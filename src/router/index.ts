@@ -1,6 +1,6 @@
-import { App } from 'vue';
-import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router';
-import Layout from '@/views/Layout/index.vue';
+import { App } from 'vue'
+import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router'
+import Layout from '@/views/Layout/index.vue'
 
 //固定路由
 const constantRoutes: RouteRecordRaw[] = [
@@ -14,7 +14,7 @@ const constantRoutes: RouteRecordRaw[] = [
     name: '404',
     path: '/404'
   }
-];
+]
 
 // 主要业务页面路由
 const mainRouter: RouteRecordRaw[] = [
@@ -65,7 +65,7 @@ const mainRouter: RouteRecordRaw[] = [
       }
     ]
   }
-];
+]
 
 // 整合路由
 export const routes: RouteRecordRaw[] = [
@@ -76,15 +76,15 @@ export const routes: RouteRecordRaw[] = [
     children: mainRouter
   },
   ...constantRoutes
-];
+]
 
 const router = createRouter({
   history: createWebHashHistory(),
   routes
-});
+})
 
 export function setupRouter(app: App<Element>) {
-  app.use(router);
+  app.use(router)
 }
 
 function setPath(routerArr, pathStr = '') {
@@ -92,14 +92,14 @@ function setPath(routerArr, pathStr = '') {
     let obj: { index: string; name: string; children?: any[] } = {
       index: `${pathStr}${item.path}`,
       name: item.meta?.title ?? item.path
-    };
-    if (item?.children) {
-      obj.children = setPath(item.children,item.path);
     }
-    return obj;
-  });
+    if (item?.children) {
+      obj.children = setPath(item.children, item.path)
+    }
+    return obj
+  })
 }
 
-export const menuList = setPath(mainRouter);
+export const menuList: any = setPath(mainRouter)
 
-export default router;
+export default router
