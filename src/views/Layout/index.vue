@@ -4,7 +4,7 @@
       <CustomHeadr />
     </el-header>
     <el-container>
-      <el-aside width="200px">
+      <el-aside width="220px">
         <Menu />
       </el-aside>
       <el-container>
@@ -36,7 +36,6 @@ import Menu from './components/Menu.vue'
   .main-wrap{
     width: 100%;
     height: 100%;
-    background-color: beige;
     position: relative;
     padding: 15px;
   }

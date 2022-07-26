@@ -24,3 +24,5 @@ dist-ssr
 
 /dist
 dist
+components.d.ts
+yarn.lock

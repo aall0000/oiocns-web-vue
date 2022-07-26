@@ -2,6 +2,8 @@ import { App } from 'vue'
 import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router'
 import Layout from '@/views/Layout/index.vue'
 
+let resultRouter: RouteRecordRaw[] = []
+
 //固定路由
 const constantRoutes: RouteRecordRaw[] = [
   {
@@ -10,7 +12,7 @@ const constantRoutes: RouteRecordRaw[] = [
     path: '/login'
   },
   {
-    component: () => import('@/views/others/404.vue'),
+    component: () => import('@/views/Others/404.vue'),
     name: '404',
     path: '/404'
   }
@@ -37,7 +39,6 @@ const mainRouter: RouteRecordRaw[] = [
     }
   },
   {
-    component: () => import('@/views/Work/index.vue'),
     name: 'work2',
     path: '/work2',
     meta: {
@@ -46,7 +47,7 @@ const mainRouter: RouteRecordRaw[] = [
     },
     children: [
       {
-        component: () => import('@/views/Home/index.vue'),
+        component: () => import('@/components/usePinia.vue'),
         name: 'test1',
         path: '/test1',
         meta: {
@@ -73,7 +74,7 @@ export const routes: RouteRecordRaw[] = [
     path: '/',
     redirect: '/home',
     component: Layout,
-    children: mainRouter
+    children: handleMainRouter(mainRouter)
   },
   ...constantRoutes
 ]
@@ -83,11 +84,23 @@ const router = createRouter({
   routes
 })
 
-export function setupRouter(app: App<Element>) {
-  app.use(router)
+// 处理业务路由为一级
+function handleMainRouter(routerArr: RouteRecordRaw[], path?: string) {
+  routerArr.forEach((item: RouteRecordRaw) => {
+    if (item?.children) {
+      handleMainRouter(item.children, item.path)
+    } else {
+      let obj = { ...item }
+      if (path) {
+        obj.path = `${path}${item.path}`
+      }
+      resultRouter.push(obj)
+    }
+  })
+  return resultRouter
 }
 
-function setPath(routerArr, pathStr = '') {
+function setRouterPath(routerArr, pathStr = '') {
   return routerArr.map((item) => {
     let obj: { index: string; name: string; children?: any[] } = {
       index: `${pathStr}${item.path}`,
@@ -100,6 +113,24 @@ function setPath(routerArr, pathStr = '') {
   })
 }
 
+// 处理导航展示所需信息
+function setPath(routerArr, pathStr = '') {
+  return routerArr.map((item) => {
+    let obj: { index: string; name: string; children?: any[] } = {
+      index: `${pathStr}${item.path}`,
+      name: item.meta?.title ?? item.path
+    }
+    if (item?.children) {
+      obj.children = setPath(item.children, item.path)
+    }
+    return obj
+  })
+}
+// 根据业务路由导出菜单列表用于渲染导航
 export const menuList: any = setPath(mainRouter)
+
+export function setupRouter(app: App<Element>) {
+  app.use(router)
+}
 
 export default router
