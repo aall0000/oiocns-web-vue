@@ -1,27 +1,53 @@
 <template>
-  <div id='index-wrap'>
-    村上春树{{ aa }}
-    <el-button @click="fetchRequest">请求</el-button>
+  <div class="baseLayout">
+    <div class="headers"><Head></Head></div>
+    <div class="articleTop">
+      <div class="articleTop-left"><Invitate></Invitate></div>
+      <div class="articleTop-right"><Organization></Organization></div>
+    </div>
+    <div class="articleBtm"></div>
   </div>
 </template>
 
-<script lang="ts" setup>
-import $services from '@/services'
-import { ref } from 'vue';
-
-const aa = ref(9)
-const fetchRequest = () => {
-  $services.test({
-    "id": 0,
-    "offset": 0,
-    "limit": 0
-  }).then(res => {
-    console.log('测试接口', res);
-
-  })
-}
+<script lang="ts">
+import { defineComponent } from 'vue'
+import Head from './components/head.vue'
+import Invitate from './components/invitate.vue'
+import Organization from './components/invitate.vue'
+export default defineComponent({
+  components: { Head, Invitate, Organization },
+  setup() {
+    return {}
+  }
+})
 </script>
 
-<style lang='scss'>
-#index-wrap {}
+<style lang='scss' scoped>
+.baseLayout {
+  height: 100%;
+}
+.headers {
+  width: 100%;
+  height: 15%;
+}
+.articleTop {
+  display: flex;
+  width: 100%;
+  height: 30%;
+  margin-top: 20px;
+  &-left {
+    width: 50%;
+    height: 100%;
+    margin-right: 20px;
+  }
+  &-right {
+    width: 50%;
+    height: 100%;
+  }
+}
+.articleBtm {
+  width: 100%;
+  height: 50%;
+  margin-top: 20px;
+}
 </style>

@@ -6,6 +6,6 @@ export default {
   // 公共接口
   getUserInfo: authGSV + 'getUserInfo', // 获取登录信息
   getConfirmCode: smsGSV + 'getConfirmCode', // 获取短信信息
-  test: '/orginone/organization/cohort/get/authoritys'
+  test: '/orginone/organization/person/register'
   //others
 }

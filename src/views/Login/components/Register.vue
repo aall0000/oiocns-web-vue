@@ -39,6 +39,7 @@
 <script lang="ts">
 import { defineComponent, reactive, ref } from 'vue'
 import type { FormInstance } from 'element-plus'
+import $services from '@/services'
 export default defineComponent({
   setup(prop, context) {
     const ruleFormRef = ref<FormInstance>()
@@ -103,9 +104,19 @@ export default defineComponent({
       if (!formEl) return
       formEl.validate((valid) => {
         if (valid) {
-          console.log('submit!')
+          $services
+            .test({
+              nickName: 'string',
+              name: 'string',
+              phone: 'string',
+              account: 'string',
+              password: 'string',
+              motto: 'string'
+            })
+            .then((res) => {
+              console.log('测试接口', res)
+            })
         } else {
-          console.log('error submit!')
           return false
         }
       })
