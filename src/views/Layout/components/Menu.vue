@@ -31,7 +31,7 @@
 <script lang="ts" setup>
 import { menuList } from '@/router/index';
 const handleMenySelect = (index, indexPath, item, router) => {
-  console.log('跳转参数', index, indexPath, item, router);
+  // console.log('跳转参数', index, indexPath, item, router);
 }
 </script>
 
