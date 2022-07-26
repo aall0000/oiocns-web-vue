@@ -35,4 +35,4 @@
 ● test：添加测试代码
 ● revert：撤销上一次的commit
 ● refactor：某个已有功能重构
-● build：构建工具或构建过程的变动，如：webpack升级、gulp替换为webpack等
+● build：构建工具或构建过程的变动
