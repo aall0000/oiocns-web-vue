@@ -12,7 +12,7 @@ const constantRoutes: RouteRecordRaw[] = [
     path: '/login'
   },
   {
-    component: () => import('@/views/others/404.vue'),
+    component: () => import('@/views/Others/404.vue'),
     name: '404',
     path: '/404'
   }
