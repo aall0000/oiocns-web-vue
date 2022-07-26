@@ -36,7 +36,6 @@ import Menu from './components/Menu.vue'
   .main-wrap{
     width: 100%;
     height: 100%;
-    background-color: beige;
     position: relative;
     padding: 15px;
   }

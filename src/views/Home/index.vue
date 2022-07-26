@@ -1,6 +1,7 @@
 <template>
   <div id='index-wrap'>
     村上春树{{ aa }}
+    <svg-icon icon-name="dog"></svg-icon>
     <el-button @click="fetchRequest">请求</el-button>
   </div>
 </template>
