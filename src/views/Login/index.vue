@@ -1,6 +1,6 @@
 <template>
   <div class="login">
-    <h1>登录页{{aa}}</h1>
+    <h1>登录页{{ aa }}</h1>
   </div>
 </template>
 

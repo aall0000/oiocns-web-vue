@@ -9,7 +9,7 @@
           <template #title>
             <el-icon>
               <message />
-            </el-icon>55{{ items.name }}
+            </el-icon>{{ items.name }}
           </template>
           <el-menu-item-group>
             <template v-for="(child, index) in items.children">
@@ -29,7 +29,7 @@
 </template>
 
 <script lang="ts" setup>
-import { menuList } from '@/router';
+import { menuList } from '@/router/index';
 const handleMenySelect = (index, indexPath, item, router) => {
   console.log('跳转参数', index, indexPath, item, router);
 }
