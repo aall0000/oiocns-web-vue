@@ -13,7 +13,16 @@ const constantRoutes: RouteRecordRaw[] = [
     component: () => import('@/views/others/404.vue'),
     name: '404',
     path: '/404'
-  }
+  },
+  {
+    component: () => import('@/views/Thing/index.vue'),
+    name: 'thing',
+    path: '/Thing',
+    meta: {
+      keepAlive: false,
+      title: '事'
+    }
+  },
 ];
 
 // 主要业务页面路由
