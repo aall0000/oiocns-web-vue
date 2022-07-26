@@ -42,6 +42,7 @@
     "vite": "^3.0.0",
     "vite-plugin-components": "^0.13.3",
     "vite-plugin-style-import": "^2.0.0",
+    "vite-plugin-svg-icons": "^2.0.1",
     "vue-eslint-parser": "^9.0.3",
     "vue-router": "^4.1.2",
     "vue-tsc": "^0.38.4"
