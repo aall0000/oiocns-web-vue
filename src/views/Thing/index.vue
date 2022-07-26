@@ -1,62 +1,228 @@
 <template>
-  <div class="head">
-    <div class="thing-type">事</div>
-    <div class="thing-mian">
-      <div class="thing-setting">工作台</div>
-      <el-input
-        v-model="input2"
-        class="w-50 m-2 input-class"
-        placeholder="搜索应用"
-      />
-    </div>
-  </div>
-  <div class="work-card">
-    <div class="card-head">
-      <div class="title">任务卡片</div>
-      <div class="view-details">查看详情</div>
-    </div>
-    <ul>
-      <li>
-        <p>我的待办</p>
-        <p>0</p>
-      </li>
-      <li>
-        <p>我的待办</p>
-        <p>0</p>
-      </li>
-      <li>
-        <p>我的待办</p>
-        <p>0</p>
-      </li>
-      <li>
-        <p>我的待办</p>
-        <p>0</p>
-      </li>
-    </ul>
-  </div>
-  <div class="content">
-    <div class="personal">
-      <div class="head">
-        <div class="personal-title">个人应用</div>
-        <div class="personal-edit">管理</div>
-      </div>
-      <div class="app-list">
-        <div class="app-item">
-          <img src="./../assets/Group22.png" alt="">
-          <div class="item-box">
-            <span>添加更多应⽤</span>
-          </div>
-        </div>
-         <div class="app-item">
-          <img src="./../assets/Group22.png" alt="">
-          <div class="item-box">
-            <p>资产监管资产监管</p>
-            <p>简单、⾼效、开放的监管⼯具</p>
-          </div>
-        </div>
+  <div class="thing">
+    <div class="thing-head">
+      <div class="thing-type">事</div>
+      <div class="thing-mian">
+        <div class="thing-setting">工作台</div>
+        <el-input v-model="input2" class="w-50 m-2 input-class" placeholder="搜索应用" />
       </div>
     </div>
-    <div class="whole"></div>
+    <div class="work-card">
+      <div class="card-head">
+        <div class="title">任务卡片</div>
+        <div class="view-details">查看详情</div>
+      </div>
+      <ul>
+        <li>
+          <p>我的待办</p>
+          <p>0</p>
+        </li>
+        <li>
+          <p>我的待办</p>
+          <p>0</p>
+        </li>
+        <li>
+          <p>我的待办</p>
+          <p>0</p>
+        </li>
+        <li>
+          <p>我的待办</p>
+          <p>0</p>
+        </li>
+      </ul>
+    </div>
+    <div class="content">
+      <div class="personal">
+        <div class="head">
+          <div class="personal-title">个人应用</div>
+          <div class="personal-edit">管理</div>
+        </div>
+        <div class="app-list">
+          <div class="app-item">
+            <img src="./../../assets/img/Group22.png" alt="" />
+            <div class="item-box">
+              <span>添加更多应⽤</span>
+            </div>
+          </div>
+          <div class="app-item">
+            <img src="./../../assets/img/Group22.png" alt="" />
+            <div class="item-box">
+              <p>资产监管资产监管</p>
+              <p>简单、⾼效、开放的监管⼯具</p>
+            </div>
+          </div>
+          <div class="app-item">
+            <img src="./../../assets/img/Group22.png" alt="" />
+            <div class="item-box">
+              <p>资产监管资产监管</p>
+              <p>简单、⾼效、开放的监管⼯具</p>
+            </div>
+          </div>
+          <div class="app-item">
+            <img src="./../../assets/img/Group22.png" alt="" />
+            <div class="item-box">
+              <p>资产监管资产监管</p>
+              <p>简单、⾼效、开放的监管⼯具</p>
+            </div>
+          </div>
+          <div class="app-item">
+            <img src="./../../assets/img/Group22.png" alt="" />
+            <div class="item-box">
+              <p>资产监管资产监管</p>
+              <p>简单、⾼效、开放的监管⼯具</p>
+            </div>
+          </div>
+          <div class="app-item">
+            <img src="./../../assets/img/Group22.png" alt="" />
+            <div class="item-box">
+              <p>资产监管资产监管</p>
+              <p>简单、⾼效、开放的监管⼯具</p>
+            </div>
+          </div>
+          <div class="app-item">
+            <img src="./../../assets/img/Group22.png" alt="" />
+            <div class="item-box">
+              <p>资产监管资产监管</p>
+              <p>简单、⾼效、开放的监管⼯具</p>
+            </div>
+          </div>
+        </div>
+        <div class="page">
+          <el-pagination small background layout="prev, pager, next" :total="50" class="mt-4" />
+        </div>
+        <div class="head">
+          <div class="personal-title">全员应用</div>
+        </div>
+        <div class="app-list">
+          <div class="app-item">
+            <img src="./../../assets/img/Group22.png" alt="" />
+            <div class="item-box">
+              <span>添加更多应⽤</span>
+            </div>
+          </div>
+          <div class="app-item">
+            <img src="./../../assets/img/Group22.png" alt="" />
+            <div class="item-box">
+              <p>资产监管资产监管</p>
+              <p>简单、⾼效、开放的监管⼯具</p>
+            </div>
+          </div>
+          <div class="app-item">
+            <img src="./../../assets/img/Group22.png" alt="" />
+            <div class="item-box">
+              <p>资产监管资产监管</p>
+              <p>简单、⾼效、开放的监管⼯具</p>
+            </div>
+          </div>
+          <div class="app-item">
+            <img src="./../../assets/img/Group22.png" alt="" />
+            <div class="item-box">
+              <p>资产监管资产监管</p>
+              <p>简单、⾼效、开放的监管⼯具</p>
+            </div>
+          </div>
+          <div class="app-item">
+            <img src="./../../assets/img/Group22.png" alt="" />
+            <div class="item-box">
+              <p>资产监管资产监管</p>
+              <p>简单、⾼效、开放的监管⼯具</p>
+            </div>
+          </div>
+          <div class="app-item">
+            <img src="./../../assets/img/Group22.png" alt="" />
+            <div class="item-box">
+              <p>资产监管资产监管</p>
+              <p>简单、⾼效、开放的监管⼯具</p>
+            </div>
+          </div>
+          <div class="app-item">
+            <img src="./../../assets/img/Group22.png" alt="" />
+            <div class="item-box">
+              <p>资产监管资产监管</p>
+              <p>简单、⾼效、开放的监管⼯具</p>
+            </div>
+          </div>
+        </div>
+        <div class="page">
+          <el-pagination small background layout="prev, pager, next" :total="50" class="mt-4" />
+        </div>
+      </div>
+      <div class="whole">
+        <div class="head">
+          <div class="personal-title">全部应用</div>
+        </div>
+        <div class="role-wrap">
+          <div class="role-list">
+            <div class="role-item role-active">最近使用</div>
+            <div class="role-item">类目一</div>
+            <div class="role-item">类目二</div>
+            <div class="role-item">类目三</div>
+            <div class="role-item">类目四</div>
+            <div class="role-item">类目五</div>
+            <div class="role-item">类目六</div>
+            <div class="role-item">类目七</div>
+            <div class="role-item">类目八</div>
+            <div class="role-item">类目九</div>
+            <div class="role-item">类目十</div>
+          </div>
+          <div class="open-fold">展开</div>
+        </div>
+
+        <div class="app-list">
+          <div class="app-item">
+            <img src="./../../assets/img/Group22.png" alt="" />
+            <div class="item-box">
+              <span>添加更多应⽤</span>
+            </div>
+          </div>
+          <div class="app-item">
+            <img src="./../../assets/img/Group22.png" alt="" />
+            <div class="item-box">
+              <p>资产监管资产监管</p>
+              <p>简单、⾼效、开放的监管⼯具</p>
+            </div>
+          </div>
+          <div class="app-item">
+            <img src="./../../assets/img/Group22.png" alt="" />
+            <div class="item-box">
+              <p>资产监管资产监管</p>
+              <p>简单、⾼效、开放的监管⼯具</p>
+            </div>
+          </div>
+          <div class="app-item">
+            <img src="./../../assets/img/Group22.png" alt="" />
+            <div class="item-box">
+              <p>资产监管资产监管</p>
+              <p>简单、⾼效、开放的监管⼯具</p>
+            </div>
+          </div>
+          <div class="app-item">
+            <img src="./../../assets/img/Group22.png" alt="" />
+            <div class="item-box">
+              <p>资产监管资产监管</p>
+              <p>简单、⾼效、开放的监管⼯具</p>
+            </div>
+          </div>
+          <div class="app-item">
+            <img src="./../../assets/img/Group22.png" alt="" />
+            <div class="item-box">
+              <p>资产监管资产监管</p>
+              <p>简单、⾼效、开放的监管⼯具</p>
+            </div>
+          </div>
+          <div class="app-item">
+            <img src="./../../assets/img/Group22.png" alt="" />
+            <div class="item-box">
+              <p>资产监管资产监管</p>
+              <p>简单、⾼效、开放的监管⼯具</p>
+            </div>
+          </div>
+        </div>
+        <div class="page">
+          <el-pagination small background layout="prev, pager, next" :total="50" class="mt-4" />
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 <script lang="ts" setup>
@@ -66,114 +232,218 @@ const input2 = ref('')
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" scoped>
-  .head{
-    padding: 30px;
-    .thing-type{
-      font-size: 16px;
-      color: #8d8d8d;
-      margin-bottom: 15px;
-    }
-    .thing-mian{
-      font-size: 24px;
-      font-weight: bold;
-      color: #333;
-      display: flex;
-      justify-content: space-between  ;
-      .input-class{
-        width: 200px;
-      }
+.thing {
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+}
+.thing-head {
+  padding: 30px;
+  .thing-type {
+    font-size: 16px;
+    color: #8d8d8d;
+    margin-bottom: 15px;
+  }
+  .thing-mian {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+    display: flex;
+    justify-content: space-between;
+    .input-class {
+      width: 200px;
     }
   }
-  .work-card{
-    background: #f0f2f5;
-    padding:20px;
-    .card-head{
-      background: #fff;
+}
+.work-card {
+  background: #f0f2f5;
+  padding: 20px;
+  .card-head {
+    background: #fff;
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid #eee;
+    box-sizing: border-box;
+    padding: 20px;
+    .title {
+      color: #333;
+      font-size: 16px;
+    }
+    .view-details {
+      font-size: 12px;
+      color: #154ad8;
+    }
+  }
+  ul {
+    width: 100%;
+    display: flex;
+    background: #fff;
+    li {
+      width: 25%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      border-right: 1px solid #eee;
+      margin: 30px 0;
+      > p:nth-child(1) {
+        color: #ccc;
+        margin-bottom: 20px;
+      }
+    }
+    li:last-child {
+      border-right: 0;
+    }
+  }
+}
+.content {
+  background: #f0f2f5;
+  padding: 0 20px 20px;
+  display: flex;
+  justify-content: space-between;
+  .personal {
+    background: #fff;
+    width: calc(50% - 10px);
+    .head {
       display: flex;
       justify-content: space-between;
-      border-bottom: 1px solid #eee;
-      box-sizing: border-box;
-      padding:20px;
-      .title{
-        color: #333;
-        font-size: 16px;
-      }
-      .view-details{
-        font-size: 12px;
-        color: #154ad8;
-      }
+      border-bottom: 1px solid #e8e8e8;
+      padding: 15px;
     }
-    ul{
+    .app-list {
       width: 100%;
-      display: flex;
-      background: #fff;
-      li{
-        width: 25%;
+      padding: 20px;
+      padding-bottom: 0;
+      box-sizing: border-box;
+      overflow: hidden;
+      .app-item {
+        width: calc(50% - 10px);
+        box-sizing: border-box;
+        float: left;
+        height: 60px;
+        padding: 10px;
+        border: 1px solid #e9e9e9;
+        border-radius: 3px;
         display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        border-right: 1px solid #eee;
-        margin: 30px 0;
-        >p:nth-child(1){
-          color: #ccc;
-          margin-bottom: 20px;
+        margin-bottom: 10px;
+        img {
+          width: 40px;
+          height: 40px;
+          margin-right: 10px;
+        }
+        .item-box {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          > p:nth-child(1) {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 5px;
+          }
+          > p:nth-child(2) {
+            font-size: 12px;
+            color: #8d8d8d;
+          }
         }
       }
-      li:last-child{
-        border-right:0
+      .app-item:nth-child(2n) {
+        margin-left: 20px;
       }
     }
-  }
-  .content{
-    background: #f0f2f5;
-    padding:0 20px 20px;
-    .personal{
-       background: #fff;
-       width: 50%;
-       .head{
-          display: flex;
-          justify-content: space-between;
-          border-bottom: 1px solid #e8e8e8;
-       }
-       .app-list{
-          width: 100%;
-          overflow: hidden;
-          padding: 20px;
-          box-sizing: border-box;
-          .app-item{
-            width:calc(50% - 10px);
-            box-sizing: border-box;
-            float: left;
-            height: 60px;
-            padding: 10px;
-            border: 1px solid #e9e9e9;
-            border-radius: 3px;
-            display: flex;
-            img{
-              width:40px;
-              height: 40px;
-              margin-right: 10px;
-            }
-            .item-box{
-              display: flex;
-              flex-direction: column;
-              justify-content: center;
-              >p:nth-child(1){
-                font-size: 14px;
-                color:#333;
-                margin-bottom: 5px;
-              }
-              >p:nth-child(2){
-                font-size: 12px;
-                color: #8d8d8d;
-              }
-            }
-          }
-          .app-item:nth-child(2n){
-            margin-left: 20px;
-          }
-       }
+    .page {
+      width: 100%;
+      height: 50px;
+      display: flex;
+      flex-direction: row-reverse;
+      align-items: center;
+      padding-right: 20px;
     }
   }
+  .whole {
+    background: #fff;
+    width: calc(50% - 10px);
+    .head {
+      padding: 15px;
+      border-bottom: 1px solid #e8e8e8;
+    }
+    .app-list {
+      width: 100%;
+      padding: 20px;
+      padding-bottom: 0;
+      box-sizing: border-box;
+      overflow: hidden;
+      .app-item {
+        width: calc(50% - 10px);
+        box-sizing: border-box;
+        float: left;
+        height: 60px;
+        padding: 10px;
+        border: 1px solid #e9e9e9;
+        border-radius: 3px;
+        display: flex;
+        margin-bottom: 10px;
+        img {
+          width: 40px;
+          height: 40px;
+          margin-right: 10px;
+        }
+        .item-box {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          > p:nth-child(1) {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 5px;
+          }
+          > p:nth-child(2) {
+            font-size: 12px;
+            color: #8d8d8d;
+          }
+        }
+      }
+      .app-item:nth-child(2n) {
+        margin-left: 20px;
+      }
+    }
+    .role-wrap {
+      overflow: hidden;
+      .role-list {
+        width: calc(100% - 40px);
+        float: left;
+        margin-top: 10px;
+        .role-item {
+          float: left;
+          margin-left: 10px;
+          padding: 5px;
+          font-size: 12px;
+          border-radius: 3px;
+          cursor: pointer;
+        }
+        .role-active {
+          background: pink;
+          color: #fff;
+        }
+      }
+      .open-fold {
+        width: 30px;
+        text-align: center;
+        height: 20px;
+        line-height: 20px;
+        float: right;
+        margin-top: 12px;
+        margin-right: 10px;
+        font-size: 12px;
+      }
+    }
+    .page {
+      width: 100%;
+      height: 50px;
+      display: flex;
+      flex-direction: row-reverse;
+      align-items: center;
+      padding-right: 20px;
+    }
+  }
+}
 </style>

@@ -23,6 +23,24 @@ const constantRoutes: RouteRecordRaw[] = [
       title: '事'
     }
   },
+  {
+    component: () => import('@/views/Thing/personalApp.vue'),
+    name: 'personalApp',
+    path: '/personalApp',
+    meta: {
+      keepAlive: false,
+      title: '物'
+    }
+  },
+  {
+    component: () => import('@/views/Thing/cardDetail.vue'),
+    name: 'cardDetail',
+    path: '/CardDetail',
+    meta: {
+      keepAlive: false,
+      title: '事'
+    }
+  },
 ];
 
 // 主要业务页面路由
