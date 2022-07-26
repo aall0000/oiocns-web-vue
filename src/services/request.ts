@@ -130,7 +130,7 @@ export default function request(
   const baseURL = autoMatchBaseUrl(prefix);
 
   const formatHeaders = {
-    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+    'Content-Type': 'application/json; charset=UTF-8',
     ...headers
   };
 

@@ -12,13 +12,13 @@ import { ref } from 'vue';
 
 const aa = ref(9)
 const fetchRequest = () => {
-  $services.test({
-    "id": 0,
-    "offset": 0,
-    "limit": 0
+  $services.person.login({
+    "data": {
+      "account": "realVeer",
+      "password": "1E!2w@3q#"
+    }
   }).then(res => {
-    console.log('测试接口', res);
-
+    console.log('登录', res);
   })
 }
 </script>
