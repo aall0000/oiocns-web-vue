@@ -12,9 +12,24 @@ const constantRoutes: RouteRecordRaw[] = [
     path: '/login'
   },
   {
+    component: () => import('@/views/Thing/index.vue'),
+    name: 'thing',
+    path: '/thing'
+  },
+  {
+    component: () => import('@/views/Thing/cardDetail.vue'),
+    name: 'cardDetail',
+    path: '/cardDetail'
+  },
+  {
     component: () => import('@/views/Others/404.vue'),
     name: '404',
     path: '/404'
+  },
+  {
+    component: () => import('@/views/Thing/personalApp.vue'),
+    name: 'personalApp',
+    path: '/personalApp'
   }
 ]
 

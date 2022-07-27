@@ -1,4 +1,7 @@
 <template>
+  <el-header>
+    <CustomHeadr />
+  </el-header>
   <div class="thing">
     <div class="thing-head">
       <div class="thing-type">事</div>
@@ -226,8 +229,19 @@
   </div>
 </template>
 <script lang="ts" setup>
+import CustomHeadr from './../Layout/components/CustomHeader.vue'
 import { ref } from 'vue'
 const input2 = ref('')
+const fetchRequest = () => {
+  $services.person.login({
+    "data": {
+      "account": "realVeer",
+      "password": "1E!2w@3q#"
+    }
+  }).then(res => {
+    console.log('登录', res);
+  })
+}
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
