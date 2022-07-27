@@ -2,8 +2,8 @@
   <div class="invitateLayout">
     <img class="invitateLayout-img" src="@/assets/img/rw.png" alt="" />
     <div class="invitateLayout-box">
-      <div class="invitateLayout-box__topText">创建企业/单位/组织</div>
-      <div class="invitateLayout-box__btmText">⼀起创建新组织吧</div>
+      <div class="invitateLayout-box__topText">探索更多功能</div>
+      <div class="invitateLayout-box__btmText">去应⽤市场探索更多功能吧！</div>
     </div>
     <el-icon><ArrowRight /></el-icon>
   </div>

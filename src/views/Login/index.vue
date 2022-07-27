@@ -2,21 +2,20 @@
   <div class="baseLayout">
     <img class="baseLayout-bg" src="@/assets/img/login.png" alt="" />
     <div class="baseLayout-loginBox">
-      <!-- <el-carousel
+      <el-carousel
         ref="carousel"
         style="height: 100%"
         :autoplay="false"
         indicator-position="none"
         arrow="never"
       >
-        <el-carousel-item> -->
-      <Login v-show="!show" @register="register"></Login>
-      <Register v-show="show" @gotoPrev="gotoPrev"></Register>
-      <!-- </el-carousel-item> -->
-      <!-- <el-carousel-item name="second" v-show="show">
+        <el-carousel-item>
+          <Login @register="register"></Login>
+        </el-carousel-item>
+        <el-carousel-item name="second" v-show="show">
           <Register @gotoPrev="gotoPrev"></Register>
-        </el-carousel-item> -->
-      <!-- </el-carousel> -->
+        </el-carousel-item>
+      </el-carousel>
     </div>
     <div class="baseLayout_btmText">
       Copyright 2021 资产云开放协同创新中⼼ 主办单位：浙江省财政厅
@@ -32,21 +31,13 @@ import type { FormInstance } from 'element-plus'
 export default defineComponent({
   components: { Login, Register },
   setup() {
-    let data = reactive({
-      show: false
-    })
     const carousel = ref<FormInstance>()
-    const register = () => {
-      data.show = true
-    }
-    const gotoPrev = () => {
-      data.show = false
-    }
+    const register = () => {}
+    const gotoPrev = () => {}
     return {
       gotoPrev,
       carousel,
-      register,
-      ...toRefs(data)
+      register
     }
   }
 })

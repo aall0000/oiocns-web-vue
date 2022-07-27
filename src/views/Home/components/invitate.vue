@@ -33,6 +33,8 @@ export default defineComponent({
   display: flex;
   align-items: center;
   &-img {
+    width: 100px;
+    height: 100px;
     margin-left: 15%;
   }
   &-box {

@@ -29,7 +29,7 @@
         />
       </el-form-item>
     </el-form>
-    <el-button class="loginBtn" type="primary" @click="submitForm(ruleFormRef)">注 册</el-button>
+    <el-button class="loginBtn" type="primary" @click="submitForm(ruleFormRef)">下一步</el-button>
     <div class="textBox">
       <span>已有账户？</span><span class="loginText" @click="gotoPrev">立即登录</span>
     </div>
@@ -39,7 +39,6 @@
 <script lang="ts">
 import { defineComponent, reactive, ref } from 'vue'
 import type { FormInstance } from 'element-plus'
-import $services from '@/services'
 export default defineComponent({
   setup(prop, context) {
     const ruleFormRef = ref<FormInstance>()
@@ -104,18 +103,6 @@ export default defineComponent({
       if (!formEl) return
       formEl.validate((valid) => {
         if (valid) {
-          $services
-            .test({
-              nickName: 'string',
-              name: 'string',
-              phone: 'string',
-              account: 'string',
-              password: 'string',
-              motto: 'string'
-            })
-            .then((res) => {
-              console.log('测试接口', res)
-            })
         } else {
           return false
         }
