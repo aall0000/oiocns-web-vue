@@ -6,7 +6,7 @@
       ></el-tab-pane>
       <el-tab-pane label="手机号登录" name="second">Config</el-tab-pane>
     </el-tabs>
-    <el-button class="loginBtn" type="primary">登 录</el-button>
+    <el-button class="loginBtn" type="primary" @click="login">登 录</el-button>
     <div class="other-login">
       <div class="other-login-box">
         <div style="margin-right: 10px">其他登录方式</div>
@@ -20,7 +20,7 @@
 </template>
 
 <script lang="ts">
-import UserName from './UserName.vue'
+import UserName from './userName.vue'
 import { defineComponent, toRefs } from 'vue'
 export default defineComponent({
   components: { UserName },
@@ -31,10 +31,14 @@ export default defineComponent({
     let data = {
       activeName: 'first'
     }
+    const login = () => {
+      context.emit('userLogin')
+    }
     const register = () => {
       context.emit('register')
     }
     return {
+      login,
       register,
       forgetPassword,
       ...toRefs(data)

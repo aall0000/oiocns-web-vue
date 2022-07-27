@@ -5,9 +5,9 @@
       <el-form-item prop="phone">
         <el-input
           size="large"
-          v-model="ruleForm.phone"
+          v-model="ruleForm.account"
           autocomplete="off"
-          placeholder="请输入手机号"
+          placeholder="请输入账户"
         />
       </el-form-item>
       <el-form-item prop="password">
@@ -29,7 +29,7 @@
         />
       </el-form-item>
     </el-form>
-    <el-button class="loginBtn" type="primary" @click="submitForm(ruleFormRef)">下一步</el-button>
+    <el-button class="loginBtn" type="primary" @click="submitForm(ruleFormRef)">注 册</el-button>
     <div class="textBox">
       <span>已有账户？</span><span class="loginText" @click="gotoPrev">立即登录</span>
     </div>
@@ -44,29 +44,21 @@ export default defineComponent({
     const ruleFormRef = ref<FormInstance>()
     const ruleForm = reactive({
       password: '',
-      phone: '',
+      account: '',
       password2: ''
     })
     const gotoPrev = () => {
       context.emit('gotoPrev')
     }
     const validatePass = (rule: any, value: any, callback: any) => {
-      const phoneReg = /^1[3|4|5|7|8|9][0-9]{9}$/
       if (value === '') {
-        callback(new Error('请输入手机号'))
+        callback(new Error('请输入账户'))
       } else {
-        if (ruleForm.phone !== '') {
-          if (phoneReg.test(value)) {
-            callback()
-          } else {
-            callback(new Error('手机号格式不正确'))
-          }
-        }
         callback()
       }
     }
     const validatePass2 = (rule: any, value: any, callback: any) => {
-      const passReg = /^(?![0-9]+$)(?![a-zA-Z]+$)[a-zA-z0-9]{6,15}$/
+      const passReg = /^(?=.*\d)(?=.*[a-zA-Z])(?=.*[~!@#$%^&*])[\da-zA-Z~!@#$%^&*]{6,15}$/
       if (value === '') {
         callback(new Error('请输入密码'))
       } else {
@@ -103,6 +95,7 @@ export default defineComponent({
       if (!formEl) return
       formEl.validate((valid) => {
         if (valid) {
+          context.emit('registerUser', ruleForm)
         } else {
           return false
         }
