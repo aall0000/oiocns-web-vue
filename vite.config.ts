@@ -11,12 +11,23 @@ import { settings } from './src/config/index';
 import Icons from 'unplugin-icons/vite';
 import IconsResolver from 'unplugin-icons/resolver';
 
+// import vueSetupExtend from '@winner-fed/unplugin-vue-setup-extend/vite';
+// import svgLoader from 'vite-svg-loader';
+
 export default defineConfig({
   base: settings.base, // 生产环境路径
   plugins: [
     vue(), //按需导入element-plus组件
     AutoImport({
-      resolvers: [ElementPlusResolver(), IconsResolver({ prefix: 'Icon' })]
+      resolvers: [ElementPlusResolver(), IconsResolver({ prefix: 'Icon' })],
+      include: [
+        /\.[tj]sx?$/, // .ts, .tsx, .js, .jsx
+        /\.vue$/,
+        /\.vue\?vue/, // .vue
+        /\.md$/, // .md
+      ],
+      dts: true,
+      imports: ['vue', 'vue-router']
     }),
     Components({
       resolvers: [ElementPlusResolver(), IconsResolver({ enabledCollections: 'ep' })]

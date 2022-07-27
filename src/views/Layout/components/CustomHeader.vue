@@ -6,17 +6,15 @@
       <img class="logo" src="@/icons/svg/vite.svg" alt="logo" />
       <el-dropdown trigger="click">
         <span class="el-dropdown-link">
-          资产云开放协同创新中⼼<el-icon>
+          资产云开放协同创新中心<el-icon>
             <CaretBottom />
           </el-icon>
         </span>
         <template #dropdown>
           <el-dropdown-menu>
-            <el-dropdown-item>Action 1</el-dropdown-item>
-            <el-dropdown-item> Action 2 </el-dropdown-item>
-            <el-dropdown-item>Action 3</el-dropdown-item>
-            <el-dropdown-item>Action 4</el-dropdown-item>
-            <el-dropdown-item>Action 5</el-dropdown-item>
+            <el-dropdown-item>企业 1</el-dropdown-item>
+            <el-dropdown-item> 企业 2 </el-dropdown-item>
+            <el-dropdown-item>企业 3</el-dropdown-item>
           </el-dropdown-menu>
         </template>
       </el-dropdown>
@@ -45,17 +43,15 @@
           <el-icon>
             <User />
           </el-icon>
-          资产云开放协同创新中⼼<el-icon>
+          用户1<el-icon>
             <CaretBottom />
           </el-icon>
         </span>
         <template #dropdown>
           <el-dropdown-menu>
-            <el-dropdown-item>Action 1</el-dropdown-item>
-            <el-dropdown-item> Action 2 </el-dropdown-item>
-            <el-dropdown-item>Action 3</el-dropdown-item>
-            <el-dropdown-item>Action 4</el-dropdown-item>
-            <el-dropdown-item>Action 5</el-dropdown-item>
+            <el-dropdown-item>用户11</el-dropdown-item>
+            <el-dropdown-item> 用户12 </el-dropdown-item>
+            <el-dropdown-item>用户13</el-dropdown-item>
           </el-dropdown-menu>
         </template>
       </el-dropdown>
@@ -64,10 +60,13 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { Search } from '@element-plus/icons-vue'
 const SearchInfo = ref('')
 
+watch(() => SearchInfo.value, (newVal) => {
+  console.log('监听Search变化', newVal);
+})
 </script>
 
 <style lang='scss'>
@@ -86,7 +85,8 @@ const SearchInfo = ref('')
 
   .col-right {
     justify-content: flex-end;
-    .right-con{
+
+    .right-con {
       margin-right: 18px;
     }
   }
