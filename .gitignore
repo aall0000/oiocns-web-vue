@@ -26,3 +26,4 @@ dist-ssr
 dist
 yarn.lock
 components.d.ts
+/components.d.ts
