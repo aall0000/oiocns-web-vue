@@ -94,6 +94,15 @@ const mainRouter: RouteRecordRaw[] = [
     }
   },
   {
+    component: () => import('@/views/Group/index.vue'),
+    name: 'group',
+    path: '/group',
+    meta: {
+      keepAlive: false,
+      title: '群'
+    }
+  },
+  {
     name: 'work2',
     path: '/work2',
     meta: {

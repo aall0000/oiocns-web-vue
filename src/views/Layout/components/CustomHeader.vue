@@ -6,17 +6,15 @@
       <img class="logo" src="@/assets/img/avatar.jpg" alt="logo" />
       <el-dropdown trigger="click">
         <span class="el-dropdown-link">
-          资产云开放协同创新中⼼<el-icon>
+          资产云开放协同创新中心<el-icon>
             <CaretBottom />
           </el-icon>
         </span>
         <template #dropdown>
           <el-dropdown-menu>
-            <el-dropdown-item>Action 1</el-dropdown-item>
-            <el-dropdown-item> Action 2 </el-dropdown-item>
-            <el-dropdown-item>Action 3</el-dropdown-item>
-            <el-dropdown-item>Action 4</el-dropdown-item>
-            <el-dropdown-item>Action 5</el-dropdown-item>
+            <el-dropdown-item>企业 1</el-dropdown-item>
+            <el-dropdown-item> 企业 2 </el-dropdown-item>
+            <el-dropdown-item>企业 3</el-dropdown-item>
           </el-dropdown-menu>
         </template>
       </el-dropdown>
@@ -45,7 +43,7 @@
           <el-icon>
             <User />
           </el-icon>
-          资产云开放协同创新中⼼<el-icon>
+          用户1<el-icon>
             <CaretBottom />
           </el-icon>
         </span>
@@ -65,7 +63,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { Search } from '@element-plus/icons-vue'
 import { useRouter } from 'vue-router';
 const SearchInfo = ref('')
@@ -77,8 +75,9 @@ const Setting = () =>{
 
 <style lang='scss'>
 .custom-header {
-  height: 60px;
+  height: 58px;
   line-height: 60px;
+
 
   .el-col {
     display: flex;
@@ -91,7 +90,8 @@ const Setting = () =>{
 
   .col-right {
     justify-content: flex-end;
-    .right-con{
+
+    .right-con {
       margin-right: 18px;
     }
   }
