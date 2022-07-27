@@ -1,6 +1,6 @@
 <template>
 
-  <el-row class="custom-header">
+  <el-row class="page-custom-header">
     <!-- 左侧 -->
     <el-col class="" :span="12">
       <img class="logo" src="@/assets/img/avatar.jpg" alt="logo" />
@@ -74,7 +74,7 @@ const Setting = () =>{
 </script>
 
 <style lang='scss'>
-.custom-header {
+.page-custom-header {
   height: 58px;
   line-height: 60px;
 
