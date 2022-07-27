@@ -9,11 +9,14 @@
         indicator-position="none"
         arrow="never"
       >
-        <el-carousel-item>
-          <Login @register="register"></Login>
+        <el-carousel-item name="first">
+          <Login @register="register" @userLogin="userLogin"></Login>
         </el-carousel-item>
-        <el-carousel-item name="second" v-show="show">
-          <Register @gotoPrev="gotoPrev"></Register>
+        <el-carousel-item name="second">
+          <UserInfo @gotoPrev="gotoPrev" @gotoNext="gotoNext"></UserInfo>
+        </el-carousel-item>
+        <el-carousel-item name="third">
+          <Register @gotoPrev="gotoPrev" @registerUser="registerUser"></Register>
         </el-carousel-item>
       </el-carousel>
     </div>
@@ -23,24 +26,74 @@
   </div>
 </template>
 
-<script lang="ts">
-import Login from './components/Login.vue'
-import Register from './components/Register.vue'
-import { defineComponent, nextTick, reactive, ref, toRaw, toRefs } from 'vue'
-import type { FormInstance } from 'element-plus'
-export default defineComponent({
-  components: { Login, Register },
-  setup() {
-    const carousel = ref<FormInstance>()
-    const register = () => {}
-    const gotoPrev = () => {}
-    return {
-      gotoPrev,
-      carousel,
-      register
-    }
-  }
-})
+<script lang="ts" setup >
+import Login from './components/login.vue'
+import Register from './components/register.vue'
+import UserInfo from './components/userInfo.vue'
+import $services from '@/services'
+import { ElMessage } from 'element-plus'
+import { nextTick, reactive, ref, toRaw, toRefs } from 'vue'
+const carousel = ref<any>()
+let registerData = reactive<Object>({})
+const register = () => {
+  carousel.value?.setActiveItem('second')
+}
+const gotoNext = (data) => {
+  registerData = data
+  carousel.value?.setActiveItem('third')
+  console.log(registerData)
+}
+const gotoPrev = () => {
+  carousel.value?.setActiveItem('first')
+}
+const userLogin = (data) => {
+  console.log(data)
+  let params = data
+  $services.person
+    .login({
+      data: {
+        account: params.username,
+        password: params.password
+      }
+    })
+    .then((res) => {
+      console.log('测试接口', res)
+      if (res.code == 200) {
+        ElMessage({
+          message: '注册成功',
+          type: 'success'
+        })
+        carousel.value?.setActiveItem('first')
+      } else {
+        ElMessage({
+          message: res.msg,
+          type: 'warning'
+        })
+      }
+    })
+}
+const registerUser = (data) => {
+  registerData = { ...registerData, ...data }
+  $services.person
+    .register({
+      data: registerData
+    })
+    .then((res) => {
+      console.log('测试接口', res)
+      if (res.code == 200) {
+        ElMessage({
+          message: '注册成功',
+          type: 'success'
+        })
+        carousel.value?.setActiveItem('first')
+      } else {
+        ElMessage({
+          message: res.msg,
+          type: 'warning'
+        })
+      }
+    })
+}
 </script>
 
 <style lang="scss" scoped>
