@@ -15,6 +15,61 @@ const constantRoutes: RouteRecordRaw[] = [
     component: () => import('@/views/Others/404.vue'),
     name: '404',
     path: '/404'
+  },
+  {
+    path: '/user',
+    component: () => import('../views/Layout/MsgLayout/Layout.vue'),
+    redirect:"/userMsg",
+    children: [
+      {
+        path: '/userMsg',
+        name: 'userMsg',
+        component: () => import("../views/Person/MsgSetting/userMsg.vue"),
+        meta:{
+          title:'个人信息'
+        }
+      },
+      {
+        path: '/userUnit',
+        name: 'userUnit',
+        component: () => import("../views/Person/MsgSetting/userUnit.vue"),
+        meta:{
+          title:'我的单位'
+        }
+      },
+      {
+        path: '/userAccountBind',
+        name: 'userAccountBind',
+        component: () => import("../views/Person/MsgSetting/userAccountBind.vue"),
+        meta:{
+          title:'账号绑定'
+        }
+      },
+      {
+        path: '/userSaveSet',
+        name: 'userSaveSet',
+        component: () => import("../views/Person/MsgSetting/userSaveSet.vue"),
+        meta:{
+          title:'安全设置'
+        }
+      },
+      {
+        path: '/UnitMsg',
+        name: 'UnitMsg',
+        component: () => import("../views/Person/MsgSetting/UnitMsg.vue"),
+        meta:{
+          title:'单位信息'
+        }
+      },
+      {
+        path: '/AffiliatedGroups',
+        name: 'AffiliatedGroups',
+        component: () => import("../views/Person/MsgSetting/AffiliatedGroups.vue"),
+        meta:{
+          title:'关联集团'
+        }
+      },
+    ]
   }
 ]
 
@@ -65,7 +120,9 @@ const mainRouter: RouteRecordRaw[] = [
         }
       }
     ]
-  }
+  },
+  //个人中心信息设置路由
+
 ]
 
 // 整合路由

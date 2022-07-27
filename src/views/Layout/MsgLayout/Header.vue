@@ -79,7 +79,7 @@ const Setting = () =>{
 .custom-header {
   height: 60px;
   line-height: 60px;
-
+  border-bottom: 6px solid #eff0f4;
   .el-col {
     display: flex;
     align-items: center;

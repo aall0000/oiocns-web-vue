@@ -3,7 +3,7 @@ import vue from '@vitejs/plugin-vue';
 import * as path from 'path';
 // import styleImport from 'vite-plugin-style-import';
 import AutoImport from 'unplugin-auto-import/vite';
-import { createSvgIconsPlugin } from 'vite-plugin-svg-icons';
+
 import Components from 'unplugin-vue-components/vite';
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers';
 import { settings } from './src/config/index';
@@ -24,12 +24,7 @@ export default defineConfig({
     Icons({
       autoInstall: true
     }),
-    createSvgIconsPlugin({
-      // Specify the icon folder to be cached
-      iconDirs: [path.resolve(process.cwd(), 'src/icons')],
-      // Specify symbolId format
-      symbolId: 'icon-[dir]-[name]',
-    }),
+
   ],
   resolve: {
     alias: {
