@@ -46,7 +46,32 @@ const gotoNext = (data) => {
 const gotoPrev = () => {
   carousel.value?.setActiveItem('first')
 }
-const userLogin = () => {}
+const userLogin = (data) => {
+  console.log(data)
+  let params = data
+  $services.person
+    .login({
+      data: {
+        account: params.username,
+        password: params.password
+      }
+    })
+    .then((res) => {
+      console.log('测试接口', res)
+      if (res.code == 200) {
+        ElMessage({
+          message: '注册成功',
+          type: 'success'
+        })
+        carousel.value?.setActiveItem('first')
+      } else {
+        ElMessage({
+          message: res.msg,
+          type: 'warning'
+        })
+      }
+    })
+}
 const registerUser = (data) => {
   registerData = { ...registerData, ...data }
   $services.person
