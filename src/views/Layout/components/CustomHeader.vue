@@ -71,8 +71,9 @@ watch(() => SearchInfo.value, (newVal) => {
 
 <style lang='scss'>
 .custom-header {
-  height: 60px;
+  height: 58px;
   line-height: 60px;
+  
 
   .el-col {
     display: flex;

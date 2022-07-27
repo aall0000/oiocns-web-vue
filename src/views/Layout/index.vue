@@ -1,12 +1,12 @@
 <template>
   <el-container class="pages home-wrap">
-    <el-header>
+    <el-header class="page-header">
       <CustomHeadr />
     </el-header>
     <el-container>
-      <el-aside width="220px">
-        <Menu />
-      </el-aside>
+        <!-- <Menu /> -->
+        <div id="menu-teleport-target"/>
+     
       <el-container>
         <el-main class="main-wrap">
           <keep-alive v-if="$route.meta.keepAlive">
@@ -32,10 +32,19 @@ import Menu from './components/Menu.vue'
   display: flex;
   align-items: center;
 }
+
 .home-wrap {
+
   .el-menu,
   .el-scrollbar__view {
     height: 100%;
+  }
+
+  .page-header {
+    height: 58px;
+    box-shadow: 0px 5px 3px 1px #e0e0e0;
+    // border-bottom: 1px solid #d7d7d7;
+    margin-bottom: 2px;
   }
 
   .main-wrap {
@@ -43,7 +52,7 @@ import Menu from './components/Menu.vue'
     width: 100%;
     height: 100%;
     position: relative;
-    padding: 15px;
+    padding: 0;
   }
 }
 </style>

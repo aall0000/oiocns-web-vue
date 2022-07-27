@@ -15,6 +15,11 @@ const constantRoutes: RouteRecordRaw[] = [
     component: () => import('@/views/Others/404.vue'),
     name: '404',
     path: '/404'
+  },
+  {
+    component: () => import('@/views/Test/index.vue'),
+    name: 'test',
+    path: '/test'
   }
 ]
 
@@ -36,6 +41,15 @@ const mainRouter: RouteRecordRaw[] = [
     meta: {
       keepAlive: false,
       title: '工作区'
+    }
+  },
+  {
+    component: () => import('@/views/Group/index.vue'),
+    name: 'group',
+    path: '/group',
+    meta: {
+      keepAlive: false,
+      title: '群'
     }
   },
   {
