@@ -1,7 +1,4 @@
 <template>
-  <el-header>
-    <CustomHeadr />
-  </el-header>
   <div class="thing">
     <div class="thing-head">
       <div class="thing-type">物 / 应用市场 </div>
@@ -57,7 +54,6 @@
   </div>
 </template>
 <script lang="ts" setup>
-  import CustomHeadr from './../Layout/components/CustomHeader.vue'
   import { ref } from 'vue'
   const activeIndex = ref(1)
   const input = ref(null)
