@@ -3,7 +3,7 @@ import vue from '@vitejs/plugin-vue';
 import * as path from 'path';
 // import styleImport from 'vite-plugin-style-import';
 import AutoImport from 'unplugin-auto-import/vite';
-import { createSvgIconsPlugin } from 'vite-plugin-svg-icons';
+
 import Components from 'unplugin-vue-components/vite';
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers';
 import { settings } from './src/config/index';
@@ -11,12 +11,23 @@ import { settings } from './src/config/index';
 import Icons from 'unplugin-icons/vite';
 import IconsResolver from 'unplugin-icons/resolver';
 
+// import vueSetupExtend from '@winner-fed/unplugin-vue-setup-extend/vite';
+// import svgLoader from 'vite-svg-loader';
+
 export default defineConfig({
   base: settings.base, // 生产环境路径
   plugins: [
     vue(), //按需导入element-plus组件
     AutoImport({
-      resolvers: [ElementPlusResolver(), IconsResolver({ prefix: 'Icon' })]
+      resolvers: [ElementPlusResolver(), IconsResolver({ prefix: 'Icon' })],
+      include: [
+        /\.[tj]sx?$/, // .ts, .tsx, .js, .jsx
+        /\.vue$/,
+        /\.vue\?vue/, // .vue
+        /\.md$/, // .md
+      ],
+      dts: true,
+      imports: ['vue', 'vue-router']
     }),
     Components({
       resolvers: [ElementPlusResolver(), IconsResolver({ enabledCollections: 'ep' })]
@@ -24,12 +35,7 @@ export default defineConfig({
     Icons({
       autoInstall: true
     }),
-    createSvgIconsPlugin({
-      // Specify the icon folder to be cached
-      iconDirs: [path.resolve(process.cwd(), 'src/icons')],
-      // Specify symbolId format
-      symbolId: 'icon-[dir]-[name]',
-    }),
+
   ],
   resolve: {
     alias: {

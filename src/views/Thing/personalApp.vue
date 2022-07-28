@@ -9,7 +9,7 @@
     </div>
     <div class="content">
       <div class="search">
-        <el-input class="input" v-model="input" placeholder="Please input" />
+        <el-input class="input" v-model="input" placeholder="请输入" />
         <div class="edit">
           <el-button type="primary">新建代办</el-button>
           <el-button type="primary">删除代办</el-button>
@@ -26,9 +26,9 @@
               <p>使⽤对象：财政、主管部⻔内容：审批、以及查询分析功能...</p>
             </div>
           </div>
-          <div class="app-edit">
-            <div class="set">设置</div>
-            <div class="edit-box">
+          <div class="app-edit" @mouseleave="mouseLeave">
+            <div class="set" @click="showType">设置</div>
+            <div class="edit-box" v-if="show == true">
               <p>设置首页应用</p>
               <p>设置可见范围</p>
             </div>
@@ -44,11 +44,18 @@
 </template>
 <script lang="ts" setup>
 import { ref } from 'vue'
-const activeIndex = ref('1')
-const input = ref(1)
+const activeIndex = ref(1)
+const input = ref(null)
+var show = ref(false);
 var input2 = ref()
 const handleSelect = (key: string, keyPath: string[]) => {
   console.log(key, keyPath)
+}
+var showType = ()=>{
+  show.value = true;
+}
+var mouseLeave = ()=>{
+  show.value = false;
 }
 var filterHandler = () => {}
 </script>
@@ -62,6 +69,7 @@ var filterHandler = () => {}
 }
 .thing-head {
   padding: 30px;
+  background: #fff;
   .thing-type {
     font-size: 16px;
     color: #8d8d8d;
@@ -164,7 +172,7 @@ var filterHandler = () => {}
           border-right: 1px solid #e9e9e9;
           color: #153ec9;
         }
-        > div:nth-child(2) {
+        > div:last-child {
           color: #888888;
         }
         .edit-box {

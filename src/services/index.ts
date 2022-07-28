@@ -22,7 +22,7 @@ Object.keys(urls).forEach((key) => {
 })
 
 export function setGlobalProperties(app: App<Element>) {
-  app.config.globalProperties.$services = FUNS
+  app.config.globalProperties.$API = FUNS
 }
 
 export default FUNS

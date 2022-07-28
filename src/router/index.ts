@@ -15,7 +15,62 @@ const constantRoutes: RouteRecordRaw[] = [
     component: () => import('@/views/Others/404.vue'),
     name: '404',
     path: '/404'
-  }
+  },
+  {
+    path: '/user',
+    component: () => import('../views/Layout/MsgLayout/Layout.vue'),
+    redirect:"/userMsg",
+    children: [
+      {
+        path: '/userMsg',
+        name: 'userMsg',
+        component: () => import("../views/Person/msgSetting/userMsg.vue"),
+        meta:{
+          title:'个人信息'
+        }
+      },
+      {
+        path: '/userUnit',
+        name: 'userUnit',
+        component: () => import("../views/Person/msgSetting/userUnit.vue"),
+        meta:{
+          title:'我的单位'
+        }
+      },
+      {
+        path: '/userAccountBind',
+        name: 'userAccountBind',
+        component: () => import("../views/Person/msgSetting/userAccountBind.vue"),
+        meta:{
+          title:'账号绑定'
+        }
+      },
+      {
+        path: '/userSaveSet',
+        name: 'userSaveSet',
+        component: () => import("../views/Person/msgSetting/userSaveSet.vue"),
+        meta:{
+          title:'安全设置'
+        }
+      },
+      {
+        path: '/UnitMsg',
+        name: 'UnitMsg',
+        component: () => import("../views/Person/msgSetting/unitMsg.vue"),
+        meta:{
+          title:'单位信息'
+        }
+      },
+      {
+        path: '/AffiliatedGroups',
+        name: 'AffiliatedGroups',
+        component: () => import("../views/Person/msgSetting/affiliatedGroups.vue"),
+        meta:{
+          title:'关联集团'
+        }
+      },
+    ]
+  },
 ]
 
 // 主要业务页面路由
@@ -37,6 +92,36 @@ const mainRouter: RouteRecordRaw[] = [
       keepAlive: false,
       title: '工作区'
     }
+  },
+  {
+    component: () => import('@/views/Group/index.vue'),
+    name: 'group',
+    path: '/group',
+    meta: {
+      keepAlive: false,
+      title: '群'
+    }
+  },
+  {
+
+    component: () => import('@/views/Thing/index.vue'),
+    name: 'thing',
+    path: '/thing'
+  },
+  {
+    component: () => import('@/views/Thing/cardDetail.vue'),
+    name: 'cardDetail',
+    path: '/cardDetail'
+  },
+  {
+    component: () => import('@/views/Thing/personalApp.vue'),
+    name: 'personalApp',
+    path: '/personalApp'
+  },
+  {
+    component: () => import('@/views/Thing/appStore.vue'),
+    name: 'appStore',
+    path: '/appStore'
   },
   {
     name: 'work2',
@@ -65,7 +150,9 @@ const mainRouter: RouteRecordRaw[] = [
         }
       }
     ]
-  }
+  },
+  //个人中心信息设置路由
+
 ]
 
 // 整合路由

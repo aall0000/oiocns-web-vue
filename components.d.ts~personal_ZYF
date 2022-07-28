@@ -7,7 +7,7 @@ export {}
 
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
-    Account: typeof import('./src/components/Personal/Account.vue')['default']
+    Account: typeof import('./src/views/Person/components/account.vue')['default']
     ElAside: typeof import('element-plus/es')['ElAside']
     ElBreadcrumb: typeof import('element-plus/es')['ElBreadcrumb']
     ElBreadcrumbItem: typeof import('element-plus/es')['ElBreadcrumbItem']
@@ -38,16 +38,16 @@ declare module '@vue/runtime-core' {
     ElTableColumn: typeof import('element-plus/es')['ElTableColumn']
     ElTabPane: typeof import('element-plus/es')['ElTabPane']
     ElTabs: typeof import('element-plus/es')['ElTabs']
-    GroupsAdd: typeof import('./src/components/Personal/Groups/GroupsAdd.vue')['default']
-    GroupsAll: typeof import('./src/components/Personal/Groups/GroupsAll.vue')['default']
-    GroupsCreated: typeof import('./src/components/Personal/Groups/GroupsCreated.vue')['default']
+    GroupsAdd: typeof import('./src/views/Person/components/groups/groupsAdd.vue')['default']
+    GroupsAll: typeof import('./src/views/Person/components/groups/groupsAll.vue')['default']
+    GroupsCreated: typeof import('./src/views/Person/components/groups/groupsCreated.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
-    Save: typeof import('./src/components/Personal/Save.vue')['default']
+    Save: typeof import('./src/views/Person/components/save.vue')['default']
     SvgIcon: typeof import('./src/components/global/SvgIcon/index.vue')['default']
-    UnitAdd: typeof import('./src/components/Personal/userUnit/UnitAdd.vue')['default']
-    UnitAll: typeof import('./src/components/Personal/userUnit/UnitAll.vue')['default']
-    UnitCreated: typeof import('./src/components/Personal/userUnit/UnitCreated.vue')['default']
+    UnitAdd: typeof import('./src/views/Person/components/userUnit/unitAdd.vue')['default']
+    UnitAll: typeof import('./src/views/Person/components/userUnit/unitAll.vue')['default']
+    UnitCreated: typeof import('./src/views/Person/components/userUnit/unitCreated.vue')['default']
     UsePinia: typeof import('./src/components/usePinia.vue')['default']
   }
 }

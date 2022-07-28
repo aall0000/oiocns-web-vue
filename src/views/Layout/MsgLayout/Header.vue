@@ -1,20 +1,22 @@
 <template>
 
-  <el-row class="page-custom-header">
+  <el-row class="custom-header">
     <!-- 左侧 -->
     <el-col class="" :span="12">
       <img class="logo" src="@/assets/img/avatar.jpg" alt="logo" />
       <el-dropdown trigger="click">
         <span class="el-dropdown-link">
-          资产云开放协同创新中心<el-icon>
+          资产云开放协同创新中⼼<el-icon>
             <CaretBottom />
           </el-icon>
         </span>
         <template #dropdown>
           <el-dropdown-menu>
-            <el-dropdown-item>企业 1</el-dropdown-item>
-            <el-dropdown-item> 企业 2 </el-dropdown-item>
-            <el-dropdown-item>企业 3</el-dropdown-item>
+            <el-dropdown-item>Action 1</el-dropdown-item>
+            <el-dropdown-item> Action 2 </el-dropdown-item>
+            <el-dropdown-item>Action 3</el-dropdown-item>
+            <el-dropdown-item>Action 4</el-dropdown-item>
+            <el-dropdown-item>Action 5</el-dropdown-item>
           </el-dropdown-menu>
         </template>
       </el-dropdown>
@@ -43,7 +45,7 @@
           <el-icon>
             <User />
           </el-icon>
-          用户1<el-icon>
+          资产云开放协同创新中⼼<el-icon>
             <CaretBottom />
           </el-icon>
         </span>
@@ -63,7 +65,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, watch } from 'vue';
+import { ref } from 'vue';
 import { Search } from '@element-plus/icons-vue'
 import { useRouter } from 'vue-router';
 const SearchInfo = ref('')
@@ -74,11 +76,10 @@ const Setting = () =>{
 </script>
 
 <style lang='scss'>
-.page-custom-header {
-  height: 58px;
+.custom-header {
+  height: 60px;
   line-height: 60px;
-
-
+  border-bottom: 6px solid #eff0f4;
   .el-col {
     display: flex;
     align-items: center;
@@ -90,8 +91,7 @@ const Setting = () =>{
 
   .col-right {
     justify-content: flex-end;
-
-    .right-con {
+    .right-con{
       margin-right: 18px;
     }
   }
