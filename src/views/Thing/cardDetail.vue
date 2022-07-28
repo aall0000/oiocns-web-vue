@@ -1,7 +1,4 @@
 <template>
-  <el-header>
-    <CustomHeadr />
-  </el-header>
   <div class="thing">
     <div class="thing-head">
       <div class="thing-type">事 / 任务卡片 / 查看详情</div>
@@ -55,7 +52,6 @@
   </div>
 </template>
 <script lang="ts" setup>
-import CustomHeadr from './../Layout/components/CustomHeader.vue'
 import { ref } from 'vue'
 var tableData = [
   {

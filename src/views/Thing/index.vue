@@ -1,7 +1,4 @@
 <template>
-  <el-header>
-    <CustomHeadr />
-  </el-header>
   <div class="thing">
     <div class="thing-head">
       <div class="thing-type">事</div>
@@ -231,7 +228,6 @@
   </div>
 </template>
 <script lang="ts" setup>
-import CustomHeadr from './../Layout/components/CustomHeader.vue'
 import $services from '@/services'
 import { ref,onMounted} from 'vue'
 const input2 = ref('')
