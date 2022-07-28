@@ -69,6 +69,7 @@ var filterHandler = () => {}
 }
 .thing-head {
   padding: 30px;
+  background: #fff;
   .thing-type {
     font-size: 16px;
     color: #8d8d8d;
