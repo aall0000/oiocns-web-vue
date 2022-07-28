@@ -68,16 +68,15 @@ import { Search } from '@element-plus/icons-vue'
 import { useRouter } from 'vue-router';
 const SearchInfo = ref('')
 const router = useRouter()
-const Setting = () =>{
+const Setting = () => {
   router.push("/user")
 }
 </script>
 
-<style lang='scss'>
+<style lang='scss' scoped>
 .page-custom-header {
-  height: 58px;
+  height: 60px;
   line-height: 60px;
-
 
   .el-col {
     display: flex;

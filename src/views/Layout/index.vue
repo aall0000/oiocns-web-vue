@@ -4,9 +4,9 @@
       <CustomHeadr />
     </el-header>
     <el-container>
-        <!-- <Menu /> -->
-        <div id="menu-teleport-target"/>
-
+      <!-- <Menu /> -->
+      <!-- 导航区域 传送门 -->
+      <div id="menu-teleport-target" />
       <el-container>
         <el-main class="main-wrap">
           <keep-alive v-if="$route.meta.keepAlive">
@@ -21,11 +21,11 @@
 </template>
 
 <script lang="ts" setup>
-import CustomHeadr from './components/CustomHeader.vue'
-import Menu from './components/Menu.vue'
+import CustomHeadr from './components/customHeader.vue'
+// import Menu from './components/menu.vue'
 </script>
 
-<style lang='scss'>
+<style lang='scss' scoped>
 .el-footer {
   background: rgb(240, 242, 245);
   justify-content: center;
@@ -35,10 +35,10 @@ import Menu from './components/Menu.vue'
 
 .home-wrap {
   .page-header {
-    height: 58px;
-    box-shadow: 0px 5px 3px 1px #e0e0e0;
+    height: 60px;
+    box-shadow: 0px 2px 3px 1px #e0e0e0;
     // border-bottom: 1px solid #d7d7d7;
-    margin-bottom: 2px;
+    z-index: 2;
   }
 
   .main-wrap {
