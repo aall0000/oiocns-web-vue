@@ -2,7 +2,7 @@
   <div class="account">
     <div class="left">
       <div >
-        <img class="img" src="../../assets/img/dingding.png" alt="">
+        <img class="img" src="src/assets/img/dingding.png" alt="">
       </div>
       <div class="title">
         <p class="bind">绑定钉钉</p>
