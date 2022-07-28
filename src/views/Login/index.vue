@@ -10,7 +10,7 @@
         arrow="never"
       >
         <el-carousel-item name="first">
-          <Login @register="register" @userLogin="userLogin"></Login>
+          <Login @register="register" @userLogin="userLogin" :btnLoading="btnLoading"></Login>
         </el-carousel-item>
         <el-carousel-item name="second">
           <UserInfo @gotoPrev="gotoPrev" @gotoNext="gotoNext"></UserInfo>
@@ -27,10 +27,10 @@
 </template>
 
 <script lang="ts" setup >
+// import 'element-plus/theme-chalk/el-loading.css'
 import Login from './components/login.vue'
 import Register from './components/register.vue'
 import UserInfo from './components/userInfo.vue'
-import { ElMessage, ElLoading } from 'element-plus'
 import $services from '@/services'
 import { reactive, ref } from 'vue'
 import { log } from 'console'
@@ -40,6 +40,7 @@ import { useRouter } from 'vue-router'
 const carousel = ref<any>()
 const store = useUserStore()
 const router = useRouter()
+let btnLoading = ref(false)
 
 let registerData = reactive<Object>({})
 const register = () => {
@@ -53,33 +54,12 @@ const gotoNext = (data) => {
 const gotoPrev = () => {
   carousel.value?.setActiveItem('first')
 }
-const userLogin = (data) => {
-  console.log(data)
-  let params = data
-  $services.person
-    .login({
-      data: {
-        account: params.username,
-        password: params.password
-      }
-    })
-    .then((res) => {
-      if (res.code == 200) {
-        const loading = ElLoading.service({
-          lock: true,
-          text: 'Loading',
-          background: 'rgba(0, 0, 0, 0.7)'
-        })
-        localStorage.setItem('ZCY_LOGIN_DATA', res.data)
-        store.updateUserInfo(res.data)
-        router.push({ path: 'home' })
-      } else {
-        ElMessage({
-          message: res.msg,
-          type: 'warning'
-        })
-      }
-    })
+const userLogin = (data: object) => {
+  btnLoading.value = true
+  store.updateUserInfo(data).then(() => {
+    btnLoading.value = false
+    router.push({ path: 'home' })
+  })
 }
 const registerUser = (data) => {
   registerData = { ...registerData, ...data }
