@@ -4,7 +4,7 @@
       <div class="thing-type">事</div>
       <div class="thing-mian">
         <div class="thing-setting">工作台</div>
-        <el-input v-model="input2" class="w-50 m-2 input-class" placeholder="搜索应用" />
+        <el-input v-model="input2" class="w-50 m-2 input-class" :suffix-icon="Search" placeholder="搜索应用" />
       </div>
     </div>
     <div class="work-card">
@@ -229,13 +229,15 @@
 </template>
 <script lang="ts" setup>
 import $services from '@/services'
+import { Search } from '@element-plus/icons-vue'
 import { ref,onMounted} from 'vue'
 const input2 = ref('')
 const getCardList = () => {
-  $services.person.login({
-    "data": {
-      "account": "realVeer",
-      "password": "1E!2w@3q#"
+  $services.appstore.search({
+    "data":{
+        "offset": 10,
+        "limit": 10,
+        "filter": ""
     }
   }).then(res => {
     console.log('登录', res);
@@ -253,6 +255,9 @@ onMounted(() => {
   width: 100%;
   height: 100%;
   overflow-y: auto;
+  position: absolute;
+  left: 0;
+  top: 0;
 }
 .thing-head {
   padding: 30px;

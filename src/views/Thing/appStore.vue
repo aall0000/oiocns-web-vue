@@ -83,6 +83,9 @@
     width: 100%;
     height: 100%;
     overflow-y: auto;
+    position: absolute;
+    left: 0;
+    top: 0;
   }
 
   .thing-head {

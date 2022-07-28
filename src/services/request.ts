@@ -70,9 +70,9 @@ const axiosRequest = {
   success: (config) => {
     // 以下代码，鉴权token,可根据具体业务增删。
     // demo示例:
-    if (config['url'].indexOf('operatorQry') !== -1) {
-      config.headers['accessToken'] = '6666666666666666';
-    }
+    // if (config['url'].indexOf('operatorQry') !== -1) {
+      config.headers['accessToken'] = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiZWxvbmdJZCI6MzM4NzkyNDIzMjk3NzgxNzYwLCJjb21wYW55SWQiOjAsImV4cCI6MTY1ODk4MjkyNiwiaWF0IjoxNjU4OTc1NzI2LCJ1c2VySWQiOjMzODc5MjQyMzI5Nzc4MTc2MH0.JEPIUgVKTpoukuu_99S6x9t2GTF4sscrPd2zloSSsI';
+    // }
     return config;
   },
   error: (error) => Promise.reject(error)

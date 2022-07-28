@@ -22,15 +22,21 @@
       <div class="search">
         <el-input class="input" v-model="input" placeholder="Please input" />
         <div class="edit">
-          <el-button type="primary">新建代办</el-button>
+          <el-button type="primary" color="#153ec9">新建代办</el-button>
           <el-button>删除代办</el-button>
           <el-button>完成代办</el-button>
         </div>
       </div>
       <div class="tab-list">
         <el-table :data="tableData" stripe style="width: 100%" @select="select">
-          <el-table-column prop="date" type="selection" width="180" />
-          <el-table-column prop="date" label="Date" width="180" />
+          <el-table-column prop="date" label="序号" type="selection" width="180" />
+          <el-table-column prop="date" label="全部" width="180" />
+          <el-table-column prop="date" label="内容" width="180" />
+          <el-table-column prop="date" label="链接" width="180" />
+          <el-table-column prop="date" label="状态" width="180" />
+          <el-table-column prop="date"
+          sortable
+          label="发送时间" width="180" />
           <el-table-column
             prop="name"
             label="Name"
@@ -42,7 +48,7 @@
               { text: '2016-05-04', value: '2016-05-04' }
             ]"
           />
-          <el-table-column prop="address" label="Address" :filter-method="filterHandler" />
+          <el-table-column prop="date" label="操作" width="180" />
         </el-table>
       </div>
       <div class="page">
@@ -80,6 +86,9 @@ const input = ref(1)
 const handleSelect = (key: string, keyPath: string[]) => {
   console.log(key, keyPath)
 }
+var select = ()=>{
+  console.log('aa')
+}
 var filterHandler = () => {}
 </script>
 
@@ -89,6 +98,10 @@ var filterHandler = () => {}
   width: 100%;
   height: 100%;
   overflow-y: auto;
+  overflow-y: auto;
+  position: absolute;
+  left: 0;
+  top: 0;
 }
 .thing-head {
   padding: 30px;
