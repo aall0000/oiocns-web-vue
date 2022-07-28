@@ -29,6 +29,7 @@ defineExpose({
   height: 100%;
   padding: 10px 0;
   overflow-y: auto;
+  border-right: 1px solid #ccc;
 
   .group-con {
     padding: 10px 12px;

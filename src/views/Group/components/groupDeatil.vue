@@ -1,0 +1,224 @@
+<template>
+  <div class="group-detail-wrap">
+    <h1 class="title">群详情</h1>
+    <ul class="base flex border-b">
+      <img class="base-img" src="@/assets/img/toux.jpg" alt="" srcset="">
+      <li class="base-info">
+        <div class="base-info-top flex">
+          <p class="base-info-top-name">群名称</p>
+          <el-tag size="small">群标签</el-tag>
+        </div>
+        <div class="base-info-desc">资产云部⻔成员群</div>
+      </li>
+    </ul>
+    <!-- 组成员 -->
+    <ul class="user-list border-b">
+      <li class="li-search con">
+
+        <p class="li-search-con">组成员<span class="li-search-con-num">200</span>人</p>
+        <el-input class="li-search-inp" placeholder="搜索成员">
+          <template #suffix>
+            <el-icon class="el-input__icon">
+              <search />
+            </el-icon>
+          </template>
+        </el-input>
+      </li>
+      <li class="con">
+        <el-button type="primary">组织架构</el-button>
+      </li>
+      <ul class="img-list con">
+        <li class="img-list-con" v-for="o in 20" :key="o">
+          <img class="img-list-con-img" src="@/assets/img/x.png" alt="" />
+          <span class="img-list-con-name">成员名称</span>
+        </li>
+        <p class="img-list-more-btn">查看更多</p>
+      </ul>
+
+    </ul>
+    <li class="con setting-con border-b">
+      <span class="con-label">我在本群昵称</span>
+      <span class="con-value">555</span>
+    </li>
+    <li class="con setting-con border-b">
+      <span class="con-label">群备注</span>
+      <span class="con-value">555</span>
+    </li>
+    <li class="con check-con">
+      <el-checkbox v-model="state.isIgnoreMsg" label="设置群消息免打扰" />
+    </li>
+    <li class="con check-con">
+      <el-checkbox v-model="state.isStick" label="置顶该群" />
+    </li>
+    <div class="footer">
+      <el-button type="danger" plain>退出该群</el-button>
+      <el-button type="danger">解散该群</el-button>
+    </div>
+  </div>
+</template>
+
+<script lang="ts" setup>
+import { formItemValidateStates } from 'element-plus';
+import { reactive, ref } from 'vue'
+
+const state = reactive({ isEditNickName: false, isQunName: false, isIgnoreMsg: false, isStick: false })
+
+const textarea = ref('')
+
+const emit = defineEmits(['submitInfo'])
+
+const submit = () => {
+  console.log('submit');
+
+  emit('submitInfo', textarea)
+}
+
+</script>
+
+<style lang="scss" scoped>
+.group-detail-wrap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 340px;
+  border-left: 1px solid #ccc;
+  padding: 15px;
+
+  .title {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+
+  // 群基本信息
+  .base {
+    align-items: center;
+    padding-bottom: 15px;
+
+    &-img {
+      width: 60px;
+      height: 60px;
+      margin-right: 15px;
+      border-radius: 50%;
+    }
+
+    &-info {
+      display: flex;
+      justify-content: space-around;
+      flex-direction: column;
+      height: 100%;
+
+      &-top {
+        align-items: center;
+
+        &-name {
+          font-size: 16px;
+          font-weight: 600;
+          margin-right: 10px;
+        }
+      }
+
+      &-desc {
+        font-size: 13px;
+      }
+    }
+  }
+
+  .con {
+    padding: 10px 0 0 0;
+  }
+
+  // 群成员
+  .user-list {
+
+
+    .li-search {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      &-con {
+        font-size: 15px;
+        font-weight: 500;
+        color: #333;
+
+        &-num {
+          margin-left: 10px;
+
+        }
+      }
+
+      &-inp {
+        width: 120px;
+      }
+    }
+  }
+
+  .img-list {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+
+    &-con {
+      display: flex;
+      flex-direction: column;
+      align-self: center;
+      margin-right: 10px;
+      margin-bottom: 10px;
+      cursor: pointer;
+
+      &-img {
+        width: 50px;
+        height: 50px;
+      }
+
+      &-name {
+        font-size: 10px;
+        line-height: 20px;
+      }
+
+    }
+
+    &-more-btn {
+      width: 100%;
+      text-align: center;
+      color: $mainColor;
+      cursor: pointer;
+    }
+  }
+
+  .setting-con {
+    display: flex;
+    justify-content: space-between;
+
+    .con-label {
+      font-weight: bold;
+      color: #333;
+    }
+  }
+
+  .check-con {
+    .el-checkbox {
+      height: 26px;
+    }
+
+  }
+
+  // 底部按钮
+  .footer {
+    position: absolute;
+    bottom: 20px;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+
+  }
+
+  .border-b {
+    border-bottom: 1px solid #d6d6d6;
+    padding-bottom: 10px;
+
+  }
+}
+</style>

@@ -2,21 +2,20 @@
   <div class='group-wrap'>
     <!-- 导航传送门 -->
     <teleport v-if="isShow" to="#menu-teleport-target">
-      <el-aside width="220px">
+      <el-aside class="custom-group-silder-menu" width="220px">
         <groupSideBarVue v-model:active="activeId" @addUser="handleAddUser" />
       </el-aside>
     </teleport>
     <!-- 右侧展示主体 -->
-    <div class="page-right">
+    <div class="chart-page">
       <!-- 头部 -->
       <groupHeaderVue class="chart-header" />
       <!-- 聊天区域 -->
-      <div class="chart-content">聊天区域1</div>
+      <groupContent class="chart-content"></groupContent>
       <!-- 输入区域 -->
-      <div class="chart-input">
-        <groupInputBox @submitInfo="submit" />
-      </div>
+      <groupInputBox class="chart-input" @submitInfo="submit" />
     </div>
+    <groupDetail v-if='true' />
   </div>
 </template>
 
@@ -25,6 +24,8 @@ import { onMounted, ref } from 'vue';
 import groupSideBarVue from './components/groupSideBar.vue';
 import groupHeaderVue from './components/groupHeader.vue';
 import groupInputBox from './components/groupInputBox.vue'
+import groupContent from './components/groupContent.vue'
+import groupDetail from './components/groupDeatil.vue'
 // 是否展示导航
 const isShow = ref<boolean>(false);
 onMounted(() => {
@@ -41,21 +42,23 @@ const handleAddUser = () => {
 
 const submit = (value) => {
   console.log('发送消息', value.value);
-
 }
 </script>
 
+<style lang='scss'>
+.custom-group-silder-menu.el-aside {
+  height: 100%;
+}
+</style>
 <style lang='scss' scoped>
 .group-wrap {
   width: 100%;
-  height: 100%;
+  height: calc(100vh - 60px);
   display: flex;
   justify-content: space-between;
   background-color: #fff;
 
-  .page-left {}
-
-  .page-right {
+  .chart-page {
     height: 100%;
     display: flex;
     flex-direction: column;
@@ -65,7 +68,8 @@ const submit = (value) => {
 
     .chart-header {
       height: 80px;
-      background-color: antiquewhite;
+      box-shadow: 0 1px 2px 1px rgb(229, 229, 229);
+      z-index: 2;
     }
 
     .chart-content {
@@ -75,8 +79,12 @@ const submit = (value) => {
     }
 
     .chart-input {
-      height: 60px;
-      background-color: #ccc;
+      height: max-content;
+      min-height: 120px;
+
+      .el-textarea__inner {
+        color: #fff;
+      }
     }
   }
 }
