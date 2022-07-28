@@ -4,12 +4,18 @@ export const useUserStore = defineStore({
   id: 'user', // id必填，且需要唯一
   state: () => {
     return {
-      name: '张三'
+      userInfo:{},
+      userToken:'',
     };
   },
+  getters:{
+    token:(state)=>'Bearer ' + state.userToken
+  },
   actions: {
-    updateName(name: string) {
-      this.name = name;
+    updateUserInfo(data: object) {
+      console.log(data);
+      this.userInfo = data
+      this.userToken = data.accessToken
     }
   }
 });
