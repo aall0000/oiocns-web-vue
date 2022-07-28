@@ -89,8 +89,15 @@
 import { ArrowLeft } from '@element-plus/icons-vue'
 import { regionData, CodeToText } from 'element-china-area-data'
 import { reactive, ref } from 'vue'
+import $services from '@/services'
 const labelPosition = ref('top')
-
+const fetchRequest = () => {
+  $services.person.query.info({
+    "data": {}
+  }).then(res => {
+    console.log('查询人员信息', res);
+  })
+}
 const formLabelAlign = reactive({
   name: '',
   idCardNum: '',

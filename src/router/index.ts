@@ -24,7 +24,7 @@ const constantRoutes: RouteRecordRaw[] = [
       {
         path: '/userMsg',
         name: 'userMsg',
-        component: () => import("../views/Person/MsgSetting/userMsg.vue"),
+        component: () => import("../views/Person/msgSetting/userMsg.vue"),
         meta:{
           title:'个人信息'
         }
@@ -32,7 +32,7 @@ const constantRoutes: RouteRecordRaw[] = [
       {
         path: '/userUnit',
         name: 'userUnit',
-        component: () => import("../views/Person/MsgSetting/userUnit.vue"),
+        component: () => import("../views/Person/msgSetting/userUnit.vue"),
         meta:{
           title:'我的单位'
         }
@@ -40,7 +40,7 @@ const constantRoutes: RouteRecordRaw[] = [
       {
         path: '/userAccountBind',
         name: 'userAccountBind',
-        component: () => import("../views/Person/MsgSetting/userAccountBind.vue"),
+        component: () => import("../views/Person/msgSetting/userAccountBind.vue"),
         meta:{
           title:'账号绑定'
         }
@@ -48,7 +48,7 @@ const constantRoutes: RouteRecordRaw[] = [
       {
         path: '/userSaveSet',
         name: 'userSaveSet',
-        component: () => import("../views/Person/MsgSetting/userSaveSet.vue"),
+        component: () => import("../views/Person/msgSetting/userSaveSet.vue"),
         meta:{
           title:'安全设置'
         }
@@ -56,7 +56,7 @@ const constantRoutes: RouteRecordRaw[] = [
       {
         path: '/UnitMsg',
         name: 'UnitMsg',
-        component: () => import("../views/Person/MsgSetting/UnitMsg.vue"),
+        component: () => import("../views/Person/msgSetting/unitMsg.vue"),
         meta:{
           title:'单位信息'
         }
@@ -64,7 +64,7 @@ const constantRoutes: RouteRecordRaw[] = [
       {
         path: '/AffiliatedGroups',
         name: 'AffiliatedGroups',
-        component: () => import("../views/Person/MsgSetting/AffiliatedGroups.vue"),
+        component: () => import("../views/Person/msgSetting/affiliatedGroups.vue"),
         meta:{
           title:'关联集团'
         }

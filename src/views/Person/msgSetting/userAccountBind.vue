@@ -20,7 +20,7 @@
 
 <script lang="ts" setup>
 import { ArrowLeft } from '@element-plus/icons-vue'
-import Account from "../../../components/Personal/Account.vue";
+import Account from "../components/account.vue";
 import { reactive, ref } from 'vue'
 const formLabelAlign = reactive({
   dd: '',

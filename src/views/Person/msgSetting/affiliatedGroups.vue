@@ -39,9 +39,9 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 import type { TabsPaneContext } from 'element-plus'
-import GroupsCreated from "../../../components/Personal/Groups/GroupsCreated.vue";
-import GroupsAll from "../../../components/Personal/Groups/GroupsAll.vue";
-import GroupsAdd from "../../../components/Personal/Groups/GroupsAdd.vue";
+import GroupsCreated from "../components/groups/groupsCreated.vue";
+import GroupsAll from "../components/groups/groupsAll.vue";
+import GroupsAdd from "../components/groups/groupsAdd.vue";
 const activeName = ref('first')
 
 const handleClick = (tab: TabsPaneContext, event: Event) => {
