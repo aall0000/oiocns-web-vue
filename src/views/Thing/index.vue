@@ -168,7 +168,9 @@
             <div class="role-item">类目九</div>
             <div class="role-item">类目十</div>
           </div>
-          <div class="open-fold">展开</div>
+          <div class="open-fold">展开
+            <el-icon><ArrowDown /></el-icon>
+          </div>
         </div>
 
         <div class="app-list">
@@ -230,9 +232,10 @@
 </template>
 <script lang="ts" setup>
 import CustomHeadr from './../Layout/components/CustomHeader.vue'
-import { ref } from 'vue'
+import $services from '@/services'
+import { ref,onMounted} from 'vue'
 const input2 = ref('')
-const fetchRequest = () => {
+const getCardList = () => {
   $services.person.login({
     "data": {
       "account": "realVeer",
@@ -242,6 +245,10 @@ const fetchRequest = () => {
     console.log('登录', res);
   })
 }
+onMounted(() => {
+  getCardList()
+})
+
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
@@ -423,7 +430,7 @@ const fetchRequest = () => {
     .role-wrap {
       overflow: hidden;
       .role-list {
-        width: calc(100% - 40px);
+        width: calc(100% - 50px);
         float: left;
         margin-top: 10px;
         .role-item {
@@ -435,19 +442,22 @@ const fetchRequest = () => {
           cursor: pointer;
         }
         .role-active {
-          background: pink;
+          background: #4462d2;
           color: #fff;
         }
       }
       .open-fold {
-        width: 30px;
+        width: 40px;
         text-align: center;
         height: 20px;
         line-height: 20px;
         float: right;
-        margin-top: 12px;
+        margin-top: 13px;
         margin-right: 10px;
+        display: flex;
+        justify-content: center;
         font-size: 12px;
+        align-items: center;
       }
     }
     .page {

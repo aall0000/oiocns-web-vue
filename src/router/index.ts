@@ -30,6 +30,11 @@ const constantRoutes: RouteRecordRaw[] = [
     component: () => import('@/views/Thing/personalApp.vue'),
     name: 'personalApp',
     path: '/personalApp'
+  },
+  {
+    component: () => import('@/views/Thing/appStore.vue'),
+    name: 'appStore',
+    path: '/appStore'
   }
 ]
 
