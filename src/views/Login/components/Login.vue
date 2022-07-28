@@ -6,7 +6,7 @@
       ></el-tab-pane>
       <el-tab-pane label="手机号登录" name="second">Config</el-tab-pane>
     </el-tabs>
-    <el-button class="loginBtn" type="primary" @click="login" @keyup.enter="login">登 录</el-button>
+    <el-button class="loginBtn" type="primary" @click="login">登 录</el-button>
     <div class="other-login">
       <div class="other-login-box">
         <div style="margin-right: 10px">其他登录方式</div>
@@ -21,7 +21,7 @@
 
 <script lang="ts">
 import UserName from './userName.vue'
-import { defineComponent, toRefs, ref } from 'vue'
+import { defineComponent, toRefs, ref, onMounted, onUnmounted } from 'vue'
 export default defineComponent({
   components: { UserName },
   setup(prop, context) {
@@ -38,6 +38,18 @@ export default defineComponent({
     const register = () => {
       context.emit('register')
     }
+    onMounted(() => {
+      window.addEventListener('keydown', keyDown)
+    })
+    const keyDown = (e) => {
+      //如果是回车则执行登录方法
+      if (e.keyCode == 13) {
+        login()
+      }
+    }
+    onUnmounted(() => {
+      window.removeEventListener('keydown', keyDown, false)
+    })
     return {
       username,
       login,
