@@ -1,4 +1,7 @@
 <template>
+  <el-header>
+    <CustomHeadr />
+  </el-header>
   <div class="thing">
     <div class="thing-head">
       <div class="thing-type">事 / 任务卡片 / 查看详情</div>
@@ -23,8 +26,8 @@
         <el-input class="input" v-model="input" placeholder="Please input" />
         <div class="edit">
           <el-button type="primary">新建代办</el-button>
-          <el-button type="primary">删除代办</el-button>
-          <el-button type="primary">完成代办</el-button>
+          <el-button>删除代办</el-button>
+          <el-button>完成代办</el-button>
         </div>
       </div>
       <div class="tab-list">
@@ -52,6 +55,7 @@
   </div>
 </template>
 <script lang="ts" setup>
+import CustomHeadr from './../Layout/components/CustomHeader.vue'
 import { ref } from 'vue'
 var tableData = [
   {
@@ -117,6 +121,8 @@ var filterHandler = () => {}
       width: 200px;
     }
     .edit {
+      font-size: 14px;
+      font-weight: bold;
     }
   }
   .page {
