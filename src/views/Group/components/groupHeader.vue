@@ -1,6 +1,6 @@
 <template>
   <ul class='group-header-wrap'>
-  <h1>头部</h1>
+    <h1>头部</h1>
   </ul>
 </template>
 
@@ -8,7 +8,7 @@
 
 </script>
 
-<style lang='scss'>
+<style lang='scss' scoped>
 .group-header-wrap {
   width: 100%;
   display: flex;

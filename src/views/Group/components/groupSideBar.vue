@@ -10,7 +10,7 @@
 
 </script>
 
-<style lang='scss'>
+<style lang='scss' scoped>
 .group-side-bar-wrap {
   width: 220px;
   height: 100%;

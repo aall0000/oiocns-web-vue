@@ -6,7 +6,7 @@
     <el-container>
         <!-- <Menu /> -->
         <div id="menu-teleport-target"/>
-     
+
       <el-container>
         <el-main class="main-wrap">
           <keep-alive v-if="$route.meta.keepAlive">
@@ -34,12 +34,6 @@ import Menu from './components/Menu.vue'
 }
 
 .home-wrap {
-
-  .el-menu,
-  .el-scrollbar__view {
-    height: 100%;
-  }
-
   .page-header {
     height: 58px;
     box-shadow: 0px 5px 3px 1px #e0e0e0;
