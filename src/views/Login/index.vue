@@ -30,10 +30,17 @@
 import Login from './components/login.vue'
 import Register from './components/register.vue'
 import UserInfo from './components/userInfo.vue'
+import { ElMessage, ElLoading } from 'element-plus'
 import $services from '@/services'
-import { ElMessage } from 'element-plus'
-import { nextTick, reactive, ref, toRaw, toRefs } from 'vue'
+import { reactive, ref } from 'vue'
+import { log } from 'console'
+import { useUserStore } from '@/store/user'
+import { useRouter } from 'vue-router'
+
 const carousel = ref<any>()
+const store = useUserStore()
+const router = useRouter()
+
 let registerData = reactive<Object>({})
 const register = () => {
   carousel.value?.setActiveItem('second')
@@ -57,13 +64,15 @@ const userLogin = (data) => {
       }
     })
     .then((res) => {
-      console.log('测试接口', res)
       if (res.code == 200) {
-        ElMessage({
-          message: '注册成功',
-          type: 'success'
+        const loading = ElLoading.service({
+          lock: true,
+          text: 'Loading',
+          background: 'rgba(0, 0, 0, 0.7)'
         })
-        carousel.value?.setActiveItem('first')
+        localStorage.setItem('ZCY_LOGIN_DATA', res.data)
+        store.updateUserInfo(res.data)
+        router.push({ path: 'home' })
       } else {
         ElMessage({
           message: res.msg,

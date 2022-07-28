@@ -13,7 +13,7 @@
       <el-form-item prop="password">
         <el-input
           size="large"
-          placeholder="以字母或数字符号组合的6-15位新密码"
+          placeholder="以大小写字母和数字符号组合的6-15位新密码"
           v-model="ruleForm.password"
           type="password"
           autocomplete="off"
@@ -58,18 +58,12 @@ export default defineComponent({
       }
     }
     const validatePass2 = (rule: any, value: any, callback: any) => {
-      const passReg = /^(?=.*\d)(?=.*[a-zA-Z])(?=.*[~!@#$%^&*])[\da-zA-Z~!@#$%^&*]{6,15}$/
       if (value === '') {
         callback(new Error('请输入密码'))
       } else {
         if (ruleForm.password !== '') {
           if (value.length < 6 || value.length > 15) {
             callback(new Error('密码长度不正确'))
-          }
-          if (passReg.test(value)) {
-            callback()
-          } else {
-            callback(new Error('密码格式不正确'))
           }
         }
         callback()
