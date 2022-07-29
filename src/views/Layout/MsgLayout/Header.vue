@@ -53,8 +53,8 @@
           <el-dropdown-menu>
             <el-dropdown-item>Action 1</el-dropdown-item>
             <el-dropdown-item> 语言切换 </el-dropdown-item>
-            <el-dropdown-item>首页配置</el-dropdown-item>
-            <el-dropdown-item @click="Setting">信息设置</el-dropdown-item>
+            <el-dropdown-item @click="home">首页配置</el-dropdown-item>
+            <el-dropdown-item @click="setting">信息设置</el-dropdown-item>
             <el-dropdown-item>帮助中心</el-dropdown-item>
             <el-dropdown-item>退出登录</el-dropdown-item>
           </el-dropdown-menu>
@@ -70,8 +70,11 @@ import { Search } from '@element-plus/icons-vue'
 import { useRouter } from 'vue-router';
 const SearchInfo = ref('')
 const router = useRouter()
-const Setting = () =>{
+const setting = () =>{
   router.push("/user")
+}
+const home = () =>{
+  router.push("/home")
 }
 </script>
 
