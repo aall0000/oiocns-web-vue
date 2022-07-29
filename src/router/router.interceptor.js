@@ -5,8 +5,7 @@ import { useUserStore } from '@/store/user'
 router.beforeEach((to, from, next) => {
   console.log('路由守卫')
   const store = useUserStore()
-  console.log(store.userToken)
-  if (store.userToken !== '') {
+  if (store.userToken) {
     clearPending()
     next()
   } else {
