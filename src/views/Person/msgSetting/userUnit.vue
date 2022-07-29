@@ -39,9 +39,9 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 import type { TabsPaneContext } from 'element-plus'
-import UnitCreated from "../../../components/Personal/userUnit/UnitCreated.vue";
-import UnitAll from "../../../components/Personal/userUnit/UnitAll.vue";
-import UnitAdd from "../../../components/Personal/userUnit/UnitAdd.vue";
+import UnitCreated from "../components/userUnit/unitCreated.vue";
+import UnitAll from "../components/userUnit/unitAll.vue";
+import UnitAdd from "../components/userUnit/unitAdd.vue";
 const activeName = ref('first')
 
 const handleClick = (tab: TabsPaneContext, event: Event) => {

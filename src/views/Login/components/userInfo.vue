@@ -53,6 +53,7 @@ const ruleForm = reactive({
   name: '',
   motto: ''
 })
+
 const gotoPrev = () => {
   emit('gotoPrev')
 }

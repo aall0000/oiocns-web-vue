@@ -10,7 +10,7 @@
         arrow="never"
       >
         <el-carousel-item name="first">
-          <Login @register="register" @userLogin="userLogin"></Login>
+          <Login @register="register" @userLogin="userLogin" :btnLoading="btnLoading"></Login>
         </el-carousel-item>
         <el-carousel-item name="second">
           <UserInfo @gotoPrev="gotoPrev" @gotoNext="gotoNext"></UserInfo>
@@ -27,13 +27,21 @@
 </template>
 
 <script lang="ts" setup >
+// import 'element-plus/theme-chalk/el-loading.css'
 import Login from './components/login.vue'
 import Register from './components/register.vue'
 import UserInfo from './components/userInfo.vue'
 import $services from '@/services'
-import { ElMessage } from 'element-plus'
-import { nextTick, reactive, ref, toRaw, toRefs } from 'vue'
+import { reactive, ref } from 'vue'
+import { log } from 'console'
+import { useUserStore } from '@/store/user'
+import { useRouter } from 'vue-router'
+
 const carousel = ref<any>()
+const store = useUserStore()
+const router = useRouter()
+let btnLoading = ref(false)
+
 let registerData = reactive<Object>({})
 const register = () => {
   carousel.value?.setActiveItem('second')
@@ -46,31 +54,12 @@ const gotoNext = (data) => {
 const gotoPrev = () => {
   carousel.value?.setActiveItem('first')
 }
-const userLogin = (data) => {
-  console.log(data)
-  let params = data
-  $services.person
-    .login({
-      data: {
-        account: params.username,
-        password: params.password
-      }
-    })
-    .then((res) => {
-      console.log('测试接口', res)
-      if (res.code == 200) {
-        ElMessage({
-          message: '注册成功',
-          type: 'success'
-        })
-        carousel.value?.setActiveItem('first')
-      } else {
-        ElMessage({
-          message: res.msg,
-          type: 'warning'
-        })
-      }
-    })
+const userLogin = (data: object) => {
+  btnLoading.value = true
+  store.updateUserInfo(data).then(() => {
+    btnLoading.value = false
+    router.push({ path: 'home' })
+  })
 }
 const registerUser = (data) => {
   registerData = { ...registerData, ...data }
