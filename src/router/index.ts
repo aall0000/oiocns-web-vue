@@ -18,7 +18,7 @@ const constantRoutes: RouteRecordRaw[] = [
   },
   {
     path: '/user',
-    component: () => import('../views/Layout/MsgLayout/Layout.vue'),
+    component: () => import('../views/Layout/msgLayout/layout.vue'),
     redirect:"/userMsg",
     children: [
       {
