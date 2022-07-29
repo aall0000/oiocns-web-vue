@@ -5,10 +5,11 @@ export const useUserStore = defineStore({
   id: 'user', // id必填，且需要唯一
   state: () => {
     return {
-      userInfo: JSON.parse(localStorage.getItem('ZCY_LOGIN_DATA')), // 用户登录信息
-      queryInfo: localStorage.getItem('ZCY_DETAIL_DATA'), // 用户详细信息
+      userInfo: JSON.parse(sessionStorage.getItem('ZCY_LOGIN_DATA')), // 用户登录信息
+      queryInfo: JSON.parse(sessionStorage.getItem('ZCY_DETAIL_DATA')), // 用户详细信息
       userCompanys: [], // 获取用户组织列表 分页
-      userToken: '' || localStorage.getItem('TOKEN')
+      userToken: '' || sessionStorage.getItem('TOKEN'),
+      workspaceId: ''
     }
   },
   getters: {
@@ -26,8 +27,8 @@ export const useUserStore = defineStore({
         })
         .then(async (res) => {
           if (res.code == 200) {
-            localStorage.setItem('ZCY_LOGIN_DATA', JSON.stringify(res.data))
-            localStorage.setItem('TOKEN', res.data.accessToken)
+            sessionStorage.setItem('ZCY_LOGIN_DATA', JSON.stringify(res.data))
+            sessionStorage.setItem('TOKEN', res.data.accessToken)
             this.userToken = res.data.accessToken
             this.getQueryInfo()
           } else {
@@ -44,8 +45,8 @@ export const useUserStore = defineStore({
         console.log(res)
         if (res.code == 200) {
           this.queryInfo = res.data
-          localStorage.setItem('ZCY_DETAIL_DATA', JSON.stringify(res.data))
-          this.getCompanyList(1)
+          sessionStorage.setItem('ZCY_DETAIL_DATA', JSON.stringify(res.data))
+          this.getCompanyList(0)
         } else {
           ElMessage({
             message: res.msg,
@@ -65,7 +66,9 @@ export const useUserStore = defineStore({
         .then((res) => {
           console.log(res)
           if (res.code == 200) {
-            this.userCompanys = res.data
+            let arr = []
+            arr.push({ id: this.queryInfo.id, name: this.userInfo.workspaceName })
+            this.userCompanys = [...arr, ...res.data.result]
           } else {
             ElMessage({
               message: res.msg,

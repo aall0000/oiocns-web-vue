@@ -1,5 +1,4 @@
 <template>
-
   <el-row class="page-custom-header">
     <!-- 左侧 -->
     <el-col class="" :span="12">
@@ -24,7 +23,12 @@
       <el-icon :size="18" class="icon1 right-con">
         <Suitcase />
       </el-icon>
-      <el-input class="right-con" v-model="SearchInfo" :style="{ width: '200px' }" placeholder="请输⼊想搜索的功能">
+      <el-input
+        class="right-con"
+        v-model="SearchInfo"
+        :style="{ width: '200px' }"
+        placeholder="请输⼊想搜索的功能"
+      >
         <template #append>
           <el-button :icon="Search" />
         </template>
@@ -63,17 +67,23 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, watch } from 'vue';
+import { ref, watch } from 'vue'
 import { Search } from '@element-plus/icons-vue'
-import { useRouter } from 'vue-router';
+import { useRouter } from 'vue-router'
+import { useUserStore } from '@/store/user'
+
+const store = useUserStore()
 const SearchInfo = ref('')
 const router = useRouter()
 const Setting = () => {
-  router.push("/user")
+  router.push('/user')
 }
 </script>
 
-<style lang='scss' scoped>
+<style lang='scss'>
+.el-dropdown-link {
+  cursor: pointer;
+}
 .page-custom-header {
   height: 60px;
   line-height: 60px;
@@ -94,6 +104,5 @@ const Setting = () => {
       margin-right: 18px;
     }
   }
-
 }
 </style>
