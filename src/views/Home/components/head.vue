@@ -32,10 +32,13 @@
 
 <script lang="ts" setup>
 import { useUserStore } from '@/store/user'
-import { ref, computed } from 'vue'
+import { storeToRefs } from 'pinia';
+import { defineComponent } from 'vue'
 const store = useUserStore()
-const { name } = store.queryInfo
-console.log('2222555', name)
+const { queryInfo } = storeToRefs(store)
+
+console.log('2222', store)
+
 const getTimeState = () => {
   // 获取当前时间
   let timeNow = new Date()
