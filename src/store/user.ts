@@ -8,6 +8,7 @@ export const useUserStore = defineStore({
       userInfo: JSON.parse(sessionStorage.getItem('ZCY_LOGIN_DATA')), // 用户登录信息
       queryInfo: JSON.parse(sessionStorage.getItem('ZCY_DETAIL_DATA')), // 用户详细信息
       userCompanys: [], // 获取用户组织列表 分页
+      copyCompanys: [],
       userToken: '' || sessionStorage.getItem('TOKEN'),
       workspaceData: JSON.parse(sessionStorage.getItem('WORKSPACE')) // 当前选中的公司
     }
@@ -61,9 +62,9 @@ export const useUserStore = defineStore({
         }
       })
     },
-    async getCompanyList(current: number, workspaceId: string) {
-      await $services
-        .joinCompanys({
+    async getCompanyList(current: number, workspaceId: string, lazyLoad: boolean) {
+      await $services.company
+        .getJoined({
           data: {
             offset: current,
             limit: 10
@@ -74,7 +75,12 @@ export const useUserStore = defineStore({
           if (res.code == 200) {
             let arr = []
             arr.push({ id: this.queryInfo.id, name: this.userInfo.workspaceName })
-            this.userCompanys = [...arr, ...res.data.result]
+            if (lazyLoad) {
+              this.userCompanys = [...this.userCompanys, ...(res.data.result || [])]
+            } else {
+              this.userCompanys = [...arr, ...(res.data.result || [])]
+            }
+            this.copyCompanys = JSON.parse(JSON.stringify(this.userCompanys))
             if (workspaceId) {
               this.getWorkspaceData(workspaceId)
             } else {
@@ -88,8 +94,8 @@ export const useUserStore = defineStore({
           }
         })
     },
-    getWorkspaceData(id: string) {
-      this.userCompanys.forEach((el: any, index: number) => {
+    async getWorkspaceData(id: string) {
+      await this.copyCompanys.forEach((el: any, index: number) => {
         if (id == el.id) {
           let obj = {
             id: el.id,
@@ -100,6 +106,14 @@ export const useUserStore = defineStore({
           this.userCompanys.splice(index, 1)
         }
       })
+    },
+    resetState() {
+      this.userInfo = null
+      this.queryInfo = null
+      this.userCompanys = null
+      this.copyCompanys = null
+      this.userToken = null
+      this.workspaceData = null
     }
   }
 })

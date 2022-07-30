@@ -41,6 +41,7 @@ export default defineComponent({
     const register = () => {
       context.emit('register')
     }
+
     onMounted(() => {
       window.addEventListener('keydown', keyDown)
     })

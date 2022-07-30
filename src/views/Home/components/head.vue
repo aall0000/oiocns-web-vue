@@ -4,7 +4,7 @@
       <img class="header-left-img" src="@/assets/img/头像.png" alt="" />
       <!-- <div class="header-left__avater">俞</div> -->
       <div class="header-left-box">
-        <div class="header-left-box__top">{{ getTimeState() }}，{{ store.queryInfo.name }}</div>
+        <div class="header-left-box__top">{{ getTimeState() }}，{{ queryInfo?.name }}</div>
         <div class="header-left-box__btm">管理⼈员 | 本次登录 2022-02-19 14:03:18</div>
       </div>
     </div>
@@ -34,6 +34,7 @@
 import { useUserStore } from '@/store/user'
 import { defineComponent } from 'vue'
 const store = useUserStore()
+const queryInfo = store.queryInfo
 console.log('2222', store)
 
 const getTimeState = () => {
