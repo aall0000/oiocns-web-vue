@@ -32,9 +32,11 @@
 
 <script lang="ts" setup>
 import { useUserStore } from '@/store/user'
+import { storeToRefs } from 'pinia';
 import { defineComponent } from 'vue'
 const store = useUserStore()
-const queryInfo = store.queryInfo
+const { queryInfo } = storeToRefs(store)
+
 console.log('2222', store)
 
 const getTimeState = () => {
