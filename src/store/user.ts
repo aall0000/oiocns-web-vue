@@ -63,8 +63,8 @@ export const useUserStore = defineStore({
       })
     },
     async getCompanyList(current: number, workspaceId: string, lazyLoad: boolean) {
-      await $services
-        .joinCompanys({
+      await $services.company
+        .getJoined({
           data: {
             offset: current,
             limit: 10
