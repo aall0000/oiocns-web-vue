@@ -9,22 +9,22 @@
     <el-menu
       :default-active="activeIndex"
       class="el-menu-demo"
-      style="height: 45px"
+      style="height: 45px;padding-left:20px"
       mode="horizontal"
       @select="handleSelect"
     >
       <el-menu-item index="1">代办</el-menu-item>
-      <el-menu-item index="2">已办</el-menu-item>
+      <!-- <el-menu-item index="2">已办</el-menu-item>
       <el-menu-item index="3">已完成</el-menu-item>
       <el-menu-item index="4">我发起的</el-menu-item>
-      <el-menu-item index="5">已逾期</el-menu-item>
+      <el-menu-item index="5">已逾期</el-menu-item> -->
     </el-menu>
     <div class="content">
       <div class="search">
         <!-- <el-input class="input" v-model="input" placeholder="Please input" /> -->
         <div class="edit">
           <!-- <el-button type="primary" color="#153ec9">新建代办</el-button>
-          <el-button>驳回代办</el-button>
+          <el-button>拒绝代办</el-button>
           <el-button>完成代办</el-button> -->
         </div>
       </div>
@@ -43,14 +43,14 @@
             ]"
             :filter-method="changeSelect"
           />
-          <el-table-column prop="target.typeName" label="内容" width="180" />
-          <el-table-column prop="date" label="链接" />
-          <el-table-column prop="target.status" label="状态" width="180" />
+          <el-table-column prop="target.typeName" label="内容"  />
+          <!-- <el-table-column prop="date" label="链接" /> -->
+          <el-table-column prop="target.status" label="状态"  />
           <el-table-column prop="target.updateTime" sortable label="发送时间" width="180" />
           <el-table-column prop="date" label="操作" width="180">
             <template #default="scope">
               <span style="margin-right: 10px" @click="joinSuccess(scope.row)">完成</span>
-              <span @click="joinRefse(scope.row)">驳回</span>
+              <span @click="joinRefse(scope.row)">拒绝</span>
             </template>
           </el-table-column>
         </el-table>
