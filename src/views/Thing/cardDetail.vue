@@ -21,11 +21,11 @@
     </el-menu>
     <div class="content">
       <div class="search">
-        <el-input class="input" v-model="input" placeholder="Please input" />
+        <!-- <el-input class="input" v-model="input" placeholder="Please input" /> -->
         <div class="edit">
-          <el-button type="primary" color="#153ec9">新建代办</el-button>
+          <!-- <el-button type="primary" color="#153ec9">新建代办</el-button>
           <el-button>驳回代办</el-button>
-          <el-button>完成代办</el-button>
+          <el-button>完成代办</el-button> -->
         </div>
       </div>
       <div class="tab-list">
@@ -88,7 +88,7 @@
   }
   var joinRefse = (item: { id: '' }) => {
     $services.person
-      .joinRefse({
+      .joinRefuse({
         data: {
           id: item.id
         }
