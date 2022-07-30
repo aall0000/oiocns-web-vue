@@ -12,7 +12,7 @@
         </span>
         <template #dropdown>
           <el-dropdown-menu>
-            <el-dropdown-item>Action 1</el-dropdown-item>
+            <el-dropdown-item @click="changeWorkspace">切换工作空间</el-dropdown-item>
             <el-dropdown-item> Action 2 </el-dropdown-item>
             <el-dropdown-item>Action 3</el-dropdown-item>
             <el-dropdown-item>Action 4</el-dropdown-item>
@@ -68,8 +68,25 @@
 import { ref } from 'vue';
 import { Search } from '@element-plus/icons-vue'
 import { useRouter } from 'vue-router';
+import $services from '@/services'
 const SearchInfo = ref('')
 const router = useRouter()
+async function changeWorkspace (){
+  let token = sessionStorage.getItem("TOKEN")
+  console.log(token)
+    await $services.person.changeWorkspace({
+      "data": {
+        "id": 340820527893581824
+      },
+      "headers":{
+        "Authorization":token
+      }
+    }).then(res => {
+      sessionStorage.setItem("WorkTOKEN",res.data.accessToken)
+
+      console.log('切换到华为技术有限公司', res);
+    })
+}
 const setting = () =>{
   router.push("/user")
 }

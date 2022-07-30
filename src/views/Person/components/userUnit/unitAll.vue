@@ -59,26 +59,29 @@ import { onBeforeMount } from 'vue'
 import $services from '@/services'
 const currentPage4 = 1
 const pageSize4 = 5
-let tableData = [
-  {
-    name:'',
-    code:'',
-    isMain:'',
-    admin:'',
-    time:'',
-    state:''
-  }
-]
+
+
 onBeforeMount(()=>{
-  login()
+  fetchRequest()
 })
 onMounted(()=>{
 
 })
+let tableData = [
+  {
+    name:'华为技术有限公司',
+    code:'914403001922038216',
+    isMain:'是',
+    admin:'338792423297781760',
+    time:'2022-07-29 11:39:06',
+    state:'是'
+  }
+]
 
 
-async function fetchRequest(token){
-  console.log(token)
+
+async function fetchRequest(){
+    let token = sessionStorage.getItem("TOKEN")
     await $services.company.getJoined({
       "data": {
         "offset": 0,
@@ -97,25 +100,9 @@ async function fetchRequest(token){
         }
 
       }
-
-      console.log(tableData)
     })
 }
 
-async function login(){
-  let tokens = ' '
-  await $services.person.login({
-    "data": {
-      "account": "realVeer",
-      "password": "1E!2w@3q#"
-    }
-  }).then(res => {
-    tokens = res.data.accessToken
-    fetchRequest(tokens)
-    console.log('登录', res);
-
-  })
-}
 function handleSizeChange(pageSize) {//改变当前每页的个数
       this.pageSize4 = pageSize
       this.load()
