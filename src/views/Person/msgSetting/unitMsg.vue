@@ -100,37 +100,23 @@ const formLabelAlign = reactive({
 })
 
 onBeforeMount(()=>{
-  login()
+  fetchRequest()
 })
-
-function fetchRequest(token){
-    $services.person.workspace({
+function fetchRequest(){
+    let token = sessionStorage.getItem("WorkTOKEN")
+    $services.company.queryInfo({
       "data": {},"headers":{"Authorization":token}
     }).then(res => {
-      console.log('查询人员信息', res);
-      formLabelAlign.name=res.data.team.name
-      formLabelAlign.idCardNum=res.data.id
-      formLabelAlign.jobId=res.data.thingId
-      formLabelAlign.tel=res.data.team.code
+      console.log('查询该单位详细信息', res);
+      // formLabelAlign.name=res.data.team.name
+      // formLabelAlign.idCardNum=res.data.id
+      // formLabelAlign.jobId=res.data.thingId
+      // formLabelAlign.tel=res.data.team.code
 
-      formLabelAlign.Profile=res.data.team.remark
+      // formLabelAlign.Profile=res.data.team.remark
     })
 }
-function login(){
-  let tokens = ' '
-  $services.person.login({
-    "data": {
-      "account": "realVeer",
-      "password": "1E!2w@3q#"
-    }
-  }).then(res => {
-    tokens = res.data.accessToken
-    fetchRequest(tokens)
-    console.log('登录', res);
-  })
 
-
-}
 
 const options = regionData
 const selectedOptions:Array<number> = []

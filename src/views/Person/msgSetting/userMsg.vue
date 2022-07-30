@@ -109,11 +109,12 @@ const formLabelAlign = reactive({
 })
 
 onBeforeMount(()=>{
-  login()
+  fetchRequest()
 })
 
-function fetchRequest(token){
-    $services.person.info({
+function fetchRequest(){
+    let token = sessionStorage.getItem("TOKEN")
+    $services.person.queryInfo({
       "data": {},"headers":{"Authorization":token}
     }).then(res => {
       console.log('查询人员信息', res);
@@ -124,21 +125,6 @@ function fetchRequest(token){
 
       formLabelAlign.Profile=res.data.team.remark
     })
-}
-function login(){
-  let tokens = ' '
-  $services.person.login({
-    "data": {
-      "account": "realVeer",
-      "password": "1E!2w@3q#"
-    }
-  }).then(res => {
-    tokens = res.data.accessToken
-    fetchRequest(tokens)
-    console.log('登录', res);
-  })
-
-
 }
 const options = regionData
 const selectedOptions:Array<number> = []

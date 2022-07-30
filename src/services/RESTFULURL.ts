@@ -9,14 +9,15 @@ export default {
   person: {
     login: person + '/login', // 登录
     register: person + '/register', // 注册
-    info: person + '/query/info', // 注册
-    workspace:person + '/change/workspace'
+    queryInfo: person + '/query/info', // 注册
+
   },
   cohort: {
     join: cohort + '/join' // 加群
   },
   company: {
-    getJoined: company+'/get/joined/companys'
+    getJoined: company+'/get/joined/companys',
+    queryInfo: company+'/query/info'
   },
   test: '/orginone/organization/cohort/get/authoritys',
   //others
