@@ -1,15 +1,19 @@
 <template>
-  <div class="organization-wrap">
-    <div class="organization-head">
-      <div class="organization-type">群 / 消息 / 组织架构</div>
+  <div class="organization-table-wrap">
+    <div class="organization-table-head">
+      <div class="organization-table-type">群 / 消息 / 组织架构</div>
+      <div class="organization-table-name">组织架构 <span class="organization-table-name-desc">在这里查看或管理组织树</span> </div>
     </div>
-    <el-tabs v-model="activeName" class="demo-tabs" @tab-click="handleClick">
-      <el-tab-pane label="成员" name="first">成员</el-tab-pane>
-      <el-tab-pane label="单位" name="second">单位</el-tab-pane>
-      <el-tab-pane label="集团" name="third">集团</el-tab-pane>
-    </el-tabs>
     <div class="content">
       <div class="tab-list">
+        <div class="search">
+          <el-input class="input" v-model="input" placeholder="Please input" />
+          <div class="edit">
+            <el-button type="primary">新建代办</el-button>
+            <el-button>删除代办</el-button>
+            <el-button>完成代办</el-button>
+          </div>
+        </div>
         <el-table :data="tableData" stripe style="width: 100%" @select="select">
           <el-table-column prop="date" type="selection" width="180" />
           <el-table-column prop="date" label="Date" width="180" />
@@ -64,25 +68,34 @@ const handleClick = (tab: TabsPaneContext, event: Event) => {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" scoped>
-.organization-wrap {
+.organization-table-wrap {
   width: 100%;
   height: 100%;
   overflow-y: auto;
 }
 
-.organization-head {
+.organization-table-head {
   padding: 20px;
   background: #fff;
 
-  .organization-type {
+  .organization-table-type {
     font-size: 16px;
     color: #8d8d8d;
     margin-bottom: 15px;
   }
 
-  .organization-mian {
-    font-size: 24px;
+  .organization-table-name {
+    font-size: 21px;
     font-weight: bold;
+
+    &-desc {
+      font-size: 17px;
+      font-weight: normal;
+    }
+  }
+
+  .organization-table-mian {
+    font-size: 24px;
     color: #333;
     display: flex;
     justify-content: space-between;

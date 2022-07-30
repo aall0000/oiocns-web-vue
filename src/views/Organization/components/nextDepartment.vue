@@ -42,6 +42,8 @@
   &.header {
     background-color: #f3f3f3;
     border-bottom: 1px solid #ccc;
+    height: 40px;
+    line-height: 40px;
   }
 
   &.body {
@@ -51,8 +53,8 @@
   .con {
     text-align: left;
     width: 120px;
-    height: 32px;
-    line-height: 32px;
+    height: 40px;
+    line-height: 40px;
     overflow: hidden;
     text-overflow: ellipsis;
   }

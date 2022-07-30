@@ -15,11 +15,25 @@
     </li>
     <ul class="con tree-dept">
       <li class="tree-dept-item" v-for="item in treeDate" :key="item.name">
-        <div class="label dept-name active">{{ `${item.name}(${item.num}人)` }}</div>
+        <div class="dept-label active">
+          <span class="dept-label-name "><img class="dept-label-icon" src="@/assets/img/dept.png" alt="" srcset=""> {{
+              `${item.name}(${item.num}人)`
+          }}</span>
+          <span class="right-icon">
+            <el-icon :size="14">
+              <ArrowUp />
+            </el-icon>
+          </span>
+        </div>
         <template v-if="item?.children">
-          <div class="child-label dept-name" v-for="child in item.children" :key="child.name">{{
-              `${child.name}(${child.num}人)`
-          }}
+          <div class="child-label dept-label" v-for="child in item.children" :key="child.name">
+            <span class="dept-label-name "><img class="dept-label-icon" src="@/assets/img/group-next.png" alt=""
+                srcset=""> {{
+                    `${child.name}(${child.num}人)`
+                }}</span>
+            <span class="right-icon">
+              <img class="dept-label-icon" src="@/assets/img/group-more.png" alt="" srcset="">
+            </span>
           </div>
         </template>
       </li>
@@ -68,6 +82,8 @@ const treeDate = [
 </style>
 <style lang='scss' scoped>
 .departmentTree-wrap {
+  width: 230px;
+  min-width: 230px;
   padding: 20px 0;
   background-color: #fff;
   border-right: 1px solid #e8e8e8;
@@ -78,7 +94,7 @@ const treeDate = [
   }
 
   .tree-search {
-    padding: 0 14px;
+    padding: 0 24px;
 
     .search {
       .el-input__inner {
@@ -91,7 +107,7 @@ const treeDate = [
   .tree-btns {
     display: flex;
     justify-content: space-between;
-    padding: 0 14px;
+    padding: 0 24px;
 
     .el-button--small {
       padding: 12px 6px;
@@ -99,24 +115,54 @@ const treeDate = [
   }
 
   .tree-dept {
-    padding: 0 0 0 14px;
+    // padding: 0 0 0 14px;
+
     .tree-dept-item {
-      .dept-name {
-        height: 32px;
-        line-height: 32px;
+      .dept-label {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 40px;
         font-size: 14px;
+        padding-left: 24px;
+
+
+        &-icon {
+          width: 14px;
+          height: 14px;
+        }
+
+        .dept-label-name {
+          display: flex;
+          align-items: center;
+        }
+
+        .dept-label-icon {
+          margin-right: 4px;
+        }
 
         &.active {
-          color: $mainColor;
+          .dept-label-name {
+            color: $mainColor;
+          }
+
+          background-color: #E7ECFB;
           border-right: 2px solid $mainColor;
-          transform: translateX(1px);
+          // transform: translateX(1px);
         }
+
+        .right-icon {
+          margin-right: 10px;
+        }
+
       }
+
+
 
       .label {}
 
       .child-label {
-        padding-left: 20px;
+        padding-left: 38px;
       }
     }
   }

@@ -23,6 +23,7 @@
             <div class="left-name">
               <el-icon :size="20">
                 <Connection />
+                <img class="group-icon" src="@/assets/img/group-next.png" alt="">
               </el-icon>下级部门
             </div>
             <div class="edit">
@@ -39,7 +40,7 @@
           <div class="deptment-info-btns">
             <div class="left-name">
               <el-icon :size="20">
-                <Connection />
+                <img class="group-icon" src="@/assets/img/group-user.png" alt="">
               </el-icon>组内成员
             </div>
             <div class="edit">
@@ -48,7 +49,7 @@
               <el-button>批量导入/导出</el-button>
               <el-button>变更部门</el-button>
               <el-button>调整排序</el-button>
-              <el-button>操作离职</el-button>
+              <el-button type="danger">操作离职</el-button>
             </div>
           </div>
         </div>
@@ -77,8 +78,8 @@
 </template>
 <script lang="ts" setup>
 import { ref } from 'vue';
-import departmentTree from '../components/departmentTree.vue'
-import nextDepartmentVue from '../components/nextDepartment.vue';
+import departmentTree from './components/departmentTree.vue'
+import nextDepartmentVue from './components/nextDepartment.vue';
 var tableData = [
   {
     date: '2016-05-03',
@@ -138,6 +139,11 @@ var filterHandler = () => { }
   overflow-y: auto;
   display: flex;
   flex-direction: column;
+  .group-icon{
+    width: 16px;
+    height: 16px;
+    margin-right: 10px;
+  }
 }
 
 .org-head {
@@ -167,10 +173,10 @@ var filterHandler = () => { }
   padding: 15px;
 
   //左侧组织架构 树
-  .department-tree {
-    width: 200px;
-    min-width: 200px;
-  }
+  // .department-tree {
+  //   width: 200px;
+  //   min-width: 200px;
+  // }
 
   // 右侧列表
   .department-info {

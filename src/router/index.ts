@@ -103,9 +103,18 @@ const mainRouter: RouteRecordRaw[] = [
     }
   },
   {
-    component: () => import('@/views/Group/Organization/index.vue'),
+    component: () => import('@/views/Organization/index.vue'),
     name: 'organization',
     path: '/organization',
+    meta: {
+      keepAlive: false,
+      title: '成员单位'
+    }
+  },
+  {
+    component: () => import('@/views/Organization/OrganizationTable/index.vue'),
+    name: 'organizationTable',
+    path: '/organizationTable',
     meta: {
       keepAlive: false,
       title: '组织架构'
