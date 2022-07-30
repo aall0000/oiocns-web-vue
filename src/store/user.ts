@@ -76,9 +76,9 @@ export const useUserStore = defineStore({
             let arr = []
             arr.push({ id: this.queryInfo.id, name: this.userInfo.workspaceName })
             if (lazyLoad) {
-              this.userCompanys = [...this.userCompanys, ...res.data.result]
+              this.userCompanys = [...this.userCompanys, ...(res.data.result || [])]
             } else {
-              this.userCompanys = [...arr, ...res.data.result]
+              this.userCompanys = [...arr, ...(res.data.result || [])]
             }
             this.copyCompanys = JSON.parse(JSON.stringify(this.userCompanys))
             if (workspaceId) {
