@@ -18,7 +18,7 @@
     <div class="createdBody">
       <el-table :data="tableData" stripe style="width: 98%">
         <el-table-column prop="name" label="单位名称"  />
-        <el-table-column prop="num" label="统一社会信用代码"  />
+        <el-table-column prop="code" label="统一社会信用代码"  />
         <el-table-column prop="isMain" label="是否主单位" />
         <el-table-column prop="admin" label="管理员" />
         <el-table-column prop="time" label="创建时间" />
@@ -40,8 +40,12 @@
     </div>
     <div class="createdBottom">
       <el-pagination
-        :page-size="20"
-        :pager-count="11"
+        v-model:currentPage="currentPage4"
+        v-model:page-size="pageSize4"
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :page-size="3"
+        :pager-count="10"
         layout="prev, pager, next"
         :total="1000"
       />
@@ -50,63 +54,63 @@
 </template>
 <script lang="ts" setup>
 import { Search } from '@element-plus/icons-vue'
-const tableData = [
-  {
-    name:'杭州电子科技大学',
-    num:'1234567891597534862',
-    isMain:'是',
-    admin:'孙耀',
-    time:'2022-7-26 12:44:37',
-    state:"已通过",
+import { onMounted, reactive, ref } from 'vue'
+import { onBeforeMount } from 'vue'
+import $services from '@/services'
+const currentPage4 = 1
+const pageSize4 = 5
 
-  },
-  {
-    name:'杭州电子科技大学',
-    num:'1234567891597534862',
-    isMain:'是',
-    admin:'孙耀',
-    time:'2022-7-26 12:44:37',
-    state:"已通过",
 
-  },
-  {
-    name:'杭州电子科技大学',
-    num:'1234567891597534862',
-    isMain:'是',
-    admin:'孙耀',
-    time:'2022-7-26 12:44:37',
-    state:"已通过",
+onBeforeMount(()=>{
+  fetchRequest()
+})
+onMounted(()=>{
 
-  },
+})
+let tableData = [
   {
-    name:'资产云开放协同创新中心',
-    num:'1234567891597534862',
+    name:'华为技术有限公司',
+    code:'914403001922038216',
     isMain:'是',
-    admin:'潘朝晖',
-    time:'2022-7-26 12:44:37',
-    state:"已通过",
-
-  },
-  {
-    name:'资产云开放协同创新中心',
-    num:'1234567891597534862',
-    isMain:'是',
-    admin:'潘朝晖',
-    time:'2022-7-26 12:44:37',
-    state:"已通过",
-
-  },
-  {
-    name:'资产云开放协同创新中心',
-    num:'1234567891597534862',
-    isMain:'是',
-    admin:'潘朝晖',
-    time:'2022-7-26 12:44:37',
-    state:"已通过",
-
+    admin:'338792423297781760',
+    time:'2022-07-29 11:39:06',
+    state:'是'
   }
-
 ]
+
+
+
+async function fetchRequest(){
+    let token = sessionStorage.getItem("TOKEN")
+    await $services.company.getJoined({
+      "data": {
+        "offset": 0,
+        "limit": 1
+      },"headers":{"Authorization":token}
+    }).then(res => {
+      console.log('查询加入的公司', res);
+      for(let i = 0; i < res.data.result.length; i++ ){
+        tableData[i].name=res.data.result[i].name;
+        tableData[i].code=res.data.result[i].code;
+        tableData[i].admin=res.data.result[i].belongId;
+        tableData[i].time=res.data.result[i].createTime;
+        if(res.data.result[i].status){
+          tableData[i].state="是";
+          tableData[i].isMain="是";
+        }
+
+      }
+    })
+}
+
+function handleSizeChange(pageSize) {//改变当前每页的个数
+      this.pageSize4 = pageSize
+      this.load()
+    }
+function handleCurrentChange(pageNum) {//改变当前页码
+  this.currentPage4 = pageNum
+  this.load()
+}
 </script>
 <style lang="less">
 .created{

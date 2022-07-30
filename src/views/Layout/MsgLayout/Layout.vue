@@ -14,8 +14,8 @@
 
 <script setup lang="ts">
 
-import Header from "../MsgLayout/Header.vue";
-import Aside from "../MsgLayout/Aside.vue";
+import Header from "./header.vue";
+import Aside from "./aside.vue";
 
 </script>
 

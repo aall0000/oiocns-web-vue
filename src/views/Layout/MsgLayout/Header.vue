@@ -12,7 +12,7 @@
         </span>
         <template #dropdown>
           <el-dropdown-menu>
-            <el-dropdown-item>Action 1</el-dropdown-item>
+            <el-dropdown-item @click="changeWorkspace">切换工作空间</el-dropdown-item>
             <el-dropdown-item> Action 2 </el-dropdown-item>
             <el-dropdown-item>Action 3</el-dropdown-item>
             <el-dropdown-item>Action 4</el-dropdown-item>
@@ -53,8 +53,8 @@
           <el-dropdown-menu>
             <el-dropdown-item>Action 1</el-dropdown-item>
             <el-dropdown-item> 语言切换 </el-dropdown-item>
-            <el-dropdown-item>首页配置</el-dropdown-item>
-            <el-dropdown-item @click="Setting">信息设置</el-dropdown-item>
+            <el-dropdown-item @click="home">首页配置</el-dropdown-item>
+            <el-dropdown-item @click="setting">信息设置</el-dropdown-item>
             <el-dropdown-item>帮助中心</el-dropdown-item>
             <el-dropdown-item>退出登录</el-dropdown-item>
           </el-dropdown-menu>
@@ -68,10 +68,30 @@
 import { ref } from 'vue';
 import { Search } from '@element-plus/icons-vue'
 import { useRouter } from 'vue-router';
+import $services from '@/services'
 const SearchInfo = ref('')
 const router = useRouter()
-const Setting = () =>{
+async function changeWorkspace (){
+  let token = sessionStorage.getItem("TOKEN")
+  console.log(token)
+    await $services.person.changeWorkspace({
+      "data": {
+        "id": 340820527893581824
+      },
+      "headers":{
+        "Authorization":token
+      }
+    }).then(res => {
+      sessionStorage.setItem("WorkTOKEN",res.data.accessToken)
+
+      console.log('切换到华为技术有限公司', res);
+    })
+}
+const setting = () =>{
   router.push("/user")
+}
+const home = () =>{
+  router.push("/home")
 }
 </script>
 

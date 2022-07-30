@@ -3,17 +3,26 @@
     <!-- 左侧 -->
     <el-col class="" :span="12">
       <img class="logo" src="@/assets/img/avatar.jpg" alt="logo" />
-      <el-dropdown trigger="click">
-        <span class="el-dropdown-link">
-          资产云开放协同创新中心<el-icon>
+      <el-dropdown trigger="click" placement="bottom-start">
+        <span class="el-dropdown-link" @click="onClickDrop">
+          {{ store.workspaceData.name || ''
+          }}<el-icon>
             <CaretBottom />
           </el-icon>
         </span>
         <template #dropdown>
-          <el-dropdown-menu>
-            <el-dropdown-item>企业 1</el-dropdown-item>
-            <el-dropdown-item> 企业 2 </el-dropdown-item>
-            <el-dropdown-item>企业 3</el-dropdown-item>
+          <el-dropdown-menu
+            v-infinite-scroll="load"
+            infinite-scroll-immediate="false"
+            infinite-scroll-distance="1"
+            style="max-height: 300px; overflow: auto"
+          >
+            <el-dropdown-item
+              v-for="item in store.userCompanys"
+              :key="item.id"
+              @click="switchCompany(item)"
+              >{{ item.name }}</el-dropdown-item
+            >
           </el-dropdown-menu>
         </template>
       </el-dropdown>
@@ -58,7 +67,7 @@
             <el-dropdown-item>首页配置</el-dropdown-item>
             <el-dropdown-item @click="Setting">信息设置</el-dropdown-item>
             <el-dropdown-item>帮助中心</el-dropdown-item>
-            <el-dropdown-item>退出登录</el-dropdown-item>
+            <el-dropdown-item @click="exitLogin">退出登录</el-dropdown-item>
           </el-dropdown-menu>
         </template>
       </el-dropdown>
@@ -67,20 +76,59 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, watch } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 import { Search } from '@element-plus/icons-vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/store/user'
+import $services from '@/services'
 
 const store = useUserStore()
 const SearchInfo = ref('')
 const router = useRouter()
+let current = ref(0)
+const load = () => {
+  current.value++
+  store.getCompanyList(current.value, store.workspaceData.id, true)
+}
+const onClickDrop = () => {
+  if (store.userCompanys.length == 0) {
+    current.value = 0
+    store.getCompanyList(current.value, store.workspaceData.id, false)
+  }
+}
+const switchCompany = (data: { id: string }) => {
+  $services.person
+    .switchCpmpany({
+      data: {
+        id: data.id
+      }
+    })
+    .then((res) => {
+      if (res.code == 200) {
+        sessionStorage.setItem('TOKEN', res.data.accessToken)
+        store.getQueryInfo(res.data.accessToken)
+        store.getWorkspaceData(res.data.workspaceId).then(() => {
+          location.reload()
+        })
+      } else {
+        ElMessage({
+          message: res.msg,
+          type: 'warning'
+        })
+      }
+    })
+}
 const Setting = () => {
   router.push('/user')
 }
+const exitLogin = () => {
+  sessionStorage.clear()
+  store.resetState()
+  router.push('/login')
+}
 </script>
 
-<style lang='scss'>
+<style lang='scss' scoped>
 .el-dropdown-link {
   cursor: pointer;
 }

@@ -23,7 +23,7 @@
             <el-input v-model="formLabelAlign.name" />
           </el-form-item>
           <el-form-item label="单位类型">
-            <el-select class="select" v-model="value"  placeholder="Select">
+            <el-select class="select" v-model="formLabelAlign.type"  placeholder="Select">
               <el-option
 
                 v-for="item in options"
@@ -83,7 +83,9 @@
 <script lang="ts" setup>
 import { ArrowLeft } from '@element-plus/icons-vue'
 import { regionData, CodeToText } from 'element-china-area-data'
-import { reactive, ref } from 'vue'
+import { onMounted, reactive, ref } from 'vue'
+import { onBeforeMount } from 'vue'
+import $services from '@/services'
 const labelPosition = ref('top')
 
 const formLabelAlign = reactive({
@@ -91,10 +93,31 @@ const formLabelAlign = reactive({
   idCardNum: '',
   jobId: '',
   tel: '',
+  type:'',
   email: '',
   country: '',
-  Profile: ''
+  Profile: '',
 })
+
+onBeforeMount(()=>{
+  fetchRequest()
+})
+function fetchRequest(){
+    let token = sessionStorage.getItem("WorkTOKEN")
+    $services.company.queryInfo({
+      "data": {},"headers":{"Authorization":token}
+    }).then(res => {
+      console.log('查询该单位详细信息', res);
+      // formLabelAlign.name=res.data.team.name
+      // formLabelAlign.idCardNum=res.data.id
+      // formLabelAlign.jobId=res.data.thingId
+      // formLabelAlign.tel=res.data.team.code
+
+      // formLabelAlign.Profile=res.data.team.remark
+    })
+}
+
+
 const options = regionData
 const selectedOptions:Array<number> = []
 const handleChange = () =>{
