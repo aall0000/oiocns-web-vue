@@ -9,7 +9,8 @@ export default {
   person: {
     login: person + '/login', // 登录
     register: person + '/register', // 注册
-    queryInfo: person + '/query/info' // 获取用户详细信息
+    queryInfo: person + '/query/info', // 获取用户详细信息
+    switchCpmpany: person + '/change/workspace' //切换工作空间
   },
   joinCompanys: '/orginone/organization/company/get/joined/companys', // 获取组织列表
   cohort: {
