@@ -9,7 +9,10 @@ export default {
     register: person + '/register', // 注册
     queryInfo: person + '/query/info', // 获取用户详细信息
     switchCpmpany: person + '/change/workspace', //切换工作空间
-    workspace: person + '/change/workspace'
+    workspace: person + '/change/workspace',
+    approval:person + '/get/all/approval',// 获取代办列表
+    joinRefuse:person + '/join/refuse',// 拒绝加好友
+    joinSuccess:person + '/join/success',// 同意加好友
   },
   cohort: {
     join: cohort + '/join' // 加群
