@@ -54,10 +54,15 @@ const gotoNext = (data) => {
 const gotoPrev = () => {
   carousel.value?.setActiveItem('first')
 }
-const userLogin = (data: object) => {
+const userLogin = (data: { password: string; username: string; remind: boolean }) => {
   btnLoading.value = true
   store.updateUserInfo(data).then(() => {
     btnLoading.value = false
+    if (data.remind) {
+      setCookie(data.username, data.password, 7)
+    } else {
+      setCookie('', '', -1)
+    }
     router.push({ path: 'home' })
   })
 }
@@ -82,6 +87,14 @@ const registerUser = (data) => {
         })
       }
     })
+}
+
+const setCookie = (username: string, password: string, days: any) => {
+  let date = new Date() // 获取时间
+  date.setTime(date.getTime() + 24 * 60 * 60 * 1000 * days) // 保存的天数
+  // 字符串拼接cookie
+  window.document.cookie = 'username' + '=' + username + ';path=/;expires=' + date.toGMTString()
+  window.document.cookie = 'password' + '=' + password + ';path=/;expires=' + date.toGMTString()
 }
 </script>
 
