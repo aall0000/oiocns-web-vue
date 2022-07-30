@@ -10,7 +10,7 @@
     <div class="work-card">
       <div class="card-head">
         <div class="title">任务卡片</div>
-        <div class="view-details">查看详情</div>
+        <div class="view-details" @click="jumpDetail">查看详情</div>
       </div>
       <ul>
         <li>
@@ -18,15 +18,15 @@
           <p>0</p>
         </li>
         <li>
-          <p>我的待办</p>
+          <p>已办事项</p>
           <p>0</p>
         </li>
         <li>
-          <p>我的待办</p>
+          <p>已完结事项</p>
           <p>0</p>
         </li>
         <li>
-          <p>我的待办</p>
+          <p>我发起的</p>
           <p>0</p>
         </li>
       </ul>
@@ -230,18 +230,22 @@
 <script lang="ts" setup>
 import $services from '@/services'
 import { Search } from '@element-plus/icons-vue'
+import router from '@/router/index'
 import { ref,onMounted} from 'vue'
 const input2 = ref('')
+var cartList = ref([]);
 const getCardList = () => {
-  $services.appstore.search({
+  $services.person.approval({
     "data":{
-        "offset": 10,
+        "offset": 0,
         "limit": 10,
-        "filter": ""
     }
   }).then(res => {
-    console.log('登录', res);
+    cartList = res.data.result
   })
+}
+var jumpDetail =()=>{
+  router.push({path:'/cardDetail'})
 }
 onMounted(() => {
   getCardList()

@@ -40,9 +40,7 @@
                   <p>使⽤对象：财政、主管部⻔内容：审批、以及查询分析功能...</p>
                 </div>
               </div>
-              <div class="app-get" @mouseleave="mouseLeave">
-                 获取
-              </div>
+              <div class="app-get" @mouseleave="mouseLeave"> 获取 </div>
             </div>
           </div>
           <div class="page">
@@ -62,12 +60,10 @@
   const handleSelect = (key: string, keyPath: string[]) => {
     console.log(key, keyPath)
   }
-  var handleOpen = ()=>{
+  var handleOpen = () => {
     console.log(1)
   }
-  var handleClose = ()=>{
-
-  }
+  var handleClose = () => {}
   var showType = () => {
     show.value = true
   }
@@ -114,14 +110,14 @@
     background: #f0f2f5;
     padding: 20px;
     .app-content {
-        width: 100%;
+      width: 100%;
       .content-menu {
         float: left;
         width: 200px;
       }
 
       .content-app {
-        width:calc(100% - 200px);
+        width: calc(100% - 200px);
         float: left;
         .app-list {
           background: #fff;
@@ -129,7 +125,7 @@
           padding: 20px;
 
           .app-item {
-            width:350px;
+            width: 350px;
             height: 150px;
             border-radius: 3px;
             text-align: center;
@@ -183,8 +179,8 @@
               text-align: center;
               cursor: pointer;
             }
-            .app-get:hover{
-                color: #153ec9;
+            .app-get:hover {
+              color: #153ec9;
             }
           }
         }
