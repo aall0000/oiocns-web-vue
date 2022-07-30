@@ -4,7 +4,7 @@
       <img class="header-left-img" src="@/assets/img/头像.png" alt="" />
       <!-- <div class="header-left__avater">俞</div> -->
       <div class="header-left-box">
-        <div class="header-left-box__top">{{ getTimeState() }}，{{ name }}</div>
+        <div class="header-left-box__top">{{ getTimeState() }}，{{ queryInfo.name }}</div>
         <div class="header-left-box__btm">管理⼈员 | 本次登录 {{ getTime }}</div>
       </div>
     </div>
