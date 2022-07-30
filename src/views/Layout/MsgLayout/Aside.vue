@@ -8,22 +8,22 @@
         @open="handleOpen"
         @close="handleClose"
       >
-        <el-menu-item index="userMsg">
+        <el-menu-item index="userMsg" :style="style2">
           <span>个人信息</span>
         </el-menu-item>
-        <el-menu-item index="userUnit" >
+        <el-menu-item index="userUnit" :style="style2">
           <span>我的单位</span>
         </el-menu-item>
-        <el-menu-item index="UnitMsg">
+        <el-menu-item index="UnitMsg" :style="style">
           <span>单位信息</span>
         </el-menu-item>
-        <el-menu-item index="AffiliatedGroups">
+        <el-menu-item index="AffiliatedGroups" :style=style>
           <span>关联集团</span>
         </el-menu-item>
-        <el-menu-item index="userAccountBind">
+        <el-menu-item index="userAccountBind" :style="style2">
           <span>账号绑定</span>
         </el-menu-item>
-        <el-menu-item index="userSaveSet">
+        <el-menu-item index="userSaveSet" :style="style2">
           <span>安全设置</span>
         </el-menu-item>
       </el-menu>
@@ -37,12 +37,26 @@ import {
   Location,
   Setting,
 } from '@element-plus/icons-vue'
+import { ref } from 'vue';
 const handleOpen = (key: string, keyPath: string[]) => {
   console.log(key, keyPath)
 }
 const handleClose = (key: string, keyPath: string[]) => {
   console.log(key, keyPath)
 }
+let style = ref("")
+let style2 = ref("")
+const workspace = ()=>{
+  if(sessionStorage.getItem("workspaceName")==="个人空间"){
+    style.value = "display:none"
+    style2.value = "display:block"
+  }
+  else{
+    style2.value = "display:block"
+    style2.value = "display:none"
+  }
+}
+workspace()
 </script>
 <style scoped>
 .tac{

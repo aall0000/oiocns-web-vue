@@ -27,3 +27,5 @@ dist
 yarn.lock
 components.d.ts
 auto-imports.d.ts
+/components.d.ts
+/auto-imports.d.ts

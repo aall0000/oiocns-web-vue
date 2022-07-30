@@ -8,6 +8,7 @@
           v-model="ruleForm.account"
           autocomplete="off"
           placeholder="请输入账户"
+          oninput="value=value.replace(/[\u4E00-\u9FA5]/g,'')"
         />
       </el-form-item>
       <el-form-item prop="password">

@@ -4,18 +4,18 @@
       <el-tab-pane label="账户密码登录" name="first"
         ><UserName ref="username" @forgetPassword="forgetPassword"></UserName
       ></el-tab-pane>
-      <el-tab-pane label="手机号登录" name="second">Config</el-tab-pane>
+      <!-- <el-tab-pane label="手机号登录" name="second">Config</el-tab-pane> -->
     </el-tabs>
     <el-button class="loginBtn" type="primary" @click="login" :loading="btnLoading"
       >登 录</el-button
     >
     <div class="other-login">
-      <div class="other-login-box">
+      <!-- <div class="other-login-box">
         <div style="margin-right: 10px">其他登录方式</div>
         <img class="loginImg" src="@/assets/img/shape.png" alt="" />
         <img class="loginImg" src="@/assets/img/wb.png" alt="" />
         <img class="loginImg" src="@/assets/img/we.png" alt="" />
-      </div>
+      </div> -->
       <div class="other-login__register" @click="register">注册用户</div>
     </div>
   </div>
@@ -41,6 +41,7 @@ export default defineComponent({
     const register = () => {
       context.emit('register')
     }
+
     onMounted(() => {
       window.addEventListener('keydown', keyDown)
     })

@@ -1,20 +1,27 @@
 <template>
-
   <el-row class="page-custom-header">
     <!-- 左侧 -->
     <el-col class="" :span="12">
       <img class="logo" src="@/assets/img/avatar.jpg" alt="logo" />
-      <el-dropdown trigger="click">
-        <span class="el-dropdown-link">
-          资产云开放协同创新中心<el-icon>
+      <el-dropdown trigger="click" placement="bottom-start">
+        <span class="el-dropdown-link" @click="onClickDrop">
+          {{ store.workspaceData.name
+          }}<el-icon>
             <CaretBottom />
           </el-icon>
         </span>
         <template #dropdown>
-          <el-dropdown-menu>
-            <el-dropdown-item>企业 1</el-dropdown-item>
-            <el-dropdown-item> 企业 2 </el-dropdown-item>
-            <el-dropdown-item>企业 3</el-dropdown-item>
+          <el-dropdown-menu
+            v-infinite-scroll="load"
+            infinite-scroll-distance="1"
+            style="max-height: 300px; overflow: auto"
+          >
+            <el-dropdown-item
+              v-for="item in store.userCompanys"
+              :key="item.id"
+              @click="switchCompany(item)"
+              >{{ item.name }}</el-dropdown-item
+            >
           </el-dropdown-menu>
         </template>
       </el-dropdown>
@@ -24,7 +31,12 @@
       <el-icon :size="18" class="icon1 right-con">
         <Suitcase />
       </el-icon>
-      <el-input class="right-con" v-model="SearchInfo" :style="{ width: '200px' }" placeholder="请输⼊想搜索的功能">
+      <el-input
+        class="right-con"
+        v-model="SearchInfo"
+        :style="{ width: '200px' }"
+        placeholder="请输⼊想搜索的功能"
+      >
         <template #append>
           <el-button :icon="Search" />
         </template>
@@ -63,21 +75,58 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, watch } from 'vue';
+import { ref, watch } from 'vue'
 import { Search } from '@element-plus/icons-vue'
-import { useRouter } from 'vue-router';
+import { useRouter } from 'vue-router'
+import { useUserStore } from '@/store/user'
+import { log } from 'console'
+import $services from '@/services'
+
+const store = useUserStore()
 const SearchInfo = ref('')
 const router = useRouter()
-const Setting = () =>{
-  router.push("/user")
+const load = () => {
+  console.log('懒加载')
+}
+const onClickDrop = () => {
+  if (store.userCompanys.length == 0) {
+    store.getCompanyList(0, store.workspaceData.id)
+  }
+}
+const switchCompany = (data: { id: string }) => {
+  $services.person
+    .switchCpmpany({
+      data: {
+        id: data.id
+      }
+    })
+    .then((res) => {
+      if (res.code == 200) {
+        sessionStorage.setItem('TOKEN', res.data.accessToken)
+        store.getQueryInfo(res.data.accessToken)
+        store.getCompanyList(0, res.data.workspaceId).then(() => {
+          location.reload()
+        })
+      } else {
+        ElMessage({
+          message: res.msg,
+          type: 'warning'
+        })
+      }
+    })
+}
+const Setting = () => {
+  router.push('/user')
 }
 </script>
 
-<style lang='scss'>
+<style lang='scss' scoped>
+.el-dropdown-link {
+  cursor: pointer;
+}
 .page-custom-header {
   height: 58px;
   line-height: 60px;
-
 
   .el-col {
     display: flex;
@@ -95,6 +144,5 @@ const Setting = () =>{
       margin-right: 18px;
     }
   }
-
 }
 </style>
