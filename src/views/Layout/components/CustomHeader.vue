@@ -5,7 +5,7 @@
       <img class="logo" src="@/assets/img/avatar.jpg" alt="logo" />
       <el-dropdown trigger="click" placement="bottom-start">
         <span class="el-dropdown-link" @click="onClickDrop">
-          {{ store.workspaceData.name
+          {{ store.workspaceData.name || ''
           }}<el-icon>
             <CaretBottom />
           </el-icon>
@@ -13,6 +13,7 @@
         <template #dropdown>
           <el-dropdown-menu
             v-infinite-scroll="load"
+            infinite-scroll-immediate="false"
             infinite-scroll-distance="1"
             style="max-height: 300px; overflow: auto"
           >
@@ -66,7 +67,7 @@
             <el-dropdown-item>首页配置</el-dropdown-item>
             <el-dropdown-item @click="Setting">信息设置</el-dropdown-item>
             <el-dropdown-item>帮助中心</el-dropdown-item>
-            <el-dropdown-item>退出登录</el-dropdown-item>
+            <el-dropdown-item @click="exitLogin">退出登录</el-dropdown-item>
           </el-dropdown-menu>
         </template>
       </el-dropdown>
@@ -75,22 +76,24 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, watch } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 import { Search } from '@element-plus/icons-vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/store/user'
-import { log } from 'console'
 import $services from '@/services'
 
 const store = useUserStore()
 const SearchInfo = ref('')
 const router = useRouter()
+let current = ref(0)
 const load = () => {
-  console.log('懒加载')
+  current.value++
+  store.getCompanyList(current.value, store.workspaceData.id, true)
 }
 const onClickDrop = () => {
   if (store.userCompanys.length == 0) {
-    store.getCompanyList(0, store.workspaceData.id)
+    current.value = 0
+    store.getCompanyList(current.value, store.workspaceData.id, false)
   }
 }
 const switchCompany = (data: { id: string }) => {
@@ -104,7 +107,7 @@ const switchCompany = (data: { id: string }) => {
       if (res.code == 200) {
         sessionStorage.setItem('TOKEN', res.data.accessToken)
         store.getQueryInfo(res.data.accessToken)
-        store.getCompanyList(0, res.data.workspaceId).then(() => {
+        store.getWorkspaceData(res.data.workspaceId).then(() => {
           location.reload()
         })
       } else {
@@ -117,6 +120,11 @@ const switchCompany = (data: { id: string }) => {
 }
 const Setting = () => {
   router.push('/user')
+}
+const exitLogin = () => {
+  sessionStorage.clear()
+  store.resetState()
+  router.push('/login')
 }
 </script>
 
