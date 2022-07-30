@@ -5,8 +5,8 @@
       <img class="logo" src="@/assets/img/avatar.jpg" alt="logo" />
       <el-dropdown trigger="click" placement="bottom-start">
         <span class="el-dropdown-link" @click="onClickDrop">
-          {{ store.workspaceData?.name || ''
-          }}<el-icon>
+          {{ workspaceData?.name || '' }}
+          <el-icon>
             <CaretBottom />
           </el-icon>
         </span>
@@ -86,14 +86,15 @@ const store = useUserStore()
 const SearchInfo = ref('')
 const router = useRouter()
 let current = ref(0)
+const workspaceData = store.workspaceData
 const load = () => {
   current.value++
-  store.getCompanyList(current.value, store.workspaceData.id, true)
+  store.getCompanyList(current.value, workspaceData.id, true)
 }
 const onClickDrop = () => {
   if (store.userCompanys.length == 0) {
     current.value = 0
-    store.getCompanyList(current.value, store.workspaceData.id, false)
+    store.getCompanyList(current.value, workspaceData.id, false)
   }
 }
 const switchCompany = (data: { id: string }) => {
