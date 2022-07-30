@@ -32,8 +32,8 @@
 
 <script lang="ts" setup>
 import { useUserStore } from '@/store/user'
-import { storeToRefs } from 'pinia';
-import { defineComponent } from 'vue'
+import { storeToRefs } from 'pinia'
+import { computed } from 'vue'
 const store = useUserStore()
 const { queryInfo } = storeToRefs(store)
 
