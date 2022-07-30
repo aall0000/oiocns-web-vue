@@ -15,7 +15,10 @@ export default {
     queryInfo: person + '/query/info', // 获取用户详细信息
     switchCpmpany: person + '/change/workspace', //切换工作空间
     info: person + '/query/info', // 注册
-    workspace: person + '/change/workspace'
+    workspace: person + '/change/workspace',
+    approval: person + '/get/all/approval', // 代办列表
+    joinRefuse: person + '/join/refuse', // 拒绝好友请求
+    joinSuccess: person + '/join/success' //同意好友请求
   },
   cohort: {
     join: cohort + '/join' // 加群
