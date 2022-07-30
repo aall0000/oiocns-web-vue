@@ -80,6 +80,7 @@ export default defineConfig({
     https: settings.https,
     // 扩展访问端口
     host: settings.host,
+    hmr: true,
     proxy: settings.proxyFlag
       ? {
           '/orginone': {

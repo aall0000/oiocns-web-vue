@@ -133,7 +133,7 @@ const exitLogin = () => {
   cursor: pointer;
 }
 .page-custom-header {
-  height: 58px;
+  height: 60px;
   line-height: 60px;
 
   .el-col {

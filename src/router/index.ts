@@ -24,53 +24,53 @@ const constantRoutes: RouteRecordRaw[] = [
       {
         path: '/userMsg',
         name: 'userMsg',
-        component: () => import("../views/Person/msgSetting/userMsg.vue"),
-        meta:{
-          title:'个人信息'
+        component: () => import('../views/Person/msgSetting/userMsg.vue'),
+        meta: {
+          title: '个人信息'
         }
       },
       {
         path: '/userUnit',
         name: 'userUnit',
-        component: () => import("../views/Person/msgSetting/userUnit.vue"),
-        meta:{
-          title:'我的单位'
+        component: () => import('../views/Person/msgSetting/userUnit.vue'),
+        meta: {
+          title: '我的单位'
         }
       },
       {
         path: '/userAccountBind',
         name: 'userAccountBind',
-        component: () => import("../views/Person/msgSetting/userAccountBind.vue"),
-        meta:{
-          title:'账号绑定'
+        component: () => import('../views/Person/msgSetting/userAccountBind.vue'),
+        meta: {
+          title: '账号绑定'
         }
       },
       {
         path: '/userSaveSet',
         name: 'userSaveSet',
-        component: () => import("../views/Person/msgSetting/userSaveSet.vue"),
-        meta:{
-          title:'安全设置'
+        component: () => import('../views/Person/msgSetting/userSaveSet.vue'),
+        meta: {
+          title: '安全设置'
         }
       },
       {
         path: '/UnitMsg',
         name: 'UnitMsg',
-        component: () => import("../views/Person/msgSetting/unitMsg.vue"),
-        meta:{
-          title:'单位信息'
+        component: () => import('../views/Person/msgSetting/unitMsg.vue'),
+        meta: {
+          title: '单位信息'
         }
       },
       {
         path: '/AffiliatedGroups',
         name: 'AffiliatedGroups',
-        component: () => import("../views/Person/msgSetting/affiliatedGroups.vue"),
-        meta:{
-          title:'关联集团'
+        component: () => import('../views/Person/msgSetting/affiliatedGroups.vue'),
+        meta: {
+          title: '关联集团'
         }
-      },
+      }
     ]
-  },
+  }
 ]
 
 // 主要业务页面路由
@@ -103,7 +103,24 @@ const mainRouter: RouteRecordRaw[] = [
     }
   },
   {
-
+    component: () => import('@/views/Organization/index.vue'),
+    name: 'organization',
+    path: '/organization',
+    meta: {
+      keepAlive: false,
+      title: '成员单位'
+    }
+  },
+  {
+    component: () => import('@/views/Organization/OrganizationTable/index.vue'),
+    name: 'organizationTable',
+    path: '/organizationTable',
+    meta: {
+      keepAlive: false,
+      title: '组织架构'
+    }
+  },
+  {
     component: () => import('@/views/Thing/index.vue'),
     name: 'thing',
     path: '/thing'
@@ -150,9 +167,8 @@ const mainRouter: RouteRecordRaw[] = [
         }
       }
     ]
-  },
+  }
   //个人中心信息设置路由
-
 ]
 
 // 整合路由

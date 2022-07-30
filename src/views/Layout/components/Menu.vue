@@ -35,7 +35,7 @@ const handleMenySelect = (index, indexPath, item, router) => {
 }
 </script>
 
-<style lang='scss'>
+<style lang='scss' scoped>
 .Menu-wrap {
 
   .el-menu,
