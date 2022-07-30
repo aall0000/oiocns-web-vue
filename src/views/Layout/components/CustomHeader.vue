@@ -5,7 +5,7 @@
       <img class="logo" src="@/assets/img/avatar.jpg" alt="logo" />
       <el-dropdown trigger="click" placement="bottom-start">
         <span class="el-dropdown-link" @click="onClickDrop">
-          {{ store.workspaceData.name
+          {{ store.workspaceData.name || ''
           }}<el-icon>
             <CaretBottom />
           </el-icon>
@@ -85,6 +85,9 @@ import $services from '@/services'
 const store = useUserStore()
 const SearchInfo = ref('')
 const router = useRouter()
+
+console.log('222', store.workspaceData);
+
 const load = () => {
   console.log('懒加载')
 }

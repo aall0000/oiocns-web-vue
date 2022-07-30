@@ -14,15 +14,16 @@ export default {
     register: person + '/register', // 注册
     queryInfo: person + '/query/info', // 获取用户详细信息
     switchCpmpany: person + '/change/workspace', //切换工作空间
-    info: person + '/query/info', // 注册
-    workspace: person + '/change/workspace'
+
   },
   cohort: {
     join: cohort + '/join' // 加群
   },
   company: {
-    getJoined: company + '/get/joined/companys'
+    queryInfo: company + '/query/info'
   },
+  joinCompanys:'/orginone/organization/company/get/joined/companys',
+
   test: '/orginone/organization/cohort/get/authoritys'
   //others
 }
