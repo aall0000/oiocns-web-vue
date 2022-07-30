@@ -78,7 +78,7 @@
 </template>
 <script lang="ts" setup>
 import { ref } from 'vue';
-import departmentTree from './components/departmentTree.vue'
+import departmentTree from './components/departmentTree1.vue'
 import nextDepartmentVue from './components/nextDepartment.vue';
 var tableData = [
   {

@@ -1,170 +1,125 @@
 <template>
-  <ul class='departmentTree-wrap'>
-    <li class="con tree-search">
-      <el-input class="search" placeholder="搜索姓名、手机、邮箱">
-        <template #suffix>
-          <el-icon class="el-input__icon">
-            <search />
-          </el-icon>
-        </template>
-      </el-input>
-    </li>
-    <li class="con tree-btns">
-      <el-button :icon="Plus" size="small">新建部门</el-button>
-      <el-button :icon="User" size="small">管理部门</el-button>
-    </li>
-    <ul class="con tree-dept">
-      <li class="tree-dept-item" v-for="item in treeDate" :key="item.name">
-        <div class="dept-label active">
-          <span class="dept-label-name "><img class="dept-label-icon" src="@/assets/img/dept.png" alt="" srcset=""> {{
-              `${item.name}(${item.num}人)`
-          }}</span>
-          <span class="right-icon">
-            <el-icon :size="14">
-              <ArrowUp />
-            </el-icon>
-          </span>
-        </div>
-        <template v-if="item?.children">
-          <div class="child-label dept-label" v-for="child in item.children" :key="child.name">
-            <span class="dept-label-name "><img class="dept-label-icon" src="@/assets/img/group-next.png" alt=""
-                srcset=""> {{
-                    `${child.name}(${child.num}人)`
-                }}</span>
-            <span class="right-icon">
-              <img class="dept-label-icon" src="@/assets/img/group-more.png" alt="" srcset="">
-            </span>
-          </div>
-        </template>
-      </li>
+  <div class="dept-tree-wrap">
+    <!-- 选择根节点 -->
+    <el-select v-model="value" class="m-2" placeholder="Select">
+      <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
+    </el-select>
+    <!-- 搜索条件 -->
+    <el-input v-model="value" class="w-50 m-2" placeholder="Type something">
+      <template #prefix>
+        <el-icon class="el-input__icon">
+          <search />
+        </el-icon>
+      </template>
+    </el-input>
+    <!-- 组织展示 -->
+    <el-tree :data="data" :props="defaultProps" @node-click="handleNodeClick" />
+  </div>
 
-    </ul>
-  </ul>
 </template>
 
-<script lang="ts" setup>
-import { Search, Plus, User } from '@element-plus/icons-vue'
+<script lang="ts" setup>import { ref } from 'vue';
+
+interface Tree {
+  label: string
+  children?: Tree[]
+}
+const value = ref('')
 
 
-const treeDate = [
+const handleNodeClick = (data: Tree) => {
+  console.log(data)
+}
+
+const data: Tree[] = [
   {
-    name: '名称1',
-    num: 20,
+    label: 'Level one 1',
     children: [
-      { name: '名称1-1', num: 11, },
-      { name: '子部门1名称', num: 12, }
-    ]
+      {
+        label: 'Level two 1-1',
+        children: [
+          {
+            label: 'Level three 1-1-1',
+          },
+        ],
+      },
+    ],
   },
   {
-    name: '名称2',
-    num: 10,
+    label: 'Level one 2',
     children: [
       {
-        name: '名称2-1',
-        num: 11,
+        label: 'Level two 2-1',
+        children: [
+          {
+            label: 'Level three 2-1-1',
+          },
+        ],
       },
       {
-        name: '子部门1名称测试',
-        num: 12,
-      }]
-  }]
+        label: 'Level two 2-2',
+        children: [
+          {
+            label: 'Level three 2-2-1',
+          },
+        ],
+      },
+    ],
+  },
+  {
+    label: 'Level one 3',
+    children: [
+      {
+        label: 'Level two 3-1',
+        children: [
+          {
+            label: 'Level three 3-1-1',
+          },
+        ],
+      },
+      {
+        label: 'Level two 3-2',
+        children: [
+          {
+            label: 'Level three 3-2-1',
+          },
+        ],
+      },
+    ],
+  },
+]
+
+const options = [
+  {
+    value: 'Option1',
+    label: 'Option1',
+  },
+  {
+    value: 'Option2',
+    label: 'Option2',
+  },
+  {
+    value: 'Option3',
+    label: 'Option3',
+  },
+  {
+    value: 'Option4',
+    label: 'Option4',
+  },
+  {
+    value: 'Option5',
+    label: 'Option5',
+  },
+]
+const defaultProps = {
+  children: 'children',
+  label: 'label',
+}
 </script>
 
-<style lang="scss">
-.departmentTree-wrap .tree-search {
-  .search {
-    .el-input__inner {
-      font-size: 12px;
 
-    }
-  }
-}
-</style>
-<style lang='scss' scoped>
-.departmentTree-wrap {
+<style lang="scss" scoped>
+.dept-tree-wrap {
   width: 230px;
-  min-width: 230px;
-  padding: 20px 0;
-  background-color: #fff;
-  border-right: 1px solid #e8e8e8;
-  z-index: 2;
-
-  .con {
-    margin-bottom: 10px;
-  }
-
-  .tree-search {
-    padding: 0 24px;
-
-    .search {
-      .el-input__inner {
-        font-size: 12px;
-
-      }
-    }
-  }
-
-  .tree-btns {
-    display: flex;
-    justify-content: space-between;
-    padding: 0 24px;
-
-    .el-button--small {
-      padding: 12px 6px;
-    }
-  }
-
-  .tree-dept {
-    // padding: 0 0 0 14px;
-
-    .tree-dept-item {
-      .dept-label {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        height: 40px;
-        font-size: 14px;
-        padding-left: 24px;
-
-
-        &-icon {
-          width: 14px;
-          height: 14px;
-        }
-
-        .dept-label-name {
-          display: flex;
-          align-items: center;
-        }
-
-        .dept-label-icon {
-          margin-right: 4px;
-        }
-
-        &.active {
-          .dept-label-name {
-            color: $mainColor;
-          }
-
-          background-color: #E7ECFB;
-          border-right: 2px solid $mainColor;
-          // transform: translateX(1px);
-        }
-
-        .right-icon {
-          margin-right: 10px;
-        }
-
-      }
-
-
-
-      .label {}
-
-      .child-label {
-        padding-left: 38px;
-      }
-    }
-  }
 }
 </style>
