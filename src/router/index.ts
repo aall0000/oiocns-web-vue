@@ -19,7 +19,7 @@ const constantRoutes: RouteRecordRaw[] = [
   {
     path: '/user',
     component: () => import('../views/Layout/msgLayout/layout.vue'),
-    redirect:"/userMsg",
+    redirect: '/userMsg',
     children: [
       {
         path: '/userMsg',
@@ -139,6 +139,15 @@ const mainRouter: RouteRecordRaw[] = [
     component: () => import('@/views/Thing/appStore.vue'),
     name: 'appStore',
     path: '/appStore'
+  },
+  {
+    component: () => import('@/views/Person/application/index.vue'),
+    name: 'application',
+    path: '/application',
+    meta: {
+      keepAlive: false,
+      title: '我的申请'
+    }
   },
   {
     name: 'work2',

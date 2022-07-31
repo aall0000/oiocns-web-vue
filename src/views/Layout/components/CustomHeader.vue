@@ -104,7 +104,7 @@ const onClickDrop = () => {
 }
 const switchCompany = (data: { id: string }) => {
   $services.person
-    .switchCpmpany({
+    .changeWorkspace({
       data: {
         id: data.id
       }
