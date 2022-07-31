@@ -21,7 +21,7 @@
 </template>
 
 <script lang="ts" setup>
-import CustomHeadr from './components/customHeader.vue'
+import CustomHeadr from './components/cstHeader.vue'
 // import Menu from './components/menu.vue'
 </script>
 

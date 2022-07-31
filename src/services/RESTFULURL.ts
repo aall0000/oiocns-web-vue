@@ -35,7 +35,6 @@ export default {
     update: person + '/update',//变更信息
   },
   cohort: {
-
     applyJoin: cohort + '/apply/join',//申请加群组
     create: cohort + '/create',//创建群组
     join: cohort + '/join', // 加群
@@ -57,10 +56,6 @@ export default {
     removePerson: cohort + '/remove/person',//移除群成员
     searchCohorts: cohort + '/search/cohorts',//搜索群聊
     update: cohort + '/update',//变更群组
-
-
-
-
   },
   company: {
     applyJoin: company + '/apply/join',//申请加入单位
@@ -114,7 +109,6 @@ export default {
     updateGroup: company + '/update/group',//变更集团
     updateJob: company + '/update/job',//变更岗位
     updateSubGroup: company + '/update/subGroup',//变更子集团
-
   },
   //others
 }

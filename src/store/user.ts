@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import $services from '@/services'
+import { ElMessage } from 'element-plus'
 
 export const useUserStore = defineStore({
   id: 'user', // id必填，且需要唯一
@@ -64,7 +65,7 @@ export const useUserStore = defineStore({
     },
     async getCompanyList(current: number, workspaceId: string, lazyLoad: boolean) {
       await $services.company
-        .getJoined({
+        .getJoinedCompany({
           data: {
             offset: current,
             limit: 10
