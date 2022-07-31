@@ -108,12 +108,12 @@ export const useUserStore = defineStore({
       })
     },
     resetState() {
-      this.userInfo = null
-      this.queryInfo = null
-      this.userCompanys = null
-      this.copyCompanys = null
-      this.userToken = null
-      this.workspaceData = null
+      // this.userInfo = null
+      // this.queryInfo = null
+      // this.userCompanys = null
+      // this.copyCompanys = null
+      this.userToken = ''
+      // this.workspaceData = null
     }
   }
 })

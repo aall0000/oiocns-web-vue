@@ -4,8 +4,8 @@
       <img class="header-left-img" src="@/assets/img/头像.png" alt="" />
       <!-- <div class="header-left__avater">俞</div> -->
       <div class="header-left-box">
-        <div class="header-left-box__top">{{ getTimeState() }}，{{ queryInfo?.name }}</div>
-        <div class="header-left-box__btm">管理⼈员 | 本次登录 2022-02-19 14:03:18</div>
+        <div class="header-left-box__top">{{ getTimeState() }}，{{ queryInfo.name }}</div>
+        <div class="header-left-box__btm">管理⼈员 | 本次登录 {{ getTime }}</div>
       </div>
     </div>
     <div class="header-right">
@@ -32,8 +32,8 @@
 
 <script lang="ts" setup>
 import { useUserStore } from '@/store/user'
-import { storeToRefs } from 'pinia';
-import { defineComponent } from 'vue'
+import { storeToRefs } from 'pinia'
+import { computed } from 'vue'
 const store = useUserStore()
 const { queryInfo } = storeToRefs(store)
 
@@ -58,6 +58,18 @@ const getTimeState = () => {
   }
   return state
 }
+const getTime = computed(() => {
+  let date = new Date()
+  let y = date.getFullYear() //年
+  let m: any = date.getMonth() + 1 //月，月是从0开始的所以+1
+  let d: any = date.getDate() //日
+  let h: any = date.getHours()
+  let min: any = date.getMinutes()
+  m = m < 10 ? '0' + m : m //小于10补0
+  d = d < 10 ? '0' + d : d //小于10补0
+  min = min < 10 ? '0' + min : min //小于10补0
+  return y + '-' + m + '-' + d + ' ' + h + ':' + min //返回时间形式yyyy-mm-dd
+})
 </script>
 
 <style lang='scss' scoped>
