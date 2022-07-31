@@ -68,7 +68,7 @@
         <div class="button">
           <el-button> + 新增更多描述</el-button>
           <el-button>导出单位信息</el-button>
-          <el-button type="primary">更新信息</el-button>
+          <el-button type="primary" >更新信息</el-button>
         </div>
       </div>
 
@@ -86,7 +86,7 @@ import { regionData, CodeToText } from 'element-china-area-data'
 import { onMounted, reactive, ref } from 'vue'
 import { onBeforeMount } from 'vue'
 import $services from '@/services'
-const labelPosition = ref('top')
+const labelPosition = ref<'top'>('top')
 const options2 = [
   {
     value:"有限责任公司",

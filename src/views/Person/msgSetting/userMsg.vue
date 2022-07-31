@@ -66,7 +66,11 @@
           </el-form>
           <div class="button">
             <el-button> + 新增更多描述</el-button>
-            <el-button type="primary">更新信息</el-button>
+            <el-popconfirm title="确认更新" @confirm="update()">
+              <template #reference>
+                <el-button type="primary" >更新信息</el-button>
+              </template>
+            </el-popconfirm>
           </div>
         </div>
         <div class="bodyRight">
@@ -96,7 +100,8 @@ import { regionData, CodeToText } from 'element-china-area-data'
 import { onMounted, reactive, ref } from 'vue'
 import { onBeforeMount } from 'vue'
 import $services from '@/services'
-const labelPosition = ref('top')
+import console from 'console'
+const labelPosition = ref<'top'>('top')
 
 const formLabelAlign = reactive({
   name: '',
@@ -126,6 +131,21 @@ function fetchRequest(){
       formLabelAlign.Profile=res.data.team.remark
     })
 }
+const update =  () =>{
+  let token = sessionStorage.getItem("TOKEN")
+    $services.person.update({
+      "data": {
+        'name': formLabelAlign.name,
+        'code':formLabelAlign.idCardNum,
+        'teamName':formLabelAlign.name,
+        'teamCode':formLabelAlign.tel,
+        'teamRemark':formLabelAlign.Profile,
+      },"headers":{"Authorization":token}
+    }).then(res => {
+
+    })
+}
+
 const options = regionData
 const selectedOptions:Array<number> = []
 const handleChange = () =>{
