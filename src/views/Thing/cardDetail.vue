@@ -45,12 +45,20 @@
           />
           <el-table-column prop="target.typeName" label="内容"  />
           <!-- <el-table-column prop="date" label="链接" /> -->
-          <el-table-column prop="target.status" label="状态"  />
+          <el-table-column prop="status" label="状态" >
+            <template #default="scope">
+              <div v-if="scope.row.status === 200">已拒绝</div>
+              <div v-else>待批</div>
+            </template>
+          </el-table-column>
           <el-table-column prop="target.updateTime" sortable label="发送时间" width="180" />
           <el-table-column prop="date" label="操作" width="180">
             <template #default="scope">
-              <span style="margin-right: 10px" @click="joinSuccess(scope.row)">完成</span>
-              <span @click="joinRefse(scope.row)">拒绝</span>
+              <div v-if="scope.row.status === 200"></div>
+              <div v-else>
+                <span style="margin-right: 10px" @click="joinSuccess(scope.row)">完成</span>
+                <span @click="joinRefse(scope.row)">拒绝</span>
+              </div>
             </template>
           </el-table-column>
         </el-table>
@@ -67,6 +75,7 @@
   import router from '@/router/index'
   import { ref, onMounted } from 'vue'
   import zhCn from 'element-plus/lib/locale/lang/zh-cn'
+import { ElMessage } from 'element-plus'
 
   var tableData = ref([])
   const activeIndex = ref('1')
@@ -94,7 +103,10 @@
         }
       })
       .then((res) => {
-        console.log(res)
+        ElMessage({
+          message:"拒绝成功",
+          type:'success'
+        })
       })
   }
   var joinSuccess = (item: { id: '' }) => {
@@ -105,7 +117,10 @@
         }
       })
       .then((res) => {
-        console.log(res)
+         ElMessage({
+          message:"添加成功",
+          type:'success'
+        })
       })
   }
   var changeSelect = () => {
