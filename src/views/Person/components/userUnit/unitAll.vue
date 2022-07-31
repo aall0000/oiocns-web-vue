@@ -82,7 +82,7 @@ let tableData = [
 
 async function fetchRequest(){
     let token = sessionStorage.getItem("TOKEN")
-    await $services.joinCompanys({
+    await $services.getJoined({
       "data": {
         "offset": 0,
         "limit": 1
@@ -112,7 +112,7 @@ function handleCurrentChange(pageNum) {//改变当前页码
   this.load()
 }
 </script>
-<style lang="less">
+<style lang="scss">
 .created{
   width: 100%;
   height: 100vh;

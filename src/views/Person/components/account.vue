@@ -15,7 +15,7 @@
 
   </div>
 </template>
-<style scoped lang="less">
+<style scoped lang="scss">
 .account{
   width: 100%;
   height: 50px;

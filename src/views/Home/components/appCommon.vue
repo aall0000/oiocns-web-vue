@@ -2,7 +2,12 @@
   <div class="appCommon">
     <div class="appCommon-title">常用应用推荐</div>
     <div class="appCommon-content">
-      <div class="appCommon-content-box" v-for="(item, index) in dataList" :key="index">
+      <div
+        class="appCommon-content-box"
+        v-for="(item, index) in dataList"
+        :key="index"
+        @click="joinFriends(item)"
+      >
         <img src="@/assets/img/app_icon.png" alt="" />
         <div class="textBox">
           <div class="textBox-top">{{ item.name }}</div>
@@ -13,44 +18,41 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, reactive, toRefs } from 'vue'
-
-export default defineComponent({
-  setup() {
-    const data = reactive({
-      dataList: [
-        {
-          name: '资产监管资产监管',
-          introduce: '简单、⾼效、开放的监管⼯具'
-        },
-        {
-          name: '资产监管资产监管',
-          introduce: '简单、⾼效、开放的监管⼯具'
-        },
-        {
-          name: '资产监管资产监管',
-          introduce: '简单、⾼效、开放的监管⼯具'
-        },
-        {
-          name: '资产监管资产监管',
-          introduce: '简单、⾼效、开放的监管⼯具'
-        },
-        {
-          name: '资产监管资产监管',
-          introduce: '简单、⾼效、开放的监管⼯具'
-        },
-        {
-          name: '资产监管资产监管',
-          introduce: '简单、⾼效、开放的监管⼯具'
-        }
-      ]
-    })
-    return {
-      ...toRefs(data)
-    }
+<script lang="ts" setup>
+import { reactive } from 'vue'
+const emit = defineEmits(['joinFriend'])
+const dataList = reactive([
+  {
+    name: '添加好友',
+    introduce: '添加好友',
+    metohd: 'friend'
+  },
+  {
+    name: '资产监管资产监管',
+    introduce: '简单、⾼效、开放的监管⼯具'
+  },
+  {
+    name: '资产监管资产监管',
+    introduce: '简单、⾼效、开放的监管⼯具'
+  },
+  {
+    name: '资产监管资产监管',
+    introduce: '简单、⾼效、开放的监管⼯具'
+  },
+  {
+    name: '资产监管资产监管',
+    introduce: '简单、⾼效、开放的监管⼯具'
+  },
+  {
+    name: '资产监管资产监管',
+    introduce: '简单、⾼效、开放的监管⼯具'
   }
-})
+])
+const joinFriends = (item: any) => {
+  if (item.metohd == 'friend') {
+    emit('joinFriend')
+  }
+}
 </script>
 
 <style lang="scss" scoped>

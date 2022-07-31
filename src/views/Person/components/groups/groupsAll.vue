@@ -11,7 +11,7 @@
         />
       </div>
       <div class="topRight">
-          <el-button type="primary"> 创建集团</el-button>
+          <el-button type="primary" @click="create"> 创建集团</el-button>
           <el-button >批量导入/导出</el-button>
           <el-button >查看申请记录</el-button>
       </div>
@@ -37,6 +37,33 @@
           </template>
         </el-table-column>
       </el-table>
+      <el-dialog v-model="dialogVisible" title="提示" width="30%">
+        <el-form :model="form" label-width="120px">
+          <el-form-item label="集团名称">
+            <el-input v-model="form.name" style="width:80%"/>
+          </el-form-item>
+          <el-form-item label="集团编码">
+            <el-input v-model="form.code" style="width:80%"/>
+          </el-form-item>
+          <el-form-item label="集团简称">
+            <el-input v-model="form.teamName" style="width:80%"/>
+          </el-form-item>
+          <el-form-item label="集团代码">
+            <el-input v-model="form.teamCode" style="width:80%"/>
+          </el-form-item>
+          <el-form-item label="集团简介">
+            <el-input v-model="form.teamRemark" style="width:80%"/>
+          </el-form-item>
+
+
+        </el-form>
+        <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="dialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="save">确认</el-button>
+      </span>
+        </template>
+      </el-dialog>
     </div>
     <div class="createdBottom">
       <el-pagination
@@ -50,6 +77,39 @@
 </template>
 <script lang="ts" setup>
 import { Search } from '@element-plus/icons-vue'
+import { reactive, ref } from 'vue';
+import $services from '@/services'
+
+let dialogVisible = ref(false)
+const form =reactive({
+  name:'',
+  code:'',
+  teamName:'',
+  teamCode:'',
+  teamRemark:''
+})
+const create = () =>{
+  dialogVisible.value = true
+  console.log(dialogVisible)
+}
+const save = () =>{
+  let token = sessionStorage.getItem("TOKEN")
+    $services.company.createGroup({
+      "data": {
+        'name': form.name,
+        'code':form.code,
+        'teamName':form.teamName,
+        'teamCode':form.teamCode,
+        'teamRemark':form.teamRemark,
+      },
+      "headers":{
+        "Authorization":token
+        }
+    }).then(res => {
+      console.log('查询该单位详细信息', res);
+    })
+}
+
 const tableData = [
   {
     name:'1',
@@ -108,7 +168,7 @@ const tableData = [
 
 ]
 </script>
-<style lang="less">
+<style lang="scss">
 .created{
   width: 100%;
   height: 100vh;

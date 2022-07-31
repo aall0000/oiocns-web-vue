@@ -59,7 +59,7 @@
     }
   ]
 </script>
-<style lang="less">
+<style lang="scss">
   .created {
     width: 100%;
     height: 100vh;

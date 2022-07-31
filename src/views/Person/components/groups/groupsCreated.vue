@@ -50,6 +50,39 @@
 </template>
 <script lang="ts" setup>
 import { Search } from '@element-plus/icons-vue'
+import { reactive, ref } from 'vue';
+import $services from '@/services'
+
+let dialogVisible = ref(false)
+const form =reactive({
+  name:'',
+  code:'',
+  teamName:'',
+  teamCode:'',
+  teamRemark:''
+})
+const create = () =>{
+  dialogVisible.value = true
+  console.log(dialogVisible)
+}
+const save = () =>{
+  let token = sessionStorage.getItem("TOKEN")
+    $services.company.createGroup({
+      "data": {
+        'name': form.name,
+        'code':form.code,
+        'teamName':form.teamName,
+        'teamCode':form.teamCode,
+        'teamRemark':form.teamRemark,
+      },
+      "headers":{
+        "Authorization":token
+        }
+    }).then(res => {
+      console.log('查询该单位详细信息', res);
+    })
+}
+
 const tableData = [
   {
     name:'1',
@@ -108,7 +141,7 @@ const tableData = [
 
 ]
 </script>
-<style lang="less">
+<style lang="scss">
 .created{
   width: 100%;
   height: 100vh;

@@ -23,8 +23,8 @@ const constantRoutes: RouteRecordRaw[] = [
   },
   {
     path: '/user',
-    component: () => import('../views/Layout/MsgLayout/layout.vue'),
-    redirect:"/userMsg",
+    component: () => import('../views/Layout/msgLayout/layout.vue'),
+    redirect: '/userMsg',
     children: [
       {
         path: '/userMsg',
@@ -145,6 +145,43 @@ const mainRouter: RouteRecordRaw[] = [
     name: 'appStore',
     path: '/appStore'
   },
+  {
+    component: () => import('@/views/Person/application/index.vue'),
+    name: 'application',
+    path: '/application',
+    meta: {
+      keepAlive: false,
+      title: '我的申请'
+    }
+  },
+  {
+    name: 'work2',
+    path: '/work2',
+    meta: {
+      keepAlive: false,
+      title: '工作区2'
+    },
+    children: [
+      {
+        component: () => import('@/components/usePinia.vue'),
+        name: 'test1',
+        path: '/test1',
+        meta: {
+          keepAlive: false,
+          title: '测试1'
+        }
+      },
+      {
+        component: () => import('@/views/Work/index.vue'),
+        name: 'test2',
+        path: '/test2',
+        meta: {
+          keepAlive: false,
+          title: '测试2'
+        }
+      }
+    ]
+  }
   //个人中心信息设置路由
 ]
 

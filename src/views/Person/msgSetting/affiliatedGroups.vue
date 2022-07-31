@@ -48,7 +48,7 @@ const handleClick = (tab: TabsPaneContext, event: Event) => {
   console.log(tab, event)
 }
 </script>
-<style lang="less" scoped >
+<style lang="scss" scoped >
 .userUnit{
   .pageHeader{
     width: 100%;

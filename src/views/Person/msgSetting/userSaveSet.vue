@@ -27,7 +27,7 @@ const formLabelAlign = reactive({
 
 })
 </script>
-<style lang="less" scoped  >
+<style lang="scss" scoped  >
 .userSaveSet{
   height: calc(100vh - 70px);
 

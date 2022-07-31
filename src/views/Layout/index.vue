@@ -8,6 +8,7 @@
       <!-- 导航区域 传送门 -->
       <div id="menu-teleport-target" />
       <el-container>
+        <!-- <Breadcrumb></Breadcrumb> -->
         <el-main class="main-wrap">
           <keep-alive v-if="$route.meta.keepAlive">
             <router-view />
@@ -22,6 +23,7 @@
 
 <script lang="ts" setup>
 import CustomHeadr from './components/customHeader.vue'
+import Breadcrumb from './components/breadcrumb.vue'
 // import Menu from './components/menu.vue'
 </script>
 

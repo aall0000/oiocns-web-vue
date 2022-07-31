@@ -65,7 +65,7 @@
         <div class="button">
           <el-button> + 新增更多描述</el-button>
           <el-button>导出单位信息</el-button>
-          <el-button type="primary">更新信息</el-button>
+          <el-button type="primary" >更新信息</el-button>
         </div>
       </div>
     </div>
@@ -140,7 +140,7 @@
     alert(loc)
   }
 </script>
-<style lang="less" scoped>
+<style lang="scss" scoped>
   .UnitMsg {
     height: calc(100vh - 70px);
     .pageHeader {

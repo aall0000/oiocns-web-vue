@@ -44,7 +44,7 @@ const tableData = reactive({
 ]
 })
 </script>
-<style scoped lang="less">
+<style scoped lang="scss">
 .save{
 width: 100%;
 .body{
