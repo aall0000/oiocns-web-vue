@@ -21,6 +21,7 @@
 
 <script lang="ts" setup name="group">
 import { onMounted, ref } from 'vue';
+import * as signalR from '@microsoft/signalr';
 import groupSideBarVue from './components/groupSideBar.vue';
 import groupHeaderVue from './components/groupHeader.vue';
 import groupInputBox from './components/groupInputBox.vue'
@@ -30,6 +31,10 @@ import groupDetail from './components/groupDeatil.vue'
 const isShow = ref<boolean>(false);
 onMounted(() => {
   isShow.value = true
+  const connection = new signalR.HubConnectionBuilder()
+    .withUrl("/orginone/orgchat/msghub")
+    .build();
+  connection.start().catch((err) => document.write(err));
 }) 
 // 记录所选聊天对象---群或者人
 const activeId = ref<number>(1);
