@@ -4,7 +4,6 @@
       <el-breadcrumb separator="/" class="header">
         <el-breadcrumb-item :to="{ path: '/userMsg' }">己</el-breadcrumb-item>
         <el-breadcrumb-item><a href="/userMsg">信息设置</a></el-breadcrumb-item>
-
       </el-breadcrumb>
       <div class="title">单位信息</div>
     </div>
@@ -15,17 +14,15 @@
           :inline="true"
           :label-position="labelPosition"
           label-width="100px"
-          style="max-width:1500px"
+          style="max-width: 1500px"
           :model="formLabelAlign"
-
         >
           <el-form-item label="单位名称">
             <el-input v-model="formLabelAlign.name" />
           </el-form-item>
           <el-form-item label="单位类型">
-            <el-select class="select" v-model="formLabelAlign.type"  placeholder="股份有限公司">
+            <el-select class="select" v-model="formLabelAlign.type" placeholder="股份有限公司">
               <el-option
-
                 v-for="item in options2"
                 :key="item.value"
                 :label="item.label"
@@ -56,7 +53,7 @@
           </el-form-item>
           <el-form-item label="单位地址" prop="selectedOptions">
             <el-cascader
-              style="width: 400px;"
+              style="width: 400px"
               :options="options"
               v-model="selectedOptions"
               @change="handleChange"
@@ -71,140 +68,134 @@
           <el-button type="primary">更新信息</el-button>
         </div>
       </div>
-
     </div>
     <div class="bottom">
       <span class="content">Copyright @2021 资产云开放协同创新中心 主办单位：浙江省财政厅</span>
     </div>
   </div>
-
 </template>
 
 <script lang="ts" setup>
-import { ArrowLeft } from '@element-plus/icons-vue'
-import { regionData, CodeToText } from 'element-china-area-data'
-import { onMounted, reactive, ref } from 'vue'
-import { onBeforeMount } from 'vue'
-import $services from '@/services'
-const labelPosition = ref('top')
-const options2 = [
-  {
-    value:"有限责任公司",
-    label:"有限责任公司"
-  },
-  {
-    value:"股份有限公司",
-    label:"股份有限公司"
-  },
+  import { ArrowLeft } from '@element-plus/icons-vue'
+  import { regionData, CodeToText } from 'element-china-area-data'
+  import { onMounted, reactive, ref } from 'vue'
+  import { onBeforeMount } from 'vue'
+  import $services from '@/services'
+  const labelPosition = ref<'top'>('top')
+  const options2 = [
+    {
+      value: '有限责任公司',
+      label: '有限责任公司'
+    },
+    {
+      value: '股份有限公司',
+      label: '股份有限公司'
+    }
+  ]
+  const formLabelAlign = reactive({
+    name: '',
+    type: '',
+    code: '',
+    companyCode: '',
+    divisionName: '杭州市',
+    divisionCode: '323300',
+    contactPerson: '',
+    legalRepresentative: '',
+    tel: '15315587896',
+    address: '杭州市'
+  })
 
-
-]
-const formLabelAlign = reactive({
-  name: '',
-  type: '',
-  code: '',
-  companyCode: '',
-  divisionName:'杭州市',
-  divisionCode: '323300',
-  contactPerson: '',
-  legalRepresentative: '',
-  tel:'15315587896',
-  address:'杭州市'
-})
-
-onBeforeMount(()=>{
-  fetchRequest()
-})
-function fetchRequest(){
-    let token = sessionStorage.getItem("WorkTOKEN")
-    $services.company.queryInfo({
-      "data": {},"headers":{"Authorization":token}
-    }).then(res => {
-      console.log('查询该单位详细信息', res);
-      formLabelAlign.name=res.data.name
-      formLabelAlign.type=res.data.team.typeName
-      formLabelAlign.code=res.data.code
-      formLabelAlign.companyCode=res.data.id
-      // formLabelAlign.divisionName=res.data.team.name
-      // formLabelAlign.divisionCode=res.data.team.name
-      formLabelAlign.contactPerson=res.data.team.authId
-      formLabelAlign.legalRepresentative=res.data.belongId
-      // formLabelAlign.tel=res.data.team.name
-      // formLabelAlign.address=res.data.team.name
-    })
-}
-
-
-const options = regionData
-const selectedOptions:Array<number> = []
-const handleChange = () =>{
-  var loc = "";
-  for (let i = 0; i < selectedOptions.length; i++) {
-    loc += CodeToText[selectedOptions[i]];
+  onBeforeMount(() => {
+    fetchRequest()
+  })
+  function fetchRequest() {
+    let token = sessionStorage.getItem('WorkTOKEN')
+    $services.company
+      .queryInfo({
+        data: {},
+        headers: { Authorization: token }
+      })
+      .then((res) => {
+        console.log('查询该单位详细信息', res)
+        formLabelAlign.name = res.data.name
+        formLabelAlign.type = res.data.team.typeName
+        formLabelAlign.code = res.data.code
+        formLabelAlign.companyCode = res.data.id
+        // formLabelAlign.divisionName=res.data.team.name
+        // formLabelAlign.divisionCode=res.data.team.name
+        formLabelAlign.contactPerson = res.data.team.authId
+        formLabelAlign.legalRepresentative = res.data.belongId
+        // formLabelAlign.tel=res.data.team.name
+        // formLabelAlign.address=res.data.team.name
+      })
   }
-  alert(loc);
-}
+
+  const options = regionData
+  const selectedOptions: Array<number> = []
+  const handleChange = () => {
+    var loc = ''
+    for (let i = 0; i < selectedOptions.length; i++) {
+      loc += CodeToText[selectedOptions[i]]
+    }
+    alert(loc)
+  }
 </script>
-<style lang="less" scoped  >
-.UnitMsg{
-  height: calc(100vh - 70px);
-  .pageHeader{
-    width: 100%;
-    height: 70px;
-    background-color: #fff;
-    .header{
-      margin-top: 20px;
-      margin-left: 30px;
-    }
-    .title{
-      padding-top: 10px;
-      margin-left: 30px;
-      font-size: 25px;
-      font-weight: 600;
-    }
-  }
-  .body{
-    height: 600px;
-    width: 100%;
-    border-left: 10px solid #eff0f4 ;
-    border-top: 16px solid #eff0f4 ;
-    border-right: 16px solid #eff0f4 ;
-    display: flex;
-    .bodyLeft{
-
-      height: 100%;
+<style lang="less" scoped>
+  .UnitMsg {
+    height: calc(100vh - 70px);
+    .pageHeader {
       width: 100%;
-
-      .form1{
-        width: 100%;
-        margin-left:80px;
+      height: 70px;
+      background-color: #fff;
+      .header {
         margin-top: 20px;
+        margin-left: 30px;
+      }
+      .title {
+        padding-top: 10px;
+        margin-left: 30px;
+        font-size: 25px;
         font-weight: 600;
-        .el-input {
-
-          width: 400px;
-
-        }
-        .select{
-          width: 400px;
-        }
-      }
-
-      .button{
-        margin-top: 150px;
-        margin-left:80px;
       }
     }
+    .body {
+      height: 600px;
+      width: 100%;
+      border-left: 10px solid #eff0f4;
+      border-top: 16px solid #eff0f4;
+      border-right: 16px solid #eff0f4;
+      display: flex;
+      .bodyLeft {
+        height: 100%;
+        width: 100%;
 
-  }
-  .bottom{
-    height: calc(100vh - 760px);
-    background-color: #eff0f4;
-    display: flex;
-    .content{
-      margin: auto;
-      color: #aaa;
+        .form1 {
+          width: 100%;
+          margin-left: 80px;
+          margin-top: 20px;
+          font-weight: 600;
+          .el-input {
+            width: 400px;
+          }
+          .select {
+            width: 400px;
+          }
+        }
+
+        .button {
+          margin-top: 150px;
+          margin-left: 80px;
+        }
+      }
+    }
+    .bottom {
+      height: calc(100vh - 760px);
+      background-color: #eff0f4;
+      display: flex;
+      .content {
+        margin: auto;
+        color: #aaa;
+      }
     }
   }
-}
 </style>

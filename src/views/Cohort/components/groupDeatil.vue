@@ -2,20 +2,19 @@
   <div class="group-detail-wrap">
     <h1 class="title">群详情</h1>
     <ul class="base flex border-b">
-      <img class="base-img" src="@/assets/img/toux.jpg" alt="" srcset="">
+      <img class="base-img" src="@/assets/img/toux.jpg" alt="" srcset="" />
       <li class="base-info">
         <div class="base-info-top flex">
-          <p class="base-info-top-name">群名称</p>
-          <el-tag size="small">群标签</el-tag>
+          <p class="base-info-top-name">{{ info.name }}</p>
+          <el-tag size="small" v-if="info.remark">{{ info.remark }}</el-tag>
         </div>
-        <div class="base-info-desc">资产云部⻔成员群</div>
+        <div class="base-info-desc">{{ info.remark }}</div>
       </li>
     </ul>
     <!-- 组成员 -->
     <ul class="user-list border-b">
       <li class="li-search con">
-
-        <p class="li-search-con">组成员<span class="li-search-con-num">200</span>人</p>
+        <p class="li-search-con">组成员<span class="li-search-con-num">{{state.total}}</span>人</p>
         <el-input class="li-search-inp" placeholder="搜索成员">
           <template #suffix>
             <el-icon class="el-input__icon">
@@ -24,17 +23,16 @@
           </template>
         </el-input>
       </li>
-      <li class="con">
+      <!-- <li class="con">
         <el-button type="primary">组织架构</el-button>
-      </li>
+      </li> -->
       <ul class="img-list con">
-        <li class="img-list-con" v-for="o in 20" :key="o">
+        <li class="img-list-con" v-for="item in info.userList" :key="item.id">
           <img class="img-list-con-img" src="@/assets/img/x.png" alt="" />
           <span class="img-list-con-name">成员名称</span>
         </li>
         <p class="img-list-more-btn">查看更多</p>
       </ul>
-
     </ul>
     <li class="con setting-con border-b">
       <span class="con-label">我在本群昵称</span>
@@ -58,167 +56,192 @@
 </template>
 
 <script lang="ts" setup>
-import { formItemValidateStates } from 'element-plus';
-import { reactive, ref } from 'vue'
+  import API from '@/services'
+  import { reactive, ref, onMounted, watch } from 'vue'
+  const { id, info } = defineProps({
+    id: String,
+    info: Object
+  })
 
-const state = reactive({ isEditNickName: false, isQunName: false, isIgnoreMsg: false, isStick: false })
+  const state = reactive({
+    userList: [], //群成员
+    total: 0, //总数
+    isEditNickName: false, //是否编辑昵称
+    isQunName: false, //是否编辑群名称
+    isIgnoreMsg: false, //是否免打扰信息
+    isStick: false //是否置顶
+  })
 
-const textarea = ref('')
+  const qunName = ref<string>('')
+  const nickName = ref<string>('')
+  onMounted(() => {
+    id && getQunPerson(id)
+    console.log('44', id, info)
+  })
 
-const emit = defineEmits(['submitInfo'])
+  // 获取群成员
+  const getQunPerson = async (id: string) => {
+    const { data, err } = await API.cohort.getPersons({
+      data: {
+        id,
+        offset: 0,
+        limit: 10
+      }
+    })
+    if (!err) {
+      console.log('获取群成员', data)
+      const { result = [], total = 0 } = data
+      state.userList = result
+      state.total = total
+    }
+  }
 
-const submit = () => {
-  console.log('submit');
+  const emit = defineEmits(['submitInfo'])
 
-  emit('submitInfo', textarea)
-}
+  // const submit = () => {
+  //   console.log('submit')
 
+  //   emit('submitInfo', textarea)
+  // }
 </script>
 
 <style lang="scss" scoped>
-.group-detail-wrap {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  width: 340px;
-  border-left: 1px solid #ccc;
-  padding: 15px;
-
-  .title {
-    font-size: 18px;
-    font-weight: 600;
-    margin-bottom: 10px;
-  }
-
-  // 群基本信息
-  .base {
-    align-items: center;
-    padding-bottom: 15px;
-
-    &-img {
-      width: 60px;
-      height: 60px;
-      margin-right: 15px;
-      border-radius: 50%;
-    }
-
-    &-info {
-      display: flex;
-      justify-content: space-around;
-      flex-direction: column;
-      height: 100%;
-
-      &-top {
-        align-items: center;
-
-        &-name {
-          font-size: 16px;
-          font-weight: 600;
-          margin-right: 10px;
-        }
-      }
-
-      &-desc {
-        font-size: 13px;
-      }
-    }
-  }
-
-  .con {
-    padding: 10px 0 0 0;
-  }
-
-  // 群成员
-  .user-list {
-
-
-    .li-search {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-
-      &-con {
-        font-size: 15px;
-        font-weight: 500;
-        color: #333;
-
-        &-num {
-          margin-left: 10px;
-
-        }
-      }
-
-      &-inp {
-        width: 120px;
-      }
-    }
-  }
-
-  .img-list {
+  .group-detail-wrap {
+    position: relative;
     display: flex;
-    flex-wrap: wrap;
-    width: 100%;
+    flex-direction: column;
+    width: 340px;
+    border-left: 1px solid #ccc;
+    padding: 15px;
 
-    &-con {
-      display: flex;
-      flex-direction: column;
-      align-self: center;
-      margin-right: 10px;
+    .title {
+      font-size: 18px;
+      font-weight: 600;
       margin-bottom: 10px;
-      cursor: pointer;
+    }
+
+    // 群基本信息
+    .base {
+      align-items: center;
+      padding-bottom: 15px;
 
       &-img {
-        width: 50px;
-        height: 50px;
+        width: 60px;
+        height: 60px;
+        margin-right: 15px;
+        border-radius: 50%;
       }
 
-      &-name {
-        font-size: 10px;
-        line-height: 20px;
-      }
+      &-info {
+        display: flex;
+        justify-content: space-around;
+        flex-direction: column;
+        height: 100%;
 
+        &-top {
+          align-items: center;
+
+          &-name {
+            font-size: 16px;
+            font-weight: 600;
+            margin-right: 10px;
+          }
+        }
+
+        &-desc {
+          font-size: 13px;
+        }
+      }
     }
 
-    &-more-btn {
+    .con {
+      padding: 10px 0 0 0;
+    }
+
+    // 群成员
+    .user-list {
+      .li-search {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        &-con {
+          font-size: 15px;
+          font-weight: 500;
+          color: #333;
+
+          &-num {
+            margin-left: 10px;
+          }
+        }
+
+        &-inp {
+          width: 120px;
+        }
+      }
+    }
+
+    .img-list {
+      display: flex;
+      flex-wrap: wrap;
       width: 100%;
-      text-align: center;
-      color: $mainColor;
-      cursor: pointer;
+
+      &-con {
+        display: flex;
+        flex-direction: column;
+        align-self: center;
+        margin-right: 10px;
+        margin-bottom: 10px;
+        cursor: pointer;
+
+        &-img {
+          width: 50px;
+          height: 50px;
+        }
+
+        &-name {
+          font-size: 10px;
+          line-height: 20px;
+        }
+      }
+
+      &-more-btn {
+        width: 100%;
+        text-align: center;
+        color: $mainColor;
+        cursor: pointer;
+      }
+    }
+
+    .setting-con {
+      display: flex;
+      justify-content: space-between;
+
+      .con-label {
+        font-weight: bold;
+        color: #333;
+      }
+    }
+
+    .check-con {
+      .el-checkbox {
+        height: 26px;
+      }
+    }
+
+    // 底部按钮
+    .footer {
+      position: absolute;
+      bottom: 20px;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: center;
+    }
+
+    .border-b {
+      border-bottom: 1px solid #d6d6d6;
+      padding-bottom: 10px;
     }
   }
-
-  .setting-con {
-    display: flex;
-    justify-content: space-between;
-
-    .con-label {
-      font-weight: bold;
-      color: #333;
-    }
-  }
-
-  .check-con {
-    .el-checkbox {
-      height: 26px;
-    }
-
-  }
-
-  // 底部按钮
-  .footer {
-    position: absolute;
-    bottom: 20px;
-    left: 0;
-    right: 0;
-    display: flex;
-    justify-content: center;
-
-  }
-
-  .border-b {
-    border-bottom: 1px solid #d6d6d6;
-    padding-bottom: 10px;
-
-  }
-}
 </style>

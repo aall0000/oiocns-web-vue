@@ -5,7 +5,7 @@
     <li :class="{ 'group-con': true, active: active == '3' }" @click="changeInfo('3')">个人3</li> -->
 
     <li
-      :class="['group-con', active == item.id ? 'active' : '']"
+      :class="['group-con', active.id == item.id ? 'active' : '']"
       v-for="item in showList"
       :key="item.id"
       @click="changeInfo(item)"
@@ -16,7 +16,6 @@
 
 <script lang="ts" setup name="groupSideBar">
   import API from '@/services'
-  import { dataType } from 'element-plus/es/components/table-v2/src/common'
   import { onMounted, reactive, ref, computed } from 'vue'
 
   const state = reactive({ qunList: [], friendList: [] })
@@ -35,14 +34,14 @@
 
   // 获取我的好友列表
   const getFriendList = async () => {
-    await API.person.friends({ data: { offset: 0, limit: 10 } }).then((res) => {
+    await API.person.getFriends({ data: { offset: 0, limit: 10 } }).then((res) => {
       const { result = [] } = res.data
       state.friendList = result
     })
   }
   // 获取我加入的群列表
   const getQunList = async () => {
-    const res = await API.cohort.getMyQun({ data: { offset: 0, limit: 10 } })
+    const res = await API.cohort.getJoinedCohorts({ data: { offset: 0, limit: 10 } })
     const { data, err } = res
     if (!err) {
       const { result = [] } = data

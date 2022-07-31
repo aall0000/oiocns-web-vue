@@ -58,17 +58,17 @@
     "src/**/*.d.ts",
     "src/**/*.tsx",
     "src/**/*.vue",
-    "src/icons/index.js"
+    "src/icons/index.js",
   ],
   "exclude": [
     "node_modules",
     "dist",
-    "typings",
-    "build"
+    "src/typings",
+    "build",
   ],
   "references": [
     {
-      "path": "./tsconfig.node.json"
+      "path": "./tsconfig.node.json",
     }
   ]
 }

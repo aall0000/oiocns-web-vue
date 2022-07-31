@@ -4,33 +4,34 @@
       <img class="user-img" src="@/assets/img/toux.jpg" alt="" srcset="" />
       <li class="user-info">
         <div class="user-info-top flex">
-          <p class="user-info-top-name">{{info.name }}</p>
-          <el-tag size="small">群标签</el-tag>
+          <p class="user-info-top-name">{{ info.detail.name }}</p>
+          <el-tag size="small" v-if="info.detail?.remark">{{ info.detail.remark }}</el-tag>
         </div>
-        <div class="user-info-num"
-          ><el-icon><User /></el-icon> 500</div
-        >
+        <div class="user-info-num" v-show="info.total">
+          <el-icon><User /></el-icon> {{ info.total }}
+        </div>
       </li>
     </ul>
-    <span class="user-add" @click="addUserFun">
+    <span class="user-add" @click="handleMoreFun()">
       <el-icon :size="20">
-        <Plus />
+        <More />
       </el-icon>
     </span>
   </div>
 </template>
-<script lang="ts" setup name="groupHeader">
+<script lang="ts" setup>
   const { info } = defineProps({
     info: {
       type: Object,
       default: {}
     }
   })
+  console.log('是是是', info)
 
-  const emit = defineEmits(['addUser'])
+  const emit = defineEmits(['viewDetail'])
 
-  const addUserFun = () => {
-    emit('addUser', 1)
+  const handleMoreFun = () => {
+    emit('viewDetail')
   }
 </script>
 

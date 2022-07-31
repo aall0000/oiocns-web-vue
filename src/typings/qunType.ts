@@ -1,4 +1,6 @@
 //好友/群列表 数据类型
+
+export {}
 interface userType {
   code: string
   createTime: string

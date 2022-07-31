@@ -1,74 +1,84 @@
 <template>
   <div class="cohort-wrap">
     <!-- 导航传送门 -->
-    <teleport v-if="isShow" to="#menu-teleport-target">
+    <teleport v-if="isShowMenu" to="#menu-teleport-target">
       <el-aside class="custom-group-silder-menu" width="220px">
-        <groupSideBarVue v-model:active="activeInfo" @addUser="handleAddUser" />
+        <GroupSideBarVue v-model:active="activeInfo" />
       </el-aside>
     </teleport>
     <!-- 右侧展示主体 -->
     <div class="chart-page">
       <!-- 头部 -->
-      <groupHeaderVue :info="selectInfo.detail" v-show="activeInfo?.id" class="chart-header" />
+      <GroupHeaderVue
+        :info="selectInfo"
+        v-show="activeInfo?.id"
+        @viewDetail="handleViewDetail"
+        class="chart-header"
+      />
       <!-- 聊天区域 -->
-      <groupContent class="chart-content"></groupContent>
+      <GroupContent class="chart-content" />
       <!-- 输入区域 -->
-      <groupInputBox class="chart-input" @submitInfo="submit" />
+      <GroupInputBox class="chart-input" @submitInfo="submit" />
     </div>
-    <groupDetail :info="selectInfo" v-if="true" />
+    <GroupDetail :id="activeInfo.id" :info="selectInfo.detail" v-if="isShowDetail" />
   </div>
 </template>
 
-<script lang="ts" setup name="cohort">
+<script lang="ts" setup>
   import API from '@/services'
   import { onMounted, reactive, ref, watch } from 'vue'
-  import groupSideBarVue from './components/groupSideBar.vue'
-  import groupHeaderVue from './components/groupHeader.vue'
-  import groupInputBox from './components/groupInputBox.vue'
-  import groupContent from './components/groupContent.vue'
-  import groupDetail from './components/groupDeatil.vue'
+  import GroupSideBarVue from './components/groupSideBar.vue'
+  import GroupHeaderVue from './components/groupHeader.vue'
+  import GroupInputBox from './components/groupInputBox.vue'
+  import GroupContent from './components/groupContent.vue'
+  import GroupDetail from './components/groupDeatil.vue'
   // 是否展示导航
-  const isShow = ref<boolean>(false)
-  onMounted(() => {
-    isShow.value = true
-  })
+  const isShowMenu = ref<boolean>(false)
+  const isShowDetail = ref<boolean>(false)
+
   // 记录所选聊天对象---群或者人
   const activeInfo = ref<any>({})
-  //记录所选人/群 详细数据
-  const selectInfo = reactive({ userList: [], detail: {} })
+  let selectInfo = reactive({ detail: {}, userList: [], total: 0 })
+
+  onMounted(() => {
+    isShowMenu.value = true
+  })
+  // 监听所选聊天对象
   watch(
     () => activeInfo.value,
     (val) => {
       const { typeName, id, team = {} } = val
       if (typeName === '人员') {
         selectInfo.detail = val
+        selectInfo.total = 0
+        selectInfo.userList = []
       } else if (typeName === '群组') {
-        getQunPerson(id)
         selectInfo.detail = team
+        getQunPerson(id)
       }
-      console.log('监听active', val)
     }
   )
 
-  // 添加群人员
-  const handleAddUser = () => {
-    console.log('添加人员')
+  // 展示详情页
+  const handleViewDetail = (data) => {
+    isShowDetail.value = !isShowDetail.value
   }
 
-  const getQunPerson = (id: string) => {
-    API.cohort
-      .getQunPerson({
-        data: {
-          id,
-          offset: 0,
-          limit: 10
-        }
-      })
-      .then((res) => {
-        console.log('获取群成员', res)
-      })
+  // 获取群成员
+  const getQunPerson = async (id: string) => {
+    const { data, err } = await API.cohort.getPersons({
+      data: {
+        id,
+        offset: 0,
+        limit: 10
+      }
+    })
+    if (!err) {
+      const { total = 0, result = [] } = data
+      selectInfo.total = total
+      selectInfo.userList = result
+    }
   }
-
   const submit = (value) => {
     console.log('发送消息', value.value)
   }
