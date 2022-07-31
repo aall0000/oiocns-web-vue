@@ -82,7 +82,7 @@ let tableData = [
 
 async function fetchRequest(){
     let token = sessionStorage.getItem("TOKEN")
-    await $services.company.getJoined({
+    await $services.joinCompanys({
       "data": {
         "offset": 0,
         "limit": 1

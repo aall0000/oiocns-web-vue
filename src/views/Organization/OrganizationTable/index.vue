@@ -2,7 +2,9 @@
   <div class="organization-table-wrap">
     <div class="organization-table-head">
       <div class="organization-table-type">群 / 消息 / 组织架构</div>
-      <div class="organization-table-name">组织架构 <span class="organization-table-name-desc">在这里查看或管理组织树</span> </div>
+      <div class="organization-table-name"
+        >组织架构 <span class="organization-table-name-desc">在这里查看或管理组织树</span>
+      </div>
     </div>
     <div class="content">
       <div class="tab-list">
@@ -14,15 +16,20 @@
             <el-button>完成代办</el-button>
           </div>
         </div>
-        <el-table :data="tableData" stripe style="width: 100%" @select="select">
+        <el-table :data="tableData" stripe style="width: 100%" row-key="id" @select="select">
           <el-table-column prop="date" type="selection" width="180" />
           <el-table-column prop="date" label="Date" width="180" />
-          <el-table-column prop="name" label="Name" width="180" :filters="[
-            { text: '2016-05-01', value: '2016-05-01' },
-            { text: '2016-05-02', value: '2016-05-02' },
-            { text: '2016-05-03', value: '2016-05-03' },
-            { text: '2016-05-04', value: '2016-05-04' }
-          ]" />
+          <el-table-column
+            prop="name"
+            label="Name"
+            width="180"
+            :filters="[
+              { text: '2016-05-01', value: '2016-05-01' },
+              { text: '2016-05-02', value: '2016-05-02' },
+              { text: '2016-05-03', value: '2016-05-03' },
+              { text: '2016-05-04', value: '2016-05-04' }
+            ]"
+          />
           <el-table-column prop="address" label="Address" :filter-method="filterHandler" />
         </el-table>
       </div>
@@ -38,9 +45,14 @@ import type { TabsPaneContext } from 'element-plus'
 
 var tableData = [
   {
+    id: 31,
     date: '2016-05-03',
     name: 'Tom',
-    address: 'No. 189, Grove St, Los Angeles'
+    address: 'No. 189, Grove St, Los Angeles',
+    children: [
+      { id: 32, date: '2016-05-03', name: 'Tom', address: 'No. 189, Grove St, Los Angeles' },
+      { id: 33, date: '2016-05-03', name: 'Tom', address: 'No. 189, Grove St, Los Angeles' }
+    ]
   },
   {
     date: '2016-05-02',
