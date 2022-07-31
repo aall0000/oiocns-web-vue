@@ -112,7 +112,7 @@ const mainRouter: RouteRecordRaw[] = [
     }
   },
   {
-    component: () => import('@/views/Organization/OrganizationTable/index.vue'),
+    component: () => import('@/views/Organization/organizationTable/index.vue'),
     name: 'organizationTable',
     path: '/organizationTable',
     meta: {

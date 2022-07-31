@@ -30,7 +30,7 @@ import groupDetail from './components/groupDeatil.vue'
 const isShow = ref<boolean>(false);
 onMounted(() => {
   isShow.value = true
-})
+}) 
 // 记录所选聊天对象---群或者人
 const activeId = ref<number>(1);
 

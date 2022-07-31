@@ -36,6 +36,7 @@ import { reactive, ref } from 'vue'
 import { log } from 'console'
 import { useUserStore } from '@/store/user'
 import { useRouter } from 'vue-router'
+import { ElMessage } from 'element-plus'
 
 const carousel = ref<any>()
 const store = useUserStore()
