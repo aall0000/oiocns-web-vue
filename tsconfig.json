@@ -41,6 +41,15 @@
     "paths": {
       "@/*": [
         "src/*"
+      ],
+      "@common/*": [
+        "src/common/*"
+      ],
+      "@utils/*": [
+        "src/utils/*"
+      ],
+      "@hooks/*": [
+        "src/hooks/*"
       ]
     }
   },
@@ -54,6 +63,7 @@
   "exclude": [
     "node_modules",
     "dist",
+    "typings",
     "build"
   ],
   "references": [

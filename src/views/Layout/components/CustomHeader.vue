@@ -76,82 +76,83 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, watch, onMounted } from 'vue'
-import { Search } from '@element-plus/icons-vue'
-import { useRouter } from 'vue-router'
-import { useUserStore } from '@/store/user'
-import $services from '@/services'
+  import { ref, watch, onMounted } from 'vue'
+  import { Search } from '@element-plus/icons-vue'
+  import { useRouter } from 'vue-router'
+  import { useUserStore } from '@/store/user'
+  import { ElMessage } from 'element-plus'
+  import $services from '@/services'
 
-const store = useUserStore()
-const SearchInfo = ref('')
-const router = useRouter()
-let current = ref(0)
-const workspaceData = store.workspaceData
-const load = () => {
-  current.value++
-  store.getCompanyList(current.value, workspaceData.id, true)
-}
-const onClickDrop = () => {
-  if (store.userCompanys.length == 0) {
-    current.value = 0
-    store.getCompanyList(current.value, workspaceData.id, false)
+  const store = useUserStore()
+  const SearchInfo = ref('')
+  const router = useRouter()
+  let current = ref(0)
+  const workspaceData = store.workspaceData
+  const load = () => {
+    current.value++
+    store.getCompanyList(current.value, workspaceData.id, true)
   }
-}
-const switchCompany = (data: { id: string }) => {
-  $services.person
-    .switchCpmpany({
-      data: {
-        id: data.id
-      }
-    })
-    .then((res) => {
-      if (res.code == 200) {
-        sessionStorage.setItem('TOKEN', res.data.accessToken)
-        store.getQueryInfo(res.data.accessToken)
-        store.getWorkspaceData(res.data.workspaceId).then(() => {
-          location.reload()
-        })
-      } else {
-        ElMessage({
-          message: res.msg,
-          type: 'warning'
-        })
-      }
-    })
-}
-const Setting = () => {
-  router.push('/user')
-}
-const exitLogin = () => {
-  sessionStorage.clear()
-  store.resetState()
-  router.push('/login')
-}
-</script>
-
-<style lang='scss' scoped>
-.el-dropdown-link {
-  cursor: pointer;
-}
-.page-custom-header {
-  height: 60px;
-  line-height: 60px;
-
-  .el-col {
-    display: flex;
-    align-items: center;
-  }
-
-  .logo {
-    margin-right: 10px;
-  }
-
-  .col-right {
-    justify-content: flex-end;
-
-    .right-con {
-      margin-right: 18px;
+  const onClickDrop = () => {
+    if (store.userCompanys.length == 0) {
+      current.value = 0
+      store.getCompanyList(current.value, workspaceData.id, false)
     }
   }
-}
+  const switchCompany = (data: { id: string }) => {
+    $services.person
+      .switchCpmpany({
+        data: {
+          id: data.id
+        }
+      })
+      .then((res) => {
+        if (res.code == 200) {
+          sessionStorage.setItem('TOKEN', res.data.accessToken)
+          store.getQueryInfo(res.data.accessToken)
+          store.getWorkspaceData(res.data.workspaceId).then(() => {
+            location.reload()
+          })
+        } else {
+          ElMessage({
+            message: res.msg,
+            type: 'warning'
+          })
+        }
+      })
+  }
+  const Setting = () => {
+    router.push('/user')
+  }
+  const exitLogin = () => {
+    sessionStorage.clear()
+    store.resetState()
+    router.push('/login')
+  }
+</script>
+
+<style lang="scss" scoped>
+  .el-dropdown-link {
+    cursor: pointer;
+  }
+  .page-custom-header {
+    height: 60px;
+    line-height: 60px;
+
+    .el-col {
+      display: flex;
+      align-items: center;
+    }
+
+    .logo {
+      margin-right: 10px;
+    }
+
+    .col-right {
+      justify-content: flex-end;
+
+      .right-con {
+        margin-right: 18px;
+      }
+    }
+  }
 </style>

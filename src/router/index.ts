@@ -17,6 +17,11 @@ const constantRoutes: RouteRecordRaw[] = [
     path: '/404'
   },
   {
+    component: () => import('@/views/Test/index.vue'),
+    name: 'test',
+    path: '/test'
+  },
+  {
     path: '/user',
     component: () => import('../views/Layout/msgLayout/layout.vue'),
     redirect:"/userMsg",
@@ -94,9 +99,9 @@ const mainRouter: RouteRecordRaw[] = [
     }
   },
   {
-    component: () => import('@/views/Group/index.vue'),
-    name: 'group',
-    path: '/group',
+    component: () => import('@/views/Cohort/index.vue'),
+    name: 'cohort',
+    path: '/cohort',
     meta: {
       keepAlive: false,
       title: '群'
@@ -140,34 +145,6 @@ const mainRouter: RouteRecordRaw[] = [
     name: 'appStore',
     path: '/appStore'
   },
-  {
-    name: 'work2',
-    path: '/work2',
-    meta: {
-      keepAlive: false,
-      title: '工作区2'
-    },
-    children: [
-      {
-        component: () => import('@/components/usePinia.vue'),
-        name: 'test1',
-        path: '/test1',
-        meta: {
-          keepAlive: false,
-          title: '测试1'
-        }
-      },
-      {
-        component: () => import('@/views/Work/index.vue'),
-        name: 'test2',
-        path: '/test2',
-        meta: {
-          keepAlive: false,
-          title: '测试2'
-        }
-      }
-    ]
-  }
   //个人中心信息设置路由
 ]
 

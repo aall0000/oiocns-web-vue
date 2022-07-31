@@ -9,13 +9,16 @@ export default {
     register: person + '/register', // 注册
     queryInfo: person + '/query/info', // 获取用户详细信息
     switchCpmpany: person + '/change/workspace', //切换工作空间
-    workspace: person + '/change/workspace'
+    workspace: person + '/change/workspace',
+    friends: person + '/get/friends'
   },
   cohort: {
-    join: cohort + '/join' // 加群
+    join: cohort + '/join', // 加群
+    getMyQun: cohort + '/get/joined/cohorts', // 查询加入的群
+    getQunPerson: cohort + '/get/persons' // 查询群成员
   },
   company: {
     getJoined: company + '/get/joined/companys'
-  },
+  }
   //others
 }
