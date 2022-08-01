@@ -113,6 +113,7 @@ const switchCompany = (data: { id: string }) => {
     .then((res: any) => {
       if (res.code == 200) {
         sessionStorage.setItem('TOKEN', res.data.accessToken)
+        sessionStorage.setItem('workspaceName', res.data.workspaceName)
         store.getQueryInfo(res.data.accessToken)
         store.getWorkspaceData(res.data.workspaceId).then(() => {
           location.reload()

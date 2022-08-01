@@ -105,6 +105,7 @@ export const useUserStore = defineStore({
           this.workspaceData = obj
           sessionStorage.setItem('WORKSPACE', JSON.stringify(obj))
           this.userCompanys.splice(index, 1)
+          debugger
         }
       })
     },
