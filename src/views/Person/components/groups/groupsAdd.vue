@@ -11,7 +11,7 @@
       </div>
     </div>
     <div class="createdBody">
-      <el-table :data="state.tableData" stripe style="width: 98%">
+      <el-table :data="states" stripe style="width: 98%">
         <el-table-column type="selection" width="55" />
         <el-table-column prop="id" label="序号" />
         <el-table-column prop="code" label="集团编码" />
@@ -63,10 +63,31 @@
 <script lang="ts" setup>
   import { Search } from '@element-plus/icons-vue'
   import $services from '@/services'
-  import { onMounted, reactive, ref } from 'vue'
-
+  import { onMounted, reactive } from 'vue'
+  import { ref, toRefs, toRef } from 'vue'
+  import { useUserStore } from '@/store/user'
+  const store = useUserStore()
+  const state = reactive({ tableData: [] })
+  const state1 = reactive({ tableData: [] })
+  const state2 = reactive({ tableData: [] })
   let dialogVisible = ref(false)
-  props: 'type'
+  const props = defineProps({
+    types: String
+  })
+
+  const msg = toRef(props, 'types')
+
+  console.log(props.types)
+  const states = ref([])
+
+  if (props.types === '已加入') {
+    states.value = state2.tableData
+  } else if (props.types === '创建的') {
+    states.value = state1.tableData
+  } else {
+    states.value = state.tableData
+  }
+
   const form = reactive({
     name: '',
     code: '',
@@ -120,8 +141,6 @@
     fetchRequest()
   })
 
-  const state = reactive({ tableData: [] })
-
   async function fetchRequest() {
     let token = sessionStorage.getItem('TOKEN')
     const { data, err } = await $services.company.companyGetGroups({
@@ -136,7 +155,14 @@
       state.tableData = result.map((item) => {
         return { ...item, remark: item.team.remark }
       })
-
+      console.log(state.tableData[0].belongId)
+      for (let i = 0; i < state.tableData.length; i++) {
+        if (state.tableData[i].id === store.workspaceData.id) {
+          state1.tableData.push(state.tableData[i])
+        } else {
+          state2.tableData.push(state.tableData[i])
+        }
+      }
       console.log('查询集团成功', data)
     }
 

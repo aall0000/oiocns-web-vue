@@ -11,17 +11,17 @@
       <el-tabs v-model="activeName" @tab-click="handleClick">
         <el-tab-pane label="全部" name="first">
           <div class="body">
-            <GroupsAll :type="全部" />
+            <GroupsAdd types="全部" />
           </div>
         </el-tab-pane>
         <el-tab-pane label="创建的" name="second">
           <div class="body">
-            <GroupsCreated :type="创建的" />
+            <GroupsAdd types="创建的" />
           </div>
         </el-tab-pane>
         <el-tab-pane label="已加入" name="third">
           <div class="body">
-            <GroupsAdd :type="已加入" />
+            <GroupsAdd types="已加入" />
           </div>
         </el-tab-pane>
       </el-tabs>
@@ -35,8 +35,6 @@
 <script lang="ts" setup>
   import { ref } from 'vue'
   import type { TabsPaneContext } from 'element-plus'
-  import GroupsCreated from '../components/groups/groupsCreated.vue'
-  import GroupsAll from '../components/groups/groupsAll.vue'
   import GroupsAdd from '../components/groups/groupsAdd.vue'
   const activeName = ref('first')
 

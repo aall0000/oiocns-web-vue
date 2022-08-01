@@ -42,15 +42,15 @@
   const handleClose = (key: string, keyPath: string[]) => {
     console.log(key, keyPath)
   }
-  let style = ref('display:none')
-  let style2 = ref('display:block')
+  let style = ref('')
+  let style2 = ref('')
   const workspace = () => {
     if (sessionStorage.getItem('workspaceName') === '个人空间') {
       style.value = 'display:none'
       style2.value = 'display:block'
     } else {
       style2.value = 'display:block'
-      style2.value = 'display:none'
+      style.value = 'display:none'
     }
   }
 </script>
