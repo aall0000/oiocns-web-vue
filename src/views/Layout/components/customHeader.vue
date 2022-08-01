@@ -24,7 +24,7 @@
               >{{ item.team ? item.team.name : item.name }}</el-dropdown-item
             >
           </el-dropdown-menu>
-          <div class="joinBtn">+ 创建企业/单位/组织</div>
+          <div class="joinBtn" @click="createCompany">+ 创建企业/单位/组织</div>
         </template>
       </el-dropdown>
     </el-col>
@@ -75,16 +75,25 @@
       </el-dropdown>
     </el-col>
   </el-row>
+  <template v-for="item in dialogShow" :key="item.key">
+    <CreateUnitDialog
+      v-if="item.key == 'unit' && item.value"
+      :dialogShow="item"
+      @closeDialog="closeDialog"
+      @switchCreateCompany="switchCreateCompany"
+    ></CreateUnitDialog>
+  </template>
 </template>
 
 <script lang="ts" setup>
-import { ref, watch, onMounted } from 'vue'
+import { ref, watch, onMounted, reactive } from 'vue'
 import { Search } from '@element-plus/icons-vue'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/store/user'
 import $services from '@/services'
 import { ElMessage } from 'element-plus'
+import CreateUnitDialog from './createUnitDialog.vue'
 
 const store = useUserStore()
 const SearchInfo = ref('')
@@ -93,15 +102,60 @@ let current = ref(0)
 const { queryInfo } = storeToRefs(store)
 const workspaceData = store.workspaceData
 
+const closeDialog = (key: string) => {
+  dialogShow.map((el) => {
+    if (el.key == key) {
+      el.value = false
+    }
+  })
+}
 const load = () => {
   current.value++
   store.getCompanyList(current.value, workspaceData.id, true)
+}
+const dialogShow = reactive([
+  {
+    key: 'unit',
+    value: false
+  }
+])
+const createCompany = () => {
+  dialogShow.map((el) => {
+    if (el.key == 'unit') {
+      el.value = true
+    }
+  })
 }
 const onClickDrop = () => {
   if (store.userCompanys.length == 0) {
     current.value = 0
     store.getCompanyList(current.value, workspaceData.id, false)
   }
+}
+
+const switchCreateCompany = (data: { id: string }) => {
+  $services.person
+    .changeWorkspace({
+      data: {
+        id: data.id
+      }
+    })
+    .then((res: any) => {
+      if (res.code == 200) {
+        sessionStorage.setItem('TOKEN', res.data.accessToken)
+        sessionStorage.setItem('workspaceName', res.data.workspaceName)
+        store.getQueryInfo(res.data.accessToken)
+        current.value = 0
+        store.createUnit(res.data).then(() => {
+          location.reload()
+        })
+      } else {
+        ElMessage({
+          message: res.msg,
+          type: 'warning'
+        })
+      }
+    })
 }
 const switchCompany = (data: { id: string }) => {
   $services.person

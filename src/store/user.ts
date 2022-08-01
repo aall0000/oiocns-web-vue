@@ -95,6 +95,32 @@ export const useUserStore = defineStore({
           }
         })
     },
+
+    async createUnit(data: any) {
+      // 创建单位时 默认选择创建单位
+      await $services.company
+        .getJoinedCompany({
+          data: {
+            offset: 0,
+            limit: 100
+          }
+        })
+        .then((res: any) => {
+          console.log(res)
+          if (res.code == 200) {
+            let arr = []
+            arr.push({ id: this.queryInfo.id, name: this.userInfo.workspaceName })
+            this.copyCompanys = JSON.parse(JSON.stringify(res.data.result))
+            this.getWorkspaceData(data.workspaceId)
+          } else {
+            ElMessage({
+              message: res.msg,
+              type: 'warning'
+            })
+          }
+        })
+    },
+
     async getWorkspaceData(id: string) {
       await this.copyCompanys.forEach((el: any, index: number) => {
         if (id == el.id) {
