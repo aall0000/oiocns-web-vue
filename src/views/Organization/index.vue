@@ -76,32 +76,15 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { ref } from 'vue';
+import $services from '@/services'
+import { ref ,reactive} from 'vue';
 import departmentTree from './components/departmentTree1.vue'
 import nextDepartmentVue from './components/nextDepartment.vue';
-var tableData = [
-  {
-    date: '2016-05-03',
-    name: 'Tom',
-    address: 'No. 189, Grove St, Los Angeles'
-  },
-  {
-    date: '2016-05-02',
-    name: 'Tom',
-    address: 'No. 189, Grove St, Los Angeles'
-  },
-  {
-    date: '2016-05-04',
-    name: 'Tom',
-    address: 'No. 189, Grove St, Los Angeles'
-  },
-  {
-    date: '2016-05-01',
-    name: 'Tom',
-    address: 'No. 189, Grove St, Los Angeles'
-  }
-]
-const activeIndex = ref('1')
+type listType = {
+  list?:Array<Object>
+}
+var tableData = reactive<listType>({})
+const activeIndex = ref<string>('1')
 const handleSelect = (key: string, keyPath: string[]) => {
   console.log(key, keyPath)
 }
