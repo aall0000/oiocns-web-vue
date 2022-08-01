@@ -203,7 +203,7 @@ function setRouterPath(routerArr: any, pathStr = '') {
 }
 
 // 处理导航展示所需信息
-function setPath(routerArr, pathStr = '') {
+function setPath(routerArr: any[], pathStr = '') {
   return routerArr.map((item) => {
     let obj: { index: string; name: string; children?: any[] } = {
       index: `${pathStr}${item.path}`,

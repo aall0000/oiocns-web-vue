@@ -68,7 +68,7 @@ export default {
     createIdentity: company + '/create/identity', //创建组织员工身份标签
     createJob: company + '/create/job', //创建岗位
     createSubgroup: company + '/create/subgroup', //创建子集团
-    companyDelete: company + '/company/delete', //删除单位
+    companyDelete: company + '/delete', //删除单位
     deleteDepartment: company + '/delete/department', //删除部门
     deleteGroup: company + '/delete/group', //删除集团
     deleteJob: company + '/delete/job', //删除岗位
@@ -78,7 +78,7 @@ export default {
     getDepartmentPersons: company + '/get/department/persons', //查询部门员工
     getDepartments: company + '/get/departments', //查询部门
     getGroupCompanies: company + '/get/group/companys', //查询集团单位
-    companyGetGroups: company + 'company/get/groups', //查询集团
+    companyGetGroups: company + '/get/groups', //查询集团
     getIdentityPersons: company + '/get/identity/persons', //查询身份的人
     getIdentities: company + '/get/identitys', //查询身份
     getJobPersons: company + '/get/job/persons', //查询岗位员工
