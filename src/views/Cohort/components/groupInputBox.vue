@@ -10,20 +10,18 @@
     </div>
     <el-input v-model="textarea" class="textarea" :input-style="inputStyle" resize='none' :rows="3" type="textarea" />
     <div class="send-box">
-      <el-button type="success">发送</el-button>
+      <el-button type="success" @click="submit">发送</el-button>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { ref } from 'vue'
-const textarea = ref('')
+const textarea = ref<string>('')
 
 const emit = defineEmits(['submitInfo'])
 
 const submit = () => {
-  console.log('submit');
-
   emit('submitInfo', textarea)
 }
 const inputStyle = {
