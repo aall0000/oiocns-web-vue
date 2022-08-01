@@ -73,7 +73,7 @@ export default defineConfig({
   },
   server: {
     // 是否主动唤醒浏览器
-    open: true,
+    // open: true,
     // 占用端口
     port: settings.port,
     // 是否使用https请求
