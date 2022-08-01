@@ -4,9 +4,8 @@
       <span class="org-type">群 / 消息 / 组织架构</span>
     </div>
     <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" @select="handleSelect">
-      <el-menu-item index="1">成员</el-menu-item>
-      <el-menu-item index="2">单位</el-menu-item>
-      <el-menu-item index="3">集团</el-menu-item>
+      <el-menu-item index="1">单位</el-menu-item>
+      <el-menu-item index="2">集团</el-menu-item>
     </el-menu>
     <!-- 下级部门信息 -->
     <div class="org-content">

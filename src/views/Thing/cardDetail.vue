@@ -9,7 +9,7 @@
     <el-menu
       :default-active="activeIndex"
       class="el-menu-demo"
-      style="height: 45px;padding-left:20px"
+      style="height: 45px; padding-left: 20px"
       mode="horizontal"
       @select="handleSelect"
     >
@@ -43,9 +43,9 @@
             ]"
             :filter-method="changeSelect"
           />
-          <el-table-column prop="target.typeName" label="内容"  />
+          <el-table-column prop="target.typeName" label="内容" />
           <!-- <el-table-column prop="date" label="链接" /> -->
-          <el-table-column prop="status" label="状态" >
+          <el-table-column prop="status" label="状态">
             <template #default="scope">
               <div v-if="scope.row.status === 200">已拒绝</div>
               <div v-else>待批</div>
@@ -71,15 +71,12 @@
 </template>
 <script lang="ts" setup>
   import $services from '@/services'
-  import { Search } from '@element-plus/icons-vue'
-  import router from '@/router/index'
   import { ref, onMounted } from 'vue'
   import zhCn from 'element-plus/lib/locale/lang/zh-cn'
-import { ElMessage } from 'element-plus'
+  import { ElMessage } from 'element-plus'
 
-  var tableData = ref([])
-  const activeIndex = ref('1')
-  const input = ref(1)
+  var tableData = ref<any>([])
+  const activeIndex = ref<string>('1')
   var getList = () => {
     $services.person
       .approval({
@@ -104,8 +101,8 @@ import { ElMessage } from 'element-plus'
       })
       .then((res) => {
         ElMessage({
-          message:"拒绝成功",
-          type:'success'
+          message: '拒绝成功',
+          type: 'success'
         })
       })
   }
@@ -117,9 +114,9 @@ import { ElMessage } from 'element-plus'
         }
       })
       .then((res) => {
-         ElMessage({
-          message:"添加成功",
-          type:'success'
+        ElMessage({
+          message: '添加成功',
+          type: 'success'
         })
       })
   }

@@ -1,7 +1,7 @@
 <template>
   <ul class='departmentTree-wrap'>
     <li class=" con tree-select">
-      <el-select v-model="selectValue" class="m-2" placeholder="Select">
+      <el-select v-model="selectValue"  class="m-2" placeholder="Select" style="margin-left:20px" >
       <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
     </el-select>
     </li>
@@ -51,7 +51,7 @@
 import { Search, Plus, User } from '@element-plus/icons-vue'
 import { ref } from 'vue';
 
-const selectValue= ref('Option1')
+const selectValue= ref<string>('')
 const treeDate = [
   {
     name: '名称1',
