@@ -10,7 +10,7 @@
     // 开启所有的严格检查配置
     "strict": true,
     // 不允许使用隐式的 any 类型
-    "noImplicitAny": false,
+    "noImplicitAny": true,
     // 不允许 this 有隐式的 any 类型，即 this 必须有明确的指向
     "noImplicitThis": false,
     // 不允许把 null、undefined 赋值给其他类型变量

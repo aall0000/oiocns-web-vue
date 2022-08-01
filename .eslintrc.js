@@ -26,7 +26,7 @@ module.exports = {
     'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off', // 禁用 console
     'space-before-function-paren': 'warn',
     'vue/html-closing-bracket-newline': 'off',
-    'vue/script-setup-uses-vars': 'off',
+    'vue/script-setup-uses-vars': 'warn',
     // 执行自闭合的风格
     'vue/html-self-closing': [
       'error',
@@ -46,7 +46,6 @@ module.exports = {
     quotes: ['error', 'single'], // 强制使用一致的反勾号、双引号或单引号
     'comma-dangle': ['error', 'always-multiline'], // 要求或禁止末尾逗号
     'object-curly-spacing': ['error', 'always'], // 强制在大括号中使用一致的空格
-    'max-len': ['error', 120], // 强制一行的最大长度
     'linebreak-style': 'off', // 强制使用一致的换行风格
     'eol-last': 'off', // 要求或禁止文件末尾存在空行
     'no-shadow': 'error', // 禁止变量声明与外层作用域的变量同名
