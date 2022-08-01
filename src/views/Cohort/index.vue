@@ -12,7 +12,7 @@
       <GroupHeaderVue :info="selectInfo" v-show="activeInfo?.id" @viewDetail="handleViewDetail"
         @addUserOrCohort="handleAddFun" class="chart-header" />
       <!-- 聊天区域 -->
-      <GroupContent class="chart-content" :list="showMsgList" />
+      <GroupContent class="chart-content" :myId="myId" :list="showMsgList" />
       <!-- 输入区域 -->
       <GroupInputBox class="chart-input" @submitInfo="submit" />
     </div>
@@ -24,7 +24,7 @@
 import { useUserStore } from '@/store/user'
 import * as signalR from '@microsoft/signalr'
 import API from '@/services'
-import { onMounted, reactive, ref, Ref, watch,computed } from 'vue'
+import { onMounted, reactive, ref, Ref, watch, computed } from 'vue'
 import GroupSideBarVue from './components/groupSideBar.vue'
 import GroupHeaderVue from './components/groupHeader.vue'
 import GroupInputBox from './components/groupInputBox.vue'
@@ -43,15 +43,19 @@ const msgMap = ref(new Map())
 // 是否展示红点
 const msgDotMap = ref(new Map())
 
-const showMsgList =computed(()=>{
-console.log('计算属性',msgMap.value.get(activeInfo.value.id)??[]);
+const showMsgList = computed(() => {
+  console.log('计算属性', msgMap.value.get(activeInfo.value.id) ?? []);
 
-return msgMap.value.get(activeInfo.value.id)??[]
+  return msgMap.value.get(activeInfo.value.id) ?? []
 })
+
+//获取 登录人id-用于区分信息源
+const myId = useUserStore().queryInfo.id
 
 
 // 记录所选聊天对象---群或者人
 const activeInfo = ref<any>({})
+// 所选聊天对象的基本信息
 let selectInfo = reactive<infoType>({ detail: {} as teamType, userList: [], total: 0 })
 // 消息服务
 const connection = new signalR.HubConnectionBuilder()
@@ -67,24 +71,16 @@ onMounted(() => {
     console.log('链接成功', res)
   })
 })
+// 接受信息--处理信息
 connection.on("RecvMsg", (res) => {
   const { data } = res
   const oldMsg = msgMap.value.get(data.fromId) ?? []
   msgMap.value.set(data.fromId, [...oldMsg, data])
   // 信息来源是正在聊天的人 -则不展示红点
-  if (activeInfo.value.id===data.fromId) {
-    return
-  }
-  // 信息来源不是正在聊天的人 -则展示红点
-  msgDotMap.value.set(data.fromId, true)
+  msgDotMap.value.set(data.fromId, activeInfo.value.id === data.fromId)
+
 });
 
-watch(
-  msgMap.value,
-  (val) => {
-    console.log('搜索', val);
-  }
-)
 //   function ConnectHub(success, url){
 //     var connection = new signalR.HubConnectionBuilder()
 //         .withUrl(url)
@@ -115,6 +111,8 @@ watch(
   () => activeInfo.value,
   (val) => {
     const { typeName, id, team = {} } = val
+
+    msgDotMap.value.set(id, false)
     if (typeName === '人员') {
       selectInfo.detail = val
       selectInfo.total = 0
@@ -195,7 +193,6 @@ const handleAddFun = () => {
     .chart-content {
       flex-grow: 1;
       overflow-y: auto;
-      background-color: #fff;
     }
 
     .chart-input {

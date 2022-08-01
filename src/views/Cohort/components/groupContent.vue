@@ -1,14 +1,32 @@
 <template>
-  <div class="group-content-wrap">
-    <h1 class="title">消息内容</h1>
-  </div>
+  <ul class="group-content-wrap">
+    <template v-for="item in list">
+      <li class="group-content-left con" v-if="item.id!==myId">
+        <img class="con-img" src="@/assets/img/avatar.jpg" alt="">
+        <span class="con-txt">{{item.msgBody}}</span>
+      </li>
+      <li class="group-content-right con" v-else>
+      <span class="con-txt">{{item.msgBody}}</span>
+      <img class="con-img" src="@/assets/img/avatar.jpg" alt="">
+    </li>
+    </template>
+    <!-- <li class="group-content-left con">
+      <img class="con-img" src="@/assets/img/avatar.jpg" alt="">
+      <span class="con-txt">三生三世</span>
+    </li>
+    <li class="group-content-right con">
+      <span class="con-txt">我我我我</span>
+      <img class="con-img" src="@/assets/img/avatar.jpg" alt="">
+    </li> -->
+  </ul>
 </template>
 
 <script lang="ts" setup>
-  type Props = {
-    list: any[]
-  }
-const { list } = defineProps<Props>()
+type Props = {
+  list: any[],
+  myId:string
+}
+const { list,myId } = defineProps<Props>()
 
 
 
@@ -59,7 +77,35 @@ const arr = [
 
 <style lang="scss" scoped>
 .group-content-wrap {
-  padding: 10px;
+  padding: 30px;
+  background-color: #F5F5F5;
+
+  .con {
+    height: 40px;
+    display: flex;
+    align-items: center;
+
+    &-img {
+      height: 30px;
+      width: 30px;
+    }
+
+    &-txt {
+      height: 30px;
+      padding: 5px;
+      margin: 0 10px;
+      color: #fff;
+      background-color: #409eff;
+      border-radius: 4px;
+    }
+  }
+
+  .group-content-left {}
+
+  .group-content-right {
+    justify-content: flex-end;
+  }
+
 
 }
 </style>
