@@ -9,7 +9,7 @@
     <el-menu
       :default-active="activeIndex"
       class="el-menu-demo"
-      style="height: 45px;padding-left:20px"
+      style="height: 45px; padding-left: 20px"
       mode="horizontal"
       @select="handleSelect"
     >
@@ -43,9 +43,9 @@
             ]"
             :filter-method="changeSelect"
           />
-          <el-table-column prop="target.typeName" label="内容"  />
+          <el-table-column prop="target.typeName" label="内容" />
           <!-- <el-table-column prop="date" label="链接" /> -->
-          <el-table-column prop="target.status" label="状态"  />
+          <el-table-column prop="target.status" label="状态" />
           <el-table-column prop="target.updateTime" sortable label="发送时间" width="180" />
           <el-table-column prop="date" label="操作" width="180">
             <template #default="scope">
@@ -62,121 +62,121 @@
   </div>
 </template>
 <script lang="ts" setup>
-  import $services from '@/services'
-  import { Search } from '@element-plus/icons-vue'
-  import router from '@/router/index'
-  import { ref, onMounted } from 'vue'
-  import zhCn from 'element-plus/lib/locale/lang/zh-cn'
+import $services from '@/services'
+import { Search } from '@element-plus/icons-vue'
+import router from '@/router/index'
+import { ref, onMounted } from 'vue'
+import zhCn from 'element-plus/lib/locale/lang/zh-cn'
 
-  var tableData = ref([])
-  const activeIndex = ref('1')
-  const input = ref(1)
-  var getList = () => {
-    $services.person
-      .approval({
-        data: {
-          offset: 0,
-          limit: 10
-        }
-      })
-      .then((res) => {
-        tableData.value = res.data.result
-      })
-  }
-  var select = () => {
-    console.log('select')
-  }
-  var joinRefse = (item: { id: '' }) => {
-    $services.person
-      .joinRefuse({
-        data: {
-          id: item.id
-        }
-      })
-      .then((res) => {
-        console.log(res)
-      })
-  }
-  var joinSuccess = (item: { id: '' }) => {
-    $services.person
-      .joinSuccess({
-        data: {
-          id: item.id
-        }
-      })
-      .then((res) => {
-        console.log(res)
-      })
-  }
-  var changeSelect = () => {
-    console.log()
-  }
-  const handleSelect = (key: string, keyPath: string[]) => {
-    console.log(key, keyPath)
-  }
-  onMounted(() => {
-    getList()
-  })
+var tableData = ref([])
+const activeIndex = ref('1')
+const input = ref(1)
+var getList = () => {
+  $services.person
+    .approval({
+      data: {
+        offset: 0,
+        limit: 10
+      }
+    })
+    .then((res: any) => {
+      tableData.value = res.data.result
+    })
+}
+var select = () => {
+  console.log('select')
+}
+var joinRefse = (item: { id: '' }) => {
+  $services.person
+    .joinRefuse({
+      data: {
+        id: item.id
+      }
+    })
+    .then((res: any) => {
+      console.log(res)
+    })
+}
+var joinSuccess = (item: { id: '' }) => {
+  $services.person
+    .joinSuccess({
+      data: {
+        id: item.id
+      }
+    })
+    .then((res: any) => {
+      console.log(res)
+    })
+}
+var changeSelect = () => {
+  console.log()
+}
+const handleSelect = (key: string, keyPath: string[]) => {
+  console.log(key, keyPath)
+}
+onMounted(() => {
+  getList()
+})
 
-  var filterHandler = () => {}
+var filterHandler = () => {}
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" scoped>
-  .thing {
-    width: 100%;
-    height: 100%;
-    overflow-y: auto;
-    overflow-y: auto;
-    position: absolute;
-    left: 0;
-    top: 0;
+.thing {
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  overflow-y: auto;
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+.thing-head {
+  padding: 30px;
+  background: #fff;
+  .thing-type {
+    font-size: 16px;
+    color: #8d8d8d;
+    margin-bottom: 15px;
   }
-  .thing-head {
-    padding: 30px;
+  .thing-mian {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+    display: flex;
+    justify-content: space-between;
+  }
+}
+.content {
+  background: #f0f2f5;
+  padding: 20px;
+  .search {
     background: #fff;
-    .thing-type {
-      font-size: 16px;
-      color: #8d8d8d;
-      margin-bottom: 15px;
-    }
-    .thing-mian {
-      font-size: 24px;
-      font-weight: bold;
-      color: #333;
-      display: flex;
-      justify-content: space-between;
-    }
-  }
-  .content {
-    background: #f0f2f5;
     padding: 20px;
-    .search {
-      background: #fff;
-      padding: 20px;
-      display: flex;
-      justify-content: space-between;
-      .input {
-        width: 200px;
-      }
-      .edit {
-        font-size: 14px;
-        font-weight: bold;
-      }
+    display: flex;
+    justify-content: space-between;
+    .input {
+      width: 200px;
     }
-    .tab-list {
-      span {
-        cursor: pointer;
-      }
-    }
-    .page {
-      background: #fff;
-      width: 100%;
-      height: 50px;
-      display: flex;
-      flex-direction: row-reverse;
-      align-items: center;
-      padding-right: 20px;
+    .edit {
+      font-size: 14px;
+      font-weight: bold;
     }
   }
+  .tab-list {
+    span {
+      cursor: pointer;
+    }
+  }
+  .page {
+    background: #fff;
+    width: 100%;
+    height: 50px;
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: center;
+    padding-right: 20px;
+  }
+}
 </style>

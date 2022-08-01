@@ -31,6 +31,8 @@
 <script setup lang="ts">
 import $services from '@/services'
 import { onMounted, reactive, ref } from 'vue'
+import { ElMessage } from 'element-plus'
+
 const current = ref(0)
 onMounted(() => {
   getData()

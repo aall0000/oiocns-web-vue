@@ -82,6 +82,7 @@ import { useRouter } from 'vue-router'
 import { useUserStore } from '@/store/user'
 import { log } from 'console'
 import $services from '@/services'
+import { ElMessage } from 'element-plus'
 
 const store = useUserStore()
 const SearchInfo = ref('')
@@ -101,7 +102,7 @@ const switchCompany = (data: { id: string }) => {
         id: data.id
       }
     })
-    .then((res) => {
+    .then((res: any) => {
       if (res.code == 200) {
         sessionStorage.setItem('TOKEN', res.data.accessToken)
         sessionStorage.setItem('workspaceName', res.data.workspaceName)

@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import $services from '@/services'
+import { ElMessage } from 'element-plus'
 
 export const useUserStore = defineStore({
   id: 'user', // id必填，且需要唯一
@@ -26,7 +27,7 @@ export const useUserStore = defineStore({
             password: data.password
           }
         })
-        .then(async (res) => {
+        .then(async (res: any) => {
           if (res.code == 200) {
             sessionStorage.setItem('ZCY_LOGIN_DATA', JSON.stringify(res.data))
             sessionStorage.setItem('TOKEN', res.data.accessToken)
@@ -46,7 +47,7 @@ export const useUserStore = defineStore({
         this.userToken = token
       }
       //获取用户详细信息
-      $services.person.queryInfo().then((res) => {
+      $services.person.queryInfo().then((res: any) => {
         console.log(res)
         if (res.code == 200) {
           this.queryInfo = res.data
@@ -70,7 +71,7 @@ export const useUserStore = defineStore({
             limit: 10
           }
         })
-        .then((res) => {
+        .then((res: any) => {
           console.log(res)
           if (res.code == 200) {
             let arr = []
