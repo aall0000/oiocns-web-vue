@@ -12,8 +12,11 @@
         </div>
       </li>
     </ul>
-    <span class="user-add" @click="handleMoreFun()">
-      <el-icon :size="20">
+    <span class="btn-box">
+      <el-icon class="add-btn btn" :size="20" @click="handleAddFun()">
+        <Plus />
+      </el-icon>
+      <el-icon class="detail-btn btn" :size="20" @click="handleMoreFun()">
         <More />
       </el-icon>
     </span>
@@ -26,12 +29,14 @@
       default: {}
     }
   })
-  console.log('是是是', info)
-
-  const emit = defineEmits(['viewDetail'])
+  const emit = defineEmits(['viewDetail', 'addUserOrCohort'])
 
   const handleMoreFun = () => {
     emit('viewDetail')
+  }
+
+  const handleAddFun = () => {
+    emit('addUserOrCohort')
   }
 </script>
 
@@ -42,6 +47,13 @@
     justify-content: space-between;
     align-items: center;
     padding: 0 20px;
+    .btn-box {
+      .btn {
+        margin-right: 10px;
+      }
+      // .add-btn {
+      // }
+    }
   }
 
   .user {
@@ -64,9 +76,6 @@
           margin-right: 10px;
         }
       }
-    }
-
-    &-add {
     }
   }
 </style>

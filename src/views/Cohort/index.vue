@@ -13,6 +13,7 @@
         :info="selectInfo"
         v-show="activeInfo?.id"
         @viewDetail="handleViewDetail"
+        @addUserOrCohort= "handleAddFun"
         class="chart-header"
       />
       <!-- 聊天区域 -->
@@ -26,7 +27,7 @@
 
 <script lang="ts" setup>
   import API from '@/services'
-  import { onMounted, reactive, ref, watch } from 'vue'
+  import { onMounted, reactive, ref,Ref, watch } from 'vue'
   import GroupSideBarVue from './components/groupSideBar.vue'
   import GroupHeaderVue from './components/groupHeader.vue'
   import GroupInputBox from './components/groupInputBox.vue'
@@ -60,7 +61,7 @@
   )
 
   // 展示详情页
-  const handleViewDetail = (data) => {
+  const handleViewDetail = () => {
     isShowDetail.value = !isShowDetail.value
   }
 
@@ -79,8 +80,15 @@
       selectInfo.userList = result
     }
   }
-  const submit = (value) => {
+  // 提交信息
+  const submit = (value:Ref<string>) => {
     console.log('发送消息', value.value)
+  }
+
+  //添加成员/群
+  const handleAddFun = () =>{
+    console.log('添加成员/群');
+
   }
 </script>
 
