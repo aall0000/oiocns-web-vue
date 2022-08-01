@@ -66,10 +66,14 @@ const connection = new signalR.HubConnectionBuilder()
 // 接受信息--处理信息
 connection.on("RecvMsg", (res) => {
   const { data } = res
-  const oldMsg = msgMap.value.get(data.fromId) ?? []
-  msgMap.value.set(data.fromId, [...oldMsg, data])
+  let fromId = data.fromId
+  if(data.toId != myId){
+    fromId = data.toId
+  }
+  const oldMsg = msgMap.value.get(fromId) ?? []
+  msgMap.value.set(fromId, [...oldMsg, data])
   // 信息来源是正在聊天的人 -则不展示红点
-  msgDotMap.value.set(data.fromId, activeInfo.value.id === data.fromId)
+  msgDotMap.value.set(fromId, activeInfo.value.id === fromId)
 });
 
 onMounted(() => {
@@ -121,14 +125,17 @@ const getQunPerson = async (id: string) => {
 }
 // 提交信息
 const submit = async (value: Ref<string>) => {
-  console.log('发送消息', value.value, activeInfo.value.id > 0)
-  if (activeInfo.value.id > 0) {
+  let toId = activeInfo.value.id
+  if (toId > 0) {
     let res = await connection.invoke('SendMsg', {
       toId: activeInfo.value.id,
       msgType: 'text',
       msgBody: value.value
     })
-    console.log('发送消息res', res)
+    if (res.success === true){
+      const oldMsg = msgMap.value.get(toId) ?? []
+      msgMap.value.set(toId, [...oldMsg, res.data])
+    }
   }
 }
 

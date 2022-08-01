@@ -23,6 +23,7 @@ const emit = defineEmits(['submitInfo'])
 
 const submit = () => {
   emit('submitInfo', textarea)
+  textarea.value = ""
 }
 const inputStyle = {
   outLine: 'none'

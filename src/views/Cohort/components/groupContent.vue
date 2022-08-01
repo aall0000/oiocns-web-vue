@@ -1,7 +1,7 @@
 <template>
   <ul class="group-content-wrap">
     <template v-for="item in list">
-      <li class="group-content-left con" v-if="item.id!==myId">
+      <li class="group-content-left con" v-if="item.fromId!==myId">
         <img class="con-img" src="@/assets/img/avatar.jpg" alt="">
         <span class="con-txt">{{item.msgBody}}</span>
       </li>
