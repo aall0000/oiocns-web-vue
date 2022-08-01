@@ -63,6 +63,15 @@ const connection = new signalR.HubConnectionBuilder()
   .withAutomaticReconnect()
   .build()
 
+// 接受信息--处理信息
+connection.on("RecvMsg", (res) => {
+  const { data } = res
+  const oldMsg = msgMap.value.get(data.fromId) ?? []
+  msgMap.value.set(data.fromId, [...oldMsg, data])
+  // 信息来源是正在聊天的人 -则不展示红点
+  msgDotMap.value.set(data.fromId, activeInfo.value.id === data.fromId)
+});
+
 onMounted(() => {
   isShowMenu.value = true
 
@@ -71,41 +80,7 @@ onMounted(() => {
     console.log('链接成功', res)
   })
 })
-// 接受信息--处理信息
-connection.on("RecvMsg", (res) => {
-  const { data } = res
-  const oldMsg = msgMap.value.get(data.fromId) ?? []
-  msgMap.value.set(data.fromId, [...oldMsg, data])
-  // 信息来源是正在聊天的人 -则不展示红点
-  msgDotMap.value.set(data.fromId, activeInfo.value.id === data.fromId)
 
-});
-
-//   function ConnectHub(success, url){
-//     var connection = new signalR.HubConnectionBuilder()
-//         .withUrl(url)
-//         .configureLogging(signalR.LogLevel.None)
-//         .build();
-//     connection.on("Update", update);
-//     var startHub = function() {
-//         connection.start()
-//             .then(function() {
-//                 success(connection);
-//             })
-//             .catch(function(err) {
-//                 setTimeout(function() {
-//                     startHub();
-//                 }, 5000);
-//             });
-//     };
-
-//     connection.onclose(function(err) {
-//         setTimeout(function() {
-//             startHub();
-//         }, 5000);
-//     });
-//     startHub();
-// }
 // 监听所选聊天对象
 watch(
   () => activeInfo.value,
@@ -131,14 +106,14 @@ const handleViewDetail = () => {
 
 // 获取群成员
 const getQunPerson = async (id: string) => {
-  const { data, msg } = await API.cohort.getPersons({
+  const { data, success } = await API.cohort.getPersons({
     data: {
       id,
       offset: 0,
       limit: 12
     }
   })
-  if (msg === '成功!') {
+  if (success === true) {
     const { total = 0, result = [] } = data
     selectInfo.total = total
     selectInfo.userList = result
