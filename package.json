@@ -12,6 +12,7 @@
     "deploy": "npm run build && npm run zip"
   },
   "dependencies": {
+    "@microsoft/signalr": "^6.0.7",
     "@yzfe/svgicon": "1.0.1",
     "@yzfe/vue3-svgicon": "1.0.1",
     "element-china-area-data": "^5.0.2",

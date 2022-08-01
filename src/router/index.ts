@@ -9,7 +9,10 @@ const constantRoutes: RouteRecordRaw[] = [
   {
     component: () => import('@/views/Login/index.vue'),
     name: 'login',
-    path: '/login'
+    path: '/login',
+    meta: {
+      title: '登录'
+    }
   },
   {
     component: () => import('@/views/Others/404.vue'),

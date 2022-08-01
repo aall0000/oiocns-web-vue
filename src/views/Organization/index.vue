@@ -68,7 +68,7 @@
           </el-table>
         </div>
         <div class="page-pagination">
-          <el-pagination small background layout="prev, pager, next" :total="50" class="mt-4" />
+          <!-- <el-pagination small background layout="prev, pager, next" :total="50" class="mt-4" /> -->
         </div>
       </div>
 

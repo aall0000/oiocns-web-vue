@@ -4,24 +4,28 @@
     <li :class="{ 'group-con': true, active: active == '2' }" @click="changeInfo('2')">群2</li>
     <li :class="{ 'group-con': true, active: active == '3' }" @click="changeInfo('3')">个人3</li> -->
 
-    <li
-      :class="['group-con', active.id == item.id ? 'active' : '']"
-      v-for="item in showList"
-      :key="item.id"
-      @click="changeInfo(item)"
-      >{{ item.name }}</li
-    >
+    <li :class="['group-con', active.id == item.id ? 'active' : '']" v-for="item in showList" :key="item.id"
+      @click="changeInfo(item)">
+      <span class="group-con-dot" v-show="redDotInfo.get(item.id)"></span>
+      <img class="group-con-img" src="@/assets/img/group-user.png" alt="" srcset="">
+      <span class="group-con-name">
+        {{ item.name }}
+      </span>
+    </li>
   </ul>
 </template>
 
 <script lang="ts" setup name="groupSideBar">
 import API from '@/services'
-import { onMounted, reactive, ref, computed } from 'vue'
+import { onMounted, reactive, computed } from 'vue'
+type propType = {
+  active: userType,
+  redDotInfo: any
+}
 
 const state = reactive({ qunList: [], friendList: [] })
-defineProps({
-  active: Object
-})
+
+const { active, redDotInfo } = defineProps<propType>()
 onMounted(() => {
   getFriendList()
   getQunList()
@@ -67,12 +71,37 @@ defineExpose({})
   border-right: 1px solid #ccc;
 
   .group-con {
-    padding: 10px 12px;
+    position: relative;
+    padding: 10px 15px;
+    display: flex;
+    align-items: center;
 
     &.active,
     &:hover {
       color: #0f39d1;
       background-color: #e7ecfb;
+    }
+
+    // 头像
+    &-img {
+      width: 20px;
+      height: 20px;
+      margin-right: 10px;
+    }
+
+    &-name {
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    &-dot {
+      position: absolute;
+      left: 30px;
+      top: 10px;
+      width: 8px;
+      height: 8px;
+      background-color: red;
+      border-radius: 50%;
     }
   }
 }
