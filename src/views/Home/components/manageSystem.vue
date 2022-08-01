@@ -2,7 +2,12 @@
   <div class="manageSystem">
     <div class="manageSystem-title">轻松上⼿后台管理</div>
     <div class="content">
-      <div class="contentBox" v-for="(item, index) in dataList" :key="index">
+      <div
+        class="contentBox"
+        v-for="(item, index) in dataList"
+        :key="index"
+        @click="gotoRouter(item)"
+      >
         <img src="@/assets/img/work_big.png" alt="" />
         <div class="textBox">
           <div class="textBox-top">{{ item.name }}</div>
@@ -14,37 +19,34 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, reactive, toRefs } from 'vue'
-
-export default defineComponent({
-  setup() {
-    const data = reactive({
-      dataList: [
-        {
-          img: 'work_big',
-          name: '去办“事”',
-          introduce: '专属⼯作台。在这⾥查看待办，完成⼯作'
-        },
-        {
-          name: '管理“物”',
-          introduce: '探索应⽤，⾼效管理'
-        },
-        {
-          name: '查看“群”',
-          introduce: '查看群消息，完善群架构'
-        },
-        {
-          name: '完善“⼰”',
-          introduce: '完善信息设置，切换个⼈与⼯作空间'
-        }
-      ]
-    })
-    return {
-      ...toRefs(data)
-    }
+<script lang="ts" setup>
+import { reactive, toRefs } from 'vue'
+import { useRouter } from 'vue-router'
+const dataList = reactive([
+  {
+    img: 'work_big',
+    name: '去办“事”',
+    introduce: '专属⼯作台。在这⾥查看待办，完成⼯作',
+    src: '/thing'
+  },
+  {
+    name: '管理“物”',
+    introduce: '探索应⽤，⾼效管理'
+  },
+  {
+    name: '查看“群”',
+    introduce: '查看群消息，完善群架构',
+    src: '/cohort'
+  },
+  {
+    name: '完善“⼰”',
+    introduce: '完善信息设置，切换个⼈与⼯作空间'
   }
-})
+])
+const router = useRouter()
+const gotoRouter = (data: any) => {
+  router.push(data.src)
+}
 </script>
 
 <style lang="scss" scoped>

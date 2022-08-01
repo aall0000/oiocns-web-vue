@@ -46,7 +46,7 @@ let registerData = reactive<Object>({})
 const register = () => {
   carousel.value?.setActiveItem('second')
 }
-const gotoNext = (data) => {
+const gotoNext = (data: object) => {
   registerData = data
   carousel.value?.setActiveItem('third')
   console.log(registerData)
@@ -66,7 +66,7 @@ const userLogin = (data: { password: string; username: string; remind: boolean }
     router.push({ path: 'home' })
   })
 }
-const registerUser = (data) => {
+const registerUser = (data: any) => {
   registerData = { ...registerData, ...data }
   $services.person
     .register({
