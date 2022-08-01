@@ -27,7 +27,7 @@ const formLabelAlign = reactive({
 
 })
 </script>
-<style lang="less" scoped  >
+<style lang="scss" scoped  >
 .userAccountBind{
   height: calc(100vh - 70px);
 

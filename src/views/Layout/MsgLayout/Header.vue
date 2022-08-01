@@ -5,7 +5,7 @@
       <img class="logo" src="@/assets/img/avatar.jpg" alt="logo" />
       <el-dropdown trigger="click" placement="bottom-start">
         <span class="el-dropdown-link" @click="onClickDrop">
-          {{ store.workspaceData.name
+          {{ store.workspaceData?.name
           }}<el-icon>
             <CaretBottom />
           </el-icon>
@@ -96,7 +96,7 @@ const onClickDrop = () => {
 }
 const switchCompany = (data: { id: string }) => {
   $services.person
-    .switchCpmpany({
+    .changeWorkspace({
       data: {
         id: data.id
       }
@@ -147,7 +147,7 @@ const Setting = () => {
     }
   }
 }
-.border{
+.border {
   height: 6px;
 }
 </style>

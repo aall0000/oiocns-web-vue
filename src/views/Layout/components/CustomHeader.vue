@@ -21,7 +21,7 @@
               v-for="item in store.userCompanys"
               :key="item.id"
               @click="switchCompany(item)"
-              >{{ item.name }}</el-dropdown-item
+              >{{ item.team.name }}</el-dropdown-item
             >
           </el-dropdown-menu>
           <div class="joinBtn">+ 创建企业/单位/组织</div>
@@ -78,100 +78,100 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, watch, onMounted } from 'vue'
-import { Search } from '@element-plus/icons-vue'
-import { storeToRefs } from 'pinia'
-import { useRouter } from 'vue-router'
-import { useUserStore } from '@/store/user'
-import $services from '@/services'
+  import { ref, watch, onMounted } from 'vue'
+  import { Search } from '@element-plus/icons-vue'
+  import { storeToRefs } from 'pinia'
+  import { useRouter } from 'vue-router'
+  import { useUserStore } from '@/store/user'
+  import $services from '@/services'
 
-const store = useUserStore()
-const SearchInfo = ref('')
-const router = useRouter()
-let current = ref(0)
-const { queryInfo } = storeToRefs(store)
-const workspaceData = store.workspaceData
+  const store = useUserStore()
+  const SearchInfo = ref('')
+  const router = useRouter()
+  let current = ref(0)
+  const { queryInfo } = storeToRefs(store)
+  const workspaceData = store.workspaceData
 
-const load = () => {
-  current.value++
-  store.getCompanyList(current.value, workspaceData.id, true)
-}
-const onClickDrop = () => {
-  if (store.userCompanys.length == 0) {
-    current.value = 0
-    store.getCompanyList(current.value, workspaceData.id, false)
+  const load = () => {
+    current.value++
+    store.getCompanyList(current.value, workspaceData.id, true)
   }
-}
-const switchCompany = (data: { id: string }) => {
-  $services.person
-    .switchCpmpany({
-      data: {
-        id: data.id
-      }
-    })
-    .then((res) => {
-      if (res.code == 200) {
-        sessionStorage.setItem('TOKEN', res.data.accessToken)
-        store.getQueryInfo(res.data.accessToken)
-        store.getWorkspaceData(res.data.workspaceId).then(() => {
-          location.reload()
-        })
-      } else {
-        ElMessage({
-          message: res.msg,
-          type: 'warning'
-        })
-      }
-    })
-}
-const Setting = () => {
-  router.push('/user')
-}
-const exitLogin = () => {
-  sessionStorage.clear()
-  store.resetState()
-  router.push('/login')
-}
-</script>
-
-<style lang='scss' scoped>
-.joinBtn {
-  margin: 10px;
-  display: flex;
-  height: 32px;
-  background: #ffffff;
-  border-radius: 2px;
-  border: 1px solid #d9d9d9;
-  text-align: center;
-  align-items: center;
-  cursor: pointer;
-  font-size: 12px;
-  padding: 10px;
-
-  color: rgba(0, 0, 0, 0.65);
-}
-.el-dropdown-link {
-  cursor: pointer;
-}
-.page-custom-header {
-  height: 60px;
-  line-height: 60px;
-
-  .el-col {
-    display: flex;
-    align-items: center;
-  }
-
-  .logo {
-    margin-right: 10px;
-  }
-
-  .col-right {
-    justify-content: flex-end;
-
-    .right-con {
-      margin-right: 18px;
+  const onClickDrop = () => {
+    if (store.userCompanys.length == 0) {
+      current.value = 0
+      store.getCompanyList(current.value, workspaceData.id, false)
     }
   }
-}
+  const switchCompany = (data: { id: string }) => {
+    $services.person
+      .changeWorkspace({
+        data: {
+          id: data.id
+        }
+      })
+      .then((res) => {
+        if (res.code == 200) {
+          sessionStorage.setItem('TOKEN', res.data.accessToken)
+          store.getQueryInfo(res.data.accessToken)
+          store.getWorkspaceData(res.data.workspaceId).then(() => {
+            location.reload()
+          })
+        } else {
+          ElMessage({
+            message: res.msg,
+            type: 'warning'
+          })
+        }
+      })
+  }
+  const Setting = () => {
+    router.push('/user')
+  }
+  const exitLogin = () => {
+    sessionStorage.clear()
+    store.resetState()
+    router.push('/login')
+  }
+</script>
+
+<style lang="scss" scoped>
+  .joinBtn {
+    margin: 10px;
+    display: flex;
+    height: 32px;
+    background: #ffffff;
+    border-radius: 2px;
+    border: 1px solid #d9d9d9;
+    text-align: center;
+    align-items: center;
+    cursor: pointer;
+    font-size: 12px;
+    padding: 10px;
+
+    color: rgba(0, 0, 0, 0.65);
+  }
+  .el-dropdown-link {
+    cursor: pointer;
+  }
+  .page-custom-header {
+    height: 60px;
+    line-height: 60px;
+
+    .el-col {
+      display: flex;
+      align-items: center;
+    }
+
+    .logo {
+      margin-right: 10px;
+    }
+
+    .col-right {
+      justify-content: flex-end;
+
+      .right-con {
+        margin-right: 18px;
+      }
+    }
+  }
 </style>

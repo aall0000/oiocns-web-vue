@@ -11,20 +11,20 @@
         />
       </div>
       <div class="topRight">
-          <el-button type="primary"> 创建集团</el-button>
+          <el-button type="primary" @click="create"> 创建集团</el-button>
           <el-button >批量导入/导出</el-button>
           <el-button >查看申请记录</el-button>
       </div>
     </div>
     <div class="createdBody">
-      <el-table :data="tableData" stripe style="width: 98%">
+      <el-table :data="state.tableData" stripe style="width: 98%">
         <el-table-column type="selection" width="55" />
-        <el-table-column prop="name" label="序号"  />
-        <el-table-column prop="num" label="集团编码"  />
-        <el-table-column prop="isMain" label="集团名称" />
-        <el-table-column prop="admin" label="集团描述" />
-        <el-table-column prop="time" label="管理单位" />
-        <el-table-column prop="state" label="加入时间" />
+        <el-table-column prop="num" label="序号"  />
+        <el-table-column prop="code" label="集团编码"  />
+        <el-table-column prop="name" label="集团名称" />
+        <el-table-column prop="remark" label="集团描述" />
+        <el-table-column prop="admin" label="管理单位" />
+        <el-table-column prop="time" label="加入时间" />
         <el-table-column prop="option" label="操作" >
           <template #default="scope">
 
@@ -37,6 +37,33 @@
           </template>
         </el-table-column>
       </el-table>
+      <el-dialog v-model="dialogVisible" title="提示" width="30%">
+        <el-form :model="form" label-width="120px">
+          <el-form-item label="集团名称">
+            <el-input v-model="form.name" style="width:80%"/>
+          </el-form-item>
+          <el-form-item label="集团编码">
+            <el-input v-model="form.code" style="width:80%"/>
+          </el-form-item>
+          <el-form-item label="集团简称">
+            <el-input v-model="form.teamName" style="width:80%"/>
+          </el-form-item>
+          <el-form-item label="集团代码">
+            <el-input v-model="form.teamCode" style="width:80%"/>
+          </el-form-item>
+          <el-form-item label="集团简介">
+            <el-input v-model="form.teamRemark" style="width:80%"/>
+          </el-form-item>
+
+
+        </el-form>
+        <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="dialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="save">确认</el-button>
+      </span>
+        </template>
+      </el-dialog>
     </div>
     <div class="createdBottom">
       <el-pagination
@@ -45,70 +72,91 @@
         layout="prev, pager, next"
         :total="1000"
       />
+
     </div>
   </div>
 </template>
 <script lang="ts" setup>
 import { Search } from '@element-plus/icons-vue'
-const tableData = [
-  {
-    name:'1',
-    num:'Y0001',
-    isMain:'资产云开放协同创新中心集团',
-    admin:'这是对集团的描述',
-    time:'管理单位名称',
-    state:"2022-7-26 :44:37",
+import $services from '@/services'
+import { onMounted, reactive, ref } from 'vue';
 
-  },
-  {
-    name:'2',
-    num:'Y0001',
-    isMain:'资产云开放协同创新中心集团',
-    admin:'这是对集团的描述',
-    time:'管理单位名称',
-    state:"2022-7-26 :44:37",
+let dialogVisible = ref(false)
+const form =reactive({
+  name:'',
+  code:'',
+  teamName:'',
+  teamCode:'',
+  teamRemark:''
+})
+const create = () =>{
+  dialogVisible.value = true
+  console.log(dialogVisible)
+}
+const save = () =>{
+  let token = sessionStorage.getItem("TOKEN")
+    $services.company.createGroup({
+      "data": {
+        'name': form.name,
+        'code':form.code,
+        'teamName':form.teamName,
+        'teamCode':form.teamCode,
+        'teamRemark':form.teamRemark,
+      },
+      "headers":{
+        "Authorization":token
+        }
+    }).then(res => {
+      console.log('成功创建集团', res);
+      dialogVisible.value = false
+    })
+}
 
-  },
-  {
-    name:'3',
-    num:'Y0001',
-    isMain:'资产云开放协同创新中心集团',
-    admin:'这是对集团的描述',
-    time:'管理单位名称',
-    state:"2022-7-26 :44:37",
+onMounted(()=>{
+  fetchRequest()
+})
 
-  },
-  {
-    name:'4',
-    num:'Y0001',
-    isMain:'资产云开放协同创新中心集团',
-    admin:'这是对集团的描述',
-    time:'管理单位名称',
-    state:"2022-7-26 :44:37",
+const state = reactive({tableData:[]})
 
-  },
-  {
-    name:'5',
-    num:'Y0001',
-    isMain:'资产云开放协同创新中心集团',
-    admin:'这是对集团的描述',
-    time:'管理单位名称',
-    state:"2022-7-26 :44:37",
 
-  },
-  {
-    name:'6',
-    num:'Y0001',
-    isMain:'资产云开放协同创新中心集团',
-    admin:'这是对集团的描述',
-    time:'管理单位名称',
-    state:"2022-7-26 :44:37",
+async function fetchRequest(){
+    let token = sessionStorage.getItem("TOKEN")
+  const {data,err} = await $services.company.companyGetGroups({
+      "data": {
+        "offset": 0,
+        "limit": 10
+      },"headers":{"Authorization":token}
+    })
+     console.log('state.tableData',data,err);
+    if (!err) {
+      const{result,total}=data
+    console.log('state.tableData',result);
 
-  },
+       state.tableData= result.map(item=>{
+        return {...item,remark:item.team.remark}
+      })
+      console.log(state.tableData);
+    }
 
-]
+    // .then(res => {
+    //   console.log('查询加入的集团', res);
+    //   // for(let i = 0; i < res.data.result.length; i++ ){
+    //   //   tableData[i].num=res.data.result[i].id;
+    //   //   tableData[i].code=res.data.result[i].code;
+    //   //   tableData[i].name=res.data.result[i].name;
+    //   //   tableData[i].remark=res.data.result[i].team.remark;
+    //   //   tableData[i].admin=res.data.result[i].belongId;
+    //   //   tableData[i].time=res.data.result[i].createTime;
+    //   // }
+    //   state.tableData= res.result.map(item=>{
+    //     return {...item,remark:item.team.remark}
+    //   })
+    //   console.log(state.tableData);
+
+    // })
+}
 </script>
-<style lang="less">
+<style lang="scss">
 .created{
   width: 100%;
   height: 100vh;

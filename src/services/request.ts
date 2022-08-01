@@ -27,6 +27,7 @@ const codeMessage = {
 }
 
 function responseLog(response) {
+  return;
   if (process.env.NODE_ENV === 'development') {
     const randomColor = `rgba(${Math.round(Math.random() * 255)},${Math.round(
       Math.random() * 255
@@ -59,13 +60,13 @@ function checkStatus(response) {
     }
     return {
       status,
-      msg: codeMessage[status] || statusText
+      err: codeMessage[status] || statusText
     }
   }
   // 异常状态下，把错误信息返回去
   return {
     status: -404,
-    msg: '网络异常'
+    err: '网络异常'
   }
 }
 
@@ -76,14 +77,10 @@ function checkStatus(response) {
 const axiosRequest = {
   success: (config) => {
     // 以下代码，鉴权token,可根据具体业务增删。
-    // demo示例:
     const store = useUserStore()
     if (store.userToken !== '') {
       config.headers['Authorization'] = store.userToken
     }
-    // if (config['url'].indexOf('operatorQry') !== -1) {
-    //   config.headers['accessToken'] = '6666666666666666'
-    // }
     return config
   },
   error: (error) => Promise.reject(error)

@@ -33,7 +33,6 @@ import Register from './components/register.vue'
 import UserInfo from './components/userInfo.vue'
 import $services from '@/services'
 import { reactive, ref } from 'vue'
-import { log } from 'console'
 import { useUserStore } from '@/store/user'
 import { useRouter } from 'vue-router'
 
