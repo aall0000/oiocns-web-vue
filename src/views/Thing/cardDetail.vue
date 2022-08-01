@@ -85,7 +85,7 @@
           limit: 10
         }
       })
-      .then((res) => {
+      .then((res?:any) => {
         tableData.value = res.data.result
       })
   }
