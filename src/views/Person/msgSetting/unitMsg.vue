@@ -65,7 +65,7 @@
         <div class="button">
           <el-button> + 新增更多描述</el-button>
           <el-button>导出单位信息</el-button>
-          <el-button type="primary" >更新信息</el-button>
+          <el-button type="primary">更新信息</el-button>
         </div>
       </div>
     </div>
@@ -76,126 +76,126 @@
 </template>
 
 <script lang="ts" setup>
-  import { ArrowLeft } from '@element-plus/icons-vue'
-  import { regionData, CodeToText } from 'element-china-area-data'
-  import { onMounted, reactive, ref } from 'vue'
-  import { onBeforeMount } from 'vue'
-  import $services from '@/services'
-  const labelPosition = ref<'top'>('top')
-  const options2 = [
-    {
-      value: '有限责任公司',
-      label: '有限责任公司'
-    },
-    {
-      value: '股份有限公司',
-      label: '股份有限公司'
-    }
-  ]
-  const formLabelAlign = reactive({
-    name: '',
-    type: '',
-    code: '',
-    companyCode: '',
-    divisionName: '杭州市',
-    divisionCode: '323300',
-    contactPerson: '',
-    legalRepresentative: '',
-    tel: '15315587896',
-    address: '杭州市'
-  })
-
-  onBeforeMount(() => {
-    fetchRequest()
-  })
-  function fetchRequest() {
-    let token = sessionStorage.getItem('WorkTOKEN')
-    $services.company
-      .queryInfo({
-        data: {},
-        headers: { Authorization: token }
-      })
-      .then((res) => {
-        console.log('查询该单位详细信息', res)
-        formLabelAlign.name = res.data.name
-        formLabelAlign.type = res.data.team.typeName
-        formLabelAlign.code = res.data.code
-        formLabelAlign.companyCode = res.data.id
-        // formLabelAlign.divisionName=res.data.team.name
-        // formLabelAlign.divisionCode=res.data.team.name
-        formLabelAlign.contactPerson = res.data.team.authId
-        formLabelAlign.legalRepresentative = res.data.belongId
-        // formLabelAlign.tel=res.data.team.name
-        // formLabelAlign.address=res.data.team.name
-      })
+import { ArrowLeft } from '@element-plus/icons-vue'
+import { regionData, CodeToText } from 'element-china-area-data'
+import { onMounted, reactive, ref } from 'vue'
+import { onBeforeMount } from 'vue'
+import $services from '@/services'
+const labelPosition = ref<'top'>('top')
+const options2 = [
+  {
+    value: '有限责任公司',
+    label: '有限责任公司'
+  },
+  {
+    value: '股份有限公司',
+    label: '股份有限公司'
   }
+]
+const formLabelAlign = reactive({
+  name: '',
+  type: '',
+  code: '',
+  companyCode: '',
+  divisionName: '杭州市',
+  divisionCode: '323300',
+  contactPerson: '',
+  legalRepresentative: '',
+  tel: '15315587896',
+  address: '杭州市'
+})
 
-  const options = regionData
-  const selectedOptions: Array<number> = []
-  const handleChange = () => {
-    var loc = ''
-    for (let i = 0; i < selectedOptions.length; i++) {
-      loc += CodeToText[selectedOptions[i]]
-    }
-    alert(loc)
+onBeforeMount(() => {
+  fetchRequest()
+})
+function fetchRequest() {
+  let token = sessionStorage.getItem('WorkTOKEN')
+  $services.company
+    .queryInfo({
+      data: {},
+      headers: { Authorization: token }
+    })
+    .then((res: any) => {
+      console.log('查询该单位详细信息', res)
+      formLabelAlign.name = res.data.name
+      formLabelAlign.type = res.data.team.typeName
+      formLabelAlign.code = res.data.code
+      formLabelAlign.companyCode = res.data.id
+      // formLabelAlign.divisionName=res.data.team.name
+      // formLabelAlign.divisionCode=res.data.team.name
+      formLabelAlign.contactPerson = res.data.team.authId
+      formLabelAlign.legalRepresentative = res.data.belongId
+      // formLabelAlign.tel=res.data.team.name
+      // formLabelAlign.address=res.data.team.name
+    })
+}
+
+const options = regionData
+const selectedOptions: Array<number> = []
+const handleChange = () => {
+  var loc = ''
+  for (let i = 0; i < selectedOptions.length; i++) {
+    loc += CodeToText[selectedOptions[i]]
   }
+  alert(loc)
+}
 </script>
 <style lang="scss" scoped>
-  .UnitMsg {
-    height: calc(100vh - 70px);
-    .pageHeader {
-      width: 100%;
-      height: 70px;
-      background-color: #fff;
-      .header {
-        margin-top: 20px;
-        margin-left: 30px;
-      }
-      .title {
-        padding-top: 10px;
-        margin-left: 30px;
-        font-size: 25px;
-        font-weight: 600;
-      }
+.UnitMsg {
+  height: calc(100vh - 70px);
+  .pageHeader {
+    width: 100%;
+    height: 70px;
+    background-color: #fff;
+    .header {
+      margin-top: 20px;
+      margin-left: 30px;
     }
-    .body {
-      height: 600px;
+    .title {
+      padding-top: 10px;
+      margin-left: 30px;
+      font-size: 25px;
+      font-weight: 600;
+    }
+  }
+  .body {
+    height: 600px;
+    width: 100%;
+    border-left: 10px solid #eff0f4;
+    border-top: 16px solid #eff0f4;
+    border-right: 16px solid #eff0f4;
+    display: flex;
+    .bodyLeft {
+      height: 100%;
       width: 100%;
-      border-left: 10px solid #eff0f4;
-      border-top: 16px solid #eff0f4;
-      border-right: 16px solid #eff0f4;
-      display: flex;
-      .bodyLeft {
-        height: 100%;
+
+      .form1 {
         width: 100%;
-
-        .form1 {
-          width: 100%;
-          margin-left: 80px;
-          margin-top: 20px;
-          font-weight: 600;
-          .el-input {
-            width: 400px;
-          }
-          .select {
-            width: 400px;
-          }
+        margin-left: 80px;
+        margin-top: 20px;
+        font-weight: 600;
+        .el-input {
+          width: 400px;
         }
-
-        .button {
-          margin-top: 150px;
-          margin-left: 80px;
+        .select {
+          width: 400px;
         }
       }
-    }
-    .bottom {
-      height: calc(100vh - 760px);
-      background-color: #eff0f4;
-      display: flex;
-      .content {
-        margin: auto;
-        color: #aaa;
+
+      .button {
+        margin-top: 150px;
+        margin-left: 80px;
       }
     }
   }
+  .bottom {
+    height: calc(100vh - 760px);
+    background-color: #eff0f4;
+    display: flex;
+    .content {
+      margin: auto;
+      color: #aaa;
+    }
+  }
+}
 </style>

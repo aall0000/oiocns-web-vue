@@ -35,6 +35,7 @@ import $services from '@/services'
 import { reactive, ref } from 'vue'
 import { useUserStore } from '@/store/user'
 import { useRouter } from 'vue-router'
+import { ElMessage } from 'element-plus'
 
 const carousel = ref<any>()
 const store = useUserStore()
@@ -71,7 +72,7 @@ const registerUser = (data) => {
     .register({
       data: registerData
     })
-    .then((res) => {
+    .then((res: any) => {
       console.log('测试接口', res)
       if (res.code == 200) {
         ElMessage({

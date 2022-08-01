@@ -16,7 +16,7 @@
             <el-button>完成代办</el-button>
           </div>
         </div>
-        <el-table :data="tableData" stripe style="width: 100%" row-key="id" @select="select">
+        <el-table :data="tableData" stripe style="width: 100%" row-key="id">
           <el-table-column prop="date" type="selection" width="180" />
           <el-table-column prop="date" label="Date" width="180" />
           <el-table-column

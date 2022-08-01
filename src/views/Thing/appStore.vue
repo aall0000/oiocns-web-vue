@@ -52,161 +52,161 @@
   </div>
 </template>
 <script lang="ts" setup>
-  import { ref } from 'vue'
-  const activeIndex = ref(1)
-  const input = ref(null)
-  var show = ref(false)
-  var input2 = ref()
-  const handleSelect = (key: string, keyPath: string[]) => {
-    console.log(key, keyPath)
-  }
-  var handleOpen = () => {
-    console.log(1)
-  }
-  var handleClose = () => {}
-  var showType = () => {
-    show.value = true
-  }
-  var mouseLeave = () => {
-    show.value = false
-  }
-  var filterHandler = () => {}
+import { ref } from 'vue'
+const activeIndex = ref('1')
+const input = ref(null)
+var show = ref(false)
+var input2 = ref()
+const handleSelect = (key: string, keyPath: string[]) => {
+  console.log(key, keyPath)
+}
+var handleOpen = () => {
+  console.log(1)
+}
+var handleClose = () => {}
+var showType = () => {
+  show.value = true
+}
+var mouseLeave = () => {
+  show.value = false
+}
+var filterHandler = () => {}
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" scoped>
-  .thing {
+.thing {
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.thing-head {
+  padding: 30px;
+  background: #fff;
+  .thing-type {
+    font-size: 16px;
+    color: #8d8d8d;
+    margin-bottom: 15px;
+  }
+
+  .thing-mian {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+    display: flex;
+    justify-content: space-between;
+
+    .input-class {
+      width: 200px;
+    }
+  }
+}
+
+.content {
+  background: #f0f2f5;
+  padding: 20px;
+  .app-content {
     width: 100%;
-    height: 100%;
-    overflow-y: auto;
-    position: absolute;
-    left: 0;
-    top: 0;
-  }
-
-  .thing-head {
-    padding: 30px;
-    background: #fff;
-    .thing-type {
-      font-size: 16px;
-      color: #8d8d8d;
-      margin-bottom: 15px;
+    .content-menu {
+      float: left;
+      width: 200px;
     }
 
-    .thing-mian {
-      font-size: 24px;
-      font-weight: bold;
-      color: #333;
-      display: flex;
-      justify-content: space-between;
+    .content-app {
+      width: calc(100% - 200px);
+      float: left;
+      .app-list {
+        background: #fff;
+        box-sizing: border-box;
+        padding: 20px;
 
-      .input-class {
-        width: 200px;
-      }
-    }
-  }
+        .app-item {
+          width: 350px;
+          height: 150px;
+          border-radius: 3px;
+          text-align: center;
+          line-height: 150px;
+          float: left;
+          margin-right: 15px;
+          border: 1px solid #eee;
 
-  .content {
-    background: #f0f2f5;
-    padding: 20px;
-    .app-content {
-      width: 100%;
-      .content-menu {
-        float: left;
-        width: 200px;
-      }
+          .app-box {
+            width: 100%;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
 
-      .content-app {
-        width: calc(100% - 200px);
-        float: left;
-        .app-list {
-          background: #fff;
-          box-sizing: border-box;
-          padding: 20px;
+            img {
+              width: 40px;
+              height: 40px;
+            }
 
-          .app-item {
-            width: 350px;
-            height: 150px;
-            border-radius: 3px;
+            .app-right {
+              width: 220px;
+              margin-left: 20px;
+
+              p {
+                line-height: 20px;
+                text-align: left;
+              }
+
+              > p:nth-child(1) {
+                margin-bottom: 10px;
+
+                font-size: 14px;
+                color: #333;
+              }
+
+              > p:nth-child(2) {
+                font-size: 12px;
+                color: #8d8d8d;
+              }
+            }
+          }
+
+          .app-get {
+            width: 100%;
+            border-top: 1px solid #e9e9e9;
+            height: 50px;
+            background: #f7f7f7;
+            color: #888888;
+            line-height: 50px;
             text-align: center;
-            line-height: 150px;
-            float: left;
-            margin-right: 15px;
-            border: 1px solid #eee;
-
-            .app-box {
-              width: 100%;
-              height: 100px;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-
-              img {
-                width: 40px;
-                height: 40px;
-              }
-
-              .app-right {
-                width: 220px;
-                margin-left: 20px;
-
-                p {
-                  line-height: 20px;
-                  text-align: left;
-                }
-
-                > p:nth-child(1) {
-                  margin-bottom: 10px;
-
-                  font-size: 14px;
-                  color: #333;
-                }
-
-                > p:nth-child(2) {
-                  font-size: 12px;
-                  color: #8d8d8d;
-                }
-              }
-            }
-
-            .app-get {
-              width: 100%;
-              border-top: 1px solid #e9e9e9;
-              height: 50px;
-              background: #f7f7f7;
-              color: #888888;
-              line-height: 50px;
-              text-align: center;
-              cursor: pointer;
-            }
-            .app-get:hover {
-              color: #153ec9;
-            }
+            cursor: pointer;
+          }
+          .app-get:hover {
+            color: #153ec9;
           }
         }
       }
     }
-
-    .clearfix:after {
-      content: '.';
-      display: block;
-      height: 0;
-      clear: both;
-      visibility: hidden;
-    }
-
-    .clearfix {
-      zoom: 1;
-    }
-
-    .page {
-      background: #fff;
-      width: 100%;
-      height: 50px;
-      display: flex;
-      flex-direction: row-reverse;
-      align-items: center;
-      padding-right: 20px;
-    }
   }
+
+  .clearfix:after {
+    content: '.';
+    display: block;
+    height: 0;
+    clear: both;
+    visibility: hidden;
+  }
+
+  .clearfix {
+    zoom: 1;
+  }
+
+  .page {
+    background: #fff;
+    width: 100%;
+    height: 50px;
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: center;
+    padding-right: 20px;
+  }
+}
 </style>

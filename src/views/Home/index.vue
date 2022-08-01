@@ -48,6 +48,7 @@ import AppMarket from './components/appMarket.vue'
 import AppCommon from './components/appCommon.vue'
 import ManageSystem from './components/manageSystem.vue'
 import $services from '@/services'
+import { ElMessage } from 'element-plus'
 
 interface ListItem {
   value: string
@@ -67,12 +68,12 @@ const remoteMethod = (query: string) => {
           limit: 10
         }
       })
-      .then((res) => {
+      .then((res: any) => {
         if (res.code == 200) {
           console.log(res)
           let states = res.data.result
-          let arr = []
-          states.forEach((el) => {
+          let arr: { value: any; label: any }[] = []
+          states.forEach((el: any) => {
             let obj = {
               value: el.id,
               label: el.name

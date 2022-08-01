@@ -217,8 +217,8 @@ function handleMainRouter(routerArr: RouteRecordRaw[], path?: string) {
   return resultRouter
 }
 
-function setRouterPath(routerArr, pathStr = '') {
-  return routerArr.map((item) => {
+function setRouterPath(routerArr: any, pathStr = '') {
+  return routerArr.map((item: any) => {
     let obj: { index: string; name: string; children?: any[] } = {
       index: `${pathStr}${item.path}`,
       name: item.meta?.title ?? item.path

@@ -1,6 +1,6 @@
 /* --------------------------------------------公共方法--------------------------------- */
 // 获取URL参数
-const getQueryString = (name) => {
+const getQueryString = (name: any) => {
   const reg = new RegExp('(^|&)' + name + '=([^&]*)(&|$)')
   const r = window.location.search.substr(1).match(reg)
   if (r !== null) return decodeURI(r[2])
@@ -84,7 +84,7 @@ const formatDate = (date?: any, fmt?: string) => {
 
   return fmt
 }
-function formatTimeByPattern(val) {
+function formatTimeByPattern(val: any) {
   // 2016-05-23 13:58:02.0
   if (val.length > 19) {
     val = val.substring(0, 19)
@@ -110,45 +110,54 @@ function formatTimeByPattern(val) {
   }
 }
 
-
 /**
-   * 将时间转化为几天前,几小时前，几分钟前
-   *
-   * @param {number} ms
-   * @returns {*}
-   * @example
-   *
-   * formatTimeAgo(1505232000000);
-   * // => 1天前
-   */
- function formatTimeAgo(ms) {
-  ms = parseInt(ms);
+ * 将时间转化为几天前,几小时前，几分钟前
+ *
+ * @param {number} ms
+ * @returns {*}
+ * @example
+ *
+ * formatTimeAgo(1505232000000);
+ * // => 1天前
+ */
+function formatTimeAgo(ms: any) {
+  ms = parseInt(ms)
 
-  var timeNow = Date.now();
-  var diff = (timeNow - ms) / 1000;
-  var date = new Date();
+  var timeNow = Date.now()
+  var diff = (timeNow - ms) / 1000
+  var date = new Date()
   // 向下取整更精确些
-  var days = Math.floor(diff / (24 * 60 * 60));
-  var hours = Math.floor(diff / (60 * 60));
-  var minutes = Math.floor(diff / 60);
-  var second = Math.floor(diff);
+  var days = Math.floor(diff / (24 * 60 * 60))
+  var hours = Math.floor(diff / (60 * 60))
+  var minutes = Math.floor(diff / 60)
+  var second = Math.floor(diff)
 
   if (days > 0 && days < 2) {
-    return days + '天前';
+    return days + '天前'
   } else if (days <= 0 && hours > 0) {
-    return hours + '小时前';
+    return hours + '小时前'
   } else if (hours <= 0 && minutes > 0) {
-    return minutes + '分钟前';
+    return minutes + '分钟前'
   } else if (minutes <= 0 && second >= 0) {
-    return '刚刚';
+    return '刚刚'
   } else {
-    date.setTime(ms);
+    date.setTime(ms)
 
-    return (date.getFullYear() + '-' + f(date.getMonth() + 1) + '-' + f(date.getDate()) + ' ' + f(date.getHours()) + ':' + f(date.getMinutes()));
+    return (
+      date.getFullYear() +
+      '-' +
+      f(date.getMonth() + 1) +
+      '-' +
+      f(date.getDate()) +
+      ' ' +
+      f(date.getHours()) +
+      ':' +
+      f(date.getMinutes())
+    )
   }
 
-  function f(n) {
-    return (n < 10) ? '0' + n : n;
+  function f(n: any) {
+    return n < 10 ? '0' + n : n
   }
 }
 
@@ -157,7 +166,7 @@ function formatTimeByPattern(val) {
  * @param {*} value 正则校验变量
  * @return {boolean} 正则校验结果 true: 是emoji表情 false: 不是emoji表情
  */
-function isEmoji(value) {
+function isEmoji(value: any) {
   var arr = ['\ud83c[\udf00-\udfff]', '\ud83d[\udc00-\ude4f]', '\ud83d[\ude80-\udeff]']
 
   return new RegExp(arr.join('|'), 'g').test(value)
@@ -168,7 +177,7 @@ function isEmoji(value) {
  * @param {string} value 正则校验的变量
  * @returns {boolean} 正则校验结果 true: 是特殊字符 false: 不是特殊字符
  */
-function isSpecialChar(value) {
+function isSpecialChar(value: any) {
   var regEn = /[`~!@#$%^&*()_+<>?:"{},.\/;'[\]\s]/im
   var regCn = /[·！#￥（——）：；“”‘、，|《。》？、【】[\]\s]/im
 
@@ -185,7 +194,7 @@ function isSpecialChar(value) {
  * filterEmptyPropObj({name: 'foo', sex: ''})
  * // => {name: 'foo'}
  */
-function filterEmptyPropObj(obj) {
+function filterEmptyPropObj(obj: any) {
   if (!(typeof obj == 'object')) {
     return
   }

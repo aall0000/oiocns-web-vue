@@ -70,125 +70,125 @@
   </div>
 </template>
 <script lang="ts" setup>
-  import $services from '@/services'
-  import { ref, onMounted } from 'vue'
-  import zhCn from 'element-plus/lib/locale/lang/zh-cn'
-  import { ElMessage } from 'element-plus'
+import $services from '@/services'
+import { ref, onMounted } from 'vue'
+import zhCn from 'element-plus/lib/locale/lang/zh-cn'
+import { ElMessage } from 'element-plus'
 
-  var tableData = ref<any>([])
-  const activeIndex = ref<string>('1')
-  var getList = () => {
-    $services.person
-      .approval({
-        data: {
-          offset: 0,
-          limit: 10
-        }
+var tableData = ref<any>([])
+const activeIndex = ref<string>('1')
+var getList = () => {
+  $services.person
+    .approval({
+      data: {
+        offset: 0,
+        limit: 10
+      }
+    })
+    .then((res) => {
+      tableData.value = res.data.result
+    })
+}
+var select = () => {
+  console.log('select')
+}
+var joinRefse = (item: { id: '' }) => {
+  $services.person
+    .joinRefuse({
+      data: {
+        id: item.id
+      }
+    })
+    .then((res) => {
+      ElMessage({
+        message: '拒绝成功',
+        type: 'success'
       })
-      .then((res) => {
-        tableData.value = res.data.result
+    })
+}
+var joinSuccess = (item: { id: '' }) => {
+  $services.person
+    .joinSuccess({
+      data: {
+        id: item.id
+      }
+    })
+    .then((res) => {
+      ElMessage({
+        message: '添加成功',
+        type: 'success'
       })
-  }
-  var select = () => {
-    console.log('select')
-  }
-  var joinRefse = (item: { id: '' }) => {
-    $services.person
-      .joinRefuse({
-        data: {
-          id: item.id
-        }
-      })
-      .then((res) => {
-        ElMessage({
-          message: '拒绝成功',
-          type: 'success'
-        })
-      })
-  }
-  var joinSuccess = (item: { id: '' }) => {
-    $services.person
-      .joinSuccess({
-        data: {
-          id: item.id
-        }
-      })
-      .then((res) => {
-        ElMessage({
-          message: '添加成功',
-          type: 'success'
-        })
-      })
-  }
-  var changeSelect = () => {
-    console.log()
-  }
-  const handleSelect = (key: string, keyPath: string[]) => {
-    console.log(key, keyPath)
-  }
-  onMounted(() => {
-    getList()
-  })
+    })
+}
+var changeSelect = () => {
+  console.log()
+}
+const handleSelect = (key: string, keyPath: string[]) => {
+  console.log(key, keyPath)
+}
+onMounted(() => {
+  getList()
+})
 
-  var filterHandler = () => {}
+var filterHandler = () => {}
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" scoped>
-  .thing {
-    width: 100%;
-    height: 100%;
-    overflow-y: auto;
-    overflow-y: auto;
-    position: absolute;
-    left: 0;
-    top: 0;
+.thing {
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  overflow-y: auto;
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+.thing-head {
+  padding: 30px;
+  background: #fff;
+  .thing-type {
+    font-size: 16px;
+    color: #8d8d8d;
+    margin-bottom: 15px;
   }
-  .thing-head {
-    padding: 30px;
+  .thing-mian {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+    display: flex;
+    justify-content: space-between;
+  }
+}
+.content {
+  background: #f0f2f5;
+  padding: 20px;
+  .search {
     background: #fff;
-    .thing-type {
-      font-size: 16px;
-      color: #8d8d8d;
-      margin-bottom: 15px;
-    }
-    .thing-mian {
-      font-size: 24px;
-      font-weight: bold;
-      color: #333;
-      display: flex;
-      justify-content: space-between;
-    }
-  }
-  .content {
-    background: #f0f2f5;
     padding: 20px;
-    .search {
-      background: #fff;
-      padding: 20px;
-      display: flex;
-      justify-content: space-between;
-      .input {
-        width: 200px;
-      }
-      .edit {
-        font-size: 14px;
-        font-weight: bold;
-      }
+    display: flex;
+    justify-content: space-between;
+    .input {
+      width: 200px;
     }
-    .tab-list {
-      span {
-        cursor: pointer;
-      }
-    }
-    .page {
-      background: #fff;
-      width: 100%;
-      height: 50px;
-      display: flex;
-      flex-direction: row-reverse;
-      align-items: center;
-      padding-right: 20px;
+    .edit {
+      font-size: 14px;
+      font-weight: bold;
     }
   }
+  .tab-list {
+    span {
+      cursor: pointer;
+    }
+  }
+  .page {
+    background: #fff;
+    width: 100%;
+    height: 50px;
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: center;
+    padding-right: 20px;
+  }
+}
 </style>
