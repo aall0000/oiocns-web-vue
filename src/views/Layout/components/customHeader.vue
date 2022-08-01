@@ -21,7 +21,7 @@
               v-for="item in store.userCompanys"
               :key="item.id"
               @click="switchCompany(item)"
-              >{{ item.team.name }}</el-dropdown-item
+              >{{ item.team ? item.team.name : item.name }}</el-dropdown-item
             >
           </el-dropdown-menu>
           <div class="joinBtn">+ 创建企业/单位/组织</div>

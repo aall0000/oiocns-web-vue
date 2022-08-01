@@ -100,12 +100,11 @@ export const useUserStore = defineStore({
         if (id == el.id) {
           let obj = {
             id: el.id,
-            name: el.name
+            name: el.team ? el.team.name : el.name
           }
           this.workspaceData = obj
           sessionStorage.setItem('WORKSPACE', JSON.stringify(obj))
           this.userCompanys.splice(index, 1)
-          debugger
         }
       })
     },
