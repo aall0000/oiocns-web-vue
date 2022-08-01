@@ -73,7 +73,7 @@ export default defineConfig({
   },
   server: {
     // 是否主动唤醒浏览器
-    // open: true,
+    open: true,
     // 占用端口
     port: settings.port,
     // 是否使用https请求
@@ -86,7 +86,14 @@ export default defineConfig({
           '/orginone': {
             target: 'http://qkbyte.orginone.cn:2001', // 后台接口
             changeOrigin: true, // 是否允许跨域
-            // secure: false,                    // 如果是https接口，需要配置这个参数
+            // secure: false,                    // 如果是https接口，需要配置这个参数---7003
+            // rewrite: (path: any) => path.replace(/^\/api/, '')
+          },
+          '/orginone/orgchat/msghub': {
+            target: 'http://qkbyte.orginone.cn:7003', // 后台接口
+            changeOrigin: true, // 是否允许跨域
+            ws:true,
+            // secure: false,                    // 如果是https接口，需要配置这个参数---
             // rewrite: (path: any) => path.replace(/^\/api/, '')
           }
         }

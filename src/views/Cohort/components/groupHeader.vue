@@ -60,8 +60,8 @@
     align-items: center;
 
     &-img {
-      width: 60px;
-      height: 60px;
+      width: 50px;
+      height: 50px;
       margin-right: 15px;
       border-radius: 50%;
     }

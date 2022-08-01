@@ -1,8 +1,9 @@
 import { createApp } from 'vue'
 import App from './App.vue'
-import { setupRouter } from '@/router'
+import router, { setupRouter } from '@/router'
 import './router/router.interceptor'
 import { setGlobalProperties } from '@/services'
+import setupGlobalComponent from '@/components/global'
 import setupSvgIcon from '@/icons'
 import { createPinia } from 'pinia'
 import '@/assets/style/app.scss'
@@ -17,10 +18,13 @@ const app = createApp(App)
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
   app.component(key, component)
 }
+setupGlobalComponent(app)
 setGlobalProperties(app)
 setupSvgIcon(app)
-setupRouter(app)
-
-app.use(InfiniteScroll)
 app.use(pinia)
+
+setupRouter(app)
+app.use(InfiniteScroll)
+await router.isReady()
+
 app.mount('#app')

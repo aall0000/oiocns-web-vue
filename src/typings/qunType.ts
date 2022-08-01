@@ -16,17 +16,8 @@ interface userType {
 }
 
 // 群数据类型
-interface teamType {
+interface teamType extends userType  {
   authId: string
-  code: string
-  createTime: string
-  createUser: string
-  id: string
-  name: string
   remark: string
-  status: number
   targetId: string
-  updateTime: string
-  updateUser: string
-  version: string
 }
