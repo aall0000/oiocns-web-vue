@@ -130,6 +130,7 @@ defineExpose({
       }
 
       &-txt {
+        max-width: 100%;
         min-height: 30px;
         padding: 5px;
         margin: 0 10px;
