@@ -11,11 +11,15 @@ export const useUserStore = defineStore({
       userCompanys: [], // 获取用户组织列表 分页
       copyCompanys: [],
       userToken: '' || sessionStorage.getItem('TOKEN'),
-      workspaceData: JSON.parse(sessionStorage.getItem('WORKSPACE')) // 当前选中的公司
+      workspaceData: JSON.parse(sessionStorage.getItem('WORKSPACE')), // 当前选中的公司
+      userNameMap: new Map()
     }
   },
   getters: {
     // token: (state) => 'Bearer ' + state.userToken
+    getUserName: (state) => {
+      return (userId: string): string => state.userNameMap.get(userId)
+    }
   },
   actions: {
     async updateUserInfo(data: { username: string; password: string }) {
@@ -141,6 +145,9 @@ export const useUserStore = defineStore({
       // this.copyCompanys = null
       this.userToken = ''
       // this.workspaceData = null
+    },
+    setUserNameMap(id: string, name: string) {
+      this.userNameMap.set(id, name)
     }
   }
 })
