@@ -219,7 +219,8 @@ const handleAddFun = () => {
     overflow: hidden;
 
     .chart-header {
-      height: 80px;
+      height: 70px;
+      min-height: 70px;
       box-shadow: 0 1px 2px 1px #e5e5e5;
       z-index: 2;
     }

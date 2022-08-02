@@ -27,6 +27,7 @@
 </template>
 
 <script lang="ts" setup >
+// @ts-nocheck
 // import 'element-plus/theme-chalk/el-loading.css'
 import Login from './components/login.vue'
 import Register from './components/register.vue'

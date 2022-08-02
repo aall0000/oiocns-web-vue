@@ -76,6 +76,7 @@
 </template>
 
 <script lang="ts" setup>
+// @ts-nocheck
 import { ArrowLeft } from '@element-plus/icons-vue'
 import { regionData, CodeToText } from 'element-china-area-data'
 import { onMounted, reactive, ref } from 'vue'
