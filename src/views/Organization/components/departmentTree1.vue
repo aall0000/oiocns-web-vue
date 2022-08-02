@@ -1,7 +1,7 @@
 <template>
   <ul class="departmentTree-wrap">
     <li class="con tree-select">
-      <el-select
+      <!-- <el-select
         v-model="selectValue"
         @change="changeIndexFun"
         class="m-2"
@@ -14,16 +14,16 @@
           :label="item.name"
           :value="{ id: item.id, item: item }"
         />
-      </el-select>
+      </el-select> -->
     </li>
     <li class="con tree-search">
-      <el-input class="search" placeholder="搜索姓名、手机、邮箱">
+      <!-- <el-input class="search" placeholder="搜索姓名、手机、邮箱">
         <template #suffix>
           <el-icon class="el-input__icon">
             <search />
           </el-icon>
         </template>
-      </el-input>
+      </el-input> -->
     </li>
     <li class="con tree-btns">
       <el-button :icon="Plus" @click="dialogVisible = true" size="small">新建部门</el-button>
@@ -33,8 +33,8 @@
       <li class="tree-dept-item" v-for="item in treeDate.list" :key="item.name">
         <div
           class="dept-label"
-          :class="treeIndex == item.id ? 'active' : ''"
-          @click="checkIndex(item.id)"
+          :class="treeItem.id == item.id ? 'active' : ''"
+          @click="checkIndex(item)"
         >
           <span class="dept-label-name"
             ><img class="dept-label-icon" src="@/assets/img/dept.png" alt="" srcset="" />
@@ -86,22 +86,19 @@
 <script lang="ts" setup>
   import $services from '@/services'
   import { Search, Plus, User } from '@element-plus/icons-vue'
-  import { ref, reactive } from 'vue'
+  import { ref, reactive ,onMounted} from 'vue'
   import { useUserStore } from '@/store/user'
   import { storeToRefs } from 'pinia'
+  import { String } from 'lodash'
   const store = useUserStore()
-  const { queryInfo } = storeToRefs(store)
+  const { workspaceData } = storeToRefs(store)
   let dialogVisible = ref<boolean>(false)
   defineProps<{
     selectList: any
   }>()
   type selectType = {
-    id: string
-    item: {
-      id: string
-      code: number
-      name: string
-    }
+    id: string,
+    name: string
   }
   type treeDateType = {
     list?: any
@@ -112,19 +109,23 @@
 
   const changeObj = ref<selectType>()
 
-  const emit = defineEmits(['changeIndex', 'treeIndex'])
-  let treeIndex = ref<string>('')
+  const emit = defineEmits(['changeIndex', 'treeItem'])
+  let treeItem = ref<any>({})
 
-  const changeIndexFun = (val: selectType) => {
+  
+  const changeIndexFun = (val: any) => {
     changeObj.value = val
     emit('changeIndex', val.id)
-    selectValue.value = val.item.name
-    treeIndex.value  = ''
+    selectValue.value = val.name
+    treeItem.value  = ''
     getDepartmentsList(val.id)
   }
-  const checkIndex = (id: string) => {
-    treeIndex.value = id
-    emit('treeIndex', id)
+  onMounted(() => {
+    changeIndexFun(workspaceData.value)
+  })
+  const checkIndex = (item: any) => {
+    treeItem.value = item
+    emit('treeItem', item)
   }
   let departmentName = ref<string>('')
   let departmentTeamName = ref<string>('')
@@ -135,18 +136,17 @@
     $services.company
       .createDepartment({
         data: {
-          id: changeObj.value.item.id,
-          code: changeObj.value.item.code,
+          id: workspaceData.value.id,
+          code: departmentTeamCode.value,
           name: departmentName.value,
           parentId: 0,
           teamName: departmentTeamName.value,
-          teamCode: departmentTeamCode.value,
           teamRemark: departmentTeamRemark.value
         }
       })
       .then((res: ResultType) => {
         dialogVisible.value = false
-        getDepartmentsList(changeObj.value.item.id)
+        getDepartmentsList(workspaceData.value.id)
       })
   }
   let departmentsList = reactive({})
