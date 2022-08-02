@@ -64,7 +64,7 @@ const constantRoutes: RouteRecordRaw[] = [
       {
         path: '/unitMsg',
         name: 'unitMsg',
-        component: () => import('@/views/Person/msgSetting/unitMsg.vue'),
+        component: () => import('@/views/Person/msgSetting/UnitMsg.vue'),
         meta: {
           title: '单位信息'
         }
