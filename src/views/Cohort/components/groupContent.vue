@@ -144,7 +144,7 @@ defineExpose({
   .group-content-left {
     .con-content {
       &-txt {
-        width: max-content;
+        width: 100%;
       }
     }
   }
@@ -160,7 +160,7 @@ defineExpose({
       align-items: flex-end;
 
       &-txt {
-        text-align: right;
+        text-align: left;
 
       }
     }
