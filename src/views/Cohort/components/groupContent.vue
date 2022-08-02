@@ -5,19 +5,18 @@
       <li class="group-content-left con" v-if="item.fromId !== myId">
         <img class="con-img" src="@/assets/img/avatar.jpg" alt="">
         <div class="con-content">
-          <span class="con-content-name">{{ item.id }}</span>
+          <span class="con-content-name">{{ getUserName(item.fromId) }}</span>
           <p class="con-content-txt">
             <span>{{ item.msgBody }}</span>
           </p>
         </div>
-
       </li>
       <li class="group-content-right con" v-else>
         <div class="con-content">
-          <span class="con-content-name">{{ item.id }}</span>
-          <p class="con-content-txt">
-            <span>{{ item.msgBody }}</span>
-          </p>
+          <span class="con-content-name">{{ getUserName(item.fromId) }}</span>
+          <span class="con-content-txt">
+            {{ item.msgBody }}
+          </span>
         </div>
         <img class="con-img" src="@/assets/img/avatar.jpg" alt="">
       </li>
@@ -34,14 +33,23 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref, nextTick, onUnmounted } from 'vue';
+import { onMounted, ref, nextTick, onUnmounted, computed } from 'vue';
 import { debounce } from '@/utils/tools'
+import { useUserStore } from "@/store/user"
 
 type Props = {
   list: any[],//消息列表
   myId: string,//使用者id
 }
 const { list, myId } = defineProps<Props>()
+const { getUserName, userNameMap } = useUserStore()
+// const shouList = computed(()=>{
+//   return list.map(item=>{
+//     return
+//   })
+// })
+
+console.log('userNameMap', userNameMap, getUserName('338793056054677504'));
 
 // dom节点
 const nodeRef = ref(null)
@@ -133,12 +141,30 @@ defineExpose({
 
   }
 
-  .group-content-left {}
+  .group-content-left {
+    .con-content {
+      &-txt {
+        width: max-content;
+      }
+    }
+  }
 
   .group-content-right {
     justify-content: flex-end;
-  }
 
+    .con-content {
+      max-width: 50%;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: flex-end;
+
+      &-txt {
+        text-align: right;
+
+      }
+    }
+  }
 
 }
 </style>

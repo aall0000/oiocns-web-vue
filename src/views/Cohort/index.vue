@@ -36,6 +36,7 @@ interface infoType {
   userList: userType[]
   total: number
 }
+const { setUserNameMap, userToken } = useUserStore()
 // 是否展示导航
 const isShowMenu = ref<boolean>(false)
 const isShowDetail = ref<boolean>(false)
@@ -87,7 +88,7 @@ connection.on("RecvMsg", (res) => {
 onMounted(() => {
   isShowMenu.value = true
   connection.start().then(async () => {
-    let res = await connection.invoke('TokenAuth', useUserStore().userToken)
+    let res = await connection.invoke('TokenAuth', userToken)
     console.log('链接成功', res)
   })
 })
@@ -135,6 +136,9 @@ const getQunPerson = async (id: string) => {
     const { total = 0, result = [] } = data
     selectInfo.total = total
     selectInfo.userList = result
+    result.forEach((item: userType) => {
+      setUserNameMap(item.id, item.name)
+    });
   }
 }
 // 提交信息
@@ -215,7 +219,7 @@ const handleAddFun = () => {
     overflow: hidden;
 
     .chart-header {
-      height: 70px;
+      height: 80px;
       box-shadow: 0 1px 2px 1px #e5e5e5;
       z-index: 2;
     }
