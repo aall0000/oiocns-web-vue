@@ -15,6 +15,8 @@
         @viewDetail="handleViewDetail"
         @addUserOrCohort="handleAddFun"
         class="chart-header"
+        @addFriends="addFriends"
+        @pullPerson="pullPerson"
       />
 
       <!-- 聊天区域 -->
@@ -23,6 +25,10 @@
       <GroupInputBox class="chart-input" @submitInfo="submit" />
     </div>
     <GroupDetail :id="activeInfo.id" :info="selectInfo" v-if="isShowDetail" />
+    <template v-for="item in dialogState.dialogShow" :key="item.key">
+      <AddFriendsDialog v-if="item.key == 'addFriends'" :dialogShow="item"></AddFriendsDialog>
+      <PullPersonDialog v-if="item.key == 'pullPerson'" :dialogShow="item"></PullPersonDialog>
+    </template>
   </div>
 </template>
 
@@ -36,6 +42,8 @@
   import GroupInputBox from './components/groupInputBox.vue'
   import GroupContent from './components/groupContent.vue'
   import GroupDetail from './components/groupDeatil.vue'
+  import AddFriendsDialog from './components/addFriendsDialog.vue'
+  import PullPersonDialog from './components/pullPersonDialog.vue'
   interface infoType {
     detail: teamType
     userList: userType[]
@@ -162,6 +170,24 @@
       }
     ]
   })
+
+  //添加好友
+  const addFriends = () => {
+    dialogState.dialogShow.map((el: { key: string; value: boolean }) => {
+      if (el.key == 'addFriends') {
+        el.value = true
+      }
+    })
+  }
+
+  //拉人进群组
+  const pullPerson = () => {
+    dialogState.dialogShow.map((el: { key: string; value: boolean }) => {
+      if (el.key == 'pullPerson') {
+        el.value = true
+      }
+    })
+  }
 </script>
 
 <style lang="scss">
