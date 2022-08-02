@@ -116,7 +116,7 @@ function fetchRequest() {
       data: {},
       headers: { Authorization: token }
     })
-    .then((res: any) => {
+    .then((res: ResultType) => {
       console.log('查询该单位详细信息', res)
       formLabelAlign.name = res.data.name
       formLabelAlign.type = res.data.team.typeName

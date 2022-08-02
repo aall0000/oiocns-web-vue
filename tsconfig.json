@@ -23,7 +23,7 @@
     "declaration": true, // 是否自动创建类型声明文件
     "declarationDir": "./lib", // 类型声明文件的输出目录
     "resolveJsonModule": true,
-    "isolatedModules": false,
+    "isolatedModules": true,
     "esModuleInterop": true,
     // 启用装饰器
     "experimentalDecorators": false,
@@ -62,7 +62,6 @@
   ],
   "exclude": [
     "node_modules",
-    "/node_modules",
     "dist",
     "typings",
     "build",

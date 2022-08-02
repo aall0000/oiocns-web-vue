@@ -35,9 +35,8 @@
 <script lang="ts" setup>
   import { ref } from 'vue'
   import type { TabsPaneContext } from 'element-plus'
-  import GroupsAdd from '../components/groups.vue'
-
-  const activeName = ref<string>('first')
+  import GroupsAdd from '../components/groups/groupsAdd.vue'
+  const activeName = ref('first')
 
   const handleClick = (tab: TabsPaneContext, event: Event) => {
     console.log(tab, event)

@@ -116,7 +116,7 @@ const mainRouter: RouteRecordRaw[] = [
     path: '/organization',
     meta: {
       keepAlive: false,
-      title: '成员单位'
+      title: '组织架构'
     }
   },
   {
@@ -125,7 +125,7 @@ const mainRouter: RouteRecordRaw[] = [
     path: '/organizationTable',
     meta: {
       keepAlive: false,
-      title: '组织架构'
+      title: '成员单位'
     }
   },
   {
@@ -172,7 +172,7 @@ const mainRouter: RouteRecordRaw[] = [
       keepAlive: false,
       title: '我的申请'
     }
-  },
+  }
   //个人中心信息设置路由
 ]
 

@@ -12,8 +12,8 @@
       <GroupHeaderVue :info="selectInfo" v-show="activeInfo?.id" @viewDetail="handleViewDetail"
         @addUserOrCohort="handleAddFun" class="chart-header" />
       <!-- 聊天区域 -->
-      <GroupContent class="chart-content" :myId="myId" ref="contentWrapRef" :list="showMsgList" :isShowMoreBtn="isShowMoreBtn"
-        @viewMoreMsg="handleViewMoreHistory" />
+      <GroupContent class="chart-content" :myId="myId" ref="contentWrapRef" :list="showMsgList"
+        :isShowMoreBtn="isShowMoreBtn" @viewMoreMsg="handleViewMoreHistory" />
       <!-- 输入区域 -->
       <GroupInputBox class="chart-input" @submitInfo="submit" />
     </div>
@@ -55,13 +55,12 @@ const contentWrapRef = ref(null)
 const isShowMoreBtn = ref<boolean>(false)
 
 //获取 登录人id-用于区分信息源
-const myId = useUserStore().queryInfo.id;
+const myId = useUserStore().queryInfo.id
 const current = ref<number>(0) //当前页码
 const limit = ref<number>(20) //数量限制 limit
 const pageOffset = computed(() => {
   return current.value * limit.value
 })
-
 
 // 记录所选聊天对象---群或者人
 const activeInfo = ref<any>({})
@@ -74,7 +73,7 @@ const connection = new signalR.HubConnectionBuilder()
   .build()
 
 // 接受信息--处理信息
-connection.on("RecvMsg", (res) => {
+connection.on('RecvMsg', (res) => {
   const { data } = res
   let fromId = data.fromId
   if (data.toId != myId) {
@@ -84,7 +83,7 @@ connection.on("RecvMsg", (res) => {
   msgMap.value.set(fromId, [...oldMsg, data])
   // 信息来源是正在聊天的人 -则不展示红点
   msgDotMap.value.set(fromId, activeInfo.value.id === fromId)
-});
+})
 
 onMounted(() => {
   isShowMenu.value = true
@@ -139,7 +138,7 @@ const getQunPerson = async (id: string) => {
     selectInfo.userList = result
     result.forEach((item: userType) => {
       setUserNameMap(item.id, item.name)
-    });
+    })
   }
 }
 // 提交信息
@@ -161,14 +160,13 @@ const submit = async (value: Ref<string>) => {
 
 // 获取历史消息
 const getHistoryMsg = async (id: string, type: string) => {
-
-  const url: string = type == '人员' ? "getFriendMsg" : type == '群组' ? 'getCohortMsg' : '';
+  const url: string = type == '人员' ? 'getFriendMsg' : type == '群组' ? 'getCohortMsg' : ''
   if (!url) {
-    return console.log('该聊天对象-非人员/群组');
+    return console.log('该聊天对象-非人员/群组')
   }
 
   const params = {
-    [type == '人员' ? "friendId" : 'cohortId']: id,
+    [type == '人员' ? 'friendId' : 'cohortId']: id,
     offset: pageOffset.value,
     limit: limit.value
   }
@@ -212,33 +210,31 @@ const handleAddFun = () => {
   justify-content: space-between;
   background-color: #fff;
 
-  .chart-page {
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    flex: 1;
-    overflow: hidden;
+  .chart-header {
+    height: 70px;
+    min-height: 70px;
+    box-shadow: 0 1px 2px 1px #e5e5e5;
+    z-index: 2;
+  }
 
-    .chart-header {
-      height: 70px;
-      min-height: 70px;
-      box-shadow: 0 1px 2px 1px #e5e5e5;
-      z-index: 2;
-    }
+  .chart-header {
+    height: 70px;
+    min-height: 70px;
+    box-shadow: 0 1px 2px 1px #e5e5e5;
+    z-index: 2;
+  }
 
-    .chart-content {
-      flex-grow: 1;
-      overflow-y: auto;
-    }
+  .chart-content {
+    flex-grow: 1;
+    overflow-y: auto;
+  }
 
-    .chart-input {
-      height: max-content;
-      min-height: 120px;
+  .chart-input {
+    height: max-content;
+    min-height: 120px;
 
-      .el-textarea__inner {
-        color: #fff;
-      }
+    .el-textarea__inner {
+      color: #fff;
     }
   }
 }

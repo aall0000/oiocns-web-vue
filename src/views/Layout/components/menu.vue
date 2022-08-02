@@ -30,16 +30,10 @@
 </template>
 
 <script lang="ts" setup>
-import { menuList } from '@/router/index';
-
-import { MenuItemClicked } from 'element-plus';
-import { NavigationFailure } from 'vue-router'
-const handleMenySelect = (index: string, indexPath: string[], item: MenuItemClicked, router?: Promise<void | NavigationFailure>) => {
-  console.log('跳转参数', index, indexPath, item, router);
+import { menuList } from '@/router/index'
+const handleMenySelect = (index: string, indexPath: string[], item: any, router: any) => {
+  // console.log('跳转参数', index, indexPath, item, router);
 }
-
-console.log('444',menuList);
-
 </script>
 
 <style lang='scss' scoped>

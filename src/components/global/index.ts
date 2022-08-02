@@ -1,4 +1,3 @@
-// @ts-nocheck
 // 这里放置需要全局注册的组件
 export default function setupGlobalComponent(app:any) {
   // 自动加载 global 目录下的 .vue 结尾的文件

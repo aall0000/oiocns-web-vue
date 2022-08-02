@@ -1,6 +1,6 @@
 /* --------------------------------------------公共方法--------------------------------- */
 // 获取URL参数
-const getQueryString = (name: string) => {
+const getQueryString = (name: any) => {
   const reg = new RegExp('(^|&)' + name + '=([^&]*)(&|$)')
   const r = window.location.search.substr(1).match(reg)
   if (r !== null) return decodeURI(r[2])
@@ -41,7 +41,7 @@ const formatDate = (date?: any, fmt?: string) => {
   } else if (typeof date === 'number') {
     date = new Date(date)
   }
-  let o:any = {
+  var o = {
     'M+': date.getMonth() + 1, // 月份
     'd+': date.getDate(), // 日
     'h+': date.getHours() % 12 === 0 ? 12 : date.getHours() % 12, // 小时
@@ -51,7 +51,7 @@ const formatDate = (date?: any, fmt?: string) => {
     'q+': Math.floor((date.getMonth() + 3) / 3), // 季度
     S: date.getMilliseconds() // 毫秒
   }
-  let week:any = {
+  var week = {
     '0': '\u65e5',
     '1': '\u4e00',
     '2': '\u4e8c',
@@ -73,7 +73,7 @@ const formatDate = (date?: any, fmt?: string) => {
     )
   }
 
-  for (let k in o) {
+  for (var k in o) {
     if (new RegExp('(' + k + ')').test(fmt)) {
       fmt = fmt.replace(
         RegExp.$1,
@@ -90,11 +90,11 @@ function formatTimeByPattern(val: any) {
     val = val.substring(0, 19)
   }
 
-  let pattern = /-|\./g
-  let year
-  let month
-  let day
-  let reset
+  var pattern = /-|\./g
+  var year
+  var month
+  var day
+  var reset
 
   if (pattern.test(val)) {
     return val.replace(pattern, '/')
@@ -123,14 +123,14 @@ function formatTimeByPattern(val: any) {
 function formatTimeAgo(ms: any) {
   ms = parseInt(ms)
 
-  let timeNow = Date.now()
-  let diff = (timeNow - ms) / 1000
-  let date = new Date()
+  var timeNow = Date.now()
+  var diff = (timeNow - ms) / 1000
+  var date = new Date()
   // 向下取整更精确些
-  let days = Math.floor(diff / (24 * 60 * 60))
-  let hours = Math.floor(diff / (60 * 60))
-  let minutes = Math.floor(diff / 60)
-  let second = Math.floor(diff)
+  var days = Math.floor(diff / (24 * 60 * 60))
+  var hours = Math.floor(diff / (60 * 60))
+  var minutes = Math.floor(diff / 60)
+  var second = Math.floor(diff)
 
   if (days > 0 && days < 2) {
     return days + '天前'
@@ -167,7 +167,7 @@ function formatTimeAgo(ms: any) {
  * @return {boolean} 正则校验结果 true: 是emoji表情 false: 不是emoji表情
  */
 function isEmoji(value: any) {
-  let arr = ['\ud83c[\udf00-\udfff]', '\ud83d[\udc00-\ude4f]', '\ud83d[\ude80-\udeff]']
+  var arr = ['\ud83c[\udf00-\udfff]', '\ud83d[\udc00-\ude4f]', '\ud83d[\ude80-\udeff]']
 
   return new RegExp(arr.join('|'), 'g').test(value)
 }
@@ -178,8 +178,8 @@ function isEmoji(value: any) {
  * @returns {boolean} 正则校验结果 true: 是特殊字符 false: 不是特殊字符
  */
 function isSpecialChar(value: any) {
-  let regEn = /[`~!@#$%^&*()_+<>?:"{},.\/;'[\]\s]/im
-  let regCn = /[·！#￥（——）：；“”‘、，|《。》？、【】[\]\s]/im
+  var regEn = /[`~!@#$%^&*()_+<>?:"{},.\/;'[\]\s]/im
+  var regCn = /[·！#￥（——）：；“”‘、，|《。》？、【】[\]\s]/im
 
   return regEn.test(value) || regCn.test(value)
 }
@@ -199,7 +199,7 @@ function filterEmptyPropObj(obj: any) {
     return
   }
 
-  for (let key in obj) {
+  for (var key in obj) {
     if (obj.hasOwnProperty(key) && (obj[key] == null || obj[key] == undefined || obj[key] === '')) {
       delete obj[key]
     }

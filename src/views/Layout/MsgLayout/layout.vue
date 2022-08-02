@@ -5,7 +5,7 @@
     <!--    主体-->
     <div style="display: flex">
       <!--      侧边栏-->
-      <userAside />
+      <Aside />
       <!--      内容区域home-->
       <router-view style="flex: 1" />
     </div>
@@ -13,8 +13,8 @@
 </template>
 
 <script setup lang="ts">
-  import Header from '../components/customHeader.vue'
-  import userAside from './userAside.vue'
+  import Header from './header.vue'
+  import Aside from './aside.vue'
 </script>
 
 <style scoped></style>

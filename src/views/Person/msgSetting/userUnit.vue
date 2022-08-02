@@ -11,17 +11,17 @@
       <el-tabs v-model="activeName" @tab-click="handleClick">
         <el-tab-pane label="全部" name="first">
           <div class="body">
-            <UnitAll types="全部" />
+            <UnitAll />
           </div>
         </el-tab-pane>
         <el-tab-pane label="创建的" name="second">
           <div class="body">
-            <UnitAll types="创建的" />
+            <UnitCreated />
           </div>
         </el-tab-pane>
         <el-tab-pane label="已加入" name="third">
           <div class="body">
-            <UnitAll types="已加入" />
+            <UnitAdd />
           </div>
         </el-tab-pane>
       </el-tabs>
@@ -35,8 +35,9 @@
 <script lang="ts" setup>
   import { ref } from 'vue'
   import type { TabsPaneContext } from 'element-plus'
-  import UnitAll from '../components/unit.vue'
-
+  import UnitCreated from '../components/userUnit/unitCreated.vue'
+  import UnitAll from '../components/userUnit/unitAll.vue'
+  import UnitAdd from '../components/userUnit/unitAdd.vue'
   const activeName = ref('first')
 
   const handleClick = (tab: TabsPaneContext, event: Event) => {

@@ -1,5 +1,3 @@
-// @ts-nocheck
-
 import { isObject } from '@vueuse/shared'
 import { App } from 'vue'
 import request from './request'

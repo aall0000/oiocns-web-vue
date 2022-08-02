@@ -43,7 +43,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import Menu from '@/views/Layout/components/menu.vue'
 import Head from './components/head.vue'
 import Invitate from './components/invitate.vue'
@@ -76,7 +76,7 @@ const remoteMethod = (query: string) => {
           limit: 10
         }
       })
-      .then((res: any) => {
+      .then((res: ResultType) => {
         if (res.code == 200) {
           console.log(res)
           let states = res.data.result
@@ -109,7 +109,7 @@ const submitFriends = () => {
         id: value.value
       }
     })
-    .then((res: any) => {
+    .then((res: ResultType) => {
       if (res.code == 200) {
         ElMessage({
           message: '申请成功',

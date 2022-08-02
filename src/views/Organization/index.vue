@@ -5,18 +5,17 @@
 		</div>
 		<el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" @select="handleSelect">
 			<el-menu-item index="1">单位</el-menu-item>
-			<el-menu-item index="2">集团</el-menu-item>
+			<!-- <el-menu-item index="2">集团</el-menu-item> -->
 		</el-menu>
 		<!-- 下级部门信息 -->
 		<div class="org-content" >
-			<departmentTree :selectList="selectList" @changeIndex="changeIndex" @treeIndex="treeIndex"
-				class="department-tree" />
+			<departmentTree :selectList="selectList" @changeIndex="changeIndex" @treeItem="treeItem" class="department-tree" />
 			<div class="department-info" v-if="showInfo == true ">
 				<div class="deptment-info" >
 					<p class="deptment-info-name">
-						<span>部门1名称</span>
-						<span class="info-num">20人</span>
-						<el-button size="small">编辑</el-button>
+						<span>{{treeObj.name}}</span>
+						<!-- <span class="info-num">20人</span> -->
+						<el-button size="small" style="margin-left:15px">编辑</el-button>
 					</p>
 
 					<div class="deptment-info-btns">
@@ -27,7 +26,7 @@
 							</el-icon>下级部门
 						</div>
 						<div class="edit">
-							<el-button type="primary">创建子部门</el-button>
+							<el-button type="primary" @click="dialogVisible = true">创建子部门</el-button>
 							<el-button>调整排序</el-button>
 						</div>
 					</div>
@@ -70,6 +69,26 @@
 				<div class="page-pagination">
 					<el-pagination small background layout="prev, pager, next" :total="50" class="mt-4" />
 				</div>
+         <el-dialog v-model="dialogVisible" title="请输入部门名称" width="30%">
+          <el-form-item label="部门名称">
+            <el-input v-model="departmentName" placeholder="Please input" clearable />
+          </el-form-item>
+          <el-form-item label="团队名称">
+            <el-input v-model="departmentTeamName" placeholder="Please input" clearable />
+          </el-form-item>
+          <el-form-item label="团队code">
+            <el-input v-model="departmentTeamCode" placeholder="Please input" clearable />
+          </el-form-item>
+          <el-form-item label="团队Remark">
+            <el-input v-model="departmentTeamRemark" placeholder="Please input" clearable />
+          </el-form-item>
+          <template #footer>
+            <span class="dialog-footer">
+              <el-button @click="dialogVisible = false">取消</el-button>
+              <el-button type="primary" @click="submitFriends">确认</el-button>
+            </span>
+          </template>
+        </el-dialog>
 			</div>
 		</div>
 	</div>
@@ -101,10 +120,12 @@
 		name: string
 		id: string
 	}
+  let dialogVisible = ref<boolean>(false)
 	const activeIndex = ref < string > ('1')
 	const selectList = reactive < selectType[] > ([])
+  let selectId = ref<string>();
   let showInfo = ref<boolean>(false)
-
+  let treeObj = ref<any>({})
 	$services.company
 		.getJoinedCompany({
 			data: {
@@ -113,16 +134,18 @@
 				limit: 100
 			}
 		})
-		.then((res: any) => {
+		.then((res: ResultType) => {
 			selectList.push(...res.data.result)
 			console.log(selectList)
 		})
 	const changeIndex = (id: string) => {
+    selectId.value = id;
     showInfo.value = false;
 		selectChange(id)
 	}
-	const treeIndex = (id: string) => {
-		getDepPerson(id)
+	const treeItem = (item: any) => {
+    treeObj.value = item;
+		getDepPerson(item.id)
 	}
 	const getDepPerson = (id: string) => {
 		$services.company
@@ -133,16 +156,37 @@
 					limit: 100
 				}
 			})
-			.then((res: any) => {
+			.then((res: ResultType) => {
         showInfo.value = true;
 				console.log("resres", res)
 			})
 	}
+  let departmentName = ref<string>('')
+  let departmentTeamName = ref<string>('')
+  let departmentTeamCode = ref<string>('')
+  let departmentTeamRemark = ref<string>('')
+  const submitFriends = () => {
+    console.log('aaaaa');
+    $services.company
+      .createDepartment({
+        data: {
+          id: selectId.value,
+          name: departmentName.value,
+          parentId: treeObj.value.id,
+          teamName: departmentTeamName.value,
+          code: departmentTeamCode.value,
+          teamRemark: departmentTeamRemark.value
+        }
+      })
+      .then((res: any) => {
+        dialogVisible.value = false
+      })
+  }
 	const getQueryInfo = () => {
 		$services.company.queryInfo({
 				data: {}
 			})
-			.then((res: any) => {
+			.then((res: ResultType) => {
 				console.log('获取单位详情', res);
 			})
 	}
@@ -155,7 +199,7 @@
 					limit: 100
 				}
 			})
-			.then((res: any) => {
+			.then((res: ResultType) => {
 				console.log(res)
 			})
 	}
