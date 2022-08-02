@@ -113,14 +113,15 @@
   const changeObj = ref<selectType>()
 
   const emit = defineEmits(['changeIndex', 'treeIndex'])
+  let treeIndex = ref<string>('')
 
   const changeIndexFun = (val: selectType) => {
     changeObj.value = val
     emit('changeIndex', val.id)
     selectValue.value = val.item.name
+    treeIndex.value  = ''
     getDepartmentsList(val.id)
   }
-  let treeIndex = ref<string>('')
   const checkIndex = (id: string) => {
     treeIndex.value = id
     emit('treeIndex', id)
@@ -161,15 +162,19 @@
       .then((res: any) => {
         departmentsList = res.data
         let arr: any = []
-        res.data.result.forEach((element: any) => {
-          let obj = {
-            id: element.id,
-            code: element.code,
-            name: element.name,
-            children: {}
-          }
-          arr.push(obj)
-        })
+        if(res.data.result){
+          res.data.result.forEach((element: any) => {
+            let obj = {
+              id: element.id,
+              code: element.code,
+              name: element.name,
+              children: {}
+            }
+            arr.push(obj)
+          })
+        }else{
+          arr = []
+        }
         treeDate.list = arr
       })
   }

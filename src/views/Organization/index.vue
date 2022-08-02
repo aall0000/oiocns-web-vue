@@ -8,11 +8,11 @@
 			<el-menu-item index="2">集团</el-menu-item>
 		</el-menu>
 		<!-- 下级部门信息 -->
-		<div class="org-content">
+		<div class="org-content" >
 			<departmentTree :selectList="selectList" @changeIndex="changeIndex" @treeIndex="treeIndex"
 				class="department-tree" />
-			<div class="department-info">
-				<div class="deptment-info">
+			<div class="department-info" v-if="showInfo == true ">
+				<div class="deptment-info" >
 					<p class="deptment-info-name">
 						<span>部门1名称</span>
 						<span class="info-num">20人</span>
@@ -103,6 +103,8 @@
 	}
 	const activeIndex = ref < string > ('1')
 	const selectList = reactive < selectType[] > ([])
+  let showInfo = ref<boolean>(false)
+
 	$services.company
 		.getJoinedCompany({
 			data: {
@@ -116,6 +118,7 @@
 			console.log(selectList)
 		})
 	const changeIndex = (id: string) => {
+    showInfo.value = false;
 		selectChange(id)
 	}
 	const treeIndex = (id: string) => {
@@ -131,6 +134,7 @@
 				}
 			})
 			.then((res: any) => {
+        showInfo.value = true;
 				console.log("resres", res)
 			})
 	}
