@@ -123,6 +123,7 @@
         return { ...item, remark: item.team.remark }
       })
       console.log(state.tableData[0].belongId)
+      totals.value = total
       for (let i = 0; i < state.tableData.length; i++) {
         if (state.tableData[i].belongId === store.workspaceData.id) {
           state1.tableData.push(state.tableData[i])
