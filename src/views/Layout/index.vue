@@ -4,7 +4,6 @@
       <CustomHeadr />
     </el-header>
     <el-container>
-      <!-- <Menu /> -->
       <!-- 导航区域 传送门 -->
       <div id="menu-teleport-target" />
       <el-container>
@@ -24,7 +23,7 @@
 <script lang="ts" setup>
 import CustomHeadr from './components/customHeader.vue'
 import Breadcrumb from './components/breadcrumb.vue'
-// import Menu from './components/menu.vue'
+import Menu from './components/menu.vue'
 </script>
 
 <style lang='scss' scoped>

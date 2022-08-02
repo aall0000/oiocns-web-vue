@@ -22,17 +22,7 @@
             <el-popconfirm title="确认删除?" @confirm="handleDelete(scope.row.id)">
               <template #reference>
                 <el-button type="danger">删除</el-button>
-              </template>
-            </el-popconfirm>
-          </template>
-        </el-table-column>
-      </el-table>
-    </div>
     <div class="createdBottom">
-      <el-pagination
-        v-model:currentPage="currentPage4"
-        v-model:page-size="pageSize4"
-        @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
         :page-size="3"
         :pager-count="10"
@@ -43,88 +33,88 @@
   </div>
 </template>
 <script lang="ts" setup>
-  import { Search } from '@element-plus/icons-vue'
-  import { onMounted, reactive, ref } from 'vue'
-  import { onBeforeMount } from 'vue'
-  import $services from '@/services'
-  const currentPage4 = 1
-  const pageSize4 = 5
+import { Search } from '@element-plus/icons-vue'
+import { onMounted, reactive, ref } from 'vue'
+import { onBeforeMount } from 'vue'
+import $services from '@/services'
+const currentPage4 = 1
+const pageSize4 = 5
 
-  onBeforeMount(() => {
-    fetchRequest()
+onBeforeMount(() => {
+  fetchRequest()
+})
+onMounted(() => {})
+const state = reactive({ tableData: [] })
+
+async function fetchRequest() {
+  let token = sessionStorage.getItem('TOKEN')
+  const { data, err } = await $services.company.getJoinedCompany({
+    data: {
+      offset: 0,
+      limit: 10
+    },
+    headers: { Authorization: token }
   })
-  onMounted(() => {})
-  const state = reactive({ tableData: [] })
-
-  async function fetchRequest() {
-    let token = sessionStorage.getItem('TOKEN')
-    const { data, err } = await $services.company.getJoinedCompany({
-      data: {
-        offset: 0,
-        limit: 10
-      },
-      headers: { Authorization: token }
+  if (!err) {
+    const { result, total } = data
+    state.tableData = result.map((item) => {
+      return { ...item, remark: item.team.remark }
     })
-    if (!err) {
-      const { result, total } = data
-      state.tableData = result.map((item) => {
-        return { ...item, remark: item.team.remark }
-      })
-      console.log(state.tableData[0].belongId)
+    console.log(state.tableData[0].belongId)
 
-      console.log('查询单位成功', data)
-    }
+    console.log('查询单位成功', data)
   }
-  const handleDelete = (id) => {
-    let token = sessionStorage.getItem('TOKEN')
-    $services.company
-      .companyDelete({
-        data: {
-          id: id
-        },
-        headers: {
-          Authorization: token
-        }
-      })
-      .then((res) => {
-        console.log('删除单位成功', res)
-        fetchRequest()
-      })
-  }
+}
+const handleDelete = (id) => {
+  let token = sessionStorage.getItem('TOKEN')
+  $services.company
+    .companyDelete({
+      data: {
+        id: id
+      },
+      headers: {
+        Authorization: token
+      }
+    })
+    .then((res) => {
+      console.log('删除单位成功', res)
+      fetchRequest()
+    })
+}
 
-  function handleSizeChange(pageSize) {
-    //改变当前每页的个数
-    this.pageSize4 = pageSize
-    this.load()
-  }
-  function handleCurrentChange(pageNum) {
-    //改变当前页码
-    this.currentPage4 = pageNum
-    this.load()
-  }
+function handleSizeChange(pageSize) {
+  //改变当前每页的个数
+  this.pageSize4 = pageSize
+  this.load()
+}
+function handleCurrentChange(pageNum) {
+  //改变当前页码
+  this.currentPage4 = pageNum
+  this.load()
+}
 </script>
 <style lang="scss">
-  .created {
-    width: 100%;
-    height: 100vh;
+.created {
+  width: 100%;
+  height: 100vh;
 
-    .createdTop {
-      width: 95%;
-      margin: 30px;
-      display: flex;
-      justify-content: space-between;
-      .topLeft {
-        .search {
-        }
+  .createdTop {
+    width: 95%;
+    margin: 30px;
+    display: flex;
+    justify-content: space-between;
+    .topLeft {
+      .search {
       }
     }
-    .createdBody {
-      margin: 30px;
-    }
-    .createdBottom {
-      position: absolute;
-      right: 30px;
-      bottom: 30px;
-    }
   }
+  .createdBody {
+    margin: 30px;
+  }
+  .createdBottom {
+    position: absolute;
+    right: 30px;
+    bottom: 30px;
+  }
+}
 </style>
