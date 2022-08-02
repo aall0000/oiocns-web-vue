@@ -11,11 +11,15 @@ export const useUserStore = defineStore({
       userCompanys: [], // 获取用户组织列表 分页
       copyCompanys: [],
       userToken: '' || sessionStorage.getItem('TOKEN'),
-      workspaceData: JSON.parse(sessionStorage.getItem('WORKSPACE')) // 当前选中的公司
+      workspaceData: JSON.parse(sessionStorage.getItem('WORKSPACE')), // 当前选中的公司
+      userNameMap: new Map()
     }
   },
   getters: {
     // token: (state) => 'Bearer ' + state.userToken
+    getUserName: (state) => {
+      return (userId: string): string => state.userNameMap.get(userId)
+    }
   },
   actions: {
     async updateUserInfo(data: { username: string; password: string }) {
@@ -27,7 +31,7 @@ export const useUserStore = defineStore({
             password: data.password
           }
         })
-        .then(async (res: ResultType) => {
+        .then(async (res: any) => {
           if (res.code == 200) {
             sessionStorage.setItem('ZCY_LOGIN_DATA', JSON.stringify(res.data))
             sessionStorage.setItem('TOKEN', res.data.accessToken)
@@ -47,7 +51,7 @@ export const useUserStore = defineStore({
         this.userToken = token
       }
       //获取用户详细信息
-      $services.person.queryInfo().then((res: ResultType) => {
+      $services.person.queryInfo().then((res: any) => {
         console.log(res)
         if (res.code == 200) {
           this.queryInfo = res.data
@@ -71,7 +75,7 @@ export const useUserStore = defineStore({
             limit: 10
           }
         })
-        .then((res: ResultType) => {
+        .then((res: any) => {
           console.log(res)
           if (res.code == 200) {
             let arr = []
@@ -105,7 +109,7 @@ export const useUserStore = defineStore({
             limit: 100
           }
         })
-        .then((res: ResultType) => {
+        .then((res: any) => {
           console.log(res)
           if (res.code == 200) {
             let arr = []
@@ -141,6 +145,9 @@ export const useUserStore = defineStore({
       // this.copyCompanys = null
       this.userToken = ''
       // this.workspaceData = null
+    },
+    setUserNameMap(id: string, name: string) {
+      this.userNameMap.set(id, name)
     }
   }
 })

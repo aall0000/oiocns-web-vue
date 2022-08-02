@@ -172,7 +172,7 @@ const mainRouter: RouteRecordRaw[] = [
       keepAlive: false,
       title: '我的申请'
     }
-  },
+  }
   //个人中心信息设置路由
 ]
 

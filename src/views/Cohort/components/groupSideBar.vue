@@ -18,11 +18,12 @@
 <script lang="ts" setup name="groupSideBar">
 import API from '@/services'
 import { onMounted, reactive, computed } from 'vue'
+import { useUserStore } from '@/store/user'
+const { setUserNameMap } = useUserStore()
 type propType = {
   active: userType,
   redDotInfo: any
 }
-
 const state = reactive({ qunList: [], friendList: [] })
 
 const { active, redDotInfo } = defineProps<propType>()
@@ -38,9 +39,12 @@ const showList = computed(() => {
 
 // 获取我的好友列表
 const getFriendList = async () => {
-  await API.person.getFriends({ data: { offset: 0, limit: 10 } }).then((res: ResultType) => {
+  await API.person.getFriends({ data: { offset: 0, limit: 10 } }).then((res: any) => {
     const { result = [] } = res.data
     state.friendList = result
+    result.forEach((item: userType) => {
+      setUserNameMap(item.id, item.name)
+    });
   })
 }
 // 获取我加入的群列表
