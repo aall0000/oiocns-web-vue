@@ -2,38 +2,28 @@
   <div class="created">
     <div class="createdTop">
       <div class="topLeft">
-        <el-input
-
-
-          class="search"
-          placeholder="搜索单位名"
-          :suffix-icon="Search"
-        />
+        <el-input class="search" placeholder="搜索单位名" :suffix-icon="Search" />
       </div>
       <div class="topRight">
-          <el-button type="primary"> 批量导入/导出</el-button>
-          <el-button >查看申请记录</el-button>
+        <el-button type="primary"> 批量导入/导出</el-button>
+        <el-button>查看申请记录</el-button>
       </div>
     </div>
     <div class="createdBody">
-      <el-table :data="tableData" stripe style="width: 98%">
-        <el-table-column prop="name" label="单位名称"  />
-        <el-table-column prop="code" label="统一社会信用代码"  />
+      <el-table :data="state.tableData" stripe style="width: 98%">
+        <el-table-column prop="name" label="单位名称" />
+        <el-table-column prop="code" label="统一社会信用代码" />
         <el-table-column prop="isMain" label="是否主单位" />
-        <el-table-column prop="admin" label="管理员" />
-        <el-table-column prop="time" label="创建时间" />
+        <el-table-column prop="belongId" label="管理员" />
+        <el-table-column prop="createTime" label="创建时间" />
         <el-table-column prop="state" label="申请状态" />
-        <el-table-column prop="option" label="操作" >
+        <el-table-column prop="option" label="操作">
           <template #default="scope">
-            <el-button size="small"
-              >设为主单位</el-button
-            >
-            <el-button
-              size="small"
-              type="danger"
-
-              >退出组织</el-button
-            >
+            <el-popconfirm title="确认删除?" @confirm="handleDelete(scope.row.id)">
+              <template #reference>
+                <el-button type="danger">删除</el-button>
+              </template>
+            </el-popconfirm>
           </template>
         </el-table-column>
       </el-table>
@@ -53,90 +43,88 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { Search } from '@element-plus/icons-vue'
-import { onMounted, reactive, ref } from 'vue'
-import { onBeforeMount } from 'vue'
-import $services from '@/services'
-const currentPage4 = 1
-const pageSize4 = 5
+  import { Search } from '@element-plus/icons-vue'
+  import { onMounted, reactive, ref } from 'vue'
+  import { onBeforeMount } from 'vue'
+  import $services from '@/services'
+  const currentPage4 = 1
+  const pageSize4 = 5
 
+  onBeforeMount(() => {
+    fetchRequest()
+  })
+  onMounted(() => {})
+  const state = reactive({ tableData: [] })
 
-onBeforeMount(()=>{
-  fetchRequest()
-})
-onMounted(()=>{
-
-})
-let tableData = [
-  {
-    name:'华为技术有限公司',
-    code:'914403001922038216',
-    isMain:'是',
-    admin:'338792423297781760',
-    time:'2022-07-29 11:39:06',
-    state:'是'
-  }
-]
-
-
-
-async function fetchRequest(){
-    let token = sessionStorage.getItem("TOKEN")
-    await $services.getJoined({
-      "data": {
-        "offset": 0,
-        "limit": 1
-      },"headers":{"Authorization":token}
-    }).then(res => {
-      console.log('查询加入的公司', res);
-      for(let i = 0; i < res.data.result.length; i++ ){
-        tableData[i].name=res.data.result[i].name;
-        tableData[i].code=res.data.result[i].code;
-        tableData[i].admin=res.data.result[i].belongId;
-        tableData[i].time=res.data.result[i].createTime;
-        if(res.data.result[i].status){
-          tableData[i].state="是";
-          tableData[i].isMain="是";
-        }
-
-      }
+  async function fetchRequest() {
+    let token = sessionStorage.getItem('TOKEN')
+    const { data, err } = await $services.company.getJoinedCompany({
+      data: {
+        offset: 0,
+        limit: 10
+      },
+      headers: { Authorization: token }
     })
-}
+    if (!err) {
+      const { result, total } = data
+      state.tableData = result.map((item) => {
+        return { ...item, remark: item.team.remark }
+      })
+      console.log(state.tableData[0].belongId)
 
-function handleSizeChange(pageSize) {//改变当前每页的个数
-      this.pageSize4 = pageSize
-      this.load()
+      console.log('查询单位成功', data)
     }
-function handleCurrentChange(pageNum) {//改变当前页码
-  this.currentPage4 = pageNum
-  this.load()
-}
+  }
+  const handleDelete = (id) => {
+    let token = sessionStorage.getItem('TOKEN')
+    $services.company
+      .companyDelete({
+        data: {
+          id: id
+        },
+        headers: {
+          Authorization: token
+        }
+      })
+      .then((res) => {
+        console.log('删除单位成功', res)
+        fetchRequest()
+      })
+  }
+
+  function handleSizeChange(pageSize) {
+    //改变当前每页的个数
+    this.pageSize4 = pageSize
+    this.load()
+  }
+  function handleCurrentChange(pageNum) {
+    //改变当前页码
+    this.currentPage4 = pageNum
+    this.load()
+  }
 </script>
 <style lang="scss">
-.created{
-  width: 100%;
-  height: 100vh;
+  .created {
+    width: 100%;
+    height: 100vh;
 
-  .createdTop{
-    width: 95%;
-    margin: 30px;
-    display: flex;
-    justify-content: space-between;
-    .topLeft{
-
-      .search{
-
+    .createdTop {
+      width: 95%;
+      margin: 30px;
+      display: flex;
+      justify-content: space-between;
+      .topLeft {
+        .search {
+        }
       }
     }
+    .createdBody {
+      margin: 30px;
+    }
+    .createdBottom {
+      position: absolute;
+      right: 30px;
+      bottom: 30px;
+    }
   }
-  .createdBody{
-    margin: 30px;
-  }
-  .createdBottom{
-    position: absolute;
-    right: 30px;
-    bottom: 30px;
-
-  }
-}
 </style>
