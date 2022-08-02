@@ -12,7 +12,7 @@
       <GroupHeaderVue :info="selectInfo" v-show="activeInfo?.id" @viewDetail="handleViewDetail"
         @addUserOrCohort="handleAddFun" class="chart-header" />
       <!-- 聊天区域 -->
-      <GroupContent class="chart-content" :myId="myId" ref="contentWrapRef" :list="showMsgList"
+      <GroupContent class="chart-content" :myId="myId" ref="contentWrapRef" :list="showMsgList" :isShowMoreBtn="isShowMoreBtn"
         @viewMoreMsg="handleViewMoreHistory" />
       <!-- 输入区域 -->
       <GroupInputBox class="chart-input" @submitInfo="submit" />
@@ -52,6 +52,7 @@ const showMsgList = computed(() => {
   return msgMap.value.get(activeInfo.value.id) ?? []
 })
 const contentWrapRef = ref(null)
+const isShowMoreBtn = ref<boolean>(false)
 
 //获取 登录人id-用于区分信息源
 const myId = useUserStore().queryInfo.id;
@@ -182,6 +183,7 @@ const getHistoryMsg = async (id: string, type: string) => {
     // 记录查询成功的数据
     lastQueryParams.value = params
     contentWrapRef.value.keepScrollPos()
+    isShowMoreBtn.value = total > msgMap.value.get(id).size ?? false
   }
 }
 
@@ -219,7 +221,8 @@ const handleAddFun = () => {
     overflow: hidden;
 
     .chart-header {
-      height: 80px;
+      height: 70px;
+      min-height: 70px;
       box-shadow: 0 1px 2px 1px #e5e5e5;
       z-index: 2;
     }

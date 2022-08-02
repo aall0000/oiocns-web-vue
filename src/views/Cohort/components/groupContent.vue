@@ -1,6 +1,6 @@
 <template>
   <ul class="group-content-wrap" ref="nodeRef">
-    <li class="history-more" @click="getMoreHistory">查看更多</li>
+    <li class="history-more" v-if="isShowMoreBtn" @click="getMoreHistory">查看更多</li>
     <template v-for="item in list">
       <li class="group-content-left con" v-if="item.fromId !== myId">
         <img class="con-img" src="@/assets/img/avatar.jpg" alt="">
@@ -40,6 +40,7 @@ import { useUserStore } from "@/store/user"
 type Props = {
   list: any[],//消息列表
   myId: string,//使用者id
+  isShowMoreBtn:boolean,//是否展示更多按钮
 }
 const { list, myId } = defineProps<Props>()
 const { getUserName, userNameMap } = useUserStore()
