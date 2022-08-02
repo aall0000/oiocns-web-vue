@@ -92,7 +92,7 @@ const load = () => {
 }
 const onClickDrop = () => {
   if (store.userCompanys.length == 0) {
-    store.getCompanyList(0, store.workspaceData.id)
+    store.getCompanyList(0, store.workspaceData.id, false)
   }
 }
 const switchCompany = (data: { id: string }) => {
@@ -107,7 +107,7 @@ const switchCompany = (data: { id: string }) => {
         sessionStorage.setItem('TOKEN', res.data.accessToken)
         sessionStorage.setItem('workspaceName', res.data.workspaceName)
         store.getQueryInfo(res.data.accessToken)
-        store.getCompanyList(0, res.data.workspaceId).then(() => {
+        store.getCompanyList(0, res.data.workspaceId, false).then(() => {
           location.reload()
         })
       } else {

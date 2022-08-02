@@ -74,6 +74,7 @@ import $services from '@/services'
 import { ref, onMounted } from 'vue'
 import zhCn from 'element-plus/lib/locale/lang/zh-cn'
 import { ElMessage } from 'element-plus'
+import { interRes } from '@/utils/interface'
 
 var tableData = ref<any>([])
 const activeIndex = ref<string>('1')
@@ -85,7 +86,7 @@ var getList = () => {
         limit: 10
       }
     })
-    .then((res) => {
+    .then((res: interRes) => {
       tableData.value = res.data.result
     })
 }
@@ -99,7 +100,7 @@ var joinRefse = (item: { id: '' }) => {
         id: item.id
       }
     })
-    .then((res) => {
+    .then((res: interRes) => {
       ElMessage({
         message: '拒绝成功',
         type: 'success'
@@ -113,7 +114,7 @@ var joinSuccess = (item: { id: '' }) => {
         id: item.id
       }
     })
-    .then((res) => {
+    .then((res: interRes) => {
       ElMessage({
         message: '添加成功',
         type: 'success'
