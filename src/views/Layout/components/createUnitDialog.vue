@@ -103,7 +103,7 @@ const submit = () => {
     .create({
       data: ruleForm
     })
-    .then((res: any) => {
+    .then((res: ResultType) => {
       console.log('测试接口', res)
       if (res.code == 200) {
         ElMessage({

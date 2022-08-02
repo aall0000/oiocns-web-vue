@@ -102,7 +102,7 @@ const switchCompany = (data: { id: string }) => {
         id: data.id
       }
     })
-    .then((res: any) => {
+    .then((res: ResultType) => {
       if (res.code == 200) {
         sessionStorage.setItem('TOKEN', res.data.accessToken)
         sessionStorage.setItem('workspaceName', res.data.workspaceName)

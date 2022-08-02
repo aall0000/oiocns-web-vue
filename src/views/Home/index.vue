@@ -76,7 +76,7 @@ const remoteMethod = (query: string) => {
           limit: 10
         }
       })
-      .then((res: any) => {
+      .then((res: ResultType) => {
         if (res.code == 200) {
           console.log(res)
           let states = res.data.result
@@ -109,7 +109,7 @@ const submitFriends = () => {
         id: value.value
       }
     })
-    .then((res: any) => {
+    .then((res: ResultType) => {
       if (res.code == 200) {
         ElMessage({
           message: '申请成功',

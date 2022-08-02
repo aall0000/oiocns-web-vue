@@ -113,7 +113,7 @@
 				limit: 100
 			}
 		})
-		.then((res: any) => {
+		.then((res: ResultType) => {
 			selectList.push(...res.data.result)
 			console.log(selectList)
 		})
@@ -133,7 +133,7 @@
 					limit: 100
 				}
 			})
-			.then((res: any) => {
+			.then((res: ResultType) => {
         showInfo.value = true;
 				console.log("resres", res)
 			})
@@ -142,7 +142,7 @@
 		$services.company.queryInfo({
 				data: {}
 			})
-			.then((res: any) => {
+			.then((res: ResultType) => {
 				console.log('获取单位详情', res);
 			})
 	}
@@ -155,7 +155,7 @@
 					limit: 100
 				}
 			})
-			.then((res: any) => {
+			.then((res: ResultType) => {
 				console.log(res)
 			})
 	}

@@ -38,7 +38,7 @@ const showList = computed(() => {
 
 // 获取我的好友列表
 const getFriendList = async () => {
-  await API.person.getFriends({ data: { offset: 0, limit: 10 } }).then((res: any) => {
+  await API.person.getFriends({ data: { offset: 0, limit: 10 } }).then((res: ResultType) => {
     const { result = [] } = res.data
     state.friendList = result
   })

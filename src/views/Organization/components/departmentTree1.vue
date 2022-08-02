@@ -144,7 +144,7 @@
           teamRemark: departmentTeamRemark.value
         }
       })
-      .then((res: any) => {
+      .then((res: ResultType) => {
         dialogVisible.value = false
         getDepartmentsList(changeObj.value.item.id)
       })
@@ -159,7 +159,7 @@
           limit: 100
         }
       })
-      .then((res: any) => {
+      .then((res: ResultType) => {
         departmentsList = res.data
         let arr: any = []
         if(res.data.result){

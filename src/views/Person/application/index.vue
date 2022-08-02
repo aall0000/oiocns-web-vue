@@ -45,7 +45,7 @@ const getData = () => {
         limit: 10
       }
     })
-    .then((res: any) => {
+    .then((res: ResultType) => {
       if (res.code == 200) {
         state.tableData = res.data.result
         // let arr = []
@@ -75,7 +75,7 @@ const handleClick = (item: any) => {
         id: item.id
       }
     })
-    .then((res: any) => {
+    .then((res: ResultType) => {
       if (res.code == 200) {
         ElMessage({
           message: '取消申请成功',

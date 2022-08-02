@@ -72,7 +72,7 @@
             <el-dropdown-item @click="exitLogin">退出登录</el-dropdown-item>
           </el-dropdown-menu>
         </template>
-      </el-dropdown>
+      </el-dropdown>  
     </el-col>
   </el-row>
   <template v-for="item in dialogShow" :key="item.key">
@@ -140,7 +140,7 @@ const switchCreateCompany = (data: { id: string }) => {
         id: data.id
       }
     })
-    .then((res: any) => {
+    .then((res: ResultType) => {
       if (res.code == 200) {
         sessionStorage.setItem('TOKEN', res.data.accessToken)
         sessionStorage.setItem('workspaceName', res.data.workspaceName)
@@ -164,7 +164,7 @@ const switchCompany = (data: { id: string }) => {
         id: data.id
       }
     })
-    .then((res: any) => {
+    .then((res: ResultType) => {
       if (res.code == 200) {
         sessionStorage.setItem('TOKEN', res.data.accessToken)
         sessionStorage.setItem('workspaceName', res.data.workspaceName)

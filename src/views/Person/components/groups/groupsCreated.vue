@@ -34,7 +34,6 @@
 <script lang="ts" setup>
 import { Search } from '@element-plus/icons-vue'
 import { reactive, ref } from 'vue'
-import { interRes } from '@/utils/interface'
 import $services from '@/services'
 
 let dialogVisible = ref(false)
@@ -64,7 +63,7 @@ const save = () => {
         Authorization: token
       }
     })
-    .then((res: interRes) => {
+    .then((res: ResultType) => {
       console.log('查询该单位详细信息', res)
     })
 }

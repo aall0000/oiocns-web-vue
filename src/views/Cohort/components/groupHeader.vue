@@ -13,9 +13,19 @@
       </li>
     </ul>
     <span class="btn-box">
-      <el-icon class="add-btn btn" :size="20" @click="handleAddFun()">
-        <Plus />
-      </el-icon>
+      <el-dropdown trigger="click">
+        <span class="el-dropdown-link">
+          <el-icon class="add-btn btn" :size="20">
+            <Plus />
+          </el-icon>
+        </span>
+        <template #dropdown>
+          <el-dropdown-menu>
+            <el-dropdown-item @click="addFriends">添加好友</el-dropdown-item>
+            <el-dropdown-item @click="pullPerson">拉人进入群组</el-dropdown-item>
+          </el-dropdown-menu>
+        </template>
+      </el-dropdown>
       <el-icon class="detail-btn btn" :size="20" @click="handleMoreFun()">
         <More />
       </el-icon>
@@ -29,12 +39,17 @@
       default: {}
     }
   })
-  const emit = defineEmits(['viewDetail', 'addUserOrCohort'])
+  const emit = defineEmits(['viewDetail', 'addUserOrCohort', 'addFriends', 'pullPerson'])
 
   const handleMoreFun = () => {
     emit('viewDetail')
   }
-
+  const addFriends = () => {
+    emit('addFriends')
+  }
+  const pullPerson = () => {
+    emit('pullPerson')
+  }
   const handleAddFun = () => {
     emit('addUserOrCohort')
   }
@@ -51,8 +66,9 @@
       .btn {
         margin-right: 10px;
       }
-      // .add-btn {
-      // }
+      .add-btn {
+        cursor: pointer;
+      }
     }
   }
 

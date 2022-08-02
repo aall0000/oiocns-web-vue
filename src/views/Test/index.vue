@@ -30,7 +30,7 @@ const clickFun = async () => {
         password: '1E!2w@3q#'
       }
     })
-    .then((res: any) => {
+    .then((res: ResultType) => {
       console.log(API[apiType.value], '---------->', res)
     })
 }
