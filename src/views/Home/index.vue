@@ -1,5 +1,8 @@
 <template>
   <div class="baseLayout">
+    <teleport v-if="isShowMenu" to="#menu-teleport-target">
+      <el-aside class="custom-group-silder-menu" width="220px"><Menu></Menu></el-aside>
+    </teleport>
     <div class="headers"><Head></Head></div>
     <div class="articleTop">
       <div class="articleTop-left"><Invitate></Invitate></div>
@@ -40,7 +43,8 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
+import Menu from '@/views/Layout/components/menu.vue'
 import Head from './components/head.vue'
 import Invitate from './components/invitate.vue'
 import Organization from './components/organization.vue'
@@ -54,9 +58,13 @@ interface ListItem {
   value: string
   label: string
 }
+const isShowMenu = ref<boolean>(false)
 const options = ref<ListItem[]>([])
 const value = ref('')
 const loading = ref(false)
+onMounted(() => {
+  isShowMenu.value = true
+})
 const remoteMethod = (query: string) => {
   if (query) {
     loading.value = true
