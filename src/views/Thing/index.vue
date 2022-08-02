@@ -232,6 +232,7 @@ import $services from '@/services'
 import { Search } from '@element-plus/icons-vue'
 import router from '@/router/index'
 import { ref,onMounted} from 'vue'
+import { AnyNaptrRecord } from 'dns';
 const input2 = ref('')
 var cartList = ref([]);
 const getCardList = () => {

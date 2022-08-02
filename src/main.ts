@@ -25,6 +25,6 @@ app.use(pinia)
 
 setupRouter(app)
 app.use(InfiniteScroll)
-await router.isReady()
+// await router.isReady()
 
 app.mount('#app')

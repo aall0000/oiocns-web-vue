@@ -70,7 +70,7 @@
       <div class="bodyRight">
         <div class="touX">
           <span>头像</span>
-          <img class="image" src="../../../assets/img/toux.jpg" alt="" />
+          <img class="image" src="@/assets/img/toux.jpg" alt="" />
         </div>
         <div class="up">
           <el-icon><Upload /></el-icon>
@@ -86,6 +86,7 @@
 </template>
 
 <script lang="ts" setup>
+// @ts-nocheck
   import { ArrowLeft } from '@element-plus/icons-vue'
   import { regionData, CodeToText } from 'element-china-area-data'
   import { onMounted, reactive, ref } from 'vue'

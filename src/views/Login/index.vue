@@ -1,3 +1,4 @@
+
 <template>
   <div class="baseLayout">
     <img class="baseLayout-bg" src="@/assets/img/login.png" alt="" />
@@ -27,6 +28,7 @@
 </template>
 
 <script lang="ts" setup >
+// @ts-nocheck
 // import 'element-plus/theme-chalk/el-loading.css'
 import Login from './components/login.vue'
 import Register from './components/register.vue'
