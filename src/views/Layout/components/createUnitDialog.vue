@@ -52,7 +52,7 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps, ref, reactive } from 'vue'
+import { ref, reactive } from 'vue'
 import type { FormInstance, FormRules } from 'element-plus'
 import $services from '@/services'
 import { ElMessage } from 'element-plus'

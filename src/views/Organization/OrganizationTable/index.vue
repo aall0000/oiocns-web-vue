@@ -30,7 +30,7 @@
               { text: '2016-05-04', value: '2016-05-04' }
             ]"
           />
-          <el-table-column prop="address" label="Address" :filter-method="filterHandler" />
+          <el-table-column prop="address" label="Address" />
         </el-table>
       </div>
       <div class="page">
@@ -42,7 +42,7 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 import type { TabsPaneContext } from 'element-plus'
-
+let input = ''
 var tableData = [
   {
     id: 31,
