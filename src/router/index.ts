@@ -131,22 +131,38 @@ const mainRouter: RouteRecordRaw[] = [
   {
     component: () => import('@/views/Thing/index.vue'),
     name: 'thing',
-    path: '/thing'
+    path: '/thing',
+    meta: {
+      keepAlive: false,
+      title: '我的待办'
+    }
   },
   {
     component: () => import('@/views/Thing/cardDetail.vue'),
     name: 'cardDetail',
-    path: '/cardDetail'
+    path: '/cardDetail',
+    meta: {
+      keepAlive: false,
+      title: '代办详情'
+    }
   },
   {
     component: () => import('@/views/Thing/personalApp.vue'),
     name: 'personalApp',
-    path: '/personalApp'
+    path: '/personalApp',
+    meta: {
+      keepAlive: false,
+      title: '我的应用'
+    }
   },
   {
     component: () => import('@/views/Thing/appStore.vue'),
     name: 'appStore',
-    path: '/appStore'
+    path: '/appStore',
+    meta: {
+      keepAlive: false,
+      title: '应用市场'
+    }
   },
   {
     component: () => import('@/views/Person/application/index.vue'),
