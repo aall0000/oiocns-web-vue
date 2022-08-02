@@ -45,7 +45,7 @@ export default defineComponent({
     onMounted(() => {
       window.addEventListener('keydown', keyDown)
     })
-    const keyDown = (e) => {
+    const keyDown = (e: { keyCode: number }) => {
       //如果是回车则执行登录方法
       if (e.keyCode == 13) {
         login()
