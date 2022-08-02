@@ -240,7 +240,7 @@ const getCardList = () => {
         "offset": 0,
         "limit": 10,
     }
-  }).then(res => {
+  }).then((res:any) => {
     cartList = res.data.result
   })
 }

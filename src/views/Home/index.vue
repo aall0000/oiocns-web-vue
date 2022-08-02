@@ -43,7 +43,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import Menu from '@/views/Layout/components/menu.vue'
 import Head from './components/head.vue'
 import Invitate from './components/invitate.vue'
