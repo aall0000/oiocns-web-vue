@@ -147,7 +147,7 @@
           Authorization: token
         }
       })
-      .then((res: any) => {
+      .then((res: ResultType) => {
         console.log('删除单位成功', res)
         fetchRequest(offset.value, pageSize.value)
       })

@@ -86,7 +86,7 @@
 <script lang="ts" setup>
   import $services from '@/services'
   import { Search, Plus, User } from '@element-plus/icons-vue'
-  import { ref, reactive ,onMounted} from 'vue'
+  import { ref, reactive, onMounted } from 'vue'
   import { useUserStore } from '@/store/user'
   import { storeToRefs } from 'pinia'
   import { String } from 'lodash'
@@ -97,7 +97,7 @@
     selectList: any
   }>()
   type selectType = {
-    id: string,
+    id: string
     name: string
   }
   type treeDateType = {
@@ -112,12 +112,11 @@
   const emit = defineEmits(['changeIndex', 'treeItem'])
   let treeItem = ref<any>({})
 
-  
   const changeIndexFun = (val: any) => {
     changeObj.value = val
     emit('changeIndex', val.id)
     selectValue.value = val.name
-    treeItem.value  = ''
+    treeItem.value = ''
     getDepartmentsList(val.id)
   }
   onMounted(() => {
@@ -144,7 +143,7 @@
           teamRemark: departmentTeamRemark.value
         }
       })
-      .then((res: any) => {
+      .then((res: ResultType) => {
         dialogVisible.value = false
         getDepartmentsList(workspaceData.value.id)
       })
@@ -159,10 +158,10 @@
           limit: 100
         }
       })
-      .then((res: any) => {
+      .then((res: ResultType) => {
         departmentsList = res.data
         let arr: any = []
-        if(res.data.result){
+        if (res.data.result) {
           res.data.result.forEach((element: any) => {
             let obj = {
               id: element.id,
@@ -172,7 +171,7 @@
             }
             arr.push(obj)
           })
-        }else{
+        } else {
           arr = []
         }
         treeDate.list = arr

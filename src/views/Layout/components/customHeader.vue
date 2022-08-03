@@ -140,7 +140,7 @@
           id: data.id
         }
       })
-      .then((res: any) => {
+      .then((res: ResultType) => {
         if (res.code == 200) {
           sessionStorage.setItem('TOKEN', res.data.accessToken)
           store.getQueryInfo(res.data.accessToken)
@@ -163,7 +163,7 @@
           id: data.id
         }
       })
-      .then((res: any) => {
+      .then((res: ResultType) => {
         if (res.code == 200) {
           sessionStorage.setItem('TOKEN', res.data.accessToken)
 
