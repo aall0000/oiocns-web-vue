@@ -37,7 +37,7 @@
   const mainMenus = [
     { name: '工作台', icon: 'Tickets', path: '/thing' },
     { name: '消息', icon: 'ChatDotRound', path: '/cohort' },
-    { name: '组织架构', icon: 'School', path: '/organizationTable' },
+    { name: '组织架构', icon: 'School', path: '/organization' },
     { name: '应用', icon: 'Grid', path: '/personalApp' },
     { name: '市场', icon: 'GoodsFilled', path: '/appStore' },
     { name: '元数据', icon: 'Share', path: '/work' },
