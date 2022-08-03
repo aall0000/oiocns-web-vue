@@ -14,7 +14,7 @@
         </div>
       </li>
     </ul>
-    <span class="btn-box">{{info?.detail?.typeName}}
+    <span class="btn-box">
       <el-icon class="add-btn btn" v-if="info?.detail?.typeName !== '人员'" :size="20" @click="handleAddFun()">
         <Plus />
       </el-icon>
