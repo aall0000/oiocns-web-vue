@@ -180,7 +180,11 @@
       })
   }
   const Setting = () => {
-    router.push('/user')
+    if (store.workspaceData.name === '个人空间') {
+      router.push('/user')
+    } else {
+      router.push('/company')
+    }
   }
   const exitLogin = () => {
     sessionStorage.clear()

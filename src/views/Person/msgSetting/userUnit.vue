@@ -2,9 +2,9 @@
   <div class="userUnit">
     <div class="pageHeader">
       <el-breadcrumb separator="/" class="header">
-        <el-breadcrumb-item :to="{ path: '/userMsg' }">己</el-breadcrumb-item>
+        <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
         <el-breadcrumb-item><a href="/userMsg">信息设置</a></el-breadcrumb-item>
-        <el-breadcrumb-item><a href="/userMsg">我的单位</a></el-breadcrumb-item>
+        <el-breadcrumb-item><a href="/userUnit">我的单位</a></el-breadcrumb-item>
       </el-breadcrumb>
     </div>
     <div class="title">

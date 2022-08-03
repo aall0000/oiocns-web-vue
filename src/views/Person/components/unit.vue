@@ -27,6 +27,16 @@
           </template>
         </el-table-column>
       </el-table>
+      <div class="createdBottom">
+        <el-pagination
+          :page-size="pageSize"
+          :pager-count="5"
+          layout="total, prev, pager, next, jumper"
+          :total="totals"
+          :current-page="currentPage1"
+          @current-change="handleCurrentChange1"
+        />
+      </div>
     </div>
     <div class="createdBody" v-if="types === '创建的'">
       <el-table :data="state1.tableData" stripe style="width: 98%">
@@ -46,6 +56,16 @@
           </template>
         </el-table-column>
       </el-table>
+      <div class="createdBottom">
+        <el-pagination
+          :page-size="pageSize"
+          :pager-count="5"
+          layout="total, prev, pager, next, jumper"
+          :total="totals"
+          :current-page="currentPage2"
+          @current-change="handleCurrentChange2"
+        />
+      </div>
     </div>
     <div class="createdBody" v-if="types === '已加入'">
       <el-table :data="state2.tableData" stripe style="width: 98%">
@@ -65,16 +85,16 @@
           </template>
         </el-table-column>
       </el-table>
-    </div>
-    <div class="createdBottom">
-      <el-pagination
-        :page-size="pageSize"
-        :pager-count="5"
-        layout="total, prev, pager, next, jumper"
-        :total="totals"
-        :current-page="currentPage"
-        @current-change="handleCurrentChange"
-      />
+      <div class="createdBottom">
+        <el-pagination
+          :page-size="pageSize"
+          :pager-count="5"
+          layout="total, prev, pager, next, jumper"
+          :total="totals"
+          :current-page="currentPage3"
+          @current-change="handleCurrentChange3"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -85,28 +105,50 @@
   import $services from '@/services'
   import { useUserStore } from '@/store/user'
   const store = useUserStore()
-  let currentPage = ref<number>(1)
+  let currentPage1 = ref<number>(1)
+  let currentPage2 = ref<number>(1)
+  let currentPage3 = ref<number>(1)
   let pageSize = ref<number>(5)
-  let offset = ref<number>(0)
+  let offset1 = ref<number>(0)
+  let offset2 = ref<number>(0)
+  let offset3 = ref<number>(0)
   let totals = ref<any>(5)
   const state = reactive({ tableData: [] })
   const state1 = reactive({ tableData: [] })
   const state2 = reactive({ tableData: [] })
 
   onBeforeMount(() => {
-    fetchRequest(offset.value, pageSize.value)
+    fetchRequest(offset1.value, pageSize.value)
   })
   const props = defineProps({
     types: String
   })
-  const handleCurrentChange = (val: number) => {
+  const handleCurrentChange1 = (val: number) => {
     console.log(val)
     console.log(pageSize.value)
 
-    offset.value = (val - 1) * pageSize.value
-    console.log(offset.value)
-    fetchRequest(offset.value, pageSize.value)
-    currentPage.value = val
+    offset1.value = (val - 1) * pageSize.value
+    console.log(offset1.value)
+    fetchRequest(offset1.value, pageSize.value)
+    currentPage1.value = val
+  }
+  const handleCurrentChange2 = (val: number) => {
+    console.log(val)
+    console.log(pageSize.value)
+
+    offset2.value = (val - 1) * pageSize.value
+    console.log(offset2.value)
+    fetchRequest(offset2.value, pageSize.value)
+    currentPage2.value = val
+  }
+  const handleCurrentChange3 = (val: number) => {
+    console.log(val)
+    console.log(pageSize.value)
+
+    offset3.value = (val - 1) * pageSize.value
+    console.log(offset3.value)
+    fetchRequest(offset3.value, pageSize.value)
+    currentPage3.value = val
   }
   async function fetchRequest(offset: number, pageSize: number) {
     let token = sessionStorage.getItem('TOKEN')
@@ -122,6 +164,7 @@
       state.tableData = result.map((item: { team: { remark: any } }) => {
         return { ...item, remark: item.team.remark }
       })
+      totals.value = total
       console.log(state.tableData[0].belongId)
       for (let i = 0; i < state.tableData.length; i++) {
         if (state.tableData[i].belongId === store.workspaceData.id) {
@@ -148,7 +191,7 @@
       })
       .then((res: any) => {
         console.log('删除单位成功', res)
-        fetchRequest(offset.value, pageSize.value)
+        fetchRequest(offset1.value, pageSize.value)
       })
   }
 
@@ -173,18 +216,14 @@
       margin: 30px;
       display: flex;
       justify-content: space-between;
-      .topLeft {
-        .search {
-        }
-      }
     }
     .createdBody {
       margin: 30px;
-    }
-    .createdBottom {
-      position: absolute;
-      right: 30px;
-      bottom: 30px;
+      .createdBottom {
+        position: absolute;
+        right: 30px;
+        bottom: 30px;
+      }
     }
   }
 </style>
