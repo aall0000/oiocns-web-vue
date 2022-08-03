@@ -208,8 +208,7 @@
             </el-form-item>
             <template #footer>
               <span class="dialog-footer">
-                <el-button @click="dialogVisible = false">取消</el-button>
-                <el-button type="primary" @click="addQunFun">确认</el-button>
+=                <el-button type="primary" @click="addQunFun">确认</el-button>
               </span>
             </template>
           </el-dialog>
