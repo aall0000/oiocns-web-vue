@@ -6,7 +6,7 @@
       <li class="base-info">
         <div class="base-info-top flex">
           <p class="base-info-top-name">{{ detail.name }}</p>
-          <el-tag size="small" v-if="detail.remark">{{ detail.remark }}</el-tag>
+          <el-tag size="small">标签</el-tag>
         </div>
         <div class="base-info-desc">{{ detail.remark }}</div>
       </li>
