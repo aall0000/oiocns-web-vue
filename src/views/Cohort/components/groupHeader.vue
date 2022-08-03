@@ -10,18 +10,12 @@
         <div class="user-info-num" v-show="info.total">
           <el-icon>
             <User />
-          </el-icon>
-          {{ info.total }}
+          </el-icon> {{ info.total }}
         </div>
       </li>
     </ul>
     <span class="btn-box">
-      <el-icon
-        class="add-btn btn"
-        v-if="info?.detail?.typeName !== '人员'"
-        :size="20"
-        @click="handleAddFun()"
-      >
+      <el-icon class="add-btn btn" v-if="info?.detail?.typeName !== '人员'" :size="20" @click="handleAddFun()">
         <Plus />
       </el-icon>
       <el-icon class="detail-btn btn" :size="20" @click="handleMoreFun()">
@@ -41,65 +35,67 @@
   </el-dialog>
 </template>
 <script lang="ts" setup>
-  import { ref } from 'vue'
-  type prop = {
-    info: any
-  }
-  const { info } = defineProps<prop>()
-  const emit = defineEmits(['viewDetail', 'addUserOrCohort'])
+import { ref } from 'vue';
+type prop = {
+  info: any
+}
+const { info } = defineProps<prop>()
+const emit = defineEmits(['viewDetail', 'addUserOrCohort'])
 
-  const handleMoreFun = () => {
-    emit('viewDetail')
-  }
-  const dialogVisible = ref(false)
-  const handleAddFun = () => {
-    // emit('addUserOrCohort')
-    console.log('测试', info.detail)
+const handleMoreFun = () => {
+  emit('viewDetail')
+}
+const dialogVisible = ref(false)
+const handleAddFun = () => {
+  // emit('addUserOrCohort')
+  console.log('测试', info.detail);
 
-    dialogVisible.value = true
-  }
+  dialogVisible.value = true
+}
 </script>
 
 <style lang="scss" scoped>
-  .group-header-wrap {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 20px;
-    .btn-box {
-      .btn {
-        margin-right: 10px;
-      }
-      .add-btn {
-        cursor: pointer;
-      }
+.group-header-wrap {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+  height: 70px;
+  min-height: 70px;
+  box-shadow: 0 1px 2px 1px #e5e5e5;
+  // z-index: 2;
+
+  .btn-box {
+    .btn {
+      margin-right: 10px;
     }
 
     // .add-btn {
     // }
   }
+}
 
-  .user {
-    align-items: center;
+.user {
+  align-items: center;
 
-    &-img {
-      width: 50px;
-      height: 50px;
-      margin-right: 15px;
-      border-radius: 50%;
-    }
+  &-img {
+    width: 50px;
+    height: 50px;
+    margin-right: 15px;
+    border-radius: 50%;
+  }
 
-    &-info {
-      &-top {
-        align-items: center;
+  &-info {
+    &-top {
+      align-items: center;
 
-        &-name {
-          font-size: 16px;
-          font-weight: 600;
-          margin-right: 10px;
-        }
+      &-name {
+        font-size: 16px;
+        font-weight: 600;
+        margin-right: 10px;
       }
     }
   }
+}
 </style>
