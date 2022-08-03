@@ -21,7 +21,7 @@ const active = ref<string>('消息')
 const mainMenus = [
   { name: '消息', icon: 'Apple', path: '/cohort' },
   { name: '工作台', icon: 'Aim', path: '/thing' },
-  { name: '组织架构', icon: 'Apple', path: '/organizationTable' },
+  { name: '组织架构', icon: 'Apple', path: '/organization' },
   { name: '应用', icon: 'Apple', path: '/personalApp' },
   { name: '市场', icon: 'Clock', path: '/appStore' },
   { name: '我的', icon: 'Apple', path: '/userMsg' },
