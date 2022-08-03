@@ -5,8 +5,11 @@
     </el-header>
     <el-container>
       <!-- 导航区域 传送门 -->
-       <el-aside class="main-menu-content">
+      <el-aside class="main-menu-content">
         <MainAsideVue />
+      </el-aside>
+      <el-aside v-if="isShowPersonalMenu" :style="{ width: 'max-content' }">
+        <UserAside />
       </el-aside>
       <div id="menu-teleport-target" />
       <el-container>
@@ -28,6 +31,19 @@ import CustomHeadr from './components/customHeader.vue'
 import MainAsideVue from './components/mainAside.vue';
 import Breadcrumb from './components/breadcrumb.vue'
 import Menu from './components/menu.vue'
+import UserAside from './msgLayout/userAside.vue'
+
+import { useRouter } from "vue-router"
+import { ref, watch } from 'vue';
+
+const router = useRouter()
+const isShowPersonalMenu = ref<boolean>(false)
+
+const showArr: string[] = ['/user/userMsg', '/user/userUnit', '/user/userAccountBind', '/user/userSaveSet','/company/unitMsg','/company/affiliatedGroups']
+watch(() => router.currentRoute.value.path, (newValue, oldValue) => {
+  console.log('watchrouter', newValue);
+  isShowPersonalMenu.value = showArr.includes(newValue)
+}, { immediate: true })
 </script>
 
 <style lang='scss' scoped>
@@ -45,7 +61,8 @@ import Menu from './components/menu.vue'
     // border-bottom: 1px solid #d7d7d7;
     z-index: 2;
   }
-  .main-menu-content{
+
+  .main-menu-content {
     width: max-content;
   }
 

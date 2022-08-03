@@ -35,7 +35,7 @@ const mainMenus = [
   { name: '应用', icon: 'Grid', path: '/personalApp' },
   { name: '市场', icon: 'GoodsFilled', path: '/appStore' },
   { name: '元数据', icon: 'Share', path: '/work' },
-  { name: '我的', icon: 'Setting', path: '/userMsg', bottom: true },
+  { name: '我的', icon: 'Setting', path: '/user/userMsg', bottom: true },
 
 ]
 
