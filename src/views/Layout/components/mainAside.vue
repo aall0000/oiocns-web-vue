@@ -1,14 +1,24 @@
 <template>
-  <ul class='mainAside-wrap'>
-    <li :class="['aside-li', item.name === active ? 'active' : '']" v-for="item in mainMenus"
-      @click="handleRouterChage(item)">
-      <el-icon class="aside-li-icon" :size="20">
-        <component :is="item.icon" />
-      </el-icon>
-      <span class="aside-li-name">{{ item.name }}</span>
-    </li>
-
-  </ul>
+  <div class='mainAside-wrap'>
+    <ul class="top-ul">
+      <li :class="['aside-li', item.name === active ? 'active' : '']" v-for="item in mainMenus.filter(a => !a?.bottom )"
+        @click="handleRouterChage(item)">
+        <el-icon class="aside-li-icon" :size="20">
+          <component :is="item.icon" />
+        </el-icon>
+        <span class="aside-li-name">{{ item.name }}</span>
+      </li>
+    </ul>
+    <ul class="top-ul">
+      <li :class="['aside-li', item.name === active ? 'active' : '']"
+        v-for="item in mainMenus.filter(a => a?.bottom === true)" @click="handleRouterChage(item)">
+        <el-icon class="aside-li-icon" :size="20">
+          <component :is="item.icon" />
+        </el-icon>
+        <span class="aside-li-name">{{ item.name }}</span>
+      </li>
+    </ul>
+  </div>
 </template>
 
 <script lang="ts" setup>
@@ -17,15 +27,16 @@ import { useRouter } from 'vue-router'
 
 const router = useRouter()
 
-const active = ref<string>('消息')
+const active = ref<string>('工作台')
 const mainMenus = [
-  { name: '消息', icon: 'Apple', path: '/cohort' },
-  { name: '工作台', icon: 'Aim', path: '/thing' },
-  { name: '组织架构', icon: 'Apple', path: '/organizationTable' },
-  { name: '应用', icon: 'Apple', path: '/personalApp' },
-  { name: '市场', icon: 'Clock', path: '/appStore' },
-  { name: '我的', icon: 'Apple', path: '/userMsg' },
-  { name: '元数据', icon: 'Apple', path: '/work' }
+  { name: '工作台', icon: 'Tickets', path: '/thing' },
+  { name: '消息', icon: 'ChatDotRound', path: '/cohort' },
+  { name: '组织架构', icon: 'School', path: '/organizationTable' },
+  { name: '应用', icon: 'Grid', path: '/personalApp' },
+  { name: '市场', icon: 'GoodsFilled', path: '/appStore' },
+  { name: '元数据', icon: 'Share', path: '/work' },
+  { name: '我的', icon: 'Setting', path: '/userMsg', bottom: true },
+
 ]
 
 const handleRouterChage = (item: any) => {
@@ -39,11 +50,15 @@ const handleRouterChage = (item: any) => {
 <style lang='scss' scoped>
 .mainAside-wrap {
   min-width: 60px;
-  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: calc(100vh - 60px);
+  padding-bottom: 20px;
   background-color: #f4f4f4;
   box-sizing: border-box;
   border-right: 1px solid #e0e0e0;
-  overflow: hidden;
+  // overflow: hidden;
 
   .aside-li {
     display: flex;

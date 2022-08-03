@@ -36,11 +36,11 @@
     </ul>
     <li class="con setting-con border-b">
       <span class="con-label">我在本群昵称</span>
-      <span class="con-value">555</span>
+      <span class="con-value">测试昵称</span>
     </li>
     <li class="con setting-con border-b">
       <span class="con-label">群备注</span>
-      <span class="con-value">555</span>
+      <span class="con-value">{{ detail.remark }}</span>
     </li>
     <li class="con check-con">
       <el-checkbox v-model="state.isIgnoreMsg" label="设置群消息免打扰" />
