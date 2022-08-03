@@ -1,6 +1,6 @@
 <template>
   <div class="page work">
-    <h1>WORK{{aa}}</h1>
+    <h1>元数据{{aa}}</h1>
   </div>
 </template>
 
