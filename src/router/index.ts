@@ -192,7 +192,6 @@ export const routes: RouteRecordRaw[] = [
   },
   ...constantRoutes
 ]
-console.log('是是是', routes)
 
 const router = createRouter({
   history: createWebHashHistory(),
@@ -212,8 +211,6 @@ function handleMainRouter(routerArr: RouteRecordRaw[], path?: string) {
       resultRouter.push(obj)
     }
   })
-  console.log('resultRouter', resultRouter)
-
   return resultRouter
 }
 

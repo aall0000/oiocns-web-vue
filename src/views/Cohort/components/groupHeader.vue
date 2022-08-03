@@ -5,15 +5,23 @@
       <li class="user-info">
         <div class="user-info-top flex">
           <p class="user-info-top-name">{{ info.detail.name }}</p>
-          <el-tag size="small" v-if="info.detail?.remark">{{ info.detail.remark }}</el-tag>
+          <el-tag size="small">标签</el-tag>
         </div>
         <div class="user-info-num" v-show="info.total">
-          <el-icon><User /></el-icon> {{ info.total }}
+          <el-icon>
+            <User />
+          </el-icon>
+          {{ info.total }}
         </div>
       </li>
     </ul>
     <span class="btn-box">
-      <el-icon class="add-btn btn" :size="20" @click="handleAddFun()">
+      <el-icon
+        class="add-btn btn"
+        v-if="info?.detail?.typeName !== '人员'"
+        :size="20"
+        @click="handleAddFun()"
+      >
         <Plus />
       </el-icon>
       <el-icon class="detail-btn btn" :size="20" @click="handleMoreFun()">
@@ -21,22 +29,34 @@
       </el-icon>
     </span>
   </div>
+
+  <el-dialog v-model="dialogVisible" title="邀请好友" width="30%">
+    <span>此处邀请好友</span>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="dialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="dialogVisible = false">确认</el-button>
+      </span>
+    </template>
+  </el-dialog>
 </template>
 <script lang="ts" setup>
-  const { info } = defineProps({
-    info: {
-      type: Object,
-      default: {}
-    }
-  })
+  import { ref } from 'vue'
+  type prop = {
+    info: any
+  }
+  const { info } = defineProps<prop>()
   const emit = defineEmits(['viewDetail', 'addUserOrCohort'])
 
   const handleMoreFun = () => {
     emit('viewDetail')
   }
-
+  const dialogVisible = ref(false)
   const handleAddFun = () => {
-    emit('addUserOrCohort')
+    // emit('addUserOrCohort')
+    console.log('测试', info.detail)
+
+    dialogVisible.value = true
   }
 </script>
 
@@ -55,6 +75,9 @@
         cursor: pointer;
       }
     }
+
+    // .add-btn {
+    // }
   }
 
   .user {

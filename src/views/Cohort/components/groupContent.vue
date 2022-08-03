@@ -6,9 +6,9 @@
         <img class="con-img" src="@/assets/img/userIcon/ic_03.png" alt="">
         <div class="con-content">
           <span class="con-content-name">{{ getUserName(item.fromId) }}</span>
-          <p class="con-content-txt">
-            <span>{{ item.msgBody }}</span>
-          </p>
+          <span class="con-content-txt">
+            {{ item.msgBody }}
+          </span>
         </div>
       </li>
       <li class="group-content-right con" v-else>
@@ -147,9 +147,8 @@ defineExpose({
 
   .group-content-left {
     .con-content {
-      &-txt {
-        width: 100%;
-      }
+      display: flex;
+      flex-direction: column;
     }
   }
 

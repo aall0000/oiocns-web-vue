@@ -132,7 +132,7 @@
           <!-- 组内成员信息 -->
           <div class="deptment-info">
             <div class="deptment-info-btns">
-              <div class="edit" v-if="personType == 1">
+              <div class="edit" v-if="personType == '1'">
                 <el-button type="primary" @click="friendDialog = true">添加好友</el-button>
               </div>
               <div class="edit" v-else>
@@ -143,7 +143,7 @@
           </div>
           <div class="tab-list">
             <el-table
-              :data="personType == 1 ? state.friendList : state.qunList"
+              :data="personType == '1' ? state.friendList : state.qunList"
               stripe
               style="width: 100%"
               height="390"
@@ -155,8 +155,8 @@
               <el-table-column prop="name" label="成员角色" />
               <el-table-column prop="name" label="操作">
                 <template #default="scope">
-                  <el-button v-if="personType ==1" @click="deleteFriend(scope.row.id)" type="primary">删除好友</el-button>
-                  <el-button v-if="personType ==2" @click="deletequn(scope.row.id)" type="primary">退出群</el-button>
+                  <el-button v-if="personType =='1'" @click="deleteFriend(scope.row.id)" type="primary">删除好友</el-button>
+                  <el-button v-if="personType =='2'" @click="deletequn(scope.row.id)" type="primary">退出群</el-button>
                 </template>
               </el-table-column>
               
@@ -169,7 +169,7 @@
       </div>
       <el-dialog
         v-model="friendDialog"
-        :title="personType == 1 ? '添加好友' : '添加群'"
+        :title="personType == '1' ? '添加好友' : '添加群'"
         width="30%"
       >
         <el-select
@@ -177,7 +177,7 @@
           filterable
           remote
           reserve-keyword
-          :placeholder="personType == 1 ? '请输入要查找的好友名' : '请输入要查找的群'"
+          :placeholder="personType == '1' ? '请输入要查找的好友名' : '请输入要查找的群'"
           :remote-method="remoteMethod"
           :loading="loading"
         >
@@ -191,7 +191,7 @@
         <template #footer>
           <span class="dialog-footer">
             <el-button @click="friendDialog = false">取消</el-button>
-            <el-button type="primary" v-if="personType == 1" @click="addFriends">确认</el-button>
+            <el-button type="primary" v-if="personType == '1'" @click="addFriends">确认</el-button>
             <el-button type="primary" v-else @click="addCohort">确认</el-button>
           </span>
         </template>
@@ -230,7 +230,7 @@
   let selectId = ref<string>()
   let showInfo = ref<boolean>(false)
   let treeObj = ref<any>({})
-  let personType = ref<number>(1)
+  let personType = ref<string>('1')
   $services.company
     .getJoinedCompany({
       data: {
@@ -335,7 +335,7 @@
       state.qunList = result
     }
   }
-  const personChange = (index: number) => {
+  const personChange = (index: string) => {
     personType.value = index
   }
   interface ListItem {
@@ -349,7 +349,7 @@
   const remoteMethod = (query: string) => {
     if (query) {
       loading.value = true
-      if (personType.value == 1) {
+      if (personType.value == '1') {
         $services.person
           .searchPersons({
             data: {
