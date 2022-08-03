@@ -1,12 +1,6 @@
 <template>
   <div class="userUnit">
-    <div class="pageHeader">
-      <el-breadcrumb separator="/" class="header">
-        <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
-        <el-breadcrumb-item><a href="/userMsg">信息设置</a></el-breadcrumb-item>
-        <el-breadcrumb-item><a href="/userUnit">我的单位</a></el-breadcrumb-item>
-      </el-breadcrumb>
-    </div>
+    <div class="pageHeader"> </div>
     <div class="title">
       <el-tabs v-model="activeName" @tab-click="handleClick">
         <el-tab-pane label="全部" name="first">
@@ -47,19 +41,14 @@
   .userUnit {
     .pageHeader {
       width: 100%;
-      height: 40px;
+      height: 35px;
       background-color: #fff;
-      .header {
-        margin-top: 20px;
-        margin-left: 30px;
-      }
     }
     .title {
       :deep(.el-tabs__item) {
         font-size: 20px !important;
         font-weight: 600;
         margin-left: 30px;
-
         border-color: #1a5773;
       }
       :deep(.el-tabs__header) {

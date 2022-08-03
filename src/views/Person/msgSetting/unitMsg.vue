@@ -1,11 +1,6 @@
 <template>
   <div class="UnitMsg">
     <div class="pageHeader">
-      <el-breadcrumb separator="/" class="header">
-        <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
-        <el-breadcrumb-item><a href="/unitMsg">信息设置</a></el-breadcrumb-item>
-        <el-breadcrumb-item><a href="/unitMsg">单位信息</a></el-breadcrumb-item>
-      </el-breadcrumb>
       <div class="title">单位信息</div>
     </div>
     <div class="body">
@@ -153,7 +148,7 @@
         margin-left: 30px;
       }
       .title {
-        padding-top: 15px;
+        padding-top: 20px;
         margin-left: 30px;
         font-size: 20px;
         font-weight: 600;

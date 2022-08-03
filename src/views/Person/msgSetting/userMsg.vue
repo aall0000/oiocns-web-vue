@@ -1,10 +1,6 @@
 <template>
   <div class="userMsg">
     <div class="pageHeader">
-      <el-breadcrumb separator="/" class="header">
-        <el-breadcrumb-item :to="{ path: '/userMsg' }">己</el-breadcrumb-item>
-        <el-breadcrumb-item><a href="/userMsg">信息设置</a></el-breadcrumb-item>
-      </el-breadcrumb>
       <div class="title">个人信息</div>
     </div>
     <div class="body">
@@ -174,9 +170,9 @@
         margin-left: 30px;
       }
       .title {
-        padding-top: 10px;
+        padding-top: 20px;
         margin-left: 30px;
-        font-size: 25px;
+        font-size: 20px;
         font-weight: 600;
       }
     }

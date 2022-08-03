@@ -1,8 +1,8 @@
 <template>
   <div class="baseLayout">
-    <teleport v-if="isShowMenu" to="#menu-teleport-target">
+    <!-- <teleport v-if="isShowMenu" to="#menu-teleport-target">
       <el-aside class="custom-group-silder-menu" width="220px"><Menu></Menu></el-aside>
-    </teleport>
+    </teleport> -->
     <div class="headers"><Head></Head></div>
     <div class="articleTop">
       <div class="articleTop-left"><Invitate></Invitate></div>

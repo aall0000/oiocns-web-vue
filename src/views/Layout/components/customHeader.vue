@@ -1,7 +1,7 @@
 <template>
   <el-row class="page-custom-header">
     <!-- 左侧 -->
-    <el-col class="" :span="12">
+    <el-col class="" :span="4">
       <img class="logo" src="@/assets/img/avatar.jpg" alt="logo" />
       <el-dropdown trigger="click" placement="bottom-start">
         <span class="el-dropdown-link" @click="onClickDrop">
@@ -29,29 +29,24 @@
       </el-dropdown>
     </el-col>
     <!-- 右侧 -->
-    <el-col :span="12" class="flex col-right">
-      <el-icon :size="18" class="icon1 right-con">
-        <Suitcase />
-      </el-icon>
-      <el-input
-        class="right-con"
-        v-model="SearchInfo"
-        :style="{ width: '200px' }"
-        placeholder="请输⼊想搜索的功能"
-      >
-        <template #append>
-          <el-button :icon="Search" />
+    <el-col :span="12" class="col-center"
+      ><el-popover trigger="click" :visible="visible" placement="bottom" :width="950">
+        <template #reference>
+          <el-input
+            ref="searchRef"
+            class="right-con"
+            v-model="SearchInfo"
+            :style="{ width: '100%', height: '40px' }"
+            placeholder="请输⼊想搜索的功能"
+          >
+            <template #prepend>
+              <el-button :icon="Search" @click="showSearchInfo" />
+            </template>
+          </el-input>
         </template>
-      </el-input>
-      <el-icon :size="18" class="icon2 right-con">
-        <Postcard />
-      </el-icon>
-      <el-icon :size="18" class="icon3 right-con">
-        <School />
-      </el-icon>
-      <el-icon :size="18" class="icon4 right-con">
-        <Grid />
-      </el-icon>
+        <SearchDialog></SearchDialog> </el-popover
+    ></el-col>
+    <el-col :span="8" class="flex col-right">
       <el-dropdown trigger="click">
         <span class="el-dropdown-link">
           <el-icon>
@@ -82,6 +77,12 @@
       @closeDialog="closeDialog"
       @switchCreateCompany="switchCreateCompany"
     ></CreateUnitDialog>
+    <SearchDialog
+      v-if="item.key == 'search' && item.value"
+      :dialogShow="item"
+      :search="SearchInfo"
+      @closeDialog="closeDialog"
+    ></SearchDialog>
   </template>
 </template>
 
@@ -94,21 +95,17 @@
   import $services from '@/services'
   import { ElMessage } from 'element-plus'
   import CreateUnitDialog from './createUnitDialog.vue'
+  import SearchDialog from './searchDialog.vue'
 
   const store = useUserStore()
   const SearchInfo = ref('')
   const router = useRouter()
   let current = ref(0)
+  const visible = ref(false)
+  const showSearch = ref(false)
   const { queryInfo } = storeToRefs(store)
   const workspaceData = store.workspaceData
 
-  const closeDialog = (key: string) => {
-    dialogShow.map((el) => {
-      if (el.key == key) {
-        el.value = false
-      }
-    })
-  }
   const load = () => {
     current.value++
     store.getCompanyList(current.value, workspaceData.id, true)
@@ -117,12 +114,41 @@
     {
       key: 'unit',
       value: false
+    },
+    {
+      key: 'search',
+      value: false
     }
   ])
+  const showSearchInfo = () => {
+    visible.value = !visible.value
+  }
+  // const getFocus = () => {
+  //   visible.value = true
+  // }
+  // const getBlur = () => {
+  //   if (!showSearch.value) {
+  //     visible.value = false
+  //   }
+  // }
+  // const mouseenter = () => {
+  //   showSearch.value = true
+  // }
+  // const mouseleave = () => {
+  //   showSearch.value = false
+  // }
+
   const createCompany = () => {
     dialogShow.map((el) => {
       if (el.key == 'unit') {
         el.value = true
+      }
+    })
+  }
+  const closeDialog = (key: string) => {
+    dialogShow.map((el) => {
+      if (el.key == key) {
+        el.value = false
       }
     })
   }
@@ -194,6 +220,9 @@
 </script>
 
 <style lang="scss" scoped>
+  :deep(.el-popover.el-popper) {
+    width: 100%;
+  }
   .joinBtn {
     margin: 10px;
     display: flex;
@@ -224,7 +253,6 @@
     .logo {
       margin-right: 10px;
     }
-
     .col-right {
       justify-content: flex-end;
 
