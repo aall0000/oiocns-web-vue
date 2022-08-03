@@ -11,8 +11,10 @@
           mode="vertical"
           @select="handleSelect"
         >
-          <el-menu-item index="1">单位</el-menu-item>
-          <el-menu-item index="2">集团</el-menu-item>
+          <el-menu-item index="1">单位维护</el-menu-item>
+          <el-menu-item index="2">集团维护</el-menu-item>
+          <el-menu-item index="3">单位群组</el-menu-item>
+          <el-menu-item index="4">我的好友</el-menu-item>
         </el-menu>
       </div>
       <div class="menu-tab" v-if="showMenu == false">
@@ -22,8 +24,8 @@
           class="el-menu-vertical-demo"
           mode="vertical"
         >
-          <el-menu-item index="1">好友管理</el-menu-item>
-          <el-menu-item index="2">群管理</el-menu-item>
+          <el-menu-item index="1">我的好友</el-menu-item>
+          <el-menu-item index="2">我的群组</el-menu-item>
         </el-menu>
       </div>
       <!-- 下级部门信息 -->
@@ -196,6 +198,26 @@
           </span>
         </template>
       </el-dialog>
+      <el-dialog v-model="addQun" title="创建群" width="30%">
+            <el-form-item label="群名称">
+              <el-input v-model="qunName" placeholder="Please input" clearable />
+            </el-form-item>
+            <el-form-item label="群code">
+              <el-input v-model="qunCode" placeholder="Please input" clearable />
+            </el-form-item>
+            <el-form-item label="团队名称">
+              <el-input v-model="qunTeamName" placeholder="Please input" clearable />
+            </el-form-item>
+            <el-form-item label="群code">
+              <el-input v-model="qunTeamCode" placeholder="Please input" clearable />
+            </el-form-item>
+            <template #footer>
+              <span class="dialog-footer">
+                <el-button @click="dialogVisible = false">取消</el-button>
+                <el-button type="primary" @click="submitFriends">确认</el-button>
+              </span>
+            </template>
+          </el-dialog>
     </div>
   </div>
 </template>
@@ -503,6 +525,11 @@
         }
       })
   }
+  const addQun = ref<boolean>(false);
+  let qunName = ref<string>('');
+  let qunCode = ref<string>('');
+  let qunTeamName = ref<string>('');
+  let qunTeamCode = ref<string>('');
   let filterHandler = () => {}
 </script>
 
