@@ -1,15 +1,19 @@
-import { defineConfig } from 'vite';
-import vue from '@vitejs/plugin-vue';
-import * as path from 'path';
+import { defineConfig } from 'vite'
+import vue from '@vitejs/plugin-vue'
+import * as path from 'path'
 // import styleImport from 'vite-plugin-style-import';
-import AutoImport from 'unplugin-auto-import/vite';
+import AutoImport from 'unplugin-auto-import/vite'
 
-import Components from 'unplugin-vue-components/vite';
-import { ElementPlusResolver } from 'unplugin-vue-components/resolvers';
-import { settings } from './src/config/index';
+import Components from 'unplugin-vue-components/vite'
+import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
+import { settings } from './src/config/index'
+// 分析插件
+import { visualizer } from 'rollup-plugin-visualizer'
+import AutoZip  from 'vite-plugin-auto-zip'
+import viteCompression from 'vite-plugin-compression'
 // 自动导入element图标
-import Icons from 'unplugin-icons/vite';
-import IconsResolver from 'unplugin-icons/resolver';
+import Icons from 'unplugin-icons/vite'
+import IconsResolver from 'unplugin-icons/resolver'
 
 // import vueSetupExtend from '@winner-fed/unplugin-vue-setup-extend/vite';
 // import svgLoader from 'vite-svg-loader';
@@ -18,13 +22,24 @@ export default defineConfig({
   base: settings.base, // 生产环境路径
   plugins: [
     vue(), //按需导入element-plus组件
+    viteCompression({
+      verbose: true,
+      disable: false,
+      threshold: 10240,
+      algorithm: 'gzip',
+      ext: '.gz'
+    }),
+    AutoZip ({
+      dir: 'dist',
+      outputName: 'test'
+    }),
     AutoImport({
       resolvers: [ElementPlusResolver(), IconsResolver({ prefix: 'Icon' })],
       include: [
         /\.[tj]sx?$/, // .ts, .tsx, .js, .jsx
         /\.vue$/,
         /\.vue\?vue/, // .vue
-        /\.md$/, // .md
+        /\.md$/ // .md
       ],
       dts: true,
       imports: ['vue', 'vue-router']
@@ -35,7 +50,7 @@ export default defineConfig({
     Icons({
       autoInstall: true
     }),
-
+    visualizer({ open: true, filename: 'report.html' })
   ],
   resolve: {
     alias: {
@@ -69,6 +84,18 @@ export default defineConfig({
         drop_console: true, // 生产环境移除console
         drop_debugger: true // 生产环境移除debugger
       }
+    },
+    rollupOptions: {
+      output: {
+        chunkFileNames: 'static/js/[name]-[hash].js',
+        entryFileNames: 'static/js/[name]-[hash].js',
+        assetFileNames: 'static/[ext]/[name]-[hash].[ext]',
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            return id.toString().split('node_modules/')[1].split('/')[0].toString()
+          }
+        }
+      }
     }
   },
   server: {
@@ -85,18 +112,18 @@ export default defineConfig({
       ? {
           '/orginone': {
             target: 'http://qkbyte.orginone.cn:2001', // 后台接口
-            changeOrigin: true, // 是否允许跨域
+            changeOrigin: true // 是否允许跨域
             // secure: false,                    // 如果是https接口，需要配置这个参数---7003
             // rewrite: (path: any) => path.replace(/^\/api/, '')
           },
           '/orginone/orgchat/msghub': {
             target: 'http://qkbyte.orginone.cn:7003', // 后台接口
             changeOrigin: true, // 是否允许跨域
-            ws:true,
+            ws: true
             // secure: false,                    // 如果是https接口，需要配置这个参数---
             // rewrite: (path: any) => path.replace(/^\/api/, '')
           }
         }
       : {}
   }
-});
+})
