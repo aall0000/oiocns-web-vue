@@ -37,7 +37,7 @@
     if (store.workspaceData.name === '个人空间') {
       menu.value = [
         {
-          value: '个人空间',
+          value: '个人信息',
           label: 'userMsg'
         },
         {
