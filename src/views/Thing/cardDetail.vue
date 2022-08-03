@@ -88,9 +88,9 @@
         tableData.value = res.data.result
       })
   }
-  // var select = () => {
-  //   console.log('select')
-  // }
+  var select = () => {
+    console.log('select')
+  }
   var joinRefse = (item: { id: '' }) => {
     $services.person
       .joinRefuse({
@@ -119,9 +119,9 @@
         })
       })
   }
-  // var changeSelect = () => {
-  //   console.log()
-  // }
+  var changeSelect = () => {
+    console.log()
+  }
   const handleSelect = (key: string, keyPath: string[]) => {
     console.log(key, keyPath)
   }
