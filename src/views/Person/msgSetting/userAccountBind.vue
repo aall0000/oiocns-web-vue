@@ -6,9 +6,6 @@
     <div class="body">
       <Account />
     </div>
-    <div class="bottom">
-      <span class="content">Copyright @2021 资产云开放协同创新中心 主办单位：浙江省财政厅</span>
-    </div>
   </div>
 </template>
 
@@ -22,7 +19,8 @@
 </script>
 <style lang="scss" scoped>
   .userAccountBind {
-    height: calc(100vh - 70px);
+    height: calc(100vh - 235px);
+    background-color: #fff;
 
     .pageHeader {
       width: 100%;

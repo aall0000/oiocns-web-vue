@@ -74,10 +74,6 @@
         </div>
       </div>
     </div>
-
-    <div class="bottom">
-      <span class="content">Copyright @2021 资产云开放协同创新中心 主办单位：浙江省财政厅</span>
-    </div>
   </div>
 </template>
 
@@ -160,7 +156,8 @@
 </script>
 <style lang="scss" scoped>
   .userMsg {
-    height: calc(100vh - 70px);
+    height: calc(100vh - 230px);
+    background-color: #fff;
     .pageHeader {
       width: 100%;
       height: 70px;
@@ -177,7 +174,7 @@
       }
     }
     .body {
-      height: 600px;
+      height: 100%;
       width: 100%;
       border-left: 10px solid #eff0f4;
       border-top: 16px solid #eff0f4;
