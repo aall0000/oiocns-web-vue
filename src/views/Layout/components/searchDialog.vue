@@ -1,10 +1,15 @@
 <template>
   <el-tabs v-model="activeName" class="demo-tabs">
-    <el-tab-pane label="日志" name="first"><div class="bank">暂无数据</div></el-tab-pane>
-    <el-tab-pane label="标签" name="second"><div class="bank">暂无数据</div></el-tab-pane>
-    <el-tab-pane label="功能" name="third"><div class="bank">暂无数据</div></el-tab-pane>
-    <el-tab-pane label="部门" name="four"><div class="bank">暂无数据</div></el-tab-pane>
-    <el-tab-pane label="公开群组" name="five"><div class="bank">暂无数据</div></el-tab-pane>
+    <el-tab-pane label="综合" name="first"><div class="bank">暂无数据</div></el-tab-pane>
+    <el-tab-pane label="联系人" name="second"><div class="bank">暂无数据</div></el-tab-pane>
+    <el-tab-pane label="群组" name="third"><div class="bank">暂无数据</div></el-tab-pane>
+    <el-tab-pane label="聊天记录" name="four"><div class="bank">暂无数据</div></el-tab-pane>
+    <el-tab-pane label="文档" name="five"><div class="bank">暂无数据</div></el-tab-pane>
+    <el-tab-pane label="日志" name="six"><div class="bank">暂无数据</div></el-tab-pane>
+    <el-tab-pane label="标签" name="six"><div class="bank">暂无数据</div></el-tab-pane>
+    <el-tab-pane label="功能" name="six"><div class="bank">暂无数据</div></el-tab-pane>
+    <el-tab-pane label="部门" name="six"><div class="bank">暂无数据</div></el-tab-pane>
+    <el-tab-pane label="公开群组" name="six"><div class="bank">暂无数据</div></el-tab-pane>
     <el-tab-pane label="应用" name="six"><div class="bank">暂无数据</div></el-tab-pane>
   </el-tabs>
 </template>

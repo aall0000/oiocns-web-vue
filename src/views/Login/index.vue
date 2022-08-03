@@ -27,7 +27,6 @@
 </template>
 
 <script lang="ts" setup>
-  // @ts-nocheck
   // import 'element-plus/theme-chalk/el-loading.css'
   import Login from './components/login.vue'
   import Register from './components/register.vue'
@@ -94,8 +93,8 @@
     let date = new Date() // 获取时间
     date.setTime(date.getTime() + 24 * 60 * 60 * 1000 * days) // 保存的天数
     // 字符串拼接cookie
-    window.document.cookie = 'username' + '=' + username + ';path=/;expires=' + date.toGMTString()
-    window.document.cookie = 'password' + '=' + password + ';path=/;expires=' + date.toGMTString()
+    window.document.cookie = 'username' + '=' + username + ';path=/;expires=' + date.toUTCString()
+    window.document.cookie = 'password' + '=' + password + ';path=/;expires=' + date.toUTCString()
   }
 </script>
 

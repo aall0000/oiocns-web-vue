@@ -1,10 +1,6 @@
 <template>
   <div class="userMsg">
     <div class="pageHeader">
-      <el-breadcrumb separator="/" class="header">
-        <el-breadcrumb-item :to="{ path: '/userMsg' }">己</el-breadcrumb-item>
-        <el-breadcrumb-item><a href="/userMsg">信息设置</a></el-breadcrumb-item>
-      </el-breadcrumb>
       <div class="title">个人信息</div>
     </div>
     <div class="body">
@@ -77,10 +73,6 @@
           <span>上传文件</span>
         </div>
       </div>
-    </div>
-
-    <div class="bottom">
-      <span class="content">Copyright @2021 资产云开放协同创新中心 主办单位：浙江省财政厅</span>
     </div>
   </div>
 </template>
@@ -164,7 +156,8 @@
 </script>
 <style lang="scss" scoped>
   .userMsg {
-    height: calc(100vh - 70px);
+    height: calc(100vh - 230px);
+    background-color: #fff;
     .pageHeader {
       width: 100%;
       height: 70px;
@@ -174,14 +167,14 @@
         margin-left: 30px;
       }
       .title {
-        padding-top: 10px;
+        padding-top: 20px;
         margin-left: 30px;
-        font-size: 25px;
+        font-size: 20px;
         font-weight: 600;
       }
     }
     .body {
-      height: 600px;
+      height: 100%;
       width: 100%;
       border-left: 10px solid #eff0f4;
       border-top: 16px solid #eff0f4;

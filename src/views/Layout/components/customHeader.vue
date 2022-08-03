@@ -1,9 +1,9 @@
 <template>
   <el-row class="page-custom-header">
     <!-- 左侧 -->
-    <el-col class="" :span="12">
+    <el-col class="" :span="4">
       <img class="logo" src="@/assets/img/avatar.jpg" alt="logo" />
-      <el-dropdown trigger="click" placement="bottom-start">
+      <el-dropdown trigger="click" placement="bottom-start" ref="dropdown">
         <span class="el-dropdown-link" @click="onClickDrop">
           {{ workspaceData?.name || '' }}
           <el-icon>
@@ -29,35 +29,24 @@
       </el-dropdown>
     </el-col>
     <!-- 右侧 -->
-    <el-col :span="12" class="flex col-right">
-      <el-icon :size="18" class="icon1 right-con">
-        <Suitcase />
-      </el-icon>
-      <el-popover trigger="click" :visible="visible" placement="bottom" :width="500">
+    <el-col :span="12" class="col-center"
+      ><el-popover trigger="click" :visible="visible" placement="bottom" :width="950">
         <template #reference>
           <el-input
             ref="searchRef"
             class="right-con"
             v-model="SearchInfo"
-            :style="{ width: '200px' }"
+            :style="{ width: '100%', height: '40px' }"
             placeholder="请输⼊想搜索的功能"
           >
-            <template #append>
+            <template #prepend>
               <el-button :icon="Search" @click="showSearchInfo" />
             </template>
           </el-input>
         </template>
-        <SearchDialog></SearchDialog>
-      </el-popover>
-      <el-icon :size="18" class="icon2 right-con">
-        <Postcard />
-      </el-icon>
-      <el-icon :size="18" class="icon3 right-con">
-        <School />
-      </el-icon>
-      <el-icon :size="18" class="icon4 right-con">
-        <Grid />
-      </el-icon>
+        <SearchDialog></SearchDialog> </el-popover
+    ></el-col>
+    <el-col :span="8" class="flex col-right">
       <el-dropdown trigger="click">
         <span class="el-dropdown-link">
           <el-icon>
@@ -116,6 +105,7 @@
   const showSearch = ref(false)
   const { queryInfo } = storeToRefs(store)
   const workspaceData = store.workspaceData
+  const dropdown = ref()
 
   const load = () => {
     current.value++
@@ -153,6 +143,7 @@
     dialogShow.map((el) => {
       if (el.key == 'unit') {
         el.value = true
+        dropdown.value.handleClose()
       }
     })
   }
@@ -231,6 +222,9 @@
 </script>
 
 <style lang="scss" scoped>
+  :deep(.el-popover.el-popper) {
+    width: 100%;
+  }
   .joinBtn {
     margin: 10px;
     display: flex;
@@ -261,7 +255,6 @@
     .logo {
       margin-right: 10px;
     }
-
     .col-right {
       justify-content: flex-end;
 

@@ -1,14 +1,14 @@
 <template>
   <ul class="group-content-wrap" ref="nodeRef">
-    <li class="history-more" @click="getMoreHistory">查看更多</li>
-    <template v-for="item in list">
+    <!-- <li class="history-more" @click="getMoreHistory">查看更多</li> -->
+    <template v-for="(item, index) in list">
       <li class="group-content-left con" v-if="item.fromId !== myId">
-        <img class="con-img" src="@/assets/img/avatar.jpg" alt="">
+        <img class="con-img" src="@/assets/img/userIcon/ic_03.png" alt="">
         <div class="con-content">
           <span class="con-content-name">{{ getUserName(item.fromId) }}</span>
-          <p class="con-content-txt">
-            <span>{{ item.msgBody }}</span>
-          </p>
+          <span class="con-content-txt">
+            {{ item.msgBody }}
+          </span>
         </div>
       </li>
       <li class="group-content-right con" v-else>
@@ -18,7 +18,7 @@
             {{ item.msgBody }}
           </span>
         </div>
-        <img class="con-img" src="@/assets/img/avatar.jpg" alt="">
+        <img class="con-img" src="@/assets/img/userIcon/ic_06.png" alt="">
       </li>
     </template>
     <!-- <li class="group-content-left con">
@@ -43,13 +43,17 @@ type Props = {
 }
 const { list, myId } = defineProps<Props>()
 const { getUserName, userNameMap } = useUserStore()
-// const shouList = computed(()=>{
-//   return list.map(item=>{
-//     return
-//   })
-// })
+const showList = ref([])
 
-console.log('userNameMap', userNameMap, getUserName('338793056054677504'));
+onMounted(() => {
+
+  // import.meta.globEager(`@/assets/img/userIcon/ic_0${index % 6}.png`)
+  // showList.value = list.map((item: any, index: number) => {
+  //   const obj = { ...item, icon: new URL(`../../../assets/img/userIcon/ic_0${index % 6}.png`, import.meta.url).href }
+  //   console.log('是是是', obj);
+  //   return obj
+  // })
+})
 
 // dom节点
 const nodeRef = ref(null)
@@ -143,9 +147,8 @@ defineExpose({
 
   .group-content-left {
     .con-content {
-      &-txt {
-        width: 100%;
-      }
+      display: flex;
+      flex-direction: column;
     }
   }
 

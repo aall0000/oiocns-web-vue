@@ -1,12 +1,6 @@
 <template>
   <div class="userUnit">
-    <div class="pageHeader">
-      <el-breadcrumb separator="/" class="header">
-        <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
-        <el-breadcrumb-item><a href="/unitMsg">信息设置</a></el-breadcrumb-item>
-        <el-breadcrumb-item><a href="/affiliatedGroups">关联集团</a></el-breadcrumb-item>
-      </el-breadcrumb>
-    </div>
+    <div class="pageHeader"> </div>
     <div class="title">
       <el-tabs v-model="activeName" @tab-click="handleClick">
         <el-tab-pane label="全部" name="first">
@@ -26,9 +20,6 @@
         </el-tab-pane>
       </el-tabs>
     </div>
-    <div class="bottom">
-      <span class="content">Copyright @2021 资产云开放协同创新中心 主办单位：浙江省财政厅</span>
-    </div>
   </div>
 </template>
 
@@ -45,6 +36,9 @@
 </script>
 <style lang="scss" scoped>
   .userUnit {
+    height: calc(100vh - 235px);
+    background-color: #fff;
+
     .pageHeader {
       width: 100%;
       height: 40px;

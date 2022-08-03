@@ -53,7 +53,7 @@
           label: 'userSaveSet'
         }
       ]
-      router.push('/user')
+      router.push('/user/userMsg')
     } else {
       menu.value = [
         {
@@ -62,17 +62,17 @@
         },
         {
           value: '关联集团',
-          label: 'AffiliatedGroups'
+          label: 'affiliatedGroups'
         }
       ]
-      router.push('/company')
+      router.push('/company/unitMsg')
     }
   }
 </script>
 <style scoped>
-  .tac {
+  /* .tac {
     border-right: 6px solid #eff0f4;
-  }
+  } */
   .el-menu-vertical-demo {
     font-weight: 600;
   }

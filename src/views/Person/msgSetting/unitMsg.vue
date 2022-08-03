@@ -1,11 +1,6 @@
 <template>
   <div class="UnitMsg">
     <div class="pageHeader">
-      <el-breadcrumb separator="/" class="header">
-        <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
-        <el-breadcrumb-item><a href="/unitMsg">信息设置</a></el-breadcrumb-item>
-        <el-breadcrumb-item><a href="/unitMsg">单位信息</a></el-breadcrumb-item>
-      </el-breadcrumb>
       <div class="title">单位信息</div>
     </div>
     <div class="body">
@@ -15,7 +10,7 @@
           :inline="true"
           :label-position="labelPosition"
           label-width="100px"
-          style="max-width: 1500px"
+          style="max-width: 1400px"
           :model="formLabelAlign"
         >
           <el-form-item label="单位名称">
@@ -69,9 +64,6 @@
           <el-button type="primary">更新信息</el-button>
         </div>
       </div>
-    </div>
-    <div class="bottom">
-      <span class="content">Copyright @2021 资产云开放协同创新中心 主办单位：浙江省财政厅</span>
     </div>
   </div>
 </template>
@@ -143,7 +135,9 @@
 </script>
 <style lang="scss" scoped>
   .UnitMsg {
-    height: calc(100vh - 70px);
+    height: calc(100vh - 235px);
+    background-color: #fff;
+
     .pageHeader {
       width: 100%;
       height: 70px;
@@ -153,7 +147,7 @@
         margin-left: 30px;
       }
       .title {
-        padding-top: 15px;
+        padding-top: 20px;
         margin-left: 30px;
         font-size: 20px;
         font-weight: 600;
