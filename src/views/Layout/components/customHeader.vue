@@ -33,16 +33,22 @@
       <el-icon :size="18" class="icon1 right-con">
         <Suitcase />
       </el-icon>
-      <el-input
-        class="right-con"
-        v-model="SearchInfo"
-        :style="{ width: '200px' }"
-        placeholder="请输⼊想搜索的功能"
-      >
-        <template #append>
-          <el-button :icon="Search" />
+      <el-popover trigger="click" :visible="visible" placement="bottom" :width="500">
+        <template #reference>
+          <el-input
+            ref="searchRef"
+            class="right-con"
+            v-model="SearchInfo"
+            :style="{ width: '200px' }"
+            placeholder="请输⼊想搜索的功能"
+          >
+            <template #append>
+              <el-button :icon="Search" @click="showSearchInfo" />
+            </template>
+          </el-input>
         </template>
-      </el-input>
+        <SearchDialog></SearchDialog>
+      </el-popover>
       <el-icon :size="18" class="icon2 right-con">
         <Postcard />
       </el-icon>
@@ -82,6 +88,12 @@
       @closeDialog="closeDialog"
       @switchCreateCompany="switchCreateCompany"
     ></CreateUnitDialog>
+    <SearchDialog
+      v-if="item.key == 'search' && item.value"
+      :dialogShow="item"
+      :search="SearchInfo"
+      @closeDialog="closeDialog"
+    ></SearchDialog>
   </template>
 </template>
 
@@ -94,21 +106,17 @@
   import $services from '@/services'
   import { ElMessage } from 'element-plus'
   import CreateUnitDialog from './createUnitDialog.vue'
+  import SearchDialog from './searchDialog.vue'
 
   const store = useUserStore()
   const SearchInfo = ref('')
   const router = useRouter()
   let current = ref(0)
+  const visible = ref(false)
+  const showSearch = ref(false)
   const { queryInfo } = storeToRefs(store)
   const workspaceData = store.workspaceData
 
-  const closeDialog = (key: string) => {
-    dialogShow.map((el) => {
-      if (el.key == key) {
-        el.value = false
-      }
-    })
-  }
   const load = () => {
     current.value++
     store.getCompanyList(current.value, workspaceData.id, true)
@@ -117,12 +125,41 @@
     {
       key: 'unit',
       value: false
+    },
+    {
+      key: 'search',
+      value: false
     }
   ])
+  const showSearchInfo = () => {
+    visible.value = !visible.value
+  }
+  // const getFocus = () => {
+  //   visible.value = true
+  // }
+  // const getBlur = () => {
+  //   if (!showSearch.value) {
+  //     visible.value = false
+  //   }
+  // }
+  // const mouseenter = () => {
+  //   showSearch.value = true
+  // }
+  // const mouseleave = () => {
+  //   showSearch.value = false
+  // }
+
   const createCompany = () => {
     dialogShow.map((el) => {
       if (el.key == 'unit') {
         el.value = true
+      }
+    })
+  }
+  const closeDialog = (key: string) => {
+    dialogShow.map((el) => {
+      if (el.key == key) {
+        el.value = false
       }
     })
   }
