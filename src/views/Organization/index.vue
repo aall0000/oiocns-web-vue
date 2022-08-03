@@ -53,6 +53,7 @@
                 >下级部门
               </div>
               <div class="edit">
+                <el-button type="primary" >创建工作组</el-button>
                 <el-button type="primary" @click="dialogVisible = true">创建子部门</el-button>
                 <el-button>调整排序</el-button>
               </div>
@@ -111,13 +112,10 @@
             <el-form-item label="部门名称">
               <el-input v-model="departmentName" placeholder="Please input" clearable />
             </el-form-item>
-            <el-form-item label="团队名称">
-              <el-input v-model="departmentTeamName" placeholder="Please input" clearable />
-            </el-form-item>
-            <el-form-item label="团队code">
+            <el-form-item label="部门编号">
               <el-input v-model="departmentTeamCode" placeholder="Please input" clearable />
             </el-form-item>
-            <el-form-item label="团队Remark">
+            <el-form-item label="部门简介">
               <el-input v-model="departmentTeamRemark" placeholder="Please input" clearable />
             </el-form-item>
             <template #footer>
@@ -139,7 +137,7 @@
               </div>
               <div class="edit" v-else>
                 <el-button type="primary" @click="friendDialog = true">添加群</el-button>
-                <el-button type="primary" @click="friendDialog = true">创建群</el-button>
+                <el-button type="primary" @click="addQun = true">创建群</el-button>
               </div>
             </div>
           </div>
@@ -202,19 +200,16 @@
             <el-form-item label="群名称">
               <el-input v-model="qunName" placeholder="Please input" clearable />
             </el-form-item>
-            <el-form-item label="群code">
+            <el-form-item label="群编号">
               <el-input v-model="qunCode" placeholder="Please input" clearable />
             </el-form-item>
-            <el-form-item label="团队名称">
-              <el-input v-model="qunTeamName" placeholder="Please input" clearable />
-            </el-form-item>
-            <el-form-item label="群code">
-              <el-input v-model="qunTeamCode" placeholder="Please input" clearable />
+            <el-form-item label="群简介">
+              <el-input v-model="qunTeamRemark" placeholder="Please input" clearable />
             </el-form-item>
             <template #footer>
               <span class="dialog-footer">
                 <el-button @click="dialogVisible = false">取消</el-button>
-                <el-button type="primary" @click="submitFriends">确认</el-button>
+                <el-button type="primary" @click="addQunFun">确认</el-button>
               </span>
             </template>
           </el-dialog>
@@ -288,7 +283,6 @@
       })
   }
   let departmentName = ref<string>('')
-  let departmentTeamName = ref<string>('')
   let departmentTeamCode = ref<string>('')
   let departmentTeamRemark = ref<string>('')
   const submitFriends = () => {
@@ -298,7 +292,6 @@
           id: selectId.value,
           name: departmentName.value,
           parentId: treeObj.value.id,
-          teamName: departmentTeamName.value,
           code: departmentTeamCode.value,
           teamRemark: departmentTeamRemark.value
         }
@@ -528,8 +521,31 @@
   const addQun = ref<boolean>(false);
   let qunName = ref<string>('');
   let qunCode = ref<string>('');
-  let qunTeamName = ref<string>('');
-  let qunTeamCode = ref<string>('');
+  let qunTeamRemark = ref<string>('');
+  const addQunFun = ()=>{
+    $services.cohort.create({
+        data: {
+          id: selectId.value,
+          name: qunName.value,
+          code: qunCode.value,
+          teamRemark: qunTeamRemark.value
+        }
+      })
+      .then((res: ResultType) => {
+        if (res.code == 200) {
+          ElMessage({
+            message: '创建成功',
+            type: 'success'
+          })
+          addQun.value = false;
+        } else {
+          ElMessage({
+            message: res.msg,
+            type: 'warning'
+          })
+        }
+      })
+  }
   let filterHandler = () => {}
 </script>
 
