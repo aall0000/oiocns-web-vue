@@ -86,7 +86,7 @@
 </template>
 
 <script lang="ts" setup>
-// @ts-nocheck
+  // @ts-nocheck
   import { ArrowLeft } from '@element-plus/icons-vue'
   import { regionData, CodeToText } from 'element-china-area-data'
   import { onMounted, reactive, ref } from 'vue'
@@ -118,7 +118,7 @@
         data: {},
         headers: { Authorization: token }
       })
-      .then((res: any) => {
+      .then((res: ResultType) => {
         console.log('查询人员信息', res)
         formLabelAlign.name = res.data.name
         formLabelAlign.idCardNum = res.data.id
@@ -147,7 +147,7 @@
         },
         headers: { Authorization: token }
       })
-      .then((res: any) => {
+      .then((res: ResultType) => {
         console.log('更新个人信息成功', res)
       })
   }

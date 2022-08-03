@@ -166,7 +166,7 @@
           Authorization: token
         }
       })
-      .then((res: any) => {
+      .then((res: ResultType) => {
         console.log('删除集团成功', res)
       })
   }
@@ -190,7 +190,7 @@
           Authorization: token
         }
       })
-      .then((res: any) => {
+      .then((res: ResultType) => {
         console.log('成功创建集团', res)
         dialogVisible.value = false
         fetchRequest(offset.value, pageSize.value)

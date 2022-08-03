@@ -29,88 +29,88 @@
 </template>
 
 <script setup lang="ts">
-import $services from '@/services'
-import { onMounted, reactive, ref } from 'vue'
-import { ElMessage } from 'element-plus'
+  import $services from '@/services'
+  import { onMounted, reactive, ref } from 'vue'
+  import { ElMessage } from 'element-plus'
 
-const current = ref(0)
-onMounted(() => {
-  getData()
-})
-const getData = () => {
-  $services.person
-    .getAllApply({
-      data: {
-        offset: current.value,
-        limit: 10
-      }
-    })
-    .then((res: any) => {
-      if (res.code == 200) {
-        state.tableData = res.data.result
-        // let arr = []
-        // res.data.result.forEach((el: any) => {
-        //   arr.push(el.team)
-        // })
-        // state.tableData = arr
-        // console.log(state.tableData)
-      } else {
-        ElMessage({
-          message: res.msg,
-          type: 'warning'
-        })
-      }
-    })
-}
-const handleCurrentChange = (val: number) => {
-  console.log(`current page: ${val}`)
-  current.value = val
-}
-
-const handleClick = (item: any) => {
-  console.log('click', item)
-  $services.person
-    .cancelJoin({
-      data: {
-        id: item.id
-      }
-    })
-    .then((res: any) => {
-      if (res.code == 200) {
-        ElMessage({
-          message: '取消申请成功',
-          type: 'success'
-        })
-        getData()
-      } else {
-        ElMessage({
-          message: res.msg,
-          type: 'warning'
-        })
-      }
-    })
-}
-let state = reactive({ tableData: [] })
-const tableHead = [
-  {
-    prop: 'team[name]',
-    label: '名称'
-  },
-  {
-    prop: 'team[remark]',
-    label: '备注'
+  const current = ref(0)
+  onMounted(() => {
+    getData()
+  })
+  const getData = () => {
+    $services.person
+      .getAllApply({
+        data: {
+          offset: current.value,
+          limit: 10
+        }
+      })
+      .then((res: ResultType) => {
+        if (res.code == 200) {
+          state.tableData = res.data.result
+          // let arr = []
+          // res.data.result.forEach((el: any) => {
+          //   arr.push(el.team)
+          // })
+          // state.tableData = arr
+          // console.log(state.tableData)
+        } else {
+          ElMessage({
+            message: res.msg,
+            type: 'warning'
+          })
+        }
+      })
   }
-]
+  const handleCurrentChange = (val: number) => {
+    console.log(`current page: ${val}`)
+    current.value = val
+  }
+
+  const handleClick = (item: any) => {
+    console.log('click', item)
+    $services.person
+      .cancelJoin({
+        data: {
+          id: item.id
+        }
+      })
+      .then((res: ResultType) => {
+        if (res.code == 200) {
+          ElMessage({
+            message: '取消申请成功',
+            type: 'success'
+          })
+          getData()
+        } else {
+          ElMessage({
+            message: res.msg,
+            type: 'warning'
+          })
+        }
+      })
+  }
+  let state = reactive({ tableData: [] })
+  const tableHead = [
+    {
+      prop: 'team[name]',
+      label: '名称'
+    },
+    {
+      prop: 'team[remark]',
+      label: '备注'
+    }
+  ]
 </script>
 
 <style lang="scss" scoped>
-.page {
-  background: #fff;
-  width: 100%;
-  height: 50px;
-  display: flex;
-  flex-direction: row-reverse;
-  align-items: center;
-  padding-right: 20px;
-}
+  .page {
+    background: #fff;
+    width: 100%;
+    height: 50px;
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: center;
+    padding-right: 20px;
+  }
 </style>

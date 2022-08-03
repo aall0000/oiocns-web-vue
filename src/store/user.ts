@@ -31,7 +31,7 @@ export const useUserStore = defineStore({
             password: data.password
           }
         })
-        .then(async (res: any) => {
+        .then(async (res: ResultType) => {
           if (res.code == 200) {
             sessionStorage.setItem('ZCY_LOGIN_DATA', JSON.stringify(res.data))
             sessionStorage.setItem('TOKEN', res.data.accessToken)
@@ -51,7 +51,7 @@ export const useUserStore = defineStore({
         this.userToken = token
       }
       //获取用户详细信息
-      $services.person.queryInfo().then((res: any) => {
+      $services.person.queryInfo().then((res: ResultType) => {
         console.log(res)
         if (res.code == 200) {
           this.queryInfo = res.data
@@ -75,7 +75,7 @@ export const useUserStore = defineStore({
             limit: 10
           }
         })
-        .then((res: any) => {
+        .then((res: ResultType) => {
           console.log(res)
           if (res.code == 200) {
             let arr = []
@@ -109,7 +109,7 @@ export const useUserStore = defineStore({
             limit: 100
           }
         })
-        .then((res: any) => {
+        .then((res: ResultType) => {
           console.log(res)
           if (res.code == 200) {
             let arr = []
