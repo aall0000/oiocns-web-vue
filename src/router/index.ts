@@ -61,6 +61,13 @@ const constantRoutes: RouteRecordRaw[] = [
           title: '安全设置'
         }
       },
+    ]
+  },
+  {
+      path: '/company',
+      component: () => import('@/views/Layout/msgLayout/layout.vue'),
+      redirect: '/unitMsg',
+      children: [
       {
         path: '/unitMsg',
         name: 'unitMsg',

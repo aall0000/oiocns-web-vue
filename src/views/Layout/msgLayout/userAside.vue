@@ -19,9 +19,11 @@
   import { Document, Menu as IconMenu, Location, Setting } from '@element-plus/icons-vue'
   import { onBeforeMount, onMounted, ref } from 'vue'
   import { useUserStore } from '@/store/user'
+  import { useRouter } from 'vue-router'
   const menu = ref([])
   const store = useUserStore()
-  onMounted(() => {
+  const router = useRouter()
+  onBeforeMount(() => {
     workspace()
   })
   const handleOpen = (key: string, keyPath: string[]) => {
@@ -51,6 +53,7 @@
           label: 'userSaveSet'
         }
       ]
+      router.push('/user')
     } else {
       menu.value = [
         {
@@ -62,6 +65,7 @@
           label: 'AffiliatedGroups'
         }
       ]
+      router.push('/company')
     }
   }
 </script>
