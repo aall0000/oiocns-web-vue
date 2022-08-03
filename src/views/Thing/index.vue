@@ -1,12 +1,5 @@
 <template>
   <div class="thing">
-    <div class="thing-head">
-      <div class="thing-type">事</div>
-      <div class="thing-mian">
-        <div class="thing-setting">工作台</div>
-        <el-input v-model="input2" class="w-50 m-2 input-class" :suffix-icon="Search" placeholder="搜索应用" />
-      </div>
-    </div>
     <div class="work-card">
       <div class="card-head">
         <div class="title">任务卡片</div>
@@ -35,195 +28,23 @@
       <div class="personal">
         <div class="head">
           <div class="personal-title">个人应用</div>
-          <div class="personal-edit">管理</div>
+          <!-- <div class="personal-edit">管理</div> -->
         </div>
-        <div class="app-list">
-          <div class="app-item">
-            <img src="./../../assets/img/Group22.png" alt="" />
-            <div class="item-box">
-              <span>添加更多应⽤</span>
-            </div>
-          </div>
-          <div class="app-item">
-            <img src="./../../assets/img/Group22.png" alt="" />
-            <div class="item-box">
-              <p>资产监管资产监管</p>
-              <p>简单、⾼效、开放的监管⼯具</p>
-            </div>
-          </div>
-          <div class="app-item">
-            <img src="./../../assets/img/Group22.png" alt="" />
-            <div class="item-box">
-              <p>资产监管资产监管</p>
-              <p>简单、⾼效、开放的监管⼯具</p>
-            </div>
-          </div>
-          <div class="app-item">
-            <img src="./../../assets/img/Group22.png" alt="" />
-            <div class="item-box">
-              <p>资产监管资产监管</p>
-              <p>简单、⾼效、开放的监管⼯具</p>
-            </div>
-          </div>
-          <div class="app-item">
-            <img src="./../../assets/img/Group22.png" alt="" />
-            <div class="item-box">
-              <p>资产监管资产监管</p>
-              <p>简单、⾼效、开放的监管⼯具</p>
-            </div>
-          </div>
-          <div class="app-item">
-            <img src="./../../assets/img/Group22.png" alt="" />
-            <div class="item-box">
-              <p>资产监管资产监管</p>
-              <p>简单、⾼效、开放的监管⼯具</p>
-            </div>
-          </div>
-          <div class="app-item">
-            <img src="./../../assets/img/Group22.png" alt="" />
-            <div class="item-box">
-              <p>资产监管资产监管</p>
-              <p>简单、⾼效、开放的监管⼯具</p>
-            </div>
-          </div>
-        </div>
-        <div class="page">
-          <el-pagination small background layout="prev, pager, next" :total="50" class="mt-4" />
-        </div>
-        <div class="head">
-          <div class="personal-title">全员应用</div>
-        </div>
-        <div class="app-list">
-          <div class="app-item">
-            <img src="./../../assets/img/Group22.png" alt="" />
-            <div class="item-box">
-              <span>添加更多应⽤</span>
-            </div>
-          </div>
-          <div class="app-item">
-            <img src="./../../assets/img/Group22.png" alt="" />
-            <div class="item-box">
-              <p>资产监管资产监管</p>
-              <p>简单、⾼效、开放的监管⼯具</p>
-            </div>
-          </div>
-          <div class="app-item">
-            <img src="./../../assets/img/Group22.png" alt="" />
-            <div class="item-box">
-              <p>资产监管资产监管</p>
-              <p>简单、⾼效、开放的监管⼯具</p>
-            </div>
-          </div>
-          <div class="app-item">
-            <img src="./../../assets/img/Group22.png" alt="" />
-            <div class="item-box">
-              <p>资产监管资产监管</p>
-              <p>简单、⾼效、开放的监管⼯具</p>
-            </div>
-          </div>
-          <div class="app-item">
-            <img src="./../../assets/img/Group22.png" alt="" />
-            <div class="item-box">
-              <p>资产监管资产监管</p>
-              <p>简单、⾼效、开放的监管⼯具</p>
-            </div>
-          </div>
-          <div class="app-item">
-            <img src="./../../assets/img/Group22.png" alt="" />
-            <div class="item-box">
-              <p>资产监管资产监管</p>
-              <p>简单、⾼效、开放的监管⼯具</p>
-            </div>
-          </div>
-          <div class="app-item">
-            <img src="./../../assets/img/Group22.png" alt="" />
-            <div class="item-box">
-              <p>资产监管资产监管</p>
-              <p>简单、⾼效、开放的监管⼯具</p>
-            </div>
-          </div>
-        </div>
-        <div class="page">
-          <el-pagination small background layout="prev, pager, next" :total="50" class="mt-4" />
+        <div class="app-list" style="height:300px" >
+          
         </div>
       </div>
       <div class="whole">
-        <div class="head">
-          <div class="personal-title">全部应用</div>
-        </div>
-        <div class="role-wrap">
-          <div class="role-list">
-            <div class="role-item role-active">最近使用</div>
-            <div class="role-item">类目一</div>
-            <div class="role-item">类目二</div>
-            <div class="role-item">类目三</div>
-            <div class="role-item">类目四</div>
-            <div class="role-item">类目五</div>
-            <div class="role-item">类目六</div>
-            <div class="role-item">类目七</div>
-            <div class="role-item">类目八</div>
-            <div class="role-item">类目九</div>
-            <div class="role-item">类目十</div>
-          </div>
-          <div class="open-fold">展开
-            <el-icon><ArrowDown /></el-icon>
-          </div>
-        </div>
+        <div class="view-details"  @click="drawer = true">编辑首页</div>
 
-        <div class="app-list">
-          <div class="app-item">
-            <img src="./../../assets/img/Group22.png" alt="" />
-            <div class="item-box">
-              <span>添加更多应⽤</span>
-            </div>
-          </div>
-          <div class="app-item">
-            <img src="./../../assets/img/Group22.png" alt="" />
-            <div class="item-box">
-              <p>资产监管资产监管</p>
-              <p>简单、⾼效、开放的监管⼯具</p>
-            </div>
-          </div>
-          <div class="app-item">
-            <img src="./../../assets/img/Group22.png" alt="" />
-            <div class="item-box">
-              <p>资产监管资产监管</p>
-              <p>简单、⾼效、开放的监管⼯具</p>
-            </div>
-          </div>
-          <div class="app-item">
-            <img src="./../../assets/img/Group22.png" alt="" />
-            <div class="item-box">
-              <p>资产监管资产监管</p>
-              <p>简单、⾼效、开放的监管⼯具</p>
-            </div>
-          </div>
-          <div class="app-item">
-            <img src="./../../assets/img/Group22.png" alt="" />
-            <div class="item-box">
-              <p>资产监管资产监管</p>
-              <p>简单、⾼效、开放的监管⼯具</p>
-            </div>
-          </div>
-          <div class="app-item">
-            <img src="./../../assets/img/Group22.png" alt="" />
-            <div class="item-box">
-              <p>资产监管资产监管</p>
-              <p>简单、⾼效、开放的监管⼯具</p>
-            </div>
-          </div>
-          <div class="app-item">
-            <img src="./../../assets/img/Group22.png" alt="" />
-            <div class="item-box">
-              <p>资产监管资产监管</p>
-              <p>简单、⾼效、开放的监管⼯具</p>
-            </div>
-          </div>
-        </div>
-        <div class="page">
-          <el-pagination small background layout="prev, pager, next" :total="50" class="mt-4" />
-        </div>
       </div>
+      <el-drawer
+        v-model="drawer"
+        title="编辑首页"
+        direction="rtl"
+      >
+      <div>我是首页模块</div>
+  </el-drawer>
     </div>
   </div>
 </template>
@@ -244,6 +65,7 @@ const getCardList = () => {
     cartList = res.data.result
   })
 }
+const drawer = ref(false);
 var jumpDetail =()=>{
   router.push({path:'/cardDetail'})
 }

@@ -125,6 +125,7 @@
   const checkIndex = (item: any) => {
     treeItem.value = item
     emit('treeItem', item)
+    // getDepartmentsList(item.id)
   }
   let departmentName = ref<string>('')
   let departmentTeamName = ref<string>('')
