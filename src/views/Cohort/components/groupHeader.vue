@@ -51,8 +51,9 @@
       .btn {
         margin-right: 10px;
       }
-      // .add-btn {
-      // }
+      .add-btn {
+        cursor: pointer;
+      }
     }
   }
 
