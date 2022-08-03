@@ -3,7 +3,7 @@
     <!--    头部-->
     <Header />
     <!--    主体-->
-    <div style="display: flex">
+    <div style="display: flex; border-top: 6px solid #eff0f4">
       <!--      侧边栏-->
       <userAside />
       <!--      内容区域home-->

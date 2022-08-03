@@ -2,8 +2,9 @@
   <div class="UnitMsg">
     <div class="pageHeader">
       <el-breadcrumb separator="/" class="header">
-        <el-breadcrumb-item :to="{ path: '/userMsg' }">己</el-breadcrumb-item>
-        <el-breadcrumb-item><a href="/userMsg">信息设置</a></el-breadcrumb-item>
+        <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
+        <el-breadcrumb-item><a href="/unitMsg">信息设置</a></el-breadcrumb-item>
+        <el-breadcrumb-item><a href="/unitMsg">单位信息</a></el-breadcrumb-item>
       </el-breadcrumb>
       <div class="title">单位信息</div>
     </div>
@@ -51,7 +52,7 @@
           <el-form-item label="联系方式">
             <el-input v-model="formLabelAlign.tel" />
           </el-form-item>
-          <el-form-item label="单位地址" prop="selectedOptions">
+          <!-- <el-form-item label="单位地址" prop="selectedOptions">
             <el-cascader
               style="width: 400px"
               :options="options"
@@ -59,7 +60,7 @@
               @change="handleChange"
             >
             </el-cascader>
-          </el-form-item>
+          </el-form-item> -->
         </el-form>
 
         <div class="button">
@@ -76,9 +77,8 @@
 </template>
 
 <script lang="ts" setup>
-  // @ts-nocheck
   import { ArrowLeft } from '@element-plus/icons-vue'
-  import { regionData, CodeToText } from 'element-china-area-data'
+  //import { provinceAndCityData, regionData, provinceAndCityDataPlus, regionDataPlus, CodeToText, TextToCode } from 'element-china-area-data'
   import { onMounted, reactive, ref } from 'vue'
   import { onBeforeMount } from 'vue'
   import $services from '@/services'
@@ -116,7 +116,7 @@
         data: {},
         headers: { Authorization: token }
       })
-      .then((res: ResultType) => {
+      .then((res: any) => {
         console.log('查询该单位详细信息', res)
         formLabelAlign.name = res.data.name
         formLabelAlign.type = res.data.team.typeName
@@ -131,15 +131,15 @@
       })
   }
 
-  const options = regionData
-  const selectedOptions: Array<number> = []
-  const handleChange = () => {
-    var loc = ''
-    for (let i = 0; i < selectedOptions.length; i++) {
-      loc += CodeToText[selectedOptions[i]]
-    }
-    alert(loc)
-  }
+  // const options = regionData
+  // const selectedOptions: Array<number> = []
+  // const handleChange = () => {
+  //   var loc = ''
+  //   for (let i = 0; i < selectedOptions.length; i++) {
+  //     loc += CodeToText[selectedOptions[i]]
+  //   }
+  //   alert(loc)
+  // }
 </script>
 <style lang="scss" scoped>
   .UnitMsg {
@@ -153,9 +153,9 @@
         margin-left: 30px;
       }
       .title {
-        padding-top: 10px;
+        padding-top: 15px;
         margin-left: 30px;
-        font-size: 25px;
+        font-size: 20px;
         font-weight: 600;
       }
     }
