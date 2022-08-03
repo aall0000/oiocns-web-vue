@@ -78,6 +78,9 @@ import { interRes } from '@/utils/interface'
 
 var tableData = ref<any>([])
 const activeIndex = ref<string>('1')
+type itemType = {
+  id:string,
+}
 var getList = () => {
   $services.person
     .approval({
@@ -93,7 +96,7 @@ var getList = () => {
 var select = () => {
   console.log('select')
 }
-var joinRefse = (item: { id: '' }) => {
+var joinRefse = (item: itemType) => {
   $services.person
     .joinRefuse({
       data: {
@@ -107,7 +110,7 @@ var joinRefse = (item: { id: '' }) => {
       })
     })
 }
-var joinSuccess = (item: { id: '' }) => {
+var joinSuccess = (item: itemType) => {
   $services.person
     .joinSuccess({
       data: {
