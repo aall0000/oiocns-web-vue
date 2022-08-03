@@ -5,6 +5,9 @@
     </el-header>
     <el-container>
       <!-- 导航区域 传送门 -->
+       <el-aside class="main-menu-content">
+        <MainAsideVue />
+      </el-aside>
       <div id="menu-teleport-target" />
       <el-container>
         <!-- <Breadcrumb></Breadcrumb> -->
@@ -22,6 +25,7 @@
 
 <script lang="ts" setup>
 import CustomHeadr from './components/customHeader.vue'
+import MainAsideVue from './components/mainAside.vue';
 import Breadcrumb from './components/breadcrumb.vue'
 import Menu from './components/menu.vue'
 </script>
@@ -40,6 +44,9 @@ import Menu from './components/menu.vue'
     box-shadow: 0px 2px 3px 1px #e0e0e0;
     // border-bottom: 1px solid #d7d7d7;
     z-index: 2;
+  }
+  .main-menu-content{
+    width: max-content;
   }
 
   .main-wrap {

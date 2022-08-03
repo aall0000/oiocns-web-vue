@@ -31,7 +31,6 @@
 
 <script lang="ts" setup>
 import { menuList } from '@/router/index';
-
 import { MenuItemClicked } from 'element-plus';
 import { NavigationFailure } from 'vue-router'
 const handleMenySelect = (index: string, indexPath: string[], item: MenuItemClicked, router?: Promise<void | NavigationFailure>) => {

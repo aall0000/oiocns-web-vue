@@ -15,7 +15,7 @@
       <GroupContent class="chart-content" :myId="myId" ref="contentWrapRef" :list="showMsgList"
         @viewMoreMsg="handleViewMoreHistory" />
       <!-- 输入区域 -->
-      <GroupInputBox class="chart-input" @submitInfo="submit" />
+      <GroupInputBox class="chart-input" v-show="activeInfo?.id" @submitInfo="submit" />
     </div>
     <GroupDetail :id="activeInfo.id" :info="selectInfo" v-if="isShowDetail" />
   </div>
@@ -201,6 +201,7 @@ const handleAddFun = () => {
 .custom-group-silder-menu.el-aside {
   height: 100%;
 }
+
 </style>
 <style lang="scss" scoped>
 .cohort-wrap {
@@ -233,10 +234,12 @@ const handleAddFun = () => {
     .chart-input {
       height: max-content;
       min-height: 120px;
+      border-top: 1px solid #ccc;
 
       .el-textarea__inner {
         color: #fff;
       }
+
     }
   }
 }

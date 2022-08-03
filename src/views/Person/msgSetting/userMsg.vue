@@ -40,7 +40,7 @@
           :model="formLabelAlign"
           style="max-width: 800px"
         >
-          <el-form-item label="省市区" prop="selectedOptions">
+          <!-- <el-form-item label="省市区" prop="selectedOptions">
             <el-cascader
               size="large"
               :options="options"
@@ -48,7 +48,7 @@
               @change="handleChange"
             >
             </el-cascader>
-          </el-form-item>
+          </el-form-item> -->
           <el-form-item label="个人简介">
             <el-input
               v-model="formLabelAlign.Profile"
@@ -88,7 +88,7 @@
 <script lang="ts" setup>
   // @ts-nocheck
   import { ArrowLeft } from '@element-plus/icons-vue'
-  import { regionData, CodeToText } from 'element-china-area-data'
+  // import { regionData, CodeToText } from 'element-china-area-data'
   import { onMounted, reactive, ref } from 'vue'
   import { onBeforeMount } from 'vue'
   import $services from '@/services'
@@ -152,15 +152,15 @@
       })
   }
 
-  const options = regionData
-  const selectedOptions: Array<number> = []
-  const handleChange = () => {
-    var loc = ''
-    for (let i = 0; i < selectedOptions.length; i++) {
-      loc += CodeToText[selectedOptions[i]]
-    }
-    alert(loc)
-  }
+  // const options = regionData
+  // const selectedOptions: Array<number> = []
+  // const handleChange = () => {
+  //   var loc = ''
+  //   for (let i = 0; i < selectedOptions.length; i++) {
+  //     loc += CodeToText[selectedOptions[i]]
+  //   }
+  //   alert(loc)
+  // }
 </script>
 <style lang="scss" scoped>
   .userMsg {
