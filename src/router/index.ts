@@ -107,7 +107,7 @@ const mainRouter: RouteRecordRaw[] = [
     path: '/cohort',
     meta: {
       keepAlive: false,
-      title: '群'
+      title: '消息'
     }
   },
   {
