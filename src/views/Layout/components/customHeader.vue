@@ -3,7 +3,7 @@
     <!-- 左侧 -->
     <el-col class="" :span="4">
       <img class="logo" src="@/assets/img/avatar.jpg" alt="logo" />
-      <el-dropdown trigger="click" placement="bottom-start">
+      <el-dropdown trigger="click" placement="bottom-start" ref="dropdown">
         <span class="el-dropdown-link" @click="onClickDrop">
           {{ workspaceData?.name || '' }}
           <el-icon>
@@ -105,6 +105,7 @@
   const showSearch = ref(false)
   const { queryInfo } = storeToRefs(store)
   const workspaceData = store.workspaceData
+  const dropdown = ref()
 
   const load = () => {
     current.value++
@@ -142,6 +143,7 @@
     dialogShow.map((el) => {
       if (el.key == 'unit') {
         el.value = true
+        dropdown.value.handleClose()
       }
     })
   }
