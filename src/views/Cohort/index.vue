@@ -9,8 +9,8 @@
     <!-- 右侧展示主体 -->
     <div class="chart-page">
       <!-- 头部 -->
-      <GroupHeaderVue :info="selectInfo" v-show="activeInfo?.id" @viewDetail="handleViewDetail"
-        @addUserOrCohort="handleAddFun" class="chart-header" />
+      <GroupHeaderVue :info="selectInfo" v-if="activeInfo?.id" @viewDetail="handleViewDetail"
+        @addUserOrCohort="handleAddFun" />
       <!-- 聊天区域 -->
       <GroupContent class="chart-content" :myId="myId" ref="contentWrapRef" :list="showMsgList"
         @viewMoreMsg="handleViewMoreHistory" />
@@ -218,13 +218,6 @@ const handleAddFun = () => {
     justify-content: space-between;
     flex: 1;
     overflow: hidden;
-
-    .chart-header {
-      height: 70px;
-      min-height: 70px;
-      box-shadow: 0 1px 2px 1px #e5e5e5;
-      z-index: 2;
-    }
 
     .chart-content {
       flex-grow: 1;
