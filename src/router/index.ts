@@ -19,11 +19,11 @@ const constantRoutes: RouteRecordRaw[] = [
     name: '404',
     path: '/404'
   },
-  {
-    component: () => import('@/views/Test/index.vue'),
-    name: 'test',
-    path: '/test'
-  }
+  // {
+  //   component: () => import('@/views/Test/index.vue'),
+  //   name: 'test',
+  //   path: '/test'
+  // }
 ]
 
 // 主要业务页面路由
@@ -153,6 +153,14 @@ const mainRouter: RouteRecordRaw[] = [
         component: () => import('@/views/Person/msgSetting/userSaveSet.vue'),
         meta: {
           title: '安全设置'
+        }
+      },
+      {
+        path: '/test',
+        name: 'test',
+        component: () => import('@/views/Person/msgSetting/test.vue'),
+        meta: {
+          title: '测试'
         }
       }
     ]

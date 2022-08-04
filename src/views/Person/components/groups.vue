@@ -111,7 +111,7 @@
   import { Search } from '@element-plus/icons-vue'
   import $services from '@/services'
   import { onMounted, reactive } from 'vue'
-  import { ref, toRefs, toRef } from 'vue'
+  import { ref } from 'vue'
   import { useUserStore } from '@/store/user'
   const store = useUserStore()
   const state = reactive({ tableData: [] })
@@ -127,26 +127,15 @@
     types: String
   })
 
-  const msg = toRef(props, 'types')
   const handleCurrentChange = (val: number) => {
-    console.log(val)
-    console.log(pageSize.value)
+    // console.log(val)
+    // console.log(pageSize.value)
 
     offset.value = (val - 1) * pageSize.value
-    console.log(offset.value)
+    // console.log(offset.value)
     fetchRequest(offset.value, pageSize.value)
-    currentPage.value = val
+    // currentPage.value = val
   }
-  // if (props.types === '已加入') {
-  //   states.value = state2.tableData
-  //   console.log(props.types)
-  // } else if (props.types === '创建的') {
-  //   states.value = state1.tableData
-  //   console.log(props.types)
-  // } else {
-  //   states.value = state.tableData
-  //   console.log(props.types)
-  // }
 
   const form = reactive({
     name: '',
@@ -172,7 +161,7 @@
   }
   const create = () => {
     dialogVisible.value = true
-    console.log(dialogVisible)
+    // console.log(dialogVisible)
   }
   const save = () => {
     let token = sessionStorage.getItem('TOKEN')
@@ -199,21 +188,21 @@
 
   onMounted(() => {
     fetchRequest(offset.value, pageSize.value)
-    console.log(offset.value, pageSize.value)
+    // console.log(offset.value, pageSize.value)
   })
 
   async function fetchRequest(offset: number, pageSize: number) {
     let token = sessionStorage.getItem('TOKEN')
-    console.log(offset, pageSize)
+    // console.log(offset, pageSize)
 
-    const { data, msg } = await $services.company.companyGetGroups({
+    const { data, success } = await $services.company.companyGetGroups({
       data: {
         offset: offset,
         limit: pageSize
       },
       headers: { Authorization: token }
     })
-    if (msg === '成功!') {
+    if (success === true) {
       const { result = [], total = 0 } = data
       state.tableData = result?.map((item: { team: { remark: any } }) => {
         return { ...item, remark: item.team.remark }
