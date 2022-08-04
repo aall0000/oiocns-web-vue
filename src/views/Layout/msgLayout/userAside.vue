@@ -51,6 +51,10 @@
         {
           value: '安全设置',
           label: 'userSaveSet'
+        },
+        {
+          value: '测试',
+          label: 'test'
         }
       ]
       router.push('/user/userMsg')
