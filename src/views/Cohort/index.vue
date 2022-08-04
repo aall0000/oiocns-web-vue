@@ -21,7 +21,12 @@
       <!-- 输入区域 -->
       <GroupInputBox class="chart-input" v-show="activeInfo?.id" @submitInfo="submit" />
     </div>
-    <GroupDetail :id="activeInfo.id" :info="selectInfo" v-if="isShowDetail" />
+    <GroupDetail
+      :id="activeInfo.id"
+      :info="selectInfo"
+      v-if="isShowDetail"
+      @updateUserList="getQunPerson"
+    />
   </div>
 </template>
 
