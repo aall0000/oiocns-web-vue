@@ -9,121 +9,126 @@ import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 import { settings } from './src/config/index'
 // 分析插件
 import { visualizer } from 'rollup-plugin-visualizer'
-import AutoZip  from 'vite-plugin-auto-zip'
+import AutoZip from 'vite-plugin-auto-zip'
 import viteCompression from 'vite-plugin-compression'
 // 自动导入element图标
 import Icons from 'unplugin-icons/vite'
 import IconsResolver from 'unplugin-icons/resolver'
-
-// import vueSetupExtend from '@winner-fed/unplugin-vue-setup-extend/vite';
 // import svgLoader from 'vite-svg-loader';
+// console.log('类型', process.env.NODE_ENV)
 
-export default defineConfig({
-  base: settings.base, // 生产环境路径
-  plugins: [
-    vue(), //按需导入element-plus组件
-    viteCompression({
-      verbose: true,
-      disable: false,
-      threshold: 10240,
-      algorithm: 'gzip',
-      ext: '.gz'
-    }),
-    AutoZip ({
-      dir: 'dist',
-      outputName: 'test'
-    }),
-    AutoImport({
-      resolvers: [ElementPlusResolver(), IconsResolver({ prefix: 'Icon' })],
-      include: [
-        /\.[tj]sx?$/, // .ts, .tsx, .js, .jsx
-        /\.vue$/,
-        /\.vue\?vue/, // .vue
-        /\.md$/ // .md
-      ],
-      dts: true,
-      imports: ['vue', 'vue-router']
-    }),
-    Components({
-      resolvers: [ElementPlusResolver(), IconsResolver({ enabledCollections: 'ep' })]
-    }),
-    Icons({
-      autoInstall: true
-    }),
-    visualizer({ open: true, filename: 'report.html' })
-  ],
-  resolve: {
-    alias: {
-      // 配置别名
-      '@': path.resolve(__dirname, 'src'),
-      assets: path.resolve(__dirname, 'src/assets'),
-      components: path.resolve(__dirname, 'src/components'),
-      config: path.resolve(__dirname, 'src/config'),
-      router: path.resolve(__dirname, 'src/router'),
-      utils: path.resolve(__dirname, 'src/utils'),
-      views: path.resolve(__dirname, 'src/views'),
-      plugins: path.resolve(__dirname, 'src/plugins'),
-      store: path.resolve(__dirname, 'src/store')
-    }
-  },
-  css: {
-    preprocessorOptions: {
-      scss: {
-        additionalData: '@import "./src/assets/style/variable.scss";'
-      }
-    }
-  },
-  build: {
-    target: 'modules',
-    outDir: 'dist', // 指定输出路径
-    assetsDir: 'static', // 指定生成静态资源的存放路径
-    minify: 'terser', // 混淆器,terser构建后文件体积更小
-    sourcemap: false, // 输出.map文件
-    terserOptions: {
-      compress: {
-        drop_console: true, // 生产环境移除console
-        drop_debugger: true // 生产环境移除debugger
+export default defineConfig(({ command, mode }) => {
+  console.log('运行环境', command, mode)
+
+  return {
+    base: settings.base, // 生产环境路径
+    plugins: [
+      vue(), //按需导入element-plus组件
+      viteCompression({
+        verbose: true,
+        disable: false,
+        threshold: 10240,
+        algorithm: 'gzip',
+        deleteOriginFile: true, //压缩后删除源文件
+        ext: '.gz'
+      }),
+      mode === 'zip' &&
+        AutoZip({
+          dir: 'dist'
+          // outputName: 'test'
+        }),
+      AutoImport({
+        resolvers: [ElementPlusResolver(), IconsResolver({ prefix: 'Icon' })],
+        include: [
+          /\.[tj]sx?$/, // .ts, .tsx, .js, .jsx
+          /\.vue$/,
+          /\.vue\?vue/, // .vue
+          /\.md$/ // .md
+        ],
+        dts: true,
+        imports: ['vue', 'vue-router']
+      }),
+      Components({
+        resolvers: [ElementPlusResolver(), IconsResolver({ enabledCollections: 'ep' })]
+      }),
+      Icons({
+        autoInstall: true
+      }),
+      settings.isVisualizer && visualizer({ open: true, filename: 'report.html' })
+    ],
+    resolve: {
+      alias: {
+        // 配置别名
+        '@': path.resolve(__dirname, 'src'),
+        assets: path.resolve(__dirname, 'src/assets'),
+        components: path.resolve(__dirname, 'src/components'),
+        config: path.resolve(__dirname, 'src/config'),
+        router: path.resolve(__dirname, 'src/router'),
+        utils: path.resolve(__dirname, 'src/utils'),
+        views: path.resolve(__dirname, 'src/views'),
+        plugins: path.resolve(__dirname, 'src/plugins'),
+        store: path.resolve(__dirname, 'src/store')
       }
     },
-    rollupOptions: {
-      output: {
-        chunkFileNames: 'static/js/[name]-[hash].js',
-        entryFileNames: 'static/js/[name]-[hash].js',
-        assetFileNames: 'static/[ext]/[name]-[hash].[ext]',
-        manualChunks(id) {
-          if (id.includes('node_modules')) {
-            return id.toString().split('node_modules/')[1].split('/')[0].toString()
+    css: {
+      preprocessorOptions: {
+        scss: {
+          additionalData: '@import "./src/assets/style/variable.scss";'
+        }
+      }
+    },
+    build: {
+      target: 'modules',
+      outDir: 'dist', // 指定输出路径
+      assetsDir: 'static', // 指定生成静态资源的存放路径
+      // minify: 'terser', // 混淆器,terser构建后文件体积更小
+      sourcemap: false, // 输出.map文件
+      terserOptions: {
+        compress: {
+          drop_console: true, // 生产环境移除console
+          drop_debugger: true // 生产环境移除debugger
+        }
+      },
+      rollupOptions: {
+        output: {
+          chunkFileNames: 'static/js/[name]-[hash].js',
+          entryFileNames: 'static/js/[name]-[hash].js',
+          assetFileNames: 'static/[ext]/[name]-[hash].[ext]',
+          manualChunks(id) {
+            if (id.includes('node_modules')) {
+              return id.toString().split('node_modules/')[1].split('/')[0].toString()
+            }
           }
         }
       }
-    }
-  },
-  server: {
-    // 是否主动唤醒浏览器
-    open: true,
-    // 占用端口
-    port: settings.port,
-    // 是否使用https请求
-    https: settings.https,
-    // 扩展访问端口
-    host: settings.host,
-    hmr: true,
-    proxy: settings.proxyFlag
-      ? {
-          '/orginone': {
-            target: 'http://qkbyte.orginone.cn:2001', // 后台接口
-            changeOrigin: true // 是否允许跨域
-            // secure: false,                    // 如果是https接口，需要配置这个参数---7003
-            // rewrite: (path: any) => path.replace(/^\/api/, '')
-          },
-          '/orginone/orgchat/msghub': {
-            target: 'http://qkbyte.orginone.cn:7003', // 后台接口
-            changeOrigin: true, // 是否允许跨域
-            ws: true
-            // secure: false,                    // 如果是https接口，需要配置这个参数---
-            // rewrite: (path: any) => path.replace(/^\/api/, '')
+    },
+    server: {
+      // 是否主动唤醒浏览器
+      open: true,
+      // 占用端口
+      port: settings.port,
+      // 是否使用https请求
+      https: settings.https,
+      // 扩展访问端口
+      host: settings.host,
+      hmr: true,
+      proxy: settings.proxyFlag
+        ? {
+            '/orginone': {
+              target: 'http://qkbyte.orginone.cn:2001', // 后台接口
+              changeOrigin: true // 是否允许跨域
+              // secure: false,                    // 如果是https接口，需要配置这个参数---7003
+              // rewrite: (path: any) => path.replace(/^\/api/, '')
+            },
+            '/orginone/orgchat/msghub': {
+              target: 'http://qkbyte.orginone.cn:7003', // 后台接口
+              changeOrigin: true, // 是否允许跨域
+              ws: true
+              // secure: false,                    // 如果是https接口，需要配置这个参数---
+              // rewrite: (path: any) => path.replace(/^\/api/, '')
+            }
           }
-        }
-      : {}
+        : {}
+    }
   }
 })
