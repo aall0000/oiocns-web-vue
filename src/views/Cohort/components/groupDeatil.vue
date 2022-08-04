@@ -31,7 +31,9 @@
       </li> -->
       <ul class="img-list con">
         <li class="img-list-add" @click="openDialogAdd">+</li>
-        <li class="img-list-del">-</li>
+        <li class="img-list-del" @click="openDialogDel"
+          ><el-icon><SemiSelect /></el-icon
+        ></li>
         <li class="img-list-con" v-for="item in userList" :key="item.id">
           <img class="img-list-con-img" src="@/assets/img/x.png" alt="" />
           <span class="img-list-con-name">{{ item.name }}</span>
@@ -88,6 +90,33 @@
       </span>
     </template>
   </el-dialog>
+  <el-dialog v-model="dialogVisibleDel" title="移出群聊" width="30%">
+    <div class="invitateBox">
+      <div
+        class="invitateBox-box"
+        v-for="(item, index) in state.delfriendsData"
+        :key="item.id"
+        @click="onClickBoxDel(item, index)"
+      >
+        <div class="invitateBox-flex">
+          <img src="https://cube.elemecdn.com/6/94/4d3ea53c084bad6931a56d5158a48jpeg.jpeg" alt="" />
+          <div class="invitateBox-name">{{ item.name }}</div>
+        </div>
+        <div
+          class="invitateBox-btn"
+          :style="state.delids.includes(item.id) ? 'background:#466DFF' : ''"
+        >
+          <div class="invitateBox-btn-in" v-if="state.delids.includes(item.id)"></div>
+        </div>
+      </div>
+    </div>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="dialogVisibleDel = false">取消</el-button>
+        <el-button type="primary" @click="submitInviteDel">确认</el-button>
+      </span>
+    </template>
+  </el-dialog>
 </template>
 
 <script lang="ts" setup>
@@ -123,8 +152,8 @@
   const { id, info } = defineProps<prop>()
   const { userList, total, detail } = toRefs(info)
   const store = useUserStore()
-  const dialogVisible = ref(false)
-
+  const dialogVisible = ref(false) // 控制拉入群聊dialog
+  const dialogVisibleDel = ref(false) // 控制移出群聊dialog
   const state = reactive({
     userList: [], //群成员
     total: 0, //总数
@@ -133,9 +162,11 @@
     isIgnoreMsg: false, //是否免打扰信息
     isStick: false, //是否置顶
     friendsData: [], // 我的好友
-    ids: [] // 所选择到的好友id列表
+    ids: [], // 所选择到的好友id列表
+    delfriendsData: [], // 群聊人员
+    delids: [] // 所选择到的好友id列表 移出
   })
-
+  const emit = defineEmits(['updateUserList'])
   const qunName = ref<string>('')
   const nickName = ref<string>('')
   onMounted(() => {
@@ -183,6 +214,14 @@
       state.ids.push(item.id)
     }
   }
+  // 选择人员事件
+  const onClickBoxDel = (item: itemResult, index: number) => {
+    if (state.delids.indexOf(item.id) !== -1) {
+      state.delids.splice(state.delids.indexOf(item.id), 1)
+    } else {
+      state.delids.push(item.id)
+    }
+  }
   // 确认邀请人员入群
   const submitInvite = () => {
     $services.cohort
@@ -196,12 +235,38 @@
         if (res.code == 200) {
           ElMessage({
             message: '邀请成功',
-            type: 'warning'
+            type: 'success'
           })
           dialogVisible.value = false
+          emit('updateUserList', info.detail.id)
         } else {
           ElMessage({
-            message: res.msg,
+            message: '您不是群管理员',
+            type: 'warning'
+          })
+        }
+      })
+  }
+  // 确认人员移出群聊
+  const submitInviteDel = () => {
+    $services.cohort
+      .removePerson({
+        data: {
+          id: info.detail.id,
+          targetIds: state.delids
+        }
+      })
+      .then((res: ResultType) => {
+        if (res.code == 200) {
+          ElMessage({
+            message: '移出成功',
+            type: 'success'
+          })
+          dialogVisibleDel.value = false
+          emit('updateUserList', info.detail.id)
+        } else {
+          ElMessage({
+            message: '您不是群管理员',
             type: 'warning'
           })
         }
@@ -210,6 +275,7 @@
 
   const openDialogAdd = () => {
     dialogVisible.value = true
+    current.value = 0
     $services.person
       .getFriends({
         data: {
@@ -220,6 +286,28 @@
       .then((res: ResultType) => {
         if (res.code == 200) {
           state.friendsData = res.data.result
+        } else {
+          ElMessage({
+            message: res.msg,
+            type: 'warning'
+          })
+        }
+      })
+  }
+  const openDialogDel = () => {
+    dialogVisibleDel.value = true
+    current.value = 0
+    $services.cohort
+      .getPersons({
+        data: {
+          id: info.detail.id,
+          offset: current.value,
+          limit: 10
+        }
+      })
+      .then((res: ResultType) => {
+        if (res.code == 200) {
+          state.delfriendsData = res.data.result
         } else {
           ElMessage({
             message: res.msg,
@@ -246,20 +334,20 @@
     margin-right: 16px;
   }
   .img-list-del {
+    cursor: pointer;
     width: 50px;
     height: 50px;
     background: #ffffff;
     border-radius: 2px;
     border: 1px solid #ea4c43;
-    font-size: 40px;
+    font-size: 25px;
     display: flex;
     justify-content: center;
     align-items: center;
     color: #ea4c43;
     margin-right: 16px;
   }
-  .img-list-del {
-  }
+
   .invitateBox {
     width: 100%;
     height: 500px;

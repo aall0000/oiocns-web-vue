@@ -8,15 +8,34 @@
         <el-button @click="add(item.id)">加入单位</el-button>
       </li>
     </ul>
+
+    <el-popover
+      placement="top-start"
+      title="Title"
+      :width="200"
+      trigger="hover"
+      content="this is content, this is content, this is content"
+    >
+      <template #reference>
+        <el-button>Hover to activate</el-button>
+      </template>
+    </el-popover>
   </div>
 </template>
 <script setup lang="ts">
   import { Search } from '@element-plus/icons-vue'
   import $services from '@/services'
   import { onMounted, reactive } from 'vue'
-  import { ref } from 'vue'
+
   import { useUserStore } from '@/store/user'
   import { da } from 'element-plus/es/locale/index.js'
+  import { ref, unref } from 'vue'
+  import { ClickOutside as vClickOutside } from 'element-plus'
+  const buttonRef = ref()
+  const popoverRef = ref()
+  const onClickOutside = () => {
+    unref(popoverRef).popperRef?.delayHide?.()
+  }
   const store = useUserStore()
   const tableData = ref([])
   console.log('test')
