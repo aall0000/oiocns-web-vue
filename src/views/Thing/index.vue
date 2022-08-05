@@ -6,6 +6,17 @@
         <div class="view-details" @click="jumpDetail">查看详情</div>
       </div>
       <ul>
+         <li>
+          <p>加入申请</p>
+          <p>0</p>
+        </li>
+         <li>
+          <p>加入审批</p>
+          <p>0</p>
+        </li>
+      </ul>
+
+      <ul>
         <li>
           <p>我的待办</p>
           <p>0</p>

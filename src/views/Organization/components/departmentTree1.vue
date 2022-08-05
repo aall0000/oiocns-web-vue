@@ -16,61 +16,43 @@
         />
       </el-select> -->
     </li>
+    <li class="con tree-btns">
+      <div class="title" @click="getDataDetail">部门管理</div>
+      <el-button :icon="Plus" @click="dialogVisible = true" size="small">新建部门</el-button>
+      <!-- <el-button :icon="User" size="small">管理部门</el-button> -->
+      <!-- /角色(职权)/岗位(身份)
+      创建职权需要角色id和组织id
+      通过职权列表创建身份
+      集团只有职权没有身份，通过职权可以查人
+      单位可以创建职权进行虚拟集团查找 -->
+    </li>
     <li class="con tree-search">
-      <!-- <el-input class="search" placeholder="搜索姓名、手机、邮箱">
+      <el-input class="search" placeholder="搜索姓名、手机、邮箱">
         <template #suffix>
           <el-icon class="el-input__icon">
             <search />
           </el-icon>
         </template>
-      </el-input> -->
+      </el-input>
     </li>
-    <li class="con tree-btns">
-      <el-button :icon="Plus" @click="dialogVisible = true" size="small">新建部门</el-button>
-      <el-button :icon="User" size="small">管理部门</el-button>
-    </li>
+
     <ul class="con tree-dept">
-      <li class="tree-dept-item" v-for="item in treeDate.list" :key="item.name">
-        <div
-          class="dept-label"
-          :class="treeItem.id == item.id ? 'active' : ''"
-          @click="checkIndex(item)"
-        >
-          <span class="dept-label-name"
-            ><img class="dept-label-icon" src="@/assets/img/dept.png" alt="" srcset="" />
-            {{ `${item.name}` }}
-            <!-- {{`(${item.num}人)`}} -->
-          </span>
-          <span class="right-icon">
-            <el-icon :size="14">
-              <ArrowUp />
-            </el-icon>
-          </span>
-        </div>
-        <template v-if="item?.children">
-          <div class="child-label dept-label" v-for="child in item.children" :key="child.name">
-            <span class="dept-label-name"
-              ><img class="dept-label-icon" src="@/assets/img/group-next.png" alt="" srcset="" />
-              {{ `${child.name}(${child.num}人)` }}</span
-            >
-            <span class="right-icon">
-              <img class="dept-label-icon" src="@/assets/img/group-more.png" alt="" srcset="" />
-            </span>
-          </div>
-        </template>
-      </li>
+      <el-tree
+        :props="defaultProps"
+        lazy
+        @node-click="handleNodeClick"
+        show-checkbox
+        :load="loadNode"
+      />
     </ul>
     <el-dialog v-model="dialogVisible" title="请输入部门名称" width="30%">
       <el-form-item label="部门名称">
         <el-input v-model="departmentName" placeholder="Please input" clearable />
       </el-form-item>
-      <el-form-item label="团队名称">
-        <el-input v-model="departmentTeamName" placeholder="Please input" clearable />
-      </el-form-item>
-      <el-form-item label="团队code">
+      <el-form-item label="部门编号">
         <el-input v-model="departmentTeamCode" placeholder="Please input" clearable />
       </el-form-item>
-      <el-form-item label="团队Remark">
+      <el-form-item label="部门简介">
         <el-input v-model="departmentTeamRemark" placeholder="Please input" clearable />
       </el-form-item>
       <template #footer>
@@ -85,11 +67,10 @@
 
 <script lang="ts" setup>
   import $services from '@/services'
-  import { Search, Plus, User } from '@element-plus/icons-vue'
+  import { Search, Plus, } from '@element-plus/icons-vue'
   import { ref, reactive, onMounted } from 'vue'
   import { useUserStore } from '@/store/user'
   import { storeToRefs } from 'pinia'
-  import { String } from 'lodash'
   const store = useUserStore()
   const { workspaceData } = storeToRefs(store)
   let dialogVisible = ref<boolean>(false)
@@ -100,11 +81,6 @@
     id: string
     name: string
   }
-  type treeDateType = {
-    list?: any
-  }
-  let treeDate = reactive<treeDateType>({ list: [] })
-
   let selectValue = ref<string>('')
 
   const changeObj = ref<selectType>()
@@ -117,22 +93,15 @@
     emit('changeIndex', val.id)
     selectValue.value = val.name
     treeItem.value = ''
-    getDepartmentsList(val.id)
   }
   onMounted(() => {
     changeIndexFun(workspaceData.value)
   })
-  const checkIndex = (item: any) => {
-    treeItem.value = item
-    emit('treeItem', item)
-    // getDepartmentsList(item.id)
-  }
   let departmentName = ref<string>('')
   let departmentTeamName = ref<string>('')
   let departmentTeamCode = ref<string>('')
   let departmentTeamRemark = ref<string>('')
   const submitFriends = () => {
-    console.log(changeObj)
     $services.company
       .createDepartment({
         data: {
@@ -146,74 +115,76 @@
       })
       .then((res: ResultType) => {
         dialogVisible.value = false
-        getDepartmentsList(workspaceData.value.id)
       })
   }
-  let departmentsList = reactive({})
-  const getDepartmentsList = (id: string) => {
-    $services.company
+  async function getDepartmentsList(node: any, resolve: any) {
+    var data = await $services.company
       .getDepartments({
-        data: {
-          id: id,
-          offset: 0,
-          limit: 100
-        }
+        data: { id: node, offset: 0, limit: 100 }
       })
       .then((res: ResultType) => {
-        departmentsList = res.data
         let arr: any = []
         if (res.data.result) {
           res.data.result.forEach((element: any) => {
             let obj = {
               id: element.id,
-              code: element.code,
-              name: element.name,
-              children: {}
+              label: element.name,
+              code:element.code,
+              children:[] as string[]
             }
             arr.push(obj)
           })
         } else {
-          arr = []
+          arr = [{}]
         }
-        treeDate.list = arr
+        console.log('arr',arr)
+        return arr
       })
+    return resolve(data)
   }
-  // watch(
-  //   selectList,
-  //   (val) => {
-  //     console.log('valval', val)
-  //   },
-  //   {
-  //     immediate: true,
-  //     deep: true
-  //   }
-  // )
-  // onMounted(() => {
-  //   getDepartmentsList('')
-  // });
-
-  const options = [
-    {
-      value: 'Option1',
-      label: 'Option1'
-    },
-    {
-      value: 'Option2',
-      label: 'Option2'
-    },
-    {
-      value: 'Option3',
-      label: 'Option3'
-    },
-    {
-      value: 'Option4',
-      label: 'Option4'
-    },
-    {
-      value: 'Option5',
-      label: 'Option5'
+  const getDataDetail = ()=>{
+    getDepartmentsList('340820527880998912',(res:any)=>{
+      console.log(res)
+    })
+  }
+  const defaultProps = {
+    children: 'children',
+    label: 'label',
+    id: 'id',
+    code: 'code'
+  }
+  const loadNode = (node: any, resolve: (data: any) => {}) => {
+    console.log(resolve)
+    if (node.level === 0) {
+      getQueryInfo(resolve)
     }
-  ]
+    if (node.level >= 1) {
+      getDepartmentsList(node, resolve([{
+          "id": "341994577416294400",
+          "label": "帅帅俱乐部",
+          "code": "914403001922038216",
+          "children": []
+      }]))
+      getDepartmentsList(node, resolve)
+    }
+  }
+  const handleNodeClick = (data: any) => {
+    console.log(data)
+  }
+  //根节点数据
+  async function getQueryInfo(resolve: any) {
+    await $services.company.queryInfo({}).then((res: ResultType) => {
+      let obj = [
+        {
+          children: [] as string[],
+          label: res.data.name,
+          id: res.data.id
+        }
+      ]
+      console.log(obj)
+      return resolve(obj)
+    })
+  }
 </script>
 
 <style lang="scss">

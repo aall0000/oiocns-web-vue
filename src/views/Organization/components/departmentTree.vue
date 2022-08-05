@@ -13,7 +13,6 @@
       </template>
     </el-input>
     <!-- 组织展示 -->
-    <el-tree :data="data" :props="defaultProps" @node-click="handleNodeClick" />
   </div>
 
 </template>
