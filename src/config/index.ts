@@ -1,7 +1,6 @@
-const BASE_URL =
-  process.env.NODE_ENV === 'development' ? '/orginone' : 'http://localhost:8080';
+const BASE_URL = process.env.NODE_ENV === 'development' ? '/orginone' : 'http://localhost:8080'
 
-const settings:any = {
+const settings: any = {
   // 请求根路径
   baseUrl: BASE_URL,
   // 是否开启代理，本地需要开，线上环境关闭
@@ -13,7 +12,9 @@ const settings:any = {
   // 扩展端口
   host: 'localhost',
   // 公共路径
-  base: './'
-};
+  base: './',
+  // 是否展示打包分析页面
+  isVisualizer: false,
+}
 
-export { settings };
+export { settings }

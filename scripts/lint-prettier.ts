@@ -5,7 +5,7 @@
  *  lint file is prettier
  *----------*****--------------
  */
-
+// @ts-nocheck
 const prettier = require('prettier');
 const fs = require('fs');
 const chalk = require('chalk');

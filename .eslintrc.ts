@@ -24,6 +24,7 @@ module.exports = {
   rules: {
     'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off', // 禁用 debugger
     'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off', // 禁用 console
+    'vue/no-unused-components': 'warn',
     'space-before-function-paren': 'warn',
     'vue/html-closing-bracket-newline': 'off',
     'vue/script-setup-uses-vars': 'warn',
@@ -52,8 +53,8 @@ module.exports = {
     'no-unused-var': 'error', // 禁止出现未使用过的变量
     'arrow-parens': 'off', // 要求箭头函数的参数使用圆括号
     semi: ['error', 'never'], // 要求或禁止使用分号代替 ASI
-    eqeqeq: 1, // 要求使用 === 和 !==
-    '@typescript-eslint/no-unused-vars': 'warn',
+    eqeqeq: 'error', // 要求使用 === 和 !==
+    '@typescript-eslint/no-unused-vars': 'error',
     'template-curly-spacing': ['error', 'always'], // 要求或禁止模板字符串中的嵌入表达式周围空格的使用
     '@typescript-eslint/no-empty-function': 'warn', // 不允许空函数
     '@typescript-eslint/no-explicit-any': 'warn', // 禁止使用 any 类型
@@ -63,7 +64,7 @@ module.exports = {
       'warn',
       {
         singleline: {
-          max: 3,
+          max: 5,
           allowFirstLine: true
         },
         multiline: {
@@ -71,7 +72,6 @@ module.exports = {
           allowFirstLine: false
         }
       }
-    ],
-    'vue/singleline-html-element-content-newline': 'off' // 要求单行元素的内容前后有一个换行符
+    ]
   }
 }

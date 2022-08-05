@@ -5,7 +5,7 @@
  *  prettier all js and all ts.
  *----------*****--------------
  */
-
+// @ts-nocheck
 const prettier = require('prettier');
 const fs = require('fs');
 const getPrettierFiles = require('./getPrettierFiles');

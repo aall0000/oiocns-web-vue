@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build",
+    "build:zip": "vue-tsc --noEmit && vite build --mode zip",
     "preview": "vite preview",
     "prettier": "node ./scripts/prettier.js",
     "lint:prettier": "check-prettier lint",
