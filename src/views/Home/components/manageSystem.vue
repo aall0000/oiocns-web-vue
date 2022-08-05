@@ -36,7 +36,7 @@ const dataList = reactive([
   {
     name: '查看“群”',
     introduce: '查看群消息，完善群架构',
-    src: '/cohort'
+    src: '/chat'
   },
   {
     name: '完善“⼰”',

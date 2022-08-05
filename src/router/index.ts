@@ -47,9 +47,9 @@ const mainRouter: RouteRecordRaw[] = [
     }
   },
   {
-    component: () => import('@/views/Cohort/index.vue'),
-    name: 'cohort',
-    path: '/cohort',
+    component: () => import('@/views/Chat/index.vue'),
+    name: 'chat',
+    path: '/chat',
     meta: {
       keepAlive: false,
       title: '消息'
@@ -88,7 +88,7 @@ const mainRouter: RouteRecordRaw[] = [
     path: '/cardDetail',
     meta: {
       keepAlive: false,
-      title: '代办详情'
+      title: '待办详情'
     }
   },
   {

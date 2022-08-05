@@ -90,7 +90,7 @@
   }
   const mainMenus = [
     { name: '工作台', icon: 'Tickets', path: '/thing' },
-    { name: '消息', icon: 'ChatDotRound', path: '/cohort' },
+    { name: '消息', icon: 'ChatDotRound', path: '/chat' },
     { name: '组织架构', icon: 'School', path: '/organization' },
     { name: '商店', icon: 'Grid', path: '/appStore' },
     { name: '应用', icon: 'GoodsFilled', path: '/appStore', bottom: true },
