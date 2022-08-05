@@ -190,22 +190,18 @@ const handleUpdateSideList = (data: any) => {
   if (data.toId != myId) {
     fromId = data.toId
   }
-  console.log('更新数据', data.fromId, data.toId);
-  console.log('元数据', sessionList.value, activeInfo!.id);
+  // console.log('更新数据', data.fromId, data.toId);
+  // console.log('元数据', sessionList.value, activeInfo!.id);
   const newArr: any[] = []
   sessionList.value.forEach((item: any) => {
-    console.log('打印', item.id, '=====', data.id, data.fromId == item.id);
-
+    // console.log('打印', item.id, '=====', data.id, data.fromId == item.id);
     if (data.fromId == item.id) {
-      console.log('事实上', item);
+      // console.log('事实上', item);
       item.message = data
-
       newArr.unshift(item)
     } else {
       newArr.push(item)
     }
-    console.log('sort',newArr);
-
   })
 }
 
