@@ -23,7 +23,8 @@
     "unplugin-vue-components": "^0.21.1",
     "vite-plugin-auto-zip": "^1.0.4",
     "vite-plugin-compression": "^0.5.1",
-    "vue": "^3.2.37"
+    "vue": "^3.2.37",
+    "vue-grid-layout": "^3.0.0-beta1"
   },
   "devDependencies": {
     "@element-plus/icons-vue": "^2.0.6",

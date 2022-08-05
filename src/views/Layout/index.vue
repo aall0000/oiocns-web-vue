@@ -84,6 +84,7 @@
       height: 100%;
       position: relative;
       padding: 0;
+      overflow-x: hidden;
     }
   }
 </style>
