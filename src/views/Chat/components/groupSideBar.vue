@@ -1,82 +1,98 @@
 <template>
-  <ul class="group-side-bar-wrap">
-    <!-- <li :class="['group-con', active == '1' ? 'active' : '']" @click="changeInfo('1')">群1</li>
-    <li :class="{ 'group-con': true, active: active == '2' }" @click="changeInfo('2')">群2</li>
-    <li :class="{ 'group-con': true, active: active == '3' }" @click="changeInfo('3')">个人3</li> -->
+  <div class="chart-side-wrap">
+    <div class="group-side-bar-search">
+      <el-input placeholder="搜索" v-model="searchValue" prefix-icon="Search" />
+    </div>
+    <ul class="group-side-bar-wrap">
+      <!-- <li v-for="o in 20" :class="{ 'group-con': true }">群{{o}}</li> -->
+      <li :class="['group-con', props.active.id == item.id ? 'active' : '']" v-for="item in showList" :key="item.id"
+        @click="changeInfo(item)">
+        <div class="group-con-dot" v-show="props.redDotInfo.get(item.id)?.isShowDot">
+          <span>{{ props.redDotInfo.get(item.id)?.count ?? 8 }}</span>
+        </div>
 
-    <li :class="['group-con', active.id == item.id ? 'active' : '']" v-for="item in showList" :key="item.id"
-      @click="changeInfo(item)">
-      <span class="group-con-dot" v-show="redDotInfo.get(item.id)"></span>
-      <img class="group-con-img" src="@/assets/img/group-user.png" alt="" srcset="" />
-      <span class="group-con-name">
-        {{ item.name }}
-      </span>
-    </li>
-  </ul>
+        <img class="group-con-img" src="@/assets/img/userIcon/ic_02.png" alt="头像" />
+        <div class="group-con-show">
+          <el-tooltip class="box-item" :disabled="true" :content="item.name" placement="right-start">
+            <p class="group-con-show-name">
+              <span class="group-con-show-name-label">{{ item.name }}</span>
+              <span class="group-con-show-name-time">{{ handleFormatDate(item.createTime) }} </span>
+            </p>
+          </el-tooltip>
+          <p class="group-con-show-msg">{{ item?.message?.msgBody }}</p>
+        </div>
+      </li>
+    </ul>
+  </div>
+
 </template>
 
 <script lang="ts" setup name="groupSideBar">
-import API from '@/services'
-import { onMounted, reactive, computed } from 'vue'
-import { useUserStore } from '@/store/user'
-const { setUserNameMap } = useUserStore()
+import { computed, ref, watch } from 'vue'
+import { formatDate } from '@/utils/index'
+
 type propType = {
   active: userType
-  redDotInfo: any
+  redDotInfo: any,
+  sessionList: userType[]
 }
-const state = reactive({ qunList: [], friendList: [] })
+const searchValue = ref<string>('')
+const props = defineProps<propType>()
 
-const { active, redDotInfo } = defineProps<propType>()
-onMounted(() => {
-  getFriendList()
-  getQunList()
-})
+//根据搜索条件-输出展示列表
+const showList = computed((): userType[] => {
+  let showInfoArr = props.sessionList
+  console.log('展示顺序',props.sessionList.map(item=>item.name));
 
-//整合 群/人 列表-输出展示列表
-const showList = computed(() => {
-  return [...state.qunList, ...state.friendList]
-})
-
-// 获取我的好友列表
-const getFriendList = async () => {
-  await API.person.getFriends({ data: { offset: 0, limit: 10 } }).then((res: ResultType) => {
-    const { result = [] } = res.data
-    state.friendList = result
-    result.forEach((item: userType) => {
-      setUserNameMap(item.id, item.name)
+  // 数据过滤
+  if (searchValue.value) {
+    showInfoArr = showInfoArr.filter((item: userType) => {
+      return item.name.includes(searchValue.value) || item.message?.msgBody.includes(searchValue.value)
     })
-  })
-}
-// 获取我加入的群列表
-const getQunList = async () => {
-  const res = await API.cohort.getJoinedCohorts({ data: { offset: 0, limit: 10 } })
-  const { data, err } = res
-  if (!err) {
-    const { result = [] } = data
-    state.qunList = result
   }
-}
+  return showInfoArr
+})
 
 const emit = defineEmits(['update:active'])
-const changeInfo = (item: Object) => {
+const changeInfo = (item: userType) => {
   // 触发父组件值更新
   emit('update:active', item)
 }
-// 暴露
-defineExpose({})
+
+// 时间处理
+const handleFormatDate = (timeStr: string) => {
+  const nowTime = new Date().getTime()
+  const showTime = new Date(timeStr).getTime()
+  if (nowTime - showTime > 3600 * 24 * 1000) {
+    return formatDate(timeStr, 'MM/dd')
+  }
+  return formatDate(timeStr, 'H:mm')
+}
+
 </script>
 
 <style lang="scss" scoped>
-.group-side-bar-wrap {
-  width: 220px;
-  height: 100%;
-  padding: 10px 0;
-  overflow-y: auto;
+.chart-side-wrap {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: calc(100% - 60px);
   border-right: 1px solid #ccc;
+
+}
+
+.group-side-bar-search {
+  padding: 10px 15px;
+}
+
+.group-side-bar-wrap {
+  width: 100%;
+  flex: 1 1 0;
+  overflow-y: auto;
 
   .group-con {
     position: relative;
-    padding: 10px 15px;
+    padding: 10px 15px 5px;
     display: flex;
     align-items: center;
 
@@ -92,24 +108,63 @@ defineExpose({})
     // 头像
 
     &-img {
-      width: 20px;
-      height: 20px;
+      width: 40px;
+      height: 40px;
       margin-right: 10px;
     }
 
-    &-name {
-      font-size: 16px;
-      font-weight: bold;
+    &-show {
+      width: 100%;
+
+      &-name {
+
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: nowrap;
+
+        &-label {
+          font-size: 16px;
+          font-weight: bold;
+          max-width: 140px;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          white-space: nowrap;
+        }
+
+        &-time {
+          font-size: 13px;
+        }
+      }
+
+      &-msg {
+        max-width: 140px;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+        font-size: 10px;
+        padding-top: 5px;
+      }
     }
+
+
 
     &-dot {
       position: absolute;
-      left: 30px;
-      top: 10px;
-      width: 8px;
-      height: 8px;
-      background-color: red;
+      left: 40px;
+      top: 8px;
+      min-width: 18px;
+      width: max-content;
+      height: 20px;
+      background-color: #fa2222;
       border-radius: 50%;
+      font-size: 10px;
+      color: #ffffff;
+      padding: 5px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transform: scale(80%);
     }
   }
 }

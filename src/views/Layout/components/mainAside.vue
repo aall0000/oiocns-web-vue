@@ -69,7 +69,7 @@
 </template>
 
 <script lang="ts" setup>
-  import { ref, onBeforeMount, unref } from 'vue'
+  import { ref, onMounted, unref } from 'vue'
   import { useRouter } from 'vue-router'
   import { useUserStore } from '@/store/user'
 
@@ -107,7 +107,7 @@
     { name: '资产云', icon: img5 },
     { name: '云服务', icon: img6 }
   ]
-  onBeforeMount(() => {
+  onMounted(() => {
     judgeMe()
   })
   const judgeMe = () => {

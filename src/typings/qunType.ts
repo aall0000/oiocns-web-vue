@@ -13,6 +13,7 @@ interface userType {
   updateTime: string
   updateUser: string
   version: string
+  message?:any
   team?: teamType
 }
 

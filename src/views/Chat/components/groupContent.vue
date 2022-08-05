@@ -21,14 +21,6 @@
         <img class="con-img" src="@/assets/img/userIcon/ic_06.png" alt="">
       </li>
     </template>
-    <!-- <li class="group-content-left con">
-      <img class="con-img" src="@/assets/img/avatar.jpg" alt="">
-      <span class="con-txt">三生三世</span>
-    </li>
-    <li class="group-content-right con">
-      <span class="con-txt">我我我我</span>
-      <img class="con-img" src="@/assets/img/avatar.jpg" alt="">
-    </li> -->
   </ul>
 </template>
 
@@ -42,18 +34,7 @@ type Props = {
   myId: string,//使用者id
 }
 const { list, myId } = defineProps<Props>()
-const { getUserName, userNameMap } = useUserStore()
-const showList = ref([])
-
-onMounted(() => {
-
-  // import.meta.globEager(`@/assets/img/userIcon/ic_0${index % 6}.png`)
-  // showList.value = list.map((item: any, index: number) => {
-  //   const obj = { ...item, icon: new URL(`../../../assets/img/userIcon/ic_0${index % 6}.png`, import.meta.url).href }
-  //   console.log('是是是', obj);
-  //   return obj
-  // })
-})
+const { getUserName } = useUserStore()
 
 // dom节点
 const nodeRef = ref(null)
@@ -73,8 +54,9 @@ const scrollTop = debounce(() => {
   if (scroll === 0) {
     emit('viewMoreMsg')
   }
+  console.log('监听滚动',nodeRef.value.scrollHeight);
   scrollOfZeroToEnd.value = nodeRef.value.scrollHeight - nodeRef.value.scrollTop
-}, 300)
+}, 100)
 
 onMounted(() => {
   // 添加监听滚动条位置
@@ -88,15 +70,15 @@ onUnmounted(() => {
 // 滚动设置到底部
 const goPageEnd = () => {
   nextTick(() => {
+    console.log('滚动底部',nodeRef.value.scrollHeight);
     nodeRef.value.scrollTop = nodeRef.value.scrollHeight
-  })
+  });
 }
 // 加载更多时,滚动位置固定
 const keepScrollPos = () => {
   nextTick(() => {
     nodeRef.value.scrollTop = nodeRef.value.scrollHeight - scrollOfZeroToEnd.value
   })
-
 }
 // 暴露子组件方法
 defineExpose({

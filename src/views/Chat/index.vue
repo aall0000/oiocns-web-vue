@@ -2,7 +2,7 @@
   <div class="cohort-wrap">
     <!-- 导航传送门 -->
     <teleport v-if="isShowMenu" to="#menu-teleport-target">
-      <el-aside class="custom-group-silder-menu" width="220px">
+      <el-aside class="custom-group-silder-menu" width="260px">
         <GroupSideBarVue v-model:active="activeInfo" :sessionList="sessionList" :redDotInfo="msgDotMap" />
       </el-aside>
     </teleport>
@@ -16,12 +16,7 @@
       <!-- 输入区域 -->
       <GroupInputBox class="chart-input" v-show="activeInfo?.id" @submitInfo="submit" />
     </div>
-    <GroupDetail
-      :id="activeInfo.id"
-      :info="selectInfo"
-      v-if="isShowDetail"
-      @updateUserList="getQunPerson"
-    />
+    <GroupDetail :id="activeInfo.id" :info="selectInfo" v-if="isShowDetail" @updateUserList="getQunPerson" />
   </div>
 </template>
 
@@ -29,7 +24,7 @@
 import { useUserStore } from '@/store/user'
 import * as signalR from '@microsoft/signalr'
 import API from '@/services'
-import { onMounted, reactive, ref, Ref, watch, computed } from 'vue'
+import { onMounted, reactive, ref, Ref, watch, computed, onBeforeUnmount, nextTick } from 'vue'
 import GroupSideBarVue from './components/groupSideBar.vue'
 import GroupHeaderVue from './components/groupHeader.vue'
 import GroupInputBox from './components/groupInputBox.vue'
@@ -55,6 +50,7 @@ const lastQueryParams = ref<any>({})
 const showMsgList = computed(() => {
   return msgMap.value.get(activeInfo.value.id) ?? []
 })
+//内容展示 dom节点
 const contentWrapRef = ref(null)
 
 // 会话列表
@@ -78,30 +74,64 @@ const connection = new signalR.HubConnectionBuilder()
   .withAutomaticReconnect()
   .build()
 
+onMounted(() => {
+  isShowMenu.value = true
+  // 开始链接
+  connection.start().then(async () => {
+    await connection.invoke('TokenAuth', userToken)
+    const { data, success } = await connection.invoke('GetChats')
+    if (success) {
+      const { result = [] } = data
+      console.log('链接GetChats', result)
+      sessionList.value = [...result]
+    }
+  })
+  // 监听链接断开
+  connection.onclose(() => {
+    console.log('链接关闭了');
+  })
+})
+
+// 提交信息
+const submit = async (value: Ref<string>) => {
+  if (activeInfo.value.id) {
+    await connection.send('SendMsg', {
+      toId: activeInfo.value.id,
+      msgType: 'text',
+      msgBody: value.value
+    })
+  }
+}
 // 接受信息--处理信息
 connection.on('RecvMsg', (res) => {
   const { data } = res
-  console.log('消息', data, myId);
-
   let fromId = data.fromId
+  // console.log('接受消息', '当前选择id', activeInfo.value.id, "-----", '来源', data.fromId, '-----', '我的', myId);
+  console.log('处理信息', data);
+  // 根据新信息更新导航信息
+  handleUpdateSideList(data)
+
+  if (fromId !== myId && activeInfo.value.id !== fromId) {
+    let num = msgDotMap.value.get(fromId)?.count ?? 0
+    num++
+    // 信息来源是正在聊天的人 -则不展示红点
+    msgDotMap.value.set(fromId, { isShowDot: activeInfo.value.id !== fromId, count: num })
+  } else {
+    setTimeout(() => {
+      contentWrapRef.value.goPageEnd()
+    }, 10);
+  }
+  // 如果是自己发的信息,则归属于接受者
   if (data.toId != myId) {
     fromId = data.toId
   }
   const oldMsg = msgMap.value.get(fromId) ?? []
   msgMap.value.set(fromId, [...oldMsg, data])
-  // 信息来源是正在聊天的人 -则不展示红点
-  msgDotMap.value.set(fromId, activeInfo.value.id === fromId)
 })
 
-onMounted(() => {
-  isShowMenu.value = true
-  connection.start().then(async () => {
-    await connection.invoke('TokenAuth', userToken)
-    console.log('链接成功')
-    const res = await connection.invoke('GetChats')
-    console.log('链接GetChats', res)
-    sessionList.value = res.data
-  })
+onBeforeUnmount(() => {
+  // 离开页面关闭链接
+  connection.stop()
 })
 
 // 监听所选聊天对象
@@ -111,21 +141,20 @@ watch(
     const { typeName, id, team = {} } = val
     current.value = 0
     // 取消红点提示
-    msgDotMap.value.set(id, false)
+    msgDotMap.value.set(id, { isShowDot: false, count: 0 })
     if (typeName === '人员') {
       selectInfo.detail = val
       selectInfo.total = 0
       selectInfo.userList = []
     } else if (typeName === '群组') {
       selectInfo.detail = team
+      //获取成员
       getQunPerson(id)
     }
-
-    //获取历史记录
-    const canQueryHistory = msgMap.value.get(id)?.length ?? 0
-    if (canQueryHistory === 0) {
-      getHistoryMsg(id, typeName)
-    }
+    // 切换人员-清空已存信息
+    msgMap.value.clear()
+    //获取新的聊天对象历史信息
+    getHistoryMsg(id, typeName, true)
   }
 )
 
@@ -147,33 +176,57 @@ const getQunPerson = async (id: string) => {
     const { total = 0, result = [] } = data
     selectInfo.total = total
     selectInfo.userList = result
+    // 存储用户id=>名称
     result.forEach((item: userType) => {
       setUserNameMap(item.id, item.name)
     })
   }
 }
-// 提交信息
-const submit = async (value: Ref<string>) => {
-  if (activeInfo.value.id) {
-    await connection.send('SendMsg', {
-      toId: activeInfo.value.id,
-      msgType: 'text',
-      msgBody: value.value
-    })
+
+// 根据新信息更新导航信息
+const handleUpdateSideList = (data: any) => {
+  let fromId = data.fromId
+  // 如果是自己发的信息,则归属于接受者
+  if (data.toId != myId) {
+    fromId = data.toId
+  }
+  console.log('更新数据', data.fromId, data.toId);
+  console.log('元数据', sessionList.value, activeInfo!.id);
+  const newArr: any[] = []
+  sessionList.value.forEach((item: any) => {
+    console.log('打印', item.id, '=====', data.id, data.fromId == item.id);
+
+    if (data.fromId == item.id) {
+      console.log('事实上', item);
+      item.message = data
+
+      newArr.unshift(item)
+    } else {
+      newArr.push(item)
+    }
+    console.log('sort',newArr);
+
+  })
+}
+
+// 获取历史消息
+const getHistoryMsg = async (id: string, type: string, isGoEnd?: boolean) => {
+  const url: string = type == '人员' ? 'QueryFriendMsg' : 'QueryCohortMsg';
+  const { data = [], success } = await connection.invoke(url, {
+    [type == '人员' ? 'friendId' : 'cohortId']: id,
+    offset: pageOffset.value,
+    limit: limit.value
+  })
+  if (success) {
+    const newHistoryMsgArr = (data.result && data.result?.reverse()) ?? []
+    const oldMsg = msgMap.value.get(id) ?? []
+    msgMap.value.set(id, [...newHistoryMsgArr, ...oldMsg])
   }
 }
 
 // 获取历史消息
-const getHistoryMsg = async (id: string, type: string) => {
-  // const url: string = type == '人员' ? 'QueryFriendMsg' : 'QueryCohortMsg';
-  // const { data = [], success } = await connection.invoke(url, { id, offset: 0, limit: 20 })
-  // console.log('历史消息', data)
-
-  // const newHistoryMsgArr = data?.reverse()
-  // const oldMsg = msgMap.value.get(id) ?? []
-  // msgMap.value.set(id, [...newHistoryMsgArr, ...oldMsg])
-
-  const url: string = type == '人员' ? 'getFriendMsg' : type == '群组' ? 'getCohortMsg' : ''
+const getHistoryMsg2 = async (id: string, type: string, isGoEnd?: boolean) => {
+  const url: string = type == '人员' ? 'getFriendMsg' : 'getCohortMsg'
   if (!url) {
     return console.log('该聊天对象-非人员/群组')
   }
@@ -193,7 +246,14 @@ const getHistoryMsg = async (id: string, type: string) => {
     msgMap.value.set(id, [...newHistoryMsgArr, ...oldMsg])
     // 记录查询成功的数据
     lastQueryParams.value = params
-    contentWrapRef.value.keepScrollPos()
+    if (isGoEnd) {
+      // 首次获取历史记录
+      // 滚动到底部
+      contentWrapRef.value.goPageEnd()
+    } else {
+      //保持滚动位置
+      contentWrapRef.value.keepScrollPos()
+    }
   }
 }
 
