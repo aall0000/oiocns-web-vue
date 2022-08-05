@@ -26,17 +26,13 @@ export default defineConfig(({ command, mode }) => {
       vue(), //按需导入element-plus组件
       viteCompression({
         verbose: true,
-        disable: false,
-        threshold: 10240,
-        algorithm: 'gzip',
-        deleteOriginFile: true, //压缩后删除源文件
+        disable: true, //不禁用压缩
+        threshold: 10240, //压缩前最小文件
+        algorithm: 'gzip', //压缩算法
+        deleteOriginFile: true, //压缩后是否删除源文件
         ext: '.gz'
       }),
-      mode === 'zip' &&
-        AutoZip({
-          dir: 'dist'
-          // outputName: 'test'
-        }),
+      mode === 'zip' && AutoZip(),
       AutoImport({
         resolvers: [ElementPlusResolver(), IconsResolver({ prefix: 'Icon' })],
         include: [
@@ -83,6 +79,7 @@ export default defineConfig(({ command, mode }) => {
       assetsDir: 'static', // 指定生成静态资源的存放路径
       minify: 'terser', // 混淆器,terser构建后文件体积更小
       sourcemap: false, // 输出.map文件
+      chunkSizeWarningLimit: 1024,
       terserOptions: {
         compress: {
           drop_console: true, // 生产环境移除console
@@ -90,11 +87,22 @@ export default defineConfig(({ command, mode }) => {
         }
       },
       rollupOptions: {
+        // 确保外部化处理那些你不想打包进库的依赖
+        external: ['vue', 'element-plus'], // 注意看这里
         output: {
           chunkFileNames: 'static/js/[name]-[hash].js',
           entryFileNames: 'static/js/[name]-[hash].js',
           assetFileNames: 'static/[ext]/[name]-[hash].[ext]',
+          // 在 UMD 构建模式下为这些外部化的依赖提供一个全局变量
+          globals: {
+            vue: 'Vue',
+            'element-plus': 'elementPlus'
+          },
           manualChunks(id) {
+            // if (id.includes('components')) {
+            //   // 把 components 文件里面的文件都打包到 components.js 中
+            //   return 'components'
+            // }
             if (id.includes('node_modules')) {
               return id.toString().split('node_modules/')[1].split('/')[0].toString()
             }
