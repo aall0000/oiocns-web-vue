@@ -95,39 +95,30 @@ onMounted(() => {
 
 // 提交信息
 const submit = async (value: Ref<string>) => {
-  if (activeInfo.value.id) {
+  let text = value.value.trim()
+  if (activeInfo.value.id > 0 && text.length > 0) {
     await connection.send('SendMsg', {
       toId: activeInfo.value.id,
       msgType: 'text',
-      msgBody: value.value
+      msgBody: text
     })
   }
 }
 // 接受信息--处理信息
 connection.on('RecvMsg', (res) => {
   const { data } = res
-  let fromId = data.fromId
   // console.log('接受消息', '当前选择id', activeInfo.value.id, "-----", '来源', data.fromId, '-----', '我的', myId);
   console.log('处理信息', data);
   // 根据新信息更新导航信息
-  handleUpdateSideList(data)
-
-  if (fromId !== myId && activeInfo.value.id !== fromId) {
-    let num = msgDotMap.value.get(fromId)?.count ?? 0
-    num++
+  let sessionId = handleUpdateSideList(data)
+  if (sessionId !== myId){
+    let num = (msgDotMap.value.get(sessionId)?.count ?? 0) + 1
     // 信息来源是正在聊天的人 -则不展示红点
-    msgDotMap.value.set(fromId, { isShowDot: activeInfo.value.id !== fromId, count: num })
-  } else {
-    setTimeout(() => {
-      contentWrapRef.value.goPageEnd()
-    }, 10);
+    msgDotMap.value.set(sessionId, { isShowDot: activeInfo.value.id !== sessionId, count: num })
   }
-  // 如果是自己发的信息,则归属于接受者
-  if (data.toId != myId) {
-    fromId = data.toId
-  }
-  const oldMsg = msgMap.value.get(fromId) ?? []
-  msgMap.value.set(fromId, [...oldMsg, data])
+  const oldMsg = msgMap.value.get(sessionId) ?? []
+  msgMap.value.set(sessionId, [...oldMsg, data])
+  contentWrapRef.value.goPageEnd()
 })
 
 onBeforeUnmount(() => {
@@ -150,7 +141,7 @@ watch(
       selectInfo.userList = []
     } else {
       selectInfo.detail = team
-      await getQunPerson(id,0)
+      await getQunPerson(id, 0)
     }
     // 切换人员-清空已存信息
     msgMap.value.clear()
@@ -166,7 +157,7 @@ const handleViewDetail = () => {
 
 // 获取群成员
 const getQunPerson = async (id: string, offset: number) => {
-  const {data,success} = await connection.invoke("GetPersons", {
+  const { data, success } = await connection.invoke("GetPersons", {
     cohortId: id,
     limit: 10,
     Offset: offset
@@ -175,8 +166,8 @@ const getQunPerson = async (id: string, offset: number) => {
     selectInfo.total = data.total
     if (offset === 0) {
       selectInfo.userList = data.result
-    }else{
-      selectInfo.userList = [...selectInfo.userList,...data.result]
+    } else {
+      selectInfo.userList = [...selectInfo.userList, ...data.result]
     }
     // 存储用户id=>名称
     data.result.forEach((item: userType) => {
@@ -187,24 +178,26 @@ const getQunPerson = async (id: string, offset: number) => {
 
 // 根据新信息更新导航信息
 const handleUpdateSideList = (data: any) => {
-  let fromId = data.fromId
-  // 如果是自己发的信息,则归属于接受者
-  if (data.toId != myId) {
-    fromId = data.toId
-  }
-  // console.log('更新数据', data.fromId, data.toId);
-  // console.log('元数据', sessionList.value, activeInfo!.id);
   const newArr: any[] = []
+  let resId = data.toId
   sessionList.value.forEach((item: any) => {
-    // console.log('打印', item.id, '=====', data.id, data.fromId == item.id);
-    if (data.fromId == item.id) {
-      // console.log('事实上', item);
+    let sessionId = data.toId
+    if (item.typeName === "人员" 
+      && data.fromId !== myId
+      && data.toId === myId){
+      sessionId = data.fromId
+    }
+    if (sessionId == item.id) {
       item.message = data
+      item.createTime = data.createTime
       newArr.unshift(item)
+      resId = sessionId
     } else {
       newArr.push(item)
     }
   })
+  sessionList.value = newArr
+  return resId
 }
 
 // 获取历史消息
@@ -219,39 +212,6 @@ const getHistoryMsg = async (id: string, type: string, isGoEnd?: boolean) => {
     const newHistoryMsgArr = (data.result && data.result?.reverse()) ?? []
     const oldMsg = msgMap.value.get(id) ?? []
     msgMap.value.set(id, [...newHistoryMsgArr, ...oldMsg])
-  }
-}
-
-// 获取历史消息
-const getHistoryMsg2 = async (id: string, type: string, isGoEnd?: boolean) => {
-  const url: string = type == '人员' ? 'getFriendMsg' : 'getCohortMsg'
-  if (!url) {
-    return console.log('该聊天对象-非人员/群组')
-  }
-
-  const params = {
-    [type == '人员' ? 'friendId' : 'cohortId']: id,
-    offset: pageOffset.value,
-    limit: limit.value
-  }
-  const { data, success } = await API.history[url]({
-    data: params
-  })
-  if (success === true) {
-    const { total = 0, result = [] } = data
-    const newHistoryMsgArr = result.reverse()
-    const oldMsg = msgMap.value.get(id) ?? []
-    msgMap.value.set(id, [...newHistoryMsgArr, ...oldMsg])
-    // 记录查询成功的数据
-    lastQueryParams.value = params
-    if (isGoEnd) {
-      // 首次获取历史记录
-      // 滚动到底部
-      contentWrapRef.value.goPageEnd()
-    } else {
-      //保持滚动位置
-      contentWrapRef.value.keepScrollPos()
-    }
   }
 }
 
@@ -290,7 +250,7 @@ const handleViewMoreHistory = () => {
 
     .chart-input {
       height: max-content;
-      min-height: 120px;
+      min-height: 200px;
       border-top: 1px solid #ccc;
 
       .el-textarea__inner {
