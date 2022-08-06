@@ -43,6 +43,8 @@ const isShowDetail = ref<boolean>(false)
 const msgMap = ref(new Map())
 // 是否展示红点
 const msgDotMap = ref(new Map())
+// 类型参数map
+const modules = ref(new Map<string,string>())
 
 // 记录历史记录上次搜索信息
 const lastQueryParams = ref<any>({})
@@ -75,6 +77,10 @@ const connection = new signalR.HubConnectionBuilder()
   .build()
 
 onMounted(() => {
+  modules.value.set("群组","cohort");
+  modules.value.set("公司","company");
+  modules.value.set("部门","department");
+  modules.value.set("岗位","job");
   isShowMenu.value = true
   // 开始链接
   connection.start().then(async () => {
@@ -149,7 +155,7 @@ watch(
     } else if (typeName === '群组') {
       selectInfo.detail = team
       //获取成员
-      getQunPerson(id)
+      getQunPerson(id, typeName)
     }
     // 切换人员-清空已存信息
     msgMap.value.clear()
@@ -164,8 +170,9 @@ const handleViewDetail = () => {
 }
 
 // 获取群成员
-const getQunPerson = async (id: string) => {
-  const { data, success } = await API.cohort.getPersons({
+const getQunPerson = async (id: string, typeName: string) => {
+  let module = modules.value.get(typeName)
+  const { data, success } = await API[module].getPersons({
     data: {
       id,
       offset: 0,
