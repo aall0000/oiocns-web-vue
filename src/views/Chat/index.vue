@@ -34,6 +34,7 @@ interface infoType {
   detail: teamType
   userList: userType[]
   total: number
+  isCohort: boolean
 }
 const { setUserNameMap, userToken } = useUserStore()
 // 是否展示导航
@@ -43,8 +44,6 @@ const isShowDetail = ref<boolean>(false)
 const msgMap = ref(new Map())
 // 是否展示红点
 const msgDotMap = ref(new Map())
-// 类型参数map
-const modules = ref(new Map<string,string>())
 
 // 记录历史记录上次搜索信息
 const lastQueryParams = ref<any>({})
@@ -69,7 +68,7 @@ const pageOffset = computed(() => {
 // 记录所选聊天对象---群或者人
 const activeInfo = ref<any>({})
 // 所选聊天对象的基本信息
-let selectInfo = reactive<infoType>({ detail: {} as teamType, userList: [], total: 0 })
+let selectInfo = reactive<infoType>({ detail: {} as teamType, userList: [], total: 0, isCohort: false })
 // 消息服务
 const connection = new signalR.HubConnectionBuilder()
   .withUrl('/orginone/orgchat/msghub')
@@ -77,10 +76,6 @@ const connection = new signalR.HubConnectionBuilder()
   .build()
 
 onMounted(() => {
-  modules.value.set("群组","cohort");
-  modules.value.set("公司","company");
-  modules.value.set("部门","department");
-  modules.value.set("岗位","job");
   isShowMenu.value = true
   // 开始链接
   connection.start().then(async () => {
@@ -143,8 +138,9 @@ onBeforeUnmount(() => {
 // 监听所选聊天对象
 watch(
   () => activeInfo.value,
-  (val) => {
+  async (val) => {
     const { typeName, id, team = {} } = val
+    selectInfo.isCohort = (typeName === "群组")
     current.value = 0
     // 取消红点提示
     msgDotMap.value.set(id, { isShowDot: false, count: 0 })
@@ -152,10 +148,9 @@ watch(
       selectInfo.detail = val
       selectInfo.total = 0
       selectInfo.userList = []
-    } else if (typeName === '群组') {
+    } else {
       selectInfo.detail = team
-      //获取成员
-      getQunPerson(id, typeName)
+      await getQunPerson(id,0)
     }
     // 切换人员-清空已存信息
     msgMap.value.clear()
@@ -170,21 +165,21 @@ const handleViewDetail = () => {
 }
 
 // 获取群成员
-const getQunPerson = async (id: string, typeName: string) => {
-  let module = modules.value.get(typeName)
-  const { data, success } = await API[module].getPersons({
-    data: {
-      id,
-      offset: 0,
-      limit: 12
-    }
-  })
+const getQunPerson = async (id: string, offset: number) => {
+  const {data,success} = await connection.invoke("GetPersons", {
+    cohortId: id,
+    limit: 10,
+    Offset: offset
+  });
   if (success === true) {
-    const { total = 0, result = [] } = data
-    selectInfo.total = total
-    selectInfo.userList = result
+    selectInfo.total = data.total
+    if (offset === 0) {
+      selectInfo.userList = data.result
+    }else{
+      selectInfo.userList = [...selectInfo.userList,...data.result]
+    }
     // 存储用户id=>名称
-    result.forEach((item: userType) => {
+    data.result.forEach((item: userType) => {
       setUserNameMap(item.id, item.name)
     })
   }

@@ -1,12 +1,12 @@
 <template>
   <div class="group-detail-wrap">
-    <h1 class="title">群详情</h1>
+    <h1 class="title">{{ detail.name }}</h1>
     <ul class="base flex border-b">
       <img class="base-img" src="@/assets/img/toux.jpg" alt="" srcset="" />
       <li class="base-info">
         <div class="base-info-top flex">
-          <p class="base-info-top-name">{{ detail.name }}</p>
-          <el-tag size="small">标签</el-tag>
+          <!-- <p class="base-info-top-name">{{ detail.name }}</p>
+          <el-tag size="small">标签</el-tag> -->
         </div>
         <div class="base-info-desc">{{ detail.remark }}</div>
       </li>
@@ -30,15 +30,15 @@
         <el-button type="primary">组织架构</el-button>
       </li> -->
       <ul class="img-list con">
-        <li class="img-list-add" @click="openDialogAdd">+</li>
-        <li class="img-list-del" @click="openDialogDel"
+        <li class="img-list-add" @click="openDialogAdd" v-if="isCohort">+</li>
+        <li class="img-list-del" @click="openDialogDel" v-if="isCohort"
           ><el-icon><SemiSelect /></el-icon
         ></li>
         <li class="img-list-con" v-for="item in userList" :key="item.id">
           <img class="img-list-con-img" src="@/assets/img/x.png" alt="" />
           <span class="img-list-con-name">{{ item.name }}</span>
         </li>
-        <span v-show="total > 12" class="img-list-more-btn" @click="handleViewMoreUser"
+        <span v-show="total > 10" class="img-list-more-btn" @click="handleViewMoreUser"
           >查看更多</span
         >
       </ul>
@@ -120,11 +120,9 @@
 </template>
 
 <script lang="ts" setup>
-  import API from '@/services'
-  import { reactive, ref, onMounted, toRefs, watch } from 'vue'
+  import { reactive, ref, toRefs } from 'vue'
   import $services from '@/services'
   import { ElMessage } from 'element-plus'
-  import { useUserStore } from '@/store/user'
 
   interface itemResult {
     code: string
@@ -141,17 +139,16 @@
   }
 
   type infoType = {
+    isCohort: boolean
     detail: teamType
     userList: userType[]
     total: number
   }
   type prop = {
-    id: string
     info: infoType
   }
-  const { id, info } = defineProps<prop>()
-  const { userList, total, detail } = toRefs(info)
-  const store = useUserStore()
+  const { info } = defineProps<prop>()
+  const { userList, total, detail, isCohort } = toRefs(info)
   const dialogVisible = ref(false) // 控制拉入群聊dialog
   const dialogVisibleDel = ref(false) // 控制移出群聊dialog
   const state = reactive({
@@ -167,44 +164,15 @@
     delids: [] // 所选择到的好友id列表 移出
   })
   const emit = defineEmits(['updateUserList'])
-  const qunName = ref<string>('')
-  const nickName = ref<string>('')
-  onMounted(() => {
-    id && getQunPerson(id)
-    console.log('44', id, info)
-  })
 
   let current = ref(0)
-
-  // 获取群成员
-  const getQunPerson = async (id: string) => {
-    const { data, err } = await API.cohort.getPersons({
-      data: {
-        id,
-        offset: 0,
-        limit: 10
-      }
-    })
-    if (!err) {
-      console.log('获取群成员', data)
-      const { result = [], total = 0 } = data
-      state.userList = result
-      state.total = total
-    }
-  }
 
   const isShowMoreUser = ref<boolean>(false)
   const handleViewMoreUser = () => {
     isShowMoreUser.value = true
+    emit('updateUserList', info.detail.id, current)
+    current.value = info.userList.length - 1
   }
-
-  // const emit = defineEmits(['submitInfo'])
-
-  // const submit = () => {
-  //   console.log('submit')
-
-  //   emit('submitInfo', textarea)
-  // }
 
   // 选择人员事件
   const onClickBox = (item: itemResult, index: number) => {
@@ -238,7 +206,7 @@
             type: 'success'
           })
           dialogVisible.value = false
-          emit('updateUserList', info.detail.id)
+          emit('updateUserList', info.detail.id, current)
         } else {
           ElMessage({
             message: '您不是群管理员',
@@ -263,7 +231,7 @@
             type: 'success'
           })
           dialogVisibleDel.value = false
-          emit('updateUserList', info.detail.id)
+          emit('updateUserList', info.detail.id, current)
         } else {
           ElMessage({
             message: '您不是群管理员',
