@@ -116,20 +116,8 @@
     }
   )
 
-  const selectList = reactive<selectType[]>([])
   let selectId = ref<string>()
   const friendDialog = ref<boolean>(false)
-  $services.company
-    .getJoinedCompany({
-      data: {
-        id: queryInfo.value.id,
-        offset: 0,
-        limit: 100
-      }
-    })
-    .then((res: ResultType) => {
-      selectList.push(...res.data.result)
-    })
   const addFriends = () => {
     $services.person
       .applyJoin({
