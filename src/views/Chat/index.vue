@@ -29,7 +29,7 @@ import GroupSideBarVue from './components/groupSideBar.vue'
 import GroupHeaderVue from './components/groupHeader.vue'
 import GroupInputBox from './components/groupInputBox.vue'
 import GroupContent from './components/groupContent.vue'
-import GroupDetail from './components/groupDeatil.vue'
+import GroupDetail from './components/groupDetail.vue'
 interface infoType {
   detail: teamType
   userList: userType[]
@@ -182,7 +182,7 @@ const handleUpdateSideList = (data: any) => {
   let resId = data.toId
   sessionList.value.forEach((item: any) => {
     let sessionId = data.toId
-    if (item.typeName === "人员" 
+    if (item.typeName === "人员"
       && data.fromId !== myId
       && data.toId === myId){
       sessionId = data.fromId
