@@ -75,11 +75,11 @@ const mainRouter: RouteRecordRaw[] = [
   },
   {
     component: () => import('@/views/Work/index.vue'),
-    name: 'thing',
-    path: '/thing',
+    name: 'work',
+    path: '/work',
     meta: {
       keepAlive: false,
-      title: '我的待办'
+      title: '工作组'
     }
   },
   {

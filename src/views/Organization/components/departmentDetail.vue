@@ -1,8 +1,8 @@
 <template>
-  <div class="department-info" v-if="showInfo == true">
+  <div class="department-info">
     <div class="deptment-info">
       <p class="deptment-info-name">
-        <span>{{ treeObj.name }}</span>
+        <!-- <span>{{ treeObj.name }}</span> -->
         <!-- <span class="info-num">20人</span> -->
         <!-- <el-button size="small" style="margin-left: 15px">编辑</el-button> -->
       </p>
@@ -75,8 +75,7 @@
   import $services from '@/services'
   import { ref, reactive, onMounted } from 'vue'
   const props = defineProps<{
-    treeObj: any
-    showInfo: any
+
   }>()
   let dialogVisible = ref<boolean>(false)
   let selectId = ref<string>()
@@ -89,7 +88,7 @@
         data: {
           id: selectId.value,
           name: departmentName.value,
-          parentId: props.treeObj.value.id,
+          // parentId: props.treeObj.value.id,
           code: departmentTeamCode.value,
           teamRemark: departmentTeamRemark.value
         }

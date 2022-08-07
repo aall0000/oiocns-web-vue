@@ -80,12 +80,12 @@ const activeRouter = ref<string>('')
 //   console.log(val)
 // }
 const mainMenus = [
-  { name: '工作台', icon: 'Tickets', path: '/thing' },
+  { name: '工作台', icon: 'Tickets', path: '/work' },
   { name: '消息', icon: 'ChatDotRound', path: '/chat' },
   { name: '组织架构', icon: 'School', path: '/organization' },
   { name: '商店', icon: 'Grid', path: '/appStore' },
   { name: '应用', icon: 'GoodsFilled', path: '', bottom: true },
-  { name: '元数据', icon: 'Share', path: '/work' },
+  { name: '元数据', icon: 'Share', path: '/thing' },
   { name: '我的', icon: 'Setting', path: IsSelfSpace ? '/user/userMsg' : '/company/unitMsg', bottom: true }
 ]
 const appUse = [

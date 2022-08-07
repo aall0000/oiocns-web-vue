@@ -41,7 +41,7 @@
         :props="defaultProps"
         lazy
         highlight-current
-        @node-click="handleNodeClick"
+        @node-click="changeIndexFun"
         show-checkbox
         :load="loadNode"
       />
@@ -72,7 +72,6 @@
   import { ref, reactive, onMounted } from 'vue'
   import { useUserStore } from '@/store/user'
   import { storeToRefs } from 'pinia'
-  import CircularJSON from 'circular-json'
   const store = useUserStore()
   const { workspaceData } = storeToRefs(store)
   let dialogVisible = ref<boolean>(false)
@@ -83,18 +82,11 @@
     id: string
     name: string
   }
-  let selectValue = ref<string>('')
-
-  const changeObj = ref<selectType>()
-
   const emit = defineEmits(['changeIndex', 'treeItem'])
   let treeItem = ref<any>({})
 
   const changeIndexFun = (val: any) => {
-    changeObj.value = val
-    emit('changeIndex', val.id)
-    selectValue.value = val.name
-    treeItem.value = ''
+    emit('changeIndex', val)
   }
   onMounted(() => {
     changeIndexFun(workspaceData.value)

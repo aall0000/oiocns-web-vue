@@ -18,7 +18,7 @@
           class="department-tree"
         />
         <div style="flex: 1">
-          <departmentDetail :treeObj="treeObj" :showInfo="showInfo" />
+          <departmentDetail :selectId="selectId" />
           <departmentList :selectId="selectId" :personType="personType"></departmentList>
         </div>
       </div>
@@ -56,8 +56,8 @@
   }
   const selectList = reactive<selectType[]>([])
   let selectId = ref<string>()
+  let selectItem = ref<selectType>()
   let showInfo = ref<boolean>(false)
-  let treeObj = ref<any>({})
   let personType = ref<string>('1')
   $services.company
     .getJoinedCompany({
@@ -71,13 +71,13 @@
       selectList.push(...res.data.result)
       console.log(selectList)
     })
-  const changeIndex = (id: string) => {
-    selectId.value = id
-    // showInfo.value = falsetreeItem
-  }
-  const treeItem = (item: any) => {
-    treeObj.value = item
-    getDepPerson(item.id)
+    type treeItem = {
+      id:string,
+      name:string
+    }
+  const changeIndex = (obj: treeItem) => {
+    selectId.value = obj.id
+    getDepPerson(obj.id)
   }
   const personTypeChange = (index: string) => {
     personType.value = index
