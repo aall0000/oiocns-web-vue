@@ -37,8 +37,6 @@ import { computed } from 'vue'
 const store = useUserStore()
 const { queryInfo } = storeToRefs(store)
 
-console.log('2222', store)
-
 const getTimeState = () => {
   // 获取当前时间
   let timeNow = new Date()

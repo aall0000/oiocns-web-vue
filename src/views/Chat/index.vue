@@ -83,7 +83,7 @@ onMounted(() => {
     const { data, success } = await connection.invoke('GetChats')
     if (success) {
       const { result = [] } = data
-      console.log('链接GetChats', result)
+      // console.log('链接GetChats', result)
       sessionList.value = [...result]
     }
   })

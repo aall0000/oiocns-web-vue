@@ -1,15 +1,21 @@
 <template>
-  <div class="page work">
-    <h1>元数据{{aa}}</h1>
+  <div class="page thing">
+    <h1>欢迎来到元数据</h1>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { ref } from 'vue';
-
-const aa = ref(9)
 </script>
 
 <style lang='scss'>
-.work {}
+.thing {
+  h1 {
+    font-size: 30px;
+    text-align: center;
+    margin: 30px auto;
+  }
+
+  overflow: hidden;
+}
 </style>

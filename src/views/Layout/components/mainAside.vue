@@ -1,7 +1,7 @@
 <template>
   <div class="mainAside-wrap">
     <ul class="top-ul">
-      <li :class="['aside-li', item.path === activeRouter ? 'active' : '']"
+      <li :class="['aside-li', activeRouter.includes(item.key ?? item.path) ? 'active' : '']"
         v-for="item in mainMenus.filter((a) => !a?.bottom)" @click="handleRouterChage(item)">
         <el-icon class="aside-li-icon" :size="20">
           <component :is="item.icon" />
@@ -10,7 +10,7 @@
       </li>
     </ul>
     <ul class="top-ul">
-      <li :class="['aside', item.path === activeRouter ? 'active' : '']"
+      <li :class="['aside', activeRouter.includes(item.key ?? item.path) ? 'active' : '']"
         v-for="item in mainMenus.filter((a) => a?.bottom === true)" @click="handleRouterChage(item)">
         <div class="me" v-if="item.name === '我的'">
           <el-icon class="icon1" :size="20">
@@ -18,7 +18,7 @@
           </el-icon>
           <span class="name1">{{ item.name }}</span>
         </div>
-        <div :class="['apps', item.path === activeRouter ? 'active' : '']" v-if="item.name === '应用'">
+        <div :class="['apps', activeRouter.includes(item.key ?? item.path) ? 'active' : '']" v-if="item.name === '应用'">
           <el-popover placement="right-end" title="小应用" :width="350" trigger="click">
             <el-collapse v-model="activeNames">
               <el-collapse-item title="我使用的应用" name="1">
@@ -71,8 +71,8 @@ import img6 from '@/assets/img/appIcon6.png'
 const router = useRouter()
 const store = useUserStore()
 // const active = ref<string>('工作台')
-// 是否是个人空间
-const IsSelfSpace = ref<boolean>(store.workspaceData.name === '个人空间')
+// 是否是个人空间  默认是个人空间
+const IsSelfSpace = ref<boolean>(store?.workspaceData?.name === '个人空间' ?? true)
 
 const activeNames = ref(['1', '2'])
 const activeRouter = ref<string>('')
@@ -80,13 +80,13 @@ const activeRouter = ref<string>('')
 //   console.log(val)
 // }
 const mainMenus = [
-  { name: '工作台', icon: 'Tickets', path: '/thing' },
+  { name: '工作台', icon: 'Tickets', path: '/work' },
   { name: '消息', icon: 'ChatDotRound', path: '/chat' },
   { name: '组织架构', icon: 'School', path: '/organization' },
   { name: '商店', icon: 'Grid', path: '/appStore' },
-  { name: '应用', icon: 'GoodsFilled', path: '', bottom: true },
-  { name: '元数据', icon: 'Share', path: '/work' },
-  { name: '我的', icon: 'Setting', path: IsSelfSpace ? '/user/userMsg' : '/company/unitMsg', bottom: true }
+  { name: '应用', icon: 'GoodsFilled', path: '/appStpre', bottom: true },
+  { name: '元数据', icon: 'Share', path: '/thing1' },
+  { name: '我的', icon: 'Setting', path: IsSelfSpace ? '/user/userMsg' : '/company/unitMsg', key: IsSelfSpace ? '/user/' : '/company/', bottom: true }
 ]
 const appUse = [
   { name: '资产管理', icon: img1 },
