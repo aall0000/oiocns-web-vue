@@ -17,11 +17,11 @@
       </el-select> -->
     </li>
     <li class="con tree-btns">
-      <div class="title" @click="getDataDetail">部门管理</div>
+      <div class="title">部门管理</div>
       <el-button :icon="Plus" @click="dialogVisible = true" size="small">新建部门</el-button>
       <!-- <el-button :icon="User" size="small">管理部门</el-button> -->
       <!-- /角色(职权)/岗位(身份)
-      创建职权需要角色id和组织id
+      创建岗位需要角色id和组织id
       通过职权列表创建身份
       集团只有职权没有身份，通过职权可以查人
       单位可以创建职权进行虚拟集团查找 -->
@@ -75,15 +75,7 @@
   const store = useUserStore()
   const { workspaceData } = storeToRefs(store)
   let dialogVisible = ref<boolean>(false)
-  defineProps<{
-    selectList: any
-  }>()
-  type selectType = {
-    id: string
-    name: string
-  }
-  const emit = defineEmits(['changeIndex', 'treeItem'])
-  let treeItem = ref<any>({})
+  const emit = defineEmits(['changeIndex'])
 
   const changeIndexFun = (val: any) => {
     emit('changeIndex', val)
@@ -111,10 +103,6 @@
         dialogVisible.value = false
       })
   }
-
-  const getDataDetail = () => {
-    // getDepartmentsList('340820527880998912',)
-  }
   const defaultProps = {
     children: 'children',
     label: 'label'
@@ -126,9 +114,6 @@
     if (node.level >= 1) {
       getDepartmentsList(node,resolve)
     }
-  }
-  const handleNodeClick = (data: any) => {
-    console.log(data)
   }
   //根节点数据
   async function getQueryInfo(resolve: any) {
@@ -158,7 +143,7 @@
             id: element.id,
             label: element.name,
             code:element.code,
-            children:''
+            children:[] as []
           }
 
           arr.push(JSON.parse(JSON.stringify(obj)))

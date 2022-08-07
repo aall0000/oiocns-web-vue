@@ -104,11 +104,9 @@
   })
 
   function fetchRequest() {
-    let token = sessionStorage.getItem('TOKEN')
     $services.person
       .queryInfo({
         data: {},
-        headers: { Authorization: token }
       })
       .then((res: ResultType) => {
         console.log('查询人员信息', res)
@@ -123,7 +121,6 @@
       })
   }
   const update = () => {
-    let token = sessionStorage.getItem('TOKEN')
     $services.person
       .update({
         data: {
@@ -137,7 +134,6 @@
           teamRemark: formLabelAlign.Profile,
           teamAuthId: store.queryInfo.team.authId
         },
-        headers: { Authorization: token }
       })
       .then((res: ResultType) => {
         console.log('更新个人信息成功', res)

@@ -12,14 +12,12 @@
       <!-- 单位管理 -->
       <div class="org-content" v-if="showMenu == true">
         <departmentTree
-          :selectList="selectList"
           @changeIndex="changeIndex"
-          @treeItem="treeItem"
           class="department-tree"
         />
         <div style="flex: 1">
-          <departmentDetail :selectId="selectId" />
-          <departmentList :selectId="selectId" :personType="personType"></departmentList>
+          <departmentDetail :selectItem="selectItem" />
+          <departmentList :selectId="selectId" :selectItem="selectItem" :personType="personType"></departmentList>
         </div>
       </div>
       <!-- 个人管理 -->
@@ -54,28 +52,35 @@
     name: string
     id: string
   }
-  const selectList = reactive<selectType[]>([])
+  // const selectList = reactive<selectType[]>([])
   let selectId = ref<string>()
-  let selectItem = ref<selectType>()
+  let selectItem = ref<selectType>(
+    {
+      id:'',
+      name:''
+    }
+  )
   let showInfo = ref<boolean>(false)
   let personType = ref<string>('1')
-  $services.company
-    .getJoinedCompany({
-      data: {
-        id: queryInfo.value.id,
-        offset: 0,
-        limit: 100
-      }
-    })
-    .then((res: ResultType) => {
-      selectList.push(...res.data.result)
-      console.log(selectList)
-    })
-    type treeItem = {
-      id:string,
-      name:string
-    }
+  //获取当前账号的所有单位
+  // $services.company
+  //   .getJoinedCompany({
+  //     data: {
+  //       id: queryInfo.value.id,
+  //       offset: 0,
+  //       limit: 100
+  //     }
+  //   })
+  //   .then((res: ResultType) => {
+  //     selectList.push(...res.data.result)
+  //     console.log(selectList)
+  //   })
+  type treeItem = {
+    id: string
+    name: string
+  }
   const changeIndex = (obj: treeItem) => {
+    selectItem.value = obj;
     selectId.value = obj.id
     getDepPerson(obj.id)
   }
@@ -92,12 +97,10 @@
         }
       })
       .then((res: ResultType) => {
+        console.log('ress',res)
         showInfo.value = true
       })
   }
-  let departmentName = ref<string>('')
-  let departmentTeamCode = ref<string>('')
-  let departmentTeamRemark = ref<string>('')
 </script>
 
 <style lang="scss">
