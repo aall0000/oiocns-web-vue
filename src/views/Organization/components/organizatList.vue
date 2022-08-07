@@ -112,7 +112,7 @@
   watch(
     () => props.personType,
     (news) => {
-      console.log('ddd', news)
+
     }
   )
 
@@ -129,7 +129,6 @@
     })
     .then((res: ResultType) => {
       selectList.push(...res.data.result)
-      console.log(selectList)
     })
   const addFriends = () => {
     $services.person
@@ -156,17 +155,7 @@
   const handleSelect = (key: string, keyPath: string[]) => {
     console.log(key, keyPath)
   }
-  const getQueryInfo = () => {
-    $services.company
-      .queryInfo({
-        data: {}
-      })
-      .then((res: ResultType) => {
-        console.log('获取单位详情', res)
-      })
-  }
   onMounted(() => {
-    getQueryInfo()
     getFriendList()
     getQunList()
   })
@@ -308,7 +297,6 @@
           })
           .then((res: ResultType) => {
             if (res.code == 200) {
-              console.log(res)
               let states = res.data.result
               let arr: { value: any; label: any }[] = []
               states.forEach((el: any) => {
@@ -318,7 +306,6 @@
                 }
                 arr.push(obj)
               })
-              console.log('====', options.value)
               options.value = arr
               loading.value = false
             } else {
@@ -339,7 +326,6 @@
           })
           .then((res: ResultType) => {
             if (res.code == 200) {
-              console.log(res)
               let states = res.data.result
               let arr: { value: any; label: any }[] = []
               states.forEach((el: any) => {
@@ -349,7 +335,6 @@
                 }
                 arr.push(obj)
               })
-              console.log('====', options.value)
               options.value = arr
               loading.value = false
             } else {

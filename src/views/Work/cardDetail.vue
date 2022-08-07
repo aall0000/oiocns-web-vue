@@ -13,7 +13,8 @@
       mode="horizontal"
       @select="handleSelect"
     >
-      <el-menu-item index="1">申请</el-menu-item>
+      <el-menu-item index="1">我的审批</el-menu-item>
+      <el-menu-item index="2">我的申请</el-menu-item>
       <!--  <el-menu-item index="1">待办</el-menu-item>
       <el-menu-item index="2">已办</el-menu-item>
       <el-menu-item index="3">已完成</el-menu-item>
@@ -89,6 +90,18 @@
         tableData.value = res.data.result
       })
   }
+  var getApplyList = () => {
+    $services.person
+      .getAllApply({
+        data: {
+          offset: 0,
+          limit: 10
+        }
+      })
+      .then((res: ResultType) => {
+        tableData.value = res.data.result
+      })
+  }
   var select = () => {
     console.log('select')
   }
@@ -123,8 +136,12 @@
   var changeSelect = () => {
     console.log()
   }
-  const handleSelect = (key: string, keyPath: string[]) => {
-    console.log(key, keyPath)
+  const handleSelect = (key: string|number, keyPath: string[]) => {
+    if(key ===1){
+      getList()
+    }else{
+      getApplyList()
+    }
   }
   onMounted(() => {
     getList()

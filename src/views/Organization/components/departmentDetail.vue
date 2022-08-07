@@ -11,43 +11,40 @@
         <div class="left-name">
           <el-icon :size="20">
             <Connection />
-            <img class="group-icon" style="width:20px" src="@/assets/img/group-next.png" alt="" /> </el-icon
+            <img
+              class="group-icon"
+              style="width: 20px"
+              src="@/assets/img/group-next.png"
+              alt=""
+            /> </el-icon
           >下级部门
         </div>
         <div class="edit">
-          <el-button type="primary">创建工作组</el-button>
+          <!-- <el-button type="primary">创建工作组</el-button> -->
           <el-button type="primary" @click="dialogVisible = true">创建子部门</el-button>
-          <el-button>调整排序</el-button>
+          <!-- <el-button>调整排序</el-button> -->
         </div>
       </div>
     </div>
-    <div class="tab-list">
+    <div class="tab-list" v-if="DepartmentsList.list.length>0">
       <ul class="next-dept">
         <!-- 头部 -->
         <el-row class="next-dept-con header">
           <el-col :span="4">
             <div class="con">部门名称</div>
           </el-col>
-          <el-col :span="4">
+          <!-- <el-col :span="4">
             <div class="con">成员人数</div>
-          </el-col>
+          </el-col> -->
         </el-row>
         <!-- 内容 -->
-        <el-row class="next-dept-con body">
+        <el-row class="next-dept-con body" v-for="(item,index) in DepartmentsList.list" :key="index">
           <el-col :span="4">
-            <div class="con">子部门1名称</div>
+            <div class="con">{{item.name}}</div>
           </el-col>
-          <el-col :span="4">
+          <!-- <el-col :span="4">
             <div class="con">20</div>
-          </el-col>
-        </el-row>
-        <el-row class="next-dept-con body">
-          <el-col :span="4">
-            <div class="con">子部门1名称子部门1名称子部门1名称</div>
-          </el-col>
-          <el-col :span="4">
-            <div class="con">20</div>
-          </el-col>
+          </el-col> -->
         </el-row>
       </ul>
     </div>
@@ -73,9 +70,13 @@
 </template>
 <script lang="ts" setup>
   import $services from '@/services'
-  import { ref, reactive, onMounted } from 'vue'
+  import { ref, reactive, onMounted, watch } from 'vue'
+  type selectItem = {
+    name: string
+    id: string
+  }
   const props = defineProps<{
-
+    selectItem: selectItem
   }>()
   let dialogVisible = ref<boolean>(false)
   let selectId = ref<string>()
@@ -88,7 +89,7 @@
         data: {
           id: selectId.value,
           name: departmentName.value,
-          // parentId: props.treeObj.value.id,
+          parentId: props.selectItem.id,
           code: departmentTeamCode.value,
           teamRemark: departmentTeamRemark.value
         }
@@ -97,38 +98,42 @@
         dialogVisible.value = false
       })
   }
-  const getQueryInfo = () => {
+  watch(
+    () => props.selectItem,
+    (newValue: selectItem) => {
+      if (newValue.id !== '') {
+        getDepartmentsList(newValue.id)
+      }
+    },
+  )
+  type listItem  = {
+    id: string
+    name: string
+  }
+  type DlistType = {
+    list:Array<listItem>
+  }
+  let DepartmentsList = reactive<DlistType>({list:[]})
+  const getDepartmentsList = (id: string) => {
+    let arr: any = []
     $services.company
-      .queryInfo({
-        data: {}
+      .getDepartments({
+        data: { id: id, offset: 0, limit: 100 }
       })
       .then((res: ResultType) => {
-        console.log('获取单位详情', res)
-      })
-  }
-  onMounted(() => {
-    getQueryInfo()
-    getFriendList()
-    getQunList()
-  })
+        if (res.data.result) {
+          let resData = res.data.result
 
-  const state = reactive({ qunList: [], friendList: [] })
-  const getFriendList = async () => {
-    await $services.person
-      .getFriends({ data: { offset: 0, limit: 10 } })
-      .then((res: ResultType) => {
-        const { result = [] } = res.data
-        state.friendList = result
+          resData.forEach((element: any) => {
+            var obj = {
+              id: element.id,
+              name: element.name
+            }
+            arr.push(obj)
+          })
+        }
+        DepartmentsList.list = arr 
       })
-  }
-  // 获取我加入的群列表
-  const getQunList = async () => {
-    const res = await $services.cohort.getJoinedCohorts({ data: { offset: 0, limit: 10 } })
-    const { data, err } = res
-    if (!err) {
-      const { result = [] } = data
-      state.qunList = result
-    }
   }
 </script>
 
