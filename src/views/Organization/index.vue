@@ -32,7 +32,7 @@
 <script lang="ts" setup>
   import $services from '@/services'
   import { ref, reactive } from 'vue'
-  import departmentTree from './components/departmentTree1.vue'
+  import departmentTree from './components/departmentTree.vue'
   import departmentDetail from './components/departmentDetail.vue'
   import departmentList from './components/departmentList.vue'
   import organizatList from './components/organizatList.vue'
