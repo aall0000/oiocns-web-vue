@@ -30,13 +30,17 @@
         <el-button type="primary">组织架构</el-button>
       </li> -->
       <ul class="img-list con">
-        <li class="img-list-add" @click="openDialogAdd" v-if="isCohort">+</li>
-        <li class="img-list-del" @click="openDialogDel" v-if="isCohort"
+        <li class="img-list-con img-list-add " @click="openDialogAdd" v-if="isCohort">+</li>
+        <li class="img-list-con img-list-del " @click="openDialogDel" v-if="isCohort"
           ><el-icon><SemiSelect /></el-icon
         ></li>
-        <li class="img-list-con" v-for="item in userList" :key="item.id">
+        <li class="img-list-con" v-for="item in userList" :key="item.id" :title="item.name">
           <img class="img-list-con-img" src="@/assets/img/x.png" alt="" />
           <span class="img-list-con-name">{{ item.name }}</span>
+        </li>
+        <li class="img-list-con" >
+          <img class="img-list-con-img" src="@/assets/img/x.png" alt="" />
+          <span class="img-list-con-name">菜市场上次菜市场</span>
         </li>
         <span v-show="total > 10" class="img-list-more-btn" @click="handleViewMoreUser"
           >查看更多</span
@@ -299,21 +303,23 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-right: 16px;
+    // margin-right: 16px;
+    margin-bottom: 20px !important;
   }
   .img-list-del {
     cursor: pointer;
     width: 50px;
     height: 50px;
-    background: #ffffff;
-    border-radius: 2px;
+    // background: #ffffff;
+    // border-radius: 2px;
     border: 1px solid #ea4c43;
     font-size: 25px;
     display: flex;
     justify-content: center;
     align-items: center;
     color: #ea4c43;
-    margin-right: 16px;
+    // margin-right: 16px;
+    margin-bottom: 20px !important;
   }
 
   .invitateBox {
@@ -443,7 +449,7 @@
         flex-direction: column;
         align-self: center;
         margin-right: 10px;
-        margin-bottom: 10px;
+        // margin-bottom: 10px;
         cursor: pointer;
 
         &-img {
@@ -455,6 +461,10 @@
           font-size: 10px;
           line-height: 20px;
           text-align: center;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          width: 50px;
         }
       }
 
@@ -472,6 +482,7 @@
 
       .con-label {
         font-weight: bold;
+        width: 100px;
         color: #333;
       }
     }

@@ -159,7 +159,7 @@
                   <el-button v-if="personType =='2'" @click="deletequn(scope.row.id)" type="primary">退出群</el-button>
                 </template>
               </el-table-column>
-              
+
             </el-table>
           </div>
           <div class="page-pagination">
@@ -258,7 +258,6 @@
     })
     .then((res: ResultType) => {
       selectList.push(...res.data.result)
-      console.log(selectList)
     })
   const changeIndex = (id: string) => {
     selectId.value = id
