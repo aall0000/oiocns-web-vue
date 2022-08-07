@@ -1,7 +1,7 @@
 <template>
   <div class="group-header-wrap">
     <ul class="user flex">
-      <img class="user-img" src="@/assets/img/toux.jpg" alt="" srcset="" />
+      <HeadImg :name="info.detail.name" />
       <li class="user-info">
         <div class="user-info-top flex">
           <p class="user-info-top-name">{{ info.detail.name }}</p>
@@ -35,6 +35,7 @@
   </el-dialog>
 </template>
 <script lang="ts" setup>
+import HeadImg from './headImg.vue'
 import { ref } from 'vue';
 type prop = {
   info: any
@@ -78,13 +79,6 @@ const handleAddFun = () => {
 
 .user {
   align-items: center;
-
-  &-img {
-    width: 50px;
-    height: 50px;
-    margin-right: 15px;
-    border-radius: 50%;
-  }
 
   &-info {
     &-top {

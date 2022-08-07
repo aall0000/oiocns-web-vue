@@ -83,7 +83,12 @@ export default defineConfig(({ command, mode }) => {
       terserOptions: {
         compress: {
           drop_console: true, // 生产环境移除console
-          drop_debugger: true // 生产环境移除debugger
+          drop_debugger: true, // 生产环境移除debugger
+          pure_funcs: ['console.log']
+        },
+        output: {
+          // 去掉注释内容
+          comments: true
         }
       },
       rollupOptions: {
@@ -93,11 +98,8 @@ export default defineConfig(({ command, mode }) => {
           chunkFileNames: 'static/js/[name]-[hash].js',
           entryFileNames: 'static/js/[name]-[hash].js',
           assetFileNames: 'static/[ext]/[name]-[hash].[ext]',
-          // 在 UMD 构建模式下为这些外部化的依赖提供一个全局变量
-          globals: {
-            vue: 'Vue',
-            'element-plus': 'elementPlus'
-          },
+          vue: ['vue', 'vue-router', 'vuex'],
+          'element-plus': 'elementPlus',
           manualChunks(id) {
             // if (id.includes('components')) {
             //   // 把 components 文件里面的文件都打包到 components.js 中

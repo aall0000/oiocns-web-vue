@@ -3,7 +3,7 @@
     <!-- 导航传送门 -->
     <teleport v-if="isShowMenu" to="#menu-teleport-target">
       <el-aside class="custom-group-silder-menu" width="260px">
-        <GroupSideBarVue v-model:active="activeInfo" :sessionList="sessionList" :redDotInfo="msgDotMap" />
+        <GroupSideBarVue v-model:active="activeInfo" :sessionList="sessionList" :redDotInfo="msgDotMap" :clearHistoryMsg="clearHistoryMsg" />
       </el-aside>
     </teleport>
     <!-- 右侧展示主体 -->
@@ -16,14 +16,13 @@
       <!-- 输入区域 -->
       <GroupInputBox class="chart-input" v-show="activeInfo?.id" @submitInfo="submit" />
     </div>
-    <GroupDetail :id="activeInfo.id" :info="selectInfo" v-if="isShowDetail" @updateUserList="getQunPerson" />
+    <GroupDetail :info="selectInfo" v-if="isShowDetail" @updateUserList="getQunPerson" :clearHistoryMsg="clearHistoryMsg" />
   </div>
 </template>
 
 <script lang="ts" setup>
 import { useUserStore } from '@/store/user'
 import * as signalR from '@microsoft/signalr'
-import API from '@/services'
 import { onMounted, reactive, ref, Ref, watch, computed, onBeforeUnmount, nextTick } from 'vue'
 import GroupSideBarVue from './components/groupSideBar.vue'
 import GroupHeaderVue from './components/groupHeader.vue'
@@ -83,7 +82,7 @@ onMounted(() => {
     const { data, success } = await connection.invoke('GetChats')
     if (success) {
       const { result = [] } = data
-      // console.log('链接GetChats', result)
+      console.log('链接成功')
       sessionList.value = [...result]
     }
   })
@@ -108,10 +107,10 @@ const submit = async (value: Ref<string>) => {
 connection.on('RecvMsg', (res) => {
   const { data } = res
   // console.log('接受消息', '当前选择id', activeInfo.value.id, "-----", '来源', data.fromId, '-----', '我的', myId);
-  console.log('处理信息', data);
+  // console.log('处理信息', data);
   // 根据新信息更新导航信息
   let sessionId = handleUpdateSideList(data)
-  if (sessionId !== myId){
+  if (sessionId !== myId) {
     let num = (msgDotMap.value.get(sessionId)?.count ?? 0) + 1
     // 信息来源是正在聊天的人 -则不展示红点
     msgDotMap.value.set(sessionId, { isShowDot: activeInfo.value.id !== sessionId, count: num })
@@ -147,6 +146,9 @@ watch(
     msgMap.value.clear()
     //获取新的聊天对象历史信息
     getHistoryMsg(id, typeName, true)
+
+    //关闭详情页面
+    isShowDetail.value = false
   }
 )
 
@@ -184,7 +186,7 @@ const handleUpdateSideList = (data: any) => {
     let sessionId = data.toId
     if (item.typeName === "人员"
       && data.fromId !== myId
-      && data.toId === myId){
+      && data.toId === myId) {
       sessionId = data.fromId
     }
     if (sessionId == item.id) {
@@ -215,11 +217,17 @@ const getHistoryMsg = async (id: string, type: string, isGoEnd?: boolean) => {
   }
 }
 
+//清空历史记录
+const clearHistoryMsg = () => {
+  msgMap.value.clear()
+}
+
 // 获取更多历史消息
 const handleViewMoreHistory = () => {
   current.value++
   getHistoryMsg(activeInfo.value.id, activeInfo.value.typeName)
 }
+
 </script>
 
 <style lang="scss">

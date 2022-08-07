@@ -15,16 +15,19 @@
       <el-container>
         <!-- <Breadcrumb></Breadcrumb> -->
         <el-main class="main-wrap">
-          <router-view v-slot="{ Component }">
-            <keep-alive v-if="$route.meta.keepAlive">
-              <component :is="Component" />
-            </keep-alive>
-            <component v-else :is="Component" />
-          </router-view>
-          <!-- <keep-alive v-if="$route.meta.keepAlive">
-            <router-view />
-          </keep-alive>
-          <router-view v-if="!$route.meta.keepAlive" /> -->
+          <Suspense>
+            <template #default>
+              <router-view v-slot="{ Component }">
+                <keep-alive v-if="$route.meta.keepAlive">
+                  <component :is="Component" />
+                </keep-alive>
+                <component v-else :is="Component" />
+              </router-view>
+            </template>
+            <template #fallback>
+              <LoadingVue />
+            </template>
+          </Suspense>
         </el-main>
         <el-footer>Copyright 2021 资产云开放协同创新中⼼ 主办单位：浙江省财政厅</el-footer>
       </el-container>
@@ -38,6 +41,7 @@ import MainAsideVue from './components/mainAside.vue'
 import Breadcrumb from './components/breadcrumb.vue'
 import Menu from './components/menu.vue'
 import UserAside from './msgLayout/userAside.vue'
+import LoadingVue from './components/loading.vue'
 
 import { useRouter } from 'vue-router'
 import { ref, watch } from 'vue'

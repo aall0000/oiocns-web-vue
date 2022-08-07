@@ -25,7 +25,7 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref, nextTick, onUnmounted, computed } from 'vue';
+import { onMounted, ref, nextTick, onUnmounted, computed, watch } from 'vue';
 import { debounce } from '@/utils/tools'
 import { useUserStore } from "@/store/user"
 
@@ -35,6 +35,11 @@ type Props = {
 }
 const { list, myId } = defineProps<Props>()
 const { getUserName } = useUserStore()
+
+watch(()=>list,(val)=>{
+  console.log('list',val);
+
+})
 
 // dom节点
 const nodeRef = ref(null)
@@ -91,6 +96,8 @@ defineExpose({
 .group-content-wrap {
   padding: 30px;
   background-color: #F5F5F5;
+  transition: all .7s;
+
 
   .history-more {
     text-align: center;
