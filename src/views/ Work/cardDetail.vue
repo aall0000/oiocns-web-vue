@@ -13,8 +13,9 @@
       mode="horizontal"
       @select="handleSelect"
     >
-      <el-menu-item index="1">代办</el-menu-item>
-      <!-- <el-menu-item index="2">已办</el-menu-item>
+      <el-menu-item index="1">申请</el-menu-item>
+      <!--  <el-menu-item index="1">待办</el-menu-item>
+      <el-menu-item index="2">已办</el-menu-item>
       <el-menu-item index="3">已完成</el-menu-item>
       <el-menu-item index="4">我发起的</el-menu-item>
       <el-menu-item index="5">已逾期</el-menu-item> -->

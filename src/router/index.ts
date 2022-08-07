@@ -38,12 +38,12 @@ const mainRouter: RouteRecordRaw[] = [
     }
   },
   {
-    component: () => import('@/views/Work/index.vue'),
-    name: 'work',
-    path: '/work',
+    component: () => import('@/views/Thing/index.vue'),
+    name: 'Thing',
+    path: '/Thing',
     meta: {
       keepAlive: false,
-      title: '工作区'
+      title: '元数据'
     }
   },
   {
@@ -74,7 +74,7 @@ const mainRouter: RouteRecordRaw[] = [
     }
   },
   {
-    component: () => import('@/views/Thing/index.vue'),
+    component: () => import('@/views/Work/index.vue'),
     name: 'thing',
     path: '/thing',
     meta: {
@@ -83,7 +83,7 @@ const mainRouter: RouteRecordRaw[] = [
     }
   },
   {
-    component: () => import('@/views/Thing/cardDetail.vue'),
+    component: () => import('@/views/Work/cardDetail.vue'),
     name: 'cardDetail',
     path: '/cardDetail',
     meta: {
@@ -92,7 +92,7 @@ const mainRouter: RouteRecordRaw[] = [
     }
   },
   {
-    component: () => import('@/views/Thing/personalApp.vue'),
+    component: () => import('@/views/Work/personalApp.vue'),
     name: 'personalApp',
     path: '/personalApp',
     meta: {
@@ -101,7 +101,7 @@ const mainRouter: RouteRecordRaw[] = [
     }
   },
   {
-    component: () => import('@/views/Thing/appStore.vue'),
+    component: () => import('@/views/Work/appStore.vue'),
     name: 'appStore',
     path: '/appStore',
     meta: {
