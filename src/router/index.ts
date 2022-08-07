@@ -38,12 +38,12 @@ const mainRouter: RouteRecordRaw[] = [
     }
   },
   {
-    component: () => import('@/views/Work/index.vue'),
-    name: 'work',
-    path: '/work',
+    component: () => import('@/views/Thing/index.vue'),
+    name: 'Thing',
+    path: '/Thing',
     meta: {
       keepAlive: false,
-      title: '工作区'
+      title: '元数据'
     }
   },
   {
@@ -74,16 +74,16 @@ const mainRouter: RouteRecordRaw[] = [
     }
   },
   {
-    component: () => import('@/views/Thing/index.vue'),
-    name: 'thing',
-    path: '/thing',
+    component: () => import('@/views/Work/index.vue'),
+    name: 'work',
+    path: '/work',
     meta: {
       keepAlive: false,
-      title: '我的待办'
+      title: '工作组'
     }
   },
   {
-    component: () => import('@/views/Thing/cardDetail.vue'),
+    component: () => import('@/views/Work/cardDetail.vue'),
     name: 'cardDetail',
     path: '/cardDetail',
     meta: {
@@ -92,7 +92,7 @@ const mainRouter: RouteRecordRaw[] = [
     }
   },
   {
-    component: () => import('@/views/Thing/personalApp.vue'),
+    component: () => import('@/views/Work/personalApp.vue'),
     name: 'personalApp',
     path: '/personalApp',
     meta: {
@@ -101,7 +101,7 @@ const mainRouter: RouteRecordRaw[] = [
     }
   },
   {
-    component: () => import('@/views/Thing/appStore.vue'),
+    component: () => import('@/views/Work/appStore.vue'),
     name: 'appStore',
     path: '/appStore',
     meta: {
