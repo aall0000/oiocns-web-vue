@@ -45,7 +45,13 @@
             ]"
             :filter-method="changeSelect"
           />
-          <el-table-column prop="target.typeName" label="内容" />
+          <el-table-column prop="target.typeName" label="内容" >
+             <template #default="scope">
+              <div v-if="scope.row">
+                 {{scope.row.target.name}}申请加入{{scope.row.team.name}}
+              </div>
+            </template>
+          </el-table-column>
           <!-- <el-table-column prop="date" label="链接" /> -->
           <el-table-column prop="status" label="状态">
             <template #default="scope">
