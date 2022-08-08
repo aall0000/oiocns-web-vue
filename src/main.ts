@@ -9,6 +9,7 @@ import { createPinia } from 'pinia'
 import '@/assets/style/app.scss'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import InfiniteScroll from 'element-plus'
+import VueGridLayout from 'vue-grid-layout'
 
 const pinia = createPinia()
 
@@ -22,7 +23,7 @@ setupGlobalComponent(app)
 setGlobalProperties(app)
 setupSvgIcon(app)
 app.use(pinia)
-
+app.use(VueGridLayout)
 setupRouter(app)
 app.use(InfiniteScroll)
 // await router.isReady()

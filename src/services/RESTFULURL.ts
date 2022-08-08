@@ -3,7 +3,6 @@ const cohort = '/orginone/organization/cohort'
 const person = '/orginone/organization/person'
 const company = '/orginone/organization/company'
 const history = '/orginone/orgchat/history'
-
 export default {
   // 人员接口
   person: {
@@ -113,7 +112,8 @@ export default {
   // 历史记录
   history: {
     getCohortMsg: history + '/query/cohort/msg', // 获取群聊天历史聊天信息
-    getFriendMsg: history + '/query/friend/msg' // 获取好友历史聊天信息
+    getFriendMsg: history + '/query/friend/msg', // 获取好友历史聊天信息
+    test: (str: string) => `${history}/test/${str}` // 获取好友历史聊天信息
   }
   //others
 }
