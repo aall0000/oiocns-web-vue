@@ -82,6 +82,10 @@
   import { ref, onMounted } from 'vue'
   import zhCn from 'element-plus/lib/locale/lang/zh-cn'
   import { ElMessage } from 'element-plus'
+  import { storeToRefs } from 'pinia'
+  import { useUserStore } from '@/store/user'
+  const store = useUserStore()
+  const { workspaceData } = storeToRefs(store)
   var tableData = ref<any>([])
   const activeIndex = ref<string>('1')
   var getList = () => {
@@ -123,6 +127,11 @@
           message: '拒绝成功',
           type: 'success'
         })
+        if(activeIndex.value === '1'){
+          getList()
+        }else{
+          getApplyList()
+        }
       })
   }
   var joinSuccess = (item: { id: '' }) => {
@@ -137,12 +146,18 @@
           message: '添加成功',
           type: 'success'
         })
+        if(activeIndex.value === '1'){
+          getList()
+        }else{
+          getApplyList()
+        }
       })
   }
   var changeSelect = () => {
     console.log()
   }
-  const handleSelect = (key: string|number, keyPath: string[]) => {
+  const handleSelect = (key: any, keyPath: string[]) => {
+    activeIndex.value = key
     if(key ===1){
       getList()
     }else{
