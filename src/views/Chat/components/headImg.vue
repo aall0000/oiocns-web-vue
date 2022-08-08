@@ -3,7 +3,7 @@
     <img class="user-img" :src="img" alt="" srcset="" />
   </div>
   <div class="user-head-img-wrap txt-img" v-else>
-    <span>{{ name.slice(0, 2) }}</span>
+    <span>{{ name.slice(0, 2).toLocaleUpperCase() }}</span>
   </div>
 </template>
 

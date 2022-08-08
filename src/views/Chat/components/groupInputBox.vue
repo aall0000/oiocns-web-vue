@@ -1,9 +1,15 @@
 <template>
   <div class="group-input-wrap" @keyup.enter="submit">
     <div class="icons-box">
-      <el-icon :size="20">
-        <Orange />
-      </el-icon>
+      <el-popover placement="top" :width="400" trigger="click">
+        <template #reference>
+          <el-icon :size="20">
+            <Orange />
+          </el-icon>
+        </template>
+        <FaceVue @chooseFace="handleFaceChoosed" />
+      </el-popover>
+
       <el-icon :size="20">
         <Microphone />
       </el-icon>
@@ -20,6 +26,7 @@
 
 <script lang="ts" setup>
 import { ref } from 'vue'
+import FaceVue from './qqface.vue';
 const textarea = ref<string>('')
 
 const emit = defineEmits(['submitInfo'])
@@ -27,6 +34,11 @@ const emit = defineEmits(['submitInfo'])
 const submit = () => {
   emit('submitInfo', textarea)
   textarea.value = ""
+}
+
+const handleFaceChoosed = (key: any, value: number) => {
+  console.log('生存手册', key, value);
+  textarea.value +=key[0]
 }
 
 </script>
@@ -37,6 +49,7 @@ const submit = () => {
     textarea {
       height: 100%;
     }
+
     .el-textarea__inner {
       box-shadow: none !important;
     }
@@ -70,6 +83,7 @@ const submit = () => {
     display: flex;
     height: 100%;
     justify-content: space-between;
+
     .textarea {
       flex: 1;
       outline: none;

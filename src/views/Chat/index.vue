@@ -33,7 +33,7 @@ interface infoType {
   detail: teamType
   userList: userType[]
   total: number
-  isCohort: boolean
+  typeName: string
 }
 const { setUserNameMap, userToken } = useUserStore()
 // 是否展示导航
@@ -67,7 +67,7 @@ const pageOffset = computed(() => {
 // 记录所选聊天对象---群或者人
 const activeInfo = ref<any>({})
 // 所选聊天对象的基本信息
-let selectInfo = reactive<infoType>({ detail: {} as teamType, userList: [], total: 0, isCohort: false })
+let selectInfo = reactive<infoType>({ detail: {} as teamType, userList: [], total: 0, typeName: '' })
 // 消息服务
 const connection = new signalR.HubConnectionBuilder()
   .withUrl('/orginone/orgchat/msghub')
@@ -130,7 +130,9 @@ watch(
   () => activeInfo.value,
   async (val) => {
     const { typeName, id, team = {} } = val
-    selectInfo.isCohort = (typeName === "群组")
+    console.log('城市市场',val);
+
+    selectInfo.typeName = typeName
     current.value = 0
     // 取消红点提示
     msgDotMap.value.set(id, { isShowDot: false, count: 0 })
