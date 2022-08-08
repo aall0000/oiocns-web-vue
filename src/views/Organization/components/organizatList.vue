@@ -36,9 +36,9 @@
         </el-table-column>
       </el-table>
     </div>
-    <div class="page-pagination">
+    <!-- <div class="page-pagination">
       <el-pagination small background layout="prev, pager, next" :total="50" class="mt-4" />
-    </div>
+    </div> -->
     <el-dialog
       v-model="friendDialog"
       :title="personType == '1' ? '添加好友' : '添加群'"
@@ -285,17 +285,23 @@
           })
           .then((res: ResultType) => {
             if (res.code == 200) {
-              let states = res.data.result
               let arr: { value: any; label: any }[] = []
-              states.forEach((el: any) => {
-                let obj = {
-                  value: el.id,
-                  label: el.name
-                }
-                arr.push(obj)
-              })
-              options.value = arr
-              loading.value = false
+              console.log(res.data.result != undefined,res.data.result )
+              if(res.data.result != undefined){
+               let states = res.data.result
+                states.forEach((el: any) => {
+                  let obj = {
+                    value: el.id,
+                    label: el.name
+                  }
+                  arr.push(obj)
+                })
+                options.value = arr
+                loading.value = false
+              }else{
+                options.value = arr
+                loading.value = false
+              }
             } else {
               ElMessage({
                 message: res.msg,
@@ -314,17 +320,22 @@
           })
           .then((res: ResultType) => {
             if (res.code == 200) {
-              let states = res.data.result
               let arr: { value: any; label: any }[] = []
-              states.forEach((el: any) => {
-                let obj = {
-                  value: el.id,
-                  label: el.name
-                }
-                arr.push(obj)
-              })
-              options.value = arr
-              loading.value = false
+              if(res.data.result != undefined){
+               let states = res.data.result
+                states.forEach((el: any) => {
+                  let obj = {
+                    value: el.id,
+                    label: el.name
+                  }
+                  arr.push(obj)
+                })
+                options.value = arr
+                loading.value = false
+              }else{
+                options.value = arr
+                loading.value = false
+              }
             } else {
               ElMessage({
                 message: res.msg,

@@ -1,35 +1,34 @@
 <template>
-  <div class="organization-wrap">
-    <div class="org-head">
-      <div class="org-type">群 / 消息 / 组织架构</div>
+<teleport v-if="isShowMenu" to="#menu-teleport-target">
+  <div class="subMenu">
+  <subMenu
+  :showMenu="showMenu"
+  :personType="personType"
+  @personTypeChange="personTypeChange"
+></subMenu>
+</div>
+</teleport>
+  <div class="main-content">
+    <!-- 单位管理 -->
+    <div class="org-content" v-if="showMenu == true">
+      <departmentTree
+        @changeIndex="changeIndex"
+        class="department-tree"
+      />
+      <div class="main-dep">
+        <departmentDetail :selectItem="selectItem" />
+        <departmentList :selectId="selectId" :selectItem="selectItem" :personType="personType"></departmentList>
+      </div>
     </div>
-    <div class="main-content">
-      <subMenu
-        :showMenu="showMenu"
-        :personType="personType"
-        @personTypeChange="personTypeChange"
-      ></subMenu>
-      <!-- 单位管理 -->
-      <div class="org-content" v-if="showMenu == true">
-        <departmentTree
-          @changeIndex="changeIndex"
-          class="department-tree"
-        />
-        <div style="flex: 1">
-          <departmentDetail :selectItem="selectItem" />
-          <departmentList :selectId="selectId" :selectItem="selectItem" :personType="personType"></departmentList>
-        </div>
-      </div>
-      <!-- 个人管理 -->
-      <div class="org-content" v-else style="flex-direction: column">
-        <organizatList :personType="personType"></organizatList>
-      </div>
+    <!-- 个人管理 -->
+    <div class="org-content" v-else style="flex-direction: column">
+      <organizatList :personType="personType"></organizatList>
     </div>
   </div>
 </template>
 <script lang="ts" setup>
   import $services from '@/services'
-  import { ref, reactive } from 'vue'
+  import { ref, reactive, onMounted } from 'vue'
   import departmentTree from './components/departmentTree.vue'
   import departmentDetail from './components/departmentDetail.vue'
   import departmentList from './components/departmentList.vue'
@@ -47,11 +46,14 @@
   } else {
     showMenu.value = false
   }
-
+  const isShowMenu = ref<boolean>(false)
   type selectType = {
     name: string
     id: string
   }
+  onMounted(()=>{
+    isShowMenu.value = true
+  })
   // const selectList = reactive<selectType[]>([])
   let selectId = ref<string>()
   let selectItem = ref<selectType>(
@@ -82,24 +84,9 @@
   const changeIndex = (obj: treeItem) => {
     selectItem.value = obj;
     selectId.value = obj.id
-    getDepPerson(obj.id)
   }
   const personTypeChange = (index: string) => {
     personType.value = index
-  }
-  const getDepPerson = (id: string) => {
-    $services.company
-      .getDepartmentPersons({
-        data: {
-          id: id,
-          offset: 0,
-          limit: 100
-        }
-      })
-      .then((res: ResultType) => {
-        console.log('ress',res)
-        showInfo.value = true
-      })
   }
 </script>
 
@@ -130,49 +117,35 @@
   :deep(.el-select) {
     width: 100%;
   }
-  .organization-wrap {
+  .subMenu{
+    height: 100%;
+    width: 100px;
+    float: left;
+  }
+  .main-content {
     width: 100%;
     height: 100%;
     overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-  }
-  .main-content {
-    display: flex;
-    height: 100%;
-  }
-  .org-head {
-    padding: 20px 20px 10px;
-    background: #fff;
-
-    .org-type {
-      font-size: 16px;
-      color: #8d8d8d;
-      margin-bottom: 15px;
-    }
-
-    .org-mian {
-      font-size: 24px;
-      font-weight: bold;
-      color: #333;
-      display: flex;
-      justify-content: space-between;
-    }
+    position: absolute;
+    left: 0;
+    top: 0;
   }
 
   .org-content {
     background: #f0f2f5;
-    display: flex;
-    justify-content: space-between;
-    flex-grow: 1;
     padding: 15px;
-
+    float: left;
+    width: 100%;
+    // overflow-y: scroll;
     //左侧组织架构 树
-    // .department-tree {
-    //   width: 200px;
-    //   min-width: 200px;
-    // }
-
+    .department-tree {
+      width: 200px;
+      min-width: 200px;
+    }
+    .main-dep{
+      float: left;
+      width: calc( 100% - 200px);
+    }
     // 右侧列表
     .department-info {
       flex-grow: 1;

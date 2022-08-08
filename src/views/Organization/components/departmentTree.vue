@@ -42,7 +42,6 @@
         lazy
         highlight-current
         @node-click="changeIndexFun"
-        show-checkbox
         :load="loadNode"
       />
     </ul>
@@ -78,6 +77,7 @@
   const emit = defineEmits(['changeIndex'])
 
   const changeIndexFun = (val: any) => {
+    console.log('val',val)
     emit('changeIndex', val)
   }
   onMounted(() => {
@@ -107,7 +107,7 @@
     children: 'children',
     label: 'label'
   }
-  const loadNode = (node: any, resolve: (data: any) => {}) => {
+  const loadNode = (node: any, resolve: (data: any) => void) => {
     if (node.level === 0) {
       getQueryInfo(resolve)
     }
@@ -117,7 +117,7 @@
   }
   //根节点数据
   async function getQueryInfo(resolve: any) {
-    await $services.company.queryInfo({}).then((res: ResultType) => {
+   const { data, success } =  await $services.company.queryInfo({}).then((res: ResultType) => {
       let obj = [
         {
           children: [] as string[],
@@ -165,13 +165,12 @@
 </style>
 <style lang="scss" scoped>
   .departmentTree-wrap {
-    width: 230px;
-    min-width: 230px;
     padding: 20px 0;
     background-color: #fff;
     border-right: 1px solid #e8e8e8;
     z-index: 2;
-
+    float: left;
+    height: 100%;
     .con {
       margin-bottom: 10px;
     }

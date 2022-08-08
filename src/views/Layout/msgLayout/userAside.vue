@@ -38,19 +38,19 @@
       menu.value = [
         {
           value: '个人信息',
-          label: 'userMsg'
+          label: '/user/userMsg'
         },
         {
           value: '我的单位',
-          label: 'userUnit'
+          label: '/user/userUnit'
         },
         {
           value: '账号绑定',
-          label: 'userAccountBind'
+          label: '/user/userAccountBind'
         },
         {
           value: '安全设置',
-          label: 'userSaveSet'
+          label: '/user/userSaveSet'
         },
         {
           value: '测试',
@@ -61,11 +61,11 @@
       menu.value = [
         {
           value: '单位信息',
-          label: 'unitMsg'
+          label: '/company/unitMsg'
         },
         {
           value: '关联集团',
-          label: 'affiliatedGroups'
+          label: '/company/affiliatedGroups'
         }
       ]
     }
