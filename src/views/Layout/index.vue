@@ -29,7 +29,7 @@
             </template>
           </Suspense>
         </el-main>
-        <el-footer>Copyright 2021 资产云开放协同创新中⼼ 主办单位：浙江省财政厅</el-footer>
+        <!-- <el-footer>Copyright 2021 资产云开放协同创新中⼼ 主办单位：浙江省财政厅</el-footer> -->
       </el-container>
     </el-container>
   </el-container>
@@ -88,14 +88,13 @@
       width: max-content;
     }
 
-      .main-wrap {
-        background: rgb(240, 242, 245);
-        width: 100%;
-        height: 100%;
-        position: relative;
-        padding: 0;
-        overflow-x: hidden;
-      }
+    .main-wrap {
+      background: rgb(240, 242, 245);
+      width: 100%;
+      height: 100%;
+      position: relative;
+      padding: 0;
+      overflow-x: hidden;
     }
   }
 </style>

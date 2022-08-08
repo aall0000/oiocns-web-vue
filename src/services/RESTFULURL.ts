@@ -3,7 +3,6 @@ const cohort = '/orginone/organization/cohort'
 const person = '/orginone/organization/person'
 const company = '/orginone/organization/company'
 const history = '/orginone/orgchat/history'
-
 export default {
   // 人员接口
   person: {
