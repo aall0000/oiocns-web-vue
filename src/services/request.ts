@@ -1,5 +1,5 @@
 // @ts-nocheck
-
+import { useRouter } from 'vue-router'
 import Qs from 'qs'
 import axios from 'axios'
 import autoMatchBaseUrl from './autoMatchBaseUrl'
@@ -27,7 +27,7 @@ const codeMessage = {
 }
 
 function responseLog(response) {
-  return;
+  return
   if (process.env.NODE_ENV === 'development') {
     const randomColor = `rgba(${Math.round(Math.random() * 255)},${Math.round(
       Math.random() * 255
@@ -98,14 +98,23 @@ const axiosResponse = {
   },
   error: (error) => {
     const { response, code } = error
+    const router = useRouter()
+    console.log('测试', useRouter(), router, useUserStore())
     // 接口请求异常统一处理
     if (code === 'ECONNABORTED') {
       // Timeout error
       console.log('Timeout error', code)
     }
     if (response) {
+      const { status } = response
       // 请求已发出，但是不在2xx的范围
       // 对返回的错误进行一些处理
+
+      console.log('错误信息', error, response, code)
+      if (status == 401) {
+        router.push({ path: '/login' })
+      }
+
       return Promise.reject(checkStatus(response))
     } else {
       // 处理断网的情况
