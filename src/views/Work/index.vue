@@ -91,7 +91,7 @@
                 {{ item.name }}
               </div>
             </div>
-            <el-icon style="margin-right: 5px" @click="handleDeleteCustomList(item)"
+            <el-icon style="margin-right: 5px" @click.stop="handleDeleteCustomList(item)"
               ><Delete
             /></el-icon>
           </div>
