@@ -96,6 +96,7 @@
       })
       .then((res: ResultType) => {
         dialogVisible.value = false
+        
       })
   }
   watch(
