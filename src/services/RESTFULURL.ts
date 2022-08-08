@@ -113,6 +113,10 @@ export default {
   history: {
     getCohortMsg: history + '/query/cohort/msg', // 获取群聊天历史聊天信息
     getFriendMsg: history + '/query/friend/msg' // 获取好友历史聊天信息
+  },
+  // 自定义首页
+  diyHome: {
+    diy: (str: string) => `${str}`
   }
   //others
 }

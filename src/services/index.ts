@@ -7,17 +7,22 @@ import urls from './RESTFULURL'
 const FUNS: { [key: string]: any } = {}
 
 Object.keys(urls).forEach((key) => {
-  if(isObject(urls[key])){
+  if (isObject(urls[key])) {
     FUNS[key] = {}
-    Object.keys(urls[key]).forEach((item)=>{
-      FUNS[key][item] = (options = {}) => {
-        // @ts-ignore
-        return request(urls[key][item], options)
+    Object.keys(urls[key]).forEach((item) => {
+      if (typeof urls[key][item] === 'function') {
+        // 接口拼接额外动态参数
+        FUNS[key][item] = (extarStr: string, options = {}) => {
+          return request(urls[key][item](extarStr), options)
+        }
+      } else {
+        FUNS[key][item] = (options = {}) => {
+          return request(urls[key][item], options)
+        }
       }
     })
-  }else{
+  } else {
     FUNS[key] = (options = {}) => {
-      // @ts-ignore
       return request(urls[key], options)
     }
   }

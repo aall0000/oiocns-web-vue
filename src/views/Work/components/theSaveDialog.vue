@@ -48,9 +48,11 @@
 </template>
 
 <script setup lang="ts">
-  import request from '@/services/request'
+  import { ElMessage } from 'element-plus'
+  import $services from '@/services'
+  import { useUserStore } from '@/store/user'
   import type { FormInstance, FormRules } from 'element-plus'
-  import { reactive, ref } from 'vue'
+  import { reactive, ref, onMounted } from 'vue'
   const ruleFormRef = ref<FormInstance>()
   const emit = defineEmits(['closeDialog'])
   const props = defineProps({
@@ -58,6 +60,7 @@
       type: Object
     }
   })
+  const store = useUserStore()
   const loading = ref(false)
   const radio = ref('1')
   const state = reactive({
@@ -75,10 +78,46 @@
   const rules = reactive<FormRules>({
     name: [{ required: true, message: '请输入名称', trigger: 'blur' }]
   })
+
+  onMounted(() => {
+    state.templateList = props.dialogShow.temps
+  })
   const handleClick = async (formEl: FormInstance | undefined) => {
     if (!formEl) return
     await formEl.validate((valid, fields) => {
       if (valid) {
+        if (radio.value === '1') {
+        } else {
+          state.templateList.push({
+            id: state.templateList.length,
+            name: state.form.name,
+            temps: props.dialogShow.sendData
+          })
+          let params = {
+            userId: store.queryInfo.id,
+            content: state.templateList
+          }
+          $services.diyHome
+            .diy(`/anydata/object/set/template-${params.userId}`, {
+              data: {
+                operation: 'replaceAll',
+                data: {
+                  name: '模板配置',
+                  // temps: props.dialogShow.sendData
+                  content: params.content
+                }
+              }
+            })
+            .then((res: ResultType) => {
+              if (res.state) {
+                ElMessage({
+                  message: '添加成功',
+                  type: 'success'
+                })
+                handleClose()
+              }
+            })
+        }
       } else {
         console.log('error submit!', fields)
       }

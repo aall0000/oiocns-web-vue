@@ -296,6 +296,9 @@
   import { testData } from './layout.ts'
   import TheComponentList from '@/components/protal/index.vue'
   import TheSaveDialog from './components/theSaveDialog.vue'
+  import $services from '@/services'
+  import { useUserStore } from '@/store/user'
+  import { log } from 'console'
 
   export default defineComponent({
     components: {
@@ -319,20 +322,7 @@
         baseWdith: 0,
         listShow: true,
         filterText: '', //搜索
-        templateList: [
-          {
-            name: '平台模板',
-            id: 1
-          },
-          {
-            name: '平台模板2',
-            id: 2
-          },
-          {
-            name: '平台模板3',
-            id: 3
-          }
-        ],
+        templateList: [],
         dialogShow: [
           {
             key: 'save',
@@ -383,7 +373,7 @@
         newAppItem: [],
         activeNames2: []
       })
-
+      const store = useUserStore()
       let base = ref(null)
 
       //computed位置
@@ -429,9 +419,27 @@
       // mouted位置
       onMounted(() => {
         getCanvasBg()
+        getTemps()
       })
 
       // method位置
+      // 设置默认首页
+      const handleDefault = () => {}
+      const getTemps = () => {
+        let params = {
+          userId: store.queryInfo.id
+        }
+        $services.diyHome
+          .diy(`/anydata/object/get/template-${params.userId}`, {
+            method: 'GET'
+          })
+          .then((res: ResultType) => {
+            console.log('测试接口', res)
+            if (res.state) {
+              state.templateList = res.data.content
+            }
+          })
+      }
       //关闭弹窗
       const handleCloseDialog = (key) => {
         state.dialogShow.map((el) => {
@@ -506,6 +514,7 @@
           if (el.key === 'save') {
             el.value = true
             el.sendData = state.layout
+            el.temps = state.templateList || []
           }
         })
       }
@@ -530,21 +539,51 @@
       }
       const back = () => {
         state.menuListShow = true
+        getUserTemps()
       }
+      // 获取用户模板
+      const getUserTemps = () => {
+        state.layout = []
+        getTemps()
+      }
+
       const customTemplate = () => {
         state.menuListShow = false
       }
-      const handleDeleteCustomList = () => {
+      const handleDeleteCustomList = (data) => {
         // 删除自定义模板
         ElMessageBox.confirm('此操作将永久删除该模板, 是否继续?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          ElMessage({
-            type: 'success',
-            message: 'Delete completed'
+          state.templateList.forEach((el, index) => {
+            if (el.id == data.id) {
+              state.templateList.splice(index, 1)
+            }
           })
+          let params = {
+            userId: store.queryInfo.id
+          }
+          $services.diyHome
+            .diy(`/anydata/object/set/template-${params.userId}`, {
+              data: {
+                operation: 'replaceAll',
+                data: {
+                  name: '模板配置',
+                  // temps: props.dialogShow.sendData
+                  content: state.templateList
+                }
+              }
+            })
+            .then((res: ResultType) => {
+              if (res.state) {
+                ElMessage({
+                  type: 'success',
+                  message: '删除成功'
+                })
+              }
+            })
         })
       }
       const changeFilterText = (val) => {
@@ -595,7 +634,7 @@
         state.systemIndex = index
         state.customIndex = false
         state.templateData = data
-        var config = JSON.parse(data.config)
+        var config = data.temps
         state.layout = config
       }
       const addprotalCustom = (data, index) => {
@@ -607,6 +646,7 @@
         state.layout = config
       }
       return {
+        handleDefault,
         handleCloseDialog,
         handleSave,
         layoutUpdatedEvent,
