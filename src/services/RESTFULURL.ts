@@ -114,6 +114,9 @@ export default {
     getCohortMsg: history + '/query/cohort/msg', // 获取群聊天历史聊天信息
     getFriendMsg: history + '/query/friend/msg', // 获取好友历史聊天信息
     test: (str: string) => `${history}/test/${str}` // 获取好友历史聊天信息
+  },
+  diyHome: {
+    diy: (str: string) => `${str}`
   }
   //others
 }
