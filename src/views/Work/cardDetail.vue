@@ -13,8 +13,10 @@
       mode="horizontal"
       @select="handleSelect"
     >
-      <el-menu-item index="1">代办</el-menu-item>
-      <!-- <el-menu-item index="2">已办</el-menu-item>
+      <el-menu-item index="1">我的审批</el-menu-item>
+      <el-menu-item index="2">我的申请</el-menu-item>
+      <!--  <el-menu-item index="1">待办</el-menu-item>
+      <el-menu-item index="2">已办</el-menu-item>
       <el-menu-item index="3">已完成</el-menu-item>
       <el-menu-item index="4">我发起的</el-menu-item>
       <el-menu-item index="5">已逾期</el-menu-item> -->
@@ -43,7 +45,13 @@
             ]"
             :filter-method="changeSelect"
           />
-          <el-table-column prop="target.typeName" label="内容" />
+          <el-table-column prop="target.typeName" label="内容" >
+             <template #default="scope">
+              <div v-if="scope.row">
+                 {{scope.row.target.name}}申请加入{{scope.row.team.name}}
+              </div>
+            </template>
+          </el-table-column>
           <!-- <el-table-column prop="date" label="链接" /> -->
           <el-table-column prop="status" label="状态">
             <template #default="scope">
@@ -88,6 +96,18 @@
         tableData.value = res.data.result
       })
   }
+  var getApplyList = () => {
+    $services.person
+      .getAllApply({
+        data: {
+          offset: 0,
+          limit: 10
+        }
+      })
+      .then((res: ResultType) => {
+        tableData.value = res.data.result
+      })
+  }
   var select = () => {
     console.log('select')
   }
@@ -122,8 +142,12 @@
   var changeSelect = () => {
     console.log()
   }
-  const handleSelect = (key: string, keyPath: string[]) => {
-    console.log(key, keyPath)
+  const handleSelect = (key: string|number, keyPath: string[]) => {
+    if(key ===1){
+      getList()
+    }else{
+      getApplyList()
+    }
   }
   onMounted(() => {
     getList()

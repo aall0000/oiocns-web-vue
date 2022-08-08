@@ -69,7 +69,6 @@
   onMounted(() => {
     nextTick(() => {
       searchData.value = props.search
-      console.log(props.search)
     })
   })
 

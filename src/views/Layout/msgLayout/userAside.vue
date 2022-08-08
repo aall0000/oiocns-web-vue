@@ -57,7 +57,6 @@
           label: 'test'
         }
       ]
-      router.push('/user/userMsg')
     } else {
       menu.value = [
         {
@@ -69,7 +68,6 @@
           label: 'affiliatedGroups'
         }
       ]
-      router.push('/company/unitMsg')
     }
   }
 </script>

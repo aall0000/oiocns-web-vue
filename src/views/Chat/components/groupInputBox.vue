@@ -34,6 +34,9 @@ const submit = () => {
 <style lang="scss">
 .group-input-wrap {
   .textarea {
+    textarea {
+      height: 100%;
+    }
     .el-textarea__inner {
       box-shadow: none !important;
     }
@@ -65,6 +68,7 @@ const submit = () => {
 
   .input-content {
     display: flex;
+    height: 100%;
     justify-content: space-between;
     .textarea {
       flex: 1;
@@ -75,10 +79,10 @@ const submit = () => {
     .send-box {
       display: flex;
       justify-content: flex-end;
-      height: 40px;
+      // height: 40px;
       align-items: center;
       margin-left: 30px;
-
+      margin-top: 80px;
     }
   }
 

@@ -4,7 +4,7 @@ import 'element-plus/theme-chalk/el-message.css'
 </script>
 
 <template>
-  <div class="pages" id="app">
+  <div class="pages" @contextmenu.prevent>
     <router-view />
   </div>
 </template>

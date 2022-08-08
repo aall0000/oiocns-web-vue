@@ -52,7 +52,6 @@ export const useUserStore = defineStore({
       }
       //获取用户详细信息
       $services.person.queryInfo().then((res: ResultType) => {
-        console.log(res)
         if (res.code == 200) {
           this.queryInfo = res.data
           sessionStorage.setItem('ZCY_DETAIL_DATA', JSON.stringify(res.data))

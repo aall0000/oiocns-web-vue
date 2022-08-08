@@ -15,10 +15,19 @@
       <el-container>
         <!-- <Breadcrumb></Breadcrumb> -->
         <el-main class="main-wrap">
-          <keep-alive v-if="$route.meta.keepAlive">
-            <router-view />
-          </keep-alive>
-          <router-view v-if="!$route.meta.keepAlive" />
+          <Suspense>
+            <template #default>
+              <router-view v-slot="{ Component }">
+                <keep-alive v-if="$route.meta.keepAlive">
+                  <component :is="Component" />
+                </keep-alive>
+                <component v-else :is="Component" />
+              </router-view>
+            </template>
+            <template #fallback>
+              <LoadingVue />
+            </template>
+          </Suspense>
         </el-main>
         <el-footer>Copyright 2021 资产云开放协同创新中⼼ 主办单位：浙江省财政厅</el-footer>
       </el-container>
@@ -32,6 +41,7 @@
   import Breadcrumb from './components/breadcrumb.vue'
   import Menu from './components/menu.vue'
   import UserAside from './msgLayout/userAside.vue'
+  import LoadingVue from './components/loading.vue'
 
   import { useRouter } from 'vue-router'
   import { ref, watch } from 'vue'
@@ -51,7 +61,7 @@
   watch(
     () => router.currentRoute.value.path,
     (newValue, oldValue) => {
-      console.log('watchrouter', newValue)
+      // console.log('watchrouter', newValue)
       isShowPersonalMenu.value = showArr.includes(newValue)
     },
     { immediate: true }
@@ -78,13 +88,14 @@
       width: max-content;
     }
 
-    .main-wrap {
-      background: rgb(240, 242, 245);
-      width: 100%;
-      height: 100%;
-      position: relative;
-      padding: 0;
-      overflow-x: hidden;
+      .main-wrap {
+        background: rgb(240, 242, 245);
+        width: 100%;
+        height: 100%;
+        position: relative;
+        padding: 0;
+        overflow-x: hidden;
+      }
     }
   }
 </style>
