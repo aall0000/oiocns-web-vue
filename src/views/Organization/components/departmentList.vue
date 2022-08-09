@@ -89,7 +89,8 @@
   }
   let tableData = reactive<listType>({})
   const props = defineProps<{
-    selectItem: selectItem
+    selectItem: selectItem,
+    envType:number
   }>()
   watch(
     () => props.selectItem,

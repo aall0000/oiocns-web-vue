@@ -12,13 +12,13 @@
     <!-- 单位管理 -->
     <div class="org-content" v-if="showMenu == true">
       <departmentTree
+        :envType="envType"
         @changeIndex="changeIndex"
-        :menuIndex="menuIndex"
         class="department-tree"
       />
       <div class="main-dep">
-        <departmentDetail :selectItem="selectItem" />
-        <departmentList :selectId="selectId" :selectItem="selectItem" :personType="personType"></departmentList>
+        <departmentDetail :envType="envType" :selectItem="selectItem"  />
+        <departmentList :envType="envType" :selectId="selectId" :selectItem="selectItem" :personType="personType"></departmentList>
       </div>
     </div>
     <!-- 个人管理 -->
@@ -56,6 +56,7 @@
     isShowMenu.value = true
   })
   // const selectList = reactive<selectType[]>([])
+  let envType = 2; //1-单位 2-集团
   let selectId = ref<string>()
   let selectItem = ref<selectType>(
     {
@@ -81,10 +82,10 @@
     id: string
     name: string
   }
-  const menuIndex = ref<string>('1')
-  const menuCheck = (index:string)=>{
-    menuIndex.value= index;
-  }
+  // const menuIndex = ref<string>('1')
+  // const menuCheck = (index:string)=>{
+  //   menuIndex.value= index;
+  // }
   const changeIndex = (obj: treeItem) => {
     selectItem.value = obj;
     selectId.value = obj.id
