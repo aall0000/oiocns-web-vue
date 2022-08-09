@@ -30,11 +30,11 @@
 <script lang="ts" setup>
   import $services from '@/services'
   import { ref, reactive, onMounted } from 'vue'
-  import departmentTree from './components/departmentTree.vue'
-  import departmentDetail from './components/departmentDetail.vue'
-  import departmentList from './components/departmentList.vue'
-  import organizatList from './components/organizatList.vue'
-  import subMenu from './components/menu.vue'
+  import departmentTree from './groupComponents/departmentTree.vue'
+  import departmentDetail from './groupComponents/departmentDetail.vue'
+  import departmentList from './groupComponents/departmentList.vue'
+  import organizatList from './groupComponents/organizatList.vue'
+  import subMenu from './groupComponents/menu.vue'
   import { useUserStore } from '@/store/user'
   import { storeToRefs } from 'pinia'
 
