@@ -69,12 +69,12 @@
 </script>
 
 <style lang="scss" scoped>
-  .el-footer {
-    background: rgb(240, 242, 245);
-    justify-content: center;
-    display: flex;
-    align-items: center;
-  }
+.el-footer {
+  background: rgb(240, 242, 245);
+  justify-content: center;
+  display: flex;
+  align-items: center;
+}
 
   .home-wrap {
     .page-header {
@@ -88,13 +88,12 @@
       width: max-content;
     }
 
-    .main-wrap {
-      background: rgb(240, 242, 245);
-      width: 100%;
-      height: 100%;
-      position: relative;
-      padding: 0;
-      overflow-x: hidden;
-    }
+  .main-wrap {
+    background: rgb(240, 242, 245);
+    width: 100%;
+    height: 100%;
+    position: relative;
+    padding: 0;
   }
+}
 </style>

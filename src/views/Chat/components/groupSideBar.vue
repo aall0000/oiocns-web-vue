@@ -17,7 +17,7 @@
         <div class="group-con-show">
           <el-tooltip class="box-item" :disabled="item.name.length < 7" :content="item.name" placement="right-start">
             <p class="group-con-show-name">
-              <span class="group-con-show-name-label">{{ item.name }}</span>
+              <span class="group-con-show-name-label">{{ props.myId === item.id ? `我 (${item.name})` : item.name }}</span>
               <span class="group-con-show-name-time">{{ handleFormatDate(item.createTime) }} </span>
             </p>
           </el-tooltip>
@@ -46,8 +46,11 @@ type propType = {
   redDotInfo: any,//需要红点提示的标志Map类型 {isShowDot:boolean;count:number} isShowDot是否展示红点,count未读信息数量
   sessionList: userType[],//当前会话列表
   clearHistoryMsg: Function,//清空记录
+  myId: string
 }
 const props = defineProps<propType>()
+console.log('mid', props);
+
 
 // 会话列表搜索关键字
 const searchValue = ref<string>('')
