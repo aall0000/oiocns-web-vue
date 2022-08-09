@@ -20,7 +20,7 @@
 </template>
 
 <script setup lang="ts">
-  import subMenu from './Menu.vue'
+  import subMenu from './menu.vue'
   import { ref, reactive, onMounted } from 'vue'
 
   import { useUserStore } from '@/store/user'
