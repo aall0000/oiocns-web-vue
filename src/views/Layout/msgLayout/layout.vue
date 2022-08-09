@@ -1,7 +1,5 @@
 <template>
   <div>
-    <!--    头部-->
-    <Header />
     <!--    主体-->
     <div style="display: flex; border-top: 6px solid #eff0f4">
       <!--      侧边栏-->
@@ -13,7 +11,6 @@
 </template>
 
 <script setup lang="ts">
-  import Header from '../components/customHeader.vue'
   import userAside from './userAside.vue'
 </script>
 

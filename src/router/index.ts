@@ -56,22 +56,55 @@ const mainRouter: RouteRecordRaw[] = [
     }
   },
   {
-    component: () => import('@/views/Organization/index.vue'),
-    name: 'organization',
     path: '/organization',
-    meta: {
-      keepAlive: false,
-      title: '成员单位'
-    }
+    component: () => import('@/views/Organization/components/layout.vue'),
+    redirect: '/organization/company',
+
+    children: [
+      {
+        path: '/organization/company',
+        name: 'company',
+        component: () => import('@/views/Organization/index.vue'),
+        meta: {
+          title: '单位维护'
+        }
+      },
+      {
+        path: '/organization/group',
+        name: 'group',
+        component: () => import('@/views/Person/msgSetting/userMsg.vue'),
+        meta: {
+          title: '集团维护'
+        }
+      },
+      {
+        path: '/organization/cohort',
+        name: 'cohort',
+        component: () => import('@/views/Person/msgSetting/userSaveSet.vue'),
+        meta: {
+          title: '单位群组'
+        }
+      },
+      {
+        path: '/organization/friend',
+        name: 'friend',
+        component: () => import('@/views/Person/msgSetting/userUnit.vue'),
+        meta: {
+          title: '我的好友'
+        }
+      },
+    ]
   },
   {
     component: () => import('@/views/Organization/OrganizationTable/index.vue'),
     name: 'organizationTable',
     path: '/organizationTable',
+
     meta: {
       keepAlive: false,
       title: '组织架构'
     }
+
   },
   {
     component: () => import('@/views/Work/index.vue'),
@@ -121,10 +154,11 @@ const mainRouter: RouteRecordRaw[] = [
   //个人中心信息设置路由
   {
     path: '/user',
-    redirect: '/userMsg',
+    component: () => import('@/views/Layout/msgLayout/layout.vue'),
+    redirect: '/user/userMsg',
     children: [
       {
-        path: '/userMsg',
+        path: '/user/userMsg',
         name: 'userMsg',
         component: () => import('@/views/Person/msgSetting/userMsg.vue'),
         meta: {
@@ -132,7 +166,7 @@ const mainRouter: RouteRecordRaw[] = [
         }
       },
       {
-        path: '/userUnit',
+        path: '/user/userUnit',
         name: 'userUnit',
         component: () => import('@/views/Person/msgSetting/userUnit.vue'),
         meta: {
@@ -140,7 +174,7 @@ const mainRouter: RouteRecordRaw[] = [
         }
       },
       {
-        path: '/userAccountBind',
+        path: '/user/userAccountBind',
         name: 'userAccountBind',
         component: () => import('@/views/Person/msgSetting/userAccountBind.vue'),
         meta: {
@@ -148,7 +182,7 @@ const mainRouter: RouteRecordRaw[] = [
         }
       },
       {
-        path: '/userSaveSet',
+        path: '/user/userSaveSet',
         name: 'userSaveSet',
         component: () => import('@/views/Person/msgSetting/userSaveSet.vue'),
         meta: {
@@ -156,7 +190,7 @@ const mainRouter: RouteRecordRaw[] = [
         }
       },
       {
-        path: '/test',
+        path: '/user/test',
         name: 'test',
         component: () => import('@/views/Person/msgSetting/test.vue'),
         meta: {
@@ -168,10 +202,11 @@ const mainRouter: RouteRecordRaw[] = [
 
   {
     path: '/company',
-    redirect: '/unitMsg',
+    redirect: '/company/unitMsg',
+    component: () => import('@/views/Layout/msgLayout/layout.vue'),
     children: [
       {
-        path: '/unitMsg',
+        path: '/company/unitMsg',
         name: 'unitMsg',
         component: () => import('@/views/Person/msgSetting/unitMsg.vue'),
         meta: {
@@ -179,7 +214,7 @@ const mainRouter: RouteRecordRaw[] = [
         }
       },
       {
-        path: '/affiliatedGroups',
+        path: '/company/affiliatedGroups',
         name: 'affiliatedGroups',
         component: () => import('@/views/Person/msgSetting/affiliatedGroups.vue'),
         meta: {
@@ -196,7 +231,7 @@ export const routes: RouteRecordRaw[] = [
     path: '/',
     redirect: '/home',
     component: Layout,
-    children: handleMainRouter(mainRouter)
+    children: mainRouter
   },
   ...constantRoutes
 ]
