@@ -1,14 +1,21 @@
 <template>
   <div class="group-input-wrap" @keyup.enter="submit">
     <div class="icons-box">
-      <el-icon :size="20">
-        <Orange />
-      </el-icon>
+      <el-popover placement="top" :width="400" trigger="click">
+        <template #reference>
+          <el-icon :size="20">
+            <Orange />
+          </el-icon>
+        </template>
+        <FaceVue @chooseFace="handleFaceChoosed" />
+      </el-popover>
+
       <el-icon :size="20">
         <Microphone />
       </el-icon>
     </div>
     <div class="input-content">
+      <!-- <div class="textarea" v-html="textarea" contenteditable="true" ref="inputRef" placeholder="请输入内容"> </div> -->
       <el-input v-model="textarea" class="textarea" resize='none' :rows="3" type="textarea" />
       <div class="send-box">
         <el-button type="success" @click="submit">发送</el-button>
@@ -20,7 +27,9 @@
 
 <script lang="ts" setup>
 import { ref } from 'vue'
+import FaceVue from './qqface.vue';
 const textarea = ref<string>('')
+const inputRef = ref(null)
 
 const emit = defineEmits(['submitInfo'])
 
@@ -29,14 +38,23 @@ const submit = () => {
   textarea.value = ""
 }
 
+const handleFaceChoosed = (key: any, value: number) => {
+  console.log('生存手册', key, value);
+  // let span = `<span class='qqface qqface${value} small'></span>`
+  textarea.value += key[0]
+}
+
 </script>
 
 <style lang="scss">
+@import "./qqface.scss";
+
 .group-input-wrap {
   .textarea {
     textarea {
       height: 100%;
     }
+
     .el-textarea__inner {
       box-shadow: none !important;
     }
@@ -70,6 +88,7 @@ const submit = () => {
     display: flex;
     height: 100%;
     justify-content: space-between;
+
     .textarea {
       flex: 1;
       outline: none;

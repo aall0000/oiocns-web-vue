@@ -1,15 +1,16 @@
 <template>
   <div class="menu-tab" v-if="showMenu == true">
     <el-menu
+      router
       :default-active="activeIndex"
       class="el-menu-vertical-demo"
       mode="vertical"
       @select="handleSelect"
     >
-      <el-menu-item index="1">单位维护</el-menu-item>
-      <el-menu-item index="2">集团维护</el-menu-item>
-      <el-menu-item index="3">单位群组</el-menu-item>
-      <el-menu-item index="4">我的好友</el-menu-item>
+      <el-menu-item index="/organization/company">单位维护</el-menu-item>
+      <el-menu-item index="/organization/group">集团维护</el-menu-item>
+      <el-menu-item index="/organization/cohort">单位群组</el-menu-item>
+      <el-menu-item index="/organization/friend">我的好友</el-menu-item>
     </el-menu>
   </div>
   <div class="menu-tab" v-if="showMenu == false">
@@ -30,20 +31,20 @@
     showMenu: any
     personType: any
   }>()
-  const emit = defineEmits(['personTypeChange'])
+  const emit = defineEmits(['personTypeChange', 'menuCheck'])
 
   const activeIndex = ref<string>('1')
   const index = ref<string>('1')
   const handleSelect = (key: string, keyPath: string[]) => {
-    console.log(key, keyPath)
+    // emit('menuCheck',key)
   }
-  const personChange = (index:string) => {
+  const personChange = (index: string) => {
     emit('personTypeChange', index)
   }
 </script>
 <style lang="scss" scoped>
   .menu-tab {
-    width: 100px;
+    width: 200px;
     height: calc(100% - 15px);
     background: #fff;
   }

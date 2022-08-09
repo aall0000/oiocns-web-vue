@@ -104,7 +104,6 @@
         data: ruleForm
       })
       .then((res: ResultType) => {
-        console.log('测试接口', res)
         if (res.code == 200) {
           ElMessage({
             message: '注册成功',

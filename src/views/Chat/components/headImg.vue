@@ -1,9 +1,9 @@
 <template>
   <div class="user-head-img-wrap" v-if="url">
-    <img class="user-img" :src="img" alt="" srcset="" />
+    <img class="user-img" :src="url??img" alt="" srcset="" />
   </div>
   <div class="user-head-img-wrap txt-img" v-else>
-    <span>{{ name.slice(0, 2) }}</span>
+    <span>{{ name && name.slice(0, 2).toLocaleUpperCase() }}</span>
   </div>
 </template>
 
@@ -18,7 +18,7 @@ type Props = {
 
 const props = defineProps<Props>()
 
-const { name, url } = toRefs(props)
+const { name = '', url } = toRefs(props)
 
 </script>
 
@@ -28,7 +28,7 @@ const { name, url } = toRefs(props)
   min-width: 50px;
   height: 50px;
   margin-right: 15px;
-  border-radius: 50%;
+  border-radius: 8px;
 
   &.txt-img {
     background-color: #409eff;
@@ -45,7 +45,7 @@ const { name, url } = toRefs(props)
     width: 50px;
     height: 50px;
     margin-right: 15px;
-    border-radius: 50%;
+    border-radius: 8px;
   }
 }
 </style>

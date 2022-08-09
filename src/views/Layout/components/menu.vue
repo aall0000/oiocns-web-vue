@@ -36,9 +36,6 @@ import { NavigationFailure } from 'vue-router'
 const handleMenySelect = (index: string, indexPath: string[], item: MenuItemClicked, router?: Promise<void | NavigationFailure>) => {
   console.log('跳转参数', index, indexPath, item, router);
 }
-
-console.log('444',menuList);
-
 </script>
 
 <style lang='scss' scoped>

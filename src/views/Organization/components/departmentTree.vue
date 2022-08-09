@@ -1,12 +1,13 @@
 <template>
   <ul class="departmentTree-wrap">
     <li class="con tree-select">
-      <!-- <el-select
+      <el-select
+        v-if="menuIndex==='2'"
         v-model="selectValue"
         @change="changeIndexFun"
         class="m-2"
         placeholder="Select"
-        style="margin-left: 20px"
+        style="margin-left: 20px;width:155px"
       >
         <el-option
           v-for="item in selectList"
@@ -14,7 +15,7 @@
           :label="item.name"
           :value="{ id: item.id, item: item }"
         />
-      </el-select> -->
+      </el-select>
     </li>
     <li class="con tree-btns">
       <div class="title">部门管理</div>
@@ -68,14 +69,22 @@
 <script lang="ts" setup>
   import $services from '@/services'
   import { Search, Plus } from '@element-plus/icons-vue'
-  import { ref, reactive, onMounted } from 'vue'
+  import { ref, reactive, onMounted,watch } from 'vue'
   import { useUserStore } from '@/store/user'
   import { storeToRefs } from 'pinia'
   const store = useUserStore()
   const { workspaceData } = storeToRefs(store)
   let dialogVisible = ref<boolean>(false)
   const emit = defineEmits(['changeIndex'])
-
+  const props = defineProps<{
+    menuIndex: string
+  }>()
+  watch(
+    () => props.menuIndex,
+    (newValue: string) => {
+      console.log(newValue)
+    }
+  )
   const changeIndexFun = (val: any) => {
     console.log('val',val)
     emit('changeIndex', val)
@@ -117,7 +126,7 @@
   }
   //根节点数据
   async function getQueryInfo(resolve: any) {
-   const { data, success } =  await $services.company.queryInfo({}).then((res: ResultType) => {
+    await $services.company.queryInfo({}).then((res: ResultType) => {
       let obj = [
         {
           children: [] as string[],
@@ -151,6 +160,16 @@
         }
         return resolve(arr)
       })
+  }
+  type listItem = {
+    id:string,
+    name:string,
+    code:string,
+  }
+  const selectValue = ref<string>('')
+  const selectList = ref<Array<listItem>>([])
+  const getOptionList = ()=>{
+    console.log('getOptionList')
   }
 </script>
 

@@ -12,7 +12,7 @@
       </li>
     </ul>
     <!-- 组成员 -->
-    <ul class="user-list border-b" v-if="isCohort">
+    <ul class="user-list border-b" v-if="typeName !== '人员'">
       <li class="li-search con">
         <p class="li-search-con">组成员<span class="li-search-con-num">{{ total }}</span>人</p>
         <el-input class="li-search-inp" placeholder="搜索成员">
@@ -27,8 +27,8 @@
         <el-button type="primary">组织架构</el-button>
       </li> -->
       <ul class="img-list con">
-        <li class="img-list-con img-list-add " @click="openDialogAdd" v-if="isCohort">+</li>
-        <li class="img-list-con img-list-del " @click="openDialogDel" v-if="isCohort">
+        <li class="img-list-con img-list-add " @click="openDialogAdd" v-if="typeName === '群组'">+</li>
+        <li class="img-list-con img-list-del " @click="openDialogDel" v-if="typeName === '群组'">
           <el-icon>
             <SemiSelect />
           </el-icon>
@@ -40,24 +40,27 @@
         <span v-show="total > 10" class="img-list-more-btn" @click="handleViewMoreUser">查看更多</span>
       </ul>
     </ul>
-    <li class="con setting-con border-b" v-if="isCohort">
+    <li class="con setting-con border-b" v-if="typeName === '群组'">
       <span class="con-label">我在本群昵称</span>
       <span class="con-value">测试昵称</span>
     </li>
-    <li class="con setting-con border-b" v-if="isCohort">
-      <span class="con-label">群备注</span>
+    <li class="con setting-con border-b" v-if="typeName === '群组'">
+      <span class="con-label">{{ `${typeName}备注` }}</span>
       <span class="con-value">{{ detail.remark }}</span>
     </li>
     <li class="con check-con">
-      <el-checkbox v-model="state.isIgnoreMsg" :label="isCohort ? '设置群消息免打扰' : '设置免打扰'" />
+      <el-checkbox v-model="state.isIgnoreMsg" :label="typeName !== '人员' ? '设置群消息免打扰' : '设置免打扰'" />
     </li>
     <li class="con check-con">
-      <el-checkbox v-model="state.isStick" :label="isCohort ? '置顶该群' : '置顶会话'" />
+      <el-checkbox v-model="state.isStick" :label="typeName !== '人员' ? '置顶该群' : '置顶会话'" />
     </li>
     <div class="footer">
-      <template v-if="isCohort">
+      <template v-if="typeName==='群组'">
         <el-button type="danger" plain>退出该群</el-button>
         <el-button type="danger">解散该群</el-button>
+      </template>
+       <template v-if="typeName==='人员'">
+        <el-button type="danger" plain>删除好友</el-button>
       </template>
       <template v-else>
         <el-button type="danger" plain>清空聊天记录</el-button>
@@ -129,7 +132,7 @@ interface itemResult {
 }
 
 type infoType = {
-  isCohort: boolean
+  typeName: string
   detail: teamType
   userList: userType[]
   total: number
@@ -138,7 +141,7 @@ type prop = {
   info: infoType
 }
 const { info } = defineProps<prop>()
-const { userList, total, detail, isCohort } = toRefs(info)
+const { userList, total, detail, typeName } = toRefs(info)
 const dialogVisible = ref(false) // 控制拉入群聊dialog
 const dialogVisibleDel = ref(false) // 控制移出群聊dialog
 const state = reactive({
