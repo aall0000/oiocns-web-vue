@@ -72,7 +72,7 @@ const mainRouter: RouteRecordRaw[] = [
       {
         path: '/organization/group',
         name: 'group',
-        component: () => import('@/views/Person/msgSetting/userMsg.vue'),
+        component: () => import('@/views/Organization/index.vue'),
         meta: {
           title: '集团维护'
         }
