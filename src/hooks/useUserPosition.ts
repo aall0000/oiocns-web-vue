@@ -6,8 +6,6 @@ export default function () {
 
   // 鼠标点击操作函数回调
   const clickHandler = (event: any) => {
-    console.log('市场菜市场',event.pageX,event.pageY);
-
     x.value = event.pageX
     y.value = event.pageY
   }

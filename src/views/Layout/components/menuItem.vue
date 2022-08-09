@@ -23,7 +23,6 @@
 const props = defineProps<{ menuList: any }>({
   menuList: {}
 })
-console.log('测试', props);
 
 </script>
 <style  scoped>

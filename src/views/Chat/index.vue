@@ -137,8 +137,6 @@ watch(
   () => activeInfo.value,
   async (val) => {
     const { typeName, id, team = {} } = val
-    console.log('城市市场', val);
-
     selectInfo.typeName = typeName
     current.value = 0
     // 取消红点提示
@@ -175,9 +173,6 @@ const getQunPerson = async (id: string, offset: number) => {
   });
   if (success === true) {
     selectInfo.total = data.total
-
-    console.log('菜市场',data);
-
     // 存储用户id=>名称
     data.result.forEach((item: userType) => {
       setUserNameMap(item.id, item.name)

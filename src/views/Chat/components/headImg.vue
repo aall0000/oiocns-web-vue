@@ -1,6 +1,6 @@
 <template>
   <div class="user-head-img-wrap" v-if="url">
-    <img class="user-img" :src="img" alt="" srcset="" />
+    <img class="user-img" :src="url??img" alt="" srcset="" />
   </div>
   <div class="user-head-img-wrap txt-img" v-else>
     <span>{{ name && name.slice(0, 2).toLocaleUpperCase() }}</span>

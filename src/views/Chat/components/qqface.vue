@@ -7,12 +7,9 @@
 </template>
 <script lang='ts' setup>
 import { qqfaceMap } from './config'
-console.log('cs', qqfaceMap);
-
 
 const emit = defineEmits(['chooseFace'])
 const handleChoose = (key: any, value: number) => {
-  console.log('key, value', key, value);
   emit('chooseFace', key, value)
 }
 

@@ -42,20 +42,15 @@ const { list, myId } = toRefs(props)
 
 const { getUserName } = useUserStore()
 
-// watch(() => list, (val) => {
-//   console.log('list', val);
-
-// }, { deep: true })
-
 const showList = computed(() => {
   const arr: any[] = props.list?.map((item: any) => {
-    console.log('item', item.msgBody);
+    // console.log('item', item.msgBody);
     // let word = item.msgBody.replace(/\[|\;/gi, '')
     item.msgBody = natchMsg(item.msgBody)
 
     return item
   })
-  console.log('arr',arr);
+  // console.log('arr',arr);
 
   return arr
 })
