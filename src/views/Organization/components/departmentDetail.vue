@@ -76,7 +76,8 @@
     id: string
   }
   const props = defineProps<{
-    selectItem: selectItem
+    selectItem: selectItem,
+    envType:number
   }>()
   let dialogVisible = ref<boolean>(false)
   let selectId = ref<string>()
@@ -103,7 +104,9 @@
     () => props.selectItem,
     (newValue: selectItem) => {
       if (newValue.id !== '') {
-        getDepartmentsList(newValue.id)
+        if(props.envType ==1){
+          getDepartmentsList(newValue.id)
+        }
       }
     },
   )
