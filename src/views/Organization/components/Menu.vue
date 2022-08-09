@@ -5,7 +5,6 @@
       :default-active="activeIndex"
       class="el-menu-vertical-demo"
       mode="vertical"
-      router="true"
       @select="handleSelect"
     >
       <el-menu-item index="/organization/company">单位维护</el-menu-item>
