@@ -1,24 +1,15 @@
 <template>
-<teleport v-if="isShowMenu" to="#menu-teleport-target">
-  <div class="subMenu">
-  <subMenu
-  :showMenu="showMenu"
-  :personType="personType"
-  @personTypeChange="personTypeChange"
-></subMenu>
-</div>
-</teleport>
   <div class="main-content">
     <!-- 单位管理 -->
     <div class="org-content" v-if="showMenu == true">
-      <departmentTree
-        @changeIndex="changeIndex"
-        :menuIndex="menuIndex"
-        class="department-tree"
-      />
+      <departmentTree @changeIndex="changeIndex" class="department-tree" />
       <div class="main-dep">
         <departmentDetail :selectItem="selectItem" />
-        <departmentList :selectId="selectId" :selectItem="selectItem" :personType="personType"></departmentList>
+        <departmentList
+          :selectId="selectId"
+          :selectItem="selectItem"
+          :personType="personType"
+        ></departmentList>
       </div>
     </div>
     <!-- 个人管理 -->
@@ -52,17 +43,16 @@
     name: string
     id: string
   }
-  onMounted(()=>{
+  onMounted(() => {
     isShowMenu.value = true
   })
   // const selectList = reactive<selectType[]>([])
   let selectId = ref<string>()
-  let selectItem = ref<selectType>(
-    {
-      id:'',
-      name:''
-    }
-  )
+  let selectItem = ref<selectType>({
+    id: '',
+    name: ''
+  })
+  let showInfo = ref<boolean>(false)
   let personType = ref<string>('1')
   //获取当前账号的所有单位
   // $services.company
@@ -82,11 +72,11 @@
     name: string
   }
   const menuIndex = ref<string>('1')
-  const menuCheck = (index:string)=>{
-    menuIndex.value= index;
+  const menuCheck = (index: string) => {
+    menuIndex.value = index
   }
   const changeIndex = (obj: treeItem) => {
-    selectItem.value = obj;
+    selectItem.value = obj
     selectId.value = obj.id
   }
   const personTypeChange = (index: string) => {
@@ -121,7 +111,7 @@
   :deep(.el-select) {
     width: 100%;
   }
-  .subMenu{
+  .subMenu {
     height: 100%;
     width: 100px;
     float: left;
@@ -146,9 +136,9 @@
       width: 200px;
       min-width: 200px;
     }
-    .main-dep{
+    .main-dep {
       float: left;
-      width: calc( 100% - 200px);
+      width: calc(100% - 200px);
     }
     // 右侧列表
     .department-info {

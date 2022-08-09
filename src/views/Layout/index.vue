@@ -8,9 +8,7 @@
       <el-aside class="main-menu-content">
         <MainAsideVue />
       </el-aside>
-      <el-aside v-if="isShowPersonalMenu" :style="{ width: 'max-content' }">
-        <UserAside />
-      </el-aside>
+
       <div id="menu-teleport-target" />
       <el-container>
         <!-- <Breadcrumb></Breadcrumb> -->
