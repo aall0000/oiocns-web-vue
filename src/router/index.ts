@@ -18,7 +18,7 @@ const constantRoutes: RouteRecordRaw[] = [
     component: () => import('@/views/Others/404.vue'),
     name: '404',
     path: '/404'
-  },
+  }
   // {
   //   component: () => import('@/views/Test/index.vue'),
   //   name: 'test',
@@ -74,12 +74,21 @@ const mainRouter: RouteRecordRaw[] = [
     }
   },
   {
+    component: () => import('@/views/Work/home.vue'),
+    name: 'home',
+    path: '/home',
+    meta: {
+      keepAlive: false,
+      title: '工作组'
+    }
+  },
+  {
     component: () => import('@/views/Work/index.vue'),
     name: 'work',
     path: '/work',
     meta: {
       keepAlive: false,
-      title: '工作组'
+      title: '自定义首页'
     }
   },
   {

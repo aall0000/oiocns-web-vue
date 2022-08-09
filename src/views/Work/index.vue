@@ -52,7 +52,9 @@
       style="background: white"
       @mousedown="move"
     >
-      <el-button style="width: 100%" type="primary" icon="el-icon-s-check">设为首页</el-button>
+      <el-button style="width: 100%" type="primary" icon="el-icon-s-check" @click="submitHome"
+        >确认</el-button
+      >
       <TheSearchInput
         placeholder="输入模板"
         @filterText="changeFilterText"
@@ -79,14 +81,7 @@
           :key="item.id"
         >
           <div class="row" style="padding: 5px 0; justify-content: space-between">
-            <div style="display: flex">
-              <el-icon
-                title="设为首页"
-                class="el-icon-star-off"
-                style="margin: 5px 5px 0 5px"
-                @click="handleDefault(item, index)"
-                ><Star v-if="defaultList !== item.id" /><StarFilled v-else
-              /></el-icon>
+            <div style="display: flex; padding-left: 10px">
               <div>
                 {{ item.name }}
               </div>
@@ -271,6 +266,12 @@
     </div>
   </div>
   <template v-for="item in dialogShow">
+    <TheHomeDialog
+      v-if="item.key === 'home' && item.value"
+      :key="item.key"
+      :dialogShow="item"
+      @closeDialog="handleCloseDialog"
+    ></TheHomeDialog>
     <TheSaveDialog
       v-if="item.key === 'save' && item.value"
       :key="item.key"
@@ -296,6 +297,7 @@
   import { testData } from './layout.ts'
   import TheComponentList from '@/components/protal/index.vue'
   import TheSaveDialog from './components/theSaveDialog.vue'
+  import TheHomeDialog from './components/theHomeDialog.vue'
   import $services from '@/services'
   import { useUserStore } from '@/store/user'
   import { log } from 'console'
@@ -306,7 +308,8 @@
       GridItem,
       TheSearchInput,
       TheComponentList,
-      TheSaveDialog
+      TheSaveDialog,
+      TheHomeDialog
     },
     setup() {
       onMounted(() => {
@@ -321,11 +324,14 @@
         transparentShow: false,
         baseWdith: 0,
         listShow: true,
-        filterText: '', //搜索
         templateList: [],
         dialogShow: [
           {
             key: 'save',
+            value: false
+          },
+          {
+            key: 'home',
             value: false
           },
           {
@@ -423,6 +429,15 @@
       })
 
       // method位置
+      // 确认按钮
+      const submitHome = () => {
+        state.dialogShow.map((el) => {
+          if (el.key === 'home') {
+            el.value = true
+            el.sendData = state.layout
+          }
+        })
+      }
       // 设置默认首页
       const handleDefault = () => {}
       const getTemps = () => {
@@ -524,6 +539,13 @@
         if (state.layout.length !== 0) {
           state.uniqueGrid = state.layout[state.layout.length - 1].i
         }
+        console.log(state.layout)
+
+        state.layout.forEach((el) => {
+          if (el.x < 2) {
+            el.y += 3
+          }
+        })
         // 点击侧边栏
         state.uniqueGrid += 1
         var obj = {
@@ -613,7 +635,6 @@
             odiv.style.left = left + 'px'
           }
           document.onmouseup = (e) => {
-            console.log('======chufa3')
             let left = e.clientX - disX
             if (left > state.baseWdith) {
               odiv.style.left = base.clientWidth - 400 + 'px'
@@ -646,6 +667,7 @@
         state.layout = config
       }
       return {
+        submitHome,
         handleDefault,
         handleCloseDialog,
         handleSave,

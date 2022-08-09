@@ -1,12 +1,22 @@
 <template>
   <div class="base">
     <div class="baseCover" v-if="cover"></div>
-    <testComponents v-if="containLink == 'test'"></testComponents>
+    <AppCommon v-if="containLink == 'appcommon'"></AppCommon>
+    <AppMarket v-if="containLink == 'appMarket'"></AppMarket>
+    <Head v-if="containLink == 'head'"></Head>
+    <Invitate v-if="containLink == 'invitate'"></Invitate>
+    <ManageSystem v-if="containLink == 'manageSystem'"></ManageSystem>
+    <Organization v-if="containLink == 'organization'"></Organization>
   </div>
 </template>
 
 <script setup lang="ts">
-  import testComponents from './components/test.vue'
+  import AppCommon from './components/appCommon.vue'
+  import AppMarket from './components/appMarket.vue'
+  import Head from './components/head.vue'
+  import Invitate from './components/invitate.vue'
+  import ManageSystem from './components/manageSystem.vue'
+  import Organization from './components/organization.vue'
   const props = defineProps({
     cover: {
       type: Boolean,

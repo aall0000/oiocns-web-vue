@@ -87,6 +87,36 @@
     await formEl.validate((valid, fields) => {
       if (valid) {
         if (radio.value === '1') {
+          console.log(state.form.id, state.templateList)
+          state.templateList.forEach((el) => {
+            if (el.id == state.form.id) {
+              el.temps = props.dialogShow.sendData
+            }
+          })
+          let params = {
+            userId: store.queryInfo.id,
+            content: state.templateList
+          }
+          $services.diyHome
+            .diy(`/anydata/object/set/template-${params.userId}`, {
+              data: {
+                operation: 'replaceAll',
+                data: {
+                  name: '模板配置',
+                  // temps: props.dialogShow.sendData
+                  content: params.content
+                }
+              }
+            })
+            .then((res: ResultType) => {
+              if (res.state) {
+                ElMessage({
+                  message: '添加成功',
+                  type: 'success'
+                })
+                handleClose()
+              }
+            })
         } else {
           state.templateList.push({
             id: state.templateList.length,
