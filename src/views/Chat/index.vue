@@ -3,7 +3,8 @@
     <!-- 导航传送门 -->
     <teleport v-if="isShowMenu" to="#menu-teleport-target">
       <el-aside class="custom-group-silder-menu" width="260px">
-        <GroupSideBarVue v-model:active="activeInfo" :sessionList="sessionList" :redDotInfo="msgDotMap" :clearHistoryMsg="clearHistoryMsg" />
+        <GroupSideBarVue v-model:active="activeInfo" :myId="myId" :sessionList="sessionList" :redDotInfo="msgDotMap"
+          :clearHistoryMsg="clearHistoryMsg" />
       </el-aside>
     </teleport>
     <!-- 右侧展示主体 -->
@@ -16,7 +17,8 @@
       <!-- 输入区域 -->
       <GroupInputBox class="chart-input" v-show="activeInfo?.id" @submitInfo="submit" />
     </div>
-    <GroupDetail :info="selectInfo" v-if="isShowDetail" @updateUserList="getQunPerson" :clearHistoryMsg="clearHistoryMsg" />
+    <GroupDetail :info="selectInfo" v-if="isShowDetail" @updateUserList="getQunPerson"
+      :clearHistoryMsg="clearHistoryMsg" />
   </div>
 </template>
 
@@ -82,8 +84,13 @@ onMounted(() => {
     const { data, success } = await connection.invoke('GetChats')
     if (success) {
       const { result = [] } = data
-      console.log('链接成功')
+      console.log('链接成功',data)
       sessionList.value = [...result]
+
+      // 存储用户id=>名称
+    result.forEach((item: userType) => {
+      setUserNameMap(item.id, item.name)
+    })
     }
   })
   // 监听链接断开
@@ -130,7 +137,7 @@ watch(
   () => activeInfo.value,
   async (val) => {
     const { typeName, id, team = {} } = val
-    console.log('城市市场',val);
+    console.log('城市市场', val);
 
     selectInfo.typeName = typeName
     current.value = 0
@@ -168,15 +175,19 @@ const getQunPerson = async (id: string, offset: number) => {
   });
   if (success === true) {
     selectInfo.total = data.total
+
+    console.log('菜市场',data);
+
+    // 存储用户id=>名称
+    data.result.forEach((item: userType) => {
+      setUserNameMap(item.id, item.name)
+    })
     if (offset === 0) {
       selectInfo.userList = data.result
     } else {
       selectInfo.userList = [...selectInfo.userList, ...data.result]
     }
-    // 存储用户id=>名称
-    data.result.forEach((item: userType) => {
-      setUserNameMap(item.id, item.name)
-    })
+
   }
 }
 
@@ -233,6 +244,8 @@ const handleViewMoreHistory = () => {
 </script>
 
 <style lang="scss">
+@import './components/qqface.scss';
+
 .custom-group-silder-menu.el-aside {
   height: 100%;
 }

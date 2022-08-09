@@ -1,9 +1,10 @@
 <template>
   <ul class="group-content-wrap" ref="nodeRef">
     <!-- <li class="history-more" @click="getMoreHistory">查看更多</li> -->
-    <template v-for="(item, index) in list">
+    <template v-for="(item, index) in showList">
       <li class="group-content-left con" v-if="item.fromId !== myId">
-        <img class="con-img" src="@/assets/img/userIcon/ic_03.png" alt="">
+        <!-- <img class="con-img" src="@/assets/img/userIcon/ic_03.png" alt=""> -->
+        <HeadImg :name="getUserName(item.fromId)" />
         <div class="con-content">
           <span class="con-content-name">{{ getUserName(item.fromId) }}</span>
           <span class="con-content-txt">
@@ -14,33 +15,55 @@
       <li class="group-content-right con" v-else>
         <div class="con-content">
           <span class="con-content-name">{{ getUserName(item.fromId) }}</span>
-          <span class="con-content-txt">
-            {{ item.msgBody }}
-          </span>
+          <div class="con-content-txt" v-html="item.msgBody">
+          </div>
+          <!-- {{ item.msgBody }} -->
+
         </div>
-        <img class="con-img" src="@/assets/img/userIcon/ic_06.png" alt="">
+        <!-- <img class="con-img" src="@/assets/img/userIcon/ic_06.png" alt=""> -->
+        <HeadImg :name="getUserName(myId)" />
       </li>
     </template>
   </ul>
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref, nextTick, onUnmounted, computed, watch } from 'vue';
+import { onMounted, ref, nextTick, onUnmounted, computed, watch, toRefs } from 'vue';
 import { debounce } from '@/utils/tools'
 import { useUserStore } from "@/store/user"
+import HeadImg from './headImg.vue'
 
 type Props = {
   list: any[],//消息列表
   myId: string,//使用者id
 }
-const { list, myId } = defineProps<Props>()
+const props = defineProps<Props>()
+const { list, myId } = toRefs(props)
+
 const { getUserName } = useUserStore()
 
-watch(()=>list,(val)=>{
-  console.log('list',val);
+// watch(() => list, (val) => {
+//   console.log('list', val);
 
+// }, { deep: true })
+
+const showList = computed(() => {
+  const arr: any[] = props.list?.map((item: any) => {
+    console.log('item', item.msgBody);
+    // let word = item.msgBody.replace(/\[|\;/gi, '')
+    item.msgBody = natchMsg(item.msgBody)
+
+    return item
+  })
+  console.log('arr',arr);
+
+  return arr
 })
-
+const natchMsg = (str: string) => {
+  let newStr = str;
+  let span = `<span class='qqface qqface1 small'></span>`
+  return str.replaceAll('啤酒', span);
+}
 // dom节点
 const nodeRef = ref(null)
 // 事件viewMoreMsg--查看更多
@@ -59,7 +82,7 @@ const scrollTop = debounce(() => {
   if (scroll === 0) {
     emit('viewMoreMsg')
   }
-  console.log('监听滚动',nodeRef.value.scrollHeight);
+  console.log('监听滚动', nodeRef.value.scrollHeight);
   scrollOfZeroToEnd.value = nodeRef.value.scrollHeight - nodeRef.value.scrollTop
 }, 100)
 
@@ -75,7 +98,7 @@ onUnmounted(() => {
 // 滚动设置到底部
 const goPageEnd = () => {
   nextTick(() => {
-    console.log('滚动底部',nodeRef.value.scrollHeight);
+    console.log('滚动底部', nodeRef.value.scrollHeight);
     nodeRef.value.scrollTop = nodeRef.value.scrollHeight
   });
 }
@@ -94,9 +117,12 @@ defineExpose({
 
 <style lang="scss" scoped>
 .group-content-wrap {
-  padding: 30px;
+  padding: 20px;
   background-color: #F5F5F5;
   transition: all .7s;
+  .user-head-img-wrap{
+    margin-right: 0;
+  }
 
 
   .history-more {

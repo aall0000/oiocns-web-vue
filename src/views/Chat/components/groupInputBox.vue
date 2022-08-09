@@ -15,6 +15,7 @@
       </el-icon>
     </div>
     <div class="input-content">
+      <!-- <div class="textarea" v-html="textarea" contenteditable="true" ref="inputRef" placeholder="请输入内容"> </div> -->
       <el-input v-model="textarea" class="textarea" resize='none' :rows="3" type="textarea" />
       <div class="send-box">
         <el-button type="success" @click="submit">发送</el-button>
@@ -28,6 +29,7 @@
 import { ref } from 'vue'
 import FaceVue from './qqface.vue';
 const textarea = ref<string>('')
+const inputRef = ref(null)
 
 const emit = defineEmits(['submitInfo'])
 
@@ -38,12 +40,15 @@ const submit = () => {
 
 const handleFaceChoosed = (key: any, value: number) => {
   console.log('生存手册', key, value);
-  textarea.value +=key[0]
+  // let span = `<span class='qqface qqface${value} small'></span>`
+  textarea.value += key[0]
 }
 
 </script>
 
 <style lang="scss">
+@import "./qqface.scss";
+
 .group-input-wrap {
   .textarea {
     textarea {
