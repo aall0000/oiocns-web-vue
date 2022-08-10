@@ -7,9 +7,7 @@
         <HeadImg :name="getUserName(item.fromId)" />
         <div class="con-content">
           <span class="con-content-name">{{ getUserName(item.fromId) }}</span>
-          <span class="con-content-txt">
-            {{ item.msgBody }}
-          </span>
+          <div class="con-content-txt" v-html="item.msgBody"></div>
         </div>
       </li>
       <li class="group-content-right con" v-else>
