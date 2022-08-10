@@ -140,7 +140,11 @@
     >
       <el-button type="primary" icon="el-icon-s-check" @click="clearTemplate">清空</el-button>
       <div class="layout-menu-body__tree" v-show="listShow">
-        <TheSearchInput placeholder="输入组件名" :filterText.sync="filterText"></TheSearchInput>
+        <TheSearchInput
+          placeholder="输入组件名"
+          :filterText.sync="filterText"
+          @filterText="changeFilterText"
+        ></TheSearchInput>
         <div class="layout-menu-body__treeList" v-show="!searchShow">
           <el-collapse v-model="activeNames">
             <el-collapse-item title="系统组件" name="1">
@@ -205,19 +209,16 @@
             @dragend="dragend(item)"
             draggable="true"
             unselectable="on"
-            @click="addAppProtal(item)"
+            @click="addprotal(item)"
             v-for="item in searchList"
             :key="item.recid"
           >
-            <el-popover placement="right" width="400" trigger="hover">
-              <el-image :src="item.previewPic"></el-image>
-              <div class="row" slot="reference" style="padding: 5px 0">
-                <div class="el-icon-setting listContain_item" style="margin: 2px 5px 0 5px"></div>
-                <div>
-                  {{ item.name }}
-                </div>
+            <div class="row" slot="reference" style="padding: 5px 0">
+              <div class="el-icon-setting listContain_item" style="margin: 2px 5px 0 5px"></div>
+              <div>
+                {{ item.name }}
               </div>
-            </el-popover>
+            </div>
           </div>
         </div>
       </div>
@@ -610,6 +611,17 @@
       }
       const changeFilterText = (val) => {
         state.filterText = val
+        if (state.menuListShow) {
+        } else {
+          if (state.filterText == '') {
+            state.searchShow = false
+          } else {
+            state.searchShow = true
+            state.searchList = state.componentList.filter((el) => {
+              return el.name.indexOf(val) !== -1
+            })
+          }
+        }
       }
       const handleMenuBtn = () => {
         state.menuShow = !state.menuShow
@@ -651,6 +663,8 @@
         }
       }
       const addprotalTemplate = (data, index) => {
+        console.log('======', data)
+
         // 点击系统模板事件
         state.systemIndex = index
         state.customIndex = false

@@ -80,7 +80,7 @@ const mainRouter: RouteRecordRaw[] = [
       {
         path: '/organization/cohort',
         name: 'cohort',
-        component: () => import('@/views/Person/msgSetting/userSaveSet.vue'),
+        component: () => import('@/views/Organization/cohort.vue'),
         meta: {
           title: '单位群组'
         }
@@ -88,11 +88,11 @@ const mainRouter: RouteRecordRaw[] = [
       {
         path: '/organization/friend',
         name: 'friend',
-        component: () => import('@/views/Person/msgSetting/userUnit.vue'),
+        component: () => import('@/views/Organization/friend.vue'),
         meta: {
           title: '我的好友'
         }
-      },
+      }
     ]
   },
   {
@@ -104,12 +104,11 @@ const mainRouter: RouteRecordRaw[] = [
       keepAlive: false,
       title: '组织架构'
     }
-
   },
   {
     component: () => import('@/views/Work/home.vue'),
-    name: 'home',
-    path: '/home',
+    name: 'workHome',
+    path: '/workHome',
     meta: {
       keepAlive: false,
       title: '工作组'
