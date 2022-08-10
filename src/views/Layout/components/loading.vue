@@ -106,7 +106,7 @@ $topenter: -10px;
 }
 
 .loading-wrap {
-  background: #97c8fb;
+  background: #bfe2f6;
   position: relative;
   width: 100%;
   height: 100%;

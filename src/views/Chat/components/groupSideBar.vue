@@ -21,7 +21,7 @@
               <span class="group-con-show-name-time">{{ handleFormatDate(item.createTime) }} </span>
             </p>
           </el-tooltip>
-          <p class="group-con-show-msg">{{ item?.message?.msgBody }}</p>
+          <p class="group-con-show-msg" v-html="item?.message?.msgBody"></p>
         </div>
       </li>
       <!-- 鼠标右键 -->
@@ -49,9 +49,6 @@ type propType = {
   myId: string
 }
 const props = defineProps<propType>()
-console.log('mid', props);
-
-
 // 会话列表搜索关键字
 const searchValue = ref<string>('')
 

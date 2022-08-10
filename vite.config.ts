@@ -56,14 +56,14 @@ export default defineConfig(({ command, mode }) => {
       alias: {
         // 配置别名
         '@': path.resolve(__dirname, 'src'),
-        assets: path.resolve(__dirname, 'src/assets'),
-        components: path.resolve(__dirname, 'src/components'),
-        config: path.resolve(__dirname, 'src/config'),
-        router: path.resolve(__dirname, 'src/router'),
-        utils: path.resolve(__dirname, 'src/utils'),
-        views: path.resolve(__dirname, 'src/views'),
-        plugins: path.resolve(__dirname, 'src/plugins'),
-        store: path.resolve(__dirname, 'src/store')
+        '@assets': path.resolve(__dirname, 'src/assets'),
+        '@components': path.resolve(__dirname, 'src/components'),
+        '@config': path.resolve(__dirname, 'src/config'),
+        '@router': path.resolve(__dirname, 'src/router'),
+        '@utils': path.resolve(__dirname, 'src/utils'),
+        '@views': path.resolve(__dirname, 'src/views'),
+        '@plugins': path.resolve(__dirname, 'src/plugins'),
+        '@store': path.resolve(__dirname, 'src/store')
       }
     },
     css: {

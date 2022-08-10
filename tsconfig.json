@@ -48,9 +48,18 @@
       "@utils/*": [
         "src/utils/*"
       ],
+      "@components/*": [
+        "src/components/*"
+      ],
+      "@views/*": [
+        "src/views/*"
+      ],
       "@hooks/*": [
         "src/hooks/*"
-      ]
+      ],
+      "@store/*": [
+        "src/store/*"
+      ],
     }
   },
   "include": [
