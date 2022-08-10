@@ -84,13 +84,13 @@ onMounted(() => {
     const { data, success } = await connection.invoke('GetChats')
     if (success) {
       const { result = [] } = data
-      console.log('链接成功',data)
+      console.log('链接成功', data)
       sessionList.value = [...result]
 
       // 存储用户id=>名称
-    result.forEach((item: userType) => {
-      setUserNameMap(item.id, item.name)
-    })
+      result.forEach((item: userType) => {
+        setUserNameMap(item.id, item.name)
+      })
     }
   })
   // 监听链接断开
@@ -100,9 +100,12 @@ onMounted(() => {
 })
 
 // 提交信息
-const submit = async (value: Ref<string>) => {
-  let text = value.value.trim()
-  if (activeInfo.value.id > 0 && text.length > 0) {
+const submit = async (value: string) => {
+  console.log('信息', value);
+
+  let text = value?.trim() ?? value
+
+  if (activeInfo.value.id > 0 && text?.length > 0) {
     await connection.send('SendMsg', {
       toId: activeInfo.value.id,
       msgType: 'text',
@@ -246,6 +249,8 @@ const handleViewMoreHistory = () => {
 }
 </style>
 <style lang="scss" scoped>
+
+
 .cohort-wrap {
   width: 100%;
   height: calc(100vh - 60px);

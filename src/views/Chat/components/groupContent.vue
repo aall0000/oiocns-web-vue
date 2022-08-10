@@ -115,7 +115,8 @@ defineExpose({
   padding: 20px;
   background-color: #F5F5F5;
   transition: all .7s;
-  .user-head-img-wrap{
+
+  .user-head-img-wrap {
     margin-right: 0;
   }
 
@@ -129,6 +130,12 @@ defineExpose({
     display: flex;
     // align-items: center;
     margin-top: 10px;
+
+    .emoji {
+      width: 20px;
+      height: 20px;
+      margin: -5px 2px;
+    }
 
     &-img {
       height: 35px;

@@ -1,22 +1,31 @@
 <template>
   <div class="group-input-wrap" @keyup.enter="submit">
     <div class="icons-box">
-      <el-popover placement="top" :width="400" trigger="click">
-        <template #reference>
-          <el-icon :size="20">
-            <Orange />
-          </el-icon>
-        </template>
-        <FaceVue @chooseFace="handleFaceChoosed" />
-      </el-popover>
+      <div ref="faceBtnRef">
+        <el-popover placement="top" :width="400" trigger="click">
+          <template #reference>
+            <el-icon :size="20">
+              <Orange />
+            </el-icon>
+
+          </template>
+          <ul class='qqface-wrap'>
+            <!-- <li v-for="(key, value ) in qqfaceMap" @click="handleFaceChoosed(key, value)" :key="value"
+              :class="['qqface', `qqface${value}`, 'small']">
+            </li> -->
+            <img class="emoji" v-for="index in 36" :key="index" :src="`https://cdn.sunofbeaches.com/emoji/${index}.png`"
+              alt="" @click="handleImgChoosed(`https://cdn.sunofbeaches.com/emoji/${index}.png`)">
+          </ul>
+        </el-popover>
+      </div>
 
       <el-icon :size="20">
         <Microphone />
       </el-icon>
     </div>
     <div class="input-content">
-      <div class="textarea" v-html="textarea" @change="handleChange" contenteditable="true" :ref="inputRef"
-        placeholder="请输入内容"> </div>
+      <div id="insterHtml" class="textarea" @change="handleChange" contenteditable="true" spellcheck="false"
+        ref="inputRef" placeholder="请输入内容"> </div>
       <!-- <el-input v-model="textarea" class="textarea" resize='none' :rows="3" type="textarea" /> -->
       <div class="send-box">
         <el-button type="success" @click="submit">发送</el-button>
@@ -27,28 +36,62 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
-import FaceVue from './qqface.vue';
+import { onMounted, ref } from 'vue'
+import { qqfaceMap } from './config'
 const textarea = ref<string>('')
 const inputRef = ref(null)
+const faceBtnRef = ref(null)
 
 const emit = defineEmits(['submitInfo'])
 
 const submit = () => {
-  emit('submitInfo', textarea)
-  textarea.value = ""
+  const value = document.getElementById('insterHtml').innerHTML
+  emit('submitInfo', value)
+  console.log('提交信息', value);
+  // textarea.value = ""
+  document.getElementById('insterHtml').innerHTML = ''
+  // console.log('sss',document.getElementById('insterHtml').innerHTML);
+
 }
 
 const handleFaceChoosed = (key: any, value: number) => {
-  console.log('生存手册', key, value);
-  let span = `<span class='qqface qqface${value} small'></span>`
-  textarea.value += span
-  setTimeout(() => {
-    console.log('测试',inputRef);
+  inputRef.value.focus()
+  console.log('生存手册', document.activeElement, inputRef.value);
+  // let spantTXT = `<span class='qqface qqface${value} small'></span>`
+  // const span = document.createElement('span')
+  // span.className = `qqface qqface${value} small`
+  // textarea.value += spantTXT
+  // inputRef.value.append(span)
 
-  }, 300);
+  const img = document.createElement('img')
+  img.src = "https://cdn.sunofbeaches.com/emoji/1.png"
+
+  img.width = 20
+  img.height = 20
+  document.getElementById('insterHtml').append(img)
+  console.log('inputRef.value', inputRef.value.innerHTML);
+
+
+}
+const handleImgChoosed = (url: string) => {
+  const img = document.createElement('img')
+  img.src = url
+  img.className = 'emoji'
+  img.width = 20
+  img.height = 20
+  document.getElementById('insterHtml').append(img)
 }
 
+onMounted(() => {
+  const faceBtnTriggrt = faceBtnRef.value
+  if (faceBtnTriggrt) {
+    faceBtnTriggrt.addEventListener('mousedown', (event: MouseEvent) => {
+      console.log('点击了');
+
+      return event.preventDefault()
+    })
+  }
+})
 const handleChange = (a: any) => {
   console.log('变化', a);
 
@@ -72,12 +115,22 @@ const handleChange = (a: any) => {
 
 }
 </style>
-<style lang="scss" scoped>
+<style lang="scss">
+.qqface-wrap {
+  .emoji {
+    width: 20px;
+    height: 20px;
+    margin: 5px;
+  }
+}
+
 .group-input-wrap {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   padding: 0 14px 14px 14px;
+
+ 
 
   .icons-box {
     height: 34px;
@@ -103,6 +156,13 @@ const handleChange = (a: any) => {
       flex: 1;
       outline: none;
       border: none;
+    }
+
+    .textarea:empty::before {
+      content: attr(placeholder);
+      position: absolute;
+      color: #ccc;
+      background-color: transparent;
     }
 
     .send-box {
