@@ -1,7 +1,7 @@
 <template>
   <div class="baseLayout">
-    <div v-if="state.isShow" class="addImg" @click="router.push({ path: '/work' })">
-      <div class="text">+</div>
+    <div v-if="state.isShow" class="addImg">
+      <div class="text" @click="router.push({ path: '/work' })">+</div>
     </div>
     <el-tabs
       v-else
