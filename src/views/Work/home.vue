@@ -41,7 +41,7 @@
               :use-style-cursor="false"
             >
               <TheComponentList
-                :cover="true"
+                :cover="false"
                 :containLink="items.contain_link"
                 :type="items.type"
               ></TheComponentList>
