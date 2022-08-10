@@ -10,6 +10,8 @@ import '@/assets/style/app.scss'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import InfiniteScroll from 'element-plus'
 import VueGridLayout from 'vue-grid-layout'
+// 下面是我们安装的固化插件。
+import piniaPersist from 'pinia-plugin-persist'
 
 const pinia = createPinia()
 
@@ -22,6 +24,7 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
 setupGlobalComponent(app)
 setGlobalProperties(app)
 setupSvgIcon(app)
+pinia.use(piniaPersist)
 app.use(pinia)
 app.use(VueGridLayout)
 setupRouter(app)

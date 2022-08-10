@@ -6,14 +6,24 @@ export const useUserStore = defineStore({
   id: 'user', // id必填，且需要唯一
   state: () => {
     return {
-      userInfo: JSON.parse(sessionStorage.getItem('ZCY_LOGIN_DATA')), // 用户登录信息
-      queryInfo: JSON.parse(sessionStorage.getItem('ZCY_DETAIL_DATA')), // 用户详细信息
+      userInfo: {}, // 用户登录信息
+      queryInfo: {}, // 用户详细信息
       userCompanys: [], // 获取用户组织列表 分页
       copyCompanys: [],
       userToken: '' || sessionStorage.getItem('TOKEN'),
-      workspaceData: JSON.parse(sessionStorage.getItem('WORKSPACE')), // 当前选中的公司
+      workspaceData: {}, // 当前选中的公司
       userNameMap: new Map()
     }
+  },
+  persist: {
+    //  固化插件
+    enabled: true, // 开启存储
+    strategies: [
+      // 指定存储的位置以及存储的变量都有哪些，该属性可以不写，
+      //在不写的情况下，默认存储到 sessionStorage 里面,默认存储 state 里面的所有数据。
+      { storage: sessionStorage, paths: ['userInfo', 'queryInfo', 'userToken','workspaceData'] }
+      // paths 是一个数组，如果写了 就会只存储 count 变量，当然也可以写多个。
+    ]
   },
   getters: {
     // token: (state) => 'Bearer ' + state.userToken
@@ -33,8 +43,6 @@ export const useUserStore = defineStore({
         })
         .then(async (res: ResultType) => {
           if (res.code == 200) {
-            sessionStorage.setItem('ZCY_LOGIN_DATA', JSON.stringify(res.data))
-            sessionStorage.setItem('TOKEN', res.data.accessToken)
             this.userInfo = res.data
             this.userToken = res.data.accessToken
             this.getQueryInfo()
@@ -54,7 +62,6 @@ export const useUserStore = defineStore({
       $services.person.queryInfo().then((res: ResultType) => {
         if (res.code == 200) {
           this.queryInfo = res.data
-          sessionStorage.setItem('ZCY_DETAIL_DATA', JSON.stringify(res.data))
           if (!token) {
             this.getCompanyList(0)
           }
