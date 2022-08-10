@@ -41,6 +41,7 @@
         :props="defaultProps"
         lazy
         highlight-current
+        ref="TreeDom"
         @node-click="changeIndexFun"
         :load="loadNode"
       />
