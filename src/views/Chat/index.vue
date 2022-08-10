@@ -101,9 +101,10 @@ onMounted(() => {
 
 // 提交信息
 const submit = async (value: string) => {
-  console.log('信息', value);
+  console.log('value.indexOf', value);
 
-  let text = value?.trim() ?? value
+  let text = value.indexOf('span') > -1 ? value : value.replaceAll('&nbsp;', '')
+  console.log('value', value, text);
 
   if (activeInfo.value.id > 0 && text?.length > 0) {
     await connection.send('SendMsg', {
@@ -249,8 +250,6 @@ const handleViewMoreHistory = () => {
 }
 </style>
 <style lang="scss" scoped>
-
-
 .cohort-wrap {
   width: 100%;
   height: calc(100vh - 60px);

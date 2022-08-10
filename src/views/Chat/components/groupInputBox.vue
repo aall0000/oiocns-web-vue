@@ -37,8 +37,6 @@
 
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue'
-import { qqfaceMap } from './config'
-const textarea = ref<string>('')
 const inputRef = ref(null)
 const faceBtnRef = ref(null)
 
@@ -47,7 +45,6 @@ const emit = defineEmits(['submitInfo'])
 const submit = () => {
   const value = document.getElementById('insterHtml').innerHTML
   emit('submitInfo', value)
-  console.log('提交信息', value);
   // textarea.value = ""
   document.getElementById('insterHtml').innerHTML = ''
   // console.log('sss',document.getElementById('insterHtml').innerHTML);
@@ -56,13 +53,11 @@ const submit = () => {
 
 const handleFaceChoosed = (key: any, value: number) => {
   inputRef.value.focus()
-  console.log('生存手册', document.activeElement, inputRef.value);
   // let spantTXT = `<span class='qqface qqface${value} small'></span>`
   // const span = document.createElement('span')
   // span.className = `qqface qqface${value} small`
   // textarea.value += spantTXT
   // inputRef.value.append(span)
-
   const img = document.createElement('img')
   img.src = "https://cdn.sunofbeaches.com/emoji/1.png"
 
@@ -70,8 +65,6 @@ const handleFaceChoosed = (key: any, value: number) => {
   img.height = 20
   document.getElementById('insterHtml').append(img)
   console.log('inputRef.value', inputRef.value.innerHTML);
-
-
 }
 const handleImgChoosed = (url: string) => {
   const img = document.createElement('img')
@@ -86,8 +79,6 @@ onMounted(() => {
   const faceBtnTriggrt = faceBtnRef.value
   if (faceBtnTriggrt) {
     faceBtnTriggrt.addEventListener('mousedown', (event: MouseEvent) => {
-      console.log('点击了');
-
       return event.preventDefault()
     })
   }
@@ -130,7 +121,7 @@ const handleChange = (a: any) => {
   justify-content: space-between;
   padding: 0 14px 14px 14px;
 
- 
+
 
   .icons-box {
     height: 34px;
