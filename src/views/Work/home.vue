@@ -64,7 +64,7 @@
   const router = useRouter()
   const store = useUserStore()
 
-  const editableTabsValue = ref(1)
+  const editableTabsValue = ref(0)
   interface info {
     id: String
     title: String
@@ -95,6 +95,8 @@
           state.editableTabs = res.data.content
           if (state.editableTabs.length == 0) {
             state.isShow = true
+          } else {
+            editableTabsValue.value = state.editableTabs[state.editableTabs.length - 1].name
           }
           console.log(state.editableTabs)
         }
@@ -102,10 +104,13 @@
   }
   const handleTabsEdit = (targetName: any, action: 'remove' | 'add') => {
     if (action === 'add') {
-      router.push({ path: '/work', query: { tabsData: JSON.stringify(state.editableTabs) } })
+      router.push({
+        path: '/work',
+        query: { tabsData: JSON.stringify(state.editableTabs), onValue: editableTabsValue.value }
+      })
     } else if (action === 'remove') {
       const tabs = state.editableTabs
-      let activeName = editableTabsValue.value.toString()
+      let activeName = targetName
       tabs.forEach((el, index) => {
         if (el.name == activeName) {
           tabs.splice(index, 1)
