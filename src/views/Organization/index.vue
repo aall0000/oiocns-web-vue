@@ -19,13 +19,11 @@
   </div>
 </template>
 <script lang="ts" setup>
-  import $services from '@/services'
-  import { ref, reactive, onMounted,toRaw } from 'vue'
+  import { ref, onMounted,watch} from 'vue'
   import departmentTree from './components/departmentTree.vue'
   import departmentDetail from './components/departmentDetail.vue'
   import departmentList from './components/departmentList.vue'
   import organizatList from './components/organizatList.vue'
-  import subMenu from './components/menu.vue'
   import { useUserStore } from '@/store/user'
   import { storeToRefs } from 'pinia'
   import {useRouter } from 'vue-router';
@@ -46,16 +44,25 @@
   }
   onMounted(() => {
     isShowMenu.value = true
+   
   })
+  let router = useRouter();
+  let envType= ref<number>(1);
+
+  watch(() =>router.currentRoute.value.path,(newValue,oldValue)=> {
+    if(router.currentRoute.value.path =='/organization/company'){
+      envType.value = 1; //1-单位 2-集团
+    }else{
+      envType.value = 2; //1-单位 2-集团
+    }
+  },{ immediate: true })
   // const selectList = reactive<selectType[]>([])
   
-  let envType = 2; //1-单位 2-集团
   let selectId = ref<string>()
   let selectItem = ref<selectType>({
     id: '',
     name: ''
   })
-  let showInfo = ref<boolean>(false)
   let personType = ref<string>('1')
   //获取当前账号的所有单位
   // $services.company

@@ -71,6 +71,7 @@
 <script lang="ts" setup>
   import $services from '@/services'
   import { ref, reactive, onMounted, watch } from 'vue'
+  import { ElMessage, ElMessageBox } from 'element-plus'
   type selectItem = {
     name: string
     id: string
@@ -96,8 +97,14 @@
         }
       })
       .then((res: ResultType) => {
-        dialogVisible.value = false
-        
+        if(res.code ==200){
+          dialogVisible.value = false
+          getDepartmentsList(props.selectItem.id)
+           ElMessage({
+            message: '添加成功',
+            type: 'success'
+          })
+        }
       })
   }
   watch(
