@@ -101,10 +101,7 @@ onMounted(() => {
 
 // 提交信息
 const submit = async (value: string) => {
-  console.log('value.indexOf', value);
-
   let text = value.indexOf('span') > -1 ? value : value.replaceAll('&nbsp;', '')
-  console.log('value', value, text);
 
   if (activeInfo.value.id > 0 && text?.length > 0) {
     await connection.send('SendMsg', {
