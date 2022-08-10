@@ -92,7 +92,7 @@ const mainRouter: RouteRecordRaw[] = [
         meta: {
           title: '我的好友'
         }
-      },
+      }
     ]
   },
   {
@@ -104,12 +104,11 @@ const mainRouter: RouteRecordRaw[] = [
       keepAlive: false,
       title: '组织架构'
     }
-
   },
   {
     component: () => import('@/views/Work/home.vue'),
-    name: 'home',
-    path: '/home',
+    name: 'workHome',
+    path: '/workHome',
     meta: {
       keepAlive: false,
       title: '工作组'

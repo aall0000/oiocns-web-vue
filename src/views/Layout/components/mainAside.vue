@@ -95,7 +95,7 @@
   //   console.log(val)
   // }
   const mainMenus = [
-    { name: '工作台', icon: 'Tickets', path: '/home' },
+    { name: '工作台', icon: 'Tickets', path: '/workHome' },
     { name: '消息', icon: 'ChatDotRound', path: '/chat' },
     { name: '组织架构', icon: 'School', path: '/organization' },
     { name: '商店', icon: 'Grid', path: '/appStore' },

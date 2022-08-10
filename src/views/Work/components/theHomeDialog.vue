@@ -62,7 +62,9 @@
     await formEl.validate((valid, fields) => {
       if (valid) {
         let arr = []
-        arr = JSON.parse(route.query.tabsData as string)
+        if (route.query.tabsData && route.query.tabsData.length !== 0) {
+          arr = JSON.parse(route.query.tabsData as string)
+        }
         arr.push({
           id: arr.length,
           name: arr.length,
@@ -92,7 +94,7 @@
                 type: 'success'
               })
               handleClose()
-              router.push({ path: '/home' })
+              router.push({ path: '/workHome' })
             }
           })
       } else {

@@ -41,6 +41,8 @@ declare module '@vue/runtime-core' {
     ElTableColumn: typeof import('element-plus/es')['ElTableColumn']
     ElTabPane: typeof import('element-plus/es')['ElTabPane']
     ElTabs: typeof import('element-plus/es')['ElTabs']
+    ElTag: typeof import('element-plus/es')['ElTag']
+    ElTooltip: typeof import('element-plus/es')['ElTooltip']
     ElTree: typeof import('element-plus/es')['ElTree']
     Head: typeof import('./src/components/protal/components/head.vue')['default']
     Invitate: typeof import('./src/components/protal/components/invitate.vue')['default']
@@ -50,6 +52,5 @@ declare module '@vue/runtime-core' {
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     SvgIcon: typeof import('./src/components/global/SvgIcon/index.vue')['default']
-    Test: typeof import('./src/components/protal/components/test.vue')['default']
   }
 }
