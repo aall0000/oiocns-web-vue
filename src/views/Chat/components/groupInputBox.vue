@@ -15,8 +15,9 @@
       </el-icon>
     </div>
     <div class="input-content">
-      <!-- <div class="textarea" v-html="textarea" contenteditable="true" ref="inputRef" placeholder="请输入内容"> </div> -->
-      <el-input v-model="textarea" class="textarea" resize='none' :rows="3" type="textarea" />
+      <div class="textarea" v-html="textarea" @change="handleChange" contenteditable="true" :ref="inputRef"
+        placeholder="请输入内容"> </div>
+      <!-- <el-input v-model="textarea" class="textarea" resize='none' :rows="3" type="textarea" /> -->
       <div class="send-box">
         <el-button type="success" @click="submit">发送</el-button>
       </div>
@@ -40,8 +41,17 @@ const submit = () => {
 
 const handleFaceChoosed = (key: any, value: number) => {
   console.log('生存手册', key, value);
-  // let span = `<span class='qqface qqface${value} small'></span>`
-  textarea.value += key[0]
+  let span = `<span class='qqface qqface${value} small'></span>`
+  textarea.value += span
+  setTimeout(() => {
+    console.log('测试',inputRef);
+
+  }, 300);
+}
+
+const handleChange = (a: any) => {
+  console.log('变化', a);
+
 }
 
 </script>

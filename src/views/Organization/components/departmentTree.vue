@@ -2,30 +2,29 @@
   <ul class="departmentTree-wrap">
     <li class="con tree-select">
       <el-select
-        v-if="menuIndex==='2'"
+        v-if="envType == 2"
         v-model="selectValue"
-        @change="changeIndexFun"
+        @change="changeGroupIndex"
         class="m-2"
+        value-key="id"
         placeholder="Select"
-        style="margin-left: 20px;width:155px"
+        style="margin-left: 20px; width: 155px"
       >
         <el-option
-          v-for="item in selectList"
-          :key="item.name"
+          v-for="item in selectList.list"
+          :key="item.id"
           :label="item.name"
           :value="{ id: item.id, item: item }"
         />
       </el-select>
     </li>
-    <li class="con tree-btns">
+    <li class="con tree-btns" v-if="envType == 1">
       <div class="title">部门管理</div>
       <el-button :icon="Plus" @click="dialogVisible = true" size="small">新建部门</el-button>
-      <!-- <el-button :icon="User" size="small">管理部门</el-button> -->
-      <!-- /角色(职权)/岗位(身份)
-      创建岗位需要角色id和组织id
-      通过职权列表创建身份
-      集团只有职权没有身份，通过职权可以查人
-      单位可以创建职权进行虚拟集团查找 -->
+    </li>
+    <li class="con tree-btns" v-else>
+      <div class="title">组织</div>
+      <el-button :icon="Plus" @click="dialogVisible = true" size="small">创建下级节点</el-button>
     </li>
     <li class="con tree-search">
       <el-input class="search" placeholder="搜索姓名、手机、邮箱">
@@ -37,7 +36,17 @@
       </el-input>
     </li>
 
-    <ul class="con tree-dept">
+    <ul class="con tree-dept" v-if="envType ==1">
+      <el-tree
+        :props="defaultProps"
+        lazy
+        highlight-current
+        ref="TreeDom"
+        @node-click="changeIndexFun"
+        :load="loadNode"
+      />
+    </ul>
+    <ul class="con tree-dept" v-else>
       <el-tree
         :props="defaultProps"
         lazy
@@ -46,7 +55,7 @@
         :load="loadNode"
       />
     </ul>
-    <el-dialog v-model="dialogVisible" title="请输入部门名称" width="30%">
+    <el-dialog v-model="dialogVisible" v-if="envType == 1" title="请输入部门名称" width="30%">
       <el-form-item label="部门名称">
         <el-input v-model="departmentName" placeholder="Please input" clearable />
       </el-form-item>
@@ -63,34 +72,57 @@
         </span>
       </template>
     </el-dialog>
+    <el-dialog v-model="dialogVisible" v-if="envType == 2" title="请输子集团名称" width="30%">
+      <el-form-item label="节点名称">
+        <el-input v-model="departmentName" placeholder="Please input" clearable />
+      </el-form-item>
+      <el-form-item label="部门编号">
+        <el-input v-model="departmentTeamCode" placeholder="Please input" clearable />
+      </el-form-item>
+      <el-form-item label="部门简介">
+        <el-input v-model="departmentTeamRemark" placeholder="Please input" clearable />
+      </el-form-item>
+      <el-form-item label="上级节点">
+        <el-cascader :props="upNode" v-model="upNodeId"/>
+      </el-form-item>
+
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="dialogVisible = false">取消</el-button>
+          <el-button type="primary" @click="createSubgroupFun">确认</el-button>
+        </span>
+      </template>
+    </el-dialog>
   </ul>
 </template>
 
 <script lang="ts" setup>
   import $services from '@/services'
   import { Search, Plus } from '@element-plus/icons-vue'
-  import { ref, reactive, onMounted,watch } from 'vue'
+  import { ref, reactive, onMounted, watch } from 'vue'
   import { useUserStore } from '@/store/user'
+  import { ElMessage, ElMessageBox } from 'element-plus'
+
   import { storeToRefs } from 'pinia'
   const store = useUserStore()
   const { workspaceData } = storeToRefs(store)
   let dialogVisible = ref<boolean>(false)
   const emit = defineEmits(['changeIndex'])
   const props = defineProps<{
-    menuIndex: string
+    envType: number
   }>()
-  watch(
-    () => props.menuIndex,
-    (newValue: string) => {
-      console.log(newValue)
-    }
-  )
   const changeIndexFun = (val: any) => {
-    console.log('val',val)
+    console.log('val', val)
     emit('changeIndex', val)
   }
+  //获取部门
   onMounted(() => {
-    changeIndexFun(workspaceData.value)
+    if (props.envType == 1) {
+      changeIndexFun(workspaceData.value)
+    } else {
+      //查询集团
+      getGroupList()
+    }
   })
   let departmentName = ref<string>('')
   let departmentTeamName = ref<string>('')
@@ -117,12 +149,21 @@
     label: 'label'
   }
   const loadNode = (node: any, resolve: (data: any) => void) => {
-    if (node.level === 0) {
+   if(props.envType ==1){
+     if (node.level === 0) {
       getQueryInfo(resolve)
     }
     if (node.level >= 1) {
-      getDepartmentsList(node,resolve)
+      getDepartmentsList(node, resolve)
     }
+   }else{
+    if (node.level === 0) {
+      getGroupsInfo(resolve)
+    }
+    if (node.level >= 1) {
+      getSubGroups(node, resolve)
+    }
+   }
   }
   //根节点数据
   async function getQueryInfo(resolve: any) {
@@ -137,10 +178,107 @@
       return resolve(obj)
     })
   }
-  async function getDepartmentsList(node:any,resolve: any) {
-    let arr:any = [];
+  async function getDepartmentsList(node: any, resolve: any) {
+    let arr: any = []
     await $services.company
       .getDepartments({
+        data: { id: node.data.id, offset: 0, limit: 100 }
+      })
+      .then((res: ResultType) => {
+        if (res.data.result) {
+          let resData = JSON.parse(JSON.stringify(res.data.result))
+
+          resData.forEach((element: any) => {
+            var obj = {
+              id: element.id,
+              label: element.name,
+              code: element.code,
+              children: [] as []
+            }
+
+            arr.push(JSON.parse(JSON.stringify(obj)))
+          })
+        }
+        return resolve(arr)
+      })
+  }
+  type listItem = {
+    list: any
+  }
+  const selectValue = ref<string>(null)
+  const selectList = reactive<listItem>({ list: [] })
+  //当前选中的集团
+  type groupType = {
+    id?:string,
+    name?:string,
+    children?:Array<any>
+  }
+  const checkGroup = ref<groupType>({})
+  // 查询集团
+  const getGroupList = () => {
+    $services.company
+      .companyGetGroups({
+        data: {
+          offset: 0,
+          limit: 100
+        }
+      })
+      .then((res: ResultType) => {
+        if (res.data.result) {
+          selectList.list = res.data.result
+        } else {
+          selectList.list = []
+        }
+      })
+  }
+  //切换集团
+  const changeGroupIndex = (val: object) => {
+    checkGroup.value = val
+  }
+  const upNode = {
+    checkStrictly: true,
+    lazy: true,
+    lazyLoad(node: any, resolve: any) {
+      const { level } = node
+      if (node.level === 0) {
+        getGroupsInfo(resolve)
+      }
+      if (node.level >= 1) {
+        getSubGroups(node,resolve)
+      }
+    }
+  }
+  async function getGroupsInfo(resolve: any) {
+    let arr:any = [];
+    $services.company
+      .companyGetGroups({
+        data: {
+          offset: 0,
+          limit: 100
+        }
+      })
+      .then((res: ResultType) => {
+        if (res.data.result) {
+        let resData = [res.data.result[0]]
+        resData.forEach((element: any) => {
+          var obj = {
+            id: element.id,
+            label: element.name,
+            code:element.code,
+            children:[] as [],
+            value:element.id
+          }
+          arr.push(obj)
+        })
+        }
+        return resolve(arr)
+      })
+  }
+  
+  async function getSubGroups(node:any,resolve: any) {
+    let arr:any = [];
+    await $services.company
+      .getSubgroups({
         data: { id: node.data.id, offset: 0, limit: 100 }
       })
       .then((res: ResultType) => {
@@ -152,27 +290,39 @@
             id: element.id,
             label: element.name,
             code:element.code,
+            value:element.id,
             children:[] as []
           }
 
-          arr.push(JSON.parse(JSON.stringify(obj)))
+          arr.push(obj)
         })
         }
         return resolve(arr)
       })
   }
-  type listItem = {
-    id:string,
-    name:string,
-    code:string,
-  }
-  const selectValue = ref<string>('')
-  const selectList = ref<Array<listItem>>([])
-  const getOptionList = ()=>{
-    console.log('getOptionList')
+  
+  const upNodeId = ref<any>([])
+  //创建子集团
+  const createSubgroupFun = ()=>{
+    $services.company
+      .createSubgroup({
+        data: {
+          code: departmentTeamCode.value,
+          name: departmentName.value,
+          parentId: upNodeId.value[0],
+          teamRemark: departmentTeamRemark.value
+        }
+      })
+      .then((res: ResultType) => {
+        if(res.data.code ==200){
+          ElMessage({
+            message: res.msg,
+            type: 'success'
+          })
+        }
+      })
   }
 </script>
-
 <style lang="scss">
   .departmentTree-wrap .tree-search {
     .search {

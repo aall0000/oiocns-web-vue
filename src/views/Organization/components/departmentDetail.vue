@@ -71,12 +71,14 @@
 <script lang="ts" setup>
   import $services from '@/services'
   import { ref, reactive, onMounted, watch } from 'vue'
+  import { ElMessage, ElMessageBox } from 'element-plus'
   type selectItem = {
     name: string
     id: string
   }
   const props = defineProps<{
-    selectItem: selectItem
+    selectItem: selectItem,
+    envType:number
   }>()
   let dialogVisible = ref<boolean>(false)
   let selectId = ref<string>()
@@ -95,15 +97,23 @@
         }
       })
       .then((res: ResultType) => {
-        dialogVisible.value = false
-        
+        if(res.code ==200){
+          dialogVisible.value = false
+          getDepartmentsList(props.selectItem.id)
+           ElMessage({
+            message: '添加成功',
+            type: 'success'
+          })
+        }
       })
   }
   watch(
     () => props.selectItem,
     (newValue: selectItem) => {
       if (newValue.id !== '') {
-        getDepartmentsList(newValue.id)
+        if(props.envType ==1){
+          getDepartmentsList(newValue.id)
+        }
       }
     },
   )

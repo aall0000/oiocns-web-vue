@@ -2,14 +2,14 @@
   <div class="main-content">
     <!-- 单位管理 -->
     <div class="org-content" v-if="showMenu == true">
-      <departmentTree @changeIndex="changeIndex" class="department-tree" />
+      <departmentTree
+        :envType="envType"
+        @changeIndex="changeIndex"
+        class="department-tree"
+      />
       <div class="main-dep">
-        <departmentDetail :selectItem="selectItem" />
-        <departmentList
-          :selectId="selectId"
-          :selectItem="selectItem"
-          :personType="personType"
-        ></departmentList>
+        <departmentDetail :envType="envType" :selectItem="selectItem"  />
+        <departmentList :envType="envType" :selectId="selectId" :selectItem="selectItem" :personType="personType"></departmentList>
       </div>
     </div>
     <!-- 个人管理 -->
@@ -19,15 +19,14 @@
   </div>
 </template>
 <script lang="ts" setup>
-  import $services from '@/services'
-  import { ref, reactive, onMounted } from 'vue'
+  import { ref, onMounted,watch} from 'vue'
   import departmentTree from './components/departmentTree.vue'
   import departmentDetail from './components/departmentDetail.vue'
   import departmentList from './components/departmentList.vue'
   import organizatList from './components/organizatList.vue'
-  import subMenu from './components/menu.vue'
   import { useUserStore } from '@/store/user'
   import { storeToRefs } from 'pinia'
+  import {useRouter } from 'vue-router';
 
   const store = useUserStore()
   const { queryInfo } = storeToRefs(store)
@@ -45,14 +44,25 @@
   }
   onMounted(() => {
     isShowMenu.value = true
+   
   })
+  let router = useRouter();
+  let envType= ref<number>(1);
+
+  watch(() =>router.currentRoute.value.path,(newValue,oldValue)=> {
+    if(router.currentRoute.value.path =='/organization/company'){
+      envType.value = 1; //1-单位 2-集团
+    }else{
+      envType.value = 2; //1-单位 2-集团
+    }
+  },{ immediate: true })
   // const selectList = reactive<selectType[]>([])
+  
   let selectId = ref<string>()
   let selectItem = ref<selectType>({
     id: '',
     name: ''
   })
-  let showInfo = ref<boolean>(false)
   let personType = ref<string>('1')
   //获取当前账号的所有单位
   // $services.company
@@ -71,10 +81,10 @@
     id: string
     name: string
   }
-  const menuIndex = ref<string>('1')
-  const menuCheck = (index: string) => {
-    menuIndex.value = index
-  }
+  // const menuIndex = ref<string>('1')
+  // const menuCheck = (index:string)=>{
+  //   menuIndex.value= index;
+  // }
   const changeIndex = (obj: treeItem) => {
     selectItem.value = obj
     selectId.value = obj.id
