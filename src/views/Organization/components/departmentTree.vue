@@ -10,9 +10,16 @@
       </li>
       <li class="con tree-btns" v-if="envType == 1">
         <div class="title">部门管理</div>
-        <el-icon color="#154ad8" :size="18">
-          <View />
-        </el-icon>
+        <el-popover placement="bottom" :width="150" trigger="hover">
+          <template #reference>
+            <el-icon color="#154ad8" :size="18">
+              <View />
+            </el-icon>
+          </template>
+          <el-checkbox v-model="state.isShowName" label="部门名称" />
+          <el-checkbox v-model="state.isShowCode" label="部门编码" />
+        </el-popover>
+
         <el-icon color="#154ad8" :size="20">
           <CirclePlus />
         </el-icon>
@@ -34,7 +41,13 @@
 
       <ul class="con tree-dept" v-if="envType == 1">
         <el-tree :props="defaultProps" lazy highlight-current ref="TreeDom" @node-click="changeIndexFun"
-          :load="loadNode" />
+          :load="loadNode">
+          <template #default="{ node, data }">
+            <span class="custom-tree-node">
+              <span>{{state.isShowName ? node.label :''}} {{ state.isShowCode ? data.code : '' }}</span>
+            </span>
+          </template>
+        </el-tree>
       </ul>
       <ul class="con tree-dept" v-else>
         <el-tree :props="defaultProps" lazy highlight-current @node-click="changeIndexFun" :load="loadNode" />
@@ -95,6 +108,12 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import { storeToRefs } from 'pinia'
 const store = useUserStore()
 const { workspaceData } = storeToRefs(store)
+
+const state = reactive({
+  isShowCode: false,
+  isShowName: true,
+  isShowUnit: false
+})
 let dialogVisible = ref<boolean>(false)
 const emit = defineEmits(['changeIndex'])
 const props = defineProps<{
@@ -161,6 +180,7 @@ async function getQueryInfo(resolve: any) {
       {
         children: [] as string[],
         label: res.data.name,
+        code:res.data.code,
         id: res.data.id
       }
     ]
@@ -329,10 +349,22 @@ const createSubgroupFun = () => {
   z-index: 2;
   float: left;
   height: 100%;
-  .weihu-wrap{
-    &-txt{
-      
+
+  .weihu-wrap {
+    text-align: center;
+    padding: 8px 10px 12px;
+    background-color: #fff;
+    border-top: 1px solid #ccc;
+
+    &-txt {
+      color: $mainColor;
+      font-size: 16px;
     }
+  }
+  .custom-tree-node{
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-spacing: nowrap;
   }
 }
 
