@@ -4,6 +4,7 @@ import axios from 'axios'
 import autoMatchBaseUrl from './autoMatchBaseUrl'
 import { TIMEOUT } from '@/constant'
 import { useUserStore } from '@/store/user'
+import { useRouter } from 'vue-router'
 
 export const requestInstance = axios.create({})
 
@@ -109,7 +110,7 @@ const axiosResponse = {
 
       console.log('错误信息', error, response, code)
       if (status == 401) {
-        router.push({ path: '/login' })
+        // router.push({ path: '/login' })
       }
 
       return Promise.reject(checkStatus(response))
