@@ -62,7 +62,7 @@
     }
   },{ immediate: true })
   // const selectList = reactive<selectType[]>([])
-  
+
   let selectId = ref<string>()
   let selectItem = ref<selectType>({
     id: '',
@@ -163,6 +163,7 @@
     padding: 15px;
     float: left;
     width: 100%;
+    height: 100%;
     // overflow-y: scroll;
     //左侧组织架构 树
     .department-tree {
