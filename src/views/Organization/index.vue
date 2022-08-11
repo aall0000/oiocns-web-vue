@@ -9,7 +9,7 @@
       />
       <div class="main-dep">
         <departmentDetail :envType="envType" :selectItem="selectItem"  />
-        <departmentList :envType="envType" :selectId="selectId" :selectItem="selectItem" :personType="personType"></departmentList>
+        <departmentList :envType="envType" :rootElement="rootElement" :selectId="selectId" :selectItem="selectItem" :personType="personType"></departmentList>
       </div>
     </div>
     <!-- 个人管理 -->
@@ -19,6 +19,8 @@
   </div>
 </template>
 <script lang="ts" setup>
+  // @ts-nocheck
+  import $services from '@/services'
   import { ref, onMounted,watch} from 'vue'
   import departmentTree from './components/departmentTree.vue'
   import departmentDetail from './components/departmentDetail.vue'
@@ -44,7 +46,10 @@
   }
   onMounted(() => {
     isShowMenu.value = true
-   
+    if(router.currentRoute.value.path =='/organization/company'){
+      getInfo();
+
+    }
   })
   let router = useRouter();
   let envType= ref<number>(1);
@@ -85,6 +90,24 @@
   // const menuCheck = (index:string)=>{
   //   menuIndex.value= index;
   // }
+  type rootType = {
+    id:string,
+    name:string,
+  }
+  const rootElement = ref<rootType>()
+  const getInfo =()=>{
+    $services.company.queryInfo({}).then((res: ResultType) => {
+      let obj = [
+        {
+          children: [] as string[],
+          label: res.data.name,
+          id: res.data.id
+        }
+      ]
+      console.log('queryInfo',res.data)
+      rootElement.value = res.data
+    })
+  }
   const changeIndex = (obj: treeItem) => {
     selectItem.value = obj
     selectId.value = obj.id
