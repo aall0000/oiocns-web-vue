@@ -1,5 +1,4 @@
 // @ts-nocheck
-import { useRouter } from 'vue-router'
 import Qs from 'qs'
 import axios from 'axios'
 import autoMatchBaseUrl from './autoMatchBaseUrl'
@@ -98,8 +97,6 @@ const axiosResponse = {
   },
   error: (error) => {
     const { response, code } = error
-    const router = useRouter()
-    console.log('测试', useRouter(), router, useUserStore())
     // 接口请求异常统一处理
     if (code === 'ECONNABORTED') {
       // Timeout error
