@@ -8,7 +8,7 @@
         class="department-tree"
       />
       <div class="main-dep">
-        <departmentDetail :envType="envType" :selectItem="selectItem"  />
+        <departmentDetail :envType="envType" :rootElement="rootElement" :selectItem="selectItem"  />
         <departmentList :envType="envType" :rootElement="rootElement" :selectId="selectId" :selectItem="selectItem" :personType="personType"></departmentList>
       </div>
     </div>
@@ -104,7 +104,6 @@
           id: res.data.id
         }
       ]
-      console.log('queryInfo',res.data)
       rootElement.value = res.data
     })
   }
@@ -171,7 +170,8 @@
     }
     .main-dep {
       float: left;
-      width: calc(100% - 200px);
+      width: calc(100% - 210px);
+      margin-left: 10px;
     }
     // 右侧列表
     .department-info {

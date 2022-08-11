@@ -21,8 +21,9 @@
     <el-table :data="tableData.list" stripe style="width: 100%" height="390" @select="handleSelect">
       <el-table-column type="selection" width="50" />
       <el-table-column prop="name" label="姓名"  />
-      <el-table-column prop="code" label="成员编码" />
-      <el-table-column prop="typeName" label="成员角色" />
+      <el-table-column prop="code" label="账号" />
+      <el-table-column prop="givenIdentitys" label="权限" />
+      <el-table-column prop="typeName" label="座右铭" />
     </el-table>
   </div>
   <div class="page-pagination">

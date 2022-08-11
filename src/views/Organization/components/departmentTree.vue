@@ -112,8 +112,9 @@
     envType: number
   }>()
   const changeIndexFun = (val: any) => {
-    console.log('val', val)
-    emit('changeIndex', val)
+    var obj = val;
+    obj.name = val.label
+    emit('changeIndex', obj)
   }
   //获取部门
   onMounted(() => {
