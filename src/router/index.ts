@@ -80,7 +80,7 @@ const mainRouter: RouteRecordRaw[] = [
       {
         path: '/organization/cohort',
         name: 'cohort',
-        component: () => import('@/views/Organization/cohort.vue'),
+        component: () => import('@/views/Organization/friend.vue'),
         meta: {
           title: '单位群组'
         }

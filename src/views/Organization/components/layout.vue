@@ -8,7 +8,6 @@
           <subMenu
             :showMenu="showMenu"
             :personType="personType"
-            @personTypeChange="personTypeChange"
           ></subMenu>
         </div>
       </teleport>
@@ -22,7 +21,6 @@
 <script setup lang="ts">
   import subMenu from './menu.vue'
   import { ref, reactive, onMounted } from 'vue'
-
   import { useUserStore } from '@/store/user'
   import { storeToRefs } from 'pinia'
   onMounted(() => {
@@ -38,9 +36,6 @@
     showMenu.value = false
   }
   const isShowMenu = ref<boolean>(false)
-  const personTypeChange = (index: string) => {
-    personType.value = index
-  }
 </script>
 
 <style scoped></style>
