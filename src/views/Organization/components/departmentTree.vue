@@ -36,7 +36,7 @@
       </el-input>
     </li>
 
-    <ul class="con tree-dept" v-if="envType ==1">
+    <ul class="con tree-dept" v-if="envType == 1">
       <el-tree
         :props="defaultProps"
         lazy
@@ -53,7 +53,17 @@
         highlight-current
         @node-click="changeIndexFun"
         :load="loadNode"
-      />
+      >
+        <template #default="{ node, data }">
+          <span class="custom-tree-node">
+            <div class="tree-box">
+              <el-icon v-if="data.type == 'org'"><School /></el-icon>
+              <el-icon v-else><OfficeBuilding /></el-icon>
+              <span class="tree-box__text" @click="a(node, data)">{{ node.label }}</span>
+            </div>
+          </span>
+        </template>
+      </el-tree>
     </ul>
     <el-dialog v-model="dialogVisible" v-if="envType == 1" title="请输入部门名称" width="30%">
       <el-form-item label="部门名称">
@@ -83,7 +93,7 @@
         <el-input v-model="departmentTeamRemark" placeholder="Please input" clearable />
       </el-form-item>
       <el-form-item label="上级节点">
-        <el-cascader :props="upNode" v-model="upNodeId"/>
+        <el-cascader :props="upNode" v-model="upNodeId" />
       </el-form-item>
 
       <template #footer>
@@ -114,6 +124,9 @@
   const changeIndexFun = (val: any) => {
     console.log('val', val)
     emit('changeIndex', val)
+  }
+  const a = (node: any, data: any) => {
+    console.log('333', node, data)
   }
   //获取部门
   onMounted(() => {
@@ -146,24 +159,25 @@
   }
   const defaultProps = {
     children: 'children',
-    label: 'label'
+    label: 'label',
+    isLeaf: 'leaf'
   }
   const loadNode = (node: any, resolve: (data: any) => void) => {
-   if(props.envType ==1){
-    if (node.level === 0) {
-      getQueryInfo(resolve)
+    if (props.envType == 1) {
+      if (node.level === 0) {
+        getQueryInfo(resolve)
+      }
+      if (node.level >= 1) {
+        getDepartmentsList(node, resolve)
+      }
+    } else {
+      if (node.level === 0) {
+        getGroupsInfo(resolve)
+      }
+      if (node.level >= 1) {
+        getSubGroups(node, resolve)
+      }
     }
-    if (node.level >= 1) {
-      getDepartmentsList(node, resolve)
-    }
-   }else{
-    if (node.level === 0) {
-      getGroupsInfo(resolve)
-    }
-    if (node.level >= 1) {
-      getSubGroups(node, resolve)
-    }
-   }
   }
   //根节点数据
   async function getQueryInfo(resolve: any) {
@@ -209,9 +223,9 @@
   const selectList = reactive<listItem>({ list: [] })
   //当前选中的集团
   type groupType = {
-    id?:string,
-    name?:string,
-    children?:Array<any>
+    id?: string
+    name?: string
+    children?: Array<any>
   }
   const checkGroup = ref<groupType>({})
   // 查询集团
@@ -244,12 +258,12 @@
         getGroupsInfo(resolve)
       }
       if (node.level >= 1) {
-        getSubGroups(node,resolve)
+        getSubGroups(node, resolve)
       }
     }
   }
   async function getGroupsInfo(resolve: any) {
-    let arr:any = [];
+    let arr: any = []
     $services.company
       .companyGetGroups({
         data: {
@@ -259,51 +273,115 @@
       })
       .then((res: ResultType) => {
         if (res.data.result) {
-        let resData = [res.data.result[0]]
-        resData.forEach((element: any) => {
-          var obj = {
-            id: element.id,
-            label: element.name,
-            code:element.code,
-            children:[] as [],
-            value:element.id
-          }
-          arr.push(obj)
-        })
+          let resData = [res.data.result[0]]
+          resData.forEach((element: any) => {
+            var obj = {
+              id: element.id,
+              label: element.name,
+              code: element.code,
+              children: [] as [],
+              value: element.id
+            }
+            arr.push(obj)
+          })
         }
         return resolve(arr)
       })
   }
-  
-  async function getSubGroups(node:any,resolve: any) {
-    let arr:any = [];
+  async function getSubGroups(node: any, resolve: any) {
+    let arr: any = []
+    let level = node.level
     await $services.company
       .getSubgroups({
         data: { id: node.data.id, offset: 0, limit: 100 }
       })
       .then((res: ResultType) => {
         if (res.data.result) {
-        let resData = JSON.parse(JSON.stringify(res.data.result))
-    
-        resData.forEach((element: any) => {
-          var obj = {
-            id: element.id,
-            label: element.name,
-            code:element.code,
-            value:element.id,
-            children:[] as []
+          let resData = JSON.parse(JSON.stringify(res.data.result))
+          resData.forEach((element: any) => {
+            var obj = {
+              id: element.id,
+              label: element.name,
+              code: element.code,
+              value: element.id,
+              children: [] as [],
+              type: 'org'
+            }
+            arr.push(obj)
+          })
+          if (level > 1) {
+            getUnitChildData(node, resolve, arr)
+          } else {
+            getUnitData(node, resolve, arr)
           }
-
-          arr.push(obj)
-        })
+        } else {
+          return resolve([])
+        }
+        // return resolve(arr)
+      })
+  }
+  // 查询子集团单位
+  const getUnitChildData = (node: any, resolve: any, arr: Array<any>) => {
+    $services.company
+      .getSubgroupCompanies({
+        data: {
+          id: node.data.id,
+          offset: 0,
+          limit: 100
+        }
+      })
+      .then((res: ResultType) => {
+        if (res.data.result) {
+          let resData = [res.data.result[0]]
+          resData.forEach((element: any) => {
+            var obj = {
+              id: element.id,
+              label: element.name,
+              code: element.code,
+              children: [] as [],
+              value: element.id,
+              leaf: true,
+              type: 'unit'
+            }
+            arr.push(obj)
+          })
         }
         return resolve(arr)
       })
   }
-  
+
+  // 查询集团单位
+  const getUnitData = (node: any, resolve: any, arr: Array<any>) => {
+    $services.company
+      .getGroupCompanies({
+        data: {
+          id: node.data.id,
+          offset: 0,
+          limit: 100
+        }
+      })
+      .then((res: ResultType) => {
+        if (res.data.result) {
+          let resData = [res.data.result[0]]
+          resData.forEach((element: any) => {
+            var obj = {
+              id: element.id,
+              label: element.name,
+              code: element.code,
+              children: [] as [],
+              value: element.id,
+              leaf: true,
+              type: 'unit'
+            }
+            arr.push(obj)
+          })
+        }
+        return resolve(arr)
+      })
+  }
   const upNodeId = ref<any>([])
   //创建子集团
-  const createSubgroupFun = ()=>{
+  const createSubgroupFun = () => {
     $services.company
       .createSubgroup({
         data: {
@@ -314,7 +392,7 @@
         }
       })
       .then((res: ResultType) => {
-        if(res.data.code ==200){
+        if (res.data.code == 200) {
           ElMessage({
             message: res.msg,
             type: 'success'
@@ -333,6 +411,13 @@
   }
 </style>
 <style lang="scss" scoped>
+  .tree-box {
+    display: flex;
+    align-items: center;
+    &__text {
+      margin-left: 5px;
+    }
+  }
   .departmentTree-wrap {
     padding: 20px 0;
     background-color: #fff;
