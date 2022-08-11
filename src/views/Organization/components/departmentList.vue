@@ -90,17 +90,22 @@
   let tableData = reactive<listType>({})
   const props = defineProps<{
     selectItem: selectItem,
-    envType:number
+    envType:number,
+    rootElement:selectItem
   }>()
+
   watch(
     () => props.selectItem,
     (newValue: selectItem) => {
       if (newValue.id !== '') {
-        if(props.selectItem.$treeNodeId === 1){
-          getList(newValue.id)
-        }else{
-          getDepartmentList(newValue.id)
+        if(props.selectItem && props.rootElement){
+          if(props.selectItem.id  === props.rootElement.id){
+            getList(newValue.id)
+          }else{
+            getDepartmentList(newValue.id)
+          }
         }
+        
       }
     }
   )
@@ -195,12 +200,12 @@
   const presonCode = ref<string>('');
   const presonRemark = ref<string>('');
   const addPresonDialog = ref<boolean>(false)
-  //添加员工
+  //邀请加入单位
   const addPreson = ()=>{
      $services.company
       .pullPerson({
         data: {
-          id:props.selectItem.id,
+          id:props.rootElement.id,
           targetIds:[value.value]
         }
       })
@@ -261,11 +266,11 @@
           })
         }else{
           ElMessage({
-            message: '添加成功',
+            message: '分配成功',
             type: 'success'
           })
         }
-        if(props.selectItem.$treeNodeId === 1){
+        if(props.selectItem.id  === props.rootElement.id){
           getList(props.selectItem.id)
         }else{
           getDepartmentList(props.selectItem.id)

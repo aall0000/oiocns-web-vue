@@ -112,7 +112,7 @@
   watch(
     () => props.personType,
     (news) => {
-
+      
     }
   )
 

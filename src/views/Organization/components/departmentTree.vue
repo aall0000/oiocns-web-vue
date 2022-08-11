@@ -150,7 +150,7 @@
   }
   const loadNode = (node: any, resolve: (data: any) => void) => {
    if(props.envType ==1){
-     if (node.level === 0) {
+    if (node.level === 0) {
       getQueryInfo(resolve)
     }
     if (node.level >= 1) {
