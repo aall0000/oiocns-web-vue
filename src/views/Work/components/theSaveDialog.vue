@@ -1,5 +1,5 @@
 <template>
-  <el-dialog center v-model="dialogShow.value" title="保存模板" width="30%">
+  <el-dialog center v-model="dialogShow.value" title="配置首页" width="30%">
     <div class="diy-dialog-body">
       <div style="margin-top: 30px; display: flex; justify-content: center">
         <el-radio v-model="radio" label="1">覆盖</el-radio>
@@ -16,7 +16,7 @@
           <el-form-item label="模板列表" prop="id">
             <el-select v-model="state.form.id" placeholder="请选择">
               <el-option
-                v-for="item in state.templateList"
+                v-for="item in state.tabsList"
                 :key="item.value"
                 :label="item.name"
                 :value="item.id"
@@ -52,7 +52,8 @@
   import $services from '@/services'
   import { useUserStore } from '@/store/user'
   import type { FormInstance, FormRules } from 'element-plus'
-  import { reactive, ref, onMounted } from 'vue'
+  import { reactive, ref, onMounted, computed } from 'vue'
+  import { useRoute, useRouter } from 'vue-router'
   const ruleFormRef = ref<FormInstance>()
   const emit = defineEmits(['closeDialog'])
   const props = defineProps({
@@ -60,6 +61,8 @@
       type: Object
     }
   })
+  const route = useRoute()
+  const router = useRouter()
   const store = useUserStore()
   const loading = ref(false)
   const radio = ref('1')
@@ -71,7 +74,7 @@
     options: {
       labelWidth: '100px'
     },
-    templateList: [],
+    tabsList: [],
     currentPage: 1,
     pageSize: 9999999
   })
@@ -80,22 +83,30 @@
   })
 
   onMounted(() => {
-    state.templateList = props.dialogShow.temps
+    state.tabsList = JSON.parse(route.query.tabsData as string)
+    console.log('=======', state.tabsList)
+  })
+  // 自动生成id
+  const guid = computed(() => {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+      var r = (Math.random() * 16) | 0,
+        v = c == 'x' ? r : (r & 0x3) | 0x8
+      return v.toString(16)
+    })
   })
   const handleClick = async (formEl: FormInstance | undefined) => {
     if (!formEl) return
     await formEl.validate((valid, fields) => {
       if (valid) {
         if (radio.value === '1') {
-          console.log(state.form.id, state.templateList)
-          state.templateList.forEach((el) => {
+          state.tabsList.forEach((el) => {
             if (el.id == state.form.id) {
               el.temps = props.dialogShow.sendData
             }
           })
           let params = {
             userId: store.queryInfo.id,
-            content: state.templateList
+            content: state.tabsList
           }
           $services.diyHome
             .diy(`/anydata/object/set/template-${params.userId}`, {
@@ -118,21 +129,25 @@
               }
             })
         } else {
-          state.templateList.push({
-            id: state.templateList.length,
-            name: state.form.name,
+          let tabIndex = 0
+          tabIndex = state.tabsList[state.tabsList.length - 1].name
+          state.tabsList.push({
+            id: guid.value,
+            name: ++tabIndex,
+            title: state.form.name,
             temps: props.dialogShow.sendData
           })
           let params = {
+            workspaceId: store.workspaceData.id,
             userId: store.queryInfo.id,
-            content: state.templateList
+            content: state.tabsList
           }
           $services.diyHome
-            .diy(`/anydata/object/set/template-${params.userId}`, {
+            .diy(`/anydata/object/set/${params.userId}.${params.workspaceId}`, {
               data: {
                 operation: 'replaceAll',
                 data: {
-                  name: '模板配置',
+                  name: '首页配置',
                   // temps: props.dialogShow.sendData
                   content: params.content
                 }
@@ -145,6 +160,7 @@
                   type: 'success'
                 })
                 handleClose()
+                router.push({ path: '/workHome' })
               }
             })
         }

@@ -45,7 +45,7 @@
       </grid-layout>
     </div>
 
-    <div
+    <!-- <div
       v-if="menuListShow"
       class="layout-menu box"
       :style="MenuStyle"
@@ -130,14 +130,8 @@
           ><CaretLeft
         /></el-icon>
       </div>
-    </div>
-    <div
-      v-else
-      class="layout-menu box"
-      :style="MenuStyle"
-      style="background: white"
-      @mousedown="move"
-    >
+    </div> -->
+    <div class="layout-menu box" :style="MenuStyle" style="background: white" @mousedown="move">
       <el-button type="primary" icon="el-icon-s-check" @click="clearTemplate">清空</el-button>
       <div class="layout-menu-body__tree" v-show="listShow">
         <TheSearchInput
@@ -301,7 +295,7 @@
   import TheHomeDialog from './components/theHomeDialog.vue'
   import $services from '@/services'
   import { useUserStore } from '@/store/user'
-  import { log } from 'console'
+  import { useRouter, useRoute } from 'vue-router'
 
   export default defineComponent({
     components: {
@@ -360,7 +354,7 @@
         templateData: [], // 用户点击模板的数据
         systemIndex: false, // 系统组件index
         customIndex: false, // 自定义组件index
-        menuListShow: true, // 控制自定义模板的显示
+        menuListShow: false, // 控制自定义模板的显示
         // grid
         layoutI: '',
         screenWidth: document.body.clientWidth,
@@ -378,9 +372,13 @@
         },
         newAppList: [],
         newAppItem: [],
-        activeNames2: []
+        activeNames2: [],
+        onValue: '',
+        tabsData: []
       })
       const store = useUserStore()
+      const router = useRouter()
+      const route = useRoute()
       let base = ref(null)
 
       //computed位置
@@ -426,10 +424,21 @@
       // mouted位置
       onMounted(() => {
         getCanvasBg()
-        getTemps()
+        getLayout()
+        // getTemps()
       })
 
       // method位置
+      // 获取首页layout布局
+      const getLayout = () => {
+        state.onValue = route.query.onValue
+        state.tabsData = JSON.parse(route.query.tabsData)
+        state.tabsData.forEach((el) => {
+          if (el.name == state.onValue) {
+            state.layout = el.temps
+          }
+        })
+      }
       // 确认按钮
       const submitHome = () => {
         state.dialogShow.map((el) => {
@@ -441,6 +450,7 @@
       }
       // 设置默认首页
       const handleDefault = () => {}
+      // 获取模板列表
       const getTemps = () => {
         let params = {
           userId: store.queryInfo.id
@@ -561,8 +571,10 @@
         state.layout.push(obj)
       }
       const back = () => {
-        state.menuListShow = true
-        getUserTemps()
+        // state.menuListShow = true
+        // getUserTemps()
+
+        router.push({ path: '/workHome' })
       }
       // 获取用户模板
       const getUserTemps = () => {
