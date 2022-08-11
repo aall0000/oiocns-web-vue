@@ -1,10 +1,10 @@
 // @ts-nocheck
-import { useRouter } from 'vue-router'
 import Qs from 'qs'
 import axios from 'axios'
 import autoMatchBaseUrl from './autoMatchBaseUrl'
 import { TIMEOUT } from '@/constant'
 import { useUserStore } from '@/store/user'
+import { useRouter } from 'vue-router'
 
 export const requestInstance = axios.create({})
 
@@ -98,8 +98,6 @@ const axiosResponse = {
   },
   error: (error) => {
     const { response, code } = error
-    const router = useRouter()
-    console.log('测试', useRouter(), router, useUserStore())
     // 接口请求异常统一处理
     if (code === 'ECONNABORTED') {
       // Timeout error
@@ -112,7 +110,7 @@ const axiosResponse = {
 
       console.log('错误信息', error, response, code)
       if (status == 401) {
-        router.push({ path: '/login' })
+        // router.push({ path: '/login' })
       }
 
       return Promise.reject(checkStatus(response))
