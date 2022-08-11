@@ -28,7 +28,7 @@ const { name = '', url } = toRefs(props)
   min-width: 50px;
   height: 50px;
   margin-right: 15px;
-  border-radius: 8px;
+  border-radius: 4px;
 
   &.txt-img {
     background-color: #409eff;
@@ -45,7 +45,7 @@ const { name = '', url } = toRefs(props)
     width: 50px;
     height: 50px;
     margin-right: 15px;
-    border-radius: 8px;
+    border-radius: 4px;
   }
 }
 </style>

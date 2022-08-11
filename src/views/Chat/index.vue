@@ -17,6 +17,7 @@
       <!-- 输入区域 -->
       <GroupInputBox class="chart-input" v-show="activeInfo?.id" @submitInfo="submit" />
     </div>
+    <!-- 详情 -->
     <GroupDetail :info="selectInfo" v-if="isShowDetail" @updateUserList="getQunPerson"
       :clearHistoryMsg="clearHistoryMsg" />
   </div>
@@ -37,7 +38,7 @@ interface infoType {
   total: number
   typeName: string
 }
-const { setUserNameMap, userToken } = useUserStore()
+const { setUserNameMap, userToken,queryInfo } = useUserStore()
 // 是否展示导航
 const isShowMenu = ref<boolean>(false)
 const isShowDetail = ref<boolean>(false)
@@ -59,7 +60,7 @@ const contentWrapRef = ref(null)
 const sessionList = ref<userType[]>([])
 
 //获取 登录人id-用于区分信息源
-const myId = useUserStore().queryInfo.id
+const myId = queryInfo.id
 const current = ref<number>(0) //当前页码
 const limit = ref<number>(20) //数量限制 limit
 const pageOffset = computed(() => {
