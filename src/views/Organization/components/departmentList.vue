@@ -22,7 +22,8 @@
       <el-table-column type="selection" width="50" />
       <el-table-column prop="name" label="姓名"  />
       <el-table-column prop="code" label="账号" />
-      <el-table-column prop="givenIdentitys" label="权限" />
+      <el-table-column prop="givenIdentitys" label="权限">
+      </el-table-column>
       <el-table-column prop="typeName" label="座右铭" />
     </el-table>
   </div>
