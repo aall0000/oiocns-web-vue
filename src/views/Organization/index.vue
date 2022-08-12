@@ -2,7 +2,7 @@
   <div class="main-content">
     <!-- 单位管理 -->
     <div class="org-content" v-if="showMenu == true">
-      <departmentTree :envType="envType" @changeIndex="changeIndex" class="department-tree" />
+      <departmentTree :envType="envType" :rootElement="rootElement" :selectItem="selectItem" @changeIndex="changeIndex" class="department-tree" />
       <div class="main-dep" v-if="envType == 1">
         <departmentDetail :envType="envType" :rootElement="rootElement" :selectItem="selectItem" />
         <departmentList
@@ -123,6 +123,7 @@ let envType  = ref<number>(1)
         }
       ]
       rootElement.value = res.data
+      store.userUnitInfo = res.data
     })
   }
   const changeIndex = (obj: treeItem) => {
@@ -182,6 +183,7 @@ let envType  = ref<number>(1)
     padding: 15px;
     float: left;
     width: 100%;
+    height: 100%;
     // overflow-y: scroll;
     //左侧组织架构 树
     .department-tree {

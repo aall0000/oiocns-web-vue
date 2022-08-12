@@ -77,6 +77,8 @@ const pageStore = reactive({
 })
 // 获取表格数据
 const getTableList = async () => {
+  console.log('cscsc',userUnitInfo);
+
   loading.value = true
   const { data, success } = await API.company.getDepartments({
     data: {
