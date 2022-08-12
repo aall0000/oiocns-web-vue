@@ -75,11 +75,7 @@
         </div>
         <div class="main-transfer">
           <div class="main-title">分配人员</div>
-          <el-transfer v-model="transferList" :data="data" :left-default-checked="[]" :right-default-checked="[]"
-            :props="{
-              value: 'id',
-              label: 'label'
-            }" :titles="['全部', '选中的']">
+          <el-transfer v-model="transferList" :data="data" :left-default-checked="[]" :right-default-checked="[]" :titles="['全部', '选中的']">
           </el-transfer>
         </div>
         <template #footer>
