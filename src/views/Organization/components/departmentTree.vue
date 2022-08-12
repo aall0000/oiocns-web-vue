@@ -239,157 +239,169 @@ async function getDepartmentsList(node: any, resolve: any) {
             remark: element.team.remark
           }
 
-          arr.push(JSON.parse(JSON.stringify(obj)))
-        })
-      }
-      return resolve(arr)
-    })
-}
-type listItem = {
-  list: any
-}
-const selectValue = ref<string>(null)
-const selectList = reactive<listItem>({ list: [] })
-//当前选中的集团
-type groupType = {
-  id?: string
-  name?: string
-  children?: Array<any>
-}
-const checkGroup = ref<groupType>({})
-// 查询集团
-const getGroupList = () => {
-  $services.company
-    .companyGetGroups({
-      data: {
-        offset: 0,
-        limit: 100
-      }
-    })
-    .then((res: ResultType) => {
-      if (res.data.result) {
-        selectList.list = res.data.result
-      } else {
-        selectList.list = []
-      }
-    })
-}
-//切换集团
-const changeGroupIndex = (val: object) => {
-  checkGroup.value = val
-}
-const upNode = {
-  checkStrictly: true,
-  lazy: true,
-  lazyLoad(node: any, resolve: any) {
-    const { level } = node
-    if (props.envType == 1) {
-      if (node.level === 0) {
-        getQueryInfo(resolve)
-      }
-      if (node.level >= 1) {
-        getDepartmentsList(node, resolve)
-      }
-    } else {
-      if (node.level === 0) {
-        getGroupsInfo(resolve)
-      }
-      if (node.level >= 1) {
-        getSubGroups(node, resolve)
+            arr.push(JSON.parse(JSON.stringify(obj)))
+          })
+        }
+        return resolve(arr)
+      })
+  }
+  type listItem = {
+    list: any
+  }
+  const selectValue = ref<string>(null)
+  const selectList = reactive<listItem>({ list: [] })
+  //当前选中的集团
+  type groupType = {
+    id?: string
+    name?: string
+    children?: Array<any>
+  }
+  const checkGroup = ref<groupType>({})
+  // 查询集团
+  const getGroupList = () => {
+    $services.company
+      .companyGetGroups({
+        data: {
+          offset: 0,
+          limit: 100
+        }
+      })
+      .then((res: ResultType) => {
+        if (res.data.result) {
+          selectList.list = res.data.result
+        } else {
+          selectList.list = []
+        }
+      })
+  }
+
+
+  const groupIndex = ref<number>(0)
+  const showTreeStatus  = ref<boolean>(true)
+  const changeGroupIndex = (val: any) => {
+    checkGroup.value = val
+
+    for (let i = 0; i < selectList.list.length; i++) {
+      if (val.id === selectList.list[i].id) {
+        showTreeStatus.value = false
+
+        groupIndex.value = i
+        setTimeout(() => {
+          showTreeStatus.value = true
+        }, 10)
       }
     }
   }
-}
-async function getGroupsInfo(resolve: any) {
-  let arr: any = []
-  $services.company
-    .companyGetGroups({
-      data: {
-        offset: 0,
-        limit: 100
+  const upNode = {
+    checkStrictly: true,
+    lazy: true,
+    lazyLoad(node: any, resolve: any) {
+      const { level } = node
+      if (props.envType == 1) {
+        if (node.level === 0) {
+          getQueryInfo(resolve)
+        }
+        if (node.level >= 1) {
+          getDepartmentsList(node, resolve)
+        }
+      } else {
+        if (node.level === 0) {
+          getGroupsInfo(resolve)
+        }
+        if (node.level >= 1) {
+          getSubGroups(node, resolve)
+        }
       }
-    })
-    .then((res: ResultType) => {
-      if (res.data.result) {
-        let resData = [res.data.result[0]]
-        resData.forEach((element: any) => {
-          var obj = {
-            id: element.id,
-            label: element.name,
-            code: element.code,
-            children: [] as [],
-            value: element.id,
-            type: 'org',
-            team: element.team
-          }
-          arr.push(obj)
-        })
-        changeIndexFun(arr[0])
-      }
-      return resolve(arr)
-    })
-}
-async function getSubGroups(node: any, resolve: any) {
-  let arr: any = []
-  let level = node.level
-  await $services.company
-    .getSubgroups({
-      data: { id: node.data.id, offset: 0, limit: 100 }
-    })
-    .then((res: ResultType) => {
-      if (res.data.result) {
-        let resData = JSON.parse(JSON.stringify(res.data.result))
-        resData.forEach((element: any) => {
-          var obj = {
-            id: element.id,
-            label: element.name,
-            code: element.code,
-            value: element.id,
-            children: [] as [],
-            team: element.team,
-            type: 'org'
-          }
-          arr.push(obj)
-        })
-        // if (level > 1) {
-        //   getUnitChildData(node, resolve, arr)
-        // } else {
-        //   getUnitData(node, resolve, arr)
-        // }
-      }
-      return resolve(arr)
-    })
-}
-// 查询子集团单位
-const getUnitChildData = (node: any, resolve: any, arr: Array<any>) => {
-  $services.company
-    .getSubgroupCompanies({
-      data: {
-        id: node.data.id,
-        offset: 0,
-        limit: 100
-      }
-    })
-    .then((res: ResultType) => {
-      if (res.data.result) {
-        let resData = [res.data.result[0]]
-        resData.forEach((element: any) => {
-          var obj = {
-            id: element.id,
-            label: element.name,
-            code: element.code,
-            children: [] as [],
-            value: element.id,
-            leaf: true,
-            team: element.team,
-            type: 'unit'
-          }
-          arr.push(obj)
-        })
-      }
-      return resolve(arr)
-    })
-}
+    }
+  }
+   //切换集团
+   async function getGroupsInfo(resolve: any) {
+    let arr: any = []
+    $services.company
+      .companyGetGroups({
+        data: {
+          offset: 0,
+          limit: 100
+        }
+      })
+      .then((res: ResultType) => {
+        if (res.data.result) {
+          let resData = [res.data.result[groupIndex.value]]
+          resData.forEach((element: any) => {
+            var obj = {
+              id: element.id,
+              label: element.name,
+              code: element.code,
+              children: [] as [],
+              value: element.id
+            }
+            arr.push(obj)
+          })
+        }
+        return resolve(arr)
+      })
+  }
+  async function getSubGroups(node: any, resolve: any) {
+    let arr: any = []
+    let level = node.level
+    await $services.company
+      .getSubgroups({
+        data: { id: node.data.id, offset: 0, limit: 100 }
+      })
+      .then((res: ResultType) => {
+        if (res.data.result) {
+          let resData = JSON.parse(JSON.stringify(res.data.result))
+          resData.forEach((element: any) => {
+            var obj = {
+              id: element.id,
+              label: element.name,
+              code: element.code,
+              value: element.id,
+              children: [] as [],
+              team: element.team,
+              type: 'org'
+            }
+            arr.push(obj)
+          })
+          // if (level > 1) {
+          //   getUnitChildData(node, resolve, arr)
+          // } else {
+          //   getUnitData(node, resolve, arr)
+          // }
+        }
+        return resolve(arr)
+      })
+  }
+  // 查询子集团单位
+  const getUnitChildData = (node: any, resolve: any, arr: Array<any>) => {
+    $services.company
+      .getSubgroupCompanies({
+        data: {
+          id: node.data.id,
+          offset: 0,
+          limit: 100
+        }
+      })
+      .then((res: ResultType) => {
+        if (res.data.result) {
+          let resData = [res.data.result[0]]
+          resData.forEach((element: any) => {
+            var obj = {
+              id: element.id,
+              label: element.name,
+              code: element.code,
+              children: [] as [],
+              value: element.id,
+              leaf: true,
+              team: element.team,
+              type: 'unit'
+            }
+            arr.push(obj)
+          })
+        }
+        return resolve(arr)
+      })
+  }
 
 // 查询集团单位
 const getUnitData = (node: any, resolve: any, arr: Array<any>) => {
