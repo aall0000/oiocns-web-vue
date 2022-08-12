@@ -51,6 +51,9 @@
           <el-form-item class="main-item" label="部门简介" style="width:45%">
             <el-input v-model="departmentTeamRemark" placeholder="Please input" clearable />
           </el-form-item>
+          <el-form-item label="上级节点">
+            <el-cascader :props="upNode" v-model="upNodeId" />
+          </el-form-item>
         </div>
         <el-transfer v-model="value" filterable :data="data" :filter-method="filterMethod"/>
         <template #footer>

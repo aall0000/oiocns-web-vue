@@ -18,13 +18,10 @@
     </div>
     <div class="tab-list">
       <ul class="next-dept">
-        <!-- 内容 
-        v-for="(item,index) in DepartmentsList.list" :key="index"
-        -->
         <table class="table-mytable">
           <tr>
             <td class="left">名称</td>
-            <td class="column">{{selectItem.name}}</td>
+            <td class="column">{{selectItem.label}}</td>
             <td class="left">人数</td>
             <td class="column">{{listNum}}</td>
           </tr>
@@ -58,6 +55,7 @@
   type selectItem = {
     name: string
     id: string
+    label:string
   }
    type rootType = {
     id:string,
