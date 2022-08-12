@@ -310,8 +310,10 @@
         }
       })
   }
+  const groupIndex = ref<number>(0);
+  const showTreeStatus = ref<boolean>(true)
   //切换集团
-  const changeGroupIndex = (val: object) => {
+  const changeGroupIndex = (val: any) => {
     checkGroup.value = val
 
     for (let i = 0; i < selectList.list.length; i++) {
