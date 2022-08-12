@@ -2,7 +2,7 @@
   <div class="main-content">
     <!-- 单位管理 -->
     <div class="org-content" v-if="showMenu == true">
-      <departmentTree :envType="envType" @changeIndex="changeIndex" class="department-tree" />
+      <departmentTree :envType="envType" :rootElement="rootElement" :selectItem="selectItem" @changeIndex="changeIndex" class="department-tree" />
       <div class="main-dep" v-if="envType == 1">
         <departmentDetail :envType="envType" :rootElement="rootElement" :selectItem="selectItem" />
         <departmentList
