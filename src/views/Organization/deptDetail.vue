@@ -6,52 +6,80 @@
       <ul class="box-btns flex justify-between">
         <li class="box-btns-title">部门列表</li>
         <li class="box-btns-con ">
-          <el-button small link type="primary">返回</el-button>
-          <el-button small link type="danger">删除</el-button>
-          <el-button small link type="primary">新增</el-button>
+          <el-button small link type="primary" @click="handleGoback">返回</el-button>
+          <!-- <el-button small link type="danger">删除</el-button> -->
+          <el-button small link type="primary" @click="dialogVisible=true">新增</el-button>
         </li>
       </ul>
-      <el-table class="box-table" :data="list" stripe border header-row-class-name="table_header_class"
+      <el-table class="box-table" v-loading="loading" :data="pageStore.tableData" stripe border header-row-class-name="table_header_class"
         @select="handleSelect">
         <el-table-column type="selection" width="50" />
-        <el-table-column prop="name" label="序号" />
-        <el-table-column prop="thingId" label="部门名称" />
-        <el-table-column prop="trueName" label="部门编码" />
-        <el-table-column prop="typeName" label="更新时间" />
+        <el-table-column prop="id" label="序号" />
+        <el-table-column prop="name" label="部门名称" />
+        <el-table-column prop="thingId" label="部门编码" />
+        <el-table-column prop="updateTime" label="更新时间" />
         <el-table-column label="操作" width="100">
-
-          <template #default>
-            <el-button link type="danger" size="small">删除</el-button>
+          <template #default="{ row }">
+            <el-popconfirm title="确认删除?" @confirm="handleDelItem(row)" confirm-button-text="确认" cancel-button-text="取消">
+              <template #reference>
+                <el-button link type="danger" size="small">删除</el-button>
+              </template>
+            </el-popconfirm>
           </template>
         </el-table-column>
       </el-table>
-      <el-pagination class="page-pagination" small background layout="prev, pager, next" :total="50" />
+      <el-pagination class="page-pagination" small background layout="prev, pager, next" :total="pageStore.total" />
     </div>
   </div>
+  <el-dialog v-model="dialogVisible" title="请输入部门名称" width="30%">
+    <el-form-item label="部门名称">
+      <el-input v-model="fromData.departmentName" placeholder="Please input" clearable />
+    </el-form-item>
+    <el-form-item label="部门编号">
+      <el-input v-model="fromData.departmentTeamCode" placeholder="Please input" clearable />
+    </el-form-item>
+    <el-form-item label="部门简介">
+      <el-input v-model="fromData.departmentTeamRemark" placeholder="Please input" clearable />
+    </el-form-item>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="dialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="submitFriends">确认</el-button>
+      </span>
+    </template>
+  </el-dialog>
 </template>
 <script lang='ts' setup>
 import API from "@/services"
-import { onMounted, reactive, toRefs } from 'vue';
+import { onMounted, reactive, toRefs, ref } from 'vue';
 import { useUserStore } from '@/store/user'
+import { useRouter } from "vue-router";
 import { storeToRefs } from 'pinia';
 const store = useUserStore()
-const { userUnitInfo } = storeToRefs(store)
+const router = useRouter()
+const { userUnitInfo, workspaceData } = storeToRefs(store)
 
+
+const pageStore = reactive({
+  tableData: [],
+  total: 0
+})
+
+//弹窗信息
+const fromData = reactive({
+  departmentName: "",
+  departmentTeamName: "",
+  departmentTeamCode: "",
+  departmentTeamRemark: ""
+})
+// 弹窗显示
+const dialogVisible = ref<boolean>(false)
+// 加载状态
+const loading= ref<boolean>(false)
 
 onMounted(() => {
   getTableList()
-
 })
-const list = [
-  {
-    name: '1',
-    thingId: '编码',
-    trueName: '姓名',
-    typeName: '角色',
-    teamCode: '手机号',
-    status: '状态'
-  }
-]
 
 //选中人员
 let selectArr = reactive<Array<any>>([])
@@ -60,7 +88,9 @@ const handleSelect = (key: Array<any>) => {
   console.log('selectArr', selectArr)
 }
 
+// 获取表格数据
 const getTableList = async () => {
+  loading.value=true
   const { data, success } = await API.company.getDepartments({
     data: {
       id: userUnitInfo.value.id,
@@ -70,9 +100,47 @@ const getTableList = async () => {
   })
 
   if (success) {
-    console.log('列表', data);
-
+    loading.value=false
+    const { result = [], total = 0 } = data
+    pageStore.tableData = result
+    pageStore.total = total
   }
+}
+// 提交弹窗表单
+const submitFriends = () => {
+  API.company
+    .createDepartment({
+      data: {
+        id: workspaceData.value.id,
+        code: fromData.departmentTeamCode,
+        name: fromData.departmentName,
+        parentId: 0,
+        teamName: fromData.departmentTeamName,
+        teamRemark: fromData.departmentTeamRemark
+      }
+    })
+    .then(() => {
+      getTableList()
+      dialogVisible.value = false
+    })
+}
+// 删除
+const handleDelItem = async (row: any) => {
+  console.log('删除', row);
+  const { success } = await API.company.deleteDepartment({
+    data: {
+      id: row.id,
+    }
+  })
+
+  if (success) {
+    getTableList()
+  }
+}
+
+// 返回上一页
+const handleGoback = () => {
+  router.go(-1)
 }
 </script>
 
