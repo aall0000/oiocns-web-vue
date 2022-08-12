@@ -1,7 +1,7 @@
 <template>
   <div class="baseLayout">
     <div v-if="state.isShow" class="addImg">
-      <div class="text" @click="router.push({ path: '/work' })">+</div>
+      <div class="text" @click="router.push({ path: '/work', query: { tabsData: '[]' } })">+</div>
     </div>
     <el-tabs
       v-else
@@ -93,10 +93,10 @@
       .then((res: ResultType) => {
         if (res.state) {
           state.editableTabs = res.data.content
-          if (state.editableTabs.length == 0) {
-            state.isShow = true
-          } else {
+          if (state.editableTabs && state.editableTabs.length !== 0) {
             editableTabsValue.value = state.editableTabs[state.editableTabs.length - 1].name
+          } else {
+            state.isShow = true
           }
           console.log(state.editableTabs)
         }

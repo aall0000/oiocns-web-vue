@@ -35,7 +35,14 @@
             <el-icon class="del-icon" @click="deleteporl(item)" v-if="!menuListShow"
               ><Delete
             /></el-icon>
+            <TheSandBox
+              v-if="item.type == 'iframe'"
+              :cover="true"
+              :containLink="item.contain_link"
+              :type="item.type"
+            ></TheSandBox>
             <TheComponentList
+              v-else
               :cover="true"
               :containLink="item.contain_link"
               :type="item.type"
@@ -194,6 +201,33 @@
                 </el-collapse-item>
               </el-collapse>
             </el-collapse-item>
+            <el-collapse-item title="用户组件" name="3">
+              <template #title>
+                用户组件<el-icon @click.stop="openUserDialog" class="addIcon"><Plus /></el-icon>
+              </template>
+              <div
+                class="tree"
+                @drag="drag(item)"
+                @dragend="dragend(item)"
+                draggable="true"
+                unselectable="on"
+                @click="addUserProtal(item)"
+                v-for="item in userComponentList"
+                :key="item.url"
+              >
+                <div
+                  class="row"
+                  style="padding: 5px 0; display: flex; justify-content: space-between"
+                >
+                  <div class="el-icon-setting listContain_item" style="margin: 5px 5px 0 5px">{{
+                    item.name
+                  }}</div>
+                  <el-icon style="margin-right: 5px" @click.stop="delUserCompnents(item)"
+                    ><Delete
+                  /></el-icon>
+                </div>
+              </div>
+            </el-collapse-item>
           </el-collapse>
         </div>
         <div v-show="searchShow" class="layout-menu-body__treeList">
@@ -273,6 +307,12 @@
       :dialogShow="item"
       @closeDialog="handleCloseDialog"
     ></TheSaveDialog>
+    <TheUserDialog
+      v-if="item.key === 'user' && item.value"
+      :key="item.key"
+      :dialogShow="item"
+      @closeDialog="handleCloseDialog"
+    ></TheUserDialog>
     <!-- <TheSaveJobDialog
       v-if="item.key === 'job' && item.value"
       :key="item.key"
@@ -291,20 +331,24 @@
   import 'element-plus/es/components/message-box/style/css'
   import { testData } from './layout.ts'
   import TheComponentList from '@/components/protal/index.vue'
+  import TheSandBox from '@/components/sandBox/index.vue'
   import TheSaveDialog from './components/theSaveDialog.vue'
   import TheHomeDialog from './components/theHomeDialog.vue'
+  import TheUserDialog from './components/theUserDialog.vue'
   import $services from '@/services'
   import { useUserStore } from '@/store/user'
   import { useRouter, useRoute } from 'vue-router'
 
   export default defineComponent({
     components: {
+      TheSandBox,
       GridLayout,
       GridItem,
       TheSearchInput,
       TheComponentList,
       TheSaveDialog,
-      TheHomeDialog
+      TheHomeDialog,
+      TheUserDialog
     },
     setup() {
       onMounted(() => {
@@ -321,6 +365,10 @@
         listShow: true,
         templateList: [],
         dialogShow: [
+          {
+            key: 'user',
+            value: false
+          },
           {
             key: 'save',
             value: false
@@ -339,6 +387,7 @@
         filterText: '', // 搜索
         listShow: true, // 控制组件与模板列表的展示
         componentList: [], // 组件列表
+        userComponentList: [], // 用户组件列表
         appList: [], // 应用列表
         customList: [], // 自定义模板列表
         allTemplateList: [],
@@ -425,10 +474,77 @@
       onMounted(() => {
         getCanvasBg()
         getLayout()
+        getUserComponents()
         // getTemps()
       })
 
       // method位置
+      // 删除用户组件
+      const delUserCompnents = (item) => {
+        ElMessageBox.confirm('此操作将永久删除该组件, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          let arr = state.userComponentList
+          arr.forEach((el) => {
+            if (el.id === item.id) {
+              arr.splice(arr.indexOf(el), 1)
+            }
+          })
+          let params = {
+            userId: store.queryInfo.id,
+            workspaceId: store.workspaceData.id,
+            content: arr
+          }
+          $services.diyHome
+            .diy(`/anydata/object/set/${params.userId}.${params.workspaceId}.user`, {
+              data: {
+                operation: 'replaceAll',
+                data: {
+                  name: '用户组件',
+                  // temps: props.dialogShow.sendData
+                  content: params.content
+                }
+              }
+            })
+            .then((res: ResultType) => {
+              if (res.state) {
+                ElMessage({
+                  message: '删除成功',
+                  type: 'success'
+                })
+                getUserComponents()
+              }
+            })
+        })
+      }
+      // 获取用户组件
+      const getUserComponents = () => {
+        let params = {
+          userId: store.queryInfo.id,
+          workspaceId: store.workspaceData.id
+        }
+        $services.diyHome
+          .diy(`/anydata/object/get/${params.userId}.${params.workspaceId}.user`, {
+            method: 'GET'
+          })
+          .then((res: ResultType) => {
+            console.log('测试接口', res)
+            if (res.state) {
+              state.userComponentList = res.data.content
+            }
+          })
+      }
+      // 打开添加用户组件dialog
+      const openUserDialog = () => {
+        state.dialogShow.map((el) => {
+          if (el.key === 'user') {
+            el.value = true
+            el.sendData = state.userComponentList
+          }
+        })
+      }
       // 获取首页layout布局
       const getLayout = () => {
         state.onValue = route.query.onValue
@@ -544,6 +660,33 @@
           }
         })
       }
+      const addUserProtal = (data) => {
+        // 点击组件事件
+        let list = JSON.parse(JSON.stringify(data))
+        if (state.layout.length !== 0) {
+          state.uniqueGrid = state.layout[state.layout.length - 1].i
+        }
+        console.log(state.layout)
+
+        state.layout.forEach((el) => {
+          if (el.x < 2) {
+            el.y += 3
+          }
+        })
+        // 点击侧边栏
+        state.uniqueGrid += 1
+        var obj = {
+          x: 0,
+          y: 0,
+          w: list.width,
+          h: 4.5 * list.height,
+          i: state.uniqueGrid,
+          contain_name: list.name,
+          contain_link: list.url,
+          type: 'iframe'
+        }
+        state.layout.push(obj)
+      }
       const addprotal = (data) => {
         // 点击组件事件
         let list = JSON.parse(JSON.stringify(data))
@@ -562,8 +705,8 @@
         var obj = {
           x: 0,
           y: 0,
-          w: 2,
-          h: 3,
+          w: 4,
+          h: 9,
           i: state.uniqueGrid,
           contain_name: list.name,
           contain_link: list.url
@@ -693,6 +836,9 @@
         state.layout = config
       }
       return {
+        delUserCompnents,
+        addUserProtal,
+        openUserDialog,
         submitHome,
         handleDefault,
         handleCloseDialog,
@@ -724,6 +870,12 @@
 </script>
 
 <style lang="scss" scoped>
+  .addIcon {
+    margin-left: 10px;
+    background-color: #0f39d1;
+    border-radius: 50%;
+    color: #fff;
+  }
   .del-icon {
     position: absolute;
     right: 0;
