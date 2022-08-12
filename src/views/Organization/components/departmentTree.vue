@@ -31,7 +31,7 @@
           <el-checkbox v-model="state.isShowCode" label="部门编码" />
         </el-popover>
 
-        <el-icon color="#154ad8" :size="20" @click="dialogVisible = true">
+        <el-icon color="#154ad8" :size="20" @click="showDialog">
           <CirclePlus />
         </el-icon>
         <!-- <el-button :icon="Plus"size="small">新建部门</el-button> -->
@@ -78,16 +78,43 @@
           </template>
         </el-tree>
       </ul>
-      <el-dialog v-model="dialogVisible" v-if="envType == 1" title="请输入部门名称" width="30%">
-        <el-form-item label="部门名称">
-          <el-input v-model="departmentName" placeholder="Please input" clearable />
-        </el-form-item>
-        <el-form-item label="部门编号">
-          <el-input v-model="departmentTeamCode" placeholder="Please input" clearable />
-        </el-form-item>
-        <el-form-item label="部门简介">
-          <el-input v-model="departmentTeamRemark" placeholder="Please input" clearable />
-        </el-form-item>
+      <el-dialog
+        v-model="dialogVisible"
+        v-if="envType == 1"
+        title="请输入部门名称"
+        width="50%"
+        center
+      >
+        <div class="main-title">部门信息</div>
+        <div class="main-dialog">
+          <el-form-item class="main-item" label="部门名称" style="width: 45%">
+            <el-input v-model="departmentName" placeholder="Please input" width="200px" clearable />
+          </el-form-item>
+          <el-form-item class="main-item" label="部门编号" style="width: 45%">
+            <el-input v-model="departmentTeamCode" placeholder="Please input" clearable />
+          </el-form-item>
+          <el-form-item class="main-item" label="部门简介" style="width: 45%">
+            <el-input v-model="departmentTeamRemark" placeholder="Please input" clearable />
+          </el-form-item>
+          <el-form-item class="main-item" label="上级节点">
+            <el-cascader :props="upNode" v-model="upNodeId" />
+          </el-form-item>
+        </div>
+        <div class="main-transfer">
+          <div class="main-title">分配人员</div>
+          <el-transfer
+            v-model="transferList"
+            :data="data"
+            :left-default-checked="[]"
+            :right-default-checked="[]"
+            :props="{
+              value: 'id',
+              label: 'label'
+            }"
+            :titles="['全部', '选中的']"
+          >
+          </el-transfer>
+        </div>
         <template #footer>
           <span class="dialog-footer">
             <el-button @click="dialogVisible = false">取消</el-button>
@@ -117,16 +144,13 @@
         </template>
       </el-dialog>
     </ul>
-    <div class="weihu-wrap">
-      <span class="weihu-wrap-txt">部门维护</span>
-    </div>
   </div>
 </template>
 
 <script lang="ts" setup>
   import $services from '@/services'
   import { Search, Plus } from '@element-plus/icons-vue'
-  import { ref, reactive, onMounted, watch, nextTick } from 'vue'
+  import { ref, reactive, onMounted, watch } from 'vue'
   import { useUserStore } from '@/store/user'
   import { ElMessage, ElMessageBox } from 'element-plus'
 
@@ -135,8 +159,14 @@
   const { workspaceData } = storeToRefs(store)
   let dialogVisible = ref<boolean>(false)
   const emit = defineEmits(['changeIndex'])
+  type selectItem = {
+    name: string
+    id: string
+  }
   const props = defineProps<{
     envType: number
+    selectItem: selectItem
+    rootElement: selectItem
   }>()
   const changeIndexFun = (val: any) => {
     emit('changeIndex', val)
@@ -160,19 +190,26 @@
   let departmentTeamCode = ref<string>('')
   let departmentTeamRemark = ref<string>('')
   const submitFriends = () => {
+    let parentId = 0
+    if (upNodeId.value.length > 0) {
+      parentId = upNodeId.value[0]
+    }
     $services.company
       .createDepartment({
         data: {
           id: workspaceData.value.id,
           code: departmentTeamCode.value,
           name: departmentName.value,
-          parentId: 0,
+          parentId: parentId,
           teamName: departmentTeamName.value,
           teamRemark: departmentTeamRemark.value
         }
       })
       .then((res: ResultType) => {
         dialogVisible.value = false
+        if (transferList.value.length > 0) {
+          changePreson(res.data.id)
+        }
       })
   }
   const defaultProps = {
@@ -204,7 +241,8 @@
         {
           children: [] as string[],
           label: res.data.name,
-          id: res.data.id
+          id: res.data.id,
+          remark: res.data.team.remark
         }
       ]
       return resolve(obj)
@@ -225,7 +263,8 @@
               id: element.id,
               label: element.name,
               code: element.code,
-              children: [] as []
+              children: [] as [],
+              remark: element.team.remark
             }
 
             arr.push(JSON.parse(JSON.stringify(obj)))
@@ -272,11 +311,20 @@
     lazy: true,
     lazyLoad(node: any, resolve: any) {
       const { level } = node
-      if (node.level === 0) {
-        getGroupsInfo(resolve)
-      }
-      if (node.level >= 1) {
-        getSubGroups(node, resolve)
+      if (props.envType == 1) {
+        if (node.level === 0) {
+          getQueryInfo(resolve)
+        }
+        if (node.level >= 1) {
+          getDepartmentsList(node, resolve)
+        }
+      } else {
+        if (node.level === 0) {
+          getGroupsInfo(resolve)
+        }
+        if (node.level >= 1) {
+          getSubGroups(node, resolve)
+        }
       }
     }
   }
@@ -422,6 +470,64 @@
         }
       })
   }
+  interface Option {
+    key: string
+    label: string
+  }
+  const showDialog = () => {
+    getPersons()
+  }
+
+  const data = ref<Option[]>()
+  const transferList = ref([])
+  //获取单位员工
+  const getPersons = () => {
+    $services.company
+      .getPersons({
+        data: {
+          id: props.rootElement.id,
+          offset: 0,
+          limit: 100
+        }
+      })
+      .then((res: ResultType) => {
+        let arr: any = []
+        if (res.data.result) {
+          res.data.result.forEach((element: any) => {
+            let obj = {
+              key: parseInt(element.id),
+              label: element.name
+            }
+            arr.push(obj)
+          })
+        }
+        data.value = arr
+        dialogVisible.value = true
+      })
+  }
+  //分配部门or变更
+  const changePreson = (id: string) => {
+    $services.company
+      .assignDepartment({
+        data: {
+          id: id,
+          targetIds: transferList.value
+        }
+      })
+      .then((res: ResultType) => {
+        if (res.code === 500) {
+          ElMessage({
+            message: res.msg,
+            type: 'error'
+          })
+        } else {
+          ElMessage({
+            message: '分配成功',
+            type: 'success'
+          })
+        }
+      })
+  }
 </script>
 <style lang="scss">
   .departmentTree-wrap .tree-search {
@@ -442,6 +548,27 @@
     .main-item :nth-child(2n) {
       padding-left: 5px;
     }
+  }
+  .main-title {
+    margin-left: 30px;
+    font-weight: bold;
+    font-size: 16px;
+    color: #333;
+    margin-bottom: 20px;
+  }
+  .main-transfer {
+    margin: 0 auto;
+    display: flex;
+    border: 1px solid #eee;
+    border-radius: 5px;
+    padding: 20px;
+    margin: 0 30px;
+    .main-title {
+      width: 100%;
+    }
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
   }
   .department-tree-wrap {
     display: flex;

@@ -11,7 +11,7 @@
         <div class="left-name">部门信息</div>
         <div class="edit">
           <!-- <el-button type="primary">创建工作组</el-button> -->
-          <div style="color:#154ad8" @click="dialogVisible = true">分配人员</div>
+          <!-- <div style="color:#154ad8" @click="showDialog">分配人员</div> -->
           <!-- <el-button>调整排序</el-button> -->
         </div>
       </div>
@@ -25,27 +25,56 @@
             <td class="left">人数</td>
             <td class="column">{{listNum}}</td>
           </tr>
+          <tr>
+            <td class="left">备注</td>
+            <td class="column">{{selectItem.remark}}</td>
+          </tr>
         </table>
       </ul>
     </div>
-
-    <el-dialog v-model="dialogVisible" title="请输入部门名称" width="30%">
-      <el-form-item label="部门名称">
-        <el-input v-model="departmentName" placeholder="Please input" clearable />
-      </el-form-item>
-      <el-form-item label="部门编号">
-        <el-input v-model="departmentTeamCode" placeholder="Please input" clearable />
-      </el-form-item>
-      <el-form-item label="部门简介">
-        <el-input v-model="departmentTeamRemark" placeholder="Please input" clearable />
-      </el-form-item>
-      <template #footer>
-        <span class="dialog-footer">
-          <el-button @click="dialogVisible = false">取消</el-button>
-          <el-button type="primary" @click="submitFriends">确认</el-button>
-        </span>
-      </template>
-    </el-dialog>
+    <el-dialog
+        v-model="dialogVisible"
+        title="请输入部门名称"
+        width="50%"
+        center
+      >
+        <div class="main-title">部门信息</div>
+        <div class="main-dialog">
+          <el-form-item class="main-item" label="部门名称" style="width: 45%">
+            <el-input v-model="departmentName" placeholder="Please input" width="200px" clearable />
+          </el-form-item>
+          <el-form-item class="main-item" label="部门编号" style="width: 45%">
+            <el-input v-model="departmentTeamCode" placeholder="Please input" clearable />
+          </el-form-item>
+          <el-form-item class="main-item" label="部门简介" style="width: 45%">
+            <el-input v-model="departmentTeamRemark" placeholder="Please input" clearable />
+          </el-form-item>
+          <!-- <el-form-item class="main-item" label="上级节点">
+            <el-cascader :props="upNode" v-model="upNodeId" />
+          </el-form-item> -->
+        </div>
+        <div class="main-transfer">
+          <div class="main-title">分配人员</div>
+          <el-transfer 
+          v-model="transferList" 
+          :data="data"
+          :left-default-checked="[]"
+          :right-default-checked="rightCheck.list"
+          :props="{
+            value: 'id',
+            label: 'label',
+          }"
+          :titles="['全部', '选中的']"
+          >
+        </el-transfer>
+        </div>
+        <template #footer>
+          <span class="dialog-footer">
+            <el-button @click="dialogVisible = false">取消</el-button>
+            <el-button type="primary" @click="submitFriends">确认</el-button>
+          </span>
+        </template>
+      </el-dialog>
   </div>
 </template>
 <script lang="ts" setup>
@@ -55,7 +84,8 @@
   type selectItem = {
     name: string
     id: string
-    label:string
+    label:string,
+    remark:string
   }
    type rootType = {
     id:string,
@@ -66,14 +96,13 @@
     envType:number,
     rootElement:rootType
   }>()
-  let dialogVisible = ref<boolean>(false)
   let selectId = ref<string>()
   let departmentName = ref<string>('')
   let departmentTeamCode = ref<string>('')
   let departmentTeamRemark = ref<string>('')
   const submitFriends = () => {
     $services.company
-      .createDepartment({
+      .updateDepartment({
         data: {
           id: selectId.value,
           name: departmentName.value,
@@ -109,23 +138,6 @@
     }
   )
   const listNum = ref<number>(0);
-  const getList = (id: string) => {
-    $services.company
-      .getPersons({
-        data: {
-          id: props.selectItem.id,
-          offset: 0,
-          limit: 100
-        }
-      })
-      .then((res: ResultType) => {
-        if(res.data.result){
-          listNum.value =res.data.total
-        }else{
-          listNum.value =0
-        }
-      })
-  }
   const getDepartmentList = (id:string) =>{
     $services.company
       .getDepartmentPersons({
@@ -143,9 +155,172 @@
         }
       })
   }
+  //获取单位员工
+  const getList = (id: string) => {
+    $services.company
+      .getPersons({
+        data: {
+          id: props.selectItem.id,
+          offset: 0,
+          limit: 100
+        }
+      })
+      .then((res: ResultType) => {
+        if(res.data.result){
+          listNum.value =res.data.total
+        }else{
+          listNum.value =0
+        }
+      })
+  }
+  let dialogVisible = ref<boolean>(false)
+  const upNodeId = ref<any>([])
+  interface Option {
+    key: string
+    label: string
+  }
+  const data = ref<Option[]>()
+  const transferList = ref([])
+   const upNode = {
+    checkStrictly: true,
+    lazy: true,
+    lazyLoad(node: any, resolve: any) {
+      const { level } = node
+      if (props.envType == 1) {
+        if (node.level === 0) {
+          getQueryInfo(resolve)
+        }
+        if (node.level >= 1) {
+          getDepartmentsList(node, resolve)
+        }
+      }
+    }
+  }
+  const showDialog = ()=>{
+    getPersons()
+    getDepartmentPersons()
+  }
+  const rightCheck = reactive({list:[]});
+  //获取单位人员
+  const getPersons = () => {
+    $services.company
+    .getPersons({
+      data: {
+        id: props.selectItem.id,
+        offset: 0,
+        limit: 100
+      }
+    })
+    .then((res: ResultType) => {
+      let arr:any = []
+      if(res.data.result){
+        res.data.result.forEach((element:any) => {
+          let obj = {
+            key:parseInt(element.id),
+            label:element.name
+          }
+          arr.push(obj)
+        });
+      }
+      data.value = arr;
+      dialogVisible.value = true
+
+    })
+  }
+   const getDepartmentPersons = () => {
+    $services.company
+      .getDepartmentPersons({
+        data: {
+          id: props.selectItem.id,
+          offset: 0,
+          limit: 100
+        }
+      })
+      .then((res: ResultType) => {
+       let arr:any = []
+      if(res.data.result){
+        res.data.result.forEach((element:any) => {
+          let obj = {
+            key:parseInt(element.id),
+            label:element.name
+          }
+          arr.push(obj)
+        });
+      }
+      rightCheck.list = arr
+    })
+  }
+  //根节点数据
+  async function getQueryInfo(resolve: any) {
+    await $services.company.queryInfo({}).then((res: ResultType) => {
+      let obj = [
+        {
+          children: [] as string[],
+          label: res.data.name,
+          id: res.data.id
+        }
+      ]
+      return resolve(obj)
+    })
+  }
+  async function getDepartmentsList(node: any, resolve: any) {
+    let arr: any = []
+    await $services.company
+      .getDepartments({
+        data: { id: node.data.id, offset: 0, limit: 100 }
+      })
+      .then((res: ResultType) => {
+        if (res.data.result) {
+          let resData = JSON.parse(JSON.stringify(res.data.result))
+
+          resData.forEach((element: any) => {
+            var obj = {
+              id: element.id,
+              label: element.name,
+              code: element.code,
+              children: [] as []
+            }
+
+            arr.push(JSON.parse(JSON.stringify(obj)))
+          })
+        }
+        return resolve(arr)
+      })
+  }
 </script>
 
 <style lang="scss" scoped>
+ .main-dialog {
+    display: flex;
+    padding: 0 30px;
+    flex: 1;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    .main-item :nth-child(2n) {
+      padding-left: 5px;
+    }
+  }
+  .main-title {
+    margin-left: 30px;
+    font-weight: bold;
+    font-size: 16px;
+    color: #333;
+    margin-bottom: 20px;
+  }
+  .main-transfer {
+    margin: 0 auto;
+    display: flex;
+    border: 1px solid #eee;
+    border-radius: 5px;
+    padding: 20px;
+    margin: 0 30px;
+    .main-title {
+      width: 100%;
+    }
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+  }
   .department-info{
     box-sizing: border-box;
     padding: 15px 20px;

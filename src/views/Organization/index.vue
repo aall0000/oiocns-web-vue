@@ -102,6 +102,7 @@
   type treeItem = {
     id: string
     name: string
+    remark: string
   }
   // const menuIndex = ref<string>('1')
   // const menuCheck = (index:string)=>{
