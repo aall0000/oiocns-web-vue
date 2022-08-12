@@ -1,11 +1,22 @@
 <template>
   <div class="department-tree-wrap">
-  <ul class="departmentTree-wrap">
+    <ul class="departmentTree-wrap">
       <li class="con tree-select">
-        <el-select v-if="envType == 2" v-model="selectValue" @change="changeGroupIndex" class="m-2" value-key="id"
-          placeholder="Select" style="margin-left: 20px; width: 155px">
-          <el-option v-for="item in selectList.list" :key="item.id" :label="item.name"
-            :value="{ id: item.id, item: item }" />
+        <el-select
+          v-if="envType == 2"
+          v-model="selectValue"
+          @change="changeGroupIndex"
+          class="m-2"
+          value-key="id"
+          placeholder="Select"
+          style="margin-left: 20px; width: 155px"
+        >
+          <el-option
+            v-for="item in selectList.list"
+            :key="item.id"
+            :label="item.name"
+            :value="{ id: item.id, item: item }"
+          />
         </el-select>
       </li>
       <li class="con tree-btns" v-if="envType == 1">
@@ -39,87 +50,85 @@
         </el-input>
       </li>
 
-    <ul class="con tree-dept" v-if="envType == 1">
-      <el-tree
-        :props="defaultProps"
-        lazy
-        highlight-current
-        ref="TreeDom"
-        @node-click="changeIndexFun"
-        :load="loadNode"
-      />
-    </ul>
-    <ul class="con tree-dept" v-else>
-      <el-tree
-        :props="defaultProps"
-        lazy
-        highlight-current
-        @node-click="changeIndexFun"
-        :load="loadNode"
-      >
-        <template #default="{ node, data }">
-          <span class="custom-tree-node">
-            <div class="tree-box">
-              <el-icon v-if="data.type == 'org'"><School /></el-icon>
-              <el-icon v-else><OfficeBuilding /></el-icon>
-              <span class="tree-box__text" @click="a(node, data)">{{ node.label }}</span>
-            </div>
+      <ul class="con tree-dept" v-if="envType == 1">
+        <el-tree
+          :props="defaultProps"
+          lazy
+          highlight-current
+          ref="TreeDom"
+          @node-click="changeIndexFun"
+          :load="loadNode"
+        />
+      </ul>
+      <ul class="con tree-dept" v-else>
+        <el-tree
+          :props="defaultProps"
+          lazy
+          highlight-current
+          @node-click="changeIndexFun"
+          :load="loadNode"
+        >
+          <template #default="{ node, data }">
+            <span class="custom-tree-node">
+              <div class="tree-box">
+                <el-icon><School /></el-icon>
+                <span class="tree-box__text">{{ node.label }}</span>
+              </div>
+            </span>
+          </template>
+        </el-tree>
+      </ul>
+      <el-dialog v-model="dialogVisible" v-if="envType == 1" title="请输入部门名称" width="30%">
+        <el-form-item label="部门名称">
+          <el-input v-model="departmentName" placeholder="Please input" clearable />
+        </el-form-item>
+        <el-form-item label="部门编号">
+          <el-input v-model="departmentTeamCode" placeholder="Please input" clearable />
+        </el-form-item>
+        <el-form-item label="部门简介">
+          <el-input v-model="departmentTeamRemark" placeholder="Please input" clearable />
+        </el-form-item>
+        <template #footer>
+          <span class="dialog-footer">
+            <el-button @click="dialogVisible = false">取消</el-button>
+            <el-button type="primary" @click="submitFriends">确认</el-button>
           </span>
         </template>
-      </el-tree>
-    </ul>
-    <el-dialog v-model="dialogVisible" v-if="envType == 1" title="请输入部门名称" width="30%">
-      <el-form-item label="部门名称">
-        <el-input v-model="departmentName" placeholder="Please input" clearable />
-      </el-form-item>
-      <el-form-item label="部门编号">
-        <el-input v-model="departmentTeamCode" placeholder="Please input" clearable />
-      </el-form-item>
-      <el-form-item label="部门简介">
-        <el-input v-model="departmentTeamRemark" placeholder="Please input" clearable />
-      </el-form-item>
-      <template #footer>
-        <span class="dialog-footer">
-          <el-button @click="dialogVisible = false">取消</el-button>
-          <el-button type="primary" @click="submitFriends">确认</el-button>
-        </span>
-      </template>
-    </el-dialog>
-    <el-dialog v-model="dialogVisible" v-if="envType == 2" title="请输子集团名称" width="30%">
-      <el-form-item label="节点名称">
-        <el-input v-model="departmentName" placeholder="Please input" clearable />
-      </el-form-item>
-      <el-form-item label="部门编号">
-        <el-input v-model="departmentTeamCode" placeholder="Please input" clearable />
-      </el-form-item>
-      <el-form-item label="部门简介">
-        <el-input v-model="departmentTeamRemark" placeholder="Please input" clearable />
-      </el-form-item>
-      <el-form-item label="上级节点">
-        <el-cascader :props="upNode" v-model="upNodeId" />
-      </el-form-item>
+      </el-dialog>
+      <el-dialog v-model="dialogVisible" v-if="envType == 2" title="请输子集团名称" width="30%">
+        <el-form-item label="节点名称">
+          <el-input v-model="departmentName" placeholder="Please input" clearable />
+        </el-form-item>
+        <el-form-item label="部门编号">
+          <el-input v-model="departmentTeamCode" placeholder="Please input" clearable />
+        </el-form-item>
+        <el-form-item label="部门简介">
+          <el-input v-model="departmentTeamRemark" placeholder="Please input" clearable />
+        </el-form-item>
+        <el-form-item label="上级节点">
+          <el-cascader :props="upNode" v-model="upNodeId" />
+        </el-form-item>
 
-      <template #footer>
-        <span class="dialog-footer">
-          <el-button @click="dialogVisible = false">取消</el-button>
-          <el-button type="primary" @click="createSubgroupFun">确认</el-button>
-        </span>
-      </template>
-    </el-dialog>
-    
-  </ul>
-  <div class="weihu-wrap">
+        <template #footer>
+          <span class="dialog-footer">
+            <el-button @click="dialogVisible = false">取消</el-button>
+            <el-button type="primary" @click="createSubgroupFun">确认</el-button>
+          </span>
+        </template>
+      </el-dialog>
+    </ul>
+    <div class="weihu-wrap">
       <span class="weihu-wrap-txt">部门维护</span>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import $services from '@/services'
-import { Search, Plus } from '@element-plus/icons-vue'
-import { ref, reactive, onMounted, watch } from 'vue'
-import { useUserStore } from '@/store/user'
-import { ElMessage, ElMessageBox } from 'element-plus'
+  import $services from '@/services'
+  import { Search, Plus } from '@element-plus/icons-vue'
+  import { ref, reactive, onMounted, watch, nextTick } from 'vue'
+  import { useUserStore } from '@/store/user'
+  import { ElMessage, ElMessageBox } from 'element-plus'
 
   import { storeToRefs } from 'pinia'
   const store = useUserStore()
@@ -130,7 +139,6 @@ import { ElMessage, ElMessageBox } from 'element-plus'
     envType: number
   }>()
   const changeIndexFun = (val: any) => {
-    console.log('val', val)
     emit('changeIndex', val)
   }
   const state = reactive({
@@ -212,13 +220,13 @@ import { ElMessage, ElMessageBox } from 'element-plus'
         if (res.data.result) {
           let resData = JSON.parse(JSON.stringify(res.data.result))
 
-        resData.forEach((element: any) => {
-          var obj = {
-            id: element.id,
-            label: element.name,
-            code: element.code,
-            children: [] as []
-          }
+          resData.forEach((element: any) => {
+            var obj = {
+              id: element.id,
+              label: element.name,
+              code: element.code,
+              children: [] as []
+            }
 
             arr.push(JSON.parse(JSON.stringify(obj)))
           })
@@ -290,10 +298,13 @@ import { ElMessage, ElMessageBox } from 'element-plus'
               label: element.name,
               code: element.code,
               children: [] as [],
-              value: element.id
+              value: element.id,
+              type: 'org',
+              team: element.team
             }
             arr.push(obj)
           })
+          changeIndexFun(arr[0])
         }
         return resolve(arr)
       })
@@ -315,19 +326,18 @@ import { ElMessage, ElMessageBox } from 'element-plus'
               code: element.code,
               value: element.id,
               children: [] as [],
+              team: element.team,
               type: 'org'
             }
             arr.push(obj)
           })
-          if (level > 1) {
-            getUnitChildData(node, resolve, arr)
-          } else {
-            getUnitData(node, resolve, arr)
-          }
-        } else {
-          return resolve([])
+          // if (level > 1) {
+          //   getUnitChildData(node, resolve, arr)
+          // } else {
+          //   getUnitData(node, resolve, arr)
+          // }
         }
-        // return resolve(arr)
+        return resolve(arr)
       })
   }
   // 查询子集团单位
@@ -351,6 +361,7 @@ import { ElMessage, ElMessageBox } from 'element-plus'
               children: [] as [],
               value: element.id,
               leaf: true,
+              team: element.team,
               type: 'unit'
             }
             arr.push(obj)
@@ -381,6 +392,7 @@ import { ElMessage, ElMessageBox } from 'element-plus'
               children: [] as [],
               value: element.id,
               leaf: true,
+              team: element.team,
               type: 'unit'
             }
             arr.push(obj)
@@ -412,49 +424,49 @@ import { ElMessage, ElMessageBox } from 'element-plus'
   }
 </script>
 <style lang="scss">
-.departmentTree-wrap .tree-search {
-  .search {
-    .el-input__inner {
-      font-size: 12px;
+  .departmentTree-wrap .tree-search {
+    .search {
+      .el-input__inner {
+        font-size: 12px;
+      }
     }
   }
-}
 </style>
 <style lang="scss" scoped>
-.main-dialog{
-  display: flex;
-  padding: 0 30px;
-  flex: 1;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  .main-item :nth-child(2n){
-    padding-left: 5px;
-  }
-}
-.department-tree-wrap {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  z-index: 2;
-  float: left;
-  height: 100%;
-  .weihu-wrap {
-    text-align: center;
-    padding: 8px 10px 12px;
-    background-color: #fff;
-    border-top: 1px solid #ccc;
-
-    &-txt {
-      color: $mainColor;
-      font-size: 16px;
+  .main-dialog {
+    display: flex;
+    padding: 0 30px;
+    flex: 1;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    .main-item :nth-child(2n) {
+      padding-left: 5px;
     }
   }
-  .custom-tree-node{
-    overflow: hidden;
-    text-overflow: ellipsis;
-    word-spacing: nowrap;
+  .department-tree-wrap {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    z-index: 2;
+    float: left;
+    height: 100%;
+    .weihu-wrap {
+      text-align: center;
+      padding: 8px 10px 12px;
+      background-color: #fff;
+      border-top: 1px solid #ccc;
+
+      &-txt {
+        color: $mainColor;
+        font-size: 16px;
+      }
+    }
+    .custom-tree-node {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      word-spacing: nowrap;
+    }
   }
-}
 
   .tree-box {
     display: flex;
@@ -463,84 +475,85 @@ import { ElMessage, ElMessageBox } from 'element-plus'
       margin-left: 5px;
     }
   }
-.departmentTree-wrap {
-  padding: 20px 0;
-  background-color: #fff;
-  border-right: 1px solid #e8e8e8;
+  .departmentTree-wrap {
+    padding: 20px 0;
+    background-color: #fff;
+    border-right: 1px solid #e8e8e8;
 
-  height: 100%;
+    height: 100%;
 
-  .con {
-    margin-bottom: 10px;
-  }
+    .con {
+      margin-bottom: 10px;
+    }
 
-  .tree-search {
-    padding: 0 24px;
+    .tree-search {
+      padding: 0 24px;
 
-    .search {
-      .el-input__inner {
-        font-size: 12px;
+      .search {
+        .el-input__inner {
+          font-size: 12px;
+        }
       }
     }
-  }
 
-  .tree-btns {
-    display: flex;
-    justify-content: space-between;
-    padding: 0 24px;
+    .tree-btns {
+      display: flex;
+      justify-content: space-between;
+      padding: 0 24px;
 
       .el-button--small {
         padding: 12px 6px;
       }
     }
 
-  .tree-dept {
-    // padding: 0 0 0 14px;
+    .tree-dept {
+      // padding: 0 0 0 14px;
 
-    .tree-dept-item {
-      .dept-label {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        height: 40px;
-        font-size: 14px;
-        padding-left: 24px;
-
-        &-icon {
-          width: 14px;
-          height: 14px;
-        }
-
-        .dept-label-name {
+      .tree-dept-item {
+        .dept-label {
           display: flex;
+          justify-content: space-between;
           align-items: center;
-        }
+          height: 40px;
+          font-size: 14px;
+          padding-left: 24px;
 
-        .dept-label-icon {
-          margin-right: 4px;
-        }
-
-        &.active {
-          .dept-label-name {
-            color: $mainColor;
+          &-icon {
+            width: 14px;
+            height: 14px;
           }
 
-          background-color: #e7ecfb;
-          border-right: 2px solid $mainColor;
-          // transform: translateX(1px);
+          .dept-label-name {
+            display: flex;
+            align-items: center;
+          }
+
+          .dept-label-icon {
+            margin-right: 4px;
+          }
+
+          &.active {
+            .dept-label-name {
+              color: $mainColor;
+            }
+
+            background-color: #e7ecfb;
+            border-right: 2px solid $mainColor;
+            // transform: translateX(1px);
+          }
+
+          .right-icon {
+            margin-right: 10px;
+          }
         }
 
-        .right-icon {
-          margin-right: 10px;
+        .label {
         }
-      }
 
-      .label {}
-
-      .child-label {
-        padding-left: 38px;
+        .child-label {
+          padding-left: 38px;
+        }
       }
     }
   }
-}
 </style>

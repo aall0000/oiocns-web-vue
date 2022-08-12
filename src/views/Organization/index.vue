@@ -2,14 +2,26 @@
   <div class="main-content">
     <!-- 单位管理 -->
     <div class="org-content" v-if="showMenu == true">
-      <departmentTree
-        :envType="envType"
-        @changeIndex="changeIndex"
-        class="department-tree"
-      />
-      <div class="main-dep">
-        <departmentDetail :envType="envType" :rootElement="rootElement" :selectItem="selectItem"  />
-        <departmentList :envType="envType" :rootElement="rootElement" :selectId="selectId" :selectItem="selectItem" :personType="personType"></departmentList>
+      <departmentTree :envType="envType" @changeIndex="changeIndex" class="department-tree" />
+      <div class="main-dep" v-if="envType == 1">
+        <departmentDetail :envType="envType" :rootElement="rootElement" :selectItem="selectItem" />
+        <departmentList
+          :envType="envType"
+          :rootElement="rootElement"
+          :selectId="selectId"
+          :selectItem="selectItem"
+          :personType="personType"
+        ></departmentList>
+      </div>
+      <div class="main-dep" v-else>
+        <orgDetail :envType="envType" :rootElement="rootElement" :selectItem="selectItem" />
+        <orgList
+          :envType="envType"
+          :rootElement="rootElement"
+          :selectId="selectId"
+          :selectItem="selectItem"
+          :personType="personType"
+        ></orgList>
       </div>
     </div>
     <!-- 个人管理 -->
@@ -21,14 +33,16 @@
 <script lang="ts" setup>
   // @ts-nocheck
   import $services from '@/services'
-  import { ref, onMounted,watch} from 'vue'
+  import { ref, onMounted, watch } from 'vue'
   import departmentTree from './components/departmentTree.vue'
   import departmentDetail from './components/departmentDetail.vue'
   import departmentList from './components/departmentList.vue'
+  import orgDetail from './components/orgDetail.vue'
+  import orgList from './components/orgList.vue'
   import organizatList from './components/organizatList.vue'
   import { useUserStore } from '@/store/user'
   import { storeToRefs } from 'pinia'
-  import {useRouter } from 'vue-router';
+  import { useRouter } from 'vue-router'
 
   const store = useUserStore()
   const { queryInfo } = storeToRefs(store)
@@ -46,21 +60,24 @@
   }
   onMounted(() => {
     isShowMenu.value = true
-    if(router.currentRoute.value.path =='/organization/company'){
-      getInfo();
-
+    if (router.currentRoute.value.path == '/organization/company') {
+      getInfo()
     }
   })
-  let router = useRouter();
-  let envType= ref<number>(1);
+  let router = useRouter()
+  let envType = ref<number>(1)
 
-  watch(() =>router.currentRoute.value.path,(newValue,oldValue)=> {
-    if(router.currentRoute.value.path =='/organization/company'){
-      envType.value = 1; //1-单位 2-集团
-    }else{
-      envType.value = 2; //1-单位 2-集团
-    }
-  },{ immediate: true })
+  watch(
+    () => router.currentRoute.value.path,
+    (newValue, oldValue) => {
+      if (router.currentRoute.value.path == '/organization/company') {
+        envType.value = 1 //1-单位 2-集团
+      } else {
+        envType.value = 2 //1-单位 2-集团
+      }
+    },
+    { immediate: true }
+  )
   // const selectList = reactive<selectType[]>([])
 
   let selectId = ref<string>()
@@ -91,11 +108,11 @@
   //   menuIndex.value= index;
   // }
   type rootType = {
-    id:string,
-    name:string,
+    id: string
+    name: string
   }
   const rootElement = ref<rootType>()
-  const getInfo =()=>{
+  const getInfo = () => {
     $services.company.queryInfo({}).then((res: ResultType) => {
       let obj = [
         {
