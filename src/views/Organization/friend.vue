@@ -153,6 +153,7 @@ const deleteFriend = (id: string) => {
           message: '申请成功',
           type: 'warning'
         })
+        getFriendList()
       } else {
         ElMessage({
           message: res.msg,
@@ -227,6 +228,7 @@ const addQunFun = () => {
           type: 'success'
         })
         addQun.value = false
+        getQunList()
       } else {
         ElMessage({
           message: res.msg,

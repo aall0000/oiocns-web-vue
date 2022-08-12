@@ -462,7 +462,8 @@
         }
       })
       .then((res: ResultType) => {
-        if (res.data.code == 200) {
+        if (res.code == 200) {
+          dialogVisible.value = false;
           ElMessage({
             message: res.msg,
             type: 'success'
