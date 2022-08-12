@@ -8,7 +8,7 @@
         class="department-tree"
       />
       <div class="main-dep">
-        <departmentDetail :envType="envType" :selectItem="selectItem"  />
+        <departmentDetail :envType="envType" :rootElement="rootElement" :selectItem="selectItem"  />
         <departmentList :envType="envType" :rootElement="rootElement" :selectId="selectId" :selectItem="selectItem" :personType="personType"></departmentList>
       </div>
     </div>
@@ -62,7 +62,7 @@
     }
   },{ immediate: true })
   // const selectList = reactive<selectType[]>([])
-  
+
   let selectId = ref<string>()
   let selectItem = ref<selectType>({
     id: '',
@@ -104,7 +104,6 @@
           id: res.data.id
         }
       ]
-      console.log('queryInfo',res.data)
       rootElement.value = res.data
     })
   }
@@ -163,6 +162,7 @@
     padding: 15px;
     float: left;
     width: 100%;
+    height: 100%;
     // overflow-y: scroll;
     //左侧组织架构 树
     .department-tree {
@@ -171,7 +171,8 @@
     }
     .main-dep {
       float: left;
-      width: calc(100% - 200px);
+      width: calc(100% - 210px);
+      margin-left: 10px;
     }
     // 右侧列表
     .department-info {

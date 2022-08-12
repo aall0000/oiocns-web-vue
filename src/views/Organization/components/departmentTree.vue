@@ -1,40 +1,43 @@
 <template>
-  <ul class="departmentTree-wrap">
-    <li class="con tree-select">
-      <el-select
-        v-if="envType == 2"
-        v-model="selectValue"
-        @change="changeGroupIndex"
-        class="m-2"
-        value-key="id"
-        placeholder="Select"
-        style="margin-left: 20px; width: 155px"
-      >
-        <el-option
-          v-for="item in selectList.list"
-          :key="item.id"
-          :label="item.name"
-          :value="{ id: item.id, item: item }"
-        />
-      </el-select>
-    </li>
-    <li class="con tree-btns" v-if="envType == 1">
-      <div class="title">部门管理</div>
-      <el-button :icon="Plus" @click="dialogVisible = true" size="small">新建部门</el-button>
-    </li>
-    <li class="con tree-btns" v-else>
-      <div class="title">组织</div>
-      <el-button :icon="Plus" @click="dialogVisible = true" size="small">创建下级节点</el-button>
-    </li>
-    <li class="con tree-search">
-      <el-input class="search" placeholder="搜索姓名、手机、邮箱">
-        <template #suffix>
-          <el-icon class="el-input__icon">
-            <search />
-          </el-icon>
-        </template>
-      </el-input>
-    </li>
+  <div class="department-tree-wrap">
+    <ul class="departmentTree-wrap">
+      <li class="con tree-select">
+        <el-select v-if="envType == 2" v-model="selectValue" @change="changeGroupIndex" class="m-2" value-key="id"
+          placeholder="Select" style="margin-left: 20px; width: 155px">
+          <el-option v-for="item in selectList.list" :key="item.id" :label="item.name"
+            :value="{ id: item.id, item: item }" />
+        </el-select>
+      </li>
+      <li class="con tree-btns" v-if="envType == 1">
+        <div class="title">部门管理</div>
+        <el-popover placement="bottom" :width="150" trigger="hover">
+          <template #reference>
+            <el-icon color="#154ad8" :size="18">
+              <View />
+            </el-icon>
+          </template>
+          <el-checkbox v-model="state.isShowName" label="部门名称" />
+          <el-checkbox v-model="state.isShowCode" label="部门编码" />
+        </el-popover>
+
+        <el-icon color="#154ad8" :size="20" @click="dialogVisible = true">
+          <CirclePlus />
+        </el-icon>
+        <!-- <el-button :icon="Plus"size="small">新建部门</el-button> -->
+      </li>
+      <li class="con tree-btns" v-else>
+        <div class="title">组织</div>
+        <el-button :icon="Plus" @click="dialogVisible = true" size="small">创建下级节点</el-button>
+      </li>
+      <li class="con tree-search">
+        <el-input class="search" placeholder="搜索姓名、手机、邮箱">
+          <template #suffix>
+            <el-icon class="el-input__icon">
+              <search />
+            </el-icon>
+          </template>
+        </el-input>
+      </li>
 
     <ul class="con tree-dept" v-if="envType == 1">
       <el-tree
@@ -107,11 +110,11 @@
 </template>
 
 <script lang="ts" setup>
-  import $services from '@/services'
-  import { Search, Plus } from '@element-plus/icons-vue'
-  import { ref, reactive, onMounted, watch } from 'vue'
-  import { useUserStore } from '@/store/user'
-  import { ElMessage, ElMessageBox } from 'element-plus'
+import $services from '@/services'
+import { Search, Plus } from '@element-plus/icons-vue'
+import { ref, reactive, onMounted, watch } from 'vue'
+import { useUserStore } from '@/store/user'
+import { ElMessage, ElMessageBox } from 'element-plus'
 
   import { storeToRefs } from 'pinia'
   const store = useUserStore()
@@ -202,13 +205,13 @@
         if (res.data.result) {
           let resData = JSON.parse(JSON.stringify(res.data.result))
 
-          resData.forEach((element: any) => {
-            var obj = {
-              id: element.id,
-              label: element.name,
-              code: element.code,
-              children: [] as []
-            }
+        resData.forEach((element: any) => {
+          var obj = {
+            id: element.id,
+            label: element.name,
+            code: element.code,
+            children: [] as []
+          }
 
             arr.push(JSON.parse(JSON.stringify(obj)))
           })
@@ -402,15 +405,50 @@
   }
 </script>
 <style lang="scss">
-  .departmentTree-wrap .tree-search {
-    .search {
-      .el-input__inner {
-        font-size: 12px;
-      }
+.departmentTree-wrap .tree-search {
+  .search {
+    .el-input__inner {
+      font-size: 12px;
     }
   }
+}
 </style>
 <style lang="scss" scoped>
+.main-dialog{
+  display: flex;
+  padding: 0 30px;
+  flex: 1;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  .main-item :nth-child(2n){
+    padding-left: 5px;
+  }
+}
+.department-tree-wrap {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  z-index: 2;
+  float: left;
+  height: 100%;
+  .weihu-wrap {
+    text-align: center;
+    padding: 8px 10px 12px;
+    background-color: #fff;
+    border-top: 1px solid #ccc;
+
+    &-txt {
+      color: $mainColor;
+      font-size: 16px;
+    }
+  }
+  .custom-tree-node{
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-spacing: nowrap;
+  }
+}
+
   .tree-box {
     display: flex;
     align-items: center;
@@ -418,85 +456,84 @@
       margin-left: 5px;
     }
   }
-  .departmentTree-wrap {
-    padding: 20px 0;
-    background-color: #fff;
-    border-right: 1px solid #e8e8e8;
-    z-index: 2;
-    float: left;
-    height: 100%;
-    .con {
-      margin-bottom: 10px;
-    }
+.departmentTree-wrap {
+  padding: 20px 0;
+  background-color: #fff;
+  border-right: 1px solid #e8e8e8;
 
-    .tree-search {
-      padding: 0 24px;
+  height: 100%;
 
-      .search {
-        .el-input__inner {
-          font-size: 12px;
-        }
+  .con {
+    margin-bottom: 10px;
+  }
+
+  .tree-search {
+    padding: 0 24px;
+
+    .search {
+      .el-input__inner {
+        font-size: 12px;
       }
     }
+  }
 
-    .tree-btns {
-      display: flex;
-      justify-content: space-between;
-      padding: 0 24px;
+  .tree-btns {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 24px;
 
       .el-button--small {
         padding: 12px 6px;
       }
     }
 
-    .tree-dept {
-      // padding: 0 0 0 14px;
+  .tree-dept {
+    // padding: 0 0 0 14px;
 
-      .tree-dept-item {
-        .dept-label {
+    .tree-dept-item {
+      .dept-label {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 40px;
+        font-size: 14px;
+        padding-left: 24px;
+
+        &-icon {
+          width: 14px;
+          height: 14px;
+        }
+
+        .dept-label-name {
           display: flex;
-          justify-content: space-between;
           align-items: center;
-          height: 40px;
-          font-size: 14px;
-          padding-left: 24px;
+        }
 
-          &-icon {
-            width: 14px;
-            height: 14px;
-          }
+        .dept-label-icon {
+          margin-right: 4px;
+        }
 
+        &.active {
           .dept-label-name {
-            display: flex;
-            align-items: center;
+            color: $mainColor;
           }
 
-          .dept-label-icon {
-            margin-right: 4px;
-          }
-
-          &.active {
-            .dept-label-name {
-              color: $mainColor;
-            }
-
-            background-color: #e7ecfb;
-            border-right: 2px solid $mainColor;
-            // transform: translateX(1px);
-          }
-
-          .right-icon {
-            margin-right: 10px;
-          }
+          background-color: #e7ecfb;
+          border-right: 2px solid $mainColor;
+          // transform: translateX(1px);
         }
 
-        .label {
+        .right-icon {
+          margin-right: 10px;
         }
+      }
 
-        .child-label {
-          padding-left: 38px;
-        }
+      .label {}
+
+      .child-label {
+        padding-left: 38px;
       }
     }
   }
+}
 </style>
