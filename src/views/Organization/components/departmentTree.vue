@@ -383,8 +383,7 @@
               value:element.id,
               label: element.name,
               code: element.code,
-              children: [] as [],
-              value: element.id
+              children: [] as []
             }
             arr.push(obj)
           })
@@ -408,7 +407,6 @@
               value:element.id,
               label: element.name,
               code: element.code,
-              value: element.id,
               children: [] as [],
               team: element.team,
               type: 'org'

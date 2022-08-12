@@ -93,7 +93,7 @@ export default defineConfig(({ command, mode }) => {
       },
       rollupOptions: {
         // 确保外部化处理那些你不想打包进库的依赖
-        external: ['vue', 'element-plus'], // 注意看这里
+        // external: ['vue', 'element-plus'], // 注意看这里
         output: {
           chunkFileNames: 'static/js/[name]-[hash].js',
           entryFileNames: 'static/js/[name]-[hash].js',
@@ -125,26 +125,15 @@ export default defineConfig(({ command, mode }) => {
       proxy: settings.proxyFlag
         ? {
             '/orginone': {
-              target: 'http://qkbyte.orginone.cn:2001', // 后台接口
+              target: 'http://localhost:7001', // 后台接口
               changeOrigin: true, // 是否允许跨域
               ws: true
-              // secure: false,                    // 如果是https接口，需要配置这个参数---7003
-              // rewrite: (path: any) => path.replace(/^\/api/, '')
             },
-            // '/orginone/orgchat/msghub': {
-            //   target: 'http://qkbyte.orginone.cn:7003', // 后台接口
-            //   changeOrigin: true, // 是否允许跨域
-
-            //   // secure: false,                    // 如果是https接口，需要配置这个参数---
-            //   // rewrite: (path: any) => path.replace(/^\/api/, '')
-            // },
-            // '/anydata': {
-            //   target: 'http://qkbyte.orginone.cn:2000', // 后台接口
-            //   changeOrigin: true, // 是否允许跨域
-            //   ws: true
-            //   // secure: false,                    // 如果是https接口，需要配置这个参数---
-            //   // rewrite: (path: any) => path.replace(/^\/api/, '')
-            // }
+            '/anydata': {
+              target: 'http://192.168.31.88:2000', // 后台接口
+              changeOrigin: true, // 是否允许跨域
+              ws: true
+            }
           }
         : {}
     }
