@@ -99,7 +99,7 @@
             <el-input v-model="departmentTeamRemark" placeholder="Please input" clearable />
           </el-form-item>
           <el-form-item class="main-item" label="上级节点">
-            <el-cascader :props="upNode" v-model="upNodeId" />
+            <el-cascader :props="upNode" v-model="upNodeId" @change="handleChange" />
           </el-form-item>
         </div>
         <div class="main-transfer">
@@ -131,7 +131,7 @@
           <el-input v-model="departmentTeamRemark" placeholder="Please input" clearable />
         </el-form-item>
         <el-form-item label="上级节点">
-          <el-cascader :props="upNode" v-model="upNodeId" />
+          <el-cascader :props="upNode" v-model="upNodeId" @change="handleChange" />
         </el-form-item>
 
         <template #footer>
@@ -198,7 +198,7 @@
   const submitFriends = () => {
     let parentId = 0
     if (upNodeId.value.length > 0) {
-      parentId = upNodeId.value[0]
+      parentId = upNodeId.value[upNodeId.value.length-1]
     }
     $services.company
       .createDepartment({
@@ -212,9 +212,20 @@
         }
       })
       .then((res: ResultType) => {
-        dialogVisible.value = false
-        if (transferList.value.length > 0) {
-          changePreson(res.data.id)
+        if(res.code ==200){
+          dialogVisible.value = false
+          if (transferList.value.length > 0) {
+            changePreson(res.data.id)
+          }
+          ElMessage({
+            message: res.msg,
+            type: 'success'
+          })
+        }else{
+          ElMessage({
+              message: res.msg,
+              type: 'error'
+            })
         }
       })
   }
@@ -247,6 +258,7 @@
     await $services.company.queryInfo({}).then((res: ResultType) => {
       let obj = [
         {
+          value:res.data.id,
           children: [] as string[],
           label: res.data.name,
           id: res.data.id,
@@ -269,6 +281,7 @@
           resData.forEach((element: any) => {
             var obj = {
               id: element.id,
+              value:element.id,
               label: element.name,
               code: element.code,
               children: [] as [],
@@ -283,6 +296,9 @@
   }
   type listItem = {
     list: any
+  }
+  const handleChange = (value:any) => {
+    console.log(value)
   }
   const selectValue = ref<string>(null)
   const selectList = reactive<listItem>({ list: [] })
@@ -364,6 +380,7 @@
           resData.forEach((element: any) => {
             var obj = {
               id: element.id,
+              value:element.id,
               label: element.name,
               code: element.code,
               children: [] as [],
@@ -388,6 +405,7 @@
           resData.forEach((element: any) => {
             var obj = {
               id: element.id,
+              value:element.id,
               label: element.name,
               code: element.code,
               value: element.id,
@@ -475,7 +493,7 @@
         data: {
           code: departmentTeamCode.value,
           name: departmentName.value,
-          parentId: upNodeId.value[0],
+          parentId: upNodeId.value[upNodeId.value.length-1],
           teamRemark: departmentTeamRemark.value
         }
       })
@@ -488,6 +506,11 @@
           dialogVisible.value = false
           state.nodeData.childNodes = []
           loadNode(state.nodeData, state.resolveData)
+        }else{
+          ElMessage({
+            message: res.msg,
+            type: 'error'
+          })
         }
       })
   }
