@@ -8,44 +8,24 @@
       </p>
 
       <div class="deptment-info-btns">
-        <div class="left-name">
-          <el-icon :size="20">
-            <Connection />
-            <img
-              class="group-icon"
-              style="width: 20px"
-              src="@/assets/img/group-next.png"
-              alt=""
-            /> </el-icon
-          >下级部门
-        </div>
+        <div class="left-name">部门信息</div>
         <div class="edit">
           <!-- <el-button type="primary">创建工作组</el-button> -->
-          <el-button type="primary" @click="dialogVisible = true">创建子部门</el-button>
+          <div style="color:#154ad8" @click="dialogVisible = true">分配人员</div>
           <!-- <el-button>调整排序</el-button> -->
         </div>
       </div>
     </div>
-    <div class="tab-list" v-if="DepartmentsList.list.length>0">
+    <div class="tab-list">
       <ul class="next-dept">
-        <!-- 头部 -->
-        <el-row class="next-dept-con header">
-          <el-col :span="4">
-            <div class="con">部门名称</div>
-          </el-col>
-          <!-- <el-col :span="4">
-            <div class="con">成员人数</div>
-          </el-col> -->
-        </el-row>
-        <!-- 内容 -->
-        <el-row class="next-dept-con body" v-for="(item,index) in DepartmentsList.list" :key="index">
-          <el-col :span="4">
-            <div class="con">{{item.name}}</div>
-          </el-col>
-          <!-- <el-col :span="4">
-            <div class="con">20</div>
-          </el-col> -->
-        </el-row>
+        <table class="table-mytable">
+          <tr>
+            <td class="left">名称</td>
+            <td class="column">{{selectItem.label}}</td>
+            <td class="left">人数</td>
+            <td class="column">{{listNum}}</td>
+          </tr>
+        </table>
       </ul>
     </div>
 
@@ -75,10 +55,16 @@
   type selectItem = {
     name: string
     id: string
+    label:string
+  }
+   type rootType = {
+    id:string,
+    name:string,
   }
   const props = defineProps<{
     selectItem: selectItem,
-    envType:number
+    envType:number,
+    rootElement:rootType
   }>()
   let dialogVisible = ref<boolean>(false)
   let selectId = ref<string>()
@@ -99,7 +85,7 @@
       .then((res: ResultType) => {
         if(res.code ==200){
           dialogVisible.value = false
-          getDepartmentsList(props.selectItem.id)
+          getList(props.selectItem.id)
            ElMessage({
             message: '添加成功',
             type: 'success'
@@ -111,47 +97,65 @@
     () => props.selectItem,
     (newValue: selectItem) => {
       if (newValue.id !== '') {
-        if(props.envType ==1){
-          getDepartmentsList(newValue.id)
+        if(props.selectItem && props.rootElement){
+          if(props.selectItem.id  === props.rootElement.id){
+            getList(newValue.id)
+          }else{
+            getDepartmentList(newValue.id)
+          }
         }
+        
       }
-    },
+    }
   )
-  type listItem  = {
-    id: string
-    name: string
-  }
-  type DlistType = {
-    list:Array<listItem>
-  }
-  let DepartmentsList = reactive<DlistType>({list:[]})
-  const getDepartmentsList = (id: string) => {
-    let arr: any = []
+  const listNum = ref<number>(0);
+  const getList = (id: string) => {
     $services.company
-      .getDepartments({
-        data: { id: id, offset: 0, limit: 100 }
+      .getPersons({
+        data: {
+          id: props.selectItem.id,
+          offset: 0,
+          limit: 100
+        }
       })
       .then((res: ResultType) => {
-        if (res.data.result) {
-          let resData = res.data.result
-
-          resData.forEach((element: any) => {
-            var obj = {
-              id: element.id,
-              name: element.name
-            }
-            arr.push(obj)
-          })
+        if(res.data.result){
+          listNum.value =res.data.total
+        }else{
+          listNum.value =0
         }
-        DepartmentsList.list = arr 
+      })
+  }
+  const getDepartmentList = (id:string) =>{
+    $services.company
+      .getDepartmentPersons({
+        data: {
+          id: props.selectItem.id,
+          offset: 0,
+          limit: 100
+        }
+      })
+      .then((res: ResultType) => {
+        if(res.data.result){
+          listNum.value =res.data.total
+        }else{
+          listNum.value =0
+        }
       })
   }
 </script>
 
 <style lang="scss" scoped>
+  .department-info{
+    box-sizing: border-box;
+    padding: 15px 20px;
+    background: #fff;
+    margin-bottom: 10px;
+    border-radius: 5px;
+  }
   .deptment-info {
     background: #fff;
-    padding: 20px;
+    margin-bottom: 15px;
     .deptment-info-name {
       font-size: 18px;
       font-weight: bold;
@@ -177,29 +181,23 @@
       }
     }
   }
-  .next-dept-con {
-    width: 100%;
-    padding: 0 40px;
-    background-color: #fff;
-
-    &.header {
-      background-color: #f3f3f3;
-      border-bottom: 1px solid #ccc;
-      height: 40px;
-      line-height: 40px;
+  .next-dept{
+    tr{
+      border: 1px solid #eff2f7;
+      color: #666;
+      height: 45px;
+      text-align: center;
     }
-
-    &.body {
-      border-bottom: 1px solid #ccc;
+    .left{
+      background: #f5f6fc;
+      width: 10.4%;
+      min-width: 110px;
     }
-
-    .con {
+    .column{
+      width: 39.6%;
       text-align: left;
-      width: 120px;
-      height: 40px;
-      line-height: 40px;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      padding: 0 20px;
+      background: #fff;
     }
   }
 </style>

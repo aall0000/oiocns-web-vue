@@ -1,3 +1,3 @@
 <script>
-  console.log()
+    console.log('11')
 </script>

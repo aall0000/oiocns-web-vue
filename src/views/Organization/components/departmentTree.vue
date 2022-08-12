@@ -20,10 +20,10 @@
           <el-checkbox v-model="state.isShowCode" label="部门编码" />
         </el-popover>
 
-        <el-icon color="#154ad8" :size="20">
+        <el-icon color="#154ad8" :size="20" @click="dialogVisible = true">
           <CirclePlus />
         </el-icon>
-        <!-- <el-button :icon="Plus" @click="dialogVisible = true" size="small">新建部门</el-button> -->
+        <!-- <el-button :icon="Plus"size="small">新建部门</el-button> -->
       </li>
       <li class="con tree-btns" v-else>
         <div class="title">组织</div>
@@ -52,16 +52,23 @@
       <ul class="con tree-dept" v-else>
         <el-tree :props="defaultProps" lazy highlight-current @node-click="changeIndexFun" :load="loadNode" />
       </ul>
-      <el-dialog v-model="dialogVisible" v-if="envType == 1" title="请输入部门名称" width="30%">
-        <el-form-item label="部门名称">
-          <el-input v-model="departmentName" placeholder="Please input" clearable />
-        </el-form-item>
-        <el-form-item label="部门编号">
-          <el-input v-model="departmentTeamCode" placeholder="Please input" clearable />
-        </el-form-item>
-        <el-form-item label="部门简介">
-          <el-input v-model="departmentTeamRemark" placeholder="Please input" clearable />
-        </el-form-item>
+      <el-dialog v-model="dialogVisible" v-if="envType == 1" title="新增部门" width="50%" center>
+        <div class="main-title">部门信息</div>
+        <div class="main-dialog">
+          <el-form-item class="main-item" label="部门名称" style="width:45%">
+            <el-input v-model="departmentName" placeholder="Please input" width="200px" clearable  />
+          </el-form-item>
+          <el-form-item class="main-item" label="部门编号" style="width:45%">
+            <el-input v-model="departmentTeamCode" placeholder="Please input" clearable />
+          </el-form-item>
+          <el-form-item class="main-item" label="部门简介" style="width:45%">
+            <el-input v-model="departmentTeamRemark" placeholder="Please input" clearable />
+          </el-form-item>
+          <el-form-item label="上级节点">
+            <el-cascader :props="upNode" v-model="upNodeId" />
+          </el-form-item>
+        </div>
+        <el-transfer v-model="value" filterable :data="data" :filter-method="filterMethod"/>
         <template #footer>
           <span class="dialog-footer">
             <el-button @click="dialogVisible = false">取消</el-button>
@@ -119,6 +126,11 @@ const emit = defineEmits(['changeIndex'])
 const props = defineProps<{
   envType: number
 }>()
+interface Option {
+  key: number
+  label: string
+  disabled: boolean
+}
 const changeIndexFun = (val: any) => {
   console.log('val', val)
   emit('changeIndex', val)
@@ -331,6 +343,30 @@ const createSubgroupFun = () => {
       }
     })
 }
+interface Option {
+  key: number
+  label: string
+}
+//穿梭框
+const generateData = () => {
+  const data: Option[] = []
+  for (let i = 1; i <= 15; i++) {
+    data.push({
+      key: i,
+      label: `Option ${i}`,
+      disabled: i % 4 === 0,
+    })
+  }
+  return data
+}
+
+//穿梭框筛选
+const filterMethod = (query:any,item:any)=>{
+  return item.initial
+}
+
+const data = ref<Option[]>(generateData())
+const value = ref([])
 </script>
 <style lang="scss">
 .departmentTree-wrap .tree-search {
@@ -342,6 +378,16 @@ const createSubgroupFun = () => {
 }
 </style>
 <style lang="scss" scoped>
+.main-dialog{
+  display: flex;
+  padding: 0 30px;
+  flex: 1;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  .main-item :nth-child(2n){
+    padding-left: 5px;
+  }
+}
 .department-tree-wrap {
   display: flex;
   flex-direction: column;
@@ -349,7 +395,6 @@ const createSubgroupFun = () => {
   z-index: 2;
   float: left;
   height: 100%;
-
   .weihu-wrap {
     text-align: center;
     padding: 8px 10px 12px;
