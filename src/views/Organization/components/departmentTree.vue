@@ -302,9 +302,23 @@
         }
       })
   }
-  //切换集团
-  const changeGroupIndex = (val: object) => {
+ 
+
+  const groupIndex = ref<number>(0)
+  const showTreeStatus  = ref<boolean>(true)
+  const changeGroupIndex = (val: any) => {
     checkGroup.value = val
+
+    for (let i = 0; i < selectList.list.length; i++) {
+      if (val.id === selectList.list[i].id) {
+        showTreeStatus.value = false
+
+        groupIndex.value = i
+        setTimeout(() => {
+          showTreeStatus.value = true
+        }, 10)
+      }
+    }
   }
   const upNode = {
     checkStrictly: true,
@@ -328,7 +342,8 @@
       }
     }
   }
-  async function getGroupsInfo(resolve: any) {
+   //切换集团
+   async function getGroupsInfo(resolve: any) {
     let arr: any = []
     $services.company
       .companyGetGroups({
@@ -339,20 +354,17 @@
       })
       .then((res: ResultType) => {
         if (res.data.result) {
-          let resData = [res.data.result[0]]
+          let resData = [res.data.result[groupIndex.value]]
           resData.forEach((element: any) => {
             var obj = {
               id: element.id,
               label: element.name,
               code: element.code,
               children: [] as [],
-              value: element.id,
-              type: 'org',
-              team: element.team
+              value: element.id
             }
             arr.push(obj)
           })
-          changeIndexFun(arr[0])
         }
         return resolve(arr)
       })
