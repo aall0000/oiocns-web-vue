@@ -1,21 +1,30 @@
 import { defineStore } from 'pinia'
 import $services from '@/services'
 import { ElMessage } from 'element-plus'
-import { type } from 'os'
 
 type QueryInfoType = {
   id: string
   [key: string]: any
 }
-type UserType = {
+type UnitInfoType={
+  id: string
+  typeName:string
+  thingId:string
+  [key: string]: any
+
+}
+
+
+type UserStoreType = {
   userInfo: any
   queryInfo: QueryInfoType
+  userUnitInfo:UnitInfoType
   [key: string]: any
 }
 
 export const useUserStore = defineStore({
   id: 'user', // id必填，且需要唯一
-  state: (): UserType => {
+  state: (): UserStoreType => {
     return {
       userInfo: {}, // 用户登录信息
       queryInfo: {} as QueryInfoType, // 用户详细信息
@@ -23,7 +32,8 @@ export const useUserStore = defineStore({
       copyCompanys: [],
       userToken: '' || sessionStorage.getItem('TOKEN'),
       workspaceData: {}, // 当前选中的公司
-      userNameMap: new Map()
+      userNameMap: new Map(),
+      userUnitInfo:{} as UnitInfoType,//所在单位信息
     }
   },
   persist: {
@@ -32,8 +42,8 @@ export const useUserStore = defineStore({
     strategies: [
       // 指定存储的位置以及存储的变量都有哪些，该属性可以不写，
       //在不写的情况下，默认存储到 sessionStorage 里面,默认存储 state 里面的所有数据。
-      { storage: sessionStorage, paths: ['userInfo', 'queryInfo', 'userToken', 'workspaceData'] }
-      // paths 是一个数组，如果写了 就会只存储 count 变量，当然也可以写多个。
+      { storage: sessionStorage, paths: ['userInfo', 'queryInfo', 'userToken', 'workspaceData','userUnitInfo'] }
+      // paths 是一个数组，如果写了 就会只存储 包含的 变量，当然也可以写多个。
     ]
   },
   getters: {

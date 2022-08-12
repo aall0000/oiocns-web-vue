@@ -92,6 +92,14 @@ const mainRouter: RouteRecordRaw[] = [
         meta: {
           title: '我的好友'
         }
+      },
+      {
+        path: '/organization/deptDeatil',
+        name: 'deptDeatil',
+        component: () => import('@/views/Organization/deptDetail.vue'),
+        meta: {
+          title: '部门维护'
+        }
       }
     ]
   },

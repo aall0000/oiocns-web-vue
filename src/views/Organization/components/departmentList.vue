@@ -21,7 +21,7 @@
       :data="tableData.list"
       stripe
       border
-      style="border: 1px solid #ccc; width: 95%; margin: 0 auto"
+      style="width: 95%; margin: 0 auto"
       height="390"
       :cell-style="{ 'text-align': 'center' }"
       header-row-class-name="table_header_class"
