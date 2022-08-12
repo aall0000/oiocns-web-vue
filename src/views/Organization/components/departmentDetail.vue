@@ -8,64 +8,73 @@
       </p>
 
       <div class="deptment-info-btns">
-        <div class="left-name">
-          <el-icon :size="20">
-            <Connection />
-            <img
-              class="group-icon"
-              style="width: 20px"
-              src="@/assets/img/group-next.png"
-              alt=""
-            /> </el-icon
-          >下级部门
-        </div>
+        <div class="left-name">部门信息</div>
         <div class="edit">
           <!-- <el-button type="primary">创建工作组</el-button> -->
-          <el-button type="primary" @click="dialogVisible = true">创建子部门</el-button>
+          <!-- <div style="color:#154ad8" @click="showDialog">分配人员</div> -->
           <!-- <el-button>调整排序</el-button> -->
         </div>
       </div>
     </div>
-    <div class="tab-list" v-if="DepartmentsList.list.length>0">
+    <div class="tab-list">
       <ul class="next-dept">
-        <!-- 头部 -->
-        <el-row class="next-dept-con header">
-          <el-col :span="4">
-            <div class="con">部门名称</div>
-          </el-col>
-          <!-- <el-col :span="4">
-            <div class="con">成员人数</div>
-          </el-col> -->
-        </el-row>
-        <!-- 内容 -->
-        <el-row class="next-dept-con body" v-for="(item,index) in DepartmentsList.list" :key="index">
-          <el-col :span="4">
-            <div class="con">{{item.name}}</div>
-          </el-col>
-          <!-- <el-col :span="4">
-            <div class="con">20</div>
-          </el-col> -->
-        </el-row>
+        <table class="table-mytable">
+          <tr>
+            <td class="left">名称</td>
+            <td class="column">{{selectItem.label}}</td>
+            <td class="left">人数</td>
+            <td class="column">{{listNum}}</td>
+          </tr>
+          <tr>
+            <td class="left">备注</td>
+            <td class="column">{{selectItem.remark}}</td>
+          </tr>
+        </table>
       </ul>
     </div>
-
-    <el-dialog v-model="dialogVisible" title="请输入部门名称" width="30%">
-      <el-form-item label="部门名称">
-        <el-input v-model="departmentName" placeholder="Please input" clearable />
-      </el-form-item>
-      <el-form-item label="部门编号">
-        <el-input v-model="departmentTeamCode" placeholder="Please input" clearable />
-      </el-form-item>
-      <el-form-item label="部门简介">
-        <el-input v-model="departmentTeamRemark" placeholder="Please input" clearable />
-      </el-form-item>
-      <template #footer>
-        <span class="dialog-footer">
-          <el-button @click="dialogVisible = false">取消</el-button>
-          <el-button type="primary" @click="submitFriends">确认</el-button>
-        </span>
-      </template>
-    </el-dialog>
+    <el-dialog
+        v-model="dialogVisible"
+        title="请输入部门名称"
+        width="50%"
+        center
+      >
+        <div class="main-title">部门信息</div>
+        <div class="main-dialog">
+          <el-form-item class="main-item" label="部门名称" style="width: 45%">
+            <el-input v-model="departmentName" placeholder="Please input" width="200px" clearable />
+          </el-form-item>
+          <el-form-item class="main-item" label="部门编号" style="width: 45%">
+            <el-input v-model="departmentTeamCode" placeholder="Please input" clearable />
+          </el-form-item>
+          <el-form-item class="main-item" label="部门简介" style="width: 45%">
+            <el-input v-model="departmentTeamRemark" placeholder="Please input" clearable />
+          </el-form-item>
+          <!-- <el-form-item class="main-item" label="上级节点">
+            <el-cascader :props="upNode" v-model="upNodeId" />
+          </el-form-item> -->
+        </div>
+        <div class="main-transfer">
+          <div class="main-title">分配人员</div>
+          <el-transfer 
+          v-model="transferList" 
+          :data="data"
+          :left-default-checked="[]"
+          :right-default-checked="rightCheck.list"
+          :props="{
+            value: 'id',
+            label: 'label',
+          }"
+          :titles="['全部', '选中的']"
+          >
+        </el-transfer>
+        </div>
+        <template #footer>
+          <span class="dialog-footer">
+            <el-button @click="dialogVisible = false">取消</el-button>
+            <el-button type="primary" @click="submitFriends">确认</el-button>
+          </span>
+        </template>
+      </el-dialog>
   </div>
 </template>
 <script lang="ts" setup>
@@ -75,19 +84,25 @@
   type selectItem = {
     name: string
     id: string
+    label:string,
+    remark:string
+  }
+   type rootType = {
+    id:string,
+    name:string,
   }
   const props = defineProps<{
     selectItem: selectItem,
-    envType:number
+    envType:number,
+    rootElement:rootType
   }>()
-  let dialogVisible = ref<boolean>(false)
   let selectId = ref<string>()
   let departmentName = ref<string>('')
   let departmentTeamCode = ref<string>('')
   let departmentTeamRemark = ref<string>('')
   const submitFriends = () => {
     $services.company
-      .createDepartment({
+      .updateDepartment({
         data: {
           id: selectId.value,
           name: departmentName.value,
@@ -99,7 +114,7 @@
       .then((res: ResultType) => {
         if(res.code ==200){
           dialogVisible.value = false
-          getDepartmentsList(props.selectItem.id)
+          getList(props.selectItem.id)
            ElMessage({
             message: '添加成功',
             type: 'success'
@@ -111,47 +126,211 @@
     () => props.selectItem,
     (newValue: selectItem) => {
       if (newValue.id !== '') {
-        if(props.envType ==1){
-          getDepartmentsList(newValue.id)
+        if(props.selectItem && props.rootElement){
+          if(props.selectItem.id  === props.rootElement.id){
+            getList(newValue.id)
+          }else{
+            getDepartmentList(newValue.id)
+          }
+        }
+        
+      }
+    }
+  )
+  const listNum = ref<number>(0);
+  const getDepartmentList = (id:string) =>{
+    $services.company
+      .getDepartmentPersons({
+        data: {
+          id: props.selectItem.id,
+          offset: 0,
+          limit: 100
+        }
+      })
+      .then((res: ResultType) => {
+        if(res.data.result){
+          listNum.value =res.data.total
+        }else{
+          listNum.value =0
+        }
+      })
+  }
+  //获取单位员工
+  const getList = (id: string) => {
+    $services.company
+      .getPersons({
+        data: {
+          id: props.selectItem.id,
+          offset: 0,
+          limit: 100
+        }
+      })
+      .then((res: ResultType) => {
+        if(res.data.result){
+          listNum.value =res.data.total
+        }else{
+          listNum.value =0
+        }
+      })
+  }
+  let dialogVisible = ref<boolean>(false)
+  const upNodeId = ref<any>([])
+  interface Option {
+    key: string
+    label: string
+  }
+  const data = ref<Option[]>()
+  const transferList = ref([])
+   const upNode = {
+    checkStrictly: true,
+    lazy: true,
+    lazyLoad(node: any, resolve: any) {
+      const { level } = node
+      if (props.envType == 1) {
+        if (node.level === 0) {
+          getQueryInfo(resolve)
+        }
+        if (node.level >= 1) {
+          getDepartmentsList(node, resolve)
         }
       }
-    },
-  )
-  type listItem  = {
-    id: string
-    name: string
+    }
   }
-  type DlistType = {
-    list:Array<listItem>
+  const showDialog = ()=>{
+    getPersons()
+    getDepartmentPersons()
   }
-  let DepartmentsList = reactive<DlistType>({list:[]})
-  const getDepartmentsList = (id: string) => {
-    let arr: any = []
+  const rightCheck = reactive({list:[]});
+  //获取单位人员
+  const getPersons = () => {
     $services.company
+    .getPersons({
+      data: {
+        id: props.selectItem.id,
+        offset: 0,
+        limit: 100
+      }
+    })
+    .then((res: ResultType) => {
+      let arr:any = []
+      if(res.data.result){
+        res.data.result.forEach((element:any) => {
+          let obj = {
+            key:parseInt(element.id),
+            label:element.name
+          }
+          arr.push(obj)
+        });
+      }
+      data.value = arr;
+      dialogVisible.value = true
+
+    })
+  }
+   const getDepartmentPersons = () => {
+    $services.company
+      .getDepartmentPersons({
+        data: {
+          id: props.selectItem.id,
+          offset: 0,
+          limit: 100
+        }
+      })
+      .then((res: ResultType) => {
+       let arr:any = []
+      if(res.data.result){
+        res.data.result.forEach((element:any) => {
+          let obj = {
+            key:parseInt(element.id),
+            label:element.name
+          }
+          arr.push(obj)
+        });
+      }
+      rightCheck.list = arr
+    })
+  }
+  //根节点数据
+  async function getQueryInfo(resolve: any) {
+    await $services.company.queryInfo({}).then((res: ResultType) => {
+      let obj = [
+        {
+          children: [] as string[],
+          label: res.data.name,
+          id: res.data.id
+        }
+      ]
+      return resolve(obj)
+    })
+  }
+  async function getDepartmentsList(node: any, resolve: any) {
+    let arr: any = []
+    await $services.company
       .getDepartments({
-        data: { id: id, offset: 0, limit: 100 }
+        data: { id: node.data.id, offset: 0, limit: 100 }
       })
       .then((res: ResultType) => {
         if (res.data.result) {
-          let resData = res.data.result
+          let resData = JSON.parse(JSON.stringify(res.data.result))
 
           resData.forEach((element: any) => {
             var obj = {
               id: element.id,
-              name: element.name
+              label: element.name,
+              code: element.code,
+              children: [] as []
             }
-            arr.push(obj)
+
+            arr.push(JSON.parse(JSON.stringify(obj)))
           })
         }
-        DepartmentsList.list = arr 
+        return resolve(arr)
       })
   }
 </script>
 
 <style lang="scss" scoped>
+ .main-dialog {
+    display: flex;
+    padding: 0 30px;
+    flex: 1;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    .main-item :nth-child(2n) {
+      padding-left: 5px;
+    }
+  }
+  .main-title {
+    margin-left: 30px;
+    font-weight: bold;
+    font-size: 16px;
+    color: #333;
+    margin-bottom: 20px;
+  }
+  .main-transfer {
+    margin: 0 auto;
+    display: flex;
+    border: 1px solid #eee;
+    border-radius: 5px;
+    padding: 20px;
+    margin: 0 30px;
+    .main-title {
+      width: 100%;
+    }
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+  }
+  .department-info{
+    box-sizing: border-box;
+    padding: 15px 20px;
+    background: #fff;
+    margin-bottom: 10px;
+    border-radius: 5px;
+  }
   .deptment-info {
     background: #fff;
-    padding: 20px;
+    margin-bottom: 15px;
     .deptment-info-name {
       font-size: 18px;
       font-weight: bold;
@@ -177,29 +356,23 @@
       }
     }
   }
-  .next-dept-con {
-    width: 100%;
-    padding: 0 40px;
-    background-color: #fff;
-
-    &.header {
-      background-color: #f3f3f3;
-      border-bottom: 1px solid #ccc;
-      height: 40px;
-      line-height: 40px;
+  .next-dept{
+    tr{
+      border: 1px solid #eff2f7;
+      color: #666;
+      height: 45px;
+      text-align: center;
     }
-
-    &.body {
-      border-bottom: 1px solid #ccc;
+    .left{
+      background: #f5f6fc;
+      width: 10.4%;
+      min-width: 110px;
     }
-
-    .con {
+    .column{
+      width: 39.6%;
       text-align: left;
-      width: 120px;
-      height: 40px;
-      line-height: 40px;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      padding: 0 20px;
+      background: #fff;
     }
   }
 </style>
