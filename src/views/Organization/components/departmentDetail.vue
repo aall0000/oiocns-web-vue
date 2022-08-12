@@ -60,10 +60,6 @@
           :data="data"
           :left-default-checked="[]"
           :right-default-checked="rightCheck.list"
-          :props="{
-            value: 'id',
-            label: 'label',
-          }"
           :titles="['全部', '选中的']"
           >
         </el-transfer>
@@ -241,7 +237,7 @@
       if(res.data.result){
         res.data.result.forEach((element:any) => {
           let obj = {
-            key:parseInt(element.id),
+            value:element.id,
             label:element.name
           }
           arr.push(obj)
