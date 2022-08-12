@@ -174,7 +174,11 @@
   const state = reactive({
     isShowCode: false,
     isShowName: true,
-    isShowUnit: false
+    isShowUnit: false,
+    nodeData: {
+      childNodes: [] as []
+    },
+    resolveData: Function as (data: any) => void
   })
   //获取部门
   onMounted(() => {
@@ -227,6 +231,8 @@
       }
     } else {
       if (node.level === 0) {
+        state.nodeData = node
+        state.resolveData = resolve
         getGroupsInfo(resolve)
       }
       if (node.level >= 1) {
@@ -462,11 +468,14 @@
         }
       })
       .then((res: ResultType) => {
-        if (res.data.code == 200) {
+        if (res.code == 200) {
           ElMessage({
             message: res.msg,
             type: 'success'
           })
+          dialogVisible.value = false
+          state.nodeData.childNodes = []
+          loadNode(state.nodeData, state.resolveData)
         }
       })
   }
