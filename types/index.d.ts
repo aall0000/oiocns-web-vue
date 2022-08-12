@@ -4,3 +4,4 @@ declare module 'utils';
 declare module '*.png';
 
 declare module '*.gif';
+

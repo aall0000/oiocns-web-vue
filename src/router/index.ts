@@ -96,7 +96,7 @@ const mainRouter: RouteRecordRaw[] = [
       {
         path: '/organization/deptDeatil',
         name: 'deptDeatil',
-        component: () => import('@/views/Organization/deptDeatil.vue'),
+        component: () => import('@/views/Organization/deptDetail.vue'),
         meta: {
           title: '部门维护'
         }

@@ -62,7 +62,7 @@
             <div class="tree-box">
               <el-icon v-if="data.type == 'org'"><School /></el-icon>
               <el-icon v-else><OfficeBuilding /></el-icon>
-              <span class="tree-box__text" @click="a(node, data)">{{ node.label }}</span>
+              <span class="tree-box__text">{{ node.label }}</span>
             </div>
           </span>
         </template>
@@ -106,9 +106,9 @@
         </span>
       </template>
     </el-dialog>
-    
+
   </ul>
-  <div class="weihu-wrap">
+  <div class="weihu-wrap" @click="handlePageChange">
       <span class="weihu-wrap-txt">部门维护</span>
     </div>
   </div>
@@ -120,8 +120,10 @@ import { Search, Plus } from '@element-plus/icons-vue'
 import { ref, reactive, onMounted, watch } from 'vue'
 import { useUserStore } from '@/store/user'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import { useRouter } from 'vue-router'
+import { storeToRefs } from 'pinia'
 
-  import { storeToRefs } from 'pinia'
+  const router =useRouter()
   const store = useUserStore()
   const { workspaceData } = storeToRefs(store)
   let dialogVisible = ref<boolean>(false)
@@ -409,6 +411,10 @@ import { ElMessage, ElMessageBox } from 'element-plus'
           })
         }
       })
+  }
+
+  const handlePageChange= ()=>{
+    router.push({path:'/organization/deptDeatil'})
   }
 </script>
 <style lang="scss">

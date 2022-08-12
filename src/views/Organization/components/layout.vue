@@ -1,6 +1,6 @@
 <template>
   <!--    主体-->
-  <div style="display: flex; border-top: 6px solid #eff0f4">
+  <div class="organization-layout-wrap" style="display: flex;height: 100%;">
     <!--      侧边栏-->
     <teleport v-if="isShowMenu" to="#menu-teleport-target">
       <div class="subMenu">
@@ -34,4 +34,8 @@ const isShowMenu = ref<boolean>(false)
 </script>
 
 <style scoped>
+.organization-layout-wrap{
+  display: flex;
+  flex-direction: column;
+}
 </style>

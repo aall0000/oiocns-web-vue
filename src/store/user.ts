@@ -1,21 +1,30 @@
 import { defineStore } from 'pinia'
 import $services from '@/services'
 import { ElMessage } from 'element-plus'
-import { type } from 'os'
 
 type QueryInfoType = {
   id: string
   [key: string]: any
 }
-type UserType = {
+type UnitInfoType={
+  id: string
+  typeName:string
+  thingId:string
+  [key: string]: any
+
+}
+
+
+type UserStoreType = {
   userInfo: any
   queryInfo: QueryInfoType
+  userUnitInfo:UnitInfoType
   [key: string]: any
 }
 
 export const useUserStore = defineStore({
   id: 'user', // id必填，且需要唯一
-  state: (): UserType => {
+  state: (): UserStoreType => {
     return {
       userInfo: {}, // 用户登录信息
       queryInfo: {} as QueryInfoType, // 用户详细信息
@@ -23,7 +32,8 @@ export const useUserStore = defineStore({
       copyCompanys: [],
       userToken: '' || sessionStorage.getItem('TOKEN'),
       workspaceData: {}, // 当前选中的公司
-      userNameMap: new Map()
+      userNameMap: new Map(),
+      userUnitInfo:{} as UnitInfoType,//所在单位信息
     }
   },
   persist: {
