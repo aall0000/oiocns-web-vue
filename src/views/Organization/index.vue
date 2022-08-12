@@ -2,7 +2,7 @@
   <div class="main-content">
     <!-- 单位管理 -->
     <div class="org-content" v-if="showMenu == true">
-      <departmentTree :envType="envType" @changeIndex="changeIndex" class="department-tree" />
+      <departmentTree :envType="envType" :rootElement="rootElement" :selectItem="selectItem" @changeIndex="changeIndex" class="department-tree" />
       <div class="main-dep" v-if="envType == 1">
         <departmentDetail :envType="envType" :rootElement="rootElement" :selectItem="selectItem" />
         <departmentList
@@ -44,28 +44,28 @@
   import { storeToRefs } from 'pinia'
   import { useRouter } from 'vue-router'
 
-  const store = useUserStore()
-  const { queryInfo } = storeToRefs(store)
-  const { workspaceData } = storeToRefs(store)
-  let showMenu = ref<boolean>(true)
-  if (workspaceData.value.name != '个人空间') {
-    showMenu.value = true
-  } else {
-    showMenu.value = false
+const store = useUserStore()
+const { queryInfo } = storeToRefs(store)
+const { workspaceData, userUnitInfo } = storeToRefs(store)
+let showMenu = ref<boolean>(true)
+if (workspaceData.value.name != '个人空间') {
+  showMenu.value = true
+} else {
+  showMenu.value = false
+}
+const isShowMenu = ref<boolean>(false)
+type selectType = {
+  name: string
+  id: string
+}
+onMounted(() => {
+  isShowMenu.value = true
+  if  (router.currentRoute.value.path ==  '/organization/company')  {
+    getInfo()
   }
-  const isShowMenu = ref<boolean>(false)
-  type selectType = {
-    name: string
-    id: string
-  }
-  onMounted(() => {
-    isShowMenu.value = true
-    if (router.currentRoute.value.path == '/organization/company') {
-      getInfo()
-    }
-  })
-  let router = useRouter()
-  let envType = ref<number>(1)
+})
+let router = useRouter()
+let envType  = ref<number>(1)
 
   watch(
     () => router.currentRoute.value.path,
@@ -123,6 +123,7 @@
         }
       ]
       rootElement.value = res.data
+      store.userUnitInfo = res.data
     })
   }
   const changeIndex = (obj: treeItem) => {
@@ -135,45 +136,47 @@
 </script>
 
 <style lang="scss">
-  .organization-wrap {
-    .el-menu--horizontal > .el-menu-item {
-      font-size: 18px;
+.organization-wrap {
+  .el-menu--horizontal>.el-menu-item {
+    font-size: 18px;
 
-      &:hover,
-      &.is-active {
-        background-color: none !important;
-        color: $mainColor !important;
-      }
-
-      &.is-active {
-        border-bottom: 2px solid $mainColor;
-      }
+    &:hover,
+    &.is-active {
+      background-color: none !important;
+      color: $mainColor  !important;
     }
 
-    .el-menu--horizontal .el-menu-item:not(.is-disabled):focus,
-    .el-menu--horizontal .el-menu-item:not(.is-disabled):hover {
-      background: none !important;
+    &.is-active {
+      border-bottom: 2px solid $mainColor;
     }
   }
+
+  .el-menu--horizontal .el-menu-item:not(.is-disabled):focus,
+  .el-menu--horizontal .el-menu-item:not(.is-disabled):hover {
+    background: none !important;
+  }
+}
 </style>
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" scoped>
-  :deep(.el-select) {
-    width: 100%;
-  }
-  .subMenu {
-    height: 100%;
-    width: 100px;
-    float: left;
-  }
-  .main-content {
-    width: 100%;
-    height: 100%;
-    overflow-y: auto;
-    position: absolute;
-    left: 0;
-    top: 0;
-  }
+:deep(.el-select) {
+  width: 100%;
+}
+
+.subMenu {
+  height: 100%;
+  width: 100px;
+  float: left;
+}
+
+.main-content {
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  position: absolute;
+  left: 0;
+  top: 0;
+}
 
   .org-content {
     background: #f0f2f5;

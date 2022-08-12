@@ -71,7 +71,9 @@
           <template #default="{ node, data }">
             <span class="custom-tree-node">
               <div class="tree-box">
-                <el-icon><School /></el-icon>
+                <el-icon>
+                  <School />
+                </el-icon>
                 <span class="tree-box__text">{{ node.label }}</span>
               </div>
             </span>
@@ -144,6 +146,10 @@
         </template>
       </el-dialog>
     </ul>
+
+    <div class="weihu-wrap" @click="handlePageChange">
+      <span class="weihu-wrap-txt">部门维护</span>
+    </div>
   </div>
 </template>
 
@@ -311,6 +317,17 @@
   //切换集团
   const changeGroupIndex = (val: object) => {
     checkGroup.value = val
+
+    for (let i = 0; i < selectList.list.length; i++) {
+      if (val.id === selectList.list[i].id) {
+        showTreeStatus.value = false
+
+        groupIndex.value = i
+        setTimeout(() => {
+          showTreeStatus.value = true
+        }, 10)
+      }
+    }
   }
   const upNode = {
     checkStrictly: true,
@@ -345,20 +362,17 @@
       })
       .then((res: ResultType) => {
         if (res.data.result) {
-          let resData = [res.data.result[0]]
+          let resData = [res.data.result[groupIndex.value]]
           resData.forEach((element: any) => {
             var obj = {
               id: element.id,
               label: element.name,
               code: element.code,
               children: [] as [],
-              value: element.id,
-              type: 'org',
-              team: element.team
+              value: element.id
             }
             arr.push(obj)
           })
-          changeIndexFun(arr[0])
         }
         return resolve(arr)
       })
