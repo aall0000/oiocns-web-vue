@@ -21,7 +21,7 @@
       </li>
       <li class="con tree-btns" v-if="envType == 1">
         <div class="title">部门管理</div>
-        <el-popover placement="bottom" :width="150" trigger="hover">
+        <!-- <el-popover placement="bottom" :width="150" trigger="hover">
           <template #reference>
             <el-icon color="#154ad8" :size="18">
               <View />
@@ -29,7 +29,7 @@
           </template>
           <el-checkbox v-model="state.isShowName" label="部门名称" />
           <el-checkbox v-model="state.isShowCode" label="部门编码" />
-        </el-popover>
+        </el-popover> -->
 
         <el-icon color="#154ad8" :size="20" @click="showDialog">
           <CirclePlus />
@@ -155,7 +155,7 @@
   import { ref, reactive, onMounted, watch } from 'vue'
   import { useUserStore } from '@/store/user'
   import { ElMessage, ElMessageBox } from 'element-plus'
-
+  import { useRouter } from 'vue-router'
   import { storeToRefs } from 'pinia'
   const store = useUserStore()
   const { workspaceData } = storeToRefs(store)
@@ -548,6 +548,10 @@
           })
         }
       })
+  }
+  const router =useRouter()
+  const handlePageChange = () => {
+    router.push({ path: '/organization/deptDeatil' })
   }
 </script>
 <style lang="scss">
