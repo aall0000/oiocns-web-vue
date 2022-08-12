@@ -84,7 +84,7 @@
     if (!formEl) return
     await formEl.validate((valid, fields) => {
       if (valid) {
-        let arr = props.dialogShow.sendData
+        let arr = (props.dialogShow.sendData || [])
 
         arr.push({
           id: guid,
@@ -104,7 +104,6 @@
               operation: 'replaceAll',
               data: {
                 name: '用户组件',
-                // temps: props.dialogShow.sendData
                 content: params.content
               }
             }
