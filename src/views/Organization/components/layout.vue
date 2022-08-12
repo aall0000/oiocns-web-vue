@@ -18,6 +18,8 @@ import subMenu from './menu.vue'
 import { ref, reactive, onMounted } from 'vue'
 import { useUserStore } from '@/store/user'
 import { storeToRefs } from 'pinia'
+import { useRouter } from 'vue-router'
+const router = useRouter()
 onMounted(() => {
   isShowMenu.value = true
 })
@@ -27,8 +29,10 @@ const store = useUserStore()
 const { workspaceData } = storeToRefs(store)
 if (workspaceData.value.name != '个人空间') {
   showMenu.value = true
+  router.push('/organization/company')
 } else {
   showMenu.value = false
+  router.push('/organization/friend')
 }
 const isShowMenu = ref<boolean>(false)
 </script>

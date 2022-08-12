@@ -58,8 +58,6 @@ const mainRouter: RouteRecordRaw[] = [
   {
     path: '/organization',
     component: () => import('@/views/Organization/components/layout.vue'),
-    redirect: '/organization/company',
-
     children: [
       {
         path: '/organization/company',

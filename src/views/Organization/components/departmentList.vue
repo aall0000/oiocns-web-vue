@@ -44,16 +44,16 @@
   </div>
   <el-dialog v-model="addPresonDialog" title="邀请加入单位" width="30%">
     <el-select
-      v-model="value"
+      v-model="inviter"
       filterable
       remote
       reserve-keyword
-      :placeholder="'请输入要查的人'"
+      placeholder="请输入要查的人"
       :remote-method="remoteMethod"
       :loading="loading"
     >
       <el-option
-        v-for="item in options"
+        v-for="item in inviterOptions"
         :key="item.value"
         :label="item.label"
         :value="item.value"
@@ -129,7 +129,6 @@
           } else {
             getDepartmentList(newValue.id)
           }
-        } else {
         }
       }
     }
@@ -184,8 +183,8 @@
     value: string
     label: string
   }
-  const options = ref<ListItem[]>([])
-  const value = ref('')
+  const inviterOptions = ref<ListItem[]>([])
+  const inviter = ref('')
   const loading = ref(false)
 
   const handleClick = (tab: TabsPaneContext, event: Event) => {
@@ -216,10 +215,10 @@
                 }
                 arr.push(obj)
               })
-              options.value = arr
+              inviterOptions.value = arr
               loading.value = false
             } else {
-              options.value = arr
+              inviterOptions.value = arr
               loading.value = false
             }
           } else {
@@ -230,12 +229,10 @@
           }
         })
     } else {
-      options.value = []
+      inviterOptions.value = []
     }
   }
-  const presonName = ref<string>('')
-  const presonCode = ref<string>('')
-  const presonRemark = ref<string>('')
+
   const addPresonDialog = ref<boolean>(false)
   //邀请加入单位
   const addPreson = () => {
@@ -243,7 +240,7 @@
       .pullPerson({
         data: {
           id: props.rootElement.id,
-          targetIds: [value.value]
+          targetIds: [inviter.value]
         }
       })
       .then((res: ResultType) => {

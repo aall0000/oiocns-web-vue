@@ -323,8 +323,8 @@ const remoteMethod = (query: string) => {
 </script>
 <style lang="scss" scoped>
 .firend-info {
-  background: #fff;
-  padding: 20px;
+  background: #f0f2f5;
+  padding: 15px;
 
   .deptment-info-name {
     font-size: 18px;
@@ -340,7 +340,8 @@ const remoteMethod = (query: string) => {
   .deptment-info-btns {
     display: flex;
     justify-content: space-between;
-    padding-top: 10px;
+    padding: 10px;
+    background: #fff;
 
     .left-name {
       font-size: 18px;
