@@ -134,7 +134,7 @@
       }
     }
   )
-  //获取部门员工
+  //获取单位员工
   const getList = (id: string) => {
     $services.company
       .getPersons({
@@ -175,11 +175,6 @@
         }
       })
   }
-  const authName = ref<string>('')
-  const authCode = ref<string>('')
-  const authRemark = ref<string>('')
-  const addAuthDiong = ref<boolean>(false)
-
   interface ListItem {
     value: string
     label: string
@@ -206,7 +201,6 @@
         .then((res: ResultType) => {
           if (res.code == 200) {
             let arr: { value: any; label: any }[] = []
-            console.log(res.data.result != undefined, res.data.result)
             if (res.data.result != undefined) {
               let states = res.data.result
               states.forEach((el: any) => {
@@ -247,7 +241,6 @@
         }
       })
       .then((res: ResultType) => {
-        console.log(res)
         if (res.code === 500) {
           ElMessage({
             message: res.msg,
@@ -267,7 +260,6 @@
   let selectArr = reactive<Array<selectItem>>([])
   const handleSelect = (key: Array<selectItem>) => {
     selectArr = key
-    console.log('selectArr', selectArr)
   }
   const showChange = () => {
     if (selectArr.length > 0) {

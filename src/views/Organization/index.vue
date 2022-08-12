@@ -4,6 +4,8 @@
     <div class="org-content" v-if="showMenu == true">
       <departmentTree
         :envType="envType"
+        :selectItem="selectItem"
+        :rootElement="rootElement"
         @changeIndex="changeIndex"
         class="department-tree"
       />
@@ -66,7 +68,7 @@
   let selectId = ref<string>()
   let selectItem = ref<selectType>({
     id: '',
-    name: ''
+    name: '',
   })
   let personType = ref<string>('1')
   //获取当前账号的所有单位
@@ -83,8 +85,9 @@
   //     console.log(selectList)
   //   })
   type treeItem = {
-    id: string
-    name: string
+    id: string,
+    name: string,
+    remark:string,
   }
   // const menuIndex = ref<string>('1')
   // const menuCheck = (index:string)=>{
