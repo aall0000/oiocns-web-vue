@@ -1,6 +1,6 @@
 <template>
   <div class="department-tree-wrap">
-    <ul class="departmentTree-wrap">
+  <ul class="departmentTree-wrap">
       <li class="con tree-select">
         <el-select v-if="envType == 2" v-model="selectValue" @change="changeGroupIndex" class="m-2" value-key="id"
           placeholder="Select" style="margin-left: 20px; width: 155px">
@@ -106,7 +106,12 @@
         </span>
       </template>
     </el-dialog>
+    
   </ul>
+  <div class="weihu-wrap">
+      <span class="weihu-wrap-txt">部门维护</span>
+    </div>
+  </div>
 </template>
 
 <script lang="ts" setup>
@@ -128,9 +133,11 @@ import { ElMessage, ElMessageBox } from 'element-plus'
     console.log('val', val)
     emit('changeIndex', val)
   }
-  const a = (node: any, data: any) => {
-    console.log('333', node, data)
-  }
+  const state = reactive({
+    isShowCode: false,
+    isShowName: true,
+    isShowUnit: false
+  })
   //获取部门
   onMounted(() => {
     if (props.envType == 1) {
