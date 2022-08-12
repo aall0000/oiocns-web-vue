@@ -84,7 +84,6 @@
 
   onMounted(() => {
     state.tabsList = JSON.parse(route.query.tabsData as string)
-    console.log('=======', state.tabsList)
   })
   // 自动生成id
   const guid = computed(() => {

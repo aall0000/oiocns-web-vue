@@ -53,6 +53,7 @@ declare module '@vue/runtime-core' {
     Protal: typeof import('./src/components/protal/index.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    SandBox: typeof import('./src/components/sandBox/index.vue')['default']
     SvgIcon: typeof import('./src/components/global/SvgIcon/index.vue')['default']
   }
 }
