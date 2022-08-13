@@ -155,9 +155,8 @@ const handleContextChange = (item: MenuItemType) => {
 
 .group-side-bar-wrap {
   width: 100%;
-  flex: 1 1 0;
   overflow-y: auto;
-  // position: relative;
+  height: calc(100vh - 60px);
 
   .group-con {
     position: relative;
