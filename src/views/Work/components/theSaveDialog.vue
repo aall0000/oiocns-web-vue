@@ -18,7 +18,7 @@
               <el-option
                 v-for="item in state.tabsList"
                 :key="item.value"
-                :label="item.name"
+                :label="item.title"
                 :value="item.id"
               >
               </el-option>
@@ -100,15 +100,20 @@
         if (radio.value === '1') {
           state.tabsList.forEach((el) => {
             if (el.id == state.form.id) {
-              el.temps = (props.dialogShow.sendData||[])
+              el.temps = props.dialogShow.sendData || []
             }
           })
+          // let params = {
+          //   userId: store.queryInfo.id,
+          //   content: state.tabsList
+          // }
           let params = {
+            workspaceId: store.workspaceData.id,
             userId: store.queryInfo.id,
             content: state.tabsList
           }
           $services.diyHome
-            .diy(`/anydata/object/set/template-${params.userId}`, {
+            .diy(`/anydata/object/set/${params.userId}.${params.workspaceId}`, {
               data: {
                 operation: 'replaceAll',
                 data: {
@@ -121,7 +126,7 @@
             .then((res: ResultType) => {
               if (res.state) {
                 ElMessage({
-                  message: '添加成功',
+                  message: '覆盖成功',
                   type: 'success'
                 })
                 handleClose()
@@ -129,7 +134,7 @@
             })
         } else {
           let tabIndex = 0
-          tabIndex = state.tabsList[state.tabsList.length - 1].name
+          tabIndex = state.tabsList[state.tabsList.length - 1]?.name || 0
           state.tabsList.push({
             id: guid.value,
             name: ++tabIndex,
