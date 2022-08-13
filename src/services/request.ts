@@ -4,7 +4,8 @@ import axios from 'axios'
 import autoMatchBaseUrl from './autoMatchBaseUrl'
 import { TIMEOUT } from '@/constant'
 import { useUserStore } from '@/store/user'
-import { useRouter } from 'vue-router'
+import router from '@/router'
+
 
 export const requestInstance = axios.create({})
 
@@ -107,10 +108,8 @@ const axiosResponse = {
       const { status } = response
       // 请求已发出，但是不在2xx的范围
       // 对返回的错误进行一些处理
-
-      console.log('错误信息', error, response, code)
       if (status == 401) {
-        // router.push({ path: '/login' })
+        router.push({ path: '/login' })
       }
 
       return Promise.reject(checkStatus(response))
