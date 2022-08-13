@@ -125,7 +125,7 @@ export default defineConfig(({ command, mode }) => {
       proxy: settings.proxyFlag
         ? {
             '/orginone': {
-              target: 'http://qkbyte.orginone.cn:2001', // 后台接口
+              target: 'http://anyinone.com:800', // 后台接口
               changeOrigin: true, // 是否允许跨域
               ws: true
               // secure: false,                    // 如果是https接口，需要配置这个参数---7003
