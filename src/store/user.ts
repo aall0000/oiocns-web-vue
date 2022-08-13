@@ -110,7 +110,10 @@ export const useUserStore = defineStore({
         .then((res: ResultType) => {
           console.log(res)
           if (res.code == 200) {
-            this.userCompanys = [...this.userCompanys, ...(res.data.result || [])]
+            this.userCompanys = [{
+              id: this.userInfo.workspaceId, 
+              name: this.userInfo.workspaceName
+            }, ...(res.data.result || [])]
             this.copyCompanys = JSON.parse(JSON.stringify(this.userCompanys))
             if (workspaceId) {
               this.getWorkspaceData(workspaceId)
