@@ -474,7 +474,11 @@
       onMounted(() => {
         getCanvasBg()
         getLayout()
-        getUserComponents()
+        if (route.query.userComponentList) {
+          state.userComponentList = JSON.parse(route.query.userComponentList).content
+        } else {
+          state.userComponentList = []
+        }
         // getTemps()
       })
 
