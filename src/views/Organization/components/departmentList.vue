@@ -28,13 +28,11 @@
       @select="handleSelect"
     >
       <el-table-column type="selection" />
-      <el-table-column prop="name" label="序号" />
-      <el-table-column prop="thingId" label="人员编码" />
+      <el-table-column prop="code" label="账号" />
+      <el-table-column prop="name" label="昵称" />
       <el-table-column prop="trueName" label="姓名" />
-      <el-table-column prop="typeName" label="角色" />
       <el-table-column prop="teamCode" label="手机号" />
-      <el-table-column prop="id" label="身份证" />
-      <el-table-column prop="status" label="状态" />
+      <el-table-column prop="remark" label="座右铭" />
       <el-table-column label="操作" width="100" />
     </el-table>
   </div>

@@ -21,7 +21,7 @@
       </li>
       <li class="con tree-btns" v-if="envType == 1">
         <div class="title">部门管理</div>
-        <el-popover placement="bottom" :width="150" trigger="hover">
+        <!-- <el-popover placement="bottom" :width="150" trigger="hover">
           <template #reference>
             <el-icon color="#154ad8" :size="18">
               <View />
@@ -29,7 +29,7 @@
           </template>
           <el-checkbox v-model="state.isShowName" label="部门名称" />
           <el-checkbox v-model="state.isShowCode" label="部门编码" />
-        </el-popover>
+        </el-popover> -->
 
         <el-icon color="#154ad8" :size="20" @click="showDialog">
           <CirclePlus />
@@ -99,7 +99,7 @@
             <el-input v-model="departmentTeamRemark" placeholder="Please input" clearable />
           </el-form-item>
           <el-form-item class="main-item" label="上级节点">
-            <el-cascader :props="upNode" v-model="upNodeId" />
+            <el-cascader :props="upNode" v-model="upNodeId" @change="handleChange" />
           </el-form-item>
         </div>
         <div class="main-transfer">
@@ -109,10 +109,6 @@
             :data="data"
             :left-default-checked="[]"
             :right-default-checked="[]"
-            :props="{
-              value: 'id',
-              label: 'label'
-            }"
             :titles="['全部', '选中的']"
           >
           </el-transfer>
@@ -135,7 +131,7 @@
           <el-input v-model="departmentTeamRemark" placeholder="Please input" clearable />
         </el-form-item>
         <el-form-item label="上级节点">
-          <el-cascader :props="upNode" v-model="upNodeId" />
+          <el-cascader :props="upNode" v-model="upNodeId" @change="handleChange" />
         </el-form-item>
 
         <template #footer>
@@ -159,7 +155,7 @@
   import { ref, reactive, onMounted, watch } from 'vue'
   import { useUserStore } from '@/store/user'
   import { ElMessage, ElMessageBox } from 'element-plus'
-
+  import { useRouter } from 'vue-router'
   import { storeToRefs } from 'pinia'
   const store = useUserStore()
   const { workspaceData } = storeToRefs(store)
@@ -202,7 +198,7 @@
   const submitFriends = () => {
     let parentId = 0
     if (upNodeId.value.length > 0) {
-      parentId = upNodeId.value[0]
+      parentId = upNodeId.value[upNodeId.value.length-1]
     }
     $services.company
       .createDepartment({
@@ -216,9 +212,20 @@
         }
       })
       .then((res: ResultType) => {
-        dialogVisible.value = false
-        if (transferList.value.length > 0) {
-          changePreson(res.data.id)
+        if(res.code ==200){
+          dialogVisible.value = false
+          if (transferList.value.length > 0) {
+            changePreson(res.data.id)
+          }
+          ElMessage({
+            message: res.msg,
+            type: 'success'
+          })
+        }else{
+          ElMessage({
+              message: res.msg,
+              type: 'error'
+            })
         }
       })
   }
@@ -251,6 +258,7 @@
     await $services.company.queryInfo({}).then((res: ResultType) => {
       let obj = [
         {
+          value:res.data.id,
           children: [] as string[],
           label: res.data.name,
           id: res.data.id,
@@ -273,6 +281,7 @@
           resData.forEach((element: any) => {
             var obj = {
               id: element.id,
+              value:element.id,
               label: element.name,
               code: element.code,
               children: [] as [],
@@ -287,6 +296,9 @@
   }
   type listItem = {
     list: any
+  }
+  const handleChange = (value:any) => {
+    console.log(value)
   }
   const selectValue = ref<string>(null)
   const selectList = reactive<listItem>({ list: [] })
@@ -314,8 +326,10 @@
         }
       })
   }
+  const groupIndex = ref<number>(0);
+  const showTreeStatus = ref<boolean>(true)
   //切换集团
-  const changeGroupIndex = (val: object) => {
+  const changeGroupIndex = (val: any) => {
     checkGroup.value = val
 
     for (let i = 0; i < selectList.list.length; i++) {
@@ -366,10 +380,10 @@
           resData.forEach((element: any) => {
             var obj = {
               id: element.id,
+              value:element.id,
               label: element.name,
               code: element.code,
-              children: [] as [],
-              value: element.id
+              children: [] as []
             }
             arr.push(obj)
           })
@@ -390,9 +404,9 @@
           resData.forEach((element: any) => {
             var obj = {
               id: element.id,
+              value:element.id,
               label: element.name,
               code: element.code,
-              value: element.id,
               children: [] as [],
               team: element.team,
               type: 'org'
@@ -477,7 +491,7 @@
         data: {
           code: departmentTeamCode.value,
           name: departmentName.value,
-          parentId: upNodeId.value[0],
+          parentId: upNodeId.value[upNodeId.value.length-1],
           teamRemark: departmentTeamRemark.value
         }
       })
@@ -490,6 +504,11 @@
           dialogVisible.value = false
           state.nodeData.childNodes = []
           loadNode(state.nodeData, state.resolveData)
+        }else{
+          ElMessage({
+            message: res.msg,
+            type: 'error'
+          })
         }
       })
   }
@@ -550,6 +569,10 @@
           })
         }
       })
+  }
+  const router =useRouter()
+  const handlePageChange = () => {
+    router.push({ path: '/organization/deptDeatil' })
   }
 </script>
 <style lang="scss">

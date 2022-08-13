@@ -60,10 +60,6 @@
           :data="data"
           :left-default-checked="[]"
           :right-default-checked="rightCheck.list"
-          :props="{
-            value: 'id',
-            label: 'label',
-          }"
           :titles="['全部', '选中的']"
           >
         </el-transfer>

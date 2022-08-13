@@ -16,9 +16,11 @@
       <el-table :data="personType == '1' ? state.friendList : state.qunList" stripe style="width: 100%" height="390"
         @select="handleSelect">
         <el-table-column type="selection" width="50" />
-        <el-table-column prop="typeName" label="类型" />
-        <el-table-column prop="code" label="成员编码" />
-        <el-table-column prop="name" label="成员角色" />
+        <el-table-column prop="code" label="账号" />
+        <el-table-column prop="name" label="昵称" />
+        <el-table-column prop="trueName" label="姓名" />
+        <el-table-column prop="teamCode" label="手机号" />
+        <el-table-column prop="remark" label="座右铭" />
         <el-table-column prop="name" label="操作">
           <template #default="scope">
             <el-button v-if="personType == '1'" @click="deleteFriend(scope.row.id)" type="primary">删除好友</el-button>
@@ -126,7 +128,16 @@ const getFriendList = async () => {
     .getFriends({ data: { offset: 0, limit: 10 } })
     .then((res: ResultType) => {
       const { result = [] } = res.data
-      state.friendList = result
+      state.friendList = result?.map(
+          (item: { team: { remark: any; code: any; name: any } }) => {
+            return {
+              ...item,
+              remark: item.team.remark,
+              teamCode: item.team.code,
+              trueName: item.team.name
+            }
+          }
+        )
     })
 }
 // 获取我加入的群列表
