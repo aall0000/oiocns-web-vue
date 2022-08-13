@@ -975,13 +975,13 @@
       cursor: pointer;
     }
     &-menu {
-      position: absolute;
+      position: fixed;
       right: -200px;
       // left: 50%;
-      top: 0;
+      top: 60px;
       // margin-left: 200px;
       width: 200px;
-      height: 100%;
+      height: calc(100% - 60px);
       padding: 10px;
       display: flex;
       flex-direction: column;
