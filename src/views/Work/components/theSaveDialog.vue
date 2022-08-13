@@ -100,7 +100,7 @@
         if (radio.value === '1') {
           state.tabsList.forEach((el) => {
             if (el.id == state.form.id) {
-              el.temps = props.dialogShow.sendData
+              el.temps = (props.dialogShow.sendData||[])
             }
           })
           let params = {
