@@ -681,7 +681,7 @@
         var obj = {
           x: 0,
           y: 0,
-          w: list.width,
+          w: parseInt(list.width),
           h: 4.5 * list.height,
           i: state.uniqueGrid,
           contain_name: list.name,
