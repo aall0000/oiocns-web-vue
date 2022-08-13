@@ -108,7 +108,7 @@ const mainRouter: RouteRecordRaw[] = [
 
     meta: {
       keepAlive: false,
-      title: '通讯录'
+      title: '关系'
     }
   },
   {

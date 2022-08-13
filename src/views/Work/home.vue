@@ -132,7 +132,7 @@
       .then((res: ResultType) => {
         if (res.state) {
           ElMessage({
-            message: '删除成功',
+            message: '更新成功',
             type: 'success'
           })
         }

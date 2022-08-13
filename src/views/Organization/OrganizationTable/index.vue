@@ -1,9 +1,9 @@
 <template>
   <div class="organization-table-wrap">
     <div class="organization-table-head">
-      <div class="organization-table-type">群 / 消息 / 组织架构</div>
+      <div class="organization-table-type">群 / 消息 / 人际关系</div>
       <div class="organization-table-name"
-        >组织架构 <span class="organization-table-name-desc">在这里查看或管理组织树</span>
+        >人际关系 <span class="organization-table-name-desc">在这里查看或管理组织树</span>
       </div>
     </div>
     <div class="content">

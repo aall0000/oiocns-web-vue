@@ -23,9 +23,6 @@
           </template>
         </el-input>
       </li>
-      <!-- <li class="con">
-        <el-button type="primary">组织架构</el-button>
-      </li> -->
       <ul class="img-list con">
         <li class="img-list-con img-list-add " @click="openDialogAdd" v-if="typeName === '群组'">+</li>
         <li class="img-list-con img-list-del " @click="openDialogDel" v-if="typeName === '群组'">
