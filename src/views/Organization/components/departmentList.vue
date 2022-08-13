@@ -40,7 +40,7 @@
   <div class="page-pagination">
     <el-pagination small background layout="prev, pager, next" :total="50" class="mt-4" />
   </div>
-  <el-dialog v-model="addPresonDialog" title="邀请加入单位" width="30%">
+  <el-dialog v-model="addPresonDialog" @close='hideAddPreson' title="邀请加入单位" width="30%">
     <el-select
       v-model="inviter"
       filterable
@@ -59,7 +59,7 @@
     </el-select>
     <template #footer>
       <span class="dialog-footer">
-        <el-button @click="addPresonDialog = false">取消</el-button>
+        <el-button @click="hideAddPreson">取消</el-button>
         <el-button type="primary" @click="addPreson">确认</el-button>
       </span>
     </template>
@@ -226,6 +226,10 @@
   }
 
   const addPresonDialog = ref<boolean>(false)
+  const hideAddPreson = ()=>{
+    inviter.value = ''
+    addPresonDialog.value = false
+  }
   //邀请加入单位
   const addPreson = () => {
     $services.company
@@ -246,8 +250,14 @@
             message: '添加成功',
             type: 'success'
           })
+          
+          if (props.selectItem.id === props.rootElement.id) {
+            getList(props.selectItem.id)
+          } else {
+            getDepartmentList(props.selectItem.id)
+          }
         }
-
+        inviter.value = ''
         addPresonDialog.value = false
       })
   }
