@@ -588,6 +588,9 @@
           if (el.key === key) {
             el.value = false
           }
+          if (el.key === 'user') {
+            getUserComponents()
+          }
         })
       }
 
