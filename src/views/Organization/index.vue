@@ -122,6 +122,10 @@ let envType  = ref<number>(1)
           id: res.data.id
         }
       ]
+      // let selectObj = res.data
+      // selectObj.label = res.data.name
+      // selectObj.remark = res.data.team.remark
+      // selectItem.value = selectObj
       rootElement.value = res.data
       store.userUnitInfo = res.data
     })

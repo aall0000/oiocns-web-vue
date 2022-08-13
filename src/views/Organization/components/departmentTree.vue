@@ -86,6 +86,7 @@
         title="请输入部门名称"
         width="50%"
         center
+        @close="dialogHide"
       >
         <div class="main-title">部门信息</div>
         <div class="main-dialog">
@@ -99,7 +100,7 @@
             <el-input v-model="departmentTeamRemark" placeholder="Please input" clearable />
           </el-form-item>
           <el-form-item class="main-item" label="上级节点">
-            <el-cascader :props="upNode" v-model="upNodeId" @change="handleChange" />
+            <el-cascader :props="upNode" v-model="upNodeId.list" @change="handleChange" />
           </el-form-item>
         </div>
         <div class="main-transfer">
@@ -115,7 +116,7 @@
         </div>
         <template #footer>
           <span class="dialog-footer">
-            <el-button @click="dialogVisible = false">取消</el-button>
+            <el-button @click="dialogHide">取消</el-button>
             <el-button type="primary" @click="submitFriends">确认</el-button>
           </span>
         </template>
@@ -131,7 +132,7 @@
           <el-input v-model="departmentTeamRemark" placeholder="Please input" clearable />
         </el-form-item>
         <el-form-item label="上级节点">
-          <el-cascader :props="upNode" v-model="upNodeId" @change="handleChange" />
+          <el-cascader :props="upNode" v-model="upNodeId.list" @change="handleChange" />
         </el-form-item>
 
         <template #footer>
@@ -197,8 +198,8 @@
   let departmentTeamRemark = ref<string>('')
   const submitFriends = () => {
     let parentId = 0
-    if (upNodeId.value.length > 0) {
-      parentId = upNodeId.value[upNodeId.value.length-1]
+    if (upNodeId.value.list.length > 0) {
+      parentId = upNodeId.value.list[upNodeId.value.list.length-1]
     }
     $services.company
       .createDepartment({
@@ -214,6 +215,8 @@
       .then((res: ResultType) => {
         if(res.code ==200){
           dialogVisible.value = false
+          state.nodeData.childNodes = []
+          loadNode(state.nodeData, state.resolveData)
           if (transferList.value.length > 0) {
             changePreson(res.data.id)
           }
@@ -236,7 +239,11 @@
   }
   const loadNode = (node: any, resolve: (data: any) => void) => {
     if (props.envType == 1) {
+     
       if (node.level === 0) {
+        state.nodeData = node
+        state.resolveData = resolve
+        console.log('state',state)
         getQueryInfo(resolve)
       }
       if (node.level >= 1) {
@@ -483,7 +490,7 @@
         return resolve(arr)
       })
   }
-  const upNodeId = ref<any>([])
+  const upNodeId = ref<any>({list:[]})
   //创建子集团
   const createSubgroupFun = () => {
     $services.company
@@ -491,7 +498,7 @@
         data: {
           code: departmentTeamCode.value,
           name: departmentName.value,
-          parentId: upNodeId.value[upNodeId.value.length-1],
+          parentId: upNodeId.value.list[upNodeId.value.list.length-1],
           teamRemark: departmentTeamRemark.value
         }
       })
@@ -537,7 +544,7 @@
         if (res.data.result) {
           res.data.result.forEach((element: any) => {
             let obj = {
-              key: parseInt(element.id),
+              key: element.id,
               label: element.name
             }
             arr.push(obj)
@@ -573,6 +580,14 @@
   const router =useRouter()
   const handlePageChange = () => {
     router.push({ path: '/organization/deptDeatil' })
+  }
+  const dialogHide = ()=>{
+     departmentName.value = ''
+     departmentTeamName.value = ''
+     departmentTeamCode.value = ''
+     departmentTeamRemark.value = ''
+     upNodeId.value.list = []
+     dialogVisible.value = false;
   }
 </script>
 <style lang="scss">
