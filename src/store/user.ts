@@ -66,6 +66,11 @@ export const useUserStore = defineStore({
           if (res.code == 200) {
             this.userInfo = res.data
             this.userToken = res.data.accessToken
+            this.workspaceData = {
+              id: res.data.workspaceId, 
+              name: res.data.workspaceName
+            }
+            this.userCompanys = [this.workspaceData]
             this.getQueryInfo()
           } else {
             ElMessage({
@@ -105,13 +110,7 @@ export const useUserStore = defineStore({
         .then((res: ResultType) => {
           console.log(res)
           if (res.code == 200) {
-            let arr = []
-            arr.push({ id: this.queryInfo.id, name: this.userInfo.workspaceName })
-            if (lazyLoad) {
-              this.userCompanys = [...this.userCompanys, ...(res.data.result || [])]
-            } else {
-              this.userCompanys = [...arr, ...(res.data.result || [])]
-            }
+            this.userCompanys = [...this.userCompanys, ...(res.data.result || [])]
             this.copyCompanys = JSON.parse(JSON.stringify(this.userCompanys))
             if (workspaceId) {
               this.getWorkspaceData(workspaceId)
@@ -139,8 +138,6 @@ export const useUserStore = defineStore({
         .then((res: ResultType) => {
           console.log(res)
           if (res.code == 200) {
-            let arr = []
-            arr.push({ id: this.queryInfo.id, name: this.userInfo.workspaceName })
             this.copyCompanys = JSON.parse(JSON.stringify(res.data.result))
             this.getWorkspaceData(data.workspaceId)
           } else {
