@@ -305,6 +305,7 @@
       v-if="item.key === 'save' && item.value"
       :key="item.key"
       :dialogShow="item"
+      :allData="allData"
       @closeDialog="handleCloseDialog"
     ></TheSaveDialog>
     <TheUserDialog
@@ -423,7 +424,15 @@
         newAppItem: [],
         activeNames2: [],
         onValue: '',
-        tabsData: []
+        tabsData: [],
+        allData: {
+          name: '首页配置',
+          content: [],
+          user: {
+            name: '用户组件',
+            content: []
+          }
+        }
       })
       const store = useUserStore()
       const router = useRouter()
@@ -479,6 +488,8 @@
         } else {
           state.userComponentList = []
         }
+        state.allData = JSON.parse(route.query.allData)
+        debugger
         // getTemps()
       })
 

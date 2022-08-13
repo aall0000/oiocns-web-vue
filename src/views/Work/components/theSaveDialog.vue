@@ -59,6 +59,9 @@
   const props = defineProps({
     dialogShow: {
       type: Object
+    },
+    allData: {
+      type: Object
     }
   })
   const route = useRoute()
@@ -76,7 +79,15 @@
     },
     tabsList: [],
     currentPage: 1,
-    pageSize: 9999999
+    pageSize: 9999999,
+    data: {
+      name: '首页配置',
+      content: [],
+      user: {
+        name: '用户组件',
+        content: []
+      }
+    }
   })
   const rules = reactive<FormRules>({
     name: [{ required: true, message: '请输入名称', trigger: 'blur' }]
@@ -84,6 +95,7 @@
 
   onMounted(() => {
     state.tabsList = JSON.parse(route.query.tabsData as string)
+    state.data = JSON.parse(JSON.stringify(props.allData))
   })
   // 自动生成id
   const guid = computed(() => {
@@ -107,6 +119,7 @@
           //   userId: store.queryInfo.id,
           //   content: state.tabsList
           // }
+          state.data.content = state.tabsList
           let params = {
             workspaceId: store.workspaceData.id,
             userId: store.queryInfo.id,
@@ -116,11 +129,7 @@
             .diy(`/anydata/object/set/${params.userId}.${params.workspaceId}`, {
               data: {
                 operation: 'replaceAll',
-                data: {
-                  name: '模板配置',
-                  // temps: props.dialogShow.sendData
-                  content: params.content
-                }
+                data: state.data
               }
             })
             .then((res: ResultType) => {
@@ -146,15 +155,12 @@
             userId: store.queryInfo.id,
             content: state.tabsList
           }
+          state.data.content = state.tabsList
           $services.diyHome
             .diy(`/anydata/object/set/${params.userId}.${params.workspaceId}`, {
               data: {
                 operation: 'replaceAll',
-                data: {
-                  name: '首页配置',
-                  // temps: props.dialogShow.sendData
-                  content: params.content
-                }
+                data: state.data
               }
             })
             .then((res: ResultType) => {
@@ -172,6 +178,27 @@
         console.log('error submit!', fields)
       }
     })
+  }
+  const saveData = () => {
+    let params = {
+      userId: store.queryInfo.id,
+      workspaceId: store.workspaceData.id
+    }
+    $services.diyHome
+      .diy(`/anydata/object/set/${params.userId}.${params.workspaceId}`, {
+        data: {
+          operation: 'replaceAll',
+          data: state.data
+        }
+      })
+      .then((res: ResultType) => {
+        if (res.state) {
+          ElMessage({
+            message: '删除成功',
+            type: 'success'
+          })
+        }
+      })
   }
   const handleClose = () => {
     emit('closeDialog', props.dialogShow.key)

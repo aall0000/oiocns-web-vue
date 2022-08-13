@@ -6,7 +6,11 @@
         @click="
           router.push({
             path: '/work',
-            query: { tabsData: '[]', userComponentList: JSON.stringify(state.data.user) }
+            query: {
+              tabsData: '[]',
+              userComponentList: JSON.stringify(state.data.user),
+              allData: JSON.stringify(state.data)
+            }
           })
         "
         >+</div
@@ -48,18 +52,21 @@
               :i="items.i"
               :key="items.i"
               :use-style-cursor="false"
-              ><TheSandBox
-                v-if="items.type == 'iframe'"
-                :cover="true"
-                :containLink="items.contain_link"
-                :type="items.type"
-              ></TheSandBox>
-              <TheComponentList
-                v-else
-                :cover="true"
-                :containLink="items.contain_link"
-                :type="items.type"
-              ></TheComponentList>
+            >
+              <div style="height: 100%; overflow: hidden">
+                <TheSandBox
+                  v-if="items.type == 'iframe'"
+                  :cover="true"
+                  :containLink="items.contain_link"
+                  :type="items.type"
+                ></TheSandBox>
+                <TheComponentList
+                  v-else
+                  :cover="true"
+                  :containLink="items.contain_link"
+                  :type="items.type"
+                ></TheComponentList>
+              </div>
             </grid-item>
           </grid-layout>
         </div>
@@ -125,7 +132,27 @@
         }
       })
   }
-
+  const saveData = () => {
+    let params = {
+      userId: store.queryInfo.id,
+      workspaceId: store.workspaceData.id
+    }
+    $services.diyHome
+      .diy(`/anydata/object/set/${params.userId}.${params.workspaceId}`, {
+        data: {
+          operation: 'replaceAll',
+          data: state.data
+        }
+      })
+      .then((res: ResultType) => {
+        if (res.state) {
+          ElMessage({
+            message: '删除成功',
+            type: 'success'
+          })
+        }
+      })
+  }
   const handleTabsEdit = (targetName: any, action: 'remove' | 'add') => {
     if (action === 'add') {
       router.push({
@@ -133,7 +160,8 @@
         query: {
           tabsData: JSON.stringify(state.data.content),
           onValue: editableTabsValue.value,
-          userComponentList: JSON.stringify(state.data.user)
+          userComponentList: JSON.stringify(state.data.user),
+          allData: JSON.stringify(state.data)
         }
       })
       console.log(JSON.stringify(state.data.user))
@@ -145,6 +173,7 @@
           state.data.content.splice(index, 1)
         }
       })
+      saveData()
     }
   }
 </script>
