@@ -58,8 +58,6 @@ const mainRouter: RouteRecordRaw[] = [
   {
     path: '/organization',
     component: () => import('@/views/Organization/components/layout.vue'),
-    redirect: '/organization/company',
-
     children: [
       {
         path: '/organization/company',
@@ -110,7 +108,7 @@ const mainRouter: RouteRecordRaw[] = [
 
     meta: {
       keepAlive: false,
-      title: '组织架构'
+      title: '关系'
     }
   },
   {

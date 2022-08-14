@@ -122,7 +122,12 @@ let envType  = ref<number>(1)
           id: res.data.id
         }
       ]
+      // let selectObj = res.data
+      // selectObj.label = res.data.name
+      // selectObj.remark = res.data.team.remark
+      // selectItem.value = selectObj
       rootElement.value = res.data
+      store.userUnitInfo = res.data
     })
   }
   const changeIndex = (obj: treeItem) => {
@@ -182,8 +187,8 @@ let envType  = ref<number>(1)
     padding: 15px;
     float: left;
     width: 100%;
+    height: 100%;
     // overflow-y: scroll;
-    //左侧组织架构 树
     .department-tree {
       width: 200px;
       min-width: 200px;

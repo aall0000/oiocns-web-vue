@@ -1,7 +1,20 @@
 <template>
   <div class="baseLayout">
     <div v-if="state.isShow" class="addImg">
-      <div class="text" @click="router.push({ path: '/work', query: { tabsData: '[]' } })">+</div>
+      <div
+        class="text"
+        @click="
+          router.push({
+            path: '/work',
+            query: {
+              tabsData: '[]',
+              userComponentList: JSON.stringify(state.data.user),
+              allData: JSON.stringify(state.data)
+            }
+          })
+        "
+        >+</div
+      >
     </div>
     <el-tabs
       v-else
@@ -12,7 +25,7 @@
       @edit="handleTabsEdit"
     >
       <el-tab-pane
-        v-for="item in state.editableTabs"
+        v-for="item in state.data.content"
         :key="item.name"
         :label="item.title"
         :name="item.name"
@@ -40,11 +53,20 @@
               :key="items.i"
               :use-style-cursor="false"
             >
-              <TheComponentList
-                :cover="false"
-                :containLink="items.contain_link"
-                :type="items.type"
-              ></TheComponentList>
+              <div style="height: 100%; overflow: hidden">
+                <TheSandBox
+                  v-if="items.type == 'iframe'"
+                  :cover="true"
+                  :containLink="items.contain_link"
+                  :type="items.type"
+                ></TheSandBox>
+                <TheComponentList
+                  v-else
+                  :cover="true"
+                  :containLink="items.contain_link"
+                  :type="items.type"
+                ></TheComponentList>
+              </div>
             </grid-item>
           </grid-layout>
         </div>
@@ -54,6 +76,7 @@
 </template>
 
 <script setup lang="ts">
+  import TheSandBox from '@/components/sandBox/index.vue'
   import TheComponentList from '@/components/protal/index.vue'
   import { ElMessage } from 'element-plus'
   import { onMounted, reactive, ref } from 'vue'
@@ -76,14 +99,22 @@
       draggable: false,
       resizable: false
     },
-    editableTabs: [],
-    isShow: false
+    isShow: false,
+    data: {
+      name: '首页配置',
+      content: [],
+      user: {
+        name: '用户组件',
+        content: []
+      }
+    }
   })
 
   onMounted(() => {
-    getData()
+    loadData()
   })
-  const getData = () => {
+
+  const loadData = () => {
     let params = {
       userId: store.queryInfo.id,
       workspaceId: store.workspaceData.id
@@ -92,13 +123,33 @@
       .diy(`/anydata/object/get/${params.userId}.${params.workspaceId}`, { method: 'GET' })
       .then((res: ResultType) => {
         if (res.state) {
-          state.editableTabs = res.data.content
-          if (state.editableTabs && state.editableTabs.length !== 0) {
-            editableTabsValue.value = state.editableTabs[state.editableTabs.length - 1].name
+          state.data = res.data
+          if (state.data.content && state.data.content.length !== 0) {
+            editableTabsValue.value = state.data.content[state.data.content.length - 1].name
           } else {
             state.isShow = true
           }
-          console.log(state.editableTabs)
+        }
+      })
+  }
+  const saveData = () => {
+    let params = {
+      userId: store.queryInfo.id,
+      workspaceId: store.workspaceData.id
+    }
+    $services.diyHome
+      .diy(`/anydata/object/set/${params.userId}.${params.workspaceId}`, {
+        data: {
+          operation: 'replaceAll',
+          data: state.data
+        }
+      })
+      .then((res: ResultType) => {
+        if (res.state) {
+          ElMessage({
+            message: '更新成功',
+            type: 'success'
+          })
         }
       })
   }
@@ -106,41 +157,23 @@
     if (action === 'add') {
       router.push({
         path: '/work',
-        query: { tabsData: JSON.stringify(state.editableTabs), onValue: editableTabsValue.value }
-      })
-    } else if (action === 'remove') {
-      const tabs = state.editableTabs
-      let activeName = targetName
-      tabs.forEach((el, index) => {
-        if (el.name == activeName) {
-          tabs.splice(index, 1)
+        query: {
+          tabsData: JSON.stringify(state.data.content),
+          onValue: editableTabsValue.value,
+          userComponentList: JSON.stringify(state.data.user),
+          allData: JSON.stringify(state.data)
         }
       })
-      let params = {
-        userId: store.queryInfo.id,
-        workspaceId: store.workspaceData.id,
-        content: tabs
-      }
-      $services.diyHome
-        .diy(`/anydata/object/set/${params.userId}.${params.workspaceId}`, {
-          data: {
-            operation: 'replaceAll',
-            data: {
-              name: '首页配置',
-              // temps: props.dialogShow.sendData
-              content: params.content
-            }
-          }
-        })
-        .then((res: ResultType) => {
-          if (res.state) {
-            ElMessage({
-              message: '删除成功',
-              type: 'success'
-            })
-            getData()
-          }
-        })
+      console.log(JSON.stringify(state.data.user))
+    } else if (action === 'remove') {
+      const tabs = state.data.content
+      let activeName = targetName
+      state.data.content.forEach((el, index) => {
+        if (el.name == activeName) {
+          state.data.content.splice(index, 1)
+        }
+      })
+      saveData()
     }
   }
 </script>

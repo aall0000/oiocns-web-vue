@@ -70,13 +70,13 @@
   })
 
   // 自动生成id
-  const guid = computed(() => {
+  const getUid = () => {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-      var r = (Math.random() * 16) | 0,
+      let r = (Math.random() * 16) | 0,
         v = c == 'x' ? r : (r & 0x3) | 0x8
       return v.toString(16)
     })
-  })
+  }
   onMounted(() => {
     state.templateList = props.dialogShow.temps
   })
@@ -84,10 +84,10 @@
     if (!formEl) return
     await formEl.validate((valid, fields) => {
       if (valid) {
-        let arr = props.dialogShow.sendData
+        let arr = props.dialogShow.sendData ? props.dialogShow.sendData : []
 
         arr.push({
-          id: guid,
+          id: getUid(),
           name: state.form.name,
           url: state.form.url,
           width: state.form.width,
@@ -104,7 +104,6 @@
               operation: 'replaceAll',
               data: {
                 name: '用户组件',
-                // temps: props.dialogShow.sendData
                 content: params.content
               }
             }

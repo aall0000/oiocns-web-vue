@@ -28,13 +28,11 @@
       @select="handleSelect"
     >
       <el-table-column type="selection" />
-      <el-table-column prop="name" label="序号" />
-      <el-table-column prop="thingId" label="人员编码" />
+      <el-table-column prop="code" label="账号" />
+      <el-table-column prop="name" label="昵称" />
       <el-table-column prop="trueName" label="姓名" />
-      <el-table-column prop="typeName" label="角色" />
       <el-table-column prop="teamCode" label="手机号" />
-      <el-table-column prop="id" label="身份证" />
-      <el-table-column prop="status" label="状态" />
+      <el-table-column prop="remark" label="座右铭" />
       <el-table-column label="操作" width="100" />
     </el-table>
   </div>
@@ -42,18 +40,18 @@
   <div class="page-pagination">
     <el-pagination small background layout="prev, pager, next" :total="50" class="mt-4" />
   </div>
-  <el-dialog v-model="addPresonDialog" title="邀请加入单位" width="30%">
+  <el-dialog v-model="addPresonDialog" @close='hideAddPreson' title="邀请加入单位" width="30%">
     <el-select
-      v-model="value"
+      v-model="inviter"
       filterable
       remote
       reserve-keyword
-      :placeholder="'请输入要查的人'"
+      placeholder="请输入要查的人"
       :remote-method="remoteMethod"
       :loading="loading"
     >
       <el-option
-        v-for="item in options"
+        v-for="item in inviterOptions"
         :key="item.value"
         :label="item.label"
         :value="item.value"
@@ -61,7 +59,7 @@
     </el-select>
     <template #footer>
       <span class="dialog-footer">
-        <el-button @click="addPresonDialog = false">取消</el-button>
+        <el-button @click="hideAddPreson">取消</el-button>
         <el-button type="primary" @click="addPreson">确认</el-button>
       </span>
     </template>
@@ -129,7 +127,6 @@
           } else {
             getDepartmentList(newValue.id)
           }
-        } else {
         }
       }
     }
@@ -179,8 +176,8 @@
     value: string
     label: string
   }
-  const options = ref<ListItem[]>([])
-  const value = ref('')
+  const inviterOptions = ref<ListItem[]>([])
+  const inviter = ref('')
   const loading = ref(false)
 
   const handleClick = (tab: TabsPaneContext, event: Event) => {
@@ -210,10 +207,10 @@
                 }
                 arr.push(obj)
               })
-              options.value = arr
+              inviterOptions.value = arr
               loading.value = false
             } else {
-              options.value = arr
+              inviterOptions.value = arr
               loading.value = false
             }
           } else {
@@ -224,20 +221,22 @@
           }
         })
     } else {
-      options.value = []
+      inviterOptions.value = []
     }
   }
-  const presonName = ref<string>('')
-  const presonCode = ref<string>('')
-  const presonRemark = ref<string>('')
+
   const addPresonDialog = ref<boolean>(false)
+  const hideAddPreson = ()=>{
+    inviter.value = ''
+    addPresonDialog.value = false
+  }
   //邀请加入单位
   const addPreson = () => {
     $services.company
       .pullPerson({
         data: {
           id: props.rootElement.id,
-          targetIds: [value.value]
+          targetIds: [inviter.value]
         }
       })
       .then((res: ResultType) => {
@@ -251,8 +250,14 @@
             message: '添加成功',
             type: 'success'
           })
+          
+          if (props.selectItem.id === props.rootElement.id) {
+            getList(props.selectItem.id)
+          } else {
+            getDepartmentList(props.selectItem.id)
+          }
         }
-
+        inviter.value = ''
         addPresonDialog.value = false
       })
   }

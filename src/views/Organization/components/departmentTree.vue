@@ -21,7 +21,7 @@
       </li>
       <li class="con tree-btns" v-if="envType == 1">
         <div class="title">部门管理</div>
-        <el-popover placement="bottom" :width="150" trigger="hover">
+        <!-- <el-popover placement="bottom" :width="150" trigger="hover">
           <template #reference>
             <el-icon color="#154ad8" :size="18">
               <View />
@@ -29,7 +29,7 @@
           </template>
           <el-checkbox v-model="state.isShowName" label="部门名称" />
           <el-checkbox v-model="state.isShowCode" label="部门编码" />
-        </el-popover>
+        </el-popover> -->
 
         <el-icon color="#154ad8" :size="20" @click="showDialog">
           <CirclePlus />
@@ -71,7 +71,9 @@
           <template #default="{ node, data }">
             <span class="custom-tree-node">
               <div class="tree-box">
-                <el-icon><School /></el-icon>
+                <el-icon>
+                  <School />
+                </el-icon>
                 <span class="tree-box__text">{{ node.label }}</span>
               </div>
             </span>
@@ -84,6 +86,7 @@
         title="请输入部门名称"
         width="50%"
         center
+        @close="dialogHide"
       >
         <div class="main-title">部门信息</div>
         <div class="main-dialog">
@@ -97,7 +100,7 @@
             <el-input v-model="departmentTeamRemark" placeholder="Please input" clearable />
           </el-form-item>
           <el-form-item class="main-item" label="上级节点">
-            <el-cascader :props="upNode" v-model="upNodeId" />
+            <el-cascader :props="upNode" v-model="upNodeId.list" @change="handleChange" />
           </el-form-item>
         </div>
         <div class="main-transfer">
@@ -113,7 +116,7 @@
         </div>
         <template #footer>
           <span class="dialog-footer">
-            <el-button @click="dialogVisible = false">取消</el-button>
+            <el-button @click="dialogHide">取消</el-button>
             <el-button type="primary" @click="submitFriends">确认</el-button>
           </span>
         </template>
@@ -129,7 +132,7 @@
           <el-input v-model="departmentTeamRemark" placeholder="Please input" clearable />
         </el-form-item>
         <el-form-item label="上级节点">
-          <el-cascader :props="upNode" v-model="upNodeId" />
+          <el-cascader :props="upNode" v-model="upNodeId.list" @change="handleChange" />
         </el-form-item>
 
         <template #footer>
@@ -140,6 +143,10 @@
         </template>
       </el-dialog>
     </ul>
+
+    <div class="weihu-wrap" @click="handlePageChange">
+      <span class="weihu-wrap-txt">部门维护</span>
+    </div>
   </div>
 </template>
 
@@ -149,7 +156,7 @@
   import { ref, reactive, onMounted, watch } from 'vue'
   import { useUserStore } from '@/store/user'
   import { ElMessage, ElMessageBox } from 'element-plus'
-
+  import { useRouter } from 'vue-router'
   import { storeToRefs } from 'pinia'
   const store = useUserStore()
   const { workspaceData } = storeToRefs(store)
@@ -170,7 +177,11 @@
   const state = reactive({
     isShowCode: false,
     isShowName: true,
-    isShowUnit: false
+    isShowUnit: false,
+    nodeData: {
+      childNodes: [] as []
+    },
+    resolveData: Function as (data: any) => void
   })
   //获取部门
   onMounted(() => {
@@ -187,8 +198,8 @@
   let departmentTeamRemark = ref<string>('')
   const submitFriends = () => {
     let parentId = 0
-    if (upNodeId.value.length > 0) {
-      parentId = upNodeId.value[0]
+    if (upNodeId.value.list.length > 0) {
+      parentId = upNodeId.value.list[upNodeId.value.list.length-1]
     }
     $services.company
       .createDepartment({
@@ -202,9 +213,22 @@
         }
       })
       .then((res: ResultType) => {
-        dialogVisible.value = false
-        if (transferList.value.length > 0) {
-          changePreson(res.data.id)
+        if(res.code ==200){
+          dialogVisible.value = false
+          state.nodeData.childNodes = []
+          loadNode(state.nodeData, state.resolveData)
+          if (transferList.value.length > 0) {
+            changePreson(res.data.id)
+          }
+          ElMessage({
+            message: res.msg,
+            type: 'success'
+          })
+        }else{
+          ElMessage({
+              message: res.msg,
+              type: 'error'
+            })
         }
       })
   }
@@ -215,7 +239,11 @@
   }
   const loadNode = (node: any, resolve: (data: any) => void) => {
     if (props.envType == 1) {
+     
       if (node.level === 0) {
+        state.nodeData = node
+        state.resolveData = resolve
+        console.log('state',state)
         getQueryInfo(resolve)
       }
       if (node.level >= 1) {
@@ -223,6 +251,8 @@
       }
     } else {
       if (node.level === 0) {
+        state.nodeData = node
+        state.resolveData = resolve
         getGroupsInfo(resolve)
       }
       if (node.level >= 1) {
@@ -235,6 +265,7 @@
     await $services.company.queryInfo({}).then((res: ResultType) => {
       let obj = [
         {
+          value:res.data.id,
           children: [] as string[],
           label: res.data.name,
           id: res.data.id,
@@ -257,6 +288,7 @@
           resData.forEach((element: any) => {
             var obj = {
               id: element.id,
+              value:element.id,
               label: element.name,
               code: element.code,
               children: [] as [],
@@ -271,6 +303,9 @@
   }
   type listItem = {
     list: any
+  }
+  const handleChange = (value:any) => {
+    console.log(value)
   }
   const selectValue = ref<string>(null)
   const selectList = reactive<listItem>({ list: [] })
@@ -298,9 +333,22 @@
         }
       })
   }
+  const groupIndex = ref<number>(0);
+  const showTreeStatus = ref<boolean>(true)
   //切换集团
-  const changeGroupIndex = (val: object) => {
+  const changeGroupIndex = (val: any) => {
     checkGroup.value = val
+
+    for (let i = 0; i < selectList.list.length; i++) {
+      if (val.id === selectList.list[i].id) {
+        showTreeStatus.value = false
+
+        groupIndex.value = i
+        setTimeout(() => {
+          showTreeStatus.value = true
+        }, 10)
+      }
+    }
   }
   const upNode = {
     checkStrictly: true,
@@ -335,20 +383,17 @@
       })
       .then((res: ResultType) => {
         if (res.data.result) {
-          let resData = [res.data.result[0]]
+          let resData = [res.data.result[groupIndex.value]]
           resData.forEach((element: any) => {
             var obj = {
               id: element.id,
+              value:element.id,
               label: element.name,
               code: element.code,
-              children: [] as [],
-              value: element.id,
-              type: 'org',
-              team: element.team
+              children: [] as []
             }
             arr.push(obj)
           })
-          changeIndexFun(arr[0])
         }
         return resolve(arr)
       })
@@ -366,9 +411,9 @@
           resData.forEach((element: any) => {
             var obj = {
               id: element.id,
+              value:element.id,
               label: element.name,
               code: element.code,
-              value: element.id,
               children: [] as [],
               team: element.team,
               type: 'org'
@@ -445,7 +490,7 @@
         return resolve(arr)
       })
   }
-  const upNodeId = ref<any>([])
+  const upNodeId = ref<any>({list:[]})
   //创建子集团
   const createSubgroupFun = () => {
     $services.company
@@ -453,16 +498,23 @@
         data: {
           code: departmentTeamCode.value,
           name: departmentName.value,
-          parentId: upNodeId.value[0],
+          parentId: upNodeId.value.list[upNodeId.value.list.length-1],
           teamRemark: departmentTeamRemark.value
         }
       })
       .then((res: ResultType) => {
         if (res.code == 200) {
-          dialogVisible.value = false;
           ElMessage({
             message: res.msg,
             type: 'success'
+          })
+          dialogVisible.value = false
+          state.nodeData.childNodes = []
+          loadNode(state.nodeData, state.resolveData)
+        }else{
+          ElMessage({
+            message: res.msg,
+            type: 'error'
           })
         }
       })
@@ -524,6 +576,18 @@
           })
         }
       })
+  }
+  const router =useRouter()
+  const handlePageChange = () => {
+    router.push({ path: '/organization/deptDeatil' })
+  }
+  const dialogHide = ()=>{
+     departmentName.value = ''
+     departmentTeamName.value = ''
+     departmentTeamCode.value = ''
+     departmentTeamRemark.value = ''
+     upNodeId.value.list = []
+     dialogVisible.value = false;
   }
 </script>
 <style lang="scss">

@@ -18,7 +18,7 @@
               <el-option
                 v-for="item in state.tabsList"
                 :key="item.value"
-                :label="item.name"
+                :label="item.title"
                 :value="item.id"
               >
               </el-option>
@@ -59,6 +59,9 @@
   const props = defineProps({
     dialogShow: {
       type: Object
+    },
+    allData: {
+      type: Object
     }
   })
   const route = useRoute()
@@ -76,7 +79,15 @@
     },
     tabsList: [],
     currentPage: 1,
-    pageSize: 9999999
+    pageSize: 9999999,
+    data: {
+      name: '首页配置',
+      content: [],
+      user: {
+        name: '用户组件',
+        content: []
+      }
+    }
   })
   const rules = reactive<FormRules>({
     name: [{ required: true, message: '请输入名称', trigger: 'blur' }]
@@ -84,6 +95,7 @@
 
   onMounted(() => {
     state.tabsList = JSON.parse(route.query.tabsData as string)
+    state.data = JSON.parse(JSON.stringify(props.allData))
   })
   // 自动生成id
   const guid = computed(() => {
@@ -100,28 +112,30 @@
         if (radio.value === '1') {
           state.tabsList.forEach((el) => {
             if (el.id == state.form.id) {
-              el.temps = props.dialogShow.sendData
+              el.temps = props.dialogShow.sendData || []
             }
           })
+          // let params = {
+          //   userId: store.queryInfo.id,
+          //   content: state.tabsList
+          // }
+          state.data.content = state.tabsList
           let params = {
+            workspaceId: store.workspaceData.id,
             userId: store.queryInfo.id,
             content: state.tabsList
           }
           $services.diyHome
-            .diy(`/anydata/object/set/template-${params.userId}`, {
+            .diy(`/anydata/object/set/${params.userId}.${params.workspaceId}`, {
               data: {
                 operation: 'replaceAll',
-                data: {
-                  name: '模板配置',
-                  // temps: props.dialogShow.sendData
-                  content: params.content
-                }
+                data: state.data
               }
             })
             .then((res: ResultType) => {
               if (res.state) {
                 ElMessage({
-                  message: '添加成功',
+                  message: '覆盖成功',
                   type: 'success'
                 })
                 handleClose()
@@ -129,7 +143,7 @@
             })
         } else {
           let tabIndex = 0
-          tabIndex = state.tabsList[state.tabsList.length - 1].name
+          tabIndex = state.tabsList[state.tabsList.length - 1]?.name || 0
           state.tabsList.push({
             id: guid.value,
             name: ++tabIndex,
@@ -141,15 +155,12 @@
             userId: store.queryInfo.id,
             content: state.tabsList
           }
+          state.data.content = state.tabsList
           $services.diyHome
             .diy(`/anydata/object/set/${params.userId}.${params.workspaceId}`, {
               data: {
                 operation: 'replaceAll',
-                data: {
-                  name: '首页配置',
-                  // temps: props.dialogShow.sendData
-                  content: params.content
-                }
+                data: state.data
               }
             })
             .then((res: ResultType) => {
@@ -167,6 +178,27 @@
         console.log('error submit!', fields)
       }
     })
+  }
+  const saveData = () => {
+    let params = {
+      userId: store.queryInfo.id,
+      workspaceId: store.workspaceData.id
+    }
+    $services.diyHome
+      .diy(`/anydata/object/set/${params.userId}.${params.workspaceId}`, {
+        data: {
+          operation: 'replaceAll',
+          data: state.data
+        }
+      })
+      .then((res: ResultType) => {
+        if (res.state) {
+          ElMessage({
+            message: '删除成功',
+            type: 'success'
+          })
+        }
+      })
   }
   const handleClose = () => {
     emit('closeDialog', props.dialogShow.key)
