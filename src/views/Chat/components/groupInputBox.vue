@@ -44,11 +44,12 @@ const emit = defineEmits(['submitInfo'])
 
 const submit = () => {
   const value = document.getElementById('insterHtml').innerHTML
-  emit('submitInfo', value)
-  // textarea.value = ""
+  if (value.endsWith("<div><br></div>")) {
+    emit('submitInfo', value.substring(0, value.length - 15))
+  } else {
+    emit('submitInfo', value)
+  }
   document.getElementById('insterHtml').innerHTML = ''
-  // console.log('sss',document.getElementById('insterHtml').innerHTML);
-
 }
 
 const handleFaceChoosed = (key: any, value: number) => {
