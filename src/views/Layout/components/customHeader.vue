@@ -2,7 +2,7 @@
   <el-row class="page-custom-header">
     <!-- 左侧 -->
     <el-col class="" :span="4">
-      <img class="logo" src="@/assets/img/avatar.jpg" alt="logo" />
+      <img class="logo" src="@/assets/img/avatar.jpg" alt="logo" @click="toHome"/>
       <el-dropdown trigger="click" placement="bottom-start" ref="dropdown">
         <span class="el-dropdown-link" @click="onClickDrop">
           {{ workspaceData?.name || '' }}
@@ -121,6 +121,9 @@
       value: false
     }
   ])
+  const toHome = () =>{
+    router.push('/home')
+  }
   const showSearchInfo = () => {
     visible.value = !visible.value
   }
