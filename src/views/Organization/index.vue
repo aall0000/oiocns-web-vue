@@ -189,7 +189,6 @@ let envType  = ref<number>(1)
     width: 100%;
     height: 100%;
     // overflow-y: scroll;
-    //左侧组织架构 树
     .department-tree {
       width: 200px;
       min-width: 200px;

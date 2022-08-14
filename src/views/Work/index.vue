@@ -363,7 +363,6 @@
         BtnDirection: 'right',
         transparentShow: false,
         baseWdith: 0,
-        listShow: true,
         templateList: [],
         dialogShow: [
           {
@@ -383,7 +382,6 @@
             value: false
           }
         ],
-        baseWdith: 0,
         uniqueGrid: 0,
         filterText: '', // 搜索
         listShow: true, // 控制组件与模板列表的展示
@@ -526,7 +524,7 @@
             .then((res: ResultType) => {
               if (res.state) {
                 ElMessage({
-                  message: '删除成功',
+                  message: '更新成功',
                   type: 'success'
                 })
                 getUserComponents()
@@ -776,7 +774,7 @@
               if (res.state) {
                 ElMessage({
                   type: 'success',
-                  message: '删除成功'
+                  message: '更新成功'
                 })
               }
             })

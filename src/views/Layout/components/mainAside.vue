@@ -95,15 +95,15 @@
   //   console.log(val)
   // }
   const mainMenus = [
-    { name: '工作台', icon: 'Tickets', path: '/workHome' },
+    { name: '工作台', icon: 'House', path: '/workHome' },
     { name: '消息', icon: 'ChatDotRound', path: '/chat' },
-    { name: '组织架构', icon: 'School', path: '/organization' },
-    { name: '商店', icon: 'Grid', path: '/appStore' },
-    { name: '应用', icon: 'GoodsFilled', path: '/appStpre', bottom: true },
-    { name: '元数据', icon: 'Share', path: '/thing' },
+    { name: '关系', icon: 'Avatar', path: '/organization' },
+    { name: '市场', icon: 'GoodsFilled', path: '/appStore' },
+    { name: '应用', icon: 'Grid', path: '/appStpre', bottom: true },
+    { name: '数据', icon: 'Share', path: '/thing' },
     {
       name: '我的',
-      icon: 'Setting',
+      icon: 'Operation',
       path: IsSelfSpace ? '/user' : '/company',
       key: IsSelfSpace ? '/user/' : '/company/',
       bottom: true

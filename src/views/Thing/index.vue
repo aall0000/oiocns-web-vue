@@ -279,7 +279,6 @@
         BtnDirection: 'right',
         transparentShow: false,
         baseWdith: 0,
-        listShow: true,
         filterText: '', //搜索
         templateList: [
           {
@@ -305,7 +304,6 @@
             value: false
           }
         ],
-        baseWdith: 0,
         uniqueGrid: 0,
         filterText: '', // 搜索
         listShow: true, // 控制组件与模板列表的展示
