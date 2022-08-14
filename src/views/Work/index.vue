@@ -305,6 +305,7 @@
       v-if="item.key === 'save' && item.value"
       :key="item.key"
       :dialogShow="item"
+      :allData="allData"
       @closeDialog="handleCloseDialog"
     ></TheSaveDialog>
     <TheUserDialog
@@ -421,7 +422,15 @@
         newAppItem: [],
         activeNames2: [],
         onValue: '',
-        tabsData: []
+        tabsData: [],
+        allData: {
+          name: '首页配置',
+          content: [],
+          user: {
+            name: '用户组件',
+            content: []
+          }
+        }
       })
       const store = useUserStore()
       const router = useRouter()
@@ -472,7 +481,13 @@
       onMounted(() => {
         getCanvasBg()
         getLayout()
-        getUserComponents()
+        if (route.query.userComponentList) {
+          state.userComponentList = JSON.parse(route.query.userComponentList).content
+        } else {
+          state.userComponentList = []
+        }
+        state.allData = JSON.parse(route.query.allData)
+        debugger
         // getTemps()
       })
 
@@ -973,13 +988,13 @@
       cursor: pointer;
     }
     &-menu {
-      position: absolute;
+      position: fixed;
       right: -200px;
       // left: 50%;
-      top: 0;
+      top: 60px;
       // margin-left: 200px;
       width: 200px;
-      height: 100%;
+      height: calc(100% - 60px);
       padding: 10px;
       display: flex;
       flex-direction: column;

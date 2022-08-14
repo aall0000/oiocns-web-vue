@@ -1,7 +1,20 @@
 <template>
   <div class="baseLayout">
     <div v-if="state.isShow" class="addImg">
-      <div class="text" @click="router.push({ path: '/work', query: { tabsData: '[]' } })">+</div>
+      <div
+        class="text"
+        @click="
+          router.push({
+            path: '/work',
+            query: {
+              tabsData: '[]',
+              userComponentList: JSON.stringify(state.data.user),
+              allData: JSON.stringify(state.data)
+            }
+          })
+        "
+        >+</div
+      >
     </div>
     <el-tabs
       v-else
@@ -39,18 +52,21 @@
               :i="items.i"
               :key="items.i"
               :use-style-cursor="false"
-            ><TheSandBox
-            v-if="items.type == 'iframe'"
-              :cover="true"
-              :containLink="items.contain_link"
-              :type="items.type"
-            ></TheSandBox>
-            <TheComponentList
-              v-else
-              :cover="true"
-              :containLink="items.contain_link"
-              :type="items.type"
-              ></TheComponentList>
+            >
+              <div style="height: 100%; overflow: hidden">
+                <TheSandBox
+                  v-if="items.type == 'iframe'"
+                  :cover="true"
+                  :containLink="items.contain_link"
+                  :type="items.type"
+                ></TheSandBox>
+                <TheComponentList
+                  v-else
+                  :cover="true"
+                  :containLink="items.contain_link"
+                  :type="items.type"
+                ></TheComponentList>
+              </div>
             </grid-item>
           </grid-layout>
         </div>
@@ -85,10 +101,10 @@
     },
     isShow: false,
     data: {
-      name: "首页配置",
+      name: '首页配置',
       content: [],
       user: {
-        name: "用户组件",
+        name: '用户组件',
         content: []
       }
     }
@@ -98,7 +114,7 @@
     loadData()
   })
 
-  const loadData = ()=>{
+  const loadData = () => {
     let params = {
       userId: store.queryInfo.id,
       workspaceId: store.workspaceData.id
@@ -108,25 +124,24 @@
       .then((res: ResultType) => {
         if (res.state) {
           state.data = res.data
-          if(state.data.content && state.data.content.length !==0){
+          if (state.data.content && state.data.content.length !== 0) {
             editableTabsValue.value = state.data.content[state.data.content.length - 1].name
-          }else{
+          } else {
             state.isShow = true
           }
         }
       })
   }
-
-  const saveData = ()=>{
+  const saveData = () => {
     let params = {
       userId: store.queryInfo.id,
-      workspaceId: store.workspaceData.id,
+      workspaceId: store.workspaceData.id
     }
     $services.diyHome
       .diy(`/anydata/object/set/${params.userId}.${params.workspaceId}`, {
         data: {
           operation: 'replaceAll',
-          data: state.data,
+          data: state.data
         }
       })
       .then((res: ResultType) => {
@@ -142,8 +157,14 @@
     if (action === 'add') {
       router.push({
         path: '/work',
-        query: { tabsData: JSON.stringify(state.data.content), onValue: editableTabsValue.value }
+        query: {
+          tabsData: JSON.stringify(state.data.content),
+          onValue: editableTabsValue.value,
+          userComponentList: JSON.stringify(state.data.user),
+          allData: JSON.stringify(state.data)
+        }
       })
+      console.log(JSON.stringify(state.data.user))
     } else if (action === 'remove') {
       const tabs = state.data.content
       let activeName = targetName
@@ -152,8 +173,8 @@
           state.data.content.splice(index, 1)
         }
       })
+      saveData()
     }
-    saveData()
   }
 </script>
 
