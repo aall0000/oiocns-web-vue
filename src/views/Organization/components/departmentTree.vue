@@ -84,7 +84,7 @@
       <el-dialog
         v-model="dialogVisible"
         v-if="envType == 1"
-        title="请输入部门名称"
+        title="请录入部门信息"
         width="50%"
         center
         @close="dialogHide"
@@ -101,7 +101,7 @@
             <el-input v-model="departmentTeamRemark" placeholder="请输入部门简介" clearable />
           </el-form-item>
           <el-form-item class="main-item" label="上级节点">
-            <el-cascader :props="upNode" v-model="dd" @change="handleChange" />
+            <el-cascader :props="upNode" v-model="upNodeId.list" @change="handleChange" />
           </el-form-item>
         </div>
         <div class="main-transfer">
@@ -178,9 +178,20 @@
     selectItem: selectItem
     rootElement: selectItem
   }>()
-  const changeIndexFun = (val: any) => {
-    console.log('node=====', val)
+  const changeIndexFun = (val: any, nodeAttribute?, event?) => {
     emit('changeIndex', val)
+    // 清空表单人员分配信息
+    transferList.value = []
+    // 设置表单上级节点
+    if(nodeAttribute){
+      let parentIdArr = [];
+      const level = nodeAttribute.level;
+      for(let i = 0; i<level; i++){
+        parentIdArr = [...[nodeAttribute.data.value], ...parentIdArr]
+        nodeAttribute = nodeAttribute.parent
+      }
+      upNodeId.value.list = parentIdArr;
+    }
   }
   const state = reactive({
     isShowCode: false,
@@ -204,8 +215,6 @@
   let departmentTeamName = ref<string>('')
   let departmentTeamCode = ref<string>('')
   let departmentTeamRemark = ref<string>('')
-
-  const dd = ["342689315261911040",  "342689620204589056",  "342693355249078272" ];
 
   const submitFriends = () => {
     let parentId = 0
@@ -290,7 +299,7 @@
     let arr: any = []
     await $services.company
       .getDepartments({
-        data: { id: node.data.id, offset: 0, limit: 100 }
+        data: { id: node.data.id, offset: 0, limit: 1000 }
       })
       .then((res: ResultType) => {
         if (res.data.result) {
@@ -333,7 +342,7 @@
       .companyGetGroups({
         data: {
           offset: 0,
-          limit: 100
+          limit: 1000
         }
       })
       .then((res: ResultType) => {
@@ -389,7 +398,7 @@
       .companyGetGroups({
         data: {
           offset: 0,
-          limit: 100
+          limit: 1000
         }
       })
       .then((res: ResultType) => {
@@ -414,7 +423,7 @@
     let level = node.level
     await $services.company
       .getSubgroups({
-        data: { id: node.data.id, offset: 0, limit: 100 }
+        data: { id: node.data.id, offset: 0, limit: 1000 }
       })
       .then((res: ResultType) => {
         if (res.data.result) {
@@ -447,7 +456,7 @@
         data: {
           id: node.data.id,
           offset: 0,
-          limit: 100
+          limit: 1000
         }
       })
       .then((res: ResultType) => {
@@ -478,7 +487,7 @@
         data: {
           id: node.data.id,
           offset: 0,
-          limit: 100
+          limit: 1000
         }
       })
       .then((res: ResultType) => {
@@ -547,7 +556,7 @@
         data: {
           id: props.rootElement.id,
           offset: 0,
-          limit: 100
+          limit: 1000
         }
       })
       .then((res: ResultType) => {
@@ -555,7 +564,7 @@
         if (res.data.result) {
           res.data.result.forEach((element: any) => {
             let obj = {
-              key: element.id,
+              value:element.id,
               label: element.name
             }
             arr.push(obj)
