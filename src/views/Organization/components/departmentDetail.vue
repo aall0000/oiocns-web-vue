@@ -10,7 +10,7 @@
         <div class="left-name">部门信息</div>
         <div class="edit">
           <!-- <el-button type="primary">创建工作组</el-button> -->
-          <div style="color:#154ad8" @click="showDialog">分配人员</div>
+          <div style="color:#154ad8; cursor: pointer;" @click="showDialog">分配人员</div>
           <!-- <el-button>调整排序</el-button> -->
         </div>
       </div>
@@ -20,7 +20,7 @@
         <table class="table-mytable">
           <tr>
             <td class="left">名称</td>
-            <td class="column">{{selectItem.name}}</td>
+            <td class="column">{{selectItem.name || selectItem.label}}</td>
             <td class="left">人数</td>
             <td class="column">{{listNum}}</td>
           </tr>
@@ -33,20 +33,20 @@
     </div>
     <el-dialog
         v-model="dialogVisible"
-        title="请输入部门名称"
+        title="请录入部门信息"
         width="50%"
         center
       >
         <div class="main-title">部门信息</div>
         <div class="main-dialog">
           <el-form-item class="main-item" label="部门名称" style="width: 45%">
-            <el-input v-model="departmentName" placeholder="Please input" width="200px" clearable />
+            <el-input v-model="departmentName" placeholder="请输入部门名称" width="200px" clearable />
           </el-form-item>
           <el-form-item class="main-item" label="部门编号" style="width: 45%">
-            <el-input v-model="departmentTeamCode" placeholder="Please input" clearable />
+            <el-input v-model="departmentTeamCode" placeholder="请输入部门编号" clearable />
           </el-form-item>
           <el-form-item class="main-item" label="部门简介" style="width: 45%">
-            <el-input v-model="departmentTeamRemark" placeholder="Please input" clearable />
+            <el-input v-model="departmentTeamRemark" placeholder="请输入部门简介" clearable />
           </el-form-item>
           <el-form-item class="main-item" label="上级节点">
             <el-cascader :props="upNode" v-model="upNodeId" />
@@ -54,14 +54,14 @@
         </div>
         <div class="main-transfer">
           <div class="main-title">分配人员</div>
-          <el-transfer 
-          v-model="transferList" 
-          :data="data"
-          :left-default-checked="[]"
-          :right-default-checked="rightCheck.list"
-          :titles="['全部', '选中的']"
+          <el-transfer
+            v-model="transferList"
+            :data="data"
+            :left-default-checked="[]"
+            :right-default-checked="[]"
+            :titles="['全部', '选中的']"
           >
-        </el-transfer>
+          </el-transfer>
         </div>
         <template #footer>
           <span class="dialog-footer">
@@ -121,6 +121,7 @@
     () => props.selectItem,
     (newValue: selectItem) => {
       if (newValue.id !== '') {
+        console.log("props.selectItem", props.selectItem)
         if(props.selectItem && props.rootElement){
           if(props.selectItem.id  === props.rootElement.id){
             getList(newValue.id)
@@ -128,7 +129,7 @@
             getDepartmentList(newValue.id)
           }
         }
-        
+
       }
     }
   )
@@ -139,7 +140,7 @@
         data: {
           id: props.selectItem.id,
           offset: 0,
-          limit: 100
+          limit: 1000
         }
       })
       .then((res: ResultType) => {
@@ -157,7 +158,7 @@
         data: {
           id: props.selectItem.id,
           offset: 0,
-          limit: 100
+          limit: 1000
         }
       })
       .then((res: ResultType) => {
@@ -192,10 +193,10 @@
     }
   }
   const showDialog = ()=>{
+    transferList.value = []
     getPersons()
     getDepartmentPersons()
   }
-  const rightCheck = reactive({list:[]});
   //获取单位人员
   const getPersons = () => {
     $services.company
@@ -203,7 +204,7 @@
       data: {
         id: props.selectItem.id,
         offset: 0,
-        limit: 100
+        limit: 1000
       }
     })
     .then((res: ResultType) => {
@@ -223,28 +224,20 @@
 
     })
   }
-   const getDepartmentPersons = () => {
+  const getDepartmentPersons = () => {
     $services.company
       .getDepartmentPersons({
         data: {
           id: props.selectItem.id,
           offset: 0,
-          limit: 100
+          limit: 1000
         }
       })
       .then((res: ResultType) => {
        let arr:any = []
-       console.log('res.data',res.data)
-      if(res.data){
-        res.data.result.forEach((element:any) => {
-          let obj = {
-            value:element.id,
-            label:element.name
-          }
-          arr.push(obj)
-        });
+      if(res.data && res.data.result){
+        transferList.value = res.data.result.map(d => d.id);
       }
-      rightCheck.list = arr
     })
   }
   //根节点数据
@@ -264,7 +257,7 @@
     let arr: any = []
     await $services.company
       .getDepartments({
-        data: { id: node.data.id, offset: 0, limit: 100 }
+        data: { id: node.data.id, offset: 0, limit: 1000 }
       })
       .then((res: ResultType) => {
         if (res.data.result) {
