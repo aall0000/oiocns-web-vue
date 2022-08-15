@@ -172,6 +172,8 @@
     rootElement: selectItem
   }>()
   const changeIndexFun = (val: any) => {
+    var obj = val;
+    obj.name = val.label
     emit('changeIndex', val)
   }
   const state = reactive({
@@ -544,7 +546,7 @@
         if (res.data.result) {
           res.data.result.forEach((element: any) => {
             let obj = {
-              key: element.id,
+              value:element.id,
               label: element.name
             }
             arr.push(obj)

@@ -6,12 +6,11 @@
         <!-- <span class="info-num">20人</span> -->
         <!-- <el-button size="small" style="margin-left: 15px">编辑</el-button> -->
       </p>
-
       <div class="deptment-info-btns">
         <div class="left-name">部门信息</div>
         <div class="edit">
           <!-- <el-button type="primary">创建工作组</el-button> -->
-          <!-- <div style="color:#154ad8" @click="showDialog">分配人员</div> -->
+          <div style="color:#154ad8" @click="showDialog">分配人员</div>
           <!-- <el-button>调整排序</el-button> -->
         </div>
       </div>
@@ -21,7 +20,7 @@
         <table class="table-mytable">
           <tr>
             <td class="left">名称</td>
-            <td class="column">{{selectItem.label}}</td>
+            <td class="column">{{selectItem.name}}</td>
             <td class="left">人数</td>
             <td class="column">{{listNum}}</td>
           </tr>
@@ -49,9 +48,9 @@
           <el-form-item class="main-item" label="部门简介" style="width: 45%">
             <el-input v-model="departmentTeamRemark" placeholder="Please input" clearable />
           </el-form-item>
-          <!-- <el-form-item class="main-item" label="上级节点">
+          <el-form-item class="main-item" label="上级节点">
             <el-cascader :props="upNode" v-model="upNodeId" />
-          </el-form-item> -->
+          </el-form-item>
         </div>
         <div class="main-transfer">
           <div class="main-title">分配人员</div>
@@ -212,7 +211,8 @@
       if(res.data.result){
         res.data.result.forEach((element:any) => {
           let obj = {
-            key:parseInt(element.id),
+            value:element.id,
+            key:element.id,
             label:element.name
           }
           arr.push(obj)
@@ -234,10 +234,11 @@
       })
       .then((res: ResultType) => {
        let arr:any = []
-      if(res.data.result){
+       console.log('res.data',res.data)
+      if(res.data){
         res.data.result.forEach((element:any) => {
           let obj = {
-            key:parseInt(element.id),
+            value:element.id,
             label:element.name
           }
           arr.push(obj)

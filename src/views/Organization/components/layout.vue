@@ -9,7 +9,7 @@
     </teleport>
 
     <!--      内容区域home-->
-    <router-view style="flex: 1" />
+    <router-view />
   </div>
 </template>
 

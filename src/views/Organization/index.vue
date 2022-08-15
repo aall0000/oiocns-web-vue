@@ -83,7 +83,10 @@ let envType  = ref<number>(1)
   let selectId = ref<string>()
   let selectItem = ref<selectType>({
     id: '',
-    name: ''
+    name: '',
+    num:0,
+    remark:'',
+    label:'',
   })
   let personType = ref<string>('1')
   //获取当前账号的所有单位
@@ -115,23 +118,16 @@ let envType  = ref<number>(1)
   const rootElement = ref<rootType>()
   const getInfo = () => {
     $services.company.queryInfo({}).then((res: ResultType) => {
-      let obj = [
-        {
-          children: [] as string[],
-          label: res.data.name,
-          id: res.data.id
-        }
-      ]
-      // let selectObj = res.data
-      // selectObj.label = res.data.name
-      // selectObj.remark = res.data.team.remark
-      // selectItem.value = selectObj
+      let selectObj = res.data
+      selectObj.remark = res.data.team.remark
+      selectItem.value = selectObj
       rootElement.value = res.data
       store.userUnitInfo = res.data
     })
   }
   const changeIndex = (obj: treeItem) => {
     selectItem.value = obj
+    console.log(selectItem)
     selectId.value = obj.id
   }
   const personTypeChange = (index: string) => {

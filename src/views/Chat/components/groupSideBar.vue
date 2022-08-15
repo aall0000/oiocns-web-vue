@@ -17,7 +17,8 @@
         <div class="group-con-show">
           <el-tooltip class="box-item" :disabled="item.name.length < 7" :content="item.name" placement="right-start">
             <p class="group-con-show-name">
-              <span class="group-con-show-name-label">{{ props.myId === item.id ? `我 (${item.name})` : item.name }}</span>
+              <span class="group-con-show-name-label">{{ props.myId === item.id ? `我 (${item.name})` : item.name
+              }}</span>
               <span class="group-con-show-name-time">{{ handleFormatDate(item.createTime) }} </span>
             </p>
           </el-tooltip>
@@ -144,7 +145,6 @@ const handleContextChange = (item: MenuItemType) => {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  // height: calc(100% - 60px);
   border-right: 1px solid #ccc;
 
 }
@@ -155,9 +155,45 @@ const handleContextChange = (item: MenuItemType) => {
 
 .group-side-bar-wrap {
   width: 100%;
-  height: calc(100vh - 60px);
+  height: calc(100vh - 112px);
   overflow-y: auto;
+
   // position: relative;
+  &:hover ::-webkit-scrollbar {
+    overflow: visible;
+    width: 6px;
+    height: 10px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    min-height: 10px;
+    border-radius: 5px;
+  }
+
+  &::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-track-piece {
+    // margin: 10px 0;
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar {
+    background: #fff;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: #d8d8d8;
+  }
+
+  &::-webkit-scrollbar-thumb:vertical:hover {
+    background-color: #e1e1e1;
+  }
+
+  &::-webkit-scrollbar-thumb:vertical:active {
+    background-color: #83c7ff;
+  }
 
   .group-con {
     position: relative;
@@ -177,9 +213,14 @@ const handleContextChange = (item: MenuItemType) => {
     // 头像
 
     &-img {
-      width: 40px;
-      height: 40px;
+      width: 35px;
+      height: 35px;
       margin-right: 10px;
+    }
+
+    .emoji {
+      width: 14px !important;
+      height: 14px !important;
     }
 
     &-show {
@@ -193,9 +234,9 @@ const handleContextChange = (item: MenuItemType) => {
         flex-wrap: nowrap;
 
         &-label {
-          font-size: 16px;
+          font-size: 14px;
           font-weight: bold;
-          max-width: 140px;
+          max-width: 120px;
           text-overflow: ellipsis;
           overflow: hidden;
           white-space: nowrap;
@@ -209,10 +250,12 @@ const handleContextChange = (item: MenuItemType) => {
       &-msg {
         max-width: 140px;
         text-overflow: ellipsis;
+        max-height: 24px;
         overflow: hidden;
         white-space: nowrap;
         font-size: 10px;
         padding-top: 5px;
+
       }
     }
 
