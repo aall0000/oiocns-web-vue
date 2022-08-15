@@ -307,7 +307,6 @@
   }
 
   .select-drop {
-    width: 400px;
     position: absolute;
     top: 60px;
     left: -20px;
