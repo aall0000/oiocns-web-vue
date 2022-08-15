@@ -498,7 +498,7 @@
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          let arr = state.userComponentList
+          let arr = JSON.parse(JSON.stringify(state.userComponentList))
           arr.forEach((el) => {
             if (el.id === item.id) {
               arr.splice(arr.indexOf(el), 1)
@@ -523,7 +523,7 @@
             .then((res: ResultType) => {
               if (res.state) {
                 ElMessage({
-                  message: '更新成功',
+                  message: '删除成功',
                   type: 'success'
                 })
                 getUserComponents()
@@ -600,10 +600,10 @@
           if (el.key === key) {
             el.value = false
           }
-          if (el.key === 'user') {
-            getUserComponents()
-          }
         })
+        if (key === 'user') {
+          getUserComponents()
+        }
       }
 
       const layoutUpdatedEvent = (newLayout) => {

@@ -107,7 +107,11 @@ export default {
     updateDepartment: company + '/update/department', //变更部门
     updateGroup: company + '/update/group', //变更集团
     updateJob: company + '/update/job', //变更岗位
-    updateSubGroup: company + '/update/subGroup' //变更子集团
+    updateSubGroup: company + '/update/subGroup',//变更子集团
+    getAllCohorts: company + '/get/all/cohorts', //查询所有群聊
+    getAllDepartments: company + '/get/all/departments', //查询所有部门
+    getAllJobs: company + '/get/all/jobs', //查询所有岗位
+    getAllSubgroups: company + '/get/all/subgroups' //查询所有子集团
   },
   // 历史记录
   history: {
