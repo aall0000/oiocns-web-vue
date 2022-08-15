@@ -210,6 +210,7 @@
     flex-direction: row-reverse;
     margin: unset;
     float: left;
+    z-index: 1;
   }
   .baseLayout {
     width: 100%;
