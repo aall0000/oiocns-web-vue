@@ -10,10 +10,12 @@
     </div>
     <div class="header-right">
       <div class="header-right-box">
-        <div class="header-right-top">项目数</div>
-        <div class="header-right-btm">0</div>
+        <div class="header-right-top">待审批</div>
+        <div class="header-right-btm" @click="jumpApproval()" style="color:#589ef8">
+            {{approvalNum}}
+        </div>
       </div>
-      <div class="divide"></div>
+      <!-- <div class="divide"></div>
       <div class="header-right-box">
         <div class="header-right-top">团队内排名</div>
         <div class="header-right-btm">
@@ -25,7 +27,7 @@
       <div class="header-right-box">
         <div class="header-right-top">项目访问</div>
         <div class="header-right-btm">0</div>
-      </div>
+      </div> -->
     </div>
   </div>
 </template>
@@ -33,7 +35,10 @@
 <script lang="ts" setup>
 import { useUserStore } from '@/store/user'
 import { storeToRefs } from 'pinia'
-import { computed } from 'vue'
+import { computed,onMounted,ref } from 'vue'
+import $services from '@/services'
+import { useRoute, useRouter } from 'vue-router'
+
 const store = useUserStore()
 const { queryInfo } = storeToRefs(store)
 
@@ -68,6 +73,33 @@ const getTime = computed(() => {
   min = min < 10 ? '0' + min : min //小于10补0
   return y + '-' + m + '-' + d + ' ' + h + ':' + min //返回时间形式yyyy-mm-dd
 })
+onMounted(() => {
+  getNum()
+})
+const approvalNum = ref<number>(0)
+const getNum = ()=>{
+ $services.person
+  .getAllApproval({
+    data: {
+      offset:0,
+      limit:100
+    }
+  })
+  .then((res: ResultType) => {
+    if (res.code === 200) {
+      approvalNum.value = res.data.total
+
+    } else {
+
+    }
+  })
+}
+const router = useRouter()
+const jumpApproval = ()=>{
+  console.log('aaaaaaa')
+ router.push({ path: '/cardDetail' })
+}
+  
 </script>
 
 <style lang='scss' scoped>

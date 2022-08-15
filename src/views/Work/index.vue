@@ -487,7 +487,6 @@
           state.userComponentList = []
         }
         state.allData = JSON.parse(route.query.allData)
-        debugger
         // getTemps()
       })
 

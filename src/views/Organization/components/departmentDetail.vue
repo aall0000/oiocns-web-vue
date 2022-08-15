@@ -11,7 +11,7 @@
         <div class="left-name">部门信息</div>
         <div class="edit">
           <!-- <el-button type="primary">创建工作组</el-button> -->
-          <!-- <div style="color:#154ad8" @click="showDialog">分配人员</div> -->
+          <div style="color:#154ad8" @click="showDialog">分配人员</div>
           <!-- <el-button>调整排序</el-button> -->
         </div>
       </div>
@@ -212,7 +212,8 @@
       if(res.data.result){
         res.data.result.forEach((element:any) => {
           let obj = {
-            key:parseInt(element.id),
+            value:element.id,
+            key:element.id,
             label:element.name
           }
           arr.push(obj)
