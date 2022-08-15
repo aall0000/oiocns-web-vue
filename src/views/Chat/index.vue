@@ -270,7 +270,7 @@ const handleViewMoreHistory = () => {
 
     .chart-input {
       height: max-content;
-      min-height: 200px;
+      min-height: 180px;
       border-top: 1px solid #ccc;
 
       .el-textarea__inner {
