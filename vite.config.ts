@@ -125,12 +125,12 @@ export default defineConfig(({ command, mode }) => {
       proxy: settings.proxyFlag
         ? {
             '/orginone': {
-              target: 'http://anyinone.com:800', // 后台接口
+              target: 'http://192.168.31.88:800', // 后台接口
               changeOrigin: true, // 是否允许跨域
               ws: true
             },
             '/anydata': {
-              target: 'http://anyinone.com:2000', // 后台接口
+              target: 'http://192.168.31.88:2000', // 后台接口
               changeOrigin: true, // 是否允许跨域
               ws: true
             }

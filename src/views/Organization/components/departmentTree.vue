@@ -41,7 +41,7 @@
         <el-button :icon="Plus" @click="dialogVisible = true" size="small">创建下级节点</el-button>
       </li>
       <li class="con tree-search">
-        <el-input class="search" placeholder="搜索姓名、手机、邮箱">
+        <el-input class="search" placeholder="搜索部门或者工作组">
           <template #suffix>
             <el-icon class="el-input__icon">
               <search />
@@ -55,7 +55,7 @@
           :props="defaultProps"
           lazy
           highlight-current
-          ref="TreeDom"
+          ref="treeRef"
           @node-click="changeIndexFun"
           :load="loadNode"
         />
@@ -65,6 +65,7 @@
           :props="defaultProps"
           lazy
           highlight-current
+          ref="treeRef"
           @node-click="changeIndexFun"
           :load="loadNode"
         >
@@ -91,16 +92,16 @@
         <div class="main-title">部门信息</div>
         <div class="main-dialog">
           <el-form-item class="main-item" label="部门名称" style="width: 45%">
-            <el-input v-model="departmentName" placeholder="Please input" width="200px" clearable />
+            <el-input v-model="departmentName" placeholder="请输入部门名称" width="200px" clearable />
           </el-form-item>
           <el-form-item class="main-item" label="部门编号" style="width: 45%">
-            <el-input v-model="departmentTeamCode" placeholder="Please input" clearable />
+            <el-input v-model="departmentTeamCode" placeholder="请输入部门编号" clearable />
           </el-form-item>
           <el-form-item class="main-item" label="部门简介" style="width: 45%">
-            <el-input v-model="departmentTeamRemark" placeholder="Please input" clearable />
+            <el-input v-model="departmentTeamRemark" placeholder="请输入部门简介" clearable />
           </el-form-item>
           <el-form-item class="main-item" label="上级节点">
-            <el-cascader :props="upNode" v-model="upNodeId.list" @change="handleChange" />
+            <el-cascader :props="upNode" v-model="dd" @change="handleChange" />
           </el-form-item>
         </div>
         <div class="main-transfer">
@@ -121,15 +122,16 @@
           </span>
         </template>
       </el-dialog>
+
       <el-dialog v-model="dialogVisible" v-if="envType == 2" title="请输子集团名称" width="30%">
         <el-form-item label="节点名称">
-          <el-input v-model="departmentName" placeholder="Please input" clearable />
+          <el-input v-model="departmentName" placeholder="请输入节点名称" clearable />
         </el-form-item>
         <el-form-item label="部门编号">
-          <el-input v-model="departmentTeamCode" placeholder="Please input" clearable />
+          <el-input v-model="departmentTeamCode" placeholder="请输入部门编号" clearable />
         </el-form-item>
         <el-form-item label="部门简介">
-          <el-input v-model="departmentTeamRemark" placeholder="Please input" clearable />
+          <el-input v-model="departmentTeamRemark" placeholder="请输入部门简介" clearable />
         </el-form-item>
         <el-form-item label="上级节点">
           <el-cascader :props="upNode" v-model="upNodeId.list" @change="handleChange" />
@@ -158,6 +160,11 @@
   import { ElMessage, ElMessageBox } from 'element-plus'
   import { useRouter } from 'vue-router'
   import { storeToRefs } from 'pinia'
+  import { ElTree } from 'element-plus'
+  import type Node from 'element-plus/es/components/tree/src/model/node'
+
+  const treeRef = ref<InstanceType<typeof ElTree>>()
+
   const store = useUserStore()
   const { workspaceData } = storeToRefs(store)
   let dialogVisible = ref<boolean>(false)
@@ -172,6 +179,7 @@
     rootElement: selectItem
   }>()
   const changeIndexFun = (val: any) => {
+    console.log('node=====', val)
     emit('changeIndex', val)
   }
   const state = reactive({
@@ -196,10 +204,13 @@
   let departmentTeamName = ref<string>('')
   let departmentTeamCode = ref<string>('')
   let departmentTeamRemark = ref<string>('')
+
+  const dd = ["342689315261911040",  "342689620204589056",  "342693355249078272" ];
+
   const submitFriends = () => {
     let parentId = 0
     if (upNodeId.value.list.length > 0) {
-      parentId = upNodeId.value.list[upNodeId.value.list.length-1]
+      parentId = upNodeId.value.list[upNodeId.value.list.length - 1]
     }
     $services.company
       .createDepartment({
@@ -239,7 +250,7 @@
   }
   const loadNode = (node: any, resolve: (data: any) => void) => {
     if (props.envType == 1) {
-     
+
       if (node.level === 0) {
         state.nodeData = node
         state.resolveData = resolve
@@ -577,7 +588,7 @@
         }
       })
   }
-  const router =useRouter()
+  const router = useRouter()
   const handlePageChange = () => {
     router.push({ path: '/organization/deptDeatil' })
   }

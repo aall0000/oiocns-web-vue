@@ -55,8 +55,8 @@
         </div>
         <div class="main-transfer">
           <div class="main-title">分配人员</div>
-          <el-transfer 
-          v-model="transferList" 
+          <el-transfer
+          v-model="transferList"
           :data="data"
           :left-default-checked="[]"
           :right-default-checked="rightCheck.list"
@@ -129,7 +129,7 @@
             getDepartmentList(newValue.id)
           }
         }
-        
+
       }
     }
   )

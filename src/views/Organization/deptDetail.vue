@@ -40,13 +40,13 @@
   </div>
   <el-dialog v-model="dialogVisible" title="请输入部门名称" width="30%">
     <el-form-item label="部门名称">
-      <el-input v-model="fromData.departmentName" placeholder="Please input" clearable />
+      <el-input v-model="fromData.departmentName" placeholder="请输入部门名称" clearable />
     </el-form-item>
     <el-form-item label="部门编号">
-      <el-input v-model="fromData.departmentTeamCode" placeholder="Please input" clearable />
+      <el-input v-model="fromData.departmentTeamCode" placeholder="请输入部门编号" clearable />
     </el-form-item>
     <el-form-item label="部门简介">
-      <el-input v-model="fromData.departmentTeamRemark" placeholder="Please input" clearable />
+      <el-input v-model="fromData.departmentTeamRemark" placeholder="请输入部门简介" clearable />
     </el-form-item>
     <template #footer>
       <span class="dialog-footer">
