@@ -172,6 +172,8 @@
     rootElement: selectItem
   }>()
   const changeIndexFun = (val: any) => {
+    var obj = val;
+    obj.name = val.label
     emit('changeIndex', val)
   }
   const state = reactive({

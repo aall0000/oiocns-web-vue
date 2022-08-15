@@ -68,7 +68,7 @@
       } else {
         setCookie('', '', -1)
       }
-      router.push({ path: 'home' })
+      router.push({ path: 'workHome' })
     })
   }
   const registerUser = (data: any) => {
