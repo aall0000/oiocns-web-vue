@@ -122,8 +122,10 @@
         if (props.selectItem && props.rootElement) {
           if (props.selectItem.id === props.rootElement.id) {
             getList(newValue.id)
-          } else {
+          } else if(props.selectItem.id !== props.rootElement.id) {
             getDepartmentList(newValue.id)
+          }else{
+            getJobList(newValue.id)
           }
         }
       }
@@ -150,12 +152,30 @@
             }
           }
         )
-        console.log('获取部门员工', tableData.list)
       })
   }
+  //获取部门员工
   const getDepartmentList = (id: string) => {
     $services.company
       .getDepartmentPersons({
+        data: {
+          id: props.selectItem.id,
+          offset: 0,
+          limit: 100
+        }
+      })
+      .then((res: ResultType) => {
+        if (res.data) {
+          tableData.list = res.data.result
+        } else {
+          tableData.list = []
+        }
+      })
+  }
+  //获取工作组员工
+  const getJobList = (id: string) => {
+    $services.company
+      .getJobPersons({
         data: {
           id: props.selectItem.id,
           offset: 0,
