@@ -150,7 +150,6 @@
             }
           }
         )
-        console.log('获取部门员工', tableData.list)
       })
   }
   const getDepartmentList = (id: string) => {
@@ -248,7 +247,7 @@
             message: '添加成功',
             type: 'success'
           })
-          
+
           if (props.selectItem.id === props.rootElement.id) {
             getList(props.selectItem.id)
           } else {

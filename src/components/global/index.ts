@@ -8,6 +8,8 @@ export default function setupGlobalComponent(app:any) {
     if (componentsContext.hasOwnProperty(componentConfig)) {
       const ctrl = componentsContext[componentConfig].default || componentsContext[componentConfig];
 
+      console.log("ctrl====", ctrl);
+
       app.component(ctrl.name, ctrl);
     }
   }

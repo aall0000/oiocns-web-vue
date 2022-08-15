@@ -103,7 +103,6 @@ onMounted(() => {
 // 提交信息
 const submit = async (value: string) => {
   let text = value.indexOf('span') > -1 ? value : value.replaceAll('&nbsp;', '')
-  text = text.trim()
   if (activeInfo.value.id > 0 && text?.length > 0) {
     await connection.send('SendMsg', {
       toId: activeInfo.value.id,
@@ -270,7 +269,7 @@ const handleViewMoreHistory = () => {
 
     .chart-input {
       height: max-content;
-      min-height: 200px;
+      min-height: 180px;
       border-top: 1px solid #ccc;
 
       .el-textarea__inner {

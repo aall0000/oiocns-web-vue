@@ -41,7 +41,7 @@
         <el-button :icon="Plus" @click="dialogVisible = true" size="small">创建下级节点</el-button>
       </li>
       <li class="con tree-search">
-        <el-input class="search" placeholder="搜索姓名、手机、邮箱">
+        <el-input class="search" placeholder="搜索部门或者工作组">
           <template #suffix>
             <el-icon class="el-input__icon">
               <search />
@@ -55,7 +55,7 @@
           :props="defaultProps"
           lazy
           highlight-current
-          ref="TreeDom"
+          ref="treeRef"
           @node-click="changeIndexFun"
           :load="loadNode"
         />
@@ -65,6 +65,7 @@
           :props="defaultProps"
           lazy
           highlight-current
+          ref="treeRef"
           @node-click="changeIndexFun"
           :load="loadNode"
         >
@@ -83,7 +84,7 @@
       <el-dialog
         v-model="dialogVisible"
         v-if="envType == 1"
-        title="请输入部门名称"
+        title="请录入部门信息"
         width="50%"
         center
         @close="dialogHide"
@@ -91,13 +92,13 @@
         <div class="main-title">部门信息</div>
         <div class="main-dialog">
           <el-form-item class="main-item" label="部门名称" style="width: 45%">
-            <el-input v-model="departmentName" placeholder="Please input" width="200px" clearable />
+            <el-input v-model="departmentName" placeholder="请输入部门名称" width="200px" clearable />
           </el-form-item>
           <el-form-item class="main-item" label="部门编号" style="width: 45%">
-            <el-input v-model="departmentTeamCode" placeholder="Please input" clearable />
+            <el-input v-model="departmentTeamCode" placeholder="请输入部门编号" clearable />
           </el-form-item>
           <el-form-item class="main-item" label="部门简介" style="width: 45%">
-            <el-input v-model="departmentTeamRemark" placeholder="Please input" clearable />
+            <el-input v-model="departmentTeamRemark" placeholder="请输入部门简介" clearable />
           </el-form-item>
           <el-form-item class="main-item" label="上级节点">
             <el-cascader :props="upNode" v-model="upNodeId.list" @change="handleChange" />
@@ -121,15 +122,16 @@
           </span>
         </template>
       </el-dialog>
+
       <el-dialog v-model="dialogVisible" v-if="envType == 2" title="请输子集团名称" width="30%">
         <el-form-item label="节点名称">
-          <el-input v-model="departmentName" placeholder="Please input" clearable />
+          <el-input v-model="departmentName" placeholder="请输入节点名称" clearable />
         </el-form-item>
         <el-form-item label="部门编号">
-          <el-input v-model="departmentTeamCode" placeholder="Please input" clearable />
+          <el-input v-model="departmentTeamCode" placeholder="请输入部门编号" clearable />
         </el-form-item>
         <el-form-item label="部门简介">
-          <el-input v-model="departmentTeamRemark" placeholder="Please input" clearable />
+          <el-input v-model="departmentTeamRemark" placeholder="请输入部门简介" clearable />
         </el-form-item>
         <el-form-item label="上级节点">
           <el-cascader :props="upNode" v-model="upNodeId.list" @change="handleChange" />
@@ -158,6 +160,11 @@
   import { ElMessage, ElMessageBox } from 'element-plus'
   import { useRouter } from 'vue-router'
   import { storeToRefs } from 'pinia'
+  import { ElTree } from 'element-plus'
+  import type Node from 'element-plus/es/components/tree/src/model/node'
+
+  const treeRef = ref<InstanceType<typeof ElTree>>()
+
   const store = useUserStore()
   const { workspaceData } = storeToRefs(store)
   let dialogVisible = ref<boolean>(false)
@@ -171,10 +178,20 @@
     selectItem: selectItem
     rootElement: selectItem
   }>()
-  const changeIndexFun = (val: any) => {
-    var obj = val;
-    obj.name = val.label
+  const changeIndexFun = (val: any, nodeAttribute?, event?) => {
     emit('changeIndex', val)
+    // 清空表单人员分配信息
+    transferList.value = []
+    // 设置表单上级节点
+    if(nodeAttribute){
+      let parentIdArr = [];
+      const level = nodeAttribute.level;
+      for(let i = 0; i<level; i++){
+        parentIdArr = [...[nodeAttribute.data.value], ...parentIdArr]
+        nodeAttribute = nodeAttribute.parent
+      }
+      upNodeId.value.list = parentIdArr;
+    }
   }
   const state = reactive({
     isShowCode: false,
@@ -198,10 +215,11 @@
   let departmentTeamName = ref<string>('')
   let departmentTeamCode = ref<string>('')
   let departmentTeamRemark = ref<string>('')
+
   const submitFriends = () => {
     let parentId = 0
     if (upNodeId.value.list.length > 0) {
-      parentId = upNodeId.value.list[upNodeId.value.list.length-1]
+      parentId = upNodeId.value.list[upNodeId.value.list.length - 1]
     }
     $services.company
       .createDepartment({
@@ -241,7 +259,7 @@
   }
   const loadNode = (node: any, resolve: (data: any) => void) => {
     if (props.envType == 1) {
-     
+
       if (node.level === 0) {
         state.nodeData = node
         state.resolveData = resolve
@@ -281,7 +299,7 @@
     let arr: any = []
     await $services.company
       .getDepartments({
-        data: { id: node.data.id, offset: 0, limit: 100 }
+        data: { id: node.data.id, offset: 0, limit: 1000 }
       })
       .then((res: ResultType) => {
         if (res.data.result) {
@@ -324,7 +342,7 @@
       .companyGetGroups({
         data: {
           offset: 0,
-          limit: 100
+          limit: 1000
         }
       })
       .then((res: ResultType) => {
@@ -380,7 +398,7 @@
       .companyGetGroups({
         data: {
           offset: 0,
-          limit: 100
+          limit: 1000
         }
       })
       .then((res: ResultType) => {
@@ -405,7 +423,7 @@
     let level = node.level
     await $services.company
       .getSubgroups({
-        data: { id: node.data.id, offset: 0, limit: 100 }
+        data: { id: node.data.id, offset: 0, limit: 1000 }
       })
       .then((res: ResultType) => {
         if (res.data.result) {
@@ -438,7 +456,7 @@
         data: {
           id: node.data.id,
           offset: 0,
-          limit: 100
+          limit: 1000
         }
       })
       .then((res: ResultType) => {
@@ -469,7 +487,7 @@
         data: {
           id: node.data.id,
           offset: 0,
-          limit: 100
+          limit: 1000
         }
       })
       .then((res: ResultType) => {
@@ -538,7 +556,7 @@
         data: {
           id: props.rootElement.id,
           offset: 0,
-          limit: 100
+          limit: 1000
         }
       })
       .then((res: ResultType) => {
@@ -579,7 +597,7 @@
         }
       })
   }
-  const router =useRouter()
+  const router = useRouter()
   const handlePageChange = () => {
     router.push({ path: '/organization/deptDeatil' })
   }

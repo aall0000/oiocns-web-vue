@@ -33,20 +33,20 @@
         </el-table-column>
       </el-table>
       <el-pagination class="page-pagination" @size-change="(e: any) => handlePaginationChange(e, 'limit')"
-        @current-change="(e: any) => handlePaginationChange(e, 'current')" small background :pager-count="6"
-        :page-sizes="[10, 20, 50, 100]" :page-size="pagination.limit" layout="total,prev, pager, next,"
-        :total="pageStore.total" />
+        @current-change="(e: any) => handlePaginationChange(e, 'current')" small background
+        :page-sizes="[10, 20, 50, 100]" v-model:currentPage="pagination.current" v-model:page-size="pagination.limit"
+        layout="total,prev, pager, next," :total="pageStore.total" />
     </div>
   </div>
   <el-dialog v-model="dialogVisible" title="请输入部门名称" width="30%">
     <el-form-item label="部门名称">
-      <el-input v-model="fromData.departmentName" placeholder="Please input" clearable />
+      <el-input v-model="fromData.departmentName" placeholder="请输入部门名称" clearable />
     </el-form-item>
     <el-form-item label="部门编号">
-      <el-input v-model="fromData.departmentTeamCode" placeholder="Please input" clearable />
+      <el-input v-model="fromData.departmentTeamCode" placeholder="请输入部门编号" clearable />
     </el-form-item>
     <el-form-item label="部门简介">
-      <el-input v-model="fromData.departmentTeamRemark" placeholder="Please input" clearable />
+      <el-input v-model="fromData.departmentTeamRemark" placeholder="请输入部门简介" clearable />
     </el-form-item>
     <template #footer>
       <span class="dialog-footer">
@@ -67,7 +67,7 @@ const store = useUserStore()
 const router = useRouter()
 const { userUnitInfo, workspaceData } = storeToRefs(store)
 // 表格分页数据
-const pagination = reactive({ current: 1, limit: 10 })
+const pagination: { current: number, limit: number } = reactive({ current: 1, limit: 5 })
 // 表格数据加载状态
 const loading = ref<boolean>(false)
 // 表格展示数据
@@ -77,14 +77,12 @@ const pageStore = reactive({
 })
 // 获取表格数据
 const getTableList = async () => {
-  console.log('cscsc',userUnitInfo);
-
   loading.value = true
   const { data, success } = await API.company.getDepartments({
     data: {
       id: userUnitInfo.value.id,
       offset: (pagination.current - 1) * pagination.limit,
-      limit: 10
+      limit: pagination.limit
     }
   })
 
@@ -100,7 +98,6 @@ const getTableList = async () => {
 
 // 删除表格信息
 const handleDelItem = async (row: any) => {
-  console.log('删除', row);
   const { success } = await API.company.deleteDepartment({
     data: {
       id: row.id,
@@ -115,9 +112,7 @@ const handleDelItem = async (row: any) => {
 // 处理表格分页操作
 const handlePaginationChange = (newVal: number, type: "current" | 'limit') => {
   pagination[type] = newVal
-  console.log('分页变化', type, newVal);
   getTableList()
-
 }
 //弹窗信息
 const fromData = reactive({
