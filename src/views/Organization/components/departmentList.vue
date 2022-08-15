@@ -4,8 +4,6 @@
       <div class="tabs">
         <el-tabs v-model="activeName" class="demo-tabs" @tab-click="handleClick">
           <el-tab-pane label="全部" name="first"> </el-tab-pane>
-          <el-tab-pane label="已开通" name="second"></el-tab-pane>
-          <el-tab-pane label="未开通" name="third"></el-tab-pane>
         </el-tabs>
       </div>
       <div class="edit">

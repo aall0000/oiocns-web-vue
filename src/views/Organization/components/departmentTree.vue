@@ -544,7 +544,7 @@
         if (res.data.result) {
           res.data.result.forEach((element: any) => {
             let obj = {
-              key: element.id,
+              value:element.id,
               label: element.name
             }
             arr.push(obj)
