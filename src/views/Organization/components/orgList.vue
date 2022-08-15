@@ -2,10 +2,15 @@
   <div class="deptment-info">
     <div class="deptment-info-btns">
       <div class="tabs">
-        <div class="tasTitle">单位列表</div>
+        <!-- <div class="tasTitle">单位列表</div> -->
+        <el-tabs v-model="activeName" class="demo-tabs" @tab-click="handleClick">
+          <el-tab-pane label="单位列表" name="first"> </el-tab-pane>
+          <el-tab-pane label="职权" name="second"> </el-tab-pane>
+        </el-tabs>
       </div>
     </div>
   </div>
+  <template v-if="activeName === 'first'">
   <div class="list">
     <el-table
       :data="state.tableData"
@@ -23,11 +28,16 @@
       <el-table-column prop="trueName" label="管理员" />
       <el-table-column label="操作" width="100" />
     </el-table>
+
   </div>
 
   <div class="page-pagination">
     <el-pagination small background layout="prev, pager, next" :total="50" class="mt-4" />
   </div>
+  </template>
+  <template v-else-if="activeName === 'second'">
+    
+  </template>
 </template>
 <script lang="ts" setup>
   import $services from '@/services'
