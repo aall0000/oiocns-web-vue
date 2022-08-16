@@ -8,7 +8,7 @@
           @change="changeGroupIndex"
           class="m-2"
           value-key="id"
-          placeholder="Select"
+          placeholder="请选择"
           style="margin-left: 20px; width: 155px"
         >
           <el-option
@@ -41,7 +41,7 @@
         <el-button :icon="Plus" @click="dialogVisible = true" size="small">创建下级节点</el-button>
       </li>
       <li class="con tree-search">
-        <el-input class="search" placeholder="搜索部门或者工作组">
+        <el-input class="search" v-model="filterText" placeholder="搜索部门或者工作组">
           <template #suffix>
             <el-icon class="el-input__icon">
               <search />
@@ -58,6 +58,7 @@
           ref="treeRef"
           @node-click="changeIndexFun"
           :load="loadNode"
+          :filter-node-method="filterNode"
         />
       </ul>
       <ul class="con tree-dept" v-else>
@@ -68,6 +69,7 @@
           ref="treeRef"
           @node-click="changeIndexFun"
           :load="loadNode"
+          :filter-node-method="filterNode"
         >
           <template #default="{ node, data }">
             <span class="custom-tree-node">
@@ -129,7 +131,7 @@
           <el-cascader :props="upNode" v-model="upNodeId.list"  style="width: 100%" @change="handleChange" />
         </el-form-item>
         <el-form-item label="部门简介">
-          <el-input v-model="departmentTeamRemark" placeholder="请输入"  style="width: 100%" clearable />
+          <el-input v-model="departmentTeamRemark" placeholder="请输入"  style="width: 100%" type="textarea" clearable />
         </el-form-item>
 
         <template #footer>
@@ -158,6 +160,7 @@
   import { ElTree } from 'element-plus'
   import type Node from 'element-plus/es/components/tree/src/model/node'
 
+const filterText = ref('')
   const treeRef = ref<InstanceType<typeof ElTree>>()
 
   const store = useUserStore()
@@ -249,6 +252,17 @@
         }
       })
   }
+
+  watch(filterText, (val) => {
+    console.log("filterText===========", val)
+    treeRef.value!.filter(val)
+  })
+  // 树节点搜索
+  const filterNode = (value: string, data: Tree) => {
+    if (!value) return true
+    return data.label.includes(value)
+  }
+
   //关闭弹窗清空
   const dialogHide = ()=>{
      departmentName.value = ''

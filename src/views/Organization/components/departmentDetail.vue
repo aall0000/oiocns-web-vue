@@ -114,7 +114,7 @@
             getDepartmentList(newValue.id)
           }
         }
-        
+
       }
     }
   )
@@ -129,7 +129,7 @@
         }
       })
       .then((res: ResultType) => {
-        if(res.data.result){
+        if(res.data && res.data.result){
           listNum.value =res.data.total
         }else{
           listNum.value =0
