@@ -87,7 +87,7 @@
         title="请录入部门信息"
         width="50%"
         center
-        append-to-body	
+        append-to-body
         @close="dialogHide"
       >
         <div class="main-title">部门信息</div>
@@ -142,8 +142,11 @@
       </el-dialog>
     </ul>
 
-    <div class="weihu-wrap" @click="handlePageChange">
+    <div class="weihu-wrap" @click="handlePageChange" v-if="envType == 1">
       <span class="weihu-wrap-txt">部门维护</span>
+    </div>
+    <div class="weihu-wrap" @click="maintainCompany" v-if="envType == 2">
+      <span class="weihu-wrap-txt">单位维护</span>
     </div>
   </div>
 </template>
@@ -176,6 +179,7 @@
     rootElement: selectItem
   }>()
   let parentIdArray:any = []
+  let curNodeVal = {}
   const changeIndexFun = (val: any, nodeAttribute?:any, event?:any) => {
     emit('changeIndex', val)
     // 设置表单上级节点
@@ -188,6 +192,8 @@
       }
       parentIdArray = parentIdArr;
       upNodeId.value.list = parentIdArr;
+      // 赋值当前节点
+      curNodeVal = val;
     }
   }
   const state = reactive({
@@ -610,6 +616,16 @@
   const router = useRouter()
   const handlePageChange = () => {
     router.push({ path: '/organization/deptDeatil' })
+  }
+  const maintainCompany = () => {
+    if(!curNodeVal.id){
+      ElMessage({
+        message: '请选择集团',
+        type: 'warning'
+      })
+      return;
+    }
+    router.push({ path: '/organization/companyList', query: { id: curNodeVal.id } })
   }
 </script>
 <style lang="scss">
