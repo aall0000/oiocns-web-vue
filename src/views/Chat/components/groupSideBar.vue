@@ -86,6 +86,8 @@ const showList = computed((): ImMsgType[] => {
 
 const emit = defineEmits(['update:active'])
 const changeInfo = (item: ImMsgChildType,groupId:string) => {
+  console.log('选择',{...item,groupId});
+
   // 触发父组件值更新
   emit('update:active', {...item,groupId})
 }

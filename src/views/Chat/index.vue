@@ -52,7 +52,8 @@ const msgDotMap = ref(new Map())
 const lastQueryParams = ref<any>({})
 
 const showMsgList = computed(() => {
-  return msgMap.value.get(activeInfo.value.id) ?? []
+  const key = activeInfo.value.id
+  return msgMap.value.get(key) ?? []
 })
 //内容展示 dom节点
 const contentWrapRef = ref(null)
@@ -63,7 +64,7 @@ const sessionList = ref<ImMsgType[]>([])
 //获取 登录人id-用于区分信息源
 const myId = queryInfo.id
 const current = ref<number>(0) //当前页码
-const limit = ref<number>(20) //数量限制 limit
+const limit = ref<number>(15) //数量限制 limit
 const pageOffset = computed(() => {
   return current.value * limit.value
 })
@@ -89,16 +90,38 @@ onMounted(() => {
       console.log('链接成功', data)
       sessionList.value = [...groups]
 
+      setUserNameMap(queryInfo.id, queryInfo.name)
       // 存储用户id=>名称
-      groups.forEach((item: userType) => {
-        setUserNameMap(item.id, item.name)
+      groups.forEach((item: ImMsgType) => {
+        if (item?.chats?.length > 0) {
+          item?.chats?.forEach((child: ImMsgChildType) => {
+            setUserNameMap(child.id, child.name)
+          })
+        }
       })
     }
-  })
+  });
+
+  // 接受信息--处理信息
+  connection.on('RecvMsg', (res: any, error: any) => {
+    const { data } = res
+    // console.log('接受消息', data, error);
+    // 根据新信息更新导航信息
+    let sessionId = handleUpdateSideList(data)
+    if (sessionId !== myId) {
+      let num = (msgDotMap.value.get(sessionId)?.count ?? 0) + 1
+      // 信息来源是正在聊天的人 -则不展示红点
+      msgDotMap.value.set(Number(sessionId), { isShowDot: activeInfo.value.id !== sessionId, count: num })
+    }
+    const oldMsg = msgMap.value.get(Number(sessionId)) ?? []
+    msgMap.value.set(Number(sessionId), [...oldMsg, data])
+    contentWrapRef.value.goPageEnd()
+  });
   // 监听链接断开
   connection.onclose(() => {
     console.log('链接关闭了');
-  })
+    msgMap.value.clear()
+  });
 })
 
 // 提交信息
@@ -113,8 +136,6 @@ const submit = async (value: string) => {
     msgType: 'text',
     msgBody: text
   }
-  console.log('发送消息-group', activeInfo.value.groupId, params);
-  console.log('发送消息内容', text);
   API.msg.sendMsg({ data: params })
   // if (activeInfo.value.id && text?.length > 0) {
   //   await connection.send('SendMsg', {
@@ -125,22 +146,7 @@ const submit = async (value: string) => {
   //   })
   // }
 }
-// 接受信息--处理信息
-connection.on('RecvMsg', (res) => {
-  const { data } = res
-  // console.log('接受消息', '当前选择id', activeInfo.value.id, "-----", '来源', data.fromId, '-----', '我的', myId);
-  console.log('处理信息', data);
-  // 根据新信息更新导航信息
-  let sessionId = handleUpdateSideList(data)
-  if (sessionId !== myId) {
-    let num = (msgDotMap.value.get(sessionId)?.count ?? 0) + 1
-    // 信息来源是正在聊天的人 -则不展示红点
-    msgDotMap.value.set(sessionId, { isShowDot: activeInfo.value.id !== sessionId, count: num })
-  }
-  const oldMsg = msgMap.value.get(sessionId) ?? []
-  msgMap.value.set(sessionId, [...oldMsg, data])
-  contentWrapRef.value.goPageEnd()
-})
+
 
 onBeforeUnmount(() => {
   // 离开页面关闭链接
@@ -151,8 +157,6 @@ onBeforeUnmount(() => {
 watch(
   () => activeInfo.value,
   async (val) => {
-    console.log('获取选中', val.groupId);
-
     const { typeName, id } = val
     selectInfo.typeName = typeName
     current.value = 0
@@ -169,7 +173,6 @@ watch(
     msgMap.value.clear()
     //获取新的聊天对象历史信息
     getHistoryMsg(id, typeName, true)
-
     //关闭详情页面
     isShowDetail.value = false
   }
@@ -182,11 +185,27 @@ const handleViewDetail = () => {
 
 // 获取群成员
 const getQunPerson = async (id: string, offset: number) => {
-  const { data, success } = await connection.invoke("GetPersons", {
-    cohortId: String(id),
+  console.log('获取群成员', {
+    cohortId: id,
     limit: 10,
     Offset: offset
   });
+
+  // const { data, success } = await connection.invoke("GetPersons", {
+  //   cohortId: id,
+  //   limit: 10,
+  //   Offset: offset
+  // });
+  const { data, success } = await API.cohort.getPersons({
+    data: {
+      id: id,
+      limit: 10,
+      offset: offset
+    }
+  });
+  //
+  console.log('大幅度发',data);
+
   if (success === true) {
     selectInfo.total = data.total
     // 存储用户id=>名称
@@ -228,17 +247,36 @@ const handleUpdateSideList = (data: any) => {
 
 // 获取历史消息
 const getHistoryMsg = async (id: string, type: string, isGoEnd?: boolean) => {
-  const url: string = type == '人员' ? 'QueryFriendMsg' : 'QueryCohortMsg';
-  const { data = [], success } = await connection.invoke(url, {
-    [type == '人员' ? 'friendId' : 'cohortId']: String(id),
+  // const url: string = type == '人员' ? 'QueryFriendMsg' : 'QueryCohortMsg';
+  // const { data = [], success } = await connection.invoke(url, {
+  //   [type == '人员' ? 'friendId' : 'cohortId']: id,
+  //   offset: pageOffset.value,
+  //   limit: limit.value,
+  //   spaceId: activeInfo.value.groupId,
+  // })
+  console.log('三生三世', id, type, isGoEnd);
+
+  const url: string = type == '人员' ? 'getFriendMsg' : 'getCohortMsg';
+  let params = {
+    [type == '人员' ? 'friendId' : 'cohortId']: id,
     offset: pageOffset.value,
-    limit: limit.value
+    limit: limit.value,
+  }
+  if (type == '人员') {
+    params.spaceId = activeInfo.value.groupId
+  }
+  const { data = [], success } = await API.history[url]({
+    data: params
   })
+  console.log('历史', params);
+
   if (success) {
     const newHistoryMsgArr = (data.result && data.result?.reverse()) ?? []
     const oldMsg = msgMap.value.get(id) ?? []
     msgMap.value.set(id, [...newHistoryMsgArr, ...oldMsg])
   }
+  console.log('msgMap', msgMap.value);
+
 }
 
 //清空历史记录
