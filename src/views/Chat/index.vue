@@ -84,12 +84,12 @@ onMounted(() => {
     await connection.invoke('TokenAuth', userToken)
     const { data, success } = await connection.invoke('GetChats')
     if (success) {
-      const { result = [] } = data
+      const { groups = [] } = data
       console.log('链接成功', data)
-      sessionList.value = [...result]
+      sessionList.value = [...groups]
 
       // 存储用户id=>名称
-      result.forEach((item: userType) => {
+      groups.forEach((item: userType) => {
         setUserNameMap(item.id, item.name)
       })
     }

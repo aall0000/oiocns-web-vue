@@ -35,7 +35,7 @@
       <el-pagination class="page-pagination" @size-change="(e: any) => handlePaginationChange(e, 'limit')"
         @current-change="(e: any) => handlePaginationChange(e, 'current')" small background
         :page-sizes="[10, 20, 50, 100]" v-model:currentPage="pagination.current" v-model:page-size="pagination.limit"
-        layout="total,prev, pager, next," :total="pageStore.total" />
+        layout="总数->, total,prev, pager, next," :total="pageStore.total" />
     </div>
   </div>
   <el-dialog v-model="dialogVisible" title="请输入部门名称" width="30%">

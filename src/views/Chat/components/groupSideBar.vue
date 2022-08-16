@@ -3,16 +3,32 @@
     <div class="group-side-bar-search">
       <el-input placeholder="搜索" v-model="searchValue" prefix-icon="Search" />
     </div>
-    <ul class="group-side-bar-wrap" @contextmenu.prevent="mousePosition.isShowContext = false">
-      <!-- <li v-for="o in 20" :class="{ 'group-con': true }">群{{o}}</li> -->
-      <li :class="['group-con', props.active.id == item.id ? 'active' : '']" v-for="item in showList" :key="item.id"
+    <div class="group-side-bar-wrap" @contextmenu.prevent="mousePosition.isShowContext = false">
+      <ul class="group-con" v-for="item in showList" :key="item.id">
+        <li class="group-con-item" >
+          <div class="con-title">{{ item.name }}</div>
+          <div class="con-body">
+            <HeadImg :name="item.name" />
+            <div class="group-con-show">
+              <el-tooltip class="box-item" :disabled="item.name.length < 7" :content="item.name"
+                placement="right-start">
+                <p class="group-con-show-name">
+                  <span class="group-con-show-name-label">{{ props.myId === item.id ? `我 (${item.name})` : item.name
+                  }}</span>
+                  <span class="group-con-show-name-time">{{ handleFormatDate(item.createTime) }} </span>
+                </p>
+              </el-tooltip>
+              <p class="group-con-show-msg" v-html="item?.message?.msgBody"></p>
+            </div>
+          </div>
+        </li>
+      </ul>
+      <!-- <li :class="['group-con', props.active.id == item.id ? 'active' : '']" v-for="item in showList" :key="item.id"
         @click="changeInfo(item)" @contextmenu.stop
         @contextmenu.prevent="(e: MouseEvent) => handleContextClick(e, item)">
         <div class="group-con-dot" v-show="props.redDotInfo.get(item.id)?.isShowDot">
           <span>{{ props.redDotInfo.get(item.id)?.count ?? 8 }}</span>
         </div>
-
-        <!-- <img class="group-con-img" src="@/assets/img/userIcon/ic_02.png" alt="头像" /> -->
         <HeadImg :name="item.name" />
         <div class="group-con-show">
           <el-tooltip class="box-item" :disabled="item.name.length < 7" :content="item.name" placement="right-start">
@@ -24,7 +40,7 @@
           </el-tooltip>
           <p class="group-con-show-msg" v-html="item?.message?.msgBody"></p>
         </div>
-      </li>
+      </li> -->
       <!-- 鼠标右键 -->
       <ul class="context-text-wrap" v-show="mousePosition.isShowContext"
         :style="{ left: `${mousePosition.left}px`, top: `${mousePosition.top}px` }">
@@ -32,7 +48,7 @@
             item.label
         }}</li>
       </ul>
-    </ul>
+    </div>
   </div>
 
 </template>
