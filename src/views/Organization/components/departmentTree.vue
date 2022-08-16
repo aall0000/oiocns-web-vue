@@ -103,23 +103,12 @@
           <el-form-item class="main-item" label="部门编号" style="width: 45%">
             <el-input v-model="departmentTeamCode" placeholder="请输入" clearable />
           </el-form-item>
-          <el-form-item class="main-item" label="部门简介" style="width: 45%">
-            <el-input v-model="departmentTeamRemark" placeholder="请输入" clearable />
+          <el-form-item class="main-item" label="上级节点" style="width: 100%">
+            <el-cascader :props="upNode" v-model="upNodeId.list" style="width: 100%" placeholder="请选择" @change="handleChange" />
           </el-form-item>
-          <el-form-item class="main-item" label="上级节点">
-            <el-cascader :props="upNode" v-model="upNodeId.list" placeholder="请选择" @change="handleChange" />
+          <el-form-item class="main-item" label="部门简介" style="width: 100%">
+            <el-input v-model="departmentTeamRemark" placeholder="请输入" type="textarea" clearable />
           </el-form-item>
-        </div>
-        <div class="main-transfer">
-          <div class="main-title">分配人员</div>
-          <el-transfer
-            v-model="transferList"
-            :data="transferData"
-            :left-default-checked="[]"
-            :right-default-checked="[]"
-            :titles="['全部', '选中的']"
-          >
-          </el-transfer>
         </div>
         <template #footer>
           <span class="dialog-footer">
@@ -136,11 +125,11 @@
         <el-form-item label="部门编号">
           <el-input v-model="departmentTeamCode" placeholder="请输入" clearable />
         </el-form-item>
-        <el-form-item label="部门简介">
-          <el-input v-model="departmentTeamRemark" placeholder="请输入" clearable />
-        </el-form-item>
         <el-form-item label="上级节点">
-          <el-cascader :props="upNode" v-model="upNodeId.list" @change="handleChange" />
+          <el-cascader :props="upNode" v-model="upNodeId.list"  style="width: 100%" @change="handleChange" />
+        </el-form-item>
+        <el-form-item label="部门简介">
+          <el-input v-model="departmentTeamRemark" placeholder="请输入"  style="width: 100%" clearable />
         </el-form-item>
 
         <template #footer>
@@ -184,10 +173,9 @@
     selectItem: selectItem
     rootElement: selectItem
   }>()
+  let parentIdArray = []
   const changeIndexFun = (val: any, nodeAttribute?, event?) => {
     emit('changeIndex', val)
-    // 清空表单人员分配信息
-    transferList.value = []
     // 设置表单上级节点
     if(nodeAttribute){
       let parentIdArr = [];
@@ -196,6 +184,7 @@
         parentIdArr = [...[nodeAttribute.data.value], ...parentIdArr]
         nodeAttribute = nodeAttribute.parent
       }
+      parentIdArray = parentIdArr;
       upNodeId.value.list = parentIdArr;
     }
   }
@@ -248,13 +237,6 @@
           dialogVisible.value = false
           state.nodeData.childNodes = []
           loadNode(state.nodeData, state.resolveData)
-          if (transferList.value.length > 0) {
-            if(roleType.value =='1'){
-               changePreson(res.data.id)
-            }else{
-              changeJobPreson(res.data.id)
-            }
-          }
           ElMessage({
             message: res.msg,
             type: 'success'
@@ -274,7 +256,7 @@
      departmentTeamCode.value = ''
      departmentTeamRemark.value = ''
      roleType.value='1'
-     upNodeId.value.list = []
+     upNodeId.value.list = parentIdArray || [];
      dialogVisible.value = false;
   }
   //默认节点类型
@@ -589,38 +571,8 @@
     label: string
   }
   const showDialog = () => {
-    getPersons()
+    dialogVisible.value = true
   }
-
-  const transferData = ref<Option[]>() //总人
-  const transferList = ref([]) //选中的人
-  //获取单位员工
-  const getPersons = () => {
-    $services.company
-      .getPersons({
-        data: {
-          id: props.rootElement.id,
-          offset: 0,
-          limit: 1000
-        }
-      })
-      .then((res: ResultType) => {
-        let arr: any = []
-        if (res.data.result) {
-          res.data.result.forEach((element: any) => {
-            let obj = {
-              value:element.id,
-              key:element.id,
-              label: element.name
-            }
-            arr.push(obj)
-          })
-        }
-        transferData.value = arr
-        dialogVisible.value = true
-      })
-  }
- 
   const router = useRouter()
   const handlePageChange = () => {
     router.push({ path: '/organization/deptDeatil' })
@@ -657,20 +609,6 @@
     font-size: 16px;
     color: #333;
     margin-bottom: 20px;
-  }
-  .main-transfer {
-    margin: 0 auto;
-    display: flex;
-    border: 1px solid #eee;
-    border-radius: 5px;
-    padding: 20px;
-    margin: 0 30px;
-    .main-title {
-      width: 100%;
-    }
-    justify-content: center;
-    flex-direction: column;
-    align-items: center;
   }
   .department-tree-wrap {
     display: flex;
