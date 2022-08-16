@@ -10,9 +10,16 @@
     </div>
     <div class="header-right">
       <div class="header-right-box">
-        <div class="header-right-top">待审批</div>
-        <div class="header-right-btm" @click="jumpApproval()" style="color:#589ef8">
+        <div class="header-right-top">审核</div>
+        <div class="header-right-btm" @click="jumpApproval('1')" style="color:#589ef8">
             {{approvalNum}}
+        </div>
+      </div>
+      <div class="divide"></div>
+      <div class="header-right-box">
+        <div class="header-right-top">申请</div>
+        <div class="header-right-btm" @click="jumpApproval('2')" style="color:#589ef8">
+            {{applyNum}}
         </div>
       </div>
       <!-- <div class="divide"></div>
@@ -77,6 +84,7 @@ onMounted(() => {
   getNum()
 })
 const approvalNum = ref<number>(0)
+const applyNum = ref<number>(0)
 const getNum = ()=>{
  $services.person
   .getAllApproval({
@@ -86,18 +94,28 @@ const getNum = ()=>{
     }
   })
   .then((res: ResultType) => {
-    if (res.code === 200) {
+     if (res.data.total) {
+      console.log(' res.data.total', res.data.total)
       approvalNum.value = res.data.total
-
-    } else {
-
+    }
+  })
+  $services.person
+  .getAllApply({
+    data: {
+      offset: 0,
+      limit: 10
+    }
+  })
+  .then((res: ResultType) => {
+    if (res.data.total) {
+      console.log(' res.data.total', res.data.total)
+      applyNum.value = res.data.total
     }
   })
 }
 const router = useRouter()
-const jumpApproval = ()=>{
-  console.log('aaaaaaa')
- router.push({ path: '/cardDetail' })
+const jumpApproval = (type:string)=>{
+ router.push({ path: '/cardDetail' ,query: {type:type}})
 }
   
 </script>
