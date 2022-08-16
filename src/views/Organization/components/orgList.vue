@@ -36,15 +36,34 @@
   </div>
   </template>
   <template v-else-if="activeName === 'second'">
-    
+    <section class="container">
+      <div class="treebox">
+        <div class="treebox-btns">
+          <el-button :icon="Plus" @click="changeDialog1" size="small">创建下级节点</el-button>
+        </div>
+        <div class="treebox-search">
+          <el-input class="search" placeholder="搜索部门或者工作组">
+            <template #suffix>
+              <el-icon class="el-input__icon">
+                <search />
+              </el-icon>
+            </template>
+          </el-input>
+        </div>
+        <el-tree :props="defaultProps" lazy highlight-current ref="treeRef" @node-click="changeIndexFun" :load="loadNode" />
+      </div>
+    </section>
   </template>
+  <AuthorityEditDialog ref="dialog1" />
 </template>
 <script lang="ts" setup>
   import $services from '@/services'
   import { ref, reactive, watch, nextTick } from 'vue'
   import { ElMessage, ElMessageBox } from 'element-plus'
   import type { TabsPaneContext } from 'element-plus'
+  import { Search, Plus } from '@element-plus/icons-vue'
   import { useRouter } from 'vue-router'
+  import AuthorityEditDialog from './authorityEditDialog.vue'
   const router = useRouter()
   let filterHandler = () => {}
   type selectItem = {
@@ -108,7 +127,7 @@
   const loading = ref(false)
 
   const handleClick = (tab: TabsPaneContext, event: Event) => {
-    console.log(tab, event)
+    console.log(tab, event, dialog1.value.dialogVisible)
   }
   //搜索人
   const remoteMethod = (query: string) => {
@@ -259,11 +278,47 @@
   }
   const loadNode = (node: any, resolve: (data: any) => void) => {
     if (node.level === 0) {
-      getQueryInfo(resolve)
+      getCompanyAuthority(resolve)
     }
     if (node.level >= 1) {
-      getDepartmentsList(node, resolve)
+      getSubAuthorities(node, resolve)
     }
+  }
+  const dialog1 = ref()
+  const changeDialog1 = () => dialog1.value.changeVisible()
+  // 查询公司职权
+  async function getCompanyAuthority(resolve: any) {
+    await $services.company.getAuthorities({data: {id: props.selectItem.id, offset: 0, limit: 0}}).then((res: ResultType) => {
+      let obj = [
+        {
+          children: [] as string[],
+          label: res.data.name,
+          id: res.data.id
+        }
+      ]
+      return resolve(obj)
+    })
+  }
+  // 查询子职权
+  async function getSubAuthorities(node: any, resolve: any) {
+    let arr: any = []
+    await $services.company.getSubAuthorities({data: {id: node.data.id, offset: 0, limit: 0}}).then((res: ResultType) => {
+      if (res.data.result) {
+        let resData = JSON.parse(JSON.stringify(res.data.result))
+
+        resData.forEach((element: any) => {
+          var obj = {
+            id: element.id,
+            label: element.name,
+            code: element.code,
+            children: [] as []
+          }
+
+          arr.push(JSON.parse(JSON.stringify(obj)))
+        })
+      }
+      return resolve(arr)
+    })
   }
   //根节点数据
   async function getQueryInfo(resolve: any) {
@@ -360,5 +415,27 @@
     flex-direction: row-reverse;
     align-items: center;
     padding-right: 20px;
+  }
+  section.container {
+    width: 100%;
+    background-color: #fff;
+    padding: 0 30px;
+  }
+  .treebox {
+    min-height: 300px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    max-height: 500px;
+    &-btns {
+      margin-bottom: 10px;
+    }
+    &-search {
+      margin-bottom: 10px;
+    }
+    .el-tree {
+      flex: 1;
+      overflow-y: scroll;
+    }
   }
 </style>
