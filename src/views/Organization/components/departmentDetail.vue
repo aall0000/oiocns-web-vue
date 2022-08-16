@@ -20,7 +20,7 @@
         <table class="table-mytable">
           <tr>
             <td class="left">名称</td>
-            <td class="column">{{selectItem.name}}</td>
+            <td class="column">{{selectItem.name || selectItem.label}}</td>
             <td class="left">人数</td>
             <td class="column">{{listNum}}</td>
           </tr>
