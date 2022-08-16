@@ -127,7 +127,7 @@ let envType  = ref<number>(1)
   }
   const changeIndex = (obj: treeItem) => {
     selectItem.value = obj
-    console.log(selectItem)
+    selectItem.value.name = obj.label
     selectId.value = obj.id
   }
   const personTypeChange = (index: string) => {

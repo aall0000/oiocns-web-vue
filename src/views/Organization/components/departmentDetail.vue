@@ -10,7 +10,7 @@
         <div class="left-name">部门信息</div>
         <div class="edit">
           <!-- <el-button type="primary">创建工作组</el-button> -->
-          <div style="color:#154ad8" v-if="selectItem.id !== rootElement.id" @click="showDialog">分配人员</div>
+          <div style="color:#154ad8" v-show="selectItem.id !== rootElement.id" @click="showDialog">分配人员</div>
           <!-- <el-button>调整排序</el-button> -->
         </div>
       </div>
@@ -38,16 +38,15 @@
         center
       >
         <el-select-v2
-          v-model="checkList"
-          style="width: 240px"
+          v-model="checkList.list"
+          style="width: 350px"
           multiple
           filterable
           remote
+          reserve-keyword
           :remote-method="remoteMethod"
-          clearable
           :options="options"
           :loading="loading"
-          placeholder="选择要分配的人"
         />
         <template #footer>
           <span class="dialog-footer">
@@ -77,31 +76,58 @@
     envType:number,
     rootElement:rootType
   }>()
-  let selectId = ref<string>()
-  let departmentName = ref<string>('')
-  let departmentTeamCode = ref<string>('')
-  let departmentTeamRemark = ref<string>('')
   const submitFriends = () => {
+    if (checkList.list.length > 0) {
+      changePreson(props.selectItem.id)
+        // changeJobPreson(props.selectItem.id)
+    }
+  }
+   //分配部门or变更
+  const changePreson = (id: string) => {
+    
     $services.company
-      .updateDepartment({
-        data: {
-          id: selectId.value,
-          name: departmentName.value,
-          parentId: props.selectItem.id,
-          code: departmentTeamCode.value,
-          teamRemark: departmentTeamRemark.value
-        }
-      })
-      .then((res: ResultType) => {
-        if(res.code ==200){
-          dialogVisible.value = false
-          getList(props.selectItem.id)
-           ElMessage({
-            message: '添加成功',
-            type: 'success'
-          })
-        }
-      })
+    .assignDepartment({
+      data: {
+        id: id,
+        targetIds: checkList.list
+      }
+    })
+    .then((res: ResultType) => {
+      if (res.code === 500) {
+        ElMessage({
+          message: res.msg,
+          type: 'error'
+        })
+      } else {
+        ElMessage({
+          message: '分配成功',
+          type: 'success'
+        })
+      }
+    })
+  }
+  //分配工作组or变更
+  const changeJobPreson = (id:string) =>{
+    $services.company
+    .assignDepartment({
+      data: {
+        id: id,
+        targetIds: checkList.list
+      }
+    })
+    .then((res: ResultType) => {
+      if (res.code === 500) {
+        ElMessage({
+          message: res.msg,
+          type: 'error'
+        })
+      } else {
+        ElMessage({
+          message: '分配成功',
+          type: 'success'
+        })
+      }
+    })
   }
   watch(
     () => props.selectItem,
@@ -129,7 +155,7 @@
         }
       })
       .then((res: ResultType) => {
-        if(res.data.result){
+        if(res.data){
           listNum.value =res.data.total
         }else{
           listNum.value =0
@@ -147,7 +173,7 @@
         }
       })
       .then((res: ResultType) => {
-        if(res.data.result){
+        if(res.data){
           listNum.value =res.data.total
         }else{
           listNum.value =0
@@ -162,6 +188,7 @@
   const data = ref<Option[]>()
 
   const showDialog = ()=>{
+    dialogVisible.value = true
     getPersons()
     getDepartmentPersons()
   }
@@ -183,14 +210,12 @@
           let obj = {
             value:element.id,
             key:element.id,
-            label:element.name
+            label:element.name,
           }
           arr.push(obj)
         });
       }
       options.value = arr;
-      dialogVisible.value = true
-
     })
   }
   const getDepartmentPersons = () => {
@@ -204,17 +229,12 @@
     })
     .then((res: ResultType) => {
       let arr:any = []
-      console.log('res.data',res.data)
     if(res.data){
       res.data.result.forEach((element:any) => {
-        let obj = {
-          value:element.id,
-          label:element.name
-        }
-        arr.push(obj)
+        arr.push(element.id)
       });
     }
-    rightCheck.list = arr
+    checkList.list = arr
   })
   }
   interface ListItem {
@@ -226,15 +246,16 @@
   const remoteMethod = (query: string) => {
     if (query !== '') {
       loading.value = true
-      options.value = options.value.filter((item) => {
+      var arr = options.value.filter((item) => {
         return item.label.toLowerCase().includes(query.toLowerCase())
       })
+      options.value = arr;
     } else {
-      options.value = []
+      getPersons();
     }
      loading.value = false
   }
-  const checkList = reactive<Array<object>>([])
+  const checkList = reactive({list:[]})
 </script>
 
 <style lang="scss" scoped>

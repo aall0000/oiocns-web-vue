@@ -620,52 +620,7 @@
         dialogVisible.value = true
       })
   }
-  //分配部门or变更
-  const changePreson = (id: string) => {
-    $services.company
-    .assignDepartment({
-      data: {
-        id: id,
-        targetIds: transferList.value
-      }
-    })
-    .then((res: ResultType) => {
-      if (res.code === 500) {
-        ElMessage({
-          message: res.msg,
-          type: 'error'
-        })
-      } else {
-        ElMessage({
-          message: '分配成功',
-          type: 'success'
-        })
-      }
-    })
-  }
-  //分配工作组or变更
-  const changeJobPreson = (id:string) =>{
-    $services.company
-    .assignDepartment({
-      data: {
-        id: id,
-        targetIds: transferList.value
-      }
-    })
-    .then((res: ResultType) => {
-      if (res.code === 500) {
-        ElMessage({
-          message: res.msg,
-          type: 'error'
-        })
-      } else {
-        ElMessage({
-          message: '分配成功',
-          type: 'success'
-        })
-      }
-    })
-  }
+ 
   const router = useRouter()
   const handlePageChange = () => {
     router.push({ path: '/organization/deptDeatil' })
