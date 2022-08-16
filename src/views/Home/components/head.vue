@@ -12,14 +12,14 @@
       <div class="header-right-box">
         <div class="header-right-top">审核</div>
         <div class="header-right-btm" @click="jumpApproval('1')" style="color:#589ef8">
-            {{approvalNum}} 11
+            {{approvalNum}}
         </div>
       </div>
       <div class="divide"></div>
       <div class="header-right-box">
         <div class="header-right-top">申请</div>
         <div class="header-right-btm" @click="jumpApproval('2')" style="color:#589ef8">
-            {{applyNum}} 22
+            {{applyNum}}
         </div>
       </div>
       <!-- <div class="divide"></div>
