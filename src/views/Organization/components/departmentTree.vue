@@ -31,14 +31,14 @@
           <el-checkbox v-model="state.isShowCode" label="部门编码" />
         </el-popover> -->
 
-        <el-icon color="#154ad8" :size="20" @click="showDialog">
+        <el-icon color="#154ad8" :size="20" v-if="selectItem.leaf != true" @click="showDialog">
           <CirclePlus />
         </el-icon>
         <!-- <el-button :icon="Plus"size="small">新建部门</el-button> -->
       </li>
       <li class="con tree-btns" v-else>
         <div class="title">组织</div>
-        <el-button :icon="Plus" @click="dialogVisible = true" size="small">创建下级节点</el-button>
+        <el-button :icon="Plus" @click="showCreate" size="small">创建下级节点</el-button>
       </li>
       <li class="con tree-search">
         <el-input class="search" placeholder="搜索部门或者工作组">
@@ -87,11 +87,12 @@
         title="请录入部门信息"
         width="50%"
         center
+        append-to-body	
         @close="dialogHide"
       >
         <div class="main-title">部门信息</div>
         <div class="main-dialog">
-          <el-form-item class="main-item" label="创建类型" style="width: 100%">
+          <el-form-item class="main-item" v-if="selectItem.id !== rootElement.id" label="创建类型" style="width: 100%">
             <el-radio-group v-model="roleType" class="ml-4" >
               <el-radio label="1" size="large">创建子部门</el-radio>
               <el-radio label="2" size="large">创建工作组</el-radio>
@@ -167,18 +168,19 @@
   type selectItem = {
     name: string
     id: string
+    leaf:boolean
   }
   const props = defineProps<{
     envType: number
     selectItem: selectItem
     rootElement: selectItem
   }>()
-  let parentIdArray = []
-  const changeIndexFun = (val: any, nodeAttribute?, event?) => {
+  let parentIdArray:any = []
+  const changeIndexFun = (val: any, nodeAttribute?:any, event?:any) => {
     emit('changeIndex', val)
     // 设置表单上级节点
     if(nodeAttribute){
-      let parentIdArr = [];
+      let parentIdArr:any = [];
       const level = nodeAttribute.level;
       for(let i = 0; i<level; i++){
         parentIdArr = [...[nodeAttribute.data.value], ...parentIdArr]
@@ -206,6 +208,10 @@
       getGroupList()
     }
   })
+  const showCreate = ()=>{
+    roleType.value='1';//默认设置部门
+    dialogVisible.value = true
+  }
   //提交表单数据
   let departmentName = ref<string>('')
   let departmentTeamName = ref<string>('')
@@ -322,15 +328,15 @@
     })
   }
   async function getDepartmentsList(node: any, resolve: any) {
-    let arr: any = []
-    await $services.company
+    let arr1: any = []
+    let arr2 :any =[]
+    const list1 = await $services.company
       .getDepartments({
         data: { id: node.data.id, offset: 0, limit: 1000 }
       })
       .then((res: ResultType) => {
         if (res.data.result) {
-          let resData = JSON.parse(JSON.stringify(res.data.result))
-
+          let resData = res.data.result
           resData.forEach((element: any) => {
             var obj = {
               id: element.id,
@@ -341,11 +347,39 @@
               remark: element.team.remark
             }
 
-            arr.push(JSON.parse(JSON.stringify(obj)))
+            arr1.push(obj)
           })
         }
-        return resolve(arr)
+        return arr1
       })
+    const list2= await $services.company.getJobs({
+      data:{
+        id:props.selectItem.id,
+        offset:0,
+        limit:100
+      }
+    }).then((res: ResultType) => {
+        if (res.data) {
+         if(res.data.result){
+           let resData = res.data.result
+            resData.forEach((element: any) => {
+              var obj = {
+                id: element.id,
+                value:element.id,
+                label: element.name,
+                code: element.code,
+                children: [] as [],
+                leaf:true,
+                remark: element.team.remark
+              }
+
+              arr2.push(obj)
+            })
+         }
+        }
+        return arr2
+      })
+    resolve([...list1,...list2])
   }
   type listItem = {
     list: any

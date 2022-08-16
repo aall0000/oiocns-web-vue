@@ -34,12 +34,12 @@
     <el-dialog
         v-model="dialogVisible"
         title="分配人员"
-        width="50%"
+        width="450px"
         center
       >
         <el-select-v2
           v-model="checkList.list"
-          style="width: 350px"
+          style="width: 350px;margin-left: calc(50% - 175px);"
           multiple
           filterable
           remote
@@ -65,7 +65,8 @@
     name: string
     id: string
     label:string,
-    remark:string
+    remark:string,
+    leaf:boolean
   }
    type rootType = {
     id:string,
@@ -78,8 +79,11 @@
   }>()
   const submitFriends = () => {
     if (checkList.list.length > 0) {
-      changePreson(props.selectItem.id)
-        // changeJobPreson(props.selectItem.id)
+      if(props.selectItem.leaf == true){
+        changeJobPreson(props.selectItem.id) //工作组
+      }else{
+        changePreson(props.selectItem.id) //子单位
+      }
     }
   }
    //分配部门or变更
@@ -103,13 +107,14 @@
           message: '分配成功',
           type: 'success'
         })
+        dialogVisible.value = false;
       }
     })
   }
   //分配工作组or变更
   const changeJobPreson = (id:string) =>{
     $services.company
-    .assignDepartment({
+    .assignJob({
       data: {
         id: id,
         targetIds: checkList.list
@@ -126,6 +131,7 @@
           message: '分配成功',
           type: 'success'
         })
+        dialogVisible.value = false;
       }
     })
   }
@@ -181,18 +187,15 @@
       })
   }
   let dialogVisible = ref<boolean>(false)
-  interface Option {
-    key: string
-    label: string
-  }
-  const data = ref<Option[]>()
-
+  //打开分派员工
   const showDialog = ()=>{
     dialogVisible.value = true
     getPersons()
-    getDepartmentPersons()
+    if(props.selectItem.leaf ==true){
+    }else{
+      getDepartmentPersons()
+    }
   }
-  const rightCheck = reactive({list:[]});
   //获取单位人员
   const getPersons = () => {
     $services.company
@@ -217,7 +220,28 @@
       }
       options.value = arr;
     })
+  } 
+  //获取工作组员工
+  const getJobList = () => {
+    $services.company
+    .getJobPersons({
+      data: {
+        id: props.selectItem.id,
+        offset: 0,
+        limit: 100
+      }
+    })
+    .then((res: ResultType) => {
+        let arr:any = []
+        if(res.data){
+          res.data.result.forEach((element:any) => {
+            arr.push(element.id)
+          });
+        }
+        checkList.list = arr
+    })
   }
+  //获取子单位员工
   const getDepartmentPersons = () => {
   $services.company
     .getDepartmentPersons({
@@ -237,12 +261,14 @@
     checkList.list = arr
   })
   }
+  //分配员工参数
   interface ListItem {
     value: string
     label: string
   }
   const options = ref<ListItem[]>([])
   const loading = ref(false)
+  //分配员工选择
   const remoteMethod = (query: string) => {
     if (query !== '') {
       loading.value = true
