@@ -47,7 +47,7 @@
           clearable
           :options="options"
           :loading="loading"
-          placeholder="Please enter a keyword"
+          placeholder="选择要分配的人"
         />
         <template #footer>
           <span class="dialog-footer">

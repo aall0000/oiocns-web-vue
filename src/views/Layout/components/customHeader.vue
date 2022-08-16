@@ -2,7 +2,7 @@
   <el-row class="page-custom-header">
     <!-- 左侧 -->
     <el-col class="" :span="4">
-      <img class="logo" src="@/assets/img/avatar.jpg" alt="logo" />
+      <img class="logo" src="@/assets/img/avatar.jpg" alt="logo" @click="toHome"/>
       <el-dropdown trigger="click" placement="bottom-start" ref="dropdown">
         <span class="el-dropdown-link" @click="onClickDrop">
           {{ workspaceData?.name || '' }}
@@ -87,7 +87,7 @@
 </template>
 
 <script lang="ts" setup>
-  import { ref, watch, onMounted, reactive } from 'vue'
+  import { ref, watch, onMounted, reactive, computed } from 'vue'
   import { Search } from '@element-plus/icons-vue'
   import { storeToRefs } from 'pinia'
   import { useRouter } from 'vue-router'
@@ -103,9 +103,19 @@
   let current = ref(0)
   const visible = ref(false)
   const showSearch = ref(false)
+  const btnType = ref(false)
   const { queryInfo } = storeToRefs(store)
   const workspaceData = store.workspaceData
   const dropdown = ref()
+
+  const getDropMenuStyle = computed(() => {
+    if (!btnType.value) {
+      return 'height:0px'
+    } else {
+      let height = store.userCompanys.length < 6 ? store.userCompanys.length : 6
+      return store.userCompanys.length ? 'height:' + (height * 45 + 35) + 'px;' : 'height:0px'
+    }
+  })
 
   const load = () => {
     current.value++
@@ -121,6 +131,9 @@
       value: false
     }
   ])
+  const toHome = () =>{
+    router.push('/home')
+  }
   const showSearchInfo = () => {
     visible.value = !visible.value
   }
@@ -139,6 +152,16 @@
   //   showSearch.value = false
   // }
 
+  const onClickUnit = () => {
+    btnType.value = !btnType.value
+    if (store.userCompanys.length == 0) {
+      current.value = 0
+      store.getCompanyList(current.value, workspaceData.id, false)
+    }
+  }
+  const handleClose = () => {
+    btnType.value = false
+  }
   const createCompany = () => {
     dialogShow.map((el) => {
       if (el.key == 'unit') {
@@ -222,23 +245,76 @@
 </script>
 
 <style lang="scss" scoped>
+  .seletc-drop__box {
+    cursor: pointer;
+    height: 40px;
+    padding-left: 10px;
+    &:hover {
+      background: rgb(248, 247, 249);
+    }
+  }
+  .select-drop__flex {
+    display: flex;
+    margin: 10px;
+  }
+  .select-item__imgSelect {
+    height: 25px;
+    width: 25px;
+    border-radius: 50%;
+    background: #154ad8;
+    font-size: 15px;
+    color: #ffffff;
+    line-height: 25px;
+    text-align: center;
+  }
+  .select-item__titleSelect {
+    height: 25px;
+    line-height: 25px;
+    font-size: 16px;
+    font-weight: 400;
+    margin-right: 12px;
+    margin-left: 15px;
+  }
+
+  .select-drop {
+    position: absolute;
+    top: 60px;
+    left: -20px;
+    overflow: hidden;
+    background: #ffffff;
+    display: flex;
+    flex-direction: column;
+    transition: all 0.5s;
+    box-shadow: 0px 6px 9px rgba(0, 0, 0, 0.161);
+    border-radius: 0 0 4px 4px;
+    z-index: 2;
+  }
+  .col-box {
+    cursor: pointer;
+    display: flex;
+    .el-icon {
+      margin-left: 10px;
+    }
+  }
   :deep(.el-popover.el-popper) {
     width: 100%;
   }
   .joinBtn {
     margin: 10px;
     display: flex;
-    height: 32px;
+    height: 40px;
     background: #ffffff;
     border-radius: 2px;
-    border: 1px solid #d9d9d9;
+    border-top: 1px solid #d9d9d9;
     text-align: center;
     align-items: center;
     cursor: pointer;
-    font-size: 12px;
+    font-size: 16px;
     padding: 10px;
-
     color: rgba(0, 0, 0, 0.65);
+    &:hover {
+      color: #154ad8;
+    }
   }
   .el-dropdown-link {
     cursor: pointer;

@@ -24,9 +24,9 @@ const { name = '', url } = toRefs(props)
 
 <style lang="scss" scoped>
 .user-head-img-wrap {
-  width: 50px;
-  min-width: 50px;
-  height: 50px;
+  width: 46px;
+  min-width: 46px;
+  height: 46px;
   margin-right: 15px;
   border-radius: 4px;
 
@@ -42,8 +42,8 @@ const { name = '', url } = toRefs(props)
   }
 
   .user-img {
-    width: 50px;
-    height: 50px;
+    width: 46px;
+    height: 46px;
     margin-right: 15px;
     border-radius: 4px;
   }

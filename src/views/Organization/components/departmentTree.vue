@@ -41,7 +41,7 @@
         <el-button :icon="Plus" @click="dialogVisible = true" size="small">创建下级节点</el-button>
       </li>
       <li class="con tree-search">
-        <el-input class="search" placeholder="搜索姓名、手机、邮箱">
+        <el-input class="search" placeholder="搜索部门或者工作组">
           <template #suffix>
             <el-icon class="el-input__icon">
               <search />
@@ -55,7 +55,7 @@
           :props="defaultProps"
           lazy
           highlight-current
-          ref="TreeDom"
+          ref="treeRef"
           @node-click="changeIndexFun"
           :load="loadNode"
         />
@@ -65,6 +65,7 @@
           :props="defaultProps"
           lazy
           highlight-current
+          ref="treeRef"
           @node-click="changeIndexFun"
           :load="loadNode"
         >
@@ -83,7 +84,7 @@
       <el-dialog
         v-model="dialogVisible"
         v-if="envType == 1"
-        title="请输入部门名称"
+        title="请录入部门信息"
         width="50%"
         center
         @close="dialogHide"
@@ -127,6 +128,7 @@
           </span>
         </template>
       </el-dialog>
+
       <el-dialog v-model="dialogVisible" v-if="envType == 2" title="请输子集团名称" width="30%">
         <el-form-item label="节点名称">
           <el-input v-model="departmentName" placeholder="请输入" clearable />
@@ -164,6 +166,11 @@
   import { ElMessage, ElMessageBox } from 'element-plus'
   import { useRouter } from 'vue-router'
   import { storeToRefs } from 'pinia'
+  import { ElTree } from 'element-plus'
+  import type Node from 'element-plus/es/components/tree/src/model/node'
+
+  const treeRef = ref<InstanceType<typeof ElTree>>()
+
   const store = useUserStore()
   const { workspaceData } = storeToRefs(store)
   let dialogVisible = ref<boolean>(false)
@@ -177,10 +184,20 @@
     selectItem: selectItem
     rootElement: selectItem
   }>()
-  const changeIndexFun = (val: any) => {
-    var obj = val;
-    obj.name = val.label
+  const changeIndexFun = (val: any, nodeAttribute?, event?) => {
     emit('changeIndex', val)
+    // 清空表单人员分配信息
+    transferList.value = []
+    // 设置表单上级节点
+    if(nodeAttribute){
+      let parentIdArr = [];
+      const level = nodeAttribute.level;
+      for(let i = 0; i<level; i++){
+        parentIdArr = [...[nodeAttribute.data.value], ...parentIdArr]
+        nodeAttribute = nodeAttribute.parent
+      }
+      upNodeId.value.list = parentIdArr;
+    }
   }
   const state = reactive({
     isShowCode: false,
@@ -208,7 +225,7 @@
   const createDepartment = () => {
     let parentId = 0
     if (upNodeId.value.list.length > 0) {
-      parentId = upNodeId.value.list[upNodeId.value.list.length-1]
+      parentId = upNodeId.value.list[upNodeId.value.list.length - 1]
     }
     if(roleType.value =='1'){
       var requestType ='createDepartment' //创建部门
@@ -268,7 +285,7 @@
   }
   const loadNode = (node: any, resolve: (data: any) => void) => {
     if (props.envType == 1) {
-     
+
       if (node.level === 0) {
         state.nodeData = node
         state.resolveData = resolve
@@ -326,7 +343,7 @@
     let arr: any = []
     await $services.company
       .getDepartments({
-        data: { id: node.data.id, offset: 0, limit: 100 }
+        data: { id: node.data.id, offset: 0, limit: 1000 }
       })
       .then((res: ResultType) => {
         if (res.data.result) {
@@ -370,7 +387,7 @@
       .companyGetGroups({
         data: {
           offset: 0,
-          limit: 100
+          limit: 1000
         }
       })
       .then((res: ResultType) => {
@@ -426,7 +443,7 @@
       .companyGetGroups({
         data: {
           offset: 0,
-          limit: 100
+          limit: 1000
         }
       })
       .then((res: ResultType) => {
@@ -451,7 +468,7 @@
     let level = node.level
     await $services.company
       .getSubgroups({
-        data: { id: node.data.id, offset: 0, limit: 100 }
+        data: { id: node.data.id, offset: 0, limit: 1000 }
       })
       .then((res: ResultType) => {
         if (res.data.result) {
@@ -473,6 +490,67 @@
           // } else {
           //   getUnitData(node, resolve, arr)
           // }
+        }
+        return resolve(arr)
+      })
+  }
+  // 查询子集团单位
+  const getUnitChildData = (node: any, resolve: any, arr: Array<any>) => {
+    $services.company
+      .getSubgroupCompanies({
+        data: {
+          id: node.data.id,
+          offset: 0,
+          limit: 1000
+        }
+      })
+      .then((res: ResultType) => {
+        if (res.data.result) {
+          let resData = [res.data.result[0]]
+          resData.forEach((element: any) => {
+            var obj = {
+              id: element.id,
+              label: element.name,
+              code: element.code,
+              children: [] as [],
+              value: element.id,
+              leaf: true,
+              team: element.team,
+              type: 'unit'
+            }
+            arr.push(obj)
+          })
+        }
+        return resolve(arr)
+      })
+  }
+
+  // 查询集团单位
+  const getUnitData = (node: any, resolve: any, arr: Array<any>) => {
+    $services.company
+      .getGroupCompanies({
+        data: {
+          id: node.data.id,
+          offset: 0,
+          limit: 1000
+        }
+      })
+      .then((res: ResultType) => {
+        if (res.data.result) {
+          let resData = [res.data.result[0]]
+          resData.forEach((element: any) => {
+            var obj = {
+              id: element.id,
+              label: element.name,
+              code: element.code,
+              children: [] as [],
+              value: element.id,
+              leaf: true,
+              team: element.team,
+              type: 'unit'
+            }
+            arr.push(obj)
+          })
         }
         return resolve(arr)
       })
@@ -523,7 +601,7 @@
         data: {
           id: props.rootElement.id,
           offset: 0,
-          limit: 100
+          limit: 1000
         }
       })
       .then((res: ResultType) => {
@@ -588,7 +666,7 @@
       }
     })
   }
-  const router =useRouter()
+  const router = useRouter()
   const handlePageChange = () => {
     router.push({ path: '/organization/deptDeatil' })
   }

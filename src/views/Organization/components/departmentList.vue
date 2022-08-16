@@ -268,7 +268,7 @@
             message: '添加成功',
             type: 'success'
           })
-          
+
           if (props.selectItem.id === props.rootElement.id) {
             getList(props.selectItem.id)
           } else {

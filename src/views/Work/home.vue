@@ -1,29 +1,15 @@
 <template>
   <div class="baseLayout">
-    <div v-if="state.isShow" class="addImg">
-      <div
-        class="text"
-        @click="
-          router.push({
-            path: '/work',
-            query: {
-              tabsData: '[]',
-              userComponentList: JSON.stringify(state.data.user),
-              allData: JSON.stringify(state.data)
-            }
-          })
-        "
-        >+</div
-      >
-    </div>
     <el-tabs
-      v-else
       v-model="editableTabsValue"
       type="card"
       editable
       class="demo-tabs"
       @edit="handleTabsEdit"
     >
+      <el-tab-pane :closable="false" :label="'工作台'" :name="0">
+        <TheHome style="margin-top: 4px"></TheHome>
+      </el-tab-pane>
       <el-tab-pane
         v-for="item in state.data.content"
         :key="item.name"
@@ -76,6 +62,7 @@
 </template>
 
 <script setup lang="ts">
+  import TheHome from '../Home/index.vue'
   import TheSandBox from '@/components/sandBox/index.vue'
   import TheComponentList from '@/components/protal/index.vue'
   import { ElMessage } from 'element-plus'
@@ -87,7 +74,7 @@
   const router = useRouter()
   const store = useUserStore()
 
-  const editableTabsValue = ref(0)
+  const editableTabsValue = ref(null)
   interface info {
     id: String
     title: String
@@ -99,7 +86,6 @@
       draggable: false,
       resizable: false
     },
-    isShow: false,
     data: {
       name: '首页配置',
       content: [],
@@ -127,7 +113,7 @@
           if (state.data.content && state.data.content.length !== 0) {
             editableTabsValue.value = state.data.content[state.data.content.length - 1].name
           } else {
-            state.isShow = true
+            editableTabsValue.value = 0
           }
         }
       })
@@ -158,7 +144,8 @@
       router.push({
         path: '/work',
         query: {
-          tabsData: JSON.stringify(state.data.content),
+          // tabsData: JSON.stringify(state.data.content),
+          tabsData: JSON.stringify([]),
           onValue: editableTabsValue.value,
           userComponentList: JSON.stringify(state.data.user),
           allData: JSON.stringify(state.data)
@@ -179,6 +166,18 @@
 </script>
 
 <style lang="scss" scoped>
+  :deep(.el-tabs) {
+    height: calc(100% - 40px);
+  }
+  :deep(.el-tabs__content) {
+    height: 100%;
+  }
+  :deep(.el-tab-pane) {
+    height: 100%;
+  }
+  :deep(.el-tabs__nav .el-tabs__item:nth-child(1) .el-icon) {
+    display: none;
+  }
   .addImg {
     width: 100%;
     height: 100%;
@@ -211,6 +210,7 @@
     flex-direction: row-reverse;
     margin: unset;
     float: left;
+    z-index: 1;
   }
   .baseLayout {
     width: 100%;
