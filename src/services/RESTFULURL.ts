@@ -31,7 +31,7 @@ export default {
     remove: person + '/remove', //删除好友
     removeIdentity: person + '/remove/identity', //删除好友身份
     searchPersons: person + '/search/persons', //搜索人员
-    update: person + '/update' //变更信息
+    update: person + '/update', //变更信息
   },
   cohort: {
     applyJoin: cohort + '/apply/join', //申请加群组

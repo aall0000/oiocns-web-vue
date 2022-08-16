@@ -31,14 +31,14 @@
           <el-checkbox v-model="state.isShowCode" label="部门编码" />
         </el-popover> -->
 
-        <el-icon color="#154ad8" :size="20" @click="showDialog">
+        <el-icon color="#154ad8" :size="20" v-if="selectItem.leaf != true" @click="showDialog">
           <CirclePlus />
         </el-icon>
         <!-- <el-button :icon="Plus"size="small">新建部门</el-button> -->
       </li>
       <li class="con tree-btns" v-else>
         <div class="title">组织</div>
-        <el-button :icon="Plus" @click="dialogVisible = true" size="small">创建下级节点</el-button>
+        <el-button :icon="Plus" @click="showCreate" size="small">创建下级节点</el-button>
       </li>
       <li class="con tree-search">
         <el-input class="search" placeholder="搜索部门或者工作组">
@@ -87,11 +87,12 @@
         title="请录入部门信息"
         width="50%"
         center
+        append-to-body	
         @close="dialogHide"
       >
         <div class="main-title">部门信息</div>
         <div class="main-dialog">
-          <el-form-item class="main-item" label="创建类型" style="width: 100%">
+          <el-form-item class="main-item" v-if="selectItem.id !== rootElement.id" label="创建类型" style="width: 100%">
             <el-radio-group v-model="roleType" class="ml-4" >
               <el-radio label="1" size="large">创建子部门</el-radio>
               <el-radio label="2" size="large">创建工作组</el-radio>
@@ -103,23 +104,12 @@
           <el-form-item class="main-item" label="部门编号" style="width: 45%">
             <el-input v-model="departmentTeamCode" placeholder="请输入" clearable />
           </el-form-item>
-          <el-form-item class="main-item" label="部门简介" style="width: 45%">
-            <el-input v-model="departmentTeamRemark" placeholder="请输入" clearable />
+          <el-form-item class="main-item" label="上级节点" style="width: 100%">
+            <el-cascader :props="upNode" v-model="upNodeId.list" style="width: 100%" placeholder="请选择" @change="handleChange" />
           </el-form-item>
-          <el-form-item class="main-item" label="上级节点">
-            <el-cascader :props="upNode" v-model="upNodeId.list" placeholder="请选择" @change="handleChange" />
+          <el-form-item class="main-item" label="部门简介" style="width: 100%">
+            <el-input v-model="departmentTeamRemark" placeholder="请输入" type="textarea" clearable />
           </el-form-item>
-        </div>
-        <div class="main-transfer">
-          <div class="main-title">分配人员</div>
-          <el-transfer
-            v-model="transferList"
-            :data="transferData"
-            :left-default-checked="[]"
-            :right-default-checked="[]"
-            :titles="['全部', '选中的']"
-          >
-          </el-transfer>
         </div>
         <template #footer>
           <span class="dialog-footer">
@@ -136,11 +126,11 @@
         <el-form-item label="部门编号">
           <el-input v-model="departmentTeamCode" placeholder="请输入" clearable />
         </el-form-item>
-        <el-form-item label="部门简介">
-          <el-input v-model="departmentTeamRemark" placeholder="请输入" clearable />
-        </el-form-item>
         <el-form-item label="上级节点">
-          <el-cascader :props="upNode" v-model="upNodeId.list" @change="handleChange" />
+          <el-cascader :props="upNode" v-model="upNodeId.list"  style="width: 100%" @change="handleChange" />
+        </el-form-item>
+        <el-form-item label="部门简介">
+          <el-input v-model="departmentTeamRemark" placeholder="请输入"  style="width: 100%" clearable />
         </el-form-item>
 
         <template #footer>
@@ -178,24 +168,25 @@
   type selectItem = {
     name: string
     id: string
+    leaf:boolean
   }
   const props = defineProps<{
     envType: number
     selectItem: selectItem
     rootElement: selectItem
   }>()
-  const changeIndexFun = (val: any, nodeAttribute?, event?) => {
+  let parentIdArray:any = []
+  const changeIndexFun = (val: any, nodeAttribute?:any, event?:any) => {
     emit('changeIndex', val)
-    // 清空表单人员分配信息
-    transferList.value = []
     // 设置表单上级节点
     if(nodeAttribute){
-      let parentIdArr = [];
+      let parentIdArr:any = [];
       const level = nodeAttribute.level;
       for(let i = 0; i<level; i++){
         parentIdArr = [...[nodeAttribute.data.value], ...parentIdArr]
         nodeAttribute = nodeAttribute.parent
       }
+      parentIdArray = parentIdArr;
       upNodeId.value.list = parentIdArr;
     }
   }
@@ -217,6 +208,10 @@
       getGroupList()
     }
   })
+  const showCreate = ()=>{
+    roleType.value='1';//默认设置部门
+    dialogVisible.value = true
+  }
   //提交表单数据
   let departmentName = ref<string>('')
   let departmentTeamName = ref<string>('')
@@ -248,13 +243,6 @@
           dialogVisible.value = false
           state.nodeData.childNodes = []
           loadNode(state.nodeData, state.resolveData)
-          if (transferList.value.length > 0) {
-            if(roleType.value =='1'){
-               changePreson(res.data.id)
-            }else{
-              changeJobPreson(res.data.id)
-            }
-          }
           ElMessage({
             message: res.msg,
             type: 'success'
@@ -274,7 +262,7 @@
      departmentTeamCode.value = ''
      departmentTeamRemark.value = ''
      roleType.value='1'
-     upNodeId.value.list = []
+     upNodeId.value.list = parentIdArray || [];
      dialogVisible.value = false;
   }
   //默认节点类型
@@ -340,15 +328,15 @@
     })
   }
   async function getDepartmentsList(node: any, resolve: any) {
-    let arr: any = []
-    await $services.company
+    let arr1: any = []
+    let arr2 :any =[]
+    const list1 = await $services.company
       .getDepartments({
         data: { id: node.data.id, offset: 0, limit: 1000 }
       })
       .then((res: ResultType) => {
         if (res.data.result) {
-          let resData = JSON.parse(JSON.stringify(res.data.result))
-
+          let resData = res.data.result
           resData.forEach((element: any) => {
             var obj = {
               id: element.id,
@@ -359,11 +347,39 @@
               remark: element.team.remark
             }
 
-            arr.push(JSON.parse(JSON.stringify(obj)))
+            arr1.push(obj)
           })
         }
-        return resolve(arr)
+        return arr1
       })
+    const list2= await $services.company.getJobs({
+      data:{
+        id:props.selectItem.id,
+        offset:0,
+        limit:100
+      }
+    }).then((res: ResultType) => {
+        if (res.data) {
+         if(res.data.result){
+           let resData = res.data.result
+            resData.forEach((element: any) => {
+              var obj = {
+                id: element.id,
+                value:element.id,
+                label: element.name,
+                code: element.code,
+                children: [] as [],
+                leaf:true,
+                remark: element.team.remark
+              }
+
+              arr2.push(obj)
+            })
+         }
+        }
+        return arr2
+      })
+    resolve([...list1,...list2])
   }
   type listItem = {
     list: any
@@ -589,82 +605,7 @@
     label: string
   }
   const showDialog = () => {
-    getPersons()
-  }
-
-  const transferData = ref<Option[]>() //总人
-  const transferList = ref([]) //选中的人
-  //获取单位员工
-  const getPersons = () => {
-    $services.company
-      .getPersons({
-        data: {
-          id: props.rootElement.id,
-          offset: 0,
-          limit: 1000
-        }
-      })
-      .then((res: ResultType) => {
-        let arr: any = []
-        if (res.data.result) {
-          res.data.result.forEach((element: any) => {
-            let obj = {
-              value:element.id,
-              key:element.id,
-              label: element.name
-            }
-            arr.push(obj)
-          })
-        }
-        transferData.value = arr
-        dialogVisible.value = true
-      })
-  }
-  //分配部门or变更
-  const changePreson = (id: string) => {
-    $services.company
-    .assignDepartment({
-      data: {
-        id: id,
-        targetIds: transferList.value
-      }
-    })
-    .then((res: ResultType) => {
-      if (res.code === 500) {
-        ElMessage({
-          message: res.msg,
-          type: 'error'
-        })
-      } else {
-        ElMessage({
-          message: '分配成功',
-          type: 'success'
-        })
-      }
-    })
-  }
-  //分配工作组or变更
-  const changeJobPreson = (id:string) =>{
-    $services.company
-    .assignDepartment({
-      data: {
-        id: id,
-        targetIds: transferList.value
-      }
-    })
-    .then((res: ResultType) => {
-      if (res.code === 500) {
-        ElMessage({
-          message: res.msg,
-          type: 'error'
-        })
-      } else {
-        ElMessage({
-          message: '分配成功',
-          type: 'success'
-        })
-      }
-    })
+    dialogVisible.value = true
   }
   const router = useRouter()
   const handlePageChange = () => {
@@ -702,20 +643,6 @@
     font-size: 16px;
     color: #333;
     margin-bottom: 20px;
-  }
-  .main-transfer {
-    margin: 0 auto;
-    display: flex;
-    border: 1px solid #eee;
-    border-radius: 5px;
-    padding: 20px;
-    margin: 0 30px;
-    .main-title {
-      width: 100%;
-    }
-    justify-content: center;
-    flex-direction: column;
-    align-items: center;
   }
   .department-tree-wrap {
     display: flex;

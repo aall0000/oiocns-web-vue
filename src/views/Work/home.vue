@@ -42,13 +42,13 @@
               <div style="height: 100%; overflow: hidden">
                 <TheSandBox
                   v-if="items.type == 'iframe'"
-                  :cover="true"
+                  :cover="false"
                   :containLink="items.contain_link"
                   :type="items.type"
                 ></TheSandBox>
                 <TheComponentList
                   v-else
-                  :cover="true"
+                  :cover="false"
                   :containLink="items.contain_link"
                   :type="items.type"
                 ></TheComponentList>

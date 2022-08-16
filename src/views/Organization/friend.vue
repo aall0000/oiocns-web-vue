@@ -161,7 +161,7 @@ const deleteFriend = (id: string) => {
     .then((res: ResultType) => {
       if (res.code == 200) {
         ElMessage({
-          message: '申请成功',
+          message: '删除成功',
           type: 'warning'
         })
         getFriendList()
