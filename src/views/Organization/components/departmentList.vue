@@ -7,8 +7,8 @@
         </el-tabs>
       </div>
       <div class="edit">
-        <el-link class="link" type="primary" @click="addPresonDialog = true">邀请成员</el-link>
-        <el-link class="link" type="primary" @click="showChange">变更部门</el-link>
+        <el-link class="link" type="primary" v-if="selectItem.id === rootElement.id" @click="addPresonDialog = true">邀请成员</el-link>
+        <el-link class="link" type="primary" v-else @click="showChange">变更部门</el-link>
         <el-link class="link" type="primary" @click="viewApplication">查看申请</el-link>
         <el-link class="link" type="primary" @click="showOutput">操作离职</el-link>
       </div>

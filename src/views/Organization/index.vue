@@ -115,7 +115,7 @@ let envType  = ref<number>(1)
     id: string
     name: string
   }
-  const rootElement = ref<rootType>()
+  const rootElement = ref<rootType>({id: '',})
   const getInfo = () => {
     $services.company.queryInfo({}).then((res: ResultType) => {
       let selectObj = res.data

@@ -10,7 +10,7 @@
         <div class="left-name">部门信息</div>
         <div class="edit">
           <!-- <el-button type="primary">创建工作组</el-button> -->
-          <div style="color:#154ad8" @click="showDialog">分配人员</div>
+          <div style="color:#154ad8" v-if="selectItem.id !== rootElement.id" @click="showDialog">分配人员</div>
           <!-- <el-button>调整排序</el-button> -->
         </div>
       </div>
@@ -33,36 +33,22 @@
     </div>
     <el-dialog
         v-model="dialogVisible"
-        title="请输入部门名称"
+        title="分配人员"
         width="50%"
         center
       >
-        <div class="main-title">部门信息</div>
-        <div class="main-dialog">
-          <el-form-item class="main-item" label="部门名称" style="width: 45%">
-            <el-input v-model="departmentName" placeholder="Please input" width="200px" clearable />
-          </el-form-item>
-          <el-form-item class="main-item" label="部门编号" style="width: 45%">
-            <el-input v-model="departmentTeamCode" placeholder="Please input" clearable />
-          </el-form-item>
-          <el-form-item class="main-item" label="部门简介" style="width: 45%">
-            <el-input v-model="departmentTeamRemark" placeholder="Please input" clearable />
-          </el-form-item>
-          <el-form-item class="main-item" label="上级节点">
-            <el-cascader :props="upNode" v-model="upNodeId" />
-          </el-form-item>
-        </div>
-        <div class="main-transfer">
-          <div class="main-title">分配人员</div>
-          <el-transfer 
-          v-model="transferList" 
-          :data="data"
-          :left-default-checked="[]"
-          :right-default-checked="rightCheck.list"
-          :titles="['全部', '选中的']"
-          >
-        </el-transfer>
-        </div>
+        <el-select-v2
+          v-model="checkList"
+          style="width: 240px"
+          multiple
+          filterable
+          remote
+          :remote-method="remoteMethod"
+          clearable
+          :options="options"
+          :loading="loading"
+          placeholder="Please enter a keyword"
+        />
         <template #footer>
           <span class="dialog-footer">
             <el-button @click="dialogVisible = false">取消</el-button>
@@ -169,28 +155,12 @@
       })
   }
   let dialogVisible = ref<boolean>(false)
-  const upNodeId = ref<any>([])
   interface Option {
     key: string
     label: string
   }
   const data = ref<Option[]>()
-  const transferList = ref([])
-   const upNode = {
-    checkStrictly: true,
-    lazy: true,
-    lazyLoad(node: any, resolve: any) {
-      const { level } = node
-      if (props.envType == 1) {
-        if (node.level === 0) {
-          getQueryInfo(resolve)
-        }
-        if (node.level >= 1) {
-          getDepartmentsList(node, resolve)
-        }
-      }
-    }
-  }
+
   const showDialog = ()=>{
     getPersons()
     getDepartmentPersons()
@@ -218,72 +188,53 @@
           arr.push(obj)
         });
       }
-      data.value = arr;
+      options.value = arr;
       dialogVisible.value = true
 
     })
   }
-   const getDepartmentPersons = () => {
-    $services.company
-      .getDepartmentPersons({
-        data: {
-          id: props.selectItem.id,
-          offset: 0,
-          limit: 100
-        }
-      })
-      .then((res: ResultType) => {
-       let arr:any = []
-       console.log('res.data',res.data)
-      if(res.data){
-        res.data.result.forEach((element:any) => {
-          let obj = {
-            value:element.id,
-            label:element.name
-          }
-          arr.push(obj)
-        });
+  const getDepartmentPersons = () => {
+  $services.company
+    .getDepartmentPersons({
+      data: {
+        id: props.selectItem.id,
+        offset: 0,
+        limit: 100
       }
-      rightCheck.list = arr
     })
-  }
-  //根节点数据
-  async function getQueryInfo(resolve: any) {
-    await $services.company.queryInfo({}).then((res: ResultType) => {
-      let obj = [
-        {
-          children: [] as string[],
-          label: res.data.name,
-          id: res.data.id
+    .then((res: ResultType) => {
+      let arr:any = []
+      console.log('res.data',res.data)
+    if(res.data){
+      res.data.result.forEach((element:any) => {
+        let obj = {
+          value:element.id,
+          label:element.name
         }
-      ]
-      return resolve(obj)
-    })
+        arr.push(obj)
+      });
+    }
+    rightCheck.list = arr
+  })
   }
-  async function getDepartmentsList(node: any, resolve: any) {
-    let arr: any = []
-    await $services.company
-      .getDepartments({
-        data: { id: node.data.id, offset: 0, limit: 100 }
-      })
-      .then((res: ResultType) => {
-        if (res.data.result) {
-          let resData = JSON.parse(JSON.stringify(res.data.result))
-
-          resData.forEach((element: any) => {
-            var obj = {
-              id: element.id,
-              label: element.name,
-              code: element.code,
-              children: [] as []
-            }
-
-            arr.push(JSON.parse(JSON.stringify(obj)))
-          })
-        }
-        return resolve(arr)
-      })
+  interface ListItem {
+    value: string
+    label: string
   }
+  const options = ref<ListItem[]>([])
+  const loading = ref(false)
+  const remoteMethod = (query: string) => {
+    if (query !== '') {
+      loading.value = true
+      options.value = options.value.filter((item) => {
+        return item.label.toLowerCase().includes(query.toLowerCase())
+      })
+    } else {
+      options.value = []
+    }
+     loading.value = false
+  }
+  const checkList = reactive<Array<object>>([])
 </script>
 
 <style lang="scss" scoped>
