@@ -4,21 +4,22 @@
       <el-input placeholder="搜索" v-model="searchValue" prefix-icon="Search" />
     </div>
     <div class="group-side-bar-wrap" @contextmenu.prevent="mousePosition.isShowContext = false">
+
       <ul class="group-con" v-for="item in showList" :key="item.id">
-        <li class="group-con-item" >
-          <div class="con-title">{{ item.name }}</div>
-          <div class="con-body">
-            <HeadImg :name="item.name" />
-            <div class="group-con-show">
-              <el-tooltip class="box-item" :disabled="item.name.length < 7" :content="item.name"
+        <li class="group-con-item">
+          <div class="con-title">{{ item.name }}({{ item?.chats?.length??0 }})</div>
+          <div class="con-body" v-for="child in item.chats" :key="child.id">
+            <HeadImg :name="child.name" />
+            <div class="group-con-show" @click="changeInfo(child,item.id)">
+              <el-tooltip class="box-item" :disabled="child.name.length < 7" :content="child.name"
                 placement="right-start">
                 <p class="group-con-show-name">
-                  <span class="group-con-show-name-label">{{ props.myId === item.id ? `我 (${item.name})` : item.name
+                  <span class="group-con-show-name-label">{{ props.myId === child.id ? `我 (${child.name})` : child.name
                   }}</span>
-                  <span class="group-con-show-name-time">{{ handleFormatDate(item.createTime) }} </span>
+                  <span class="group-con-show-name-time">{{ handleFormatDate(child.msgTime) }} </span>
                 </p>
               </el-tooltip>
-              <p class="group-con-show-msg" v-html="item?.message?.msgBody"></p>
+              <p class="group-con-show-msg" v-html="child?.msgBody"></p>
             </div>
           </div>
         </li>
@@ -59,9 +60,9 @@ import { formatDate } from '@/utils/index'
 import HeadImg from './headImg.vue'
 
 type propType = {
-  active: userType,//当前激活聊天对象信息
+  active: ImMsgChildType,//当前激活聊天对象信息
   redDotInfo: any,//需要红点提示的标志Map类型 {isShowDot:boolean;count:number} isShowDot是否展示红点,count未读信息数量
-  sessionList: userType[],//当前会话列表
+  sessionList: ImMsgType[],//当前会话列表
   clearHistoryMsg: Function,//清空记录
   myId: string
 }
@@ -70,23 +71,23 @@ const props = defineProps<propType>()
 const searchValue = ref<string>('')
 
 //根据搜索条件-输出展示列表
-const showList = computed((): userType[] => {
+const showList = computed((): ImMsgType[] => {
   let showInfoArr = props.sessionList
   // console.log('展示顺序',props.sessionList.map(item=>item.name));
   // 数据过滤 搜索关键词是否 在 列表名称 或 显示信息里
-  if (searchValue.value) {
-    showInfoArr = showInfoArr.filter((item: userType) => {
-      return item.name.includes(searchValue.value) || item.message?.msgBody.includes(searchValue.value)
-    })
-  }
+  // if (searchValue.value) {
+  //   showInfoArr = showInfoArr.filter((item: ImMsgType) => {
+  //     return item.name.includes(searchValue.value) || item.message?.msgBody.includes(searchValue.value)
+  //   })
+  // }
   return showInfoArr
 })
 
 
 const emit = defineEmits(['update:active'])
-const changeInfo = (item: userType) => {
+const changeInfo = (item: ImMsgChildType,groupId:string) => {
   // 触发父组件值更新
-  emit('update:active', item)
+  emit('update:active', {...item,groupId})
 }
 
 // 时间处理
@@ -166,12 +167,13 @@ const handleContextChange = (item: MenuItemType) => {
 }
 
 .group-side-bar-search {
-  padding: 10px 15px;
+  padding: 10px;
 }
 
 .group-side-bar-wrap {
   width: 100%;
   height: calc(100vh - 112px);
+  padding: 0 10px 10px;
   overflow-y: auto;
 
   // position: relative;
@@ -212,34 +214,38 @@ const handleContextChange = (item: MenuItemType) => {
   }
 
   .group-con {
-    position: relative;
-    padding: 10px 15px 5px;
-    display: flex;
-    align-items: center;
 
-    &.active {
-      color: #0f39d1;
-      background-color: #e7ecfb;
+    // // 头像
+    // &-img {
+    //   width: 35px;
+    //   height: 35px;
+    //   margin-right: 10px;
+    // }
+
+    // .emoji {
+    //   width: 14px !important;
+    //   height: 14px !important;
+    // }
+    &-item {
+      .con-title {
+        font-size: 16px;
+        font-weight: bold;
+        padding: 10px 0;
+        color: #409eff;
+      }
+
+      .con-body {
+        display: flex;
+        justify-content: space-between;
+
+      }
+
+      .con-body+.con-body {
+        margin-top: 10px;
+      }
     }
 
-    &:hover {
-      color: #0f39d1;
-    }
-
-    // 头像
-
-    &-img {
-      width: 35px;
-      height: 35px;
-      margin-right: 10px;
-    }
-
-    .emoji {
-      width: 14px !important;
-      height: 14px !important;
-    }
-
-    &-show {
+    .group-con-show {
       width: 100%;
 
       &-name {
