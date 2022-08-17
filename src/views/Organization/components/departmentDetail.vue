@@ -89,7 +89,7 @@
   }
    //分配部门or变更
   const changePreson = (id: string) => {
-    
+
     $services.company
     .assignDepartment({
       data: {
@@ -165,7 +165,7 @@
         }
       })
       .then((res: ResultType) => {
-        if(res.data){
+        if(res.data.result){
           listNum.value =res.data.total
         }else{
           listNum.value =0
@@ -224,7 +224,7 @@
       }
       options.value = arr;
     })
-  } 
+  }
   //获取工作组员工
   const getJobList = () => {
     $services.company

@@ -347,6 +347,7 @@
       font-size: 12px;
       align-items: center;
       transform: scale(90%);
+      cursor: pointer;
 
       &-icon {
         padding: 8px 0;
@@ -377,6 +378,7 @@
       .me {
         display: flex;
         flex-direction: column;
+        cursor: pointer;
 
         align-items: center;
         transform: scale(90%);
@@ -401,6 +403,7 @@
       .apps {
         display: flex;
         flex-direction: column;
+        cursor: pointer;
 
         align-items: center;
         transform: scale(90%);

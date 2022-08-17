@@ -180,7 +180,7 @@
       selectObj.remark = res.data.team.remark
       selectItem.value = selectObj
       rootElement.value = res.data
-      // store.userUnitInfo = res.data
+      store.userUnitInfo = res.data
     })
   }
   const changeIndex = (obj: treeItem) => {
