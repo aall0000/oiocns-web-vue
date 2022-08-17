@@ -50,7 +50,7 @@ const msgMap = ref(new Map())
 const lastQueryParams = ref<any>({})
 
 const showMsgList = computed(() => {
-  const key = activeInfo.value.id
+  const key = activeInfo.value.id + '_' + activeInfo.value.groupId
   return msgMap.value.get(key) ?? []
 })
 //内容展示 dom节点
@@ -151,7 +151,7 @@ onBeforeUnmount(() => {
 watch(
   () => activeInfo.value,
   async (val) => {
-    const { typeName, id } = val
+    const { typeName, id, groupId } = val
     selectInfo.typeName = typeName
     current.value = 0
     selectInfo.detail = val
@@ -164,7 +164,7 @@ watch(
     // 切换人员-清空已存信息
     msgMap.value.clear()
     //获取新的聊天对象历史信息
-    getHistoryMsg(id, typeName, true)
+    getHistoryMsg(id, groupId, typeName, true)
     //关闭详情页面
     isShowDetail.value = false
   }
@@ -226,6 +226,9 @@ const handleNewMsgShow = (data: any) => {
             val.count = (val.count || 0) + 1
           }
           arr.unshift(val)
+          let key = val.id + '_' + item.id;
+          let oldMsg = msgMap.value.get(key)
+          msgMap.value.set(key, [data, ...oldMsg])
         } else {
           arr.push(val)
         }
@@ -236,7 +239,7 @@ const handleNewMsgShow = (data: any) => {
   })
 }
 // 获取历史消息
-const getHistoryMsg = async (id: string, type: string, isGoEnd?: boolean) => {
+const getHistoryMsg = async (id: string, groupId: string, type: string, isGoEnd?: boolean) => {
   const url: string = type == '人员' ? 'QueryFriendMsg' : 'QueryCohortMsg';
   const { data = [], success } = await connection.invoke(url, {
     [type == '人员' ? 'friendId' : 'cohortId']: id,
@@ -247,7 +250,7 @@ const getHistoryMsg = async (id: string, type: string, isGoEnd?: boolean) => {
   if (success) {
     const newHistoryMsgArr = (data.result && data.result?.reverse()) ?? []
     const oldMsg = msgMap.value.get(id) ?? []
-    msgMap.value.set(id, [...newHistoryMsgArr, ...oldMsg])
+    msgMap.value.set(id + '_' + groupId, [...newHistoryMsgArr, ...oldMsg])
   }
 }
 
@@ -259,7 +262,7 @@ const clearHistoryMsg = () => {
 // 获取更多历史消息
 const handleViewMoreHistory = () => {
   current.value++
-  getHistoryMsg(activeInfo.value.id, activeInfo.value.typeName)
+  getHistoryMsg(activeInfo.value.id, activeInfo.value.groupId, activeInfo.value.typeName)
 }
 
 </script>
