@@ -2,34 +2,38 @@
   <el-row class="page-custom-header">
     <!-- 左侧 -->
     <el-col class="" :span="4">
-      <img class="logo" src="@/assets/img/avatar.jpg" alt="logo" />
-      <div class="col-box" @click="onClickUnit">
-        <div class="col-text">{{ workspaceData?.name || '' }}</div>
-        <div class="col-icon"
-          ><el-icon
-            ><CaretBottom
-              :style="
-                btnType
-                  ? 'transform: rotate(180deg);transition: all 0.5s;'
-                  : 'transform: rotate(0);transition: all 0.5s;'
-              " /></el-icon
-        ></div>
-      </div>
-      <div class="select-drop" :style="getDropMenuStyle" @mouseleave="handleClose()">
-        <div
-          class="seletc-drop__box"
-          v-for="item in store.userCompanys"
-          :key="item.id"
-          @click="switchCompany(item)"
-        >
-          <div class="select-drop__flex">
-            <div class="select-item__imgSelect">
-              {{ item.team ? item.team.name.slice(0, 1) : item.name.slice(0, 1) }}
-            </div>
-            <div class="select-item__titleSelect">{{ item.team ? item.team.name : item.name }}</div>
-          </div>
+      <div style="display: flex; align-items: center" @mouseleave="handleClose()">
+        <img class="logo" src="@/assets/img/avatar.jpg" alt="logo" />
+        <div class="col-box" @click="onClickUnit">
+          <div class="col-text">{{ workspaceData?.name || '' }}</div>
+          <div class="col-icon"
+            ><el-icon
+              ><CaretBottom
+                :style="
+                  btnType
+                    ? 'transform: rotate(180deg);transition: all 0.5s;'
+                    : 'transform: rotate(0);transition: all 0.5s;'
+                " /></el-icon
+          ></div>
         </div>
-        <div class="joinBtn" @click="createCompany">+ 创建企业/单位/组织</div>
+        <div class="select-drop" :style="getDropMenuStyle">
+          <div
+            class="seletc-drop__box"
+            v-for="item in store.userCompanys"
+            :key="item.id"
+            @click="switchCompany(item)"
+          >
+            <div class="select-drop__flex">
+              <div class="select-item__imgSelect">
+                {{ item.team ? item.team.name.slice(0, 1) : item.name.slice(0, 1) }}
+              </div>
+              <div class="select-item__titleSelect">{{
+                item.team ? item.team.name : item.name
+              }}</div>
+            </div>
+          </div>
+          <div class="joinBtn" @click="createCompany">+ 创建企业/单位/组织</div>
+        </div>
       </div>
 
       <!-- <el-dropdown trigger="click" placement="bottom-start" ref="dropdown">
@@ -303,7 +307,6 @@
   }
 
   .select-drop {
-    width: 400px;
     position: absolute;
     top: 60px;
     left: -20px;
@@ -329,17 +332,19 @@
   .joinBtn {
     margin: 10px;
     display: flex;
-    height: 32px;
+    height: 40px;
     background: #ffffff;
     border-radius: 2px;
-    border: 1px solid #d9d9d9;
+    border-top: 1px solid #d9d9d9;
     text-align: center;
     align-items: center;
     cursor: pointer;
-    font-size: 12px;
+    font-size: 16px;
     padding: 10px;
-
     color: rgba(0, 0, 0, 0.65);
+    &:hover {
+      color: #154ad8;
+    }
   }
   .el-dropdown-link {
     cursor: pointer;
