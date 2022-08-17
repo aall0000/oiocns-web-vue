@@ -313,25 +313,6 @@
       ]
       return resolve(obj)
     })
-    await $services.company.getJobs({
-      data:{
-        id:props.selectItem.id,
-        offset:0,
-        limit:100
-      }
-    }).then((res: ResultType) => {
-      // let obj = [
-      //   {
-      //     value:res.data.id,
-      //     children: [] as string[],
-      //     label: res.data.name,
-      //     id: res.data.id,
-      //     remark: res.data.team.remark
-      //   }
-      // ]
-      // return resolve(obj)
-      console.log('resssss',res)
-    })
   }
   async function getDepartmentsList(node: any, resolve: any) {
     let arr1: any = []
@@ -433,9 +414,10 @@
         groupIndex.value = i
         setTimeout(() => {
           showTreeStatus.value = true
-        }, 10)
+        }, 100)
       }
     }
+    console.log('groupIndex',groupIndex)
   }
   const upNode = {
     checkStrictly: true,
