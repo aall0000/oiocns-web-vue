@@ -13,6 +13,9 @@
             }}) </span></div>
           <div class="con-body" v-for="child in item.chats" :key="child.id" v-show="openIdArr.includes(item.id)">
             <HeadImg :name="child.name" />
+            <div class="group-con-dot" v-show="child.count > 0">
+              <span>{{ child.count }}</span>
+            </div>
             <div class="group-con-show" @click="changeInfo(child, item.id)">
               <el-tooltip class="box-item" :disabled="child.name.length < 7" :content="child.name"
                 placement="right-start">
@@ -27,24 +30,6 @@
           </div>
         </li>
       </ul>
-      <!-- <li :class="['group-con', props.active.id == item.id ? 'active' : '']" v-for="item in showList" :key="item.id"
-        @click="changeInfo(item)" @contextmenu.stop
-        @contextmenu.prevent="(e: MouseEvent) => handleContextClick(e, item)">
-        <div class="group-con-dot" v-show="props.redDotInfo.get(item.id)?.isShowDot">
-          <span>{{ props.redDotInfo.get(item.id)?.count ?? 8 }}</span>
-        </div>
-        <HeadImg :name="item.name" />
-        <div class="group-con-show">
-          <el-tooltip class="box-item" :disabled="item.name.length < 7" :content="item.name" placement="right-start">
-            <p class="group-con-show-name">
-              <span class="group-con-show-name-label">{{ props.myId === item.id ? `我 (${item.name})` : item.name
-              }}</span>
-              <span class="group-con-show-name-time">{{ handleFormatDate(item.createTime) }} </span>
-            </p>
-          </el-tooltip>
-          <p class="group-con-show-msg" v-html="item?.message?.msgBody"></p>
-        </div>
-      </li> -->
       <!-- 鼠标右键 -->
       <ul class="context-text-wrap" v-show="mousePosition.isShowContext"
         :style="{ left: `${mousePosition.left}px`, top: `${mousePosition.top}px` }">
@@ -64,7 +49,6 @@ import HeadImg from './headImg.vue'
 
 type propType = {
   active: ImMsgChildType,//当前激活聊天对象信息
-  redDotInfo: any,//需要红点提示的标志Map类型 {isShowDot:boolean;count:number} isShowDot是否展示红点,count未读信息数量
   sessionList: ImMsgType[],//当前会话列表
   clearHistoryMsg: Function,//清空记录
   myId: string
@@ -95,6 +79,7 @@ const showList = computed((): ImMsgType[] => {
 const emit = defineEmits(['update:active'])
 const changeInfo = (item: ImMsgChildType, groupId: string) => {
   // 触发父组件值更新
+  item.count = 0
   emit('update:active', { ...item, groupId })
 }
 

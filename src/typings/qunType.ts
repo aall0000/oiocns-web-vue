@@ -33,6 +33,7 @@ interface ImMsgChildType {
   typeName: string
   msgBody?: any
   groupId?:string
+  count?: number
 }
 // 聊天 侧边栏展示列表类型
 interface ImMsgType {
