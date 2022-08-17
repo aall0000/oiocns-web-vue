@@ -130,7 +130,7 @@
         <el-form-item class="main-item" label="上级节点" style="width: 100%">
           <el-cascader :props="upNode" v-model="upNodeId.list" style="width: 100%" placeholder="请选择" @change="handleChange" />
         </el-form-item>
-        <el-form-item class="main-item" label="子集团简介" style="width: 100%">
+        <el-form-item class="main-item" label="集团简介" style="width: 100%">
           <el-input v-model="departmentTeamRemark" :autosize="{ minRows: 5 }" placeholder="请输入" type="textarea" clearable />
         </el-form-item>
 
