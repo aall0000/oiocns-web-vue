@@ -92,7 +92,7 @@
       >
         <div class="main-title">部门信息</div>
         <div class="main-dialog">
-          <el-form-item class="main-item" v-if="selectItem.id !== rootElement.id" label="创建类型" style="width: 100%">
+          <el-form-item class="main-item" label="创建类型" style="width: 100%">
             <el-radio-group v-model="roleType" class="ml-4" >
               <el-radio label="1" size="large">创建子部门</el-radio>
               <el-radio label="2" size="large">创建工作组</el-radio>

@@ -72,6 +72,7 @@
     id:string,
     name:string,
   }
+  const emit = defineEmits(['Refresh'])
   const props = defineProps<{
     selectItem: selectItem,
     envType:number,
@@ -107,6 +108,7 @@
           message: '分配成功',
           type: 'success'
         })
+        emit('Refresh')
         dialogVisible.value = false;
       }
     })
@@ -131,6 +133,7 @@
           message: '分配成功',
           type: 'success'
         })
+        emit('Refresh')
         dialogVisible.value = false;
       }
     })
