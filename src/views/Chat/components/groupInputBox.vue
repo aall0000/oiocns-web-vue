@@ -67,8 +67,8 @@
     const img = document.createElement('img')
     img.src = url
     img.className = 'emoji'
-    img.width = 20
-    img.height = 20
+    // img.width = 20
+    // img.height = 20
     document.getElementById('insterHtml').append(img)
   }
 

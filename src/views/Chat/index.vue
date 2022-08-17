@@ -111,11 +111,12 @@ onMounted(() => {
     if (sessionId !== myId) {
       let num = (msgDotMap.value.get(sessionId)?.count ?? 0) + 1
       // 信息来源是正在聊天的人 -则不展示红点
-      msgDotMap.value.set(Number(sessionId), { isShowDot: activeInfo.value.id !== sessionId, count: num })
+      msgDotMap.value.set(sessionId, { isShowDot: activeInfo.value.id !== sessionId, count: num })
     }
-    const oldMsg = msgMap.value.get(Number(sessionId)) ?? []
-    msgMap.value.set(Number(sessionId), [...oldMsg, data])
+    const oldMsg = msgMap.value.get(sessionId) ?? []
+    msgMap.value.set(sessionId, [...oldMsg, data])
     contentWrapRef.value.goPageEnd()
+    handleNewMsgShow(data)
   });
   // 监听链接断开
   connection.onclose(() => {
@@ -123,6 +124,8 @@ onMounted(() => {
     msgMap.value.clear()
   });
 })
+
+
 
 // 提交信息
 const submit = async (value: string) => {
@@ -136,15 +139,10 @@ const submit = async (value: string) => {
     msgType: 'text',
     msgBody: text
   }
-  API.msg.sendMsg({ data: params })
-  // if (activeInfo.value.id && text?.length > 0) {
-  //   await connection.send('SendMsg', {
-  //     toId: 338792423297781760,
-  //     spaceId: 340896682281668600,
-  //     msgType: 'text',
-  //     msgBody: '333333'
-  //   })
-  // }
+  // API.msg.sendMsg({ data: params })
+  if (activeInfo.value.id && text?.length > 0) {
+    await connection.send('SendMsg', params)
+  }
 }
 
 
@@ -185,26 +183,19 @@ const handleViewDetail = () => {
 
 // 获取群成员
 const getQunPerson = async (id: string, offset: number) => {
-  console.log('获取群成员', {
-    cohortId: id,
+  const { data, success } = await connection.invoke("GetPersons", {
+    cohortId: String(id),
     limit: 10,
-    Offset: offset
+    offset: offset
   });
-
-  // const { data, success } = await connection.invoke("GetPersons", {
-  //   cohortId: id,
-  //   limit: 10,
-  //   Offset: offset
+  // const { data, success } = await API.cohort.getPersons({
+  //   data: {
+  //     cohortId: id,
+  //     limit: 10,
+  //     offset: offset
+  //   }
   // });
-  const { data, success } = await API.cohort.getPersons({
-    data: {
-      id: id,
-      limit: 10,
-      offset: offset
-    }
-  });
   //
-  console.log('大幅度发',data);
 
   if (success === true) {
     selectInfo.total = data.total
@@ -244,7 +235,64 @@ const handleUpdateSideList = (data: any) => {
   sessionList.value = newArr
   return resId
 }
+const handleNewMsgShow = (data: any) => {
+  const silderList = sessionList.value
+  // 是否匹配到空间
+  let canSearchSpace = false
 
+  sessionList.value = silderList.map((item: any) => {
+    // 匹配会话空间
+    if (item.id === data.spaceId) {
+      canSearchSpace = true
+      let sessionId = data.toId
+      if (item.typeName === "人员"
+        && data.fromId !== myId
+        && data.toId === myId) {
+        sessionId = data.fromId
+      }
+      const arr: any = []
+      item.chats.forEach((val: any) => {
+        if (sessionId == val.id) {
+          val.msgBody = data.msgBody
+          val.msgTime = data.msgTime
+          val.msgType = data.msgType
+          arr.unshift(val)
+        } else {
+          arr.push(val)
+        }
+
+      })
+      console.log('arr', arr);
+
+      item.chats = arr
+    }
+
+    return item
+  })
+  // 未匹配到空间 默认我的会话
+  if (!canSearchSpace) {
+    const obj: any = silderList.find(val => val.name === '我的会话')
+    const arr: any = []
+    let sessionId = data.toId
+    if (data.fromId !== myId
+      && data.toId === myId) {
+      sessionId = data.fromId
+    }
+    obj.chats.forEach((val: any) => {
+      if (sessionId == val.id) {
+        val.msgBody = data.msgBody
+        val.msgTime = data.msgTime
+        val.msgType = data.msgType
+        arr.unshift(val)
+      } else {
+        arr.push(val)
+      }
+
+    })
+    obj.chats = arr
+  }
+
+}
 // 获取历史消息
 const getHistoryMsg = async (id: string, type: string, isGoEnd?: boolean) => {
   // const url: string = type == '人员' ? 'QueryFriendMsg' : 'QueryCohortMsg';
@@ -254,7 +302,6 @@ const getHistoryMsg = async (id: string, type: string, isGoEnd?: boolean) => {
   //   limit: limit.value,
   //   spaceId: activeInfo.value.groupId,
   // })
-  console.log('三生三世', id, type, isGoEnd);
 
   const url: string = type == '人员' ? 'getFriendMsg' : 'getCohortMsg';
   let params = {
@@ -268,15 +315,12 @@ const getHistoryMsg = async (id: string, type: string, isGoEnd?: boolean) => {
   const { data = [], success } = await API.history[url]({
     data: params
   })
-  console.log('历史', params);
-
   if (success) {
     const newHistoryMsgArr = (data.result && data.result?.reverse()) ?? []
     const oldMsg = msgMap.value.get(id) ?? []
     msgMap.value.set(id, [...newHistoryMsgArr, ...oldMsg])
   }
-  console.log('msgMap', msgMap.value);
-
+  // console.log('消息msgMap', msgMap.value);
 }
 
 //清空历史记录

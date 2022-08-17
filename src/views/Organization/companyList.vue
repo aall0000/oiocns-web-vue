@@ -79,7 +79,7 @@ const pageStore = reactive({
   tableData: [],
   total: 0
 })
-let groupId;
+let groupId = ref<any>();
 
 // 获取表格数据
 const getTableList = async () => {
@@ -131,7 +131,7 @@ const fromData = reactive({
 const dialogVisible = ref<boolean>(false)
 
 onMounted(() => {
-  groupId = router.currentRoute.value.query.id;
+  groupId.value= router.currentRoute.value.query.id;
   getTableList()
 })
 
