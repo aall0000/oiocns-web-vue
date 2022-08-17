@@ -130,7 +130,7 @@ interface itemResult {
 
 type infoType = {
   typeName: string
-  detail: teamType
+  detail: ImMsgChildType
   userList: userType[]
   total: number
 }

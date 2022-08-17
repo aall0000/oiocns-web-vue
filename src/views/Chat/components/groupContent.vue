@@ -1,7 +1,7 @@
 <template>
-  <ul class="group-content-wrap" ref="nodeRef">
+  <ul class="group-content-wrap" ref="nodeRef" @scroll="scrollEvent">
     <!-- <li class="history-more" @click="getMoreHistory">查看更多</li> -->
-    <template v-for="(item, index) in showList">
+    <template v-for="(item, index) in list">
       <li class="group-content-left con" v-if="item.fromId !== myId">
         <!-- <img class="con-img" src="@/assets/img/userIcon/ic_03.png" alt=""> -->
         <HeadImg :name="getUserName(item.fromId)" />
@@ -38,25 +38,17 @@ type Props = {
 const props = defineProps<Props>()
 const { list, myId } = toRefs(props)
 
-const { getUserName } = useUserStore()
+const { getUserName, userNameMap } = useUserStore()
 
-const showList = computed(() => {
-  const arr: any[] = props.list?.map((item: any) => {
-    // console.log('item', item.msgBody);
-    // let word = item.msgBody.replace(/\[|\;/gi, '')
-    item.msgBody = natchMsg(item.msgBody)
+// const showList = computed(() => {
+//   const arr: any[] = props.list?.map((item: any) => {
+//     // console.log('item', item.msgBody);
+//     // let word = item.msgBody.replace(/\[|\;/gi, '')
 
-    return item
-  })
-  // console.log('arr',arr);
-
-  return arr
-})
-const natchMsg = (str: string) => {
-  let newStr = str;
-  let span = `<span class='qqface qqface1 small'></span>`
-  return str.replaceAll('啤酒', span);
-}
+//     return item
+//   })
+//   return arr
+// })
 // dom节点
 const nodeRef = ref(null)
 // 事件viewMoreMsg--查看更多
@@ -79,14 +71,6 @@ const scrollTop = debounce(() => {
   scrollOfZeroToEnd.value = nodeRef.value.scrollHeight - nodeRef.value.scrollTop
 }, 100)
 
-onMounted(() => {
-  // 添加监听滚动条位置
-  window.addEventListener('scroll', scrollTop, true)
-})
-//移除事件
-onUnmounted(() => {
-  window.removeEventListener('scroll', scrollTop, true)
-})
 
 // 滚动设置到底部
 const goPageEnd = () => {
@@ -100,6 +84,10 @@ const keepScrollPos = () => {
   nextTick(() => {
     nodeRef.value.scrollTop = nodeRef.value.scrollHeight - scrollOfZeroToEnd.value
   })
+}
+
+const scrollEvent = () => {
+  scrollTop(nodeRef.value.scrollTop)
 }
 // 暴露子组件方法
 defineExpose({
