@@ -108,7 +108,7 @@
             <el-cascader :props="upNode" v-model="upNodeId.list" style="width: 100%" placeholder="请选择" @change="handleChange" />
           </el-form-item>
           <el-form-item class="main-item" label="部门简介" style="width: 100%">
-            <el-input v-model="departmentTeamRemark" placeholder="请输入" type="textarea" clearable />
+            <el-input v-model="departmentTeamRemark" :autosize="{ minRows: 5 }" placeholder="请输入" type="textarea" clearable />
           </el-form-item>
         </div>
         <template #footer>
@@ -119,19 +119,23 @@
         </template>
       </el-dialog>
 
-      <el-dialog v-model="dialogVisible" v-if="envType == 2" title="请输子集团名称" width="30%">
-        <el-form-item label="节点名称">
-          <el-input v-model="departmentName" placeholder="请输入" clearable />
+      <el-dialog v-model="dialogVisible"  append-to-body v-if="envType == 2" title="请输子集团名称" width="50%">
+       <div class="main-dialog">
+        <el-form-item class="main-item" label="节点名称" style="width: 45%">
+          <el-input v-model="departmentName" placeholder="请输入子集团名称" width="200px" clearable />
         </el-form-item>
-        <el-form-item label="部门编号">
+        <el-form-item class="main-item" label="子集团编号" style="width: 45%">
           <el-input v-model="departmentTeamCode" placeholder="请输入" clearable />
         </el-form-item>
-        <el-form-item label="上级节点">
-          <el-cascader :props="upNode" v-model="upNodeId.list"  style="width: 100%" @change="handleChange" />
+        <el-form-item class="main-item" label="上级节点" style="width: 100%">
+          <el-cascader :props="upNode" v-model="upNodeId.list" style="width: 100%" placeholder="请选择" @change="handleChange" />
         </el-form-item>
-        <el-form-item label="部门简介">
-          <el-input v-model="departmentTeamRemark" placeholder="请输入"  style="width: 100%" clearable />
+        <el-form-item class="main-item" label="集团简介" style="width: 100%">
+          <el-input v-model="departmentTeamRemark" :autosize="{ minRows: 5 }" placeholder="请输入" type="textarea" clearable />
         </el-form-item>
+
+       </div>
+        
 
         <template #footer>
           <span class="dialog-footer">
