@@ -66,12 +66,13 @@ const getMoreHistory = () => {
 // 实时滚动条高度
 const scrollTop = debounce(() => {
   let scroll = nodeRef.value.scrollTop;
-  if (scroll === 0) {
-    emit('viewMoreMsg')
+  if (scroll < 10) {
+    emit('viewMoreMsg',true)
   }
-  // console.log('监听滚动', nodeRef.value.scrollHeight);
+  console.log('监听滚动', nodeRef.value.scrollHeight);
+  // 记录当前滚动位置
   scrollOfZeroToEnd.value = nodeRef.value.scrollHeight - nodeRef.value.scrollTop
-}, 100)
+}, 200)
 
 
 // 滚动设置到底部

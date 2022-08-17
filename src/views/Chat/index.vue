@@ -154,6 +154,7 @@ watch(
     const { typeName, id, groupId } = val
     selectInfo.typeName = typeName
     current.value = 0
+    theHistoryMsgTotal = 0
     selectInfo.detail = val
     if (typeName === '人员') {
       selectInfo.total = 0
@@ -228,7 +229,7 @@ const handleNewMsgShow = (data: any) => {
           arr.unshift(val)
           let key = val.id + '_' + item.id;
           let oldMsg = msgMap.value.get(key)
-          msgMap.value.set(key, [...oldMsg,data])
+          msgMap.value.set(key, [...oldMsg, data])
         } else {
           arr.push(val)
         }
@@ -238,6 +239,8 @@ const handleNewMsgShow = (data: any) => {
     return item
   })
 }
+// 记录当前会话历史消息总数
+let theHistoryMsgTotal: number = 0
 // 获取历史消息
 const getHistoryMsg = async (id: string, groupId: string, type: string, isGoEnd?: boolean) => {
   const url: string = type == '人员' ? 'QueryFriendMsg' : 'QueryCohortMsg';
@@ -247,10 +250,18 @@ const getHistoryMsg = async (id: string, groupId: string, type: string, isGoEnd?
     limit: limit.value,
     spaceId: activeInfo.value.groupId,
   })
+
   if (success) {
     const newHistoryMsgArr = (data.result && data.result?.reverse()) ?? []
-    const oldMsg = msgMap.value.get(id) ?? []
+    theHistoryMsgTotal = data.total
+    const oldMsg = msgMap.value.get(id + '_' + groupId) ?? []
     msgMap.value.set(id + '_' + groupId, [...newHistoryMsgArr, ...oldMsg])
+    if (isGoEnd) {
+      contentWrapRef.value?.goPageEnd()
+    } else {
+      contentWrapRef.value?.keepScrollPos()
+    }
+
   }
 }
 
@@ -261,6 +272,10 @@ const clearHistoryMsg = () => {
 
 // 获取更多历史消息
 const handleViewMoreHistory = () => {
+  // 当开始下下标 超过历史记录总数 停用请求
+  if (theHistoryMsgTotal > 0 && theHistoryMsgTotal < pageOffset.value) {
+    return
+  }
   current.value++
   getHistoryMsg(activeInfo.value.id, activeInfo.value.groupId, activeInfo.value.typeName)
 }

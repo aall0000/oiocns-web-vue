@@ -217,24 +217,6 @@ const handleContextChange = (item: MenuItemType) => {
     background-color: #83c7ff;
   }
 
-  .group-con-dot {
-    position: absolute;
-    left: 35px;
-    top: -8px;
-    min-width: 18px;
-    width: max-content;
-    height: 20px;
-    background-color: #fa2222;
-    border-radius: 50%;
-    font-size: 10px;
-    color: #ffffff;
-    padding: 5px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transform: scale(80%);
-  }
-
   .group-con {
 
     // // 头像
