@@ -7,10 +7,16 @@
 
       <ul class="group-con" v-for="item in showList" :key="item.id">
         <li class="group-con-item">
-          <div class="con-title">{{ item.name }}({{ item?.chats?.length??0 }})</div>
-          <div class="con-body" v-for="child in item.chats" :key="child.id">
+          <div class="con-title flex justify-between" :class="[openIdArr.includes(item.id) ? 'active' : '']"
+            @click="handleOpenSpace(item.id)"><span>{{ item.name }}({{
+                item?.chats?.length ?? 0
+            }}) </span></div>
+          <div class="con-body" v-for="child in item.chats" :key="child.id" v-show="openIdArr.includes(item.id)">
             <HeadImg :name="child.name" />
-            <div class="group-con-show" @click="changeInfo(child,item.id)">
+            <div class="group-con-dot" v-show="child.count > 0">
+              <span>{{ child.count }}</span>
+            </div>
+            <div class="group-con-show" @click="changeInfo(child, item.id)">
               <el-tooltip class="box-item" :disabled="child.name.length < 7" :content="child.name"
                 placement="right-start">
                 <p class="group-con-show-name">
@@ -24,24 +30,6 @@
           </div>
         </li>
       </ul>
-      <!-- <li :class="['group-con', props.active.id == item.id ? 'active' : '']" v-for="item in showList" :key="item.id"
-        @click="changeInfo(item)" @contextmenu.stop
-        @contextmenu.prevent="(e: MouseEvent) => handleContextClick(e, item)">
-        <div class="group-con-dot" v-show="props.redDotInfo.get(item.id)?.isShowDot">
-          <span>{{ props.redDotInfo.get(item.id)?.count ?? 8 }}</span>
-        </div>
-        <HeadImg :name="item.name" />
-        <div class="group-con-show">
-          <el-tooltip class="box-item" :disabled="item.name.length < 7" :content="item.name" placement="right-start">
-            <p class="group-con-show-name">
-              <span class="group-con-show-name-label">{{ props.myId === item.id ? `我 (${item.name})` : item.name
-              }}</span>
-              <span class="group-con-show-name-time">{{ handleFormatDate(item.createTime) }} </span>
-            </p>
-          </el-tooltip>
-          <p class="group-con-show-msg" v-html="item?.message?.msgBody"></p>
-        </div>
-      </li> -->
       <!-- 鼠标右键 -->
       <ul class="context-text-wrap" v-show="mousePosition.isShowContext"
         :style="{ left: `${mousePosition.left}px`, top: `${mousePosition.top}px` }">
@@ -61,7 +49,6 @@ import HeadImg from './headImg.vue'
 
 type propType = {
   active: ImMsgChildType,//当前激活聊天对象信息
-  redDotInfo: any,//需要红点提示的标志Map类型 {isShowDot:boolean;count:number} isShowDot是否展示红点,count未读信息数量
   sessionList: ImMsgType[],//当前会话列表
   clearHistoryMsg: Function,//清空记录
   myId: string
@@ -73,23 +60,27 @@ const searchValue = ref<string>('')
 //根据搜索条件-输出展示列表
 const showList = computed((): ImMsgType[] => {
   let showInfoArr = props.sessionList
-  // console.log('展示顺序',props.sessionList.map(item=>item.name));
+  // console.log('展示顺序', props.sessionList);
   // 数据过滤 搜索关键词是否 在 列表名称 或 显示信息里
-  // if (searchValue.value) {
-  //   showInfoArr = showInfoArr.filter((item: ImMsgType) => {
-  //     return item.name.includes(searchValue.value) || item.message?.msgBody.includes(searchValue.value)
-  //   })
-  // }
+  if (searchValue.value) {
+    showInfoArr = showInfoArr.map((child: ImMsgType) => {
+      const { id, name, } = child
+      return {
+        id, name, chats: child?.chats?.filter((item: ImMsgChildType) => {
+          return item.name.includes(searchValue.value) || item.msgBody?.includes(searchValue.value)
+        })
+      }
+    })
+  }
   return showInfoArr
 })
 
 
 const emit = defineEmits(['update:active'])
-const changeInfo = (item: ImMsgChildType,groupId:string) => {
-  console.log('选择',{...item,groupId});
-
+const changeInfo = (item: ImMsgChildType, groupId: string) => {
   // 触发父组件值更新
-  emit('update:active', {...item,groupId})
+  item.count = 0
+  emit('update:active', { ...item, groupId })
 }
 
 // 时间处理
@@ -135,6 +126,17 @@ const menuList: MenuItemType[] = [
   // { value: 3, label: '个人信息' },
   // { value: 4, label: '消息免打扰' },
 ]
+
+const openIdArr = ref<string[]>([])
+const handleOpenSpace = (selectedID: string) => {
+  const isOpen = openIdArr.value.includes(selectedID)
+  if (isOpen) {
+    openIdArr.value = openIdArr.value.filter((item: string) => item !== selectedID)
+  } else {
+    openIdArr.value = [...openIdArr.value, selectedID]
+  }
+
+}
 // 右键菜单点击
 const handleContextChange = (item: MenuItemType) => {
   console.log('右键菜单点击', item, mousePosition.selectedItem);
@@ -159,12 +161,12 @@ const handleContextChange = (item: MenuItemType) => {
 
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .chart-side-wrap {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  border-right: 1px solid #ccc;
+  border-right: 1px solid #d8d8d8;
 
 }
 
@@ -224,19 +226,24 @@ const handleContextChange = (item: MenuItemType) => {
     //   margin-right: 10px;
     // }
 
-    // .emoji {
-    //   width: 14px !important;
-    //   height: 14px !important;
-    // }
+
     &-item {
+      cursor: pointer;
+
       .con-title {
         font-size: 16px;
         font-weight: bold;
         padding: 10px 0;
-        color: #409eff;
+        color: #111;
+
+        &.active {
+          color: #409eff;
+
+        }
       }
 
       .con-body {
+        position: relative;
         display: flex;
         justify-content: space-between;
 
@@ -249,6 +256,8 @@ const handleContextChange = (item: MenuItemType) => {
 
     .group-con-show {
       width: 100%;
+
+
 
       &-name {
 
@@ -279,7 +288,6 @@ const handleContextChange = (item: MenuItemType) => {
         white-space: nowrap;
         font-size: 10px;
         padding-top: 5px;
-
       }
     }
 
@@ -287,8 +295,8 @@ const handleContextChange = (item: MenuItemType) => {
 
     &-dot {
       position: absolute;
-      left: 40px;
-      top: 8px;
+      left: 35px;
+      top: -8px;
       min-width: 18px;
       width: max-content;
       height: 20px;

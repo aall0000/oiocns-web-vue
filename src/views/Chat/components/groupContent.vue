@@ -39,6 +39,8 @@ const props = defineProps<Props>()
 const { list, myId } = toRefs(props)
 
 const { getUserName, userNameMap } = useUserStore()
+console.log('userNameMap',userNameMap);
+
 
 // const showList = computed(() => {
 //   const arr: any[] = props.list?.map((item: any) => {
@@ -64,18 +66,19 @@ const getMoreHistory = () => {
 // 实时滚动条高度
 const scrollTop = debounce(() => {
   let scroll = nodeRef.value.scrollTop;
-  if (scroll === 0) {
-    emit('viewMoreMsg')
+  if (scroll < 10) {
+    emit('viewMoreMsg',true)
   }
   console.log('监听滚动', nodeRef.value.scrollHeight);
+  // 记录当前滚动位置
   scrollOfZeroToEnd.value = nodeRef.value.scrollHeight - nodeRef.value.scrollTop
-}, 100)
+}, 200)
 
 
 // 滚动设置到底部
 const goPageEnd = () => {
   nextTick(() => {
-    console.log('滚动底部', nodeRef.value.scrollHeight);
+    // console.log('滚动底部', nodeRef.value.scrollHeight);
     nodeRef.value.scrollTop = nodeRef.value.scrollHeight
   });
 }
@@ -116,12 +119,6 @@ defineExpose({
     display: flex;
     // align-items: center;
     margin-top: 10px;
-
-    .emoji {
-      width: 20px;
-      height: 20px;
-      margin: -5px 2px;
-    }
 
     &-img {
       height: 35px;

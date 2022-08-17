@@ -72,6 +72,7 @@
     id:string,
     name:string,
   }
+  const emit = defineEmits(['Refresh'])
   const props = defineProps<{
     selectItem: selectItem,
     envType:number,
@@ -88,7 +89,7 @@
   }
    //分配部门or变更
   const changePreson = (id: string) => {
-    
+
     $services.company
     .assignDepartment({
       data: {
@@ -107,6 +108,7 @@
           message: '分配成功',
           type: 'success'
         })
+        emit('Refresh')
         dialogVisible.value = false;
       }
     })
@@ -131,6 +133,7 @@
           message: '分配成功',
           type: 'success'
         })
+        emit('Refresh')
         dialogVisible.value = false;
       }
     })
@@ -138,15 +141,16 @@
   watch(
     () => props.selectItem,
     (newValue: selectItem) => {
-      if (newValue.id !== '') {
-        if(props.selectItem && props.rootElement){
-          if(props.selectItem.id  === props.rootElement.id){
-            getList(newValue.id)
+      if (props.selectItem && props.rootElement) {
+        if (props.selectItem.id === props.rootElement.id) {
+          getList(newValue.id)
+        } else if(props.selectItem.id !== props.rootElement.id) {
+          if(props.selectItem.leaf ==true){
+            getJobList()
           }else{
             getDepartmentList(newValue.id)
           }
         }
-
       }
     }
   )
@@ -161,7 +165,7 @@
         }
       })
       .then((res: ResultType) => {
-        if(res.data){
+        if(res.data.result){
           listNum.value =res.data.total
         }else{
           listNum.value =0
@@ -220,7 +224,7 @@
       }
       options.value = arr;
     })
-  } 
+  }
   //获取工作组员工
   const getJobList = () => {
     $services.company
@@ -237,6 +241,9 @@
           res.data.result.forEach((element:any) => {
             arr.push(element.id)
           });
+          listNum.value =res.data.total
+        } else{
+          listNum.value =0
         }
         checkList.list = arr
     })

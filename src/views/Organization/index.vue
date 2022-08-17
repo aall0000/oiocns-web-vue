@@ -12,8 +12,9 @@
       />
       <div class="resize" title="收缩侧边栏"> ⋮ </div>
       <div class="main-dep mid box" v-if="envType == 1">
-        <departmentDetail :envType="envType" :rootElement="rootElement" :selectItem="selectItem" />
+        <departmentDetail :envType="envType" @Refresh="Refresh" :rootElement="rootElement" :selectItem="selectItem" />
         <departmentList
+          ref="departmentDom"
           :envType="envType"
           :rootElement="rootElement"
           :selectId="selectId"
@@ -138,7 +139,7 @@
   // const selectList = reactive<selectType[]>([])
 
   let selectId = ref<string>()
-  let selectItem = ref<selectType>({
+  const selectItem = ref<selectType>({
     id: '',
     name: '',
     num: 0,
@@ -183,12 +184,18 @@
     })
   }
   const changeIndex = (obj: treeItem) => {
-    selectItem.value = obj
+    console.log('obj',obj)
+    selectItem.value = JSON.parse(JSON.stringify(obj))//深拷贝obj，解决影响切换空间丢失name的问题
     selectItem.value.name = obj.label
     selectId.value = obj.id
   }
-  const personTypeChange = (index: string) => {
-    personType.value = index
+  // const personTypeChange = (index: string) => {
+  //   personType.value = index
+  // }
+  const departmentDom = ref(null)
+  //刷新页面
+  const Refresh = ()=>{
+    departmentDom.value.Refresh()
   }
 </script>
 
