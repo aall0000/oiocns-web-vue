@@ -103,7 +103,17 @@ onMounted(() => {
   // 接受信息--处理信息
   connection.on('RecvMsg', (res: any, error: any) => {
     const { data } = res
-    // console.log('接受消息', data, error);
+    console.log('接受消息', data, error);
+    let sessionId = data.toId
+    if (data.typeName === "人员"
+      && data.fromId !== myId
+      && data.toId === myId) {
+      sessionId = data.fromId
+    }
+    // 保存获取消息至 消息队列
+
+    const oldMsg = msgMap.value.get(sessionId) ?? []
+    msgMap.value.set(sessionId, [...oldMsg, data])
     // 根据新信息更新导航信息
     handleNewMsgShow(data)
     contentWrapRef.value.goPageEnd()
@@ -192,7 +202,7 @@ const handleNewMsgShow = (data: any) => {
   sessionList.value = silderList.map((item: any) => {
     // 匹配会话空间
     if (item.id == myId) {
-      let allSpaceIds = item.chats.map((c:ImMsgChildType) => {
+      let allSpaceIds = item.chats.map((c: ImMsgChildType) => {
         return c.id
       })
       if (allSpaceIds.indexOf(data.spaceId) > -1) {
