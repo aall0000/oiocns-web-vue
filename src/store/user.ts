@@ -67,7 +67,7 @@ export const useUserStore = defineStore({
             this.userInfo = res.data
             this.userToken = res.data.accessToken
             this.workspaceData = {
-              id: res.data.workspaceId, 
+              id: res.data.workspaceId,
               name: res.data.workspaceName
             }
             this.userCompanys = [this.workspaceData]
@@ -91,6 +91,8 @@ export const useUserStore = defineStore({
           if (!token) {
             this.getCompanyList(0)
           }
+          console.log('搜索',res.data);
+          this.setUserNameMap(res.data.id, res.data.name)
         } else {
           ElMessage({
             message: res.msg,
@@ -111,7 +113,7 @@ export const useUserStore = defineStore({
           console.log(res)
           if (res.code == 200) {
             this.userCompanys = [{
-              id: this.userInfo.workspaceId, 
+              id: this.userInfo.workspaceId,
               name: this.userInfo.workspaceName
             }, ...(res.data.result || [])]
             this.copyCompanys = JSON.parse(JSON.stringify(this.userCompanys))

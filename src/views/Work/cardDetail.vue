@@ -59,13 +59,16 @@
               <div v-else>待批</div>
             </template>
           </el-table-column>
-          <el-table-column prop="target.updateTime" sortable label="发送时间" width="180" />
+          <el-table-column prop="target.updateTime" sortable label="发送时间" width="220" />
           <el-table-column prop="date" label="操作" width="180">
             <template #default="scope">
               <!-- <div v-if="scope.row.status === 200"></div> -->
               <div v-if="activeIndex=='1'">
                 <span style="margin-right: 10px" @click="joinSuccess(scope.row)">通过</span>
                 <span @click="joinRefse(scope.row)">拒绝</span>
+              </div>
+              <div v-else>
+                <span @click="cancelJoin(scope.row)">取消申请</span>
               </div>
             </template>
           </el-table-column>
@@ -126,6 +129,25 @@
       .then((res: ResultType) => {
         ElMessage({
           message: '拒绝成功',
+          type: 'success'
+        })
+        if(activeIndex.value === '1'){
+          getList()
+        }else{
+          getApplyList()
+        }
+      })
+  }
+  var cancelJoin = (item: { id: '' }) => {
+    $services.person
+      .cancelJoin({
+        data: {
+          id: item.id
+        }
+      })
+      .then((res: ResultType) => {
+        ElMessage({
+          message: '取消成功',
           type: 'success'
         })
         if(activeIndex.value === '1'){
