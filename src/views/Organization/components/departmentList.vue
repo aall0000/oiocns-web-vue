@@ -446,6 +446,24 @@
         return resolve(arr)
       })
   }
+  const Refresh = ()=>{
+    console.log('aaaaaaaa')
+    if (props.selectItem && props.rootElement) {
+      if (props.selectItem.id === props.rootElement.id) {
+        getList()
+      } else if(props.selectItem.id !== props.rootElement.id) {
+        if(props.selectItem.leaf ==true){
+          getJobList()
+        }else{
+          getDepartmentList()
+        }
+      }
+    }
+  }
+defineExpose({
+  Refresh
+})
+
 </script>
 <style lang="scss" scoped>
   .deptment-info {

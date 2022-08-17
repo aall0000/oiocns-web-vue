@@ -92,7 +92,7 @@
       >
         <div class="main-title">部门信息</div>
         <div class="main-dialog">
-          <el-form-item class="main-item" v-if="selectItem.id !== rootElement.id" label="创建类型" style="width: 100%">
+          <el-form-item class="main-item" label="创建类型" style="width: 100%">
             <el-radio-group v-model="roleType" class="ml-4" >
               <el-radio label="1" size="large">创建子部门</el-radio>
               <el-radio label="2" size="large">创建工作组</el-radio>
@@ -179,7 +179,7 @@
     rootElement: selectItem
   }>()
   let parentIdArray:any = []
-  let curNodeVal = {}
+  let curNodeVal:any = {}
   const changeIndexFun = (val: any, nodeAttribute?:any, event?:any) => {
     emit('changeIndex', val)
     // 设置表单上级节点
@@ -313,25 +313,6 @@
       ]
       return resolve(obj)
     })
-    await $services.company.getJobs({
-      data:{
-        id:props.selectItem.id,
-        offset:0,
-        limit:100
-      }
-    }).then((res: ResultType) => {
-      // let obj = [
-      //   {
-      //     value:res.data.id,
-      //     children: [] as string[],
-      //     label: res.data.name,
-      //     id: res.data.id,
-      //     remark: res.data.team.remark
-      //   }
-      // ]
-      // return resolve(obj)
-      console.log('resssss',res)
-    })
   }
   async function getDepartmentsList(node: any, resolve: any) {
     let arr1: any = []
@@ -433,9 +414,10 @@
         groupIndex.value = i
         setTimeout(() => {
           showTreeStatus.value = true
-        }, 10)
+        }, 100)
       }
     }
+    console.log('groupIndex',groupIndex)
   }
   const upNode = {
     checkStrictly: true,
