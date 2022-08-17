@@ -21,7 +21,15 @@
     ├── router         # 路由及拦截器
     ├── services       # 统一的服务接口请求处理
     └── views
-        └── home
+        ├── Chat         # 消息聊天
+        ├── Home         # 主页
+        ├── Layout       # 布局
+        ├── Login        # 登录注册
+        ├── Organization # 关系(集团、单位、群组)
+        ├── Others       # 其他：如404页
+        ├── Person       # 我的(个人)
+        ├── Thing        # 数据
+        ├── Work         # 工作台
 
 ```
 ## git规范
