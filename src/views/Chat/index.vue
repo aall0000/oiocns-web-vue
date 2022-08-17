@@ -13,7 +13,7 @@
       <GroupHeaderVue :info="selectInfo" v-if="activeInfo?.id" @viewDetail="handleViewDetail" />
       <!-- 聊天区域 -->
       <GroupContent class="chart-content" :myId="myId" ref="contentWrapRef" :list="showMsgList"
-        @viewMoreMsg="handleViewMoreHistory" />
+        :showName="activeInfo.typeName != '人员'" @viewMoreMsg="handleViewMoreHistory" />
       <!-- 输入区域 -->
       <GroupInputBox class="chart-input" v-show="activeInfo?.id" @submitInfo="submit" />
     </div>
