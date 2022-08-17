@@ -79,7 +79,7 @@
 </template>
 
 <script lang="ts" setup>
-  import { ref, onMounted, unref, watch, reactive } from 'vue'
+  import { ref, onMounted, onUnmounted, unref, watch, reactive } from 'vue'
   import { useRouter } from 'vue-router'
   import { useUserStore } from '@/store/user'
   import $services from '@/services'
@@ -163,6 +163,11 @@
     window.addEventListener('click', clickother)
     getFixedData()
   })
+
+  onUnmounted(() => {
+    window.removeEventListener('click', clickother)
+  })
+
   const clickother = () => {
     visible.value = false
   }
