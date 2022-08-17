@@ -139,7 +139,7 @@
   // const selectList = reactive<selectType[]>([])
 
   let selectId = ref<string>()
-  let selectItem = ref<selectType>({
+  const selectItem = ref<selectType>({
     id: '',
     name: '',
     num: 0,
@@ -180,11 +180,12 @@
       selectObj.remark = res.data.team.remark
       selectItem.value = selectObj
       rootElement.value = res.data
-      store.userUnitInfo = res.data
+      // store.userUnitInfo = res.data
     })
   }
   const changeIndex = (obj: treeItem) => {
-    selectItem.value = obj
+    console.log('obj',obj)
+    selectItem.value = JSON.parse(JSON.stringify(obj))//深拷贝obj，解决影响切换空间丢失name的问题
     selectItem.value.name = obj.label
     selectId.value = obj.id
   }

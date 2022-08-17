@@ -61,7 +61,7 @@
           :filter-node-method="filterNode"
         />
       </ul>
-      <ul class="con tree-dept" v-else>
+      <ul class="con tree-dept" v-else-if ='envType==2 && showTreeStatus ==true'>
         <el-tree
           :props="defaultProps"
           lazy
@@ -110,7 +110,7 @@
             <el-cascader :props="upNode" v-model="upNodeId.list" style="width: 100%" placeholder="请选择" @change="handleChange" />
           </el-form-item>
           <el-form-item class="main-item" label="部门简介" style="width: 100%">
-            <el-input v-model="departmentTeamRemark" placeholder="请输入" type="textarea" clearable />
+            <el-input v-model="departmentTeamRemark" :autosize="{ minRows: 5 }" placeholder="请输入" type="textarea" clearable />
           </el-form-item>
         </div>
         <template #footer>
@@ -121,19 +121,23 @@
         </template>
       </el-dialog>
 
-      <el-dialog v-model="dialogVisible" v-if="envType == 2" title="请输子集团名称" width="30%">
-        <el-form-item label="节点名称">
-          <el-input v-model="departmentName" placeholder="请输入" clearable />
+      <el-dialog v-model="dialogVisible"  append-to-body v-if="envType == 2" title="请输子集团名称" width="50%">
+       <div class="main-dialog">
+        <el-form-item class="main-item" label="节点名称" style="width: 45%">
+          <el-input v-model="departmentName" placeholder="请输入子集团名称" width="200px" clearable />
         </el-form-item>
-        <el-form-item label="部门编号">
+        <el-form-item class="main-item" label="子集团编号" style="width: 45%">
           <el-input v-model="departmentTeamCode" placeholder="请输入" clearable />
         </el-form-item>
-        <el-form-item label="上级节点">
-          <el-cascader :props="upNode" v-model="upNodeId.list"  style="width: 100%" @change="handleChange" />
+        <el-form-item class="main-item" label="上级节点" style="width: 100%">
+          <el-cascader :props="upNode" v-model="upNodeId.list" style="width: 100%" placeholder="请选择" @change="handleChange" />
         </el-form-item>
         <el-form-item label="部门简介">
-          <el-input v-model="departmentTeamRemark" placeholder="请输入"  style="width: 100%" type="textarea" clearable />
+          <el-input v-model="departmentTeamRemark" placeholder="请输入"  style="width: 100%" clearable />
         </el-form-item>
+
+       </div>
+
 
         <template #footer>
           <span class="dialog-footer">
@@ -388,7 +392,7 @@ const filterText = ref('')
   const handleChange = (value:any) => {
     console.log(value)
   }
-  const selectValue = ref<string>(null)
+  const selectValue = ref<string>()
   const selectList = reactive<listItem>({ list: [] })
   const roleType = ref<string>('1')
   //当前选中的集团
@@ -409,6 +413,7 @@ const filterText = ref('')
       })
       .then((res: ResultType) => {
         if (res.data.result) {
+          selectValue.value = res.data.result[0]
           selectList.list = res.data.result
         } else {
           selectList.list = []
@@ -425,7 +430,7 @@ const filterText = ref('')
       if (val.id === selectList.list[i].id) {
         showTreeStatus.value = false
 
-        groupIndex.value = i
+        groupIndex.value = i;
         setTimeout(() => {
           showTreeStatus.value = true
         }, 100)
@@ -433,6 +438,7 @@ const filterText = ref('')
     }
     console.log('groupIndex',groupIndex)
   }
+  //上级节点
   const upNode = {
     checkStrictly: true,
     lazy: true,
@@ -455,6 +461,7 @@ const filterText = ref('')
       }
     }
   }
+  //获取集团信息
   async function getGroupsInfo(resolve: any) {
     let arr: any = []
     $services.company
@@ -481,6 +488,7 @@ const filterText = ref('')
         return resolve(arr)
       })
   }
+  //获取子集团
   async function getSubGroups(node: any, resolve: any) {
     let arr: any = []
     let level = node.level
@@ -573,6 +581,7 @@ const filterText = ref('')
         return resolve(arr)
       })
   }
+  //上级节点id
   const upNodeId = ref<any>({list:[]})
   //创建子集团
   const createSubgroupFun = () => {

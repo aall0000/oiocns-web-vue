@@ -49,7 +49,7 @@ const handleMoreFun = () => {
 const dialogVisible = ref(false)
 const handleAddFun = () => {
   // emit('addUserOrCohort')
-  console.log('测试', info.detail);
+  // console.log('测试', info.detail);
 
   dialogVisible.value = true
 }
