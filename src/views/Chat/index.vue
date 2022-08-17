@@ -222,13 +222,13 @@ const handleNewMsgShow = (data: any) => {
           val.msgBody = data.msgBody
           val.msgTime = data.createTime
           val.msgType = data.msgType
-          if (val.id != activeInfo.value.id || val.groupId != activeInfo.value.groupId) {
+          if (val.id != activeInfo.value.id || item.id != activeInfo.value.groupId) {
             val.count = (val.count || 0) + 1
           }
           arr.unshift(val)
           let key = val.id + '_' + item.id;
           let oldMsg = msgMap.value.get(key)
-          msgMap.value.set(key, [data, ...oldMsg])
+          msgMap.value.set(key, [...oldMsg,data])
         } else {
           arr.push(val)
         }
