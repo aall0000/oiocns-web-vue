@@ -708,11 +708,9 @@
         if (state.layout.length !== 0) {
           state.uniqueGrid = state.layout[state.layout.length - 1].i
         }
-        console.log(state.layout)
-
         state.layout.forEach((el) => {
           if (el.x < 2) {
-            el.y += 3
+            el.y += 9
           }
         })
         // 点击侧边栏
@@ -833,8 +831,6 @@
         }
       }
       const addprotalTemplate = (data, index) => {
-        console.log('======', data)
-
         // 点击系统模板事件
         state.systemIndex = index
         state.customIndex = false
@@ -885,6 +881,10 @@
 </script>
 
 <style lang="scss" scoped>
+  .base-layout {
+    overflow: auto;
+    height: calc(100vh - 60px);
+  }
   .addIcon {
     margin-left: 10px;
     background-color: #0f39d1;

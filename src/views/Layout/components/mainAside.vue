@@ -1,6 +1,7 @@
 <template>
   <div v-show="visible" class="menuRight" :style="{ left: left + 'px', top: top + 'px' }">
-    <div @click="clickFixed">固定在菜单上</div>
+    <div class="menuRight-fixed" @click="clickFixed">固定在菜单上</div>
+    <div class="menuRight-cancel" @click="cancelFixed">取消固定</div>
   </div>
   <div class="mainAside-wrap">
     <ul class="top-ul">
@@ -79,7 +80,7 @@
 </template>
 
 <script lang="ts" setup>
-  import { ref, onMounted, unref, watch, reactive } from 'vue'
+  import { ref, onMounted, onUnmounted, unref, watch, reactive } from 'vue'
   import { useRouter } from 'vue-router'
   import { useUserStore } from '@/store/user'
   import $services from '@/services'
@@ -103,16 +104,19 @@
   //   console.log(val)
   // }
   type MenuItemType = {
+    id?: string
     name: string
     icon: string
     path: string
     type?: string
+    fixed?: boolean
     key?: string | unknown
     bottom?: boolean | unknown
   }
   type StateType = {
     mainMenus: MenuItemType[]
-    clickMenu: object
+    clickMenu: Array<MenuItemType>
+    storeObj: MenuItemType
   }
   const state: StateType = reactive({
     mainMenus: [
@@ -129,7 +133,13 @@
         bottom: true
       }
     ],
-    clickMenu: {}
+    clickMenu: [],
+    storeObj: {
+      id: '',
+      name: '',
+      icon: '',
+      path: ''
+    }
   })
   const visible = ref(false)
   const left = ref(0)
@@ -150,19 +160,24 @@
   //   }
   // ]
   const appUse = [
-    { name: '资产管理', icon: img1 },
-    { name: '苹果插件', icon: img2 },
-    { name: '推特服务', icon: img3 },
-    { name: '办公用品', icon: img4 }
+    { id: '1', name: '资产管理', icon: img1, path: '/appUse1' },
+    { id: '2', name: '苹果插件', icon: img2, path: '/appUse2' },
+    { id: '3', name: '推特服务', icon: img3, path: '/appUse3' },
+    { id: '4', name: '办公用品', icon: img4, path: '/appUse4' }
   ]
   const appCreate = [
-    { name: '资产云', icon: img5 },
-    { name: '云服务', icon: img6 }
+    { id: '5', name: '资产云', icon: img5, path: '/appUse5' },
+    { id: '6', name: '云服务', icon: img6, path: '/appUse6' }
   ]
   onMounted(() => {
     window.addEventListener('click', clickother)
     getFixedData()
   })
+
+  onUnmounted(() => {
+    window.removeEventListener('click', clickother)
+  })
+
   const clickother = () => {
     visible.value = false
   }
@@ -173,15 +188,19 @@
   //     mainMenus[6].path = '/company/unitMsg'
   //   }
   // }
+  // 判断是否已经存在菜单
   const onAppClick = (data: MenuItemType) => {
     data.type = 'app'
-    if (!state.mainMenus.includes(data)) {
+    let bool = state.mainMenus.filter((el) => {
+      return el.id == data.id
+    })
+    if (bool.length == 0) {
       state.mainMenus.push(data)
     }
   }
   const rightClick = (event: any, item: any) => {
     if (item.type == 'app') {
-      state.clickMenu = item
+      state.storeObj = item
       visible.value = true
       top.value = event.pageY - 30
       left.value = event.pageX + 30
@@ -196,11 +215,49 @@
       .diy(`/anydata/object/get/${params.userId}.${params.workspaceId}.menu`, { method: 'GET' })
       .then((res: ResultType) => {
         if (res.state) {
-          state.mainMenus.push(res.data)
+          state.mainMenus = state.mainMenus.concat(res.data)
+          state.clickMenu = res.data
+        }
+      })
+  }
+  const cancelFixed = () => {
+    let findIndex = null
+    let arr = JSON.parse(JSON.stringify(state.clickMenu))
+    let bool = state.clickMenu.find((el, index) => {
+      findIndex = index
+      return el.id == state.storeObj.id
+    })
+    if (bool && bool.fixed) {
+      arr.splice(findIndex, 1)
+    }
+    let params = {
+      userId: store.queryInfo.id,
+      workspaceId: store.workspaceData.id
+    }
+    $services.diyHome
+      .diy(`/anydata/object/set/${params.userId}.${params.workspaceId}.menu`, {
+        data: {
+          operation: 'replaceAll',
+          data: arr
+        }
+      })
+      .then((res: ResultType) => {
+        if (res.state) {
+          ElMessage({
+            message: '取消成功',
+            type: 'success'
+          })
         }
       })
   }
   const clickFixed = () => {
+    let bool = state.clickMenu.find((el) => {
+      return el.id == state.storeObj.id
+    })
+    if (!bool) {
+      state.storeObj.fixed = true
+      state.clickMenu.push(state.storeObj)
+    }
     let params = {
       userId: store.queryInfo.id,
       workspaceId: store.workspaceData.id
@@ -242,17 +299,32 @@
 <style lang="scss" scoped>
   .menuRight {
     width: 100px;
-    height: 40px;
+    height: 60px;
     position: absolute;
     background-color: #fff;
     font-size: 12px;
     z-index: 999;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     cursor: pointer;
-    &:hover {
-      background-color: rgb(248, 247, 249);
+
+    &-fixed {
+      padding: 5px 0;
+      width: 100%;
+      text-align: center;
+      &:hover {
+        background-color: rgb(248, 247, 249);
+      }
+    }
+    &-cancel {
+      padding: 10px 0;
+      width: 100%;
+      text-align: center;
+      &:hover {
+        background-color: rgb(248, 247, 249);
+      }
     }
   }
   .mainAside-wrap {
