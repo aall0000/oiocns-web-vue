@@ -141,15 +141,16 @@
   watch(
     () => props.selectItem,
     (newValue: selectItem) => {
-      if (newValue.id !== '') {
-        if(props.selectItem && props.rootElement){
-          if(props.selectItem.id  === props.rootElement.id){
-            getList(newValue.id)
+      if (props.selectItem && props.rootElement) {
+        if (props.selectItem.id === props.rootElement.id) {
+          getList(newValue.id)
+        } else if(props.selectItem.id !== props.rootElement.id) {
+          if(props.selectItem.leaf ==true){
+            getJobList()
           }else{
             getDepartmentList(newValue.id)
           }
         }
-
       }
     }
   )
@@ -240,6 +241,9 @@
           res.data.result.forEach((element:any) => {
             arr.push(element.id)
           });
+          listNum.value =res.data.total
+        } else{
+          listNum.value =0
         }
         checkList.list = arr
     })
