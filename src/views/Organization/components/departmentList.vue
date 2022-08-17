@@ -8,9 +8,12 @@
       </div>
       <div class="edit">
         <el-link class="link" type="primary" v-if="selectItem.id === rootElement.id" @click="addPresonDialog = true">邀请成员</el-link>
-        <el-link class="link" type="primary" v-else @click="showChange">变更部门</el-link>
+        <el-link class="link" type="primary" v-if="selectItem.id !== rootElement.id &&selectItem.leaf!==true" @click="showChange">变更部门</el-link>
         <el-link class="link" type="primary" @click="viewApplication">查看申请</el-link>
-        <el-link class="link" type="primary" @click="showOutput">操作离职</el-link>
+        <el-link class="link" type="primary" @click="showOutput">
+          <span v-if="selectItem.id === rootElement.id">操作离职</span>
+          <span v-if="selectItem.id !== rootElement.id ">移除人员</span>
+        </el-link>
       </div>
     </div>
   </div>
@@ -83,7 +86,7 @@
     </template>
   </el-dialog>
   <el-dialog v-model="outputDialog" title="操作离职" width="30%">
-    确认操作其离职嘛？
+    确认操作吗？
     <template #footer>
       <span class="dialog-footer">
         <el-button @click="outputDialog = false">取消</el-button>
@@ -99,14 +102,14 @@
   import type { TabsPaneContext } from 'element-plus'
   import { useRouter } from 'vue-router'
   const router = useRouter()
-  let filterHandler = () => {}
   type listType = {
     list?: Array<Object>
   }
   type selectItem = {
     name: string
     id: string
-    $treeNodeId?: number
+    $treeNodeId?: number,
+    leaf:boolean
   }
   let tableData = reactive<listType>({})
   const props = defineProps<{
@@ -121,18 +124,20 @@
       if (newValue.id !== '') {
         if (props.selectItem && props.rootElement) {
           if (props.selectItem.id === props.rootElement.id) {
-            getList(newValue.id)
+            getList()
           } else if(props.selectItem.id !== props.rootElement.id) {
-            getDepartmentList(newValue.id)
-          }else{
-            getJobList(newValue.id)
+            if(props.selectItem.leaf ==true){
+              getJobList()
+            }else{
+              getDepartmentList()
+            }
           }
         }
       }
     }
   )
   //获取单位员工
-  const getList = (id: string) => {
+  const getList = () => {
     $services.company
       .getPersons({
         data: {
@@ -155,7 +160,7 @@
       })
   }
   //获取部门员工
-  const getDepartmentList = (id: string) => {
+  const getDepartmentList = () => {
     $services.company
       .getDepartmentPersons({
         data: {
@@ -173,7 +178,7 @@
       })
   }
   //获取工作组员工
-  const getJobList = (id: string) => {
+  const getJobList = () => {
     $services.company
       .getJobPersons({
         data: {
@@ -270,9 +275,9 @@
           })
 
           if (props.selectItem.id === props.rootElement.id) {
-            getList(props.selectItem.id)
+            getList()
           } else {
-            getDepartmentList(props.selectItem.id)
+            getDepartmentList()
           }
         }
         inviter.value = ''
@@ -310,24 +315,27 @@
       })
     }
   }
-
+  //删除人员
   const outputDepartment = () => {
     let targetArr = []
     for (let i = 0; i < selectArr.length; i++) {
       targetArr.push(selectArr[i].id)
     }
-    console.log(targetArr)
-    console.log(props.rootElement.id)
-
-    $services.company
-      .removeFromCompany({
+    if(props.selectItem.id === props.rootElement.id){ //单位
+      var requrstText='removeFromCompany' 
+    }else if( props.selectItem.id !== props.rootElement.id &&props.selectItem.leaf!==true){ //部门
+      var requrstText='removeFromDepartment'
+    }else if(props.selectItem.id !== props.rootElement.id &&props.selectItem.leaf===true){ //工作组
+      var requrstText='removeFromJob'
+    }
+    $services.company[requrstText]
+      ({
         data: {
-          id: props.rootElement.id,
+          id: props.selectItem.id,
           targetIds: targetArr
         }
       })
       .then((res: ResultType) => {
-        console.log(res)
         if (res.code === 500) {
           ElMessage({
             message: res.msg,
@@ -339,7 +347,17 @@
             type: 'success'
           })
         }
-
+        if (props.selectItem && props.rootElement) {
+          if (props.selectItem.id === props.rootElement.id) {
+            getList()
+          } else if(props.selectItem.id !== props.rootElement.id) {
+            if(props.selectItem.leaf ==true){
+              getJobList()
+            }else{
+              getDepartmentList()
+            }
+          }
+        }
         outputDialog.value = false
       })
   }
@@ -371,9 +389,9 @@
           })
         }
         if (props.selectItem.id === props.rootElement.id) {
-          getList(props.selectItem.id)
+          getList()
         } else {
-          getDepartmentList(props.selectItem.id)
+          getDepartmentList()
         }
         changeDialog.value = false
       })
@@ -403,6 +421,7 @@
       return resolve(obj)
     })
   }
+  //获取单位列表
   async function getDepartmentsList(node: any, resolve: any) {
     let arr: any = []
     await $services.company
@@ -427,6 +446,24 @@
         return resolve(arr)
       })
   }
+  const Refresh = ()=>{
+    console.log('aaaaaaaa')
+    if (props.selectItem && props.rootElement) {
+      if (props.selectItem.id === props.rootElement.id) {
+        getList()
+      } else if(props.selectItem.id !== props.rootElement.id) {
+        if(props.selectItem.leaf ==true){
+          getJobList()
+        }else{
+          getDepartmentList()
+        }
+      }
+    }
+  }
+defineExpose({
+  Refresh
+})
+
 </script>
 <style lang="scss" scoped>
   .deptment-info {
