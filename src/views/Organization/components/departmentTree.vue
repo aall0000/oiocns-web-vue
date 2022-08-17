@@ -179,7 +179,7 @@
     rootElement: selectItem
   }>()
   let parentIdArray:any = []
-  let curNodeVal = {}
+  let curNodeVal:any = {}
   const changeIndexFun = (val: any, nodeAttribute?:any, event?:any) => {
     emit('changeIndex', val)
     // 设置表单上级节点
