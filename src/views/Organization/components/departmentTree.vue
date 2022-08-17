@@ -60,7 +60,7 @@
           :load="loadNode"
         />
       </ul>
-      <ul class="con tree-dept" v-else>
+      <ul class="con tree-dept" v-else-if ='envType==2 && showTreeStatus ==true'>
         <el-tree
           :props="defaultProps"
           lazy
@@ -424,6 +424,7 @@
     }
     console.log('groupIndex',groupIndex)
   }
+  //上级节点
   const upNode = {
     checkStrictly: true,
     lazy: true,
@@ -446,6 +447,7 @@
       }
     }
   }
+  //获取集团信息
   async function getGroupsInfo(resolve: any) {
     let arr: any = []
     $services.company
@@ -472,6 +474,7 @@
         return resolve(arr)
       })
   }
+  //获取子集团
   async function getSubGroups(node: any, resolve: any) {
     let arr: any = []
     let level = node.level
@@ -564,6 +567,7 @@
         return resolve(arr)
       })
   }
+  //上级节点id
   const upNodeId = ref<any>({list:[]})
   //创建子集团
   const createSubgroupFun = () => {
