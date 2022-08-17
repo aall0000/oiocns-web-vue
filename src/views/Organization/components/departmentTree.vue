@@ -378,7 +378,7 @@
   const handleChange = (value:any) => {
     console.log(value)
   }
-  const selectValue = ref<string>(null)
+  const selectValue = ref<string>()
   const selectList = reactive<listItem>({ list: [] })
   const roleType = ref<string>('1')
   //当前选中的集团
@@ -399,6 +399,7 @@
       })
       .then((res: ResultType) => {
         if (res.data.result) {
+          selectValue.value = res.data.result[0]
           selectList.list = res.data.result
         } else {
           selectList.list = []
@@ -415,7 +416,7 @@
       if (val.id === selectList.list[i].id) {
         showTreeStatus.value = false
 
-        groupIndex.value = i
+        groupIndex.value = i;
         setTimeout(() => {
           showTreeStatus.value = true
         }, 100)
