@@ -60,7 +60,7 @@
           :load="loadNode"
         />
       </ul>
-      <ul class="con tree-dept" v-else>
+      <ul class="con tree-dept" v-else-if ='envType==2 && showTreeStatus ==true'>
         <el-tree
           :props="defaultProps"
           lazy
@@ -378,7 +378,7 @@
   const handleChange = (value:any) => {
     console.log(value)
   }
-  const selectValue = ref<string>(null)
+  const selectValue = ref<string>()
   const selectList = reactive<listItem>({ list: [] })
   const roleType = ref<string>('1')
   //当前选中的集团
@@ -399,6 +399,7 @@
       })
       .then((res: ResultType) => {
         if (res.data.result) {
+          selectValue.value = res.data.result[0]
           selectList.list = res.data.result
         } else {
           selectList.list = []
@@ -415,7 +416,7 @@
       if (val.id === selectList.list[i].id) {
         showTreeStatus.value = false
 
-        groupIndex.value = i
+        groupIndex.value = i;
         setTimeout(() => {
           showTreeStatus.value = true
         }, 100)
@@ -423,6 +424,7 @@
     }
     console.log('groupIndex',groupIndex)
   }
+  //上级节点
   const upNode = {
     checkStrictly: true,
     lazy: true,
@@ -445,6 +447,7 @@
       }
     }
   }
+  //获取集团信息
   async function getGroupsInfo(resolve: any) {
     let arr: any = []
     $services.company
@@ -471,6 +474,7 @@
         return resolve(arr)
       })
   }
+  //获取子集团
   async function getSubGroups(node: any, resolve: any) {
     let arr: any = []
     let level = node.level
@@ -563,6 +567,7 @@
         return resolve(arr)
       })
   }
+  //上级节点id
   const upNodeId = ref<any>({list:[]})
   //创建子集团
   const createSubgroupFun = () => {
