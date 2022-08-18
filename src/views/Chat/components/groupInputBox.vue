@@ -16,9 +16,9 @@
               class="emoji"
               v-for="index in 36"
               :key="index"
-              :src="getImageUrl(index)"
+              :src="`/src/assets/emo/${index}.png`"
               alt=""
-              @click="handleImgChoosed(getImageUrl(index))"
+              @click="handleImgChoosed(`/src/assets/emo/${index}.png`)"
             />
           </ul>
         </el-popover>
@@ -60,9 +60,7 @@
     document.getElementById('insterHtml').innerHTML = ''
     // console.log('sss',document.getElementById('insterHtml').innerHTML);
   }
-  const getImageUrl = (name: number) => {
-    return new URL(`../../../assets/emo/${name}.png`, import.meta.url).href
-  }
+ 
   const handleImgChoosed = (url: string) => {
     const img = document.createElement('img')
     img.src = url
