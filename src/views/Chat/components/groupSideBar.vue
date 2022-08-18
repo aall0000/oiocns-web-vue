@@ -11,7 +11,7 @@
             @click="handleOpenSpace(item.id)"><span>{{ item.name }}({{
                 item?.chats?.length ?? 0
             }}) </span></div>
-          <div class="con-body" v-for="child in item.chats" :key="child.id" v-show="openIdArr.includes(item.id)">
+          <div class="con-body" v-for="child in item.chats" :key="child.id" v-show="openIdArr.includes(item.id)" @contextmenu.prevent.stop="(e:MouseEvent)=>handleContextClick(e,child)">
             <HeadImg :name="child.name" />
             <div class="group-con-dot" v-show="child.count > 0">
               <span>{{ child.count }}</span>
@@ -64,7 +64,7 @@ const showList = computed((): ImMsgType[] => {
   // 数据过滤 搜索关键词是否 在 列表名称 或 显示信息里
   if (searchValue.value) {
     showInfoArr = showInfoArr.map((child: ImMsgType) => {
-      const { id, name, } = child
+      const { id, name } = child
       return {
         id, name, chats: child?.chats?.filter((item: ImMsgChildType) => {
           return item.name.includes(searchValue.value) || item.msgBody?.includes(searchValue.value)
@@ -97,8 +97,8 @@ const handleFormatDate = (timeStr: string) => {
 }
 
 // 鼠标右键事件
-const mousePosition: { left: number, top: number, isShowContext: boolean, selectedItem: userType } = reactive({ left: 0, top: 0, isShowContext: false, selectedItem: {} as userType })
-const handleContextClick = (e: MouseEvent, item: userType) => {
+const mousePosition: { left: number, top: number, isShowContext: boolean, selectedItem: ImMsgChildType } = reactive({ left: 0, top: 0, isShowContext: false, selectedItem: {} as ImMsgChildType })
+const handleContextClick = (e: MouseEvent, item: ImMsgChildType) => {
   if (!item) {
     return
   }
