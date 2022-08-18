@@ -150,7 +150,6 @@
     if (!item) {
       return
     }
-    console.log('鼠标', e.pageX, e.pageY)
     mousePosition.left = e.pageX - 60 - 260
     mousePosition.top = e.pageY - 60
     mousePosition.isShowContext = true
