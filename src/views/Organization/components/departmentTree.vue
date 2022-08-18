@@ -9,7 +9,7 @@
           class="m-2"
           value-key="id"
           placeholder="请选择"
-          style="margin-left: 20px; width: 155px"
+          style="margin-left: 20px; width: 237px"
         >
           <template #prefix>
             <headImg name="阿里" class="smallIcon"></headImg>
