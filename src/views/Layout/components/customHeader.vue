@@ -85,11 +85,9 @@
     <el-col :span="8" class="flex col-right">
       <el-dropdown trigger="click">
         <span class="el-dropdown-link">
-          <el-icon>
-            <User />
-          </el-icon>
-          {{ queryInfo.name
-          }}<el-icon>
+          <headImg :name="queryInfo.name.slice(0, 1)" class="smallIcon"></headImg>
+          <span>{{ queryInfo.name }}</span>
+          <el-icon style="margin-left: 15px">
             <CaretBottom />
           </el-icon>
         </span>
@@ -98,7 +96,7 @@
             <el-dropdown-item>Action 1</el-dropdown-item>
             <el-dropdown-item> 语言切换 </el-dropdown-item>
             <el-dropdown-item>首页配置</el-dropdown-item>
-            <el-dropdown-item @click="Setting">信息设置</el-dropdown-item>
+            <el-dropdown-item>信息设置</el-dropdown-item>
             <el-dropdown-item>帮助中心</el-dropdown-item>
             <el-dropdown-item @click="exitLogin">退出登录</el-dropdown-item>
           </el-dropdown-menu>
@@ -132,7 +130,7 @@
   import { ElMessage } from 'element-plus'
   import CreateUnitDialog from './createUnitDialog.vue'
   import SearchDialog from './searchDialog.vue'
-
+  import headImg from '@/views/Chat/components/headImg.vue'
   const store = useUserStore()
   const SearchInfo = ref('')
   const router = useRouter()
@@ -355,6 +353,15 @@
   }
   .el-dropdown-link {
     cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    .smallIcon {
+      font-size: 18px;
+      border-radius: 50px;
+      width: 30px;
+      transform: scale(0.7, 0.7);
+    }
   }
   .page-custom-header {
     height: 60px;
