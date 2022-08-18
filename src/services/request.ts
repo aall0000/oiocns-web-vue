@@ -27,9 +27,9 @@ const codeMessage = {
   504: '网关超时。'
 }
 
+// 处理成功调用后 信息处理
 function responseLog(response) {
-const {data,msg} = response
-console.log('请求成功处理', data)
+const { data } = response
 
   switch (data.code) {
     case 500:
