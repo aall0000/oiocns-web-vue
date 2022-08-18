@@ -32,7 +32,7 @@ interface ImMsgChildType {
   remark: string
   typeName: string
   msgBody?: any
-  groupId?:string
+  spaceId?:string
   count?: number
 }
 // 聊天 侧边栏展示列表类型

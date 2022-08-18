@@ -50,7 +50,7 @@ const msgMap = ref(new Map())
 const lastQueryParams = ref<any>({})
 
 const showMsgList = computed(() => {
-  const key = activeInfo.value.id + '_' + activeInfo.value.groupId
+  const key = activeInfo.value.id + '_' + activeInfo.value.spaceId
   return msgMap.value.get(key) ?? []
 })
 //内容展示 dom节点
@@ -132,7 +132,7 @@ const submit = async (value: string) => {
   let text = value.indexOf('span') > -1 ? value : value.replaceAll('&nbsp;', '')
   const params = {
     toId: activeInfo.value.id,
-    spaceId: activeInfo.value.groupId,
+    spaceId: activeInfo.value.spaceId,
     msgType: 'text',
     msgBody: text
   }
@@ -151,7 +151,7 @@ onBeforeUnmount(() => {
 watch(
   () => activeInfo.value,
   async (val) => {
-    const { typeName, id, groupId } = val
+    const { typeName, id, spaceId } = val
     selectInfo.typeName = typeName
     current.value = 0
     theHistoryMsgTotal = 0
@@ -165,7 +165,7 @@ watch(
     // 切换人员-清空已存信息
     msgMap.value.clear()
     //获取新的聊天对象历史信息
-    getHistoryMsg(id, groupId, typeName, true)
+    getHistoryMsg(id, spaceId, typeName, true)
     //关闭详情页面
     isShowDetail.value = false
   }
@@ -223,7 +223,7 @@ const handleNewMsgShow = (data: any) => {
           val.msgBody = data.msgBody
           val.msgTime = data.createTime
           val.msgType = data.msgType
-          if (val.id != activeInfo.value.id || item.id != activeInfo.value.groupId) {
+          if (val.id != activeInfo.value.id || item.id != activeInfo.value.spaceId) {
             val.count = (val.count || 0) + 1
           }
           arr.unshift(val)
@@ -242,20 +242,20 @@ const handleNewMsgShow = (data: any) => {
 // 记录当前会话历史消息总数
 let theHistoryMsgTotal: number = 0
 // 获取历史消息
-const getHistoryMsg = async (id: string, groupId: string, type: string, isGoEnd?: boolean) => {
+const getHistoryMsg = async (id: string, spaceId: string, type: string, isGoEnd?: boolean) => {
   const url: string = type == '人员' ? 'QueryFriendMsg' : 'QueryCohortMsg';
   const { data = [], success } = await connection.invoke(url, {
     [type == '人员' ? 'friendId' : 'cohortId']: id,
     offset: pageOffset.value,
     limit: limit.value,
-    spaceId: activeInfo.value.groupId,
+    spaceId: activeInfo.value.spaceId,
   })
 
   if (success) {
     const newHistoryMsgArr = (data.result && data.result?.reverse()) ?? []
     theHistoryMsgTotal = data.total
-    const oldMsg = msgMap.value.get(id + '_' + groupId) ?? []
-    msgMap.value.set(id + '_' + groupId, [...newHistoryMsgArr, ...oldMsg])
+    const oldMsg = msgMap.value.get(id + '_' + spaceId) ?? []
+    msgMap.value.set(id + '_' + spaceId, [...newHistoryMsgArr, ...oldMsg])
     if (isGoEnd) {
       contentWrapRef.value?.goPageEnd()
     } else {
@@ -277,7 +277,7 @@ const handleViewMoreHistory = () => {
     return
   }
   current.value++
-  getHistoryMsg(activeInfo.value.id, activeInfo.value.groupId, activeInfo.value.typeName)
+  getHistoryMsg(activeInfo.value.id, activeInfo.value.spaceId, activeInfo.value.typeName)
 }
 
 </script>
