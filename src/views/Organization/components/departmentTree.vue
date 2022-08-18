@@ -126,10 +126,6 @@ const filterText = ref('')
     },
     resolveData: Function as (data: any) => void
   })
-  //获取部门
-  onMounted(() => {
-    changeIndexFun(workspaceData.value)
-  })
   //提交表单数据
   let departmentName = ref<string>('')
   let departmentTeamName = ref<string>('')
