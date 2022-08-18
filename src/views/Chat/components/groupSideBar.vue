@@ -90,7 +90,7 @@ const handleFormatDate = (timeStr: string) => {
 
   // 超过一天 展示 月/日
   if (nowTime - showTime > 3600 * 24 * 1000) {
-    return formatDate(timeStr, 'MM/dd')
+    return formatDate(timeStr, 'M月d日')
   }
   // 超过一天 展示 时/分
   return formatDate(timeStr, 'H:mm')
@@ -235,10 +235,11 @@ const handleContextChange = (item: MenuItemType) => {
         font-weight: bold;
         padding: 10px 0;
         color: #111;
+        border-bottom: 1px solid #e5e5e5;
 
         &.active {
           color: #409eff;
-
+          border-bottom: none;
         }
       }
 
@@ -255,9 +256,8 @@ const handleContextChange = (item: MenuItemType) => {
     }
 
     .group-con-show {
-      width: 100%;
-
-
+      width: 100%;    
+      border-bottom: 1px solid #e8e8e8;
 
       &-name {
 
@@ -276,7 +276,8 @@ const handleContextChange = (item: MenuItemType) => {
         }
 
         &-time {
-          font-size: 13px;
+          color: #a8a8a8;
+          font-size: 12px;
         }
       }
 
@@ -288,6 +289,7 @@ const handleContextChange = (item: MenuItemType) => {
         white-space: nowrap;
         font-size: 10px;
         padding-top: 5px;
+        color: #787878;
       }
     }
 
