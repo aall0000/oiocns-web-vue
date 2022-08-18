@@ -83,12 +83,12 @@ let groupId = ref<any>();
 
 // 获取表格数据
 const getTableList = async () => {
-  if(groupId){
+  if(groupId.value){
     loading.value = true
     // Todo 判断 getSubgroupCompanies
     const { data, success } = await API.company.getGroupCompanies({
       data: {
-        id: groupId,
+        id: groupId.value,
         offset: (pagination.current - 1) * pagination.limit,
         limit: pagination.limit
       }

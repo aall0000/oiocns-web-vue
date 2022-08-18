@@ -1,5 +1,5 @@
 <template>
-  <el-dialog v-model="dialogShow.value" title="创建单位" width="30%">
+  <el-dialog append-to-body	 v-model="dialogShow.value" title="创建单位" width="30%">
     <el-form ref="ruleFormRef" :rules="rules" :model="ruleForm" status-icon class="demo-ruleForm">
       <el-form-item prop="name">
         <el-input
