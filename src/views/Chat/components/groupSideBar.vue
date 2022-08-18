@@ -27,7 +27,8 @@
                   <span class="group-con-show-name-time">{{ handleFormatDate(child.msgTime) }} </span>
                 </p>
               </el-tooltip>
-              <p class="group-con-show-msg" v-html="child?.msgBody"></p>
+              <p class="group-con-show-msg" v-if="child.msgType!=='recall'" v-html="child?.msgBody"></p>
+              <p class="group-con-show-msg" v-else >{{child?.showTxt}}</p>
             </div>
           </div>
         </li>
@@ -65,7 +66,7 @@ const isMounted = ref<boolean>(false)
 //根据搜索条件-输出展示列表
 const showList = computed((): ImMsgType[] => {
   let showInfoArr = props.sessionList
-  // console.log('展示顺序', props.sessionList);
+  console.log('展示顺序', props.sessionList);
 
   // 数据过滤 搜索关键词是否 在 列表名称 或 显示信息里
   if (searchValue.value) {
