@@ -237,7 +237,7 @@
     })
     .then((res: ResultType) => {
         let arr:any = []
-        if(res.data){
+        if(res.data.result){
           res.data.result.forEach((element:any) => {
             arr.push(element.id)
           });

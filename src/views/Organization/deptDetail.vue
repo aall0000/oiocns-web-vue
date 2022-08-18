@@ -11,7 +11,9 @@
           <el-button small link type="primary" @click="dialogVisible = true">新增</el-button>
         </li>
       </ul>
-      <el-table class="box-table" v-loading="loading" :data="pageStore.tableData" stripe border
+      <el-table class="box-table" v-loading="loading" :data="pageStore.tableData" stripe row-key="id"
+      border
+      default-expand-all
         header-row-class-name="table_header_class" @select="handleSelect">
         <el-table-column type="selection" width="50" />
         <el-table-column prop="id" label="序号">
