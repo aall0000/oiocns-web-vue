@@ -98,6 +98,14 @@ const mainRouter: RouteRecordRaw[] = [
         meta: {
           title: '部门维护'
         }
+      },
+      {
+        path: '/organization/groupMaintenance',
+        name: 'groupMaintenance',
+        component: () => import('@/views/Organization/groupMaintenance.vue'),
+        meta: {
+          title: '集团维护'
+        }
       }
     ]
   },
