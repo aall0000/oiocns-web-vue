@@ -98,7 +98,7 @@
 <script lang="ts" setup>
   import $services from '@/services'
   import { ref, reactive, watch } from 'vue'
-  import { ElMessage, ElMessageBox } from 'element-plus'
+  import { ElMessage } from 'element-plus'
   import type { TabsPaneContext } from 'element-plus'
   import { useRouter } from 'vue-router'
   const router = useRouter()
@@ -114,7 +114,6 @@
   let tableData = reactive<listType>({})
   const props = defineProps<{
     selectItem: selectItem
-    envType: number
     rootElement: selectItem
   }>()
   const activeName = ref('first')

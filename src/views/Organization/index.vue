@@ -3,7 +3,6 @@
     <!-- 单位管理 -->
     <div class="org-content mainBox" v-if="showMenu == true">
       <departmentTree
-        :envType="envType"
         :rootElement="rootElement"
         :selectItem="selectItem"
         ref="unitTree"
@@ -11,26 +10,15 @@
         class="department-tree left box"
       />
       <div class="resize" title="收缩侧边栏"> ⋮ </div>
-      <div class="main-dep mid box" v-if="envType == 1">
-        <departmentDetail :envType="envType" @Refresh="Refresh" :rootElement="rootElement" :selectItem="selectItem" />
+      <div class="main-dep mid box" >
+        <departmentDetail @Refresh="Refresh" :rootElement="rootElement" :selectItem="selectItem" />
         <departmentList
           ref="departmentDom"
-          :envType="envType"
           :rootElement="rootElement"
           :selectId="selectId"
           :selectItem="selectItem"
           :personType="personType"
         ></departmentList>
-      </div>
-      <div class="main-dep mid box" v-else>
-        <orgDetail :envType="envType" :rootElement="rootElement" :selectItem="selectItem" />
-        <orgList
-          :envType="envType"
-          :rootElement="rootElement"
-          :selectId="selectId"
-          :selectItem="selectItem"
-          :personType="personType"
-        ></orgList>
       </div>
     </div>
     <!-- 个人管理 -->
@@ -46,8 +34,6 @@
   import departmentTree from './components/departmentTree.vue'
   import departmentDetail from './components/departmentDetail.vue'
   import departmentList from './components/departmentList.vue'
-  import orgDetail from './components/orgDetail.vue'
-  import orgList from './components/orgList.vue'
   import organizatList from './components/organizatList.vue'
   import { useUserStore } from '@/store/user'
   import { storeToRefs } from 'pinia'
@@ -123,19 +109,6 @@
   }
 
   let router = useRouter()
-  let envType = ref<number>(1)
-
-  watch(
-    () => router.currentRoute.value.path,
-    (newValue, oldValue) => {
-      if (router.currentRoute.value.path == '/organization/company') {
-        envType.value = 1 //1-单位 2-集团
-      } else {
-        envType.value = 2 //1-单位 2-集团
-      }
-    },
-    { immediate: true }
-  )
   // const selectList = reactive<selectType[]>([])
 
   let selectId = ref<string>()

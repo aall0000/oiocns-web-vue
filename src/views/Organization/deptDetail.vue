@@ -11,7 +11,7 @@
           <el-button small link type="primary" @click="dialogVisible = true">新增</el-button>
         </li>
       </ul>
-      <el-table class="box-table" v-loading="loading" :data="pageStore.tableData" stripe row-key="id"
+      <el-table class="box-table" v-loading="loading" :load="load" :data="pageStore.tableData" stripe row-key="id"
       border
       default-expand-all
         header-row-class-name="table_header_class" @select="handleSelect">
@@ -31,6 +31,7 @@
                 <el-button link type="danger" size="small">删除</el-button>
               </template>
             </el-popconfirm>
+            <el-button link type="primary" @click="showEdit(row)" size="small">编辑</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -87,7 +88,6 @@ const getTableList = async () => {
       limit: pagination.limit
     }
   })
-
   if (success) {
     loading.value = false
     const { result = [], total = 0 } = data
@@ -125,7 +125,9 @@ const fromData = reactive({
 })
 // 弹窗显示
 const dialogVisible = ref<boolean>(false)
-
+//显示弹窗
+const showEdit = (row:any)=>{
+}
 
 onMounted(() => {
   getTableList()
@@ -162,6 +164,21 @@ const submitFriends = () => {
 // 返回上一页
 const handleGoback = () => {
   router.go(-1)
+}
+//table list
+interface User {
+  id: number
+  date: string
+  name: string
+  hasChildren?: boolean
+  children?: User[]
+}
+//table
+const load = (
+  row: User,
+  treeNode: unknown,
+  resolve: (date: User[]) => void
+) => {
 }
 </script>
 
