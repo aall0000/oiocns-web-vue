@@ -101,9 +101,7 @@ onMounted(() => {
   });
 
   // 接受信息--处理信息
-  connection.on('RecvMsg', (res: any, error: any) => {
-    const { data } = res
-    console.log('接受消息', data, error);
+  connection.on('RecvMsg', (data: any) => {
     let sessionId = data.toId
     if (data.typeName === "人员"
       && data.fromId !== myId
@@ -118,6 +116,7 @@ onMounted(() => {
     handleNewMsgShow(data)
     contentWrapRef.value.goPageEnd()
   });
+
   // 监听链接断开
   connection.onclose(() => {
     console.log('链接关闭了');
