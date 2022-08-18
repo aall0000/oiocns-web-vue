@@ -5,15 +5,15 @@
       <li class="group-content-left con" v-if="item.fromId !== myId">
         <!-- <img class="con-img" src="@/assets/img/userIcon/ic_03.png" alt=""> -->
         <HeadImg :name="getUserName(item.fromId)" />
-        <div class="con-content">
+        <div class="con-content" @contextmenu.prevent.stop="(e: MouseEvent) => handleContextClick(e, item)">
           <span v-if="showName" class="con-content-name">{{ getUserName(item.fromId) }}</span>
           <div class="con-content-link"></div>
           <div class="con-content-txt" v-html="item.msgBody"></div>
         </div>
       </li>
       <li class="group-content-right con" v-else>
-        <div class="con-content">
-          <span v-if="showName" class="con-content-name">{{ getUserName(item.fromId) }}</span>
+        <div class="con-content" @contextmenu.prevent.stop="(e: MouseEvent) => handleContextClick(e, item)">
+          <!-- <span v-if="showName" class="con-content-name">{{ getUserName(item.fromId) }}</span> -->
           <div class="con-content-link"></div>
           <div class="con-content-txt" v-html="item.msgBody">
           </div>
@@ -25,17 +25,17 @@
       </li>
     </template>
     <!-- 鼠标右键 -->
-      <ul class="context-text-wrap" v-show="mousePosition.isShowContext"
-        :style="{ left: `${mousePosition.left}px`, top: `${mousePosition.top}px` }">
-        <li class="context-menu-item" v-for="item in menuList" :key="item.value" @click="handleContextChange(item)">{{
-            item.label
-        }}</li>
-      </ul>
+    <ul class="context-text-wrap" v-show="mousePosition.isShowContext"
+      :style="{ left: `${mousePosition.left}px`, top: `${mousePosition.top}px` }">
+      <li class="context-menu-item" v-for="item in menuList" :key="item.value" @click="handleContextChange(item)">{{
+          item.label
+      }}</li>
+    </ul>
   </ul>
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref, nextTick, onUnmounted, computed, watch, toRefs, reactive } from 'vue';
+import { onMounted, ref, nextTick, onUnmounted, computed, watch, toRefs, reactive, onBeforeUnmount } from 'vue';
 import { debounce } from '@/utils/tools'
 import { useUserStore } from "@/store/user"
 import HeadImg from './headImg.vue'
@@ -61,8 +61,8 @@ const { getUserName, userNameMap } = useUserStore()
 // })
 // dom节点
 const nodeRef = ref(null)
-// 事件viewMoreMsg--查看更多
-const emit = defineEmits(['viewMoreMsg'])
+// 事件viewMoreMsg--查看更多 recallMsg--撤销消息
+const emit = defineEmits(['viewMoreMsg', 'recallMsg'])
 // 保存当前滚动条距离底部长度
 const scrollOfZeroToEnd = ref<number>(0)
 
@@ -103,7 +103,7 @@ const scrollEvent = () => {
 type MenuItemType = { value: number, label: string };
 const menuList: MenuItemType[] = [
   { value: 1, label: '撤销' },
-  { value: 2, label: '删除' },
+  // { value: 2, label: '删除' },
   // { value: 3, label: '个人信息' },
   // { value: 4, label: '消息免打扰' },
 ]
@@ -113,8 +113,9 @@ const handleContextClick = (e: MouseEvent, item: ImMsgChildType) => {
   if (!item) {
     return
   }
-  mousePosition.left = e.pageX
-  mousePosition.top = e.pageY
+  console.log('鼠标', e.pageX, e.pageY);
+  mousePosition.left = e.pageX - 60 - 260
+  mousePosition.top = e.pageY - 60
   mousePosition.isShowContext = true
   mousePosition.selectedItem = item
 }
@@ -123,22 +124,27 @@ const handleContextChange = (item: MenuItemType) => {
   console.log('右键菜单点击', item, mousePosition.selectedItem);
   switch (item.value) {
     case 1:
-
+      emit('recallMsg', mousePosition.selectedItem)
       break;
     case 2:
       // props.clearHistoryMsg()
-      break;
-    case 3:
-
-      break;
-    case 4:
-
       break;
 
     default:
       break;
   }
 }
+// 页面加载完毕，点击其他位置则隐藏菜单
+onMounted(() => {
+  window.addEventListener('click', () => { mousePosition.isShowContext = false });
+  window.addEventListener('contextmenu', () => { mousePosition.isShowContext = false });
+})
+
+// 页面卸载前给他删了
+onBeforeUnmount(() => {
+  window.removeEventListener('click', () => { })
+  window.removeEventListener('contextmenu', () => { mousePosition.isShowContext = false });
+})
 // 暴露子组件方法
 defineExpose({
   goPageEnd,
@@ -222,7 +228,7 @@ defineExpose({
         box-shadow: -1px 1px 6px 2px rgb(229 229 229);
       }
 
-      &-txt{
+      &-txt {
         box-shadow: 0 0 5px 5px #e5e5e580;
       }
     }
@@ -251,5 +257,24 @@ defineExpose({
     }
   }
 
+  .context-text-wrap {
+    position: absolute;
+    background-color: #fff;
+    width: 80px;
+    height: max-content;
+    border: 1px solid #e6e6e6;
+    box-shadow: 0 0 2px 2px #e6e6e6;
+    z-index: 999;
+
+    .context-menu-item {
+      padding: 4px 6px;
+      cursor: pointer;
+      text-align: center;
+
+      &:hover {
+        background-color: #efefef;
+      }
+    }
+  }
 }
 </style>

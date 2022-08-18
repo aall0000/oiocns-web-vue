@@ -343,7 +343,7 @@ const handleContextChange = (item: MenuItemType) => {
 
     .context-menu-item {
       padding: 5px;
-
+      cursor: pointer;
       &:hover {
         background-color: #e3e3e3;
       }

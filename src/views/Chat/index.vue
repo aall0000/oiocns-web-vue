@@ -13,7 +13,7 @@
       <GroupHeaderVue :info="selectInfo" v-if="activeInfo?.id" @viewDetail="handleViewDetail" />
       <!-- 聊天区域 -->
       <GroupContent class="chart-content" :myId="myId" ref="contentWrapRef" :list="showMsgList"
-        :showName="activeInfo.typeName != '人员'" @viewMoreMsg="handleViewMoreHistory" />
+        :showName="activeInfo.typeName != '人员'" @viewMoreMsg="handleViewMoreHistory" @recallMsg="handleRecallMsg" />
       <!-- 输入区域 -->
       <GroupInputBox class="chart-input" v-show="activeInfo?.id" @submitInfo="submit" />
     </div>
@@ -102,21 +102,8 @@ onMounted(() => {
 
   // 接受信息--处理信息
   connection.on('RecvMsg', (res: any, error: any) => {
-    const { data } = res
-    // console.log('接受消息', data, error);
-    let sessionId = data.toId
-    if (data.typeName === "人员"
-      && data.fromId !== myId
-      && data.toId === myId) {
-      sessionId = data.fromId
-    }
-    // 保存获取消息至 消息队列
-
-    const oldMsg = msgMap.value.get(sessionId) ?? []
-    msgMap.value.set(sessionId, [...oldMsg, data])
-    // 根据新信息更新导航信息
-    handleNewMsgShow(data)
-    contentWrapRef.value.goPageEnd()
+    console.log('接受消息', res.data);
+    handleReaciveMsg(res.data)
   });
   // 监听链接断开
   connection.onclose(() => {
@@ -125,7 +112,34 @@ onMounted(() => {
   });
 })
 
+// 处理接受消息
+const handleReaciveMsg = (data: any) => {
+  let sessionId = data.toId
+  if (data.fromId !== myId
+    && data.toId === myId) {
+    sessionId = data.fromId
+  }
+  // 当前展示信息列表
+  const oldMsg = msgMap.value.get(sessionId + '_' + data.spaceId) ?? []
+  // 删除信息成功
+  if (data.msgType === "recall") {
+    const newarr = oldMsg.filter((item: ImMsgChildType) => {
+      return item.id !== data.id && item.msgBody !== data.msgBody && item.createTime !== data.createTime
+    })
+    console.log('村上春树', oldMsg, data.msgBody, newarr);
 
+    msgMap.value.set(sessionId + '_' + data.spaceId, [...newarr])
+    return
+  }
+
+
+  //接受消息 保存获取消息至 消息队列
+
+  // msgMap.value.set(sessionId + '_' + data.spaceId, [...oldMsg, data])
+  // 根据新信息更新导航信息
+  handleNewMsgShow(data)
+  contentWrapRef.value.goPageEnd()
+}
 
 // 提交信息
 const submit = async (value: string) => {
@@ -141,7 +155,12 @@ const submit = async (value: string) => {
   }
 }
 
-
+// 消息撤回
+const handleRecallMsg = (item: ImMsgChildType) => {
+ item.id===myId&&connection.send('RecallMsg', { ids: [item.id] }).then(() => {
+    console.log('撤回成功')
+  })
+}
 onBeforeUnmount(() => {
   // 离开页面关闭链接
   connection.stop()

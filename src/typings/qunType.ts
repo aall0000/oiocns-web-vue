@@ -31,6 +31,7 @@ interface ImMsgChildType {
   name: string
   remark: string
   typeName: string
+  createTime:string
   msgBody?: any
   spaceId?:string
   count?: number
