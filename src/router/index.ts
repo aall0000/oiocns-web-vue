@@ -18,6 +18,15 @@ const constantRoutes: RouteRecordRaw[] = [
     component: () => import('@/views/Others/404.vue'),
     name: '404',
     path: '/404'
+  },
+  {
+    component: () => import('@/views/Test2/index.vue'),
+    name: 'test',
+    path: '/test',
+    meta: {
+      keepAlive: false,
+      title: '首页'
+    }
   }
   // {
   //   component: () => import('@/views/Test/index.vue'),

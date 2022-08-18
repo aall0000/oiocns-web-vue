@@ -96,6 +96,9 @@
       })
     }
   )
+  const changeIndexFun = ()=>{
+    
+  }
   const getOrgList = () => {
     $services.company
       .getGroupCompanies({

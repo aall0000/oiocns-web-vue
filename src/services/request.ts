@@ -5,7 +5,7 @@ import autoMatchBaseUrl from './autoMatchBaseUrl'
 import { TIMEOUT } from '@/constant'
 import { useUserStore } from '@/store/user'
 import router from '@/router'
-
+import { ElMessage } from 'element-plus'
 
 export const requestInstance = axios.create({})
 
@@ -28,6 +28,20 @@ const codeMessage = {
 }
 
 function responseLog(response) {
+const {data,msg} = response
+console.log('请求成功处理', data)
+
+  switch (data.code) {
+    case 500:
+      ElMessage({
+        message: data.msg,
+        type: 'warning'
+      })
+      break
+
+    default:
+      break
+  }
   return
   if (process.env.NODE_ENV === 'development') {
     const randomColor = `rgba(${Math.round(Math.random() * 255)},${Math.round(

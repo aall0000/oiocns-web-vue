@@ -144,6 +144,7 @@ defineExpose({
         background-color: white;
         border-radius: 5px;
         z-index: 1;
+        margin-top: -10px;
       }
 
       &-link {
@@ -154,7 +155,7 @@ defineExpose({
         border-style: solid;
         border-width: 2px;
         position: relative;
-        top: 25px;
+        top: 15px;
         -moz-transform: rotate(45deg);
         -webkit-transform: rotate(45deg);
         -o-transform: rotate(45deg);

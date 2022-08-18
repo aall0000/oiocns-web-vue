@@ -1,17 +1,10 @@
 <template>
   <div class="department-info">
     <div class="deptment-info">
-      <p class="deptment-info-name">
-        <!-- <span>{{ treeObj.name }}</span> -->
-        <!-- <span class="info-num">20人</span> -->
-        <!-- <el-button size="small" style="margin-left: 15px">编辑</el-button> -->
-      </p>
       <div class="deptment-info-btns">
         <div class="left-name">部门信息</div>
         <div class="edit">
-          <!-- <el-button type="primary">创建工作组</el-button> -->
           <div style="color:#154ad8" v-show="selectItem.id !== rootElement.id" @click="showDialog">分配人员</div>
-          <!-- <el-button>调整排序</el-button> -->
         </div>
       </div>
     </div>
@@ -59,8 +52,8 @@
 </template>
 <script lang="ts" setup>
   import $services from '@/services'
-  import { ref, reactive, onMounted, watch } from 'vue'
-  import { ElMessage, ElMessageBox } from 'element-plus'
+  import { ref, reactive, watch } from 'vue'
+  import { ElMessage } from 'element-plus'
   type selectItem = {
     name: string
     id: string
@@ -75,7 +68,6 @@
   const emit = defineEmits(['Refresh'])
   const props = defineProps<{
     selectItem: selectItem,
-    envType:number,
     rootElement:rootType
   }>()
   const submitFriends = () => {
@@ -165,11 +157,16 @@
         }
       })
       .then((res: ResultType) => {
-        if(res.data.result){
-          listNum.value =res.data.total
+        if(res.data){
+          if(res.data.result){
+            listNum.value =res.data.total
+          }else{
+            listNum.value =0
+          }
         }else{
           listNum.value =0
         }
+        
       })
   }
   //获取单位员工
@@ -237,7 +234,7 @@
     })
     .then((res: ResultType) => {
         let arr:any = []
-        if(res.data){
+        if(res.data.result){
           res.data.result.forEach((element:any) => {
             arr.push(element.id)
           });

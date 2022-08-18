@@ -1,56 +1,11 @@
 <template>
   <div class="department-tree-wrap">
     <ul class="departmentTree-wrap">
-      <li class="con tree-select">
-        <el-select
-          v-if="envType == 2"
-          v-model="selectValue"
-          @change="changeGroupIndex"
-          class="m-2"
-          value-key="id"
-          placeholder="请选择"
-          style="margin-left: 20px; width: 237px"
-        >
-          <template #prefix>
-            <headImg name="阿里" class="smallIcon"></headImg>
-          </template>
-          <el-option
-            style="height: 50px; line-height: 50px"
-            v-for="item in selectList.list"
-            :key="item.id"
-            :label="item.name"
-            :value="{ id: item.id, item: item }"
-          >
-            <span style="float: left">
-              <headImg
-                :name="item.name"
-                style="transform: scale(0.8, 0.8); border-radius: 50px"
-              ></headImg>
-            </span>
-            <span style="padding-left: 6px">{{ item.name }}</span>
-          </el-option>
-        </el-select>
-      </li>
-      <li class="con tree-btns" v-if="envType == 1">
+      <li class="con tree-btns">
         <div class="title">部门管理</div>
-        <!-- <el-popover placement="bottom" :width="150" trigger="hover">
-          <template #reference>
-            <el-icon color="#154ad8" :size="18">
-              <View />
-            </el-icon>
-          </template>
-          <el-checkbox v-model="state.isShowName" label="部门名称" />
-          <el-checkbox v-model="state.isShowCode" label="部门编码" />
-        </el-popover> -->
-
         <el-icon color="#154ad8" :size="20" v-if="selectItem.leaf != true" @click="showDialog">
           <CirclePlus />
         </el-icon>
-        <!-- <el-button :icon="Plus"size="small">新建部门</el-button> -->
-      </li>
-      <li class="con tree-btns" v-else>
-        <div class="title">组织</div>
-        <el-button :icon="Plus" @click="showCreate" size="small">创建下级节点</el-button>
       </li>
       <li class="con tree-search">
         <el-input class="search" v-model="filterText" placeholder="搜索部门或者工作组">
@@ -62,7 +17,7 @@
         </el-input>
       </li>
 
-      <ul class="con tree-dept" v-if="envType == 1">
+      <ul class="con tree-dept">
         <el-tree
           :props="defaultProps"
           lazy
@@ -73,31 +28,8 @@
           :filter-node-method="filterNode"
         />
       </ul>
-      <ul class="con tree-dept" v-else-if="envType == 2 && showTreeStatus == true">
-        <el-tree
-          :props="defaultProps"
-          lazy
-          highlight-current
-          ref="treeRef"
-          @node-click="changeIndexFun"
-          :load="loadNode"
-          :filter-node-method="filterNode"
-        >
-          <template #default="{ node, data }">
-            <span class="custom-tree-node">
-              <div class="tree-box">
-                <el-icon>
-                  <School />
-                </el-icon>
-                <span class="tree-box__text">{{ node.label }}</span>
-              </div>
-            </span>
-          </template>
-        </el-tree>
-      </ul>
       <el-dialog
         v-model="dialogVisible"
-        v-if="envType == 1"
         title="请录入部门信息"
         width="50%"
         center
@@ -144,71 +76,21 @@
           </span>
         </template>
       </el-dialog>
-
-      <el-dialog
-        v-model="dialogVisible"
-        append-to-body
-        v-if="envType == 2"
-        title="请输子集团名称"
-        width="50%"
-      >
-        <div class="main-dialog">
-          <el-form-item class="main-item" label="节点名称" style="width: 45%">
-            <el-input
-              v-model="departmentName"
-              placeholder="请输入子集团名称"
-              width="200px"
-              clearable
-            />
-          </el-form-item>
-          <el-form-item class="main-item" label="子集团编号" style="width: 45%">
-            <el-input v-model="departmentTeamCode" placeholder="请输入" clearable />
-          </el-form-item>
-          <el-form-item class="main-item" label="上级节点" style="width: 100%">
-            <el-cascader
-              :props="upNode"
-              v-model="upNodeId.list"
-              style="width: 100%"
-              placeholder="请选择"
-              @change="handleChange"
-            />
-          </el-form-item>
-          <el-form-item label="部门简介">
-            <el-input
-              v-model="departmentTeamRemark"
-              placeholder="请输入"
-              style="width: 100%"
-              clearable
-            />
-          </el-form-item>
-        </div>
-
-        <template #footer>
-          <span class="dialog-footer">
-            <el-button @click="dialogVisible = false">取消</el-button>
-            <el-button type="primary" @click="createSubgroupFun">确认</el-button>
-          </span>
-        </template>
-      </el-dialog>
     </ul>
 
-    <div class="weihu-wrap" @click="handlePageChange" v-if="envType == 1">
+    <div class="weihu-wrap" @click="handlePageChange">
       <span class="weihu-wrap-txt">部门维护</span>
-    </div>
-    <div class="weihu-wrap" @click="maintainCompany" v-if="envType == 2">
-      <span class="weihu-wrap-txt">单位维护</span>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
   import $services from '@/services'
-  import { Search, Plus } from '@element-plus/icons-vue'
+  import { Search } from '@element-plus/icons-vue'
   import { ref, reactive, onMounted, watch } from 'vue'
   import { useUserStore } from '@/store/user'
-  import { ElMessage, ElMessageBox } from 'element-plus'
+  import { ElMessage } from 'element-plus'
   import { useRouter } from 'vue-router'
-  import headImg from '@/views/Chat/components/headImg.vue'
   import { storeToRefs } from 'pinia'
   import { ElTree } from 'element-plus'
   import type Node from 'element-plus/es/components/tree/src/model/node'
@@ -226,7 +108,6 @@
     leaf: boolean
   }
   const props = defineProps<{
-    envType: number
     selectItem: selectItem
     rootElement: selectItem
   }>()
@@ -259,17 +140,8 @@
   })
   //获取部门
   onMounted(() => {
-    if (props.envType == 1) {
-      changeIndexFun(workspaceData.value)
-    } else {
-      //查询集团
-      getGroupList()
-    }
+    changeIndexFun(workspaceData.value)
   })
-  const showCreate = () => {
-    roleType.value = '1' //默认设置部门
-    dialogVisible.value = true
-  }
   //提交表单数据
   let departmentName = ref<string>('')
   let departmentTeamName = ref<string>('')
@@ -339,24 +211,13 @@
     isLeaf: 'leaf'
   }
   const loadNode = (node: any, resolve: (data: any) => void) => {
-    if (props.envType == 1) {
-      if (node.level === 0) {
-        state.nodeData = node
-        state.resolveData = resolve
-        getQueryInfo(resolve)
-      }
-      if (node.level >= 1) {
-        getDepartmentsList(node, resolve)
-      }
-    } else {
-      if (node.level === 0) {
-        state.nodeData = node
-        state.resolveData = resolve
-        getGroupsInfo(resolve)
-      }
-      if (node.level >= 1) {
-        getSubGroups(node, resolve)
-      }
+    if (node.level === 0) {
+      state.nodeData = node
+      state.resolveData = resolve
+      getQueryInfo(resolve)
+    }
+    if (node.level >= 1) {
+      getDepartmentsList(node, resolve)
     }
   }
   //根节点数据
@@ -430,257 +291,33 @@
       })
     resolve([...list1, ...list2])
   }
-  type listItem = {
-    list: any
-  }
   const handleChange = (value: any) => {
     console.log(value)
   }
-  const selectValue = ref<string>()
-  const selectList = reactive<listItem>({ list: [] })
   const roleType = ref<string>('1')
-  //当前选中的集团
-  type groupType = {
-    id?: string
-    name?: string
-    children?: Array<any>
-  }
-  const checkGroup = ref<groupType>({})
-  // 查询集团
-  const getGroupList = () => {
-    $services.company
-      .companyGetGroups({
-        data: {
-          offset: 0,
-          limit: 1000
-        }
-      })
-      .then((res: ResultType) => {
-        if (res.data.result) {
-          selectValue.value = res.data.result[0]
-          selectList.list = res.data.result
-        } else {
-          selectList.list = []
-        }
-      })
-  }
-  const groupIndex = ref<number>(0)
-  const showTreeStatus = ref<boolean>(true)
-  //切换集团
-  const changeGroupIndex = (val: any) => {
-    checkGroup.value = val
-    selectList.list.forEach((item: any) => {
-      if (item === val) {
-        console.log('返回', item)
-        selectValue.value = item.name
-      }
-    })
-    for (let i = 0; i < selectList.list.length; i++) {
-      if (val.id === selectList.list[i].id) {
-        showTreeStatus.value = false
 
-        groupIndex.value = i
-        setTimeout(() => {
-          showTreeStatus.value = true
-        }, 100)
-      }
-    }
-    console.log('groupIndex', groupIndex)
-  }
   //上级节点
   const upNode = {
     checkStrictly: true,
     lazy: true,
     lazyLoad(node: any, resolve: any) {
-      const { level } = node
-      if (props.envType == 1) {
-        if (node.level === 0) {
-          getQueryInfo(resolve)
-        }
-        if (node.level >= 1) {
-          getDepartmentsList(node, resolve)
-        }
-      } else {
-        if (node.level === 0) {
-          getGroupsInfo(resolve)
-        }
-        if (node.level >= 1) {
-          getSubGroups(node, resolve)
-        }
+      if (node.level === 0) {
+        getQueryInfo(resolve)
+      }
+      if (node.level >= 1) {
+        getDepartmentsList(node, resolve)
       }
     }
   }
-  //获取集团信息
-  async function getGroupsInfo(resolve: any) {
-    let arr: any = []
-    $services.company
-      .companyGetGroups({
-        data: {
-          offset: 0,
-          limit: 1000
-        }
-      })
-      .then((res: ResultType) => {
-        if (res.data.result) {
-          console.log('value', groupIndex.value)
-          let resData = [res.data.result[groupIndex.value]]
-          resData.forEach((element: any) => {
-            var obj = {
-              id: element.id,
-              value: element.id,
-              label: element.name,
-              code: element.code,
-              children: [] as []
-            }
-            arr.push(obj)
-          })
-        }
-        return resolve(arr)
-      })
-  }
-  //获取子集团
-  async function getSubGroups(node: any, resolve: any) {
-    let arr: any = []
-    let level = node.level
-    await $services.company
-      .getSubgroups({
-        data: { id: node.data.id, offset: 0, limit: 1000 }
-      })
-      .then((res: ResultType) => {
-        if (res.data.result) {
-          let resData = JSON.parse(JSON.stringify(res.data.result))
-          resData.forEach((element: any) => {
-            var obj = {
-              id: element.id,
-              value: element.id,
-              label: element.name,
-              code: element.code,
-              children: [] as [],
-              team: element.team,
-              type: 'org'
-            }
-            arr.push(obj)
-          })
-          // if (level > 1) {
-          //   getUnitChildData(node, resolve, arr)
-          // } else {
-          //   getUnitData(node, resolve, arr)
-          // }
-        }
-        return resolve(arr)
-      })
-  }
-  // 查询子集团单位
-  const getUnitChildData = (node: any, resolve: any, arr: Array<any>) => {
-    $services.company
-      .getSubgroupCompanies({
-        data: {
-          id: node.data.id,
-          offset: 0,
-          limit: 1000
-        }
-      })
-      .then((res: ResultType) => {
-        if (res.data.result) {
-          let resData = [res.data.result[0]]
-          resData.forEach((element: any) => {
-            var obj = {
-              id: element.id,
-              label: element.name,
-              code: element.code,
-              children: [] as [],
-              value: element.id,
-              leaf: true,
-              team: element.team,
-              type: 'unit'
-            }
-            arr.push(obj)
-          })
-        }
-        return resolve(arr)
-      })
-  }
-
-  // 查询集团单位
-  const getUnitData = (node: any, resolve: any, arr: Array<any>) => {
-    $services.company
-      .getGroupCompanies({
-        data: {
-          id: node.data.id,
-          offset: 0,
-          limit: 1000
-        }
-      })
-      .then((res: ResultType) => {
-        if (res.data.result) {
-          let resData = [res.data.result[0]]
-          resData.forEach((element: any) => {
-            var obj = {
-              id: element.id,
-              label: element.name,
-              code: element.code,
-              children: [] as [],
-              value: element.id,
-              leaf: true,
-              team: element.team,
-              type: 'unit'
-            }
-            arr.push(obj)
-          })
-        }
-        return resolve(arr)
-      })
-  }
   //上级节点id
   const upNodeId = ref<any>({ list: [] })
-  //创建子集团
-  const createSubgroupFun = () => {
-    $services.company
-      .createSubgroup({
-        data: {
-          code: departmentTeamCode.value,
-          name: departmentName.value,
-          parentId: upNodeId.value.list[upNodeId.value.list.length - 1],
-          teamRemark: departmentTeamRemark.value
-        }
-      })
-      .then((res: ResultType) => {
-        if (res.code == 200) {
-          ElMessage({
-            message: res.msg,
-            type: 'success'
-          })
-          dialogVisible.value = false
-          state.nodeData.childNodes = []
-          loadNode(state.nodeData, state.resolveData)
-        } else {
-          ElMessage({
-            message: res.msg,
-            type: 'error'
-          })
-        }
-      })
-  }
-  interface Option {
-    key: string
-    label: string
-  }
+
   const showDialog = () => {
     dialogVisible.value = true
   }
   const router = useRouter()
   const handlePageChange = () => {
     router.push({ path: '/organization/deptDeatil' })
-  }
-  const maintainCompany = () => {
-    if (!curNodeVal.id) {
-      ElMessage({
-        message: '请选择集团',
-        type: 'warning'
-      })
-      return
-    }
-    router.push({ path: '/organization/companyList', query: { id: curNodeVal.id } })
   }
 </script>
 <style lang="scss">
@@ -719,7 +356,7 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    z-index: 2;
+    z-index: 1;
     float: left;
     height: 100%;
     .weihu-wrap {
@@ -756,21 +393,6 @@
 
     .con {
       margin-bottom: 10px;
-
-      .smallIcon {
-        border-radius: 50px;
-        width: 30px;
-        transform: scale(0.8, 0.8);
-      }
-      .select_item {
-        height: 50px;
-        line-height: 50px;
-        .smallIcon {
-          border-radius: 50px;
-          width: 30px;
-          transform: scale(0.8, 0.8);
-        }
-      }
     }
 
     .tree-search {
