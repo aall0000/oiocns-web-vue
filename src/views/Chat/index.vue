@@ -33,6 +33,8 @@ import GroupHeaderVue from './components/groupHeader.vue'
 import GroupInputBox from './components/groupInputBox.vue'
 import GroupContent from './components/groupContent.vue'
 import GroupDetail from './components/groupDetail.vue'
+import { ElMessage } from 'element-plus'
+import { useRouter } from 'vue-router'
 interface infoType {
   detail: ImMsgChildType
   userList: userType[]
@@ -40,6 +42,8 @@ interface infoType {
   typeName: string
 }
 const { setUserNameMap, userToken, queryInfo } = useUserStore()
+const router = useRouter()
+
 // 是否展示导航
 const isShowMenu = ref<boolean>(false)
 const isShowDetail = ref<boolean>(false)
@@ -98,11 +102,19 @@ onMounted(() => {
         }
       })
     }
+  }).catch(err => {
+    if (err.toString().includes('请登录')) {
+      ElMessage({
+        message: '登录失效,请重新登录',
+        type: 'warning'
+      })
+      router.push({ path: '/login' })
+    }
   });
 
   // 接受信息--处理信息
   connection.on('RecvMsg', (res: any, error: any) => {
-    console.log('接受消息', res.data);
+    // console.log('接受消息', res.data);
     handleReaciveMsg(res.data)
   });
   // 监听链接断开
@@ -126,8 +138,6 @@ const handleReaciveMsg = (data: any) => {
     const newarr = oldMsg.filter((item: ImMsgChildType) => {
       return item.id !== data.id && item.msgBody !== data.msgBody && item.createTime !== data.createTime
     })
-    console.log('村上春树', oldMsg, data.msgBody, newarr);
-
     msgMap.value.set(sessionId + '_' + data.spaceId, [...newarr])
     return
   }
@@ -157,7 +167,7 @@ const submit = async (value: string) => {
 
 // 消息撤回
 const handleRecallMsg = (item: ImMsgChildType) => {
- item.id===myId&&connection.send('RecallMsg', { ids: [item.id] }).then(() => {
+  item.id === myId && connection.send('RecallMsg', { ids: [item.id] }).then(() => {
     console.log('撤回成功')
   })
 }
