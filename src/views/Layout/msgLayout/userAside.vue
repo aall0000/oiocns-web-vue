@@ -2,7 +2,7 @@
   <div class="tac">
     <el-menu
       router
-      style="width: 200px; height: calc(100vh - 70px)"
+      style="width: 200px; height: calc(100vh - 60px)"
       default-active="userMsg"
       class="el-menu-vertical-demo"
       @open="handleOpen"
@@ -52,10 +52,10 @@
           value: '安全设置',
           label: '/user/userSaveSet'
         },
-        {
-          value: '测试',
-          label: 'test'
-        }
+        // {
+        //   value: '测试',
+        //   label: 'test'
+        // }
       ]
     } else {
       menu.value = [
