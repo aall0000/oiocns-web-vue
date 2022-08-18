@@ -3,8 +3,8 @@
     <div class="pageHeader">
       <div class="title">单位信息</div>
     </div>
-    <div class="body">
-      <div class="bodyLeft">
+    <el-scrollbar class="scrollbar">
+      <div class="body">
         <el-form
           class="form1"
           :inline="true"
@@ -47,15 +47,6 @@
           <el-form-item label="联系方式">
             <el-input v-model="formLabelAlign.tel" />
           </el-form-item>
-          <!-- <el-form-item label="单位地址" prop="selectedOptions">
-            <el-cascader
-              style="width: 400px"
-              :options="options"
-              v-model="selectedOptions"
-              @change="handleChange"
-            >
-            </el-cascader>
-          </el-form-item> -->
         </el-form>
 
         <div class="button">
@@ -64,7 +55,7 @@
           <el-button type="primary">更新信息</el-button>
         </div>
       </div>
-    </div>
+    </el-scrollbar>
   </div>
 </template>
 
@@ -136,11 +127,11 @@
 <style lang="scss" scoped>
   .UnitMsg {
     height: calc(100vh - 235px);
-    background-color: #fff;
+    background-color: #eff0f4;
 
     .pageHeader {
       width: 100%;
-      height: 70px;
+      height: 10%;
       background-color: #fff;
       .header {
         margin-top: 20px;
@@ -153,21 +144,21 @@
         font-weight: 600;
       }
     }
-    .body {
-      height: 600px;
+    .scrollbar {
       width: 100%;
-      border-left: 10px solid #eff0f4;
-      border-top: 16px solid #eff0f4;
-      border-right: 16px solid #eff0f4;
-      display: flex;
-      .bodyLeft {
+      height: 90%;
+      .body {
         height: 100%;
         width: 100%;
+        background-color: #fff;
+        border-left: 10px solid #eff0f4;
+        border-top: 16px solid #eff0f4;
+        border-right: 16px solid #eff0f4;
 
         .form1 {
           width: 100%;
-          margin-left: 80px;
-          margin-top: 20px;
+          padding-left: 80px;
+          padding-top: 30px;
           font-weight: 600;
           .el-input {
             width: 400px;
@@ -178,18 +169,10 @@
         }
 
         .button {
-          margin-top: 150px;
+          margin-top: 30px;
           margin-left: 80px;
+          padding-bottom: 30px;
         }
-      }
-    }
-    .bottom {
-      height: calc(100vh - 760px);
-      background-color: #eff0f4;
-      display: flex;
-      .content {
-        margin: auto;
-        color: #aaa;
       }
     }
   }
