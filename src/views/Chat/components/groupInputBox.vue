@@ -60,9 +60,7 @@
     document.getElementById('insterHtml').innerHTML = ''
     // console.log('sss',document.getElementById('insterHtml').innerHTML);
   }
-  // const getImageUrl = (name: number) => {
-  //   return import.meta.globEager("@/assets/img.png")
-  // }
+ 
   const handleImgChoosed = (url: string) => {
     const img = document.createElement('img')
     img.src = url
