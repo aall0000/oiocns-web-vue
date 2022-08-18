@@ -16,25 +16,30 @@
                 " /></el-icon
           ></div>
         </div>
-        <div class="select-drop" :style="getDropMenuStyle">
-          <div
-            class="seletc-drop__box"
-            v-for="item in store.userCompanys"
-            :key="item.id"
-            @click="switchCompany(item)"
-          >
-            <div class="select-drop__flex">
-              <div class="select-item__imgSelect">
-                {{ item.team ? item.team.name.slice(0, 1) : item.name.slice(0, 1) }}
+        <div>
+          <div class="select-drop" :style="getDropMenuStyle">
+            <div class="select-box" v-infinite-scroll="load" infinite-scroll-immediate>
+              <div
+                class="seletc-drop__box"
+                v-for="item in store.userCompanys"
+                :key="item.id"
+                @click="switchCompany(item)"
+              >
+                <div class="select-drop__flex">
+                  <div class="select-item__imgSelect">
+                    {{ item.team ? item.team.name.slice(0, 1) : item.name.slice(0, 1) }}
+                  </div>
+                  <div class="select-item__titleSelect">{{
+                    item.team ? item.team.name : item.name
+                  }}</div>
+                </div>
               </div>
-              <div class="select-item__titleSelect">{{
-                item.team ? item.team.name : item.name
-              }}</div>
             </div>
-          </div>
-          <div class="joinBox">
-            <div class="joinBtn" @click="createCompany">创建单位</div>
-            <div class="joinBtn" @click="joinCompany">加入单位</div>
+
+            <div class="joinBox">
+              <div class="joinBtn" @click="createCompany">创建单位</div>
+              <div class="joinBtn" @click="joinCompany">加入单位</div>
+            </div>
           </div>
         </div>
       </div>
@@ -113,6 +118,11 @@
       @closeDialog="closeDialog"
       @switchCreateCompany="switchCreateCompany"
     ></CreateUnitDialog>
+    <JoinUnitDialog
+      v-if="item.key == 'join' && item.value"
+      :dialogShow="item"
+      @closeDialog="closeDialog"
+    ></JoinUnitDialog>
     <SearchDialog
       v-if="item.key == 'search' && item.value"
       :dialogShow="item"
@@ -123,6 +133,7 @@
 </template>
 
 <script lang="ts" setup>
+  import InfiniteScroll from 'element-plus'
   import { ref, watch, onMounted, reactive, computed } from 'vue'
   import { Search } from '@element-plus/icons-vue'
   import { storeToRefs } from 'pinia'
@@ -132,11 +143,13 @@
   import { ElMessage } from 'element-plus'
   import CreateUnitDialog from './createUnitDialog.vue'
   import SearchDialog from './searchDialog.vue'
+  import JoinUnitDialog from './joinUnitDialog.vue'
+  import { log } from 'console'
 
   const store = useUserStore()
   const SearchInfo = ref('')
   const router = useRouter()
-  let current = ref(0)
+  let current = ref(1)
   const visible = ref(false)
   const showSearch = ref(false)
   const btnType = ref(false)
@@ -154,12 +167,18 @@
   })
 
   const load = () => {
-    current.value++
-    store.getCompanyList(current.value, workspaceData.id, true)
+    let currentPage = 0
+    current.value = current.value + 1
+    currentPage = (current.value - 1) * 10 + 1
+    store.getCompanyList(currentPage, workspaceData.id, true)
   }
   const dialogShow = reactive([
     {
       key: 'unit',
+      value: false
+    },
+    {
+      key: 'join',
       value: false
     },
     {
@@ -188,8 +207,7 @@
   const onClickUnit = () => {
     btnType.value = !btnType.value
     if (store.userCompanys.length == 0) {
-      current.value = 0
-      store.getCompanyList(current.value, workspaceData.id, false)
+      store.getCompanyList(0, workspaceData.id, false)
     }
   }
   const handleClose = () => {
@@ -203,7 +221,14 @@
       }
     })
   }
-  const joinCompany = () => {}
+  const joinCompany = () => {
+    dialogShow.map((el) => {
+      if (el.key == 'join') {
+        el.value = true
+        btnType.value = false
+      }
+    })
+  }
   const closeDialog = (key: string) => {
     dialogShow.map((el) => {
       if (el.key == key) {
@@ -279,6 +304,12 @@
 </script>
 
 <style lang="scss" scoped>
+  .select-box {
+    overflow: auto;
+  }
+  .col-text {
+    white-space: nowrap;
+  }
   .seletc-drop__box {
     cursor: pointer;
     height: 40px;
