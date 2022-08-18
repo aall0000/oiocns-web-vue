@@ -30,10 +30,9 @@
         <el-table
           ref="diyTable"
           style="width: 100%; height: 100%"
-          height="'true'"
           class="table-row-sty"
           tooltip-effect="dark"
-          :header-cell-style="{'background:#F5F6FC;color:#333333;font-weight:bold;height:36px;padding:2px 0;'}"
+          :header-cell-style="getRowClass"
           :row-style="{ height: '44px' }"
           :cell-style="cellStyle"
           :data="tableData"
@@ -48,7 +47,6 @@
           @select-all="selectAll"
           @selection-change="handleSelectionChange"
           @cell-mouse-enter="handleMouseEnter"
-          @cell-dblclick="celldblclick"
           @sort-change="handleSortChange"
           @row-click="handleRowClick"
         >
@@ -57,15 +55,13 @@
             type="selection"
             :selectable="checkSelectable"
             width="50"
-            :class="tableData.saleStatus === 3 ? 'tableClass' : ''"
           >
           </el-table-column>
           <el-table-column
             v-if="options.order"
             type="index"
             label="序号"
-            width="50"
-            :class="tableData.saleStatus === 3 ? 'tableClass' : ''"
+            width="100"
           ></el-table-column>
           <template v-for="(item, index) in tableHead">
             <el-table-column
@@ -74,11 +70,11 @@
               v-bind="item"
               :sortable="item.sortable"
             >
-              <template slot-scope="scope">
+              <template #default="scope">
                 <div v-if="scope.row.saleStatus === 3 && item.name == 'operate'"></div>
                 <slot v-else :name="item.name" :row="scope.row" :index="scope.$index"></slot>
               </template>
-              <template slot="header" slot-scope="scope">
+              <template slot="header" #header="scope">
                 {{ scope.column.label }}
                 <template v-if="item.help">
                   <el-tooltip
@@ -90,15 +86,6 @@
                   >
                     <i class="el-icon-question"> </i>
                   </el-tooltip>
-                </template>
-                <template v-if="scope.column.label === '操作'"
-                  ><svg
-                    class="icon"
-                    aria-hidden="true"
-                    style="cursor: pointer; color: #606266; margin-left: 4px"
-                  >
-                    <use :xlink:href="'#icon-shezhibiaodan'"></use>
-                  </svg>
                 </template>
               </template>
             </el-table-column>
@@ -112,52 +99,88 @@
         </el-table>
       </div>
     </div>
+    <div class="diy-table__footer">
+      <div class="footer-buttons">
+        <slot name="footer-left"></slot>
+        <div class="footer-operate" v-if="batchOperate.length">
+          <el-dropdown @command="handleCommand" trigger="click">
+            <span class="el-dropdown-link">
+              批量操作
+              <i class="el-icon-arrow-down el-icon--right"></i>
+            </span>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item v-for="item in batchOperate" :command="item.key" :key="item.key">{{
+                item.value
+              }}</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
+        </div>
+      </div>
+      <div class="footer-pagination" v-if="!options.noPage">
+        <el-pagination
+          background
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+          v-bind="page"
+          :pager-count="5"
+          style="text-align: right; margin-top: 10px"
+        ></el-pagination>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-  const props = defineProps({
-    tableName: {
-      type: String,
-      default: ''
-    },
-    hasTableHead: {
-      type: Boolean,
-      default: true
-    },
-    hasTitle: {
-      type: Boolean,
-      default: true
-    },
-    hasTabs: {
-      type: Boolean,
-      default: false
-    },
-    tableHead: {
-      type: Array,
-      default: () => []
-    },
-    tableData: {
-      type: Array,
-      default: () => []
-    },
+  import { stubFalse } from 'lodash'
+  import { ref, reactive, toRefs, computed } from 'vue'
+  import { useUserStore } from '@/store/user'
+
+  const store = useUserStore()
+
+  interface User {
+    id: number
+    date: string
+    name: string
+    hasChildren?: boolean
+    children?: User[]
+  }
+  type Props = {
+    tableName: string
+    hasTableHead: boolean
+    hasTitle: boolean
+    hasTabs: boolean
+    tableHead: any[]
+    tableData: any[]
     options: {
-      type: Object,
-      default: () => {}
-    },
-    batchOperate: {
-      type: Array,
-      default: () => []
-    },
-    queryParams: {
-      type: Array,
-      default: () => []
-    },
-    cell: {
-      type: Boolean,
-      default: false
+      expandAll: boolean
+      checkBox: any
+      order: any
+      noPage: boolean
     }
+    batchOperate: any[]
+    queryParams: any[]
+    cell: boolean
+  }
+  const props = withDefaults(defineProps<Props>(), {
+    tableName: '',
+    hasTableHead: true,
+    hasTitle: true,
+    hasTabs: false,
+    tableHead: () => [],
+    tableData: () => [],
+    options: () => {
+      return {
+        expandAll: false,
+        checkBox: false,
+        order: true,
+        noPage: false
+      }
+    },
+    batchOperate: () => [],
+    queryParams: () => [],
+    cell: false
   })
+
   const {
     tableName,
     hasTableHead,
@@ -169,17 +192,198 @@
     batchOperate,
     queryParams,
     cell
-  } = props
+  } = toRefs(props)
 
+  const handleCurrent: any = computed(() => {
+    return (state.page.currentPage - 1) * state.page.pageSize + 1
+  })
+
+  const state = reactive({
+    loading: true,
+    multipleSelection: [], //多选
+    //分页信息
+    page: {
+      total: 0, // 总条数
+      currentPage: 1, // 当前页
+      current: handleCurrent, // 返回给接口的当前页数
+      pageSize: 20, // 每页条数
+      pageSizes: [20, 30, 50], // 分页数量列表
+      layout: 'total, prev, pager, next, sizes'
+    },
+    isAllSelect: false
+  })
+
+  defineExpose({
+    state
+  })
+
+  const { loading, multipleSelection, page, isAllSelect } = toRefs(state)
+
+  const diyTable = ref(null)
+
+  const emit = defineEmits([
+    'handleLazyTree',
+    'handleCommand',
+    'hideDrop',
+    'handleSortChange',
+    'handleRowClick',
+    'handleUpdate'
+  ])
+
+  const cellStyle = ({
+    row,
+    column,
+    rowIndex,
+    columnIndex
+  }: {
+    row: any
+    column: any
+    rowIndex: number
+    columnIndex: number
+  }) => {
+    if (row.saleStatus === 3) {
+      return {
+        backgroundColor: 'rgb(245, 246, 252)',
+        cursor: 'no-drop',
+        color: 'gainsboro'
+      }
+    } else {
+      return { padding: '0px' }
+    }
+  }
+  const loadNode = (row: User, treeNode: unknown, resolve: (date: User[]) => void) => {
+    emit('handleLazyTree', row, (res: any) => {
+      res.forEach((el: any) => {
+        checkSelectable(el)
+      })
+      resolve(res)
+    })
+  }
+
+  const checkSelectable = (row: any) => {
+    if (row.children && !row.below) {
+      if (row.children.length !== 0) {
+        return false
+      } else {
+        return true
+      }
+    } else if (row.below == true) {
+      return false
+    } else if (row.saleStatus === 3) {
+      return false
+    } else {
+      return true
+    }
+  }
+
+  const handleSelectionChange = (val: any) => {
+    multipleSelection.value = val
+  }
+
+  /**
+   * el-pagination 分页配置
+   */
+  const handleSizeChange = (val: any) => {
+    diyTable.value.clearSelection()
+    isAllSelect.value = true
+    selectAll(false, false)
+    page.value.pageSize = val
+    page.value.currentPage = 1
+    emit('handleUpdate')
+  }
+  const handleCurrentChange = (val: any) => {
+    diyTable.value.clearSelection()
+    isAllSelect.value = true
+    selectAll(false, false)
+    page.value.currentPage = val
+    emit('handleUpdate')
+  }
+
+  /**
+   * 鼠标进入表格是隐藏groupselect的drop
+   */
+  const handleMouseEnter = () => {
+    emit('hideDrop')
+  }
+
+  const handleRowClick = (row: any) => {
+    emit('handleRowClick', row)
+  }
+
+  /**
+   * 表头排序
+   */
+  const handleSortChange = (e: any) => {
+    emit('handleSortChange', e)
+  }
+
+  /**
+   * handleCommand 批量操作
+   */
+  const handleCommand = (command: any) => {
+    emit('handleCommand', command)
+  }
+  /**
+   * 初始化页码
+   */
+  const initPage = () => {
+    page.value.currentPage = 1
+  }
   /**
    * el-table 表格配置
    */
   //配置表头背景
-  const getRowClass = ({ row: any, column: any, rowIndex: number, columnIndex: number }) => {
+  const getRowClass = ({
+    row,
+    column,
+    rowIndex,
+    columnIndex
+  }: {
+    row: any
+    column: any
+    rowIndex: number
+    columnIndex: number
+  }) => {
     if (rowIndex === 0) {
-      return 'background:#F5F6FC;color:#333333;font-weight:bold;height:36px;padding:2px 0;'
+      return {
+        background: '#F5F6FC',
+        color: '#333333',
+        height: '36px',
+        padding: '2px 0'
+      }
     } else {
-      return ''
+      return {}
+    }
+  }
+  /**
+   * 全选事件
+   */
+  const selectAll = (selection: any, first: any) => {
+    if (!first) {
+      isAllSelect.value = !isAllSelect
+    }
+    if (isAllSelect) {
+      if (selection) {
+        selection.map((el: any) => {
+          if (el.children) {
+            el.children.map((j: any) => {
+              toggleSelection(j, isAllSelect)
+            })
+            if (el.children.length > 0) {
+              selectAll(el.children, true)
+            }
+          }
+        })
+      }
+    } else {
+      diyTable.value.clearSelection()
+    }
+  }
+  const toggleSelection = (rows: any, select: any) => {
+    if (select) {
+      diyTable.value.toggleRowSelection(rows, select)
+    } else {
+      diyTable.value.clearSelection()
     }
   }
 </script>
@@ -294,7 +498,7 @@
         }
         & :deep(.el-pagination__sizes .el-input__inner) {
           border-radius: 16px;
-          background: rgba(231, 239, 252, 1);
+          // background: rgba(231, 239, 252, 1);
           border-color: transparent;
         }
       }

@@ -32,7 +32,10 @@
               }}</div>
             </div>
           </div>
-          <div class="joinBtn" @click="createCompany">+ 创建企业/单位/组织</div>
+          <div class="joinBox">
+            <div class="joinBtn" @click="createCompany">创建单位</div>
+            <div class="joinBtn" @click="joinCompany">加入单位</div>
+          </div>
         </div>
       </div>
 
@@ -196,10 +199,11 @@
     dialogShow.map((el) => {
       if (el.key == 'unit') {
         el.value = true
-        dropdown.value.handleClose()
+        btnType.value = false
       }
     })
   }
+  const joinCompany = () => {}
   const closeDialog = (key: string) => {
     dialogShow.map((el) => {
       if (el.key == key) {
@@ -329,17 +333,20 @@
   :deep(.el-popover.el-popper) {
     width: 100%;
   }
+  .joinBox {
+    display: flex;
+  }
   .joinBtn {
     margin: 10px;
     display: flex;
-    height: 40px;
+    height: 30px;
     background: #ffffff;
     border-radius: 2px;
-    border-top: 1px solid #d9d9d9;
+    border: 1px solid #d9d9d9;
     text-align: center;
     align-items: center;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 12px;
     padding: 10px;
     color: rgba(0, 0, 0, 0.65);
     &:hover {
