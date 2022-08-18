@@ -42,13 +42,13 @@
               <div style="height: 100%; overflow: hidden">
                 <TheSandBox
                   v-if="items.type == 'iframe'"
-                  :cover="true"
+                  :cover="false"
                   :containLink="items.contain_link"
                   :type="items.type"
                 ></TheSandBox>
                 <TheComponentList
                   v-else
-                  :cover="true"
+                  :cover="false"
                   :containLink="items.contain_link"
                   :type="items.type"
                 ></TheComponentList>
@@ -167,7 +167,7 @@
 
 <style lang="scss" scoped>
   :deep(.el-tabs) {
-    height: calc(100% - 40px);
+    height: 100%;
   }
   :deep(.el-tabs__content) {
     height: 100%;
@@ -196,6 +196,8 @@
     border: unset;
   }
   :deep(.el-tabs__content) {
+    overflow: auto;
+    height: calc(100vh - 102px);
     background-color: rgb(241, 241, 248);
     clear: both;
   }

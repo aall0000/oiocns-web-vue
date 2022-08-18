@@ -1,18 +1,20 @@
 <template>
-  <ul class="group-content-wrap" ref="nodeRef">
+  <ul class="group-content-wrap" ref="nodeRef" @scroll="scrollEvent">
     <!-- <li class="history-more" @click="getMoreHistory">查看更多</li> -->
-    <template v-for="(item, index) in showList">
+    <template v-for="(item, index) in list">
       <li class="group-content-left con" v-if="item.fromId !== myId">
         <!-- <img class="con-img" src="@/assets/img/userIcon/ic_03.png" alt=""> -->
         <HeadImg :name="getUserName(item.fromId)" />
         <div class="con-content">
-          <span class="con-content-name">{{ getUserName(item.fromId) }}</span>
+          <span v-if="showName" class="con-content-name">{{ getUserName(item.fromId) }}</span>
+          <div class="con-content-link"></div>
           <div class="con-content-txt" v-html="item.msgBody"></div>
         </div>
       </li>
       <li class="group-content-right con" v-else>
         <div class="con-content">
-          <span class="con-content-name">{{ getUserName(item.fromId) }}</span>
+          <span v-if="showName" class="con-content-name">{{ getUserName(item.fromId) }}</span>
+          <div class="con-content-link"></div>
           <div class="con-content-txt" v-html="item.msgBody">
           </div>
           <!-- {{ item.msgBody }} -->
@@ -34,29 +36,24 @@ import HeadImg from './headImg.vue'
 type Props = {
   list: any[],//消息列表
   myId: string,//使用者id
+  showName: boolean,
 }
 const props = defineProps<Props>()
-const { list, myId } = toRefs(props)
+const { list, myId, showName } = toRefs(props)
 
-const { getUserName } = useUserStore()
+const { getUserName, userNameMap } = useUserStore()
+console.log('userNameMap', userNameMap);
 
-const showList = computed(() => {
-  const arr: any[] = props.list?.map((item: any) => {
-    // console.log('item', item.msgBody);
-    // let word = item.msgBody.replace(/\[|\;/gi, '')
-    item.msgBody = natchMsg(item.msgBody)
 
-    return item
-  })
-  // console.log('arr',arr);
+// const showList = computed(() => {
+//   const arr: any[] = props.list?.map((item: any) => {
+//     // console.log('item', item.msgBody);
+//     // let word = item.msgBody.replace(/\[|\;/gi, '')
 
-  return arr
-})
-const natchMsg = (str: string) => {
-  let newStr = str;
-  let span = `<span class='qqface qqface1 small'></span>`
-  return str.replaceAll('啤酒', span);
-}
+//     return item
+//   })
+//   return arr
+// })
 // dom节点
 const nodeRef = ref(null)
 // 事件viewMoreMsg--查看更多
@@ -72,26 +69,19 @@ const getMoreHistory = () => {
 // 实时滚动条高度
 const scrollTop = debounce(() => {
   let scroll = nodeRef.value.scrollTop;
-  if (scroll === 0) {
-    emit('viewMoreMsg')
+  if (scroll < 10) {
+    emit('viewMoreMsg', true)
   }
   console.log('监听滚动', nodeRef.value.scrollHeight);
+  // 记录当前滚动位置
   scrollOfZeroToEnd.value = nodeRef.value.scrollHeight - nodeRef.value.scrollTop
-}, 100)
+}, 200)
 
-onMounted(() => {
-  // 添加监听滚动条位置
-  window.addEventListener('scroll', scrollTop, true)
-})
-//移除事件
-onUnmounted(() => {
-  window.removeEventListener('scroll', scrollTop, true)
-})
 
 // 滚动设置到底部
 const goPageEnd = () => {
   nextTick(() => {
-    console.log('滚动底部', nodeRef.value.scrollHeight);
+    // console.log('滚动底部', nodeRef.value.scrollHeight);
     nodeRef.value.scrollTop = nodeRef.value.scrollHeight
   });
 }
@@ -100,6 +90,10 @@ const keepScrollPos = () => {
   nextTick(() => {
     nodeRef.value.scrollTop = nodeRef.value.scrollHeight - scrollOfZeroToEnd.value
   })
+}
+
+const scrollEvent = () => {
+  scrollTop(nodeRef.value.scrollTop)
 }
 // 暴露子组件方法
 defineExpose({
@@ -111,7 +105,7 @@ defineExpose({
 <style lang="scss" scoped>
 .group-content-wrap {
   padding: 20px;
-  background-color: #F5F5F5;
+  background-color: #f0f2f5;
   transition: all .7s;
 
   .user-head-img-wrap {
@@ -127,13 +121,7 @@ defineExpose({
   .con {
     display: flex;
     // align-items: center;
-    margin-top: 10px;
-
-    .emoji {
-      width: 20px;
-      height: 20px;
-      margin: -5px 2px;
-    }
+    margin: 10px 0;
 
     &-img {
       height: 35px;
@@ -150,11 +138,28 @@ defineExpose({
 
       &-txt {
         min-height: 30px;
-        padding: 5px;
+        padding: 10px;
         margin: 0 10px;
-        color: #fff;
-        background-color: #409eff;
-        border-radius: 4px;
+        color: black;
+        background-color: white;
+        border-radius: 5px;
+        z-index: 1;
+      }
+
+      &-link {
+        width: 15px;
+        height: 15px;
+        display: inline-block;
+        border-color: transparent;
+        border-style: solid;
+        border-width: 2px;
+        position: relative;
+        top: 25px;
+        -moz-transform: rotate(45deg);
+        -webkit-transform: rotate(45deg);
+        -o-transform: rotate(45deg);
+        transform: rotate(45deg);
+        z-index: 0;
       }
     }
 
@@ -164,6 +169,17 @@ defineExpose({
     .con-content {
       display: flex;
       flex-direction: column;
+      justify-content: flex-end;
+
+      &-link {
+        margin-left: 7px;
+        background-color: white;
+        box-shadow: -1px 1px 6px 2px rgb(229 229 229);
+      }
+
+      &-txt{
+        box-shadow: 0 0 5px 5px #e5e5e580;
+      }
     }
   }
 
@@ -177,9 +193,15 @@ defineExpose({
       justify-content: flex-end;
       align-items: flex-end;
 
+      &-link {
+        margin-right: 7px;
+        background-color: #a2ddff;
+      }
+
       &-txt {
         text-align: left;
-
+        background-color: #a2ddff;
+        box-shadow: 0 0 3px 3px #e5e5e580;
       }
     }
   }

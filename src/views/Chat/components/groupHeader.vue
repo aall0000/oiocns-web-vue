@@ -5,7 +5,7 @@
       <li class="user-info">
         <div class="user-info-top flex">
           <p class="user-info-top-name">{{ info.detail.name }}</p>
-          <el-tag size="small">标签</el-tag>
+          <el-tag size="small">{{info.detail.label}}</el-tag>
         </div>
         <div class="user-info-num" v-show="info.total">
           <el-icon>
@@ -49,7 +49,7 @@ const handleMoreFun = () => {
 const dialogVisible = ref(false)
 const handleAddFun = () => {
   // emit('addUserOrCohort')
-  console.log('测试', info.detail);
+  // console.log('测试', info.detail);
 
   dialogVisible.value = true
 }

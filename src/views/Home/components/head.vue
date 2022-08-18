@@ -10,10 +10,19 @@
     </div>
     <div class="header-right">
       <div class="header-right-box">
-        <div class="header-right-top">项目数</div>
-        <div class="header-right-btm">0</div>
+        <div class="header-right-top">审核</div>
+        <div class="header-right-btm" @click="jumpApproval('1')" style="color:#589ef8">
+            {{approvalNum}}
+        </div>
       </div>
       <div class="divide"></div>
+      <div class="header-right-box">
+        <div class="header-right-top">申请</div>
+        <div class="header-right-btm" @click="jumpApproval('2')" style="color:#589ef8">
+            {{applyNum}}
+        </div>
+      </div>
+      <!-- <div class="divide"></div>
       <div class="header-right-box">
         <div class="header-right-top">团队内排名</div>
         <div class="header-right-btm">
@@ -25,7 +34,7 @@
       <div class="header-right-box">
         <div class="header-right-top">项目访问</div>
         <div class="header-right-btm">0</div>
-      </div>
+      </div> -->
     </div>
   </div>
 </template>
@@ -33,7 +42,9 @@
 <script lang="ts" setup>
 import { useUserStore } from '@/store/user'
 import { storeToRefs } from 'pinia'
-import { computed } from 'vue'
+import { computed ,ref,onMounted } from 'vue'
+import $services from '@/services'
+import { useRoute, useRouter } from 'vue-router'
 const store = useUserStore()
 const { queryInfo } = storeToRefs(store)
 
@@ -68,6 +79,42 @@ const getTime = computed(() => {
   min = min < 10 ? '0' + min : min //小于10补0
   return y + '-' + m + '-' + d + ' ' + h + ':' + min //返回时间形式yyyy-mm-dd
 })
+const approvalNum = ref<number>(0)
+const applyNum = ref<number>(0)
+onMounted(() => {
+  getNum()
+})
+const getNum = ()=>{
+ $services.person
+  .getAllApproval({
+    data: {
+      offset:0,
+      limit:100
+    }
+  })
+  .then((res: ResultType) => {
+    if (res.data.total) {
+      console.log(' res.data.total', res.data.total)
+      approvalNum.value = res.data.total
+    }
+  })
+  $services.person
+  .getAllApply({
+    data: {
+      offset: 0,
+      limit: 10
+    }
+  })
+  .then((res: ResultType) => {
+  if (res.data.total) {
+      applyNum.value = res.data.total
+    }
+  })
+}
+const router = useRouter()
+const jumpApproval = (type:string)=>{
+ router.push({ path: '/cardDetail' ,query: {type:type}})
+}
 </script>
 
 <style lang='scss' scoped>

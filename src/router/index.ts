@@ -100,11 +100,11 @@ const mainRouter: RouteRecordRaw[] = [
         }
       },
       {
-        path: '/organization/groupMaintenance',
-        name: 'groupMaintenance',
-        component: () => import('@/views/Organization/groupMaintenance.vue'),
+        path: '/organization/companyList',
+        name: 'companyList',
+        component: () => import('@/views/Organization/companyList.vue'),
         meta: {
-          title: '集团维护'
+          title: '单位维护'
         }
       }
     ]

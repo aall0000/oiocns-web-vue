@@ -55,17 +55,20 @@
           <!-- <el-table-column prop="date" label="链接" /> -->
           <el-table-column prop="status" label="状态">
             <template #default="scope">
-              <div v-if="scope.row.status === 200">已拒绝</div>
+              <div v-if="scope.row.status === 200">待批</div>
               <div v-else>待批</div>
             </template>
           </el-table-column>
-          <el-table-column prop="target.updateTime" sortable label="发送时间" width="180" />
+          <el-table-column prop="target.updateTime" sortable label="发送时间" width="220" />
           <el-table-column prop="date" label="操作" width="180">
             <template #default="scope">
-              <div v-if="scope.row.status === 200"></div>
-              <div v-else>
-                <span style="margin-right: 10px" @click="joinSuccess(scope.row)">完成</span>
+              <!-- <div v-if="scope.row.status === 200"></div> -->
+              <div v-if="activeIndex=='1'">
+                <span style="margin-right: 10px" @click="joinSuccess(scope.row)">通过</span>
                 <span @click="joinRefse(scope.row)">拒绝</span>
+              </div>
+              <div v-else>
+                <span @click="cancelJoin(scope.row)">取消申请</span>
               </div>
             </template>
           </el-table-column>
@@ -84,6 +87,7 @@
   import { ElMessage } from 'element-plus'
   import { storeToRefs } from 'pinia'
   import { useUserStore } from '@/store/user'
+  import {useRouter} from "vue-router"
   const store = useUserStore()
   const { workspaceData } = storeToRefs(store)
   var tableData = ref<any>([])
@@ -134,6 +138,25 @@
         }
       })
   }
+  var cancelJoin = (item: { id: '' }) => {
+    $services.person
+      .cancelJoin({
+        data: {
+          id: item.id
+        }
+      })
+      .then((res: ResultType) => {
+        ElMessage({
+          message: '取消成功',
+          type: 'success'
+        })
+        if(activeIndex.value === '1'){
+          getList()
+        }else{
+          getApplyList()
+        }
+      })
+  }
   var joinSuccess = (item: { id: '' }) => {
     $services.person
       .joinSuccess({
@@ -158,14 +181,22 @@
   }
   const handleSelect = (key: any, keyPath: string[]) => {
     activeIndex.value = key
-    if(key ===1){
+    if(key === '1'){
       getList()
     }else{
       getApplyList()
     }
   }
   onMounted(() => {
-    getList()
+    const route = useRouter()
+    const selectType = route.currentRoute.value.query.type;
+    if(selectType == '1'){
+      activeIndex.value='1'
+      getList()
+    }else{
+      activeIndex.value='2'
+      getApplyList()
+    }
   })
 
   var filterHandler = () => {}
