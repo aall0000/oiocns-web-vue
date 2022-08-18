@@ -6,19 +6,17 @@ type QueryInfoType = {
   id: string
   [key: string]: any
 }
-type UnitInfoType={
+type UnitInfoType = {
   id: string
-  typeName:string
-  thingId:string
+  typeName: string
+  thingId: string
   [key: string]: any
-
 }
-
 
 type UserStoreType = {
   userInfo: any
   queryInfo: QueryInfoType
-  userUnitInfo:UnitInfoType
+  userUnitInfo: UnitInfoType
   [key: string]: any
 }
 
@@ -33,7 +31,7 @@ export const useUserStore = defineStore({
       userToken: '' || sessionStorage.getItem('TOKEN'),
       workspaceData: {}, // 当前选中的公司
       userNameMap: new Map(),
-      userUnitInfo:{} as UnitInfoType,//所在单位信息
+      userUnitInfo: {} as UnitInfoType //所在单位信息
     }
   },
   persist: {
@@ -42,7 +40,10 @@ export const useUserStore = defineStore({
     strategies: [
       // 指定存储的位置以及存储的变量都有哪些，该属性可以不写，
       //在不写的情况下，默认存储到 sessionStorage 里面,默认存储 state 里面的所有数据。
-      { storage: sessionStorage, paths: ['userInfo', 'queryInfo', 'userToken', 'workspaceData','userUnitInfo'] }
+      {
+        storage: sessionStorage,
+        paths: ['userInfo', 'queryInfo', 'userToken', 'workspaceData', 'userUnitInfo']
+      }
       // paths 是一个数组，如果写了 就会只存储 包含的 变量，当然也可以写多个。
     ]
   },
@@ -91,7 +92,7 @@ export const useUserStore = defineStore({
           if (!token) {
             this.getCompanyList(0)
           }
-          console.log('搜索',res.data);
+          console.log('搜索', res.data)
           this.setUserNameMap(res.data.id, res.data.name)
         } else {
           ElMessage({
@@ -112,10 +113,15 @@ export const useUserStore = defineStore({
         .then((res: ResultType) => {
           console.log(res)
           if (res.code == 200) {
-            this.userCompanys = [{
-              id: this.userInfo.workspaceId,
-              name: this.userInfo.workspaceName
-            }, ...(res.data.result || [])]
+            if (lazyLoad) {
+              this.userCompanys = this.userCompanys.concat(res.data.result || [])
+            } else {
+              this.userCompanys = res.data.result
+            }
+            // this.userCompanys = [{
+            //   id: this.userInfo.workspaceId,
+            //   name: this.userInfo.workspaceName
+            // }, ...(res.data.result || [])]
             this.copyCompanys = JSON.parse(JSON.stringify(this.userCompanys))
             if (workspaceId) {
               this.getWorkspaceData(workspaceId)
