@@ -48,11 +48,41 @@
               style="width: 100%"
             >
               <el-option
+                style="height: 50px"
                 v-for="item in options"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value"
-              />
+              >
+                <div
+                  style="
+                    height: 50px;
+                    display: flex;
+                    justify-content: flex-start;
+                    align-items: center;
+                    border-bottom: 1px solid #f0f2f5;
+                  "
+                >
+                  <div style="height: 50px; margin-top: 5px">
+                    <headImg
+                      :name="item.name.slice(0, 1)"
+                      style="transform: scale(0.7, 0.7); border-radius: 50px; font-size: 19px"
+                    ></headImg>
+                  </div>
+                  <div style="height: 50px; margin-bottom: 5px">
+                    <p
+                      style="
+                        height: 25px;
+                        font-weight: 600;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                      "
+                      >{{ item.label }}({{ item.name }})</p
+                    >
+                    <p style="height: 25px; color: #ccc">{{ item.remark }}</p>
+                  </div>
+                </div>
+              </el-option>
             </el-select>
             <template #footer>
               <span class="dialog-footer">
@@ -74,7 +104,7 @@
   import { useUserStore } from '@/store/user'
   import type { TabsPaneContext } from 'element-plus'
   import { ElMessage } from 'element-plus'
-
+  import headImg from '@/views/Chat/components/headImg.vue'
   const activeName = ref('1')
   //tab切换
   const handleClick = (tab: TabsPaneContext, event: Event) => {
@@ -118,6 +148,8 @@
   interface ListItem {
     value: string
     label: string
+    remark: string
+    name: string
   }
   const addCompany = ref<boolean>(false)
   const options = ref<ListItem[]>([])
@@ -134,42 +166,43 @@
           }
         })
         .then((res: ResultType) => {
-            if (res.data.result) {
-              let states = res.data.result
-              let arr: { value: any; label: any }[] = []
-              states.forEach((el: any) => {
-                let obj = {
-                  value: el.id,
-                  label: el.name
-                }
-                arr.push(obj)
-              })
-              options.value = arr
-              loading.value = false
-            } else {
-              options.value = []
-              loading.value = false
-            }
+          if (res.data.result) {
+            let states = res.data.result
+            let arr: { value: any; label: any; remark: any; name: any }[] = []
+            states.forEach((el: any) => {
+              let obj = {
+                value: el.id,
+                label: el.name,
+                remark: el.team.remark,
+                name: el.team.name
+              }
+              arr.push(obj)
+            })
+            options.value = arr
+            loading.value = false
+          } else {
+            options.value = []
+            loading.value = false
+          }
         })
     } else {
       options.value = []
     }
   }
   const addCompanyFun = () => {
-      $services.company
-        .applyJoin({
-          data: {
-            id:value.value
-          }
+    $services.company
+      .applyJoin({
+        data: {
+          id: value.value
+        }
+      })
+      .then((res: ResultType) => {
+        ElMessage({
+          message: '申请成功',
+          type: 'warning'
         })
-        .then((res: ResultType) => {
-            ElMessage({
-              message: '申请成功',
-              type: 'warning'
-            })
-            addCompany.value = false
-
-        })
+        addCompany.value = false
+      })
   }
 </script>
 <style lang="scss" scoped>

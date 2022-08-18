@@ -54,13 +54,32 @@
         :placeholder="personType == '1' ? '请输入要查找的好友名' : '请输入要查找的群'"
         :remote-method="remoteMethod"
         :loading="loading"
+        class="select"
       >
-        <el-option
-          v-for="item in options"
-          :key="item.value"
-          :label="item.label"
-          :value="item.value"
-        />
+        <el-option v-for="item in options" :key="item.name" :value="item.name" style="height: 50px">
+          <div
+            style="
+              height: 50px;
+              display: flex;
+              justify-content: flex-start;
+              align-items: center;
+              border-bottom: 1px solid #f0f2f5;
+            "
+          >
+            <div style="height: 50px; margin-top: 5px">
+              <headImg
+                :name="item.name.slice(0, 1)"
+                style="transform: scale(0.7, 0.7); border-radius: 50px; font-size: 19px"
+              ></headImg>
+            </div>
+            <div style="height: 50px; margin-bottom: 5px">
+              <p style="height: 25px; font-weight: 600; overflow: hidden; text-overflow: ellipsis"
+                >{{ item.label }}({{ item.name }})</p
+              >
+              <p style="height: 25px; color: #ccc">{{ item.remark }}</p>
+            </div>
+          </div>
+        </el-option>
       </el-select>
       <template #footer>
         <span class="dialog-footer">
@@ -95,7 +114,7 @@
   import { storeToRefs } from 'pinia'
   import { ElMessage } from 'element-plus'
   import { useRouter } from 'vue-router'
-
+  import headImg from '@/views/Chat/components/headImg.vue'
   const store = useUserStore()
   const router = useRouter()
   const { queryInfo } = storeToRefs(store)
@@ -279,6 +298,8 @@
   interface ListItem {
     value: string
     label: string
+    remark: string
+    name: string
   }
   const options = ref<ListItem[]>([])
   const value = ref('')
@@ -298,14 +319,17 @@
           })
           .then((res: ResultType) => {
             if (res.code == 200) {
-              let arr: { value: any; label: any }[] = []
+              let arr: { value: any; label: any; remark: any; name: any }[] = []
               console.log(res.data.result != undefined, res.data.result)
               if (res.data.result != undefined) {
                 let states = res.data.result
+
                 states.forEach((el: any) => {
                   let obj = {
                     value: el.id,
-                    label: el.name
+                    label: el.name,
+                    remark: el.team.remark,
+                    name: el.team.name
                   }
                   arr.push(obj)
                 })
@@ -333,13 +357,15 @@
           })
           .then((res: ResultType) => {
             if (res.code == 200) {
-              let arr: { value: any; label: any }[] = []
+              let arr: { value: any; label: any; remark: any; name: any }[] = []
               if (res.data.result != undefined) {
                 let states = res.data.result
                 states.forEach((el: any) => {
                   let obj = {
                     value: el.id,
-                    label: el.name
+                    label: el.name,
+                    remark: el.team.remark,
+                    name: el.team.name
                   }
                   arr.push(obj)
                 })
@@ -395,6 +421,9 @@
         font-size: 14px;
         font-weight: bold;
       }
+    }
+    .select {
+      width: 100%;
     }
   }
 </style>

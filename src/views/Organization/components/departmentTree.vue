@@ -189,7 +189,7 @@
     treeRef.value!.filter(val)
   })
   // 树节点搜索
-  const filterNode = (value: string, data: Tree) => {
+  const filterNode = (value: string, data: any) => {
     if (!value) return true
     return data.label.includes(value)
   }
