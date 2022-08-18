@@ -11,8 +11,8 @@
             @click="handleOpenSpace(item.id)"><span>{{ item.name }}({{
                 item?.chats?.length ?? 0
             }}) </span></div>
-          <div :class="['con-body',props.active.spaceId===item.id&&props.active.id === child.id ? 'active' : '']" v-for="child in item.chats"
-            :key="child.id" v-show="openIdArr.includes(item.id)"
+          <div :class="['con-body', props.active.spaceId === item.id && props.active.id === child.id ? 'active' : '']"
+            v-for="child in item.chats" :key="child.id" v-show="openIdArr.includes(item.id)"
             @contextmenu.prevent.stop="(e: MouseEvent) => handleContextClick(e, child)">
             <HeadImg :name="child.name" />
             <div class="group-con-dot" v-show="child.count > 0">
@@ -58,15 +58,15 @@ type propType = {
 const props = defineProps<propType>()
 // 会话列表搜索关键字
 const searchValue = ref<string>('')
-watch(() => props.active, () => {
-  console.log('监听', props.active);
 
-})
+// 是否已加载--判断是否需要默认打开
+const isMounted = ref<boolean>(false)
 
 //根据搜索条件-输出展示列表
 const showList = computed((): ImMsgType[] => {
   let showInfoArr = props.sessionList
   // console.log('展示顺序', props.sessionList);
+
   // 数据过滤 搜索关键词是否 在 列表名称 或 显示信息里
   if (searchValue.value) {
     showInfoArr = showInfoArr.map((child: ImMsgType) => {
@@ -77,6 +77,10 @@ const showList = computed((): ImMsgType[] => {
         })
       }
     })
+  }
+  if (!isMounted.value && openIdArr.value.length === 0 && showInfoArr.length > 0) {
+    openIdArr.value.push(showInfoArr[0].id)
+    isMounted.value = true
   }
   return showInfoArr
 })
@@ -255,10 +259,12 @@ const handleContextChange = (item: MenuItemType) => {
         padding: 10px;
         border-radius: 6px;
 
-        &:hover,&.active {
+        &:hover,
+        &.active {
           // color: #409eff;
           background-color: #f4f4f4;
         }
+
         border-bottom: 1px solid #e8e8e8;
       }
 

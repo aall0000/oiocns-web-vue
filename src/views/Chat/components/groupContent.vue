@@ -24,11 +24,18 @@
         <HeadImg :name="getUserName(myId)" />
       </li>
     </template>
+    <!-- 鼠标右键 -->
+      <ul class="context-text-wrap" v-show="mousePosition.isShowContext"
+        :style="{ left: `${mousePosition.left}px`, top: `${mousePosition.top}px` }">
+        <li class="context-menu-item" v-for="item in menuList" :key="item.value" @click="handleContextChange(item)">{{
+            item.label
+        }}</li>
+      </ul>
   </ul>
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref, nextTick, onUnmounted, computed, watch, toRefs } from 'vue';
+import { onMounted, ref, nextTick, onUnmounted, computed, watch, toRefs, reactive } from 'vue';
 import { debounce } from '@/utils/tools'
 import { useUserStore } from "@/store/user"
 import HeadImg from './headImg.vue'
@@ -42,8 +49,6 @@ const props = defineProps<Props>()
 const { list, myId, showName } = toRefs(props)
 
 const { getUserName, userNameMap } = useUserStore()
-console.log('userNameMap', userNameMap);
-
 
 // const showList = computed(() => {
 //   const arr: any[] = props.list?.map((item: any) => {
@@ -94,6 +99,45 @@ const keepScrollPos = () => {
 
 const scrollEvent = () => {
   scrollTop(nodeRef.value.scrollTop)
+}
+type MenuItemType = { value: number, label: string };
+const menuList: MenuItemType[] = [
+  { value: 1, label: '撤销' },
+  { value: 2, label: '删除' },
+  // { value: 3, label: '个人信息' },
+  // { value: 4, label: '消息免打扰' },
+]
+// 鼠标右键事件
+const mousePosition: { left: number, top: number, isShowContext: boolean, selectedItem: ImMsgChildType } = reactive({ left: 0, top: 0, isShowContext: false, selectedItem: {} as ImMsgChildType })
+const handleContextClick = (e: MouseEvent, item: ImMsgChildType) => {
+  if (!item) {
+    return
+  }
+  mousePosition.left = e.pageX
+  mousePosition.top = e.pageY
+  mousePosition.isShowContext = true
+  mousePosition.selectedItem = item
+}
+// 右键菜单点击
+const handleContextChange = (item: MenuItemType) => {
+  console.log('右键菜单点击', item, mousePosition.selectedItem);
+  switch (item.value) {
+    case 1:
+
+      break;
+    case 2:
+      // props.clearHistoryMsg()
+      break;
+    case 3:
+
+      break;
+    case 4:
+
+      break;
+
+    default:
+      break;
+  }
 }
 // 暴露子组件方法
 defineExpose({

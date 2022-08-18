@@ -103,7 +103,7 @@ onMounted(() => {
   // 接受信息--处理信息
   connection.on('RecvMsg', (res: any, error: any) => {
     const { data } = res
-    console.log('接受消息', data, error);
+    // console.log('接受消息', data, error);
     let sessionId = data.toId
     if (data.typeName === "人员"
       && data.fromId !== myId
