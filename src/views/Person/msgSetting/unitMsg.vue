@@ -99,18 +99,16 @@
         data: {},
         headers: { Authorization: token }
       })
-      .then((res: any) => {
-        console.log('查询该单位详细信息', res)
-        formLabelAlign.name = res.data.name
-        formLabelAlign.type = res.data.team.typeName
-        formLabelAlign.code = res.data.code
-        formLabelAlign.companyCode = res.data.id
-        // formLabelAlign.divisionName=res.data.team.name
-        // formLabelAlign.divisionCode=res.data.team.name
-        formLabelAlign.contactPerson = res.data.team.authId
-        formLabelAlign.legalRepresentative = res.data.belongId
-        // formLabelAlign.tel=res.data.team.name
-        // formLabelAlign.address=res.data.team.name
+      .then((res: ResultType) => {
+        if (res.success) {
+          const { result = [], total = 0 } = res.data
+          formLabelAlign.name = res.data.name
+          formLabelAlign.type = res.data.team.typeName
+          formLabelAlign.code = res.data.code
+          formLabelAlign.companyCode = res.data.id
+          formLabelAlign.contactPerson = res.data.team.authId
+          formLabelAlign.legalRepresentative = res.data.belongId
+        }
       })
   }
 

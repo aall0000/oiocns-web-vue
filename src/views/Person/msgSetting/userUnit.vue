@@ -48,38 +48,49 @@
               style="width: 100%"
             >
               <el-option
-                style="height: 50px"
                 v-for="item in options"
                 :key="item.value"
-                :label="item.label"
                 :value="item.value"
+                :label="`${item.label}(${item.name})`"
+                style="height: 50px; width: 550px"
               >
                 <div
                   style="
                     height: 50px;
+                    width: 100%;
                     display: flex;
                     justify-content: flex-start;
                     align-items: center;
                     border-bottom: 1px solid #f0f2f5;
                   "
                 >
-                  <div style="height: 50px; margin-top: 5px">
+                  <div style="height: 50px; width: 15%; margin-top: 5px">
                     <headImg
                       :name="item.name.slice(0, 1)"
                       style="transform: scale(0.7, 0.7); border-radius: 50px; font-size: 19px"
                     ></headImg>
                   </div>
-                  <div style="height: 50px; margin-bottom: 5px">
+                  <div style="height: 50px; width: 85%; margin-bottom: 5px">
                     <p
                       style="
                         height: 25px;
                         font-weight: 600;
                         overflow: hidden;
                         text-overflow: ellipsis;
+                        white-space: nowrap;
                       "
                       >{{ item.label }}({{ item.name }})</p
                     >
-                    <p style="height: 25px; color: #ccc">{{ item.remark }}</p>
+                    <p
+                      style="
+                        height: 25px;
+                        color: #ccc;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        white-space: nowrap;
+                      "
+                      >{{ item.remark }}</p
+                    >
                   </div>
                 </div>
               </el-option>
@@ -118,7 +129,17 @@
         }
       })
       .then((res: ResultType) => {
-        console.log('删除单位成功', res)
+        if (res.success) {
+          ElMessage({
+            message: '删除成功',
+            type: 'success'
+          })
+        } else {
+          ElMessage({
+            message: res.msg,
+            type: 'warning'
+          })
+        }
       })
   }
   type listItem = {
@@ -142,7 +163,9 @@
         }
       })
       .then((res: ResultType) => {
-        dataList.list = res.data.result
+        if (res.success) {
+          dataList.list = res.data.result
+        }
       })
   }
   interface ListItem {
@@ -166,7 +189,7 @@
           }
         })
         .then((res: ResultType) => {
-          if (res.data.result) {
+          if (res.success) {
             let states = res.data.result
             let arr: { value: any; label: any; remark: any; name: any }[] = []
             states.forEach((el: any) => {
@@ -197,11 +220,13 @@
         }
       })
       .then((res: ResultType) => {
-        ElMessage({
-          message: '申请成功',
-          type: 'warning'
-        })
-        addCompany.value = false
+        if (res.success) {
+          ElMessage({
+            message: '申请成功',
+            type: 'warning'
+          })
+          addCompany.value = false
+        }
       })
   }
 </script>

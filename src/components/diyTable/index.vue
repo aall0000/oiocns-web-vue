@@ -76,25 +76,8 @@
               </template>
               <template slot="header" #header="scope">
                 {{ scope.column.label }}
-                <template v-if="item.help">
-                  <el-tooltip
-                    :aa="scope"
-                    class="item"
-                    effect="dark"
-                    :content="item.help"
-                    placement="top-start"
-                  >
-                    <i class="el-icon-question"> </i>
-                  </el-tooltip>
-                </template>
               </template>
             </el-table-column>
-            <el-table-column
-              v-else
-              :key="'column' + index"
-              v-bind="item"
-              :show-overflow-tooltip="item.label == '内容摘要' ? false : true"
-            ></el-table-column>
           </template>
         </el-table>
       </div>

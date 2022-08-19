@@ -12,7 +12,27 @@
                 item?.chats?.length ?? 0
             }}) </span></div>
           <div :class="['con-body', props.active.spaceId === item.id && props.active.id === child.id ? 'active' : '']"
-            v-for="child in item.chats" :key="child.id" v-show="openIdArr.includes(item.id)"
+            v-for="child in item.chats" :key="child.id" v-if="openIdArr.includes(item.id)"
+            @contextmenu.prevent.stop="(e: MouseEvent) => handleContextClick(e, child)">
+            <HeadImg :name="child.name" />
+            <div class="group-con-dot" v-show="child.count > 0">
+              <span>{{ child.count }}</span>
+            </div>
+            <div class="group-con-show" @click="changeInfo(child, item.id)">
+              <el-tooltip class="box-item" :disabled="child.name.length < 7" :content="child.name"
+                placement="right-start">
+                <p class="group-con-show-name">
+                  <span class="group-con-show-name-label">{{ props.myId === child.id ? `我 (${child.name})` : child.name
+                  }}</span>
+                  <span class="group-con-show-name-time">{{ handleFormatDate(child.msgTime) }} </span>
+                </p>
+              </el-tooltip>
+              <p class="group-con-show-msg" v-if="child.msgType!=='recall'" v-html="child?.msgBody"></p>
+              <p class="group-con-show-msg" v-else >{{child?.showTxt}}</p>
+            </div>
+          </div>
+          <div :class="['con-body', props.active.spaceId === item.id && props.active.id === child.id ? 'active' : '']"
+            v-for="child in item.chats.filter(v=>v?.count>0)" :key="child.id+child.name" v-else
             @contextmenu.prevent.stop="(e: MouseEvent) => handleContextClick(e, child)">
             <HeadImg :name="child.name" />
             <div class="group-con-dot" v-show="child.count > 0">
@@ -63,6 +83,9 @@ const searchValue = ref<string>('')
 // 是否已加载--判断是否需要默认打开
 const isMounted = ref<boolean>(false)
 
+// 外侧打开状态
+const outList=ref<any>(new Map())
+
 //根据搜索条件-输出展示列表
 const showList = computed((): ImMsgType[] => {
   let showInfoArr = props.sessionList
@@ -79,16 +102,31 @@ const showList = computed((): ImMsgType[] => {
       }
     })
   }
+
+  // 首次进入页面默认打开第一个分组
   if (!isMounted.value && openIdArr.value.length === 0 && showInfoArr.length > 0) {
     openIdArr.value.push(showInfoArr[0].id)
     isMounted.value = true
   }
+
+    // showInfoArr.forEach((child: ImMsgType) => {
+    //   child?.chats.forEach((item: ImMsgChildType)=>{
+    //     if (item.count>0) {
+    //      const oldArr = outList.value.get(child.id)??[]
+    //       outList.value.set(child.id,[...oldArr,item.id])
+    //     }
+    //   })
+
+    // })
+    // console.log('outList',outList.value);
+
   return showInfoArr
 })
 
 
 const emit = defineEmits(['update:active'])
 const changeInfo = (item: ImMsgChildType, spaceId: string) => {
+  openIdArr.value.push(spaceId)
   // 触发父组件值更新
   item.count = 0
   emit('update:active', { ...item, spaceId })
@@ -315,8 +353,8 @@ const handleContextChange = (item: MenuItemType) => {
 
     &-dot {
       position: absolute;
-      left: 35px;
-      top: -8px;
+      left: 42px;
+      top: 2px;
       min-width: 18px;
       width: max-content;
       height: 20px;
