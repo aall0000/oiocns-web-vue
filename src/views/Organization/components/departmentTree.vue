@@ -148,10 +148,11 @@
     if (upNodeId.value.list.length > 0) {
       parentId = upNodeId.value.list[upNodeId.value.list.length - 1]
     }
+    let requestType = ''
     if (roleType.value == '1') {
-      var requestType = 'createDepartment' //创建部门
+      requestType = 'createDepartment' //创建部门
     } else {
-      var requestType = 'createJob' //创建工作组
+      requestType = 'createJob' //创建工作组
     }
     $services.company[requestType]({
       data: {
@@ -163,7 +164,7 @@
         teamRemark: departmentTeamRemark.value
       }
     }).then((res: ResultType) => {
-      if (res.code == 200) {
+      if (res.success) {
         dialogVisible.value = false
         state.nodeData.childNodes = []
         loadNode(state.nodeData, state.resolveData)
@@ -181,7 +182,6 @@
   }
 
   watch(filterText, (val) => {
-    console.log('filterText===========', val)
     treeRef.value!.filter(val)
   })
   // 树节点搜索
@@ -219,16 +219,18 @@
   //根节点数据
   async function getQueryInfo(resolve: any) {
     await $services.company.queryInfo({}).then((res: ResultType) => {
-      let obj = [
-        {
-          value: res.data.id,
-          children: [] as string[],
-          label: res.data.name,
-          id: res.data.id,
-          remark: res.data.team.remark
-        }
-      ]
-      return resolve(obj)
+      if (res.success) {
+        let obj = [
+          {
+            value: res.data.id,
+            children: [] as string[],
+            label: res.data.name,
+            id: res.data.id,
+            remark: res.data.team.remark
+          }
+        ]
+        return resolve(obj)
+      }
     })
   }
   async function getDepartmentsList(node: any, resolve: any) {
@@ -242,12 +244,19 @@
         if (res.data.result) {
           let resData = res.data.result
           resData.forEach((element: any) => {
-            var obj = {
+            let obj: {
+              id: string
+              value: string
+              label: string
+              code: string
+              children: any[]
+              remark: string
+            } = {
               id: element.id,
               value: element.id,
               label: element.name,
               code: element.code,
-              children: [] as [],
+              children: [],
               remark: element.team.remark
             }
 
@@ -265,23 +274,31 @@
         }
       })
       .then((res: ResultType) => {
-        if (res.data) {
-          if (res.data.result) {
-            let resData = res.data.result
-            resData.forEach((element: any) => {
-              var obj = {
-                id: element.id,
-                value: element.id,
-                label: element.name,
-                code: element.code,
-                children: [] as [],
-                leaf: true,
-                remark: element.team.remark
-              }
+        if (res.data.result) {
+          let resData = res.data.result
+          console.log(resData)
 
-              arr2.push(obj)
-            })
-          }
+          resData.forEach((element: any) => {
+            let obj: {
+              id: string
+              value: string
+              label: string
+              code: string
+              children: any[]
+              leaf: boolean
+              remark: string
+            } = {
+              id: element.id,
+              value: element.id,
+              label: element.name,
+              code: element.code,
+              children: [],
+              leaf: true,
+              remark: element.team.remark
+            }
+
+            arr2.push(obj)
+          })
         }
         return arr2
       })
@@ -313,7 +330,7 @@
   }
   const router = useRouter()
   const handlePageChange = () => {
-    router.push({ path: '/organization/deptDeatil' })
+    router.push({ path: '/organization/deptDetail' })
   }
 </script>
 <style lang="scss">
@@ -450,9 +467,6 @@
           .right-icon {
             margin-right: 10px;
           }
-        }
-
-        .label {
         }
 
         .child-label {

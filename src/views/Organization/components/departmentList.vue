@@ -7,12 +7,24 @@
         </el-tabs>
       </div>
       <div class="edit">
-        <el-link class="link" type="primary" v-if="selectItem.id === rootElement.id" @click="addPresonDialog = true">邀请成员</el-link>
-        <el-link class="link" type="primary" v-if="selectItem.id !== rootElement.id &&selectItem.leaf!==true" @click="showChange">变更部门</el-link>
+        <el-link
+          class="link"
+          type="primary"
+          v-if="selectItem.id === rootElement.id"
+          @click="addPresonDialog = true"
+          >邀请成员</el-link
+        >
+        <el-link
+          class="link"
+          type="primary"
+          v-if="selectItem.id !== rootElement.id && selectItem.leaf !== true"
+          @click="showChange"
+          >变更部门</el-link
+        >
         <el-link class="link" type="primary" @click="viewApplication">查看申请</el-link>
         <el-link class="link" type="primary" @click="showOutput">
           <span v-if="selectItem.id === rootElement.id">操作离职</span>
-          <span v-if="selectItem.id !== rootElement.id ">移除人员</span>
+          <span v-if="selectItem.id !== rootElement.id">移除人员</span>
         </el-link>
       </div>
     </div>
@@ -41,7 +53,7 @@
   <div class="page-pagination">
     <el-pagination small background layout="prev, pager, next" :total="50" class="mt-4" />
   </div>
-  <el-dialog v-model="addPresonDialog" @close='hideAddPreson' title="邀请加入单位" width="30%">
+  <el-dialog v-model="addPresonDialog" @close="hideAddPreson" title="邀请加入单位" width="30%">
     <el-select
       v-model="inviter"
       filterable
@@ -108,8 +120,8 @@
   type selectItem = {
     name: string
     id: string
-    $treeNodeId?: number,
-    leaf:boolean
+    $treeNodeId?: number
+    leaf: boolean
   }
   let tableData = reactive<listType>({})
   const props = defineProps<{
@@ -124,10 +136,10 @@
         if (props.selectItem && props.rootElement) {
           if (props.selectItem.id === props.rootElement.id) {
             getList()
-          } else if(props.selectItem.id !== props.rootElement.id) {
-            if(props.selectItem.leaf ==true){
+          } else if (props.selectItem.id !== props.rootElement.id) {
+            if (props.selectItem.leaf == true) {
               getJobList()
-            }else{
+            } else {
               getDepartmentList()
             }
           }
@@ -146,16 +158,18 @@
         }
       })
       .then((res: ResultType) => {
-        tableData.list = res.data.result?.map(
-          (item: { team: { remark: any; code: any; name: any } }) => {
-            return {
-              ...item,
-              remark: item.team.remark,
-              teamCode: item.team.code,
-              trueName: item.team.name
+        if (res.success) {
+          tableData.list = res.data.result?.map(
+            (item: { team: { remark: any; code: any; name: any } }) => {
+              return {
+                ...item,
+                remark: item.team.remark,
+                teamCode: item.team.code,
+                trueName: item.team.name
+              }
             }
-          }
-        )
+          )
+        }
       })
   }
   //获取部门员工
@@ -169,10 +183,9 @@
         }
       })
       .then((res: ResultType) => {
-        if (res.data) {
-          tableData.list = res.data.result
-        } else {
-          tableData.list = []
+        if (res.success) {
+          const { result = [] } = res.data
+          tableData.list = result
         }
       })
   }
@@ -187,10 +200,9 @@
         }
       })
       .then((res: ResultType) => {
-        if (res.data) {
-          tableData.list = res.data.result
-        } else {
-          tableData.list = []
+        if (res.success) {
+          const { result = [] } = res.data
+          tableData.list = result
         }
       })
   }
@@ -218,7 +230,7 @@
           }
         })
         .then((res: ResultType) => {
-          if (res.code == 200) {
+          if (res.success) {
             let arr: { value: any; label: any }[] = []
             if (res.data.result != undefined) {
               let states = res.data.result
@@ -248,7 +260,7 @@
   }
 
   const addPresonDialog = ref<boolean>(false)
-  const hideAddPreson = ()=>{
+  const hideAddPreson = () => {
     inviter.value = ''
     addPresonDialog.value = false
   }
@@ -262,12 +274,7 @@
         }
       })
       .then((res: ResultType) => {
-        if (res.code === 500) {
-          ElMessage({
-            message: res.msg,
-            type: 'error'
-          })
-        } else {
+        if (res.success) {
           ElMessage({
             message: '添加成功',
             type: 'success'
@@ -320,45 +327,42 @@
     for (let i = 0; i < selectArr.length; i++) {
       targetArr.push(selectArr[i].id)
     }
-    if(props.selectItem.id === props.rootElement.id){ //单位
-      var requrstText='removeFromCompany' 
-    }else if( props.selectItem.id !== props.rootElement.id &&props.selectItem.leaf!==true){ //部门
-      var requrstText='removeFromDepartment'
-    }else if(props.selectItem.id !== props.rootElement.id &&props.selectItem.leaf===true){ //工作组
-      var requrstText='removeFromJob'
+    let requestText = ''
+    if (props.selectItem.id === props.rootElement.id) {
+      //单位
+      requestText = 'removeFromCompany'
+    } else if (props.selectItem.id !== props.rootElement.id && props.selectItem.leaf !== true) {
+      //部门
+      requestText = 'removeFromDepartment'
+    } else if (props.selectItem.id !== props.rootElement.id && props.selectItem.leaf === true) {
+      //工作组
+      requestText = 'removeFromJob'
     }
-    $services.company[requrstText]
-      ({
-        data: {
-          id: props.selectItem.id,
-          targetIds: targetArr
-        }
-      })
-      .then((res: ResultType) => {
-        if (res.code === 500) {
-          ElMessage({
-            message: res.msg,
-            type: 'error'
-          })
-        } else {
-          ElMessage({
-            message: '删除成功',
-            type: 'success'
-          })
-        }
-        if (props.selectItem && props.rootElement) {
-          if (props.selectItem.id === props.rootElement.id) {
-            getList()
-          } else if(props.selectItem.id !== props.rootElement.id) {
-            if(props.selectItem.leaf ==true){
-              getJobList()
-            }else{
-              getDepartmentList()
-            }
+    $services.company[requestText]({
+      data: {
+        id: props.selectItem.id,
+        targetIds: targetArr
+      }
+    }).then((res: ResultType) => {
+      if (res.success) {
+        ElMessage({
+          message: '删除成功',
+          type: 'success'
+        })
+      }
+      if (props.selectItem && props.rootElement) {
+        if (props.selectItem.id === props.rootElement.id) {
+          getList()
+        } else if (props.selectItem.id !== props.rootElement.id) {
+          if (props.selectItem.leaf == true) {
+            getJobList()
+          } else {
+            getDepartmentList()
           }
         }
-        outputDialog.value = false
-      })
+      }
+      outputDialog.value = false
+    })
   }
   //变更部门
   const assignId = ref<string>('') //tree选中的部门
@@ -375,13 +379,7 @@
         }
       })
       .then((res: ResultType) => {
-        console.log(res)
-        if (res.code === 500) {
-          ElMessage({
-            message: res.msg,
-            type: 'error'
-          })
-        } else {
+        if (res.success) {
           ElMessage({
             message: '分配成功',
             type: 'success'
@@ -410,14 +408,16 @@
   //根节点数据
   async function getQueryInfo(resolve: any) {
     await $services.company.queryInfo({}).then((res: ResultType) => {
-      let obj = [
-        {
-          children: [] as string[],
-          label: res.data.name,
-          id: res.data.id
-        }
-      ]
-      return resolve(obj)
+      if (res.success) {
+        let obj = [
+          {
+            children: [] as string[],
+            label: res.data.name,
+            id: res.data.id
+          }
+        ]
+        return resolve(obj)
+      }
     })
   }
   //获取单位列表
@@ -428,15 +428,15 @@
         data: { id: node.data.id, offset: 0, limit: 100 }
       })
       .then((res: ResultType) => {
-        if (res.data.result) {
+        if (res.success) {
           let resData = JSON.parse(JSON.stringify(res.data.result))
 
           resData.forEach((element: any) => {
-            var obj = {
+            let obj: { id: string; label: string; code: string; children: any[] } = {
               id: element.id,
               label: element.name,
               code: element.code,
-              children: [] as []
+              children: []
             }
 
             arr.push(JSON.parse(JSON.stringify(obj)))
@@ -445,24 +445,22 @@
         return resolve(arr)
       })
   }
-  const Refresh = ()=>{
-    console.log('aaaaaaaa')
+  const Refresh = () => {
     if (props.selectItem && props.rootElement) {
       if (props.selectItem.id === props.rootElement.id) {
         getList()
-      } else if(props.selectItem.id !== props.rootElement.id) {
-        if(props.selectItem.leaf ==true){
+      } else if (props.selectItem.id !== props.rootElement.id) {
+        if (props.selectItem.leaf == true) {
           getJobList()
-        }else{
+        } else {
           getDepartmentList()
         }
       }
     }
   }
-defineExpose({
-  Refresh
-})
-
+  defineExpose({
+    Refresh
+  })
 </script>
 <style lang="scss" scoped>
   .deptment-info {

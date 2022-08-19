@@ -11,29 +11,28 @@
     </div>
   </div>
   <template v-if="activeName === 'first'">
-  <div class="list">
-    <el-table
-      :data="state.tableData"
-      stripe
-      border
-      style="border: 1px solid #ccc; width: 95%; margin: 0 auto"
-      height="390"
-      :cell-style="{ 'text-align': 'center' }"
-      header-row-class-name="table_header_class"
-      @select="handleSelect"
-    >
-      <el-table-column type="selection" />
-      <el-table-column prop="name" label="序号" />
-      <el-table-column prop="thingId" label="单位名称" />
-      <el-table-column prop="trueName" label="管理员" />
-      <el-table-column label="操作" width="100" />
-    </el-table>
+    <div class="list">
+      <el-table
+        :data="state.tableData"
+        stripe
+        border
+        style="border: 1px solid #ccc; width: 95%; margin: 0 auto"
+        height="390"
+        :cell-style="{ 'text-align': 'center' }"
+        header-row-class-name="table_header_class"
+        @select="handleSelect"
+      >
+        <el-table-column type="selection" />
+        <el-table-column prop="name" label="序号" />
+        <el-table-column prop="thingId" label="单位名称" />
+        <el-table-column prop="trueName" label="管理员" />
+        <el-table-column label="操作" width="100" />
+      </el-table>
+    </div>
 
-  </div>
-
-  <div class="page-pagination">
-    <el-pagination small background layout="prev, pager, next" :total="50" class="mt-4" />
-  </div>
+    <div class="page-pagination">
+      <el-pagination small background layout="prev, pager, next" :total="50" class="mt-4" />
+    </div>
   </template>
   <template v-else-if="activeName === 'second'">
     <section class="container">
@@ -50,7 +49,14 @@
             </template>
           </el-input>
         </div>
-        <el-tree :props="defaultProps" lazy highlight-current ref="treeRef" @node-click="changeIndexFun" :load="loadNode" />
+        <el-tree
+          :props="defaultProps"
+          lazy
+          highlight-current
+          ref="treeRef"
+          @node-click="changeIndexFun"
+          :load="loadNode"
+        />
       </div>
     </section>
   </template>
@@ -96,9 +102,7 @@
       })
     }
   )
-  const changeIndexFun = ()=>{
-    
-  }
+  const changeIndexFun = () => {}
   const getOrgList = () => {
     $services.company
       .getGroupCompanies({
@@ -109,10 +113,9 @@
         }
       })
       .then((res: ResultType) => {
-        if (res.code == 200) {
-          state.tableData = res.data.result
-        } else {
-          state.tableData = []
+        if (res.success) {
+          const { result = [] } = res.data
+          state.tableData = result
         }
       })
   }
@@ -145,9 +148,9 @@
           }
         })
         .then((res: ResultType) => {
-          if (res.code == 200) {
+          if (res.success) {
             let arr: { value: any; label: any }[] = []
-            console.log(res.data.result != undefined, res.data.result)
+
             if (res.data.result != undefined) {
               let states = res.data.result
               states.forEach((el: any) => {
@@ -189,12 +192,7 @@
       })
       .then((res: ResultType) => {
         console.log(res)
-        if (res.code === 500) {
-          ElMessage({
-            message: res.msg,
-            type: 'error'
-          })
-        } else {
+        if (res.success) {
           ElMessage({
             message: '添加成功',
             type: 'success'
@@ -253,13 +251,7 @@
         }
       })
       .then((res: ResultType) => {
-        console.log(res)
-        if (res.code === 500) {
-          ElMessage({
-            message: res.msg,
-            type: 'error'
-          })
-        } else {
+        if (res.success) {
           ElMessage({
             message: '删除成功',
             type: 'success'
@@ -291,49 +283,57 @@
   const changeDialog1 = () => dialog1.value.changeVisible()
   // 查询公司职权
   async function getCompanyAuthority(resolve: any) {
-    await $services.company.getAuthorities({data: {id: props.selectItem.id, offset: 0, limit: 0}}).then((res: ResultType) => {
-      let obj = [
-        {
-          children: [] as string[],
-          label: res.data.name,
-          id: res.data.id
+    await $services.company
+      .getAuthorities({ data: { id: props.selectItem.id, offset: 0, limit: 0 } })
+      .then((res: ResultType) => {
+        if (res.success) {
+          let obj = [
+            {
+              children: [] as string[],
+              label: res.data.name,
+              id: res.data.id
+            }
+          ]
+          return resolve(obj)
         }
-      ]
-      return resolve(obj)
-    })
+      })
   }
   // 查询子职权
   async function getSubAuthorities(node: any, resolve: any) {
     let arr: any = []
-    await $services.company.getSubAuthorities({data: {id: node.data.id, offset: 0, limit: 0}}).then((res: ResultType) => {
-      if (res.data.result) {
-        let resData = JSON.parse(JSON.stringify(res.data.result))
+    await $services.company
+      .getSubAuthorities({ data: { id: node.data.id, offset: 0, limit: 0 } })
+      .then((res: ResultType) => {
+        if (res.success) {
+          let resData = JSON.parse(JSON.stringify(res.data.result))
 
-        resData.forEach((element: any) => {
-          var obj = {
-            id: element.id,
-            label: element.name,
-            code: element.code,
-            children: [] as []
-          }
+          resData.forEach((element: any) => {
+            var obj = {
+              id: element.id,
+              label: element.name,
+              code: element.code,
+              children: [] as []
+            }
 
-          arr.push(JSON.parse(JSON.stringify(obj)))
-        })
-      }
-      return resolve(arr)
-    })
+            arr.push(JSON.parse(JSON.stringify(obj)))
+          })
+        }
+        return resolve(arr)
+      })
   }
   //根节点数据
   async function getQueryInfo(resolve: any) {
     await $services.company.queryInfo({}).then((res: ResultType) => {
-      let obj = [
-        {
-          children: [] as string[],
-          label: res.data.name,
-          id: res.data.id
-        }
-      ]
-      return resolve(obj)
+      if (res.success) {
+        let obj = [
+          {
+            children: [] as string[],
+            label: res.data.name,
+            id: res.data.id
+          }
+        ]
+        return resolve(obj)
+      }
     })
   }
   async function getDepartmentsList(node: any, resolve: any) {
@@ -343,7 +343,7 @@
         data: { id: node.data.id, offset: 0, limit: 100 }
       })
       .then((res: ResultType) => {
-        if (res.data.result) {
+        if (res.success) {
           let resData = JSON.parse(JSON.stringify(res.data.result))
 
           resData.forEach((element: any) => {

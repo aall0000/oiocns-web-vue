@@ -111,9 +111,7 @@
   }>()
   watch(
     () => props.personType,
-    (news) => {
-      
-    }
+    (news) => {}
   )
 
   let selectId = ref<string>()
@@ -126,10 +124,10 @@
         }
       })
       .then((res: ResultType) => {
-        if (res.code == 200) {
+        if (res.success) {
           ElMessage({
             message: '申请成功',
-            type: 'warning'
+            type: 'success'
           })
           friendDialog.value = false
         } else {
@@ -153,15 +151,17 @@
     await $services.person
       .getFriends({ data: { offset: 0, limit: 10 } })
       .then((res: ResultType) => {
-        const { result = [] } = res.data
-        state.friendList = result
+        if (res.success) {
+          const { result = [] } = res.data
+          state.friendList = result
+        }
       })
   }
   // 获取我加入的群列表
   const getQunList = async () => {
     const res = await $services.cohort.getJoinedCohorts({ data: { offset: 0, limit: 10 } })
-    const { data, err } = res
-    if (!err) {
+    const { data, success } = res
+    if (success) {
       const { result = [] } = data
       state.qunList = result
     }
@@ -176,10 +176,10 @@
         }
       })
       .then((res: ResultType) => {
-        if (res.code == 200) {
+        if (res.success) {
           ElMessage({
             message: '申请成功',
-            type: 'warning'
+            type: 'success'
           })
         } else {
           ElMessage({
@@ -197,10 +197,10 @@
         }
       })
       .then((res: ResultType) => {
-        if (res.code == 200) {
+        if (res.success) {
           ElMessage({
             message: '申请成功',
-            type: 'warning'
+            type: 'success'
           })
           friendDialog.value = false
         } else {
@@ -221,10 +221,10 @@
         }
       })
       .then((res: ResultType) => {
-        if (res.code == 200) {
+        if (res.success) {
           ElMessage({
             message: '删除成功',
-            type: 'warning'
+            type: 'success'
           })
         } else {
           ElMessage({
@@ -249,7 +249,7 @@
         }
       })
       .then((res: ResultType) => {
-        if (res.code == 200) {
+        if (res.success) {
           ElMessage({
             message: '创建成功',
             type: 'success'
@@ -284,11 +284,11 @@
             }
           })
           .then((res: ResultType) => {
-            if (res.code == 200) {
+            if (res.success) {
               let arr: { value: any; label: any }[] = []
-              console.log(res.data.result != undefined,res.data.result )
-              if(res.data.result != undefined){
-               let states = res.data.result
+
+              if (res.data.result != undefined) {
+                let states = res.data.result
                 states.forEach((el: any) => {
                   let obj = {
                     value: el.id,
@@ -298,7 +298,7 @@
                 })
                 options.value = arr
                 loading.value = false
-              }else{
+              } else {
                 options.value = arr
                 loading.value = false
               }
@@ -319,10 +319,10 @@
             }
           })
           .then((res: ResultType) => {
-            if (res.code == 200) {
+            if (res.success) {
               let arr: { value: any; label: any }[] = []
-              if(res.data.result != undefined){
-               let states = res.data.result
+              if (res.data.result != undefined) {
+                let states = res.data.result
                 states.forEach((el: any) => {
                   let obj = {
                     value: el.id,
@@ -332,7 +332,7 @@
                 })
                 options.value = arr
                 loading.value = false
-              }else{
+              } else {
                 options.value = arr
                 loading.value = false
               }
