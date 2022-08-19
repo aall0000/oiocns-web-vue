@@ -147,10 +147,7 @@
       })
 
     // 接受信息--处理信息
-    connection.on('RecvMsg', (res: any, error: any) => {
-      // console.log('接受消息', res.data)
-      handleReaciveMsg(res.data)
-    })
+    connection.on('RecvMsg', handleReaciveMsg)
     // 监听链接断开
     connection.onclose(() => {
       console.log('链接关闭了')
