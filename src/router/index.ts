@@ -101,8 +101,8 @@ const mainRouter: RouteRecordRaw[] = [
         }
       },
       {
-        path: '/organization/deptDeatil',
-        name: 'deptDeatil',
+        path: '/organization/deptDetail',
+        name: 'deptDetail',
         component: () => import('@/views/Organization/deptDetail.vue'),
         meta: {
           title: '部门维护'

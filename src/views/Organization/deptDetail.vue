@@ -30,7 +30,7 @@
         <el-table-column prop="thingId" label="部门编码" />
         <el-table-column prop="updateTime" label="更新时间" />
         <el-table-column label="操作" width="100">
-          <template #default="{ row  }">
+          <template #default="{ row }">
             <el-popconfirm
               title="确认删除?"
               @confirm="handleDelItem(row)"
@@ -123,35 +123,35 @@
         }
       })
       .then((res: ResultType) => {
-        let arr:any = []
-        if(res.data.result){
-          res.data.result.forEach((element:any) => {
-            let obj = element;
-            obj.hasChildren = true;
-            obj.parent= [workspaceData.value.id]
+        let arr: any = []
+        if (res.success) {
+          res.data.result.forEach((element: any) => {
+            let obj = element
+            obj.hasChildren = true
+            obj.parent = [workspaceData.value.id]
             arr.push(obj)
-          });
+          })
         }
         tableData.list = [...arr]
-          API.company
-            .getJobs({
-              data: {
-                id: userUnitInfo.value.id,
-                offset: 0,
-                limit: 100
-              }
-            })
-            .then((res: ResultType) => {
-              let arr:any =[]
-               if(res.data.result){
-                 res.data.result.forEach((element:any) => {
-                  let obj = element;
-                  obj.parent= [workspaceData.value.id]
-                  arr.push(obj)
-                });
-                tableData.list = [...tableData.list, ...arr]
-               }  
-            })
+        API.company
+          .getJobs({
+            data: {
+              id: userUnitInfo.value.id,
+              offset: 0,
+              limit: 100
+            }
+          })
+          .then((res: ResultType) => {
+            let arr: any = []
+            if (res.success) {
+              res.data.result.forEach((element: any) => {
+                let obj = element
+                obj.parent = [workspaceData.value.id]
+                arr.push(obj)
+              })
+              tableData.list = [...tableData.list, ...arr]
+            }
+          })
       })
   }
 
@@ -179,11 +179,10 @@
   // 弹窗显示
   const dialogVisible = ref<boolean>(false)
   //显示弹窗
-  
+
   const showEdit = (row: any) => {
     dialogVisible.value = true
-    console.log(row.parent,row.id)
-
+    console.log(row.parent, row.id)
   }
   //关闭弹窗
   const dialogHide = () => {
@@ -208,10 +207,11 @@
     if (upNodeId.value.list.length > 0) {
       parentId = upNodeId.value.list[upNodeId.value.list.length - 1]
     }
+    let requestType = ''
     if (roleType.value == '1') {
-      let requestType = 'createDepartment' //创建部门
+      requestType = 'createDepartment' //创建部门
     } else {
-      let requestType = 'createJob' //创建工作组
+      requestType = 'createJob' //创建工作组
     }
     API.company[requestType]({
       data: {
@@ -223,24 +223,23 @@
         teamRemark: fromData.departmentTeamRemark
       }
     }).then((res: ResultType) => {
-      if (res.code == 200) {
+      if (res.success) {
         dialogVisible.value = false
         state.nodeData.childNodes = []
         loadNode(state.nodeData, state.resolveData)
-      } else {
       }
     })
   }
   const loadNode = (node: any, resolve: (data: any) => void) => {
-      if (node.level === 0) {
-        getQueryInfo(resolve)
-      }
-      if (node.level >= 1) {
-        getDepartmentsList(node, resolve)
-      }
+    if (node.level === 0) {
+      getQueryInfo(resolve)
+    }
+    if (node.level >= 1) {
+      getDepartmentsList(node, resolve)
+    }
   }
   //上级切换
-  const handleChange = (value:any) => {
+  const handleChange = (value: any) => {
     console.log(value)
   }
   //选中人员
@@ -283,16 +282,18 @@
   //根节点数据
   async function getQueryInfo(resolve: any) {
     await API.company.queryInfo({}).then((res: ResultType) => {
-      let obj = [
-        {
-          value: res.data.id,
-          children: [] as string[],
-          label: res.data.name,
-          id: res.data.id,
-          remark: res.data.team.remark
-        }
-      ]
-      return resolve(obj)
+      if (res.success) {
+        let obj = [
+          {
+            value: res.data.id,
+            children: [] as string[],
+            label: res.data.name,
+            id: res.data.id,
+            remark: res.data.team.remark
+          }
+        ]
+        return resolve(obj)
+      }
     })
   }
   async function getDepartmentsList(node: any, resolve: any) {
@@ -303,7 +304,7 @@
         data: { id: node.data.id, offset: 0, limit: 1000 }
       })
       .then((res: ResultType) => {
-        if (res.data.result) {
+        if (res.success) {
           let resData = res.data.result
           resData.forEach((element: any) => {
             let obj = {
@@ -329,7 +330,7 @@
         }
       })
       .then((res: ResultType) => {
-        if (res.data) {
+        if (res.success) {
           if (res.data.result) {
             let resData = res.data.result
             resData.forEach((element: any) => {
@@ -365,11 +366,11 @@
   }
   //table
   const load = (row: User, treeNode: unknown, resolve: (date: User[]) => void) => {
-    loadList(row,treeNode,resolve)
+    loadList(row, treeNode, resolve)
   }
-  const loadList = (row:any,treeNode:any,resolve:any) => {
-    console.log('ccccc',treeNode)
-    let dataList:any = []
+  const loadList = (row: any, treeNode: any, resolve: any) => {
+    console.log('ccccc', treeNode)
+    let dataList: any = []
     API.company
       .getDepartments({
         data: {
@@ -379,41 +380,41 @@
         }
       })
       .then((res: ResultType) => {
-        let arr:any = []
-        if(res.data.result){
-          res.data.result.forEach((element:any) => {
-            let obj = element;
-            obj.hasChildren = true;
-            if(!row.parent){
-              obj.parent = [row.id];
-            }else{
-              obj.parent = [...row.parent,row.id];
+        let arr: any = []
+        if (res.success) {
+          res.data.result.forEach((element: any) => {
+            let obj = element
+            obj.hasChildren = true
+            if (!row.parent) {
+              obj.parent = [row.id]
+            } else {
+              obj.parent = [...row.parent, row.id]
             }
             arr.push(obj)
-          });
-         
+          })
+
           dataList = [...arr]
         }
-          API.company
-            .getJobs({
-              data: {
-                id: row.id,
-                offset: 0,
-                limit: 100
-              }
-            })
+        API.company
+          .getJobs({
+            data: {
+              id: row.id,
+              offset: 0,
+              limit: 100
+            }
+          })
           .then((res: ResultType) => {
-            let arr:any = []
-            if(res.data.result){
-              res.data.result.forEach((element:any) => {
-                let obj = element;
-                if(!row.parent){
-                  obj.parent = [row.id];
-                }else{
-                  obj.parent = [...row.parent,row.id];
+            let arr: any = []
+            if (res.success) {
+              res.data.result.forEach((element: any) => {
+                let obj = element
+                if (!row.parent) {
+                  obj.parent = [row.id]
+                } else {
+                  obj.parent = [...row.parent, row.id]
                 }
                 arr.push(obj)
-              });
+              })
               dataList = [...dataList, ...arr]
             }
             resolve(dataList)
