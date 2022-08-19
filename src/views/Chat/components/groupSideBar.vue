@@ -315,8 +315,8 @@ const handleContextChange = (item: MenuItemType) => {
 
     &-dot {
       position: absolute;
-      left: 35px;
-      top: -8px;
+      left: 42px;
+      top: 2px;
       min-width: 18px;
       width: max-content;
       height: 20px;
