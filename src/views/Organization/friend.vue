@@ -56,7 +56,13 @@
         :loading="loading"
         class="select"
       >
-        <el-option v-for="item in options" :key="item.name" :value="item.name" style="height: 50px">
+        <el-option
+          v-for="item in options"
+          :key="item.value"
+          :value="item.value"
+          :label="`${item.label}(${item.name})`"
+          style="height: 50px"
+        >
           <div
             style="
               height: 50px;
@@ -190,8 +196,8 @@
   // 获取我加入的群列表
   const getQunList = async () => {
     const res = await $services.cohort.getJoinedCohorts({ data: { offset: 0, limit: 10 } })
-    const { data, err } = res
-    if (!err) {
+    const { data, success } = res
+    if (success) {
       const { result = [] } = data
       state.qunList = result
     }
