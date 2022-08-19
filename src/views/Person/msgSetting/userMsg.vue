@@ -15,19 +15,17 @@
             style="max-width: 800px"
           >
             <el-form-item label="姓名">
-              <el-input v-model="formLabelAlign.name" />
+              <el-input v-model="formLabelAlign.trueName" />
             </el-form-item>
-            <el-form-item label="身份证号">
-              <el-input v-model="formLabelAlign.idCardNum" />
+            <el-form-item label="账户名">
+              <el-input disabled v-model="formLabelAlign.code" />
             </el-form-item>
-            <el-form-item label="工号">
-              <el-input v-model="formLabelAlign.jobId" />
+            <el-form-item label="用户ID">
+              <el-input disabled v-model="formLabelAlign.idCardNum" />
             </el-form-item>
+
             <el-form-item label="手机号">
               <el-input v-model="formLabelAlign.tel" />
-            </el-form-item>
-            <el-form-item label="邮箱">
-              <el-input v-model="formLabelAlign.email" />
             </el-form-item>
           </el-form>
           <el-form
@@ -39,7 +37,7 @@
           >
             <el-form-item label="个人简介">
               <el-input
-                v-model="formLabelAlign.Profile"
+                v-model="formLabelAlign.remark"
                 :rows="2"
                 type="textarea"
                 placeholder="个人简介"
@@ -48,11 +46,8 @@
           </el-form>
           <div class="button">
             <el-button> + 新增更多描述</el-button>
-            <el-popconfirm title="确认更新" @confirm="update()">
-              <template #reference>
-                <el-button type="primary">更新信息</el-button>
-              </template>
-            </el-popconfirm>
+
+            <el-button type="primary">更新信息</el-button>
           </div>
         </div>
         <div class="bodyRight">
@@ -83,13 +78,12 @@
   const labelPosition = ref<'top'>('top')
 
   const formLabelAlign = reactive({
-    name: '',
+    trueName: '',
     idCardNum: '',
-    jobId: '',
+    code: '',
     tel: '',
-    email: '',
-    country: '',
-    Profile: ''
+    name: '',
+    remark: ''
   })
 
   onBeforeMount(() => {
@@ -103,43 +97,42 @@
       })
       .then((res: ResultType) => {
         if (res.success) {
+          formLabelAlign.trueName = res.data.team.name
           formLabelAlign.name = res.data.name
           formLabelAlign.idCardNum = res.data.id
-          formLabelAlign.jobId = res.data.thingId
+          formLabelAlign.code = res.data.code
           formLabelAlign.tel = res.data.team.code
-          formLabelAlign.Profile = res.data.team.remark
+          formLabelAlign.remark = res.data.team.remark
+          console.log(res)
         }
       })
   }
-  const update = () => {
-    $services.person
-      .update({
-        data: {
-          id: store.queryInfo.id,
-          name: formLabelAlign.name,
-          code: formLabelAlign.idCardNum,
-          thingId: store.queryInfo.thingId,
-          belongId: store.queryInfo.id,
-          teamName: formLabelAlign.name,
-          teamCode: formLabelAlign.tel,
-          teamRemark: formLabelAlign.Profile,
-          teamAuthId: store.queryInfo.team.authId
-        }
-      })
-      .then((res: ResultType) => {
-        if (res.success) {
-          ElMessage({
-            message: '更新成功',
-            type: 'success'
-          })
-        } else {
-          ElMessage({
-            message: res.msg,
-            type: 'warning'
-          })
-        }
-      })
-  }
+  // const update = () => {
+  //   $services.person
+  //     .update({
+  //       data: {
+  //         id: store.queryInfo.id,
+  //         name: formLabelAlign.name,
+  //         code: formLabelAlign.code,
+  //         teamName: formLabelAlign.trueName,
+  //         teamCode: formLabelAlign.tel,
+  //         teamRemark: formLabelAlign.remark
+  //       }
+  //     })
+  //     .then((res: ResultType) => {
+  //       if (res.success) {
+  //         ElMessage({
+  //           message: '更新成功',
+  //           type: 'success'
+  //         })
+  //       } else {
+  //         ElMessage({
+  //           message: res.msg,
+  //           type: 'warning'
+  //         })
+  //       }
+  //     })
+  // }
 
   // const options = regionData
   // const selectedOptions: Array<number> = []
