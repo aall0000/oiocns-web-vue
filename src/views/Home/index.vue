@@ -57,12 +57,12 @@
 <script lang="ts" setup>
   import { ref, reactive, onMounted } from 'vue'
   import Menu from '@/views/Layout/components/menu.vue'
-  import Head from './components/head.vue'
-  import Invitate from './components/invitate.vue'
-  import Organization from './components/organization.vue'
-  import AppMarket from './components/appMarket.vue'
-  import AppCommon from './components/appCommon.vue'
-  import ManageSystem from './components/manageSystem.vue'
+  import Head from '@/components/protal/components/head.vue'
+  import Invitate from '@/components/protal/components/invitate.vue'
+  import Organization from '@/components/protal/components/organization.vue'
+  import AppMarket from '@/components/protal/components/appMarket.vue'
+  import AppCommon from '@/components/protal/components/appCommon.vue'
+  import ManageSystem from '@/components/protal/components/manageSystem.vue'
   import $services from '@/services'
   import { ElMessage } from 'element-plus'
 

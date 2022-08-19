@@ -119,6 +119,8 @@
     <JoinUnitDialog
       v-if="item.key == 'join' && item.value"
       :dialogShow="item"
+      @joinSubmit="joinSubmit"
+      @remoteMethod="remoteMethod"
       @closeDialog="closeDialog"
     ></JoinUnitDialog>
     <SearchDialog
@@ -140,6 +142,7 @@
   import $services from '@/services'
   import { ElMessage } from 'element-plus'
   import CreateUnitDialog from './createUnitDialog.vue'
+  import JoinUnitDialog from './joinUnitDialog.vue'
   import SearchDialog from './searchDialog.vue'
   import headImg from '@/views/Chat/components/headImg.vue'
   const store = useUserStore()
@@ -158,7 +161,8 @@
       return 'height:0px'
     } else {
       let height = store.userCompanys.length < 6 ? store.userCompanys.length : 6
-      return store.userCompanys.length ? 'height:' + (height * 45 + 35) + 'px;' : 'height:0px'
+      return store.userCompanys.length ? 'height:' + (height * 45 + 70) + 'px;' : 'height:80px'
+      debugger
     }
   })
 
@@ -200,9 +204,52 @@
   //   showSearch.value = false
   // }
 
+  const joinSubmit = (data: string) => {
+    $services.company
+      .applyJoin({
+        data: {
+          id: data
+        }
+      })
+      .then((res: ResultType) => {
+        if (res.code == 200) {
+          ElMessage({
+            message: '申请成功',
+            type: 'success'
+          })
+          closeDialog('join')
+        }
+      })
+  }
+
+  const remoteMethod = (query: string, callback: any) => {
+    $services.company
+      .searchCompany({
+        data: {
+          text: query,
+          offset: 0,
+          limit: 10
+        }
+      })
+      .then((res: ResultType) => {
+        if (res.data.result) {
+          let states = res.data.result
+          let arr: { value: any; label: any }[] = []
+          states.forEach((el: any) => {
+            let obj = {
+              value: el.id,
+              label: el.name
+            }
+            arr.push(obj)
+          })
+          callback(arr)
+        }
+      })
+  }
+
   const onClickUnit = () => {
     btnType.value = !btnType.value
-    if (store.userCompanys.length == 0) {
+    if (!store.userCompanys || store.userCompanys.length == 0) {
       store.getCompanyList(0, workspaceData.id, false)
     }
   }
