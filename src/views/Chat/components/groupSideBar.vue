@@ -109,17 +109,16 @@ const showList = computed((): ImMsgType[] => {
     isMounted.value = true
   }
 
-    showInfoArr.forEach((child: ImMsgType) => {
-      console.log('aaa',child,);
-      child?.chats.forEach((item: ImMsgChildType)=>{
-        if (item.count>0) {
-         const oldArr = outList.value.get(child.id)??[]
-          outList.value.set(child.id,[...oldArr,item.id])
-        }
-      })
+    // showInfoArr.forEach((child: ImMsgType) => {
+    //   child?.chats.forEach((item: ImMsgChildType)=>{
+    //     if (item.count>0) {
+    //      const oldArr = outList.value.get(child.id)??[]
+    //       outList.value.set(child.id,[...oldArr,item.id])
+    //     }
+    //   })
 
-    })
-    console.log('outList',outList.value);
+    // })
+    // console.log('outList',outList.value);
 
   return showInfoArr
 })
@@ -127,6 +126,7 @@ const showList = computed((): ImMsgType[] => {
 
 const emit = defineEmits(['update:active'])
 const changeInfo = (item: ImMsgChildType, spaceId: string) => {
+  openIdArr.value.push(spaceId)
   // 触发父组件值更新
   item.count = 0
   emit('update:active', { ...item, spaceId })
