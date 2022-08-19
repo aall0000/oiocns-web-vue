@@ -8,7 +8,7 @@
         <li class="box-btns-con">
           <el-button small link type="primary" @click="handleGoback">返回</el-button>
           <!-- <el-button small link type="danger">删除</el-button> -->
-          <!-- <el-button small link type="primary" @click="dialogVisible = true">新增</el-button> -->
+          <el-button small link type="primary" @click="showCreate">新增</el-button>
         </li>
       </ul>
       <el-table
@@ -60,6 +60,12 @@
     @close="dialogHide"
   >
     <div class="main-dialog">
+       <el-form-item class="main-item" label="创建类型" style="width: 100%">
+        <el-radio-group v-model="roleType" class="ml-4" >
+          <el-radio label="1" size="large">创建子部门</el-radio>
+          <el-radio label="2" size="large">创建工作组</el-radio>
+        </el-radio-group>
+      </el-form-item>
       <el-form-item class="main-item" label="部门名称" style="width: 45%">
         <el-input v-model="fromData.departmentName" placeholder="请输入" width="200px" clearable />
       </el-form-item>
@@ -88,7 +94,8 @@
     <template #footer>
       <span class="dialog-footer">
         <el-button @click="dialogHide">取消</el-button>
-        <el-button type="primary" @click="createDepartment">确认</el-button>
+        <el-button type="primary" v-if="createOfEdit ==1" @click="createDepartment">确认</el-button>
+        <el-button type="primary" v-if="createOfEdit ==2" @click="updateDepartment">确认</el-button>
       </span>
     </template>
   </el-dialog>
@@ -169,21 +176,47 @@
   }
   //弹窗信息
   const fromData = reactive({
+    id:'',
+    parentId:'',
     departmentName: '',
     departmentTeamName: '',
     departmentTeamCode: '',
-    departmentTeamRemark: ''
+    departmentTeamRemark: '',
+    thingId:'',
   })
   //上级节点id
   const upNodeId = ref<any>({ list: [] })
   // 弹窗显示
   const dialogVisible = ref<boolean>(false)
   //显示弹窗
-  
+  const createOfEdit = ref<number>(1) //创建1 编辑2
   const showEdit = (row: any) => {
+    
+    createOfEdit.value=2
+    if(row.typeName =='工作组'){
+      roleType.value = '2'
+    }else{
+      roleType.value = '1'
+    }
+    fromData.id= row.id;
+    fromData.parentId = row.parent[row.parent.length-1];
+    fromData.departmentTeamRemark = row.team.remark
+    fromData.departmentTeamCode =row.code
+    fromData.departmentName = row.name
+    fromData.thingId = row.thingId;
     dialogVisible.value = true
-    console.log(row.parent,row.id)
-
+    let arr = row.parent;
+    upNodeId.value.list = arr;
+  }
+  const showCreate = (row:any)=>{
+    createOfEdit.value=1
+    upNodeId.value.list =[]
+    fromData.id ='';
+    fromData.parentId= ''
+    fromData.departmentTeamRemark =''
+    fromData.departmentTeamCode  = ''
+    fromData.departmentName = ''
+    dialogVisible.value = true
   }
   //关闭弹窗
   const dialogHide = () => {
@@ -208,10 +241,11 @@
     if (upNodeId.value.list.length > 0) {
       parentId = upNodeId.value.list[upNodeId.value.list.length - 1]
     }
+    let requestType;
     if (roleType.value == '1') {
-      let requestType = 'createDepartment' //创建部门
+       requestType = 'createDepartment' //创建部门
     } else {
-      let requestType = 'createJob' //创建工作组
+       requestType = 'createJob' //创建工作组
     }
     API.company[requestType]({
       data: {
@@ -227,7 +261,34 @@
         dialogVisible.value = false
         state.nodeData.childNodes = []
         loadNode(state.nodeData, state.resolveData)
-      } else {
+      }
+    })
+  }
+  const  updateDepartment = ()=>{
+    let parentId = 0
+    if (upNodeId.value.list.length > 0) {
+      parentId = upNodeId.value.list[upNodeId.value.list.length - 1]
+    }
+    let requestType;
+    if (roleType.value == '1') {
+       requestType = 'updateDepartment' //创建部门
+    } else {
+       requestType = 'updateJob' //创建工作组
+    }
+    API.company[requestType]({
+      data: {
+        id: workspaceData.value.id,
+        code: fromData.departmentTeamCode,
+        name: fromData.departmentName,
+        parentId: parentId,
+        thingId:fromData.thingId,
+        teamRemark: fromData.departmentTeamRemark
+      }
+    }).then((res: ResultType) => {
+      if (res.code == 200) {
+        dialogVisible.value = false
+        state.nodeData.childNodes = []
+        loadNode(state.nodeData, state.resolveData)
       }
     })
   }
@@ -250,11 +311,11 @@
   }
 
   // 提交弹窗表单
-  const submitFriends = () => {
+  const upDateItem = () => {
     API.company
-      .createDepartment({
+      .updateDepartment({
         data: {
-          id: workspaceData.value.id,
+          id: fromData.id,
           code: fromData.departmentTeamCode,
           name: fromData.departmentName,
           parentId: 0,
@@ -323,7 +384,7 @@
     const list2 = await API.company
       .getJobs({
         data: {
-          id: props.selectItem.id,
+          id: node.data.id,
           offset: 0,
           limit: 100
         }
