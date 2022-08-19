@@ -11,38 +11,35 @@
             :inline="true"
             :label-position="labelPosition"
             label-width="100px"
-            :model="formLabelAlign"
+            :model="formModel"
             style="max-width: 800px"
           >
-            <el-form-item label="姓名">
-              <el-input v-model="formLabelAlign.name" />
+            <el-form-item label="昵称">
+              <el-input v-model="formModel.nickName" />
             </el-form-item>
-            <el-form-item label="身份证号">
-              <el-input v-model="formLabelAlign.idCardNum" />
+            <el-form-item label="账号">
+              <el-input v-model="formModel.account" />
             </el-form-item>
-            <el-form-item label="工号">
-              <el-input v-model="formLabelAlign.jobId" />
+            <el-form-item label="真实姓名">
+              <el-input v-model="formModel.realName" />
             </el-form-item>
             <el-form-item label="手机号">
-              <el-input v-model="formLabelAlign.tel" />
-            </el-form-item>
-            <el-form-item label="邮箱">
-              <el-input v-model="formLabelAlign.email" />
+              <el-input v-model="formModel.phone" />
             </el-form-item>
           </el-form>
           <el-form
             class="form2"
             :label-position="labelPosition"
             label-width="100px"
-            :model="formLabelAlign"
+            :model="formModel"
             style="max-width: 800px"
           >
-            <el-form-item label="个人简介">
+            <el-form-item label="座右铭">
               <el-input
-                v-model="formLabelAlign.Profile"
+                v-model="formModel.motto"
                 :rows="2"
                 type="textarea"
-                placeholder="个人简介"
+                placeholder="座右铭"
               />
             </el-form-item>
           </el-form>
@@ -82,14 +79,12 @@
   const store = useUserStore()
   const labelPosition = ref<'top'>('top')
 
-  const formLabelAlign = reactive({
-    name: '',
-    idCardNum: '',
-    jobId: '',
-    tel: '',
-    email: '',
-    country: '',
-    Profile: ''
+  const formModel = reactive({
+    nickName: '',
+    account: '',
+    realName: '',
+    phone: '',
+    motto: '',
   })
 
   onBeforeMount(() => {
@@ -103,11 +98,11 @@
       })
       .then((res: ResultType) => {
         if (res.success) {
-          formLabelAlign.name = res.data.name
-          formLabelAlign.idCardNum = res.data.id
-          formLabelAlign.jobId = res.data.thingId
-          formLabelAlign.tel = res.data.team.code
-          formLabelAlign.Profile = res.data.team.remark
+          formModel.nickName = res.data.name
+          formModel.account = res.data.code
+          formModel.realName = res.data.team.name
+          formModel.phone = res.data.team.code
+          formModel.motto = res.data.team.remark
         }
       })
   }
@@ -116,13 +111,12 @@
       .update({
         data: {
           id: store.queryInfo.id,
-          name: formLabelAlign.name,
-          code: formLabelAlign.idCardNum,
+          name: formModel.nickName,
+          code: formModel.account,
           thingId: store.queryInfo.thingId,
-          belongId: store.queryInfo.id,
-          teamName: formLabelAlign.name,
-          teamCode: formLabelAlign.tel,
-          teamRemark: formLabelAlign.Profile,
+          teamName: formModel.realName,
+          teamCode: formModel.phone,
+          teamRemark: formModel.motto,
           teamAuthId: store.queryInfo.team.authId
         }
       })
