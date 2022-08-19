@@ -11,7 +11,7 @@
       style="width: 100%"
     >
       <el-option
-        v-for="item in state.options"
+        v-for="item in options"
         :key="item.value"
         :label="item.label"
         :value="item.value"
@@ -36,33 +36,50 @@
       type: Object
     }
   })
-  const state = reactive({
-    options: []
-  })
+  interface ListItem {
+    value: string
+    label: string
+  }
+
   const value = ref('')
-  // const options = ref<ListItem[]>([])
+  const options = ref<ListItem[]>([])
   const loading = ref(false)
-  const emit = defineEmits(['closeDialog', 'switchCreateCompany', 'remoteMethod', 'joinSubmit'])
+  const emit = defineEmits(['closeDialog', 'switchCreateCompany'])
 
   const remoteMethod = (query: string) => {
     if (query) {
-      emit('remoteMethod', query, (res: Array<object>) => {
-        if (res.length > 0) {
-          state.options = res
-          loading.value = false
-        } else {
-          state.options = []
-          loading.value = false
-        }
-      })
+      $services.company
+        .searchCompany({
+          data: {
+            text: query,
+            offset: 0,
+            limit: 10
+          }
+        })
+        .then((res: ResultType) => {
+          if (res.data.result) {
+            let states = res.data.result
+            let arr: { value: any; label: any }[] = []
+            states.forEach((el: any) => {
+              let obj = {
+                value: el.id,
+                label: el.name
+              }
+              arr.push(obj)
+            })
+            options.value = arr
+            loading.value = false
+          } else {
+            options.value = []
+            loading.value = false
+          }
+        })
     } else {
-      state.options = []
+      options.value = []
     }
   }
 
-  const submit = () => {
-    emit('joinSubmit', value.value)
-  }
+  const submit = () => {}
   const closeDialog = () => {
     emit('closeDialog', 'join')
   }

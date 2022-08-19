@@ -113,6 +113,7 @@
   import { onMounted, reactive } from 'vue'
   import { ref } from 'vue'
   import { useUserStore } from '@/store/user'
+  import { ElMessage } from 'element-plus'
   const store = useUserStore()
   const state = reactive({ tableData: [] })
   const state1 = reactive({ tableData: [] })
@@ -156,7 +157,17 @@
         }
       })
       .then((res: ResultType) => {
-        console.log('删除集团成功', res)
+        if (res.success) {
+          ElMessage({
+            message: '删除成功',
+            type: 'success'
+          })
+        } else {
+          ElMessage({
+            message: res.msg,
+            type: 'warning'
+          })
+        }
       })
   }
   const create = () => {
@@ -180,9 +191,19 @@
         }
       })
       .then((res: ResultType) => {
-        console.log('成功创建集团', res)
-        dialogVisible.value = false
-        fetchRequest(offset.value, pageSize.value)
+        if (res.success) {
+          ElMessage({
+            message: '创建成功',
+            type: 'success'
+          })
+          dialogVisible.value = false
+          fetchRequest(offset.value, pageSize.value)
+        } else {
+          ElMessage({
+            message: res.msg,
+            type: 'warning'
+          })
+        }
       })
   }
 
@@ -202,13 +223,12 @@
       },
       headers: { Authorization: token }
     })
-    if (success === true) {
+    if (success) {
       const { result = [], total = 0 } = data
       state.tableData = result?.map((item: { team: { remark: any } }) => {
         return { ...item, remark: item.team.remark }
       })
       totals.value = total
-      console.log('成功!', state.tableData)
       for (let i = 0; i < state.tableData.length; i++) {
         if (state.tableData[i].belongId === store.workspaceData.id) {
           state1.tableData.push(state.tableData[i])
@@ -216,9 +236,6 @@
           state2.tableData.push(state.tableData[i])
         }
       }
-      console.log('创建的：', state1.tableData, '加入的：', state2.tableData)
-
-      console.log('查询集团成功', data)
     }
   }
 </script>

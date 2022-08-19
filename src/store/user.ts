@@ -114,9 +114,9 @@ export const useUserStore = defineStore({
           console.log(res)
           if (res.code == 200) {
             if (lazyLoad) {
-              this.userCompanys = this.userCompanys.concat(res.data.result || [])
+              this.userCompanys = this.userCompanys.concat(res.data.result ? res.data.result : [])
             } else {
-              this.userCompanys = res.data.result
+              this.userCompanys = res.data.result ? res.data.result : []
             }
             // this.userCompanys = [{
             //   id: this.userInfo.workspaceId,

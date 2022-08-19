@@ -61,10 +61,11 @@
           :key="item.value"
           :value="item.value"
           :label="`${item.label}(${item.name})`"
-          style="height: 50px"
+          style="height: 50px; width: 550px"
         >
           <div
             style="
+              width: 100%;
               height: 50px;
               display: flex;
               justify-content: flex-start;
@@ -72,17 +73,33 @@
               border-bottom: 1px solid #f0f2f5;
             "
           >
-            <div style="height: 50px; margin-top: 5px">
+            <div style="height: 50px; width: 15%; margin-top: 5px">
               <headImg
                 :name="item.name.slice(0, 1)"
                 style="transform: scale(0.7, 0.7); border-radius: 50px; font-size: 19px"
               ></headImg>
             </div>
-            <div style="height: 50px; margin-bottom: 5px">
-              <p style="height: 25px; font-weight: 600; overflow: hidden; text-overflow: ellipsis"
+            <div style="height: 50px; width: 85%; margin-bottom: 5px">
+              <p
+                style="
+                  height: 25px;
+                  font-weight: 600;
+                  overflow: hidden;
+                  text-overflow: ellipsis;
+                  white-space: nowrap;
+                "
                 >{{ item.label }}({{ item.name }})</p
               >
-              <p style="height: 25px; color: #ccc">{{ item.remark }}</p>
+              <p
+                style="
+                  height: 25px;
+                  color: #ccc;
+                  overflow: hidden;
+                  text-overflow: ellipsis;
+                  white-space: nowrap;
+                "
+                >{{ item.remark }}</p
+              >
             </div>
           </div>
         </el-option>
