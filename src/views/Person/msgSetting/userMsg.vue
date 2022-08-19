@@ -102,15 +102,13 @@
         data: {}
       })
       .then((res: ResultType) => {
-        console.log('查询人员信息', res)
-        formLabelAlign.name = res.data.name
-        formLabelAlign.idCardNum = res.data.id
-        formLabelAlign.jobId = res.data.thingId
-        formLabelAlign.tel = res.data.team.code
-        formLabelAlign.Profile = res.data.team.remark
-        formLabelAlign.Profile = res.data.team.remark
-        formLabelAlign.Profile = res.data.team.remark
-        formLabelAlign.Profile = res.data.team.remark
+        if (res.success) {
+          formLabelAlign.name = res.data.name
+          formLabelAlign.idCardNum = res.data.id
+          formLabelAlign.jobId = res.data.thingId
+          formLabelAlign.tel = res.data.team.code
+          formLabelAlign.Profile = res.data.team.remark
+        }
       })
   }
   const update = () => {
@@ -129,7 +127,17 @@
         }
       })
       .then((res: ResultType) => {
-        console.log('更新个人信息成功', res)
+        if (res.success) {
+          ElMessage({
+            message: '更新成功',
+            type: 'success'
+          })
+        } else {
+          ElMessage({
+            message: res.msg,
+            type: 'warning'
+          })
+        }
       })
   }
 
