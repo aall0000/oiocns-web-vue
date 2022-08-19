@@ -10,10 +10,7 @@
       <li class="group-content-left con" v-else-if="item.fromId !== myId">
         <!-- <img class="con-img" src="@/assets/img/userIcon/ic_03.png" alt=""> -->
         <HeadImg :name="getUserName(item.fromId)" />
-        <div
-          class="con-content"
-          @contextmenu.prevent.stop="(e: MouseEvent) => handleContextClick(e, item)"
-        >
+        <div class="con-content">
           <span v-if="showName" class="con-content-name">{{ getUserName(item.fromId) }}</span>
           <div class="con-content-link"></div>
           <div class="con-content-txt" v-html="item.msgBody"></div>
@@ -97,7 +94,7 @@
   const getMoreHistory = () => {
     emit('viewMoreMsg')
   }
-  const info = inject('reWrite',ref(''))
+  const info = inject('reWrite', ref(''))
   // 重新编辑功能
   const handleReWrite = (txt: string) => {
     info.value = txt
@@ -147,6 +144,9 @@
     selectedItem: ImMsgChildType
   } = reactive({ left: 0, top: 0, isShowContext: false, selectedItem: {} as ImMsgChildType })
   const handleContextClick = (e: MouseEvent, item: ImMsgChildType) => {
+    console.log('otem',item,new Date(item.createTime));
+    // let bool= new Date(item.createTime) - new Date()
+
     if (!item) {
       return
     }
