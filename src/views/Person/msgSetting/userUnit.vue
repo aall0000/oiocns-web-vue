@@ -129,7 +129,17 @@
         }
       })
       .then((res: ResultType) => {
-        console.log('删除单位成功', res)
+        if (res.success) {
+          ElMessage({
+            message: '删除成功',
+            type: 'success'
+          })
+        } else {
+          ElMessage({
+            message: res.msg,
+            type: 'warning'
+          })
+        }
       })
   }
   type listItem = {
@@ -153,7 +163,9 @@
         }
       })
       .then((res: ResultType) => {
-        dataList.list = res.data.result
+        if (res.success) {
+          dataList.list = res.data.result
+        }
       })
   }
   interface ListItem {
@@ -177,7 +189,7 @@
           }
         })
         .then((res: ResultType) => {
-          if (res.data.result) {
+          if (res.success) {
             let states = res.data.result
             let arr: { value: any; label: any; remark: any; name: any }[] = []
             states.forEach((el: any) => {
@@ -208,11 +220,13 @@
         }
       })
       .then((res: ResultType) => {
-        ElMessage({
-          message: '申请成功',
-          type: 'warning'
-        })
-        addCompany.value = false
+        if (res.success) {
+          ElMessage({
+            message: '申请成功',
+            type: 'warning'
+          })
+          addCompany.value = false
+        }
       })
   }
 </script>
