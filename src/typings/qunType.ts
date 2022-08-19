@@ -31,9 +31,13 @@ interface ImMsgChildType {
   name: string
   remark: string
   typeName: string
+  createTime:string
+  msgType:string
   msgBody?: any
-  groupId?:string
+  spaceId?:string
+  fromId?:string
   count?: number
+  showTxt?:string
 }
 // 聊天 侧边栏展示列表类型
 interface ImMsgType {

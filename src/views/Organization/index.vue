@@ -181,11 +181,13 @@
   const rootElement = ref<rootType>({ id: '' })
   const getInfo = () => {
     $services.company.queryInfo({}).then((res: ResultType) => {
-      let selectObj = res.data
-      selectObj.remark = res.data.team.remark
-      selectItem.value = selectObj
-      rootElement.value = res.data
-      store.userUnitInfo = res.data
+      if (res.success) {
+        let selectObj = res.data
+        selectObj.remark = res.data.team.remark
+        selectItem.value = selectObj
+        rootElement.value = res.data
+        store.userUnitInfo = res.data
+      }
     })
   }
   const changeIndex = (obj: treeItem) => {

@@ -47,13 +47,7 @@
               :loading="loading"
               style="width: 100%"
             >
-              <el-option
-                style="height: 50px"
-                v-for="item in options"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              >
+              <el-option v-for="item in options" :key="item.value" :value="item.value" :label="`${item.label}(${item.name })`" style="height: 50px">
                 <div
                   style="
                     height: 50px;
