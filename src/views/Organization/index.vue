@@ -3,18 +3,12 @@
   <div class="organization-layout-wrap" style="display: flex; height: 100%;">
     <!-- 侧边栏-->
     <teleport v-if="isShowMenu" to="#menu-teleport-target">
-      <div class="menu-tab" v-if="!isPerson">
-        <el-menu router default-active="/organization/company" class="el-menu-vertical-demo" mode="vertical">
-          <el-menu-item index="/organization/company">单位维护</el-menu-item>
-          <el-menu-item index="/organization/group">集团维护</el-menu-item>
-          <el-menu-item index="/organization/cohort">单位群组</el-menu-item>
-          <el-menu-item index="/organization/friend">我的好友</el-menu-item>
-        </el-menu>
-      </div>
-      <div class="menu-tab" v-if="isPerson">
-        <el-menu router default-active="/organization/friend" class="el-menu-vertical-demo" mode="vertical">
-          <el-menu-item index="/organization/friend">我的好友</el-menu-item>
-          <el-menu-item index="/organization/cohort">我的群组</el-menu-item>
+      <div class="menu-tab">
+        <el-menu router :default-active="currentRouter" class="el-menu-vertical-demo" mode="vertical">
+          <el-menu-item v-if="!isMySpace" index="/organization/company">单位维护</el-menu-item>
+          <el-menu-item v-if="!isMySpace" index="/organization/group">集团维护</el-menu-item>
+          <el-menu-item index="/organization/cohort">群组维护</el-menu-item>
+          <el-menu-item index="/organization/friend">好友维护</el-menu-item>
         </el-menu>
       </div>
     </teleport>
@@ -29,15 +23,14 @@
   import { storeToRefs } from 'pinia'
 
   const store = useUserStore()
-  const { workspaceData } = storeToRefs(store)
+  const router = useRouter()
+  const { workspaceData,queryInfo } = storeToRefs(store)
 
-  let isPerson = ref<boolean>(true)
-  if (workspaceData.value.name === '个人空间') {
-    isPerson.value = true
-  } else {
-    isPerson.value = false
-  }
+  const isMySpace = ref<boolean>(workspaceData.value.id == queryInfo.value.id)
+  
   const isShowMenu = ref<boolean>(false)
+  
+  const currentRouter = ref<string>(router.currentRoute.value.fullPath)
 
   onMounted(() => {
     isShowMenu.value = true

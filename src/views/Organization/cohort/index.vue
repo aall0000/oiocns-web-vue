@@ -13,11 +13,9 @@
       <el-table :data="state.qunList" stripe style="width: 100%; height: 100%"
         @select="handleSelect">
         <el-table-column type="selection" width="50" />
-        <el-table-column prop="code" label="账号" />
-        <el-table-column prop="name" label="昵称" />
-        <el-table-column prop="trueName" label="姓名" />
-        <el-table-column prop="teamCode" label="手机号" />
-        <el-table-column prop="remark" label="座右铭" />
+        <el-table-column prop="name" label="群名称" />
+        <el-table-column prop="code" label="群编号" />
+        <el-table-column prop="remark" label="群简介" />
         <el-table-column prop="name" label="操作">
           <template #default="scope">
             <el-button @click="deleteCohort(scope.row.id)" type="primary">退出群</el-button>
@@ -49,7 +47,7 @@
         <el-input v-model="qunCode" placeholder="请输入群编号" clearable />
       </el-form-item>
       <el-form-item label="群简介">
-        <el-input v-model="qunTeamRemark" placeholder="请输入群简介" type="textarea" clearable />
+        <el-input v-model="qunTeamRemark" placeholder="请输入群简介" type="textarea" clearable :rows="4" />
       </el-form-item>
       <template #footer>
         <span class="dialog-footer">
@@ -82,7 +80,14 @@ const getQunList = async () => {
   const { data, err } = res
   if (!err) {
     const { result = [] } = data
-    state.qunList = result
+    state.qunList = result?.map(
+      (item: { team: { remark: any; code: any; name: any } }) => {
+        return {
+          ...item,
+          remark: item.team.remark
+        }
+      }
+    )
   }
 }
 

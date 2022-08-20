@@ -14,9 +14,9 @@
   </div>
 </template>
 <script lang="ts" setup>
-  import Tree from './Tree.vue'
-  import Info from './Info.vue'
-  import Users from './Users.vue'
+  import Tree from './tree.vue'
+  import Info from './info.vue'
+  import Users from './body.vue'
   import { ref } from 'vue';
 
   let group = ref({})
