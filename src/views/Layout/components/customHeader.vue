@@ -231,7 +231,7 @@
         data: {
           text: query,
           offset: 0,
-          limit: 10
+          limit: 100
         }
       })
       .then((res: ResultType) => {
@@ -400,6 +400,7 @@
     box-shadow: 0px 6px 9px rgba(0, 0, 0, 0.161);
     border-radius: 0 0 4px 4px;
     z-index: 2;
+    min-width: 250px;
   }
   .col-box {
     cursor: pointer;

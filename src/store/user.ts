@@ -107,7 +107,7 @@ export const useUserStore = defineStore({
         .getJoinedCompany({
           data: {
             offset: current,
-            limit: 10
+            limit: 100
           }
         })
         .then((res: ResultType) => {
