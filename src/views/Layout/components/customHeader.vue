@@ -3,7 +3,10 @@
     <!-- 左侧 -->
     <el-col class="" :span="4">
       <div style="display: flex; align-items: center" @mouseleave="handleClose()">
-        <img class="logo" src="@/assets/img/avatar.jpg" alt="logo" />
+        <!-- <img class="logo" src="@/assets/img/avatar.jpg" alt="logo" /> -->
+        <div class="select-item__imgSelect" style="margin-right: 10px;">
+          {{ workspaceData?.name.slice(0, 1)}}
+        </div>
         <div class="col-box" @click="onClickUnit">
           <div class="col-text">{{ workspaceData?.name || '' }}</div>
           <div class="col-icon"
@@ -352,6 +355,7 @@
   }
   .col-text {
     white-space: nowrap;
+    font-size: 16px;
   }
   .seletc-drop__box {
     cursor: pointer;
