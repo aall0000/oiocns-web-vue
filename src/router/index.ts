@@ -66,12 +66,12 @@ const mainRouter: RouteRecordRaw[] = [
   },
   {
     path: '/organization',
-    component: () => import('@/views/Organization/components/layout.vue'),
+    component: () => import('@/views/Organization/index.vue'),
     children: [
       {
         path: '/organization/company',
         name: 'company',
-        component: () => import('@/views/Organization/index.vue'),
+        component: () => import('@/views/Organization/company/index.vue'),
         meta: {
           title: '单位维护'
         }
@@ -79,7 +79,7 @@ const mainRouter: RouteRecordRaw[] = [
       {
         path: '/organization/group',
         name: 'group',
-        component: () => import('@/views/Organization/index.vue'),
+        component: () => import('@/views/Organization/group/index.vue'),
         meta: {
           title: '集团维护'
         }
@@ -87,7 +87,7 @@ const mainRouter: RouteRecordRaw[] = [
       {
         path: '/organization/cohort',
         name: 'cohort',
-        component: () => import('@/views/Organization/friend.vue'),
+        component: () => import('@/views/Organization/cohort/index.vue'),
         meta: {
           title: '单位群组'
         }
@@ -95,38 +95,12 @@ const mainRouter: RouteRecordRaw[] = [
       {
         path: '/organization/friend',
         name: 'friend',
-        component: () => import('@/views/Organization/friend.vue'),
+        component: () => import('@/views/Organization/friend/index.vue'),
         meta: {
           title: '我的好友'
         }
       },
-      {
-        path: '/organization/deptDetail',
-        name: 'deptDetail',
-        component: () => import('@/views/Organization/deptDetail.vue'),
-        meta: {
-          title: '部门维护'
-        }
-      },
-      {
-        path: '/organization/companyList',
-        name: 'companyList',
-        component: () => import('@/views/Organization/companyList.vue'),
-        meta: {
-          title: '单位维护'
-        }
-      }
     ]
-  },
-  {
-    component: () => import('@/views/Organization/OrganizationTable/index.vue'),
-    name: 'organizationTable',
-    path: '/organizationTable',
-
-    meta: {
-      keepAlive: false,
-      title: '关系'
-    }
   },
   {
     component: () => import('@/views/Work/home.vue'),

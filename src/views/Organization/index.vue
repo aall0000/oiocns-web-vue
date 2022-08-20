@@ -1,83 +1,46 @@
 <template>
-  <div class="main-content">
-    <!-- 单位管理 -->
-    <div class="org-content mainBox" v-if="showMenu == true">
-      <departmentTree
-        :envType="envType"
-        :rootElement="rootElement"
-        :selectItem="selectItem"
-        ref="unitTree"
-        @changeIndex="changeIndex"
-        class="department-tree left box"
-      />
-      <div class="resize" title="收缩侧边栏"> ⋮ </div>
-      <div class="main-dep mid box" v-if="envType == 1">
-        <departmentDetail
-          :envType="envType"
-          @Refresh="Refresh"
-          :rootElement="rootElement"
-          :selectItem="selectItem"
-        />
-        <departmentList
-          ref="departmentDom"
-          :envType="envType"
-          :rootElement="rootElement"
-          :selectId="selectId"
-          :selectItem="selectItem"
-          :personType="personType"
-        ></departmentList>
+  <!-- 主体 -->
+  <div class="organization-layout-wrap" style="display: flex; height: 100%;">
+    <!-- 侧边栏-->
+    <teleport v-if="isShowMenu" to="#menu-teleport-target">
+      <div class="menu-tab" v-if="!isPerson">
+        <el-menu router default-active="/organization/company" class="el-menu-vertical-demo" mode="vertical">
+          <el-menu-item index="/organization/company">单位维护</el-menu-item>
+          <el-menu-item index="/organization/group">集团维护</el-menu-item>
+          <el-menu-item index="/organization/cohort">单位群组</el-menu-item>
+          <el-menu-item index="/organization/friend">我的好友</el-menu-item>
+        </el-menu>
       </div>
-      <div class="main-dep mid box" v-else>
-        <orgDetail :envType="envType" :rootElement="rootElement" :selectItem="selectItem" />
-        <orgList
-          :envType="envType"
-          :rootElement="rootElement"
-          :selectId="selectId"
-          :selectItem="selectItem"
-          :personType="personType"
-        ></orgList>
+      <div class="menu-tab" v-if="isPerson">
+        <el-menu router default-active="/organization/friend" class="el-menu-vertical-demo" mode="vertical">
+          <el-menu-item index="/organization/friend">我的好友</el-menu-item>
+          <el-menu-item index="/organization/cohort">我的群组</el-menu-item>
+        </el-menu>
       </div>
-    </div>
-    <!-- 个人管理 -->
-    <div class="org-content" v-else style="flex-direction: column">
-      <organizatList :personType="personType"></organizatList>
-    </div>
+    </teleport>
+    <!-- 内容区域home -->
+    <router-view />
   </div>
 </template>
 <script lang="ts" setup>
   // @ts-nocheck
-  import $services from '@/services'
-  import { ref, onMounted, watch } from 'vue'
-  import departmentTree from './components/departmentTree.vue'
-  import departmentDetail from './components/departmentDetail.vue'
-  import departmentList from './components/departmentList.vue'
-  import orgDetail from './components/orgDetail.vue'
-  import orgList from './components/orgList.vue'
-  import organizatList from './components/organizatList.vue'
+  import { ref, onMounted } from 'vue'
   import { useUserStore } from '@/store/user'
   import { storeToRefs } from 'pinia'
-  import { useRouter } from 'vue-router'
 
   const store = useUserStore()
-  const { queryInfo } = storeToRefs(store)
-  const { workspaceData, userUnitInfo } = storeToRefs(store)
-  const unitTree = ref(null)
-  let showMenu = ref<boolean>(true)
-  if (workspaceData.value.name != '个人空间') {
-    showMenu.value = true
+  const { workspaceData } = storeToRefs(store)
+
+  let isPerson = ref<boolean>(true)
+  if (workspaceData.value.name === '个人空间') {
+    isPerson.value = true
   } else {
-    showMenu.value = false
+    isPerson.value = false
   }
   const isShowMenu = ref<boolean>(false)
-  type selectType = {
-    name: string
-    id: string
-  }
+
   onMounted(() => {
     isShowMenu.value = true
-    if (router.currentRoute.value.path == '/organization/company') {
-      getInfo()
-    }
     dragControllerDiv()
   })
 
@@ -126,110 +89,33 @@
       }
     }
   }
-
-  let router = useRouter()
-  let envType = ref<number>(1)
-
-  watch(
-    () => router.currentRoute.value.path,
-    (newValue, oldValue) => {
-      if (router.currentRoute.value.path == '/organization/company') {
-        envType.value = 1 //1-单位 2-集团
-      } else {
-        envType.value = 2 //1-单位 2-集团
-      }
-    },
-    { immediate: true }
-  )
-  // const selectList = reactive<selectType[]>([])
-
-  let selectId = ref<string>()
-  const selectItem = ref<selectType>({
-    id: '',
-    name: '',
-    num: 0,
-    remark: '',
-    label: ''
-  })
-  let personType = ref<string>('1')
-  //获取当前账号的所有单位
-  // $services.company
-  //   .getJoinedCompany({
-  //     data: {
-  //       id: queryInfo.value.id,
-  //       offset: 0,
-  //       limit: 100
-  //     }
-  //   })
-  //   .then((res: ResultType) => {
-  //     selectList.push(...res.data.result)
-  //     console.log(selectList)
-  //   })
-  type treeItem = {
-    id: string
-    name: string
-    remark: string
-  }
-  // const menuIndex = ref<string>('1')
-  // const menuCheck = (index:string)=>{
-  //   menuIndex.value= index;
-  // }
-  type rootType = {
-    id: string
-    name: string
-  }
-  const rootElement = ref<rootType>({ id: '' })
-  const getInfo = () => {
-    $services.company.queryInfo({}).then((res: ResultType) => {
-      if (res.success) {
-        let selectObj = res.data
-        selectObj.remark = res.data.team.remark
-        selectItem.value = selectObj
-        rootElement.value = res.data
-        store.userUnitInfo = res.data
-      }
-    })
-  }
-  const changeIndex = (obj: treeItem) => {
-    console.log('obj', obj)
-    selectItem.value = JSON.parse(JSON.stringify(obj)) //深拷贝obj，解决影响切换空间丢失name的问题
-    selectItem.value.name = obj.label
-    selectId.value = obj.id
-  }
-  // const personTypeChange = (index: string) => {
-  //   personType.value = index
-  // }
-  const departmentDom = ref(null)
-  //刷新页面
-  const Refresh = () => {
-    departmentDom.value.Refresh()
-  }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
   .organization-wrap {
     .el-menu--horizontal > .el-menu-item {
       font-size: 18px;
-
       &:hover,
       &.is-active {
         background-color: none !important;
         color: $mainColor !important;
       }
-
       &.is-active {
         border-bottom: 2px solid $mainColor;
       }
     }
-
     .el-menu--horizontal .el-menu-item:not(.is-disabled):focus,
     .el-menu--horizontal .el-menu-item:not(.is-disabled):hover {
       background: none !important;
     }
+    display: flex;
+    flex-direction: column;
   }
-</style>
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style lang="scss" scoped>
+  .menu-tab {
+    width: 140px;
+    height: calc(100% - 15px);
+    background: #fff;
+  }
   .resize {
     cursor: col-resize;
     float: left;
@@ -254,42 +140,5 @@
   }
   :deep(.el-select) {
     width: 100%;
-  }
-
-  .subMenu {
-    height: 100%;
-    width: 100px;
-    float: left;
-  }
-
-  .main-content {
-    width: 100%;
-    height: 100%;
-    overflow-y: auto;
-    position: absolute;
-    left: 0;
-    top: 0;
-  }
-
-  .org-content {
-    display: flex;
-    background: #f0f2f5;
-    padding: 15px;
-    width: 100%;
-    height: 100%;
-    // overflow-y: scroll;
-    .department-tree {
-      width: 280px;
-      min-width: 200px;
-    }
-    .main-dep {
-      float: left;
-      width: calc(100% - 290px);
-      margin-left: 10px;
-    }
-    // 右侧列表
-    .department-info {
-      flex-grow: 1;
-    }
   }
 </style>
