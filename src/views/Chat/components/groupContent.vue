@@ -9,7 +9,7 @@
 
       <li class="group-content-left con" v-else-if="item.fromId !== myId">
         <!-- <img class="con-img" src="@/assets/img/userIcon/ic_03.png" alt=""> -->
-        <HeadImg :name="getUserName(item.fromId)" />
+        <HeadImg :name="getUserName(item.fromId)" :label="''"/>
         <div class="con-content">
           <span v-if="showName" class="con-content-name">{{ getUserName(item.fromId) }}</span>
           <div class="con-content-link"></div>
@@ -27,7 +27,7 @@
           <!-- {{ item.msgBody }} -->
         </div>
         <!-- <img class="con-img" src="@/assets/img/userIcon/ic_06.png" alt=""> -->
-        <HeadImg :name="getUserName(myId)" />
+        <HeadImg :name="getUserName(myId)" :label="''"/>
       </li>
     </template>
     <!-- 鼠标右键 -->

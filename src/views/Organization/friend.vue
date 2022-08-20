@@ -74,7 +74,7 @@
           >
             <div style="height: 50px; margin-top: 5px">
               <headImg
-                :name="item.name.slice(0, 1)"
+                :name="item.name.slice(0, 1)" :label="''"
                 style="transform: scale(0.7, 0.7); border-radius: 50px; font-size: 19px"
               ></headImg>
             </div>

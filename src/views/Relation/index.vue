@@ -26,8 +26,8 @@
   const router = useRouter()
   const { workspaceData,queryInfo } = storeToRefs(store)
 
-  const isMySpace = ref<boolean>(workspaceData.value.id == queryInfo.value.id)
-  
+  // const isMySpace = ref<boolean>(workspaceData.value.id == queryInfo.value.id)
+  const isMySpace = ref<boolean>(false)
   const isShowMenu = ref<boolean>(false)
   
   const currentRouter = ref<string>(router.currentRoute.value.fullPath)

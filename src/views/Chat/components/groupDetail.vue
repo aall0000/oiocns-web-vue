@@ -2,7 +2,7 @@
   <div class="group-detail-wrap">
     <h1 class="title">{{ detail.name }}</h1>
     <ul class="base flex border-b">
-      <HeadImg :name="detail.name" />
+      <HeadImg :name="detail.name" :label="''"/>
       <li class="base-info">
         <div class="base-info-top flex">
           <!-- <p class="base-info-top-name">{{ detail.name }}</p>
