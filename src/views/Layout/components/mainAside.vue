@@ -122,7 +122,7 @@
     mainMenus: [
       { name: '工作台', icon: 'House', path: '/workHome' },
       { name: '消息', icon: 'ChatDotRound', path: '/chat' },
-      { name: '关系', icon: 'Avatar', path: '/organization' },
+      { name: '关系', icon: 'Avatar', path: '/relation/friend' },
       { name: '市场', icon: 'GoodsFilled', path: '/appStore' },
       { name: '应用', icon: 'Grid', path: '/appStpre', bottom: true },
       { name: '数据', icon: 'Share', path: '/thing' },

@@ -5,10 +5,10 @@
     <teleport v-if="isShowMenu" to="#menu-teleport-target">
       <div class="menu-tab">
         <el-menu router :default-active="currentRouter" class="el-menu-vertical-demo" mode="vertical">
-          <el-menu-item v-if="!isMySpace" index="/organization/company">单位维护</el-menu-item>
-          <el-menu-item v-if="!isMySpace" index="/organization/group">集团维护</el-menu-item>
-          <el-menu-item index="/organization/cohort">群组维护</el-menu-item>
-          <el-menu-item index="/organization/friend">好友维护</el-menu-item>
+          <el-menu-item v-if="!isMySpace" index="/relation/company">单位维护</el-menu-item>
+          <el-menu-item v-if="!isMySpace" index="/relation/group">集团维护</el-menu-item>
+          <el-menu-item index="/relation/cohort">群组维护</el-menu-item>
+          <el-menu-item index="/relation/friend">好友维护</el-menu-item>
         </el-menu>
       </div>
     </teleport>

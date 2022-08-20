@@ -65,37 +65,37 @@ const mainRouter: RouteRecordRaw[] = [
     }
   },
   {
-    path: '/organization',
-    component: () => import('@/views/Organization/index.vue'),
+    path: '/relation',
+    component: () => import('@/views/Relation/index.vue'),
     children: [
       {
-        path: '/organization/company',
+        path: '/relation/company',
         name: 'company',
-        component: () => import('@/views/Organization/company/index.vue'),
+        component: () => import('@/views/Relation/company/index.vue'),
         meta: {
           title: '单位维护'
         }
       },
       {
-        path: '/organization/group',
+        path: '/relation/group',
         name: 'group',
-        component: () => import('@/views/Organization/group/index.vue'),
+        component: () => import('@/views/Relation/group/index.vue'),
         meta: {
           title: '集团维护'
         }
       },
       {
-        path: '/organization/cohort',
+        path: '/relation/cohort',
         name: 'cohort',
-        component: () => import('@/views/Organization/cohort/index.vue'),
+        component: () => import('@/views/Relation/cohort/index.vue'),
         meta: {
           title: '单位群组'
         }
       },
       {
-        path: '/organization/friend',
+        path: '/relation/friend',
         name: 'friend',
-        component: () => import('@/views/Organization/friend/index.vue'),
+        component: () => import('@/views/Relation/friend/index.vue'),
         meta: {
           title: '我的好友'
         }
