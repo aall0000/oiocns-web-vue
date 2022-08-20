@@ -30,14 +30,14 @@ const { name = '', url, label = '' } = toRefs(props)
 .user-head-label {
   position: absolute;
   right: 5px;
-  top: 32px;
+  top: 26px;
 }
 
 .user-head-img-wrap {
-  width: 46px;
-  min-width: 46px;
-  height: 46px;
-  margin-right: 15px;
+  width: 40px;
+  min-width: 40px;
+  height: 40px;
+  margin-right: 10px;
   border-radius: 4px;
 
   &.txt-img {

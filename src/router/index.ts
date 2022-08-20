@@ -70,7 +70,7 @@ const mainRouter: RouteRecordRaw[] = [
     children: [
       {
         path: '/relation/company',
-        name: 'company',
+        name: 'company1',
         component: () => import('@/views/Relation/company/index.vue'),
         meta: {
           title: '单位维护'
@@ -78,7 +78,7 @@ const mainRouter: RouteRecordRaw[] = [
       },
       {
         path: '/relation/group',
-        name: 'group',
+        name: 'group1',
         component: () => import('@/views/Relation/group/index.vue'),
         meta: {
           title: '集团维护'
@@ -86,7 +86,7 @@ const mainRouter: RouteRecordRaw[] = [
       },
       {
         path: '/relation/cohort',
-        name: 'cohort',
+        name: 'cohort1',
         component: () => import('@/views/Relation/cohort/index.vue'),
         meta: {
           title: '单位群组'
@@ -94,13 +94,77 @@ const mainRouter: RouteRecordRaw[] = [
       },
       {
         path: '/relation/friend',
-        name: 'friend',
+        name: 'friend1',
         component: () => import('@/views/Relation/friend/index.vue'),
         meta: {
           title: '我的好友'
         }
       },
     ]
+  },
+  {
+    path: '/organization',
+    component: () => import('@/views/Organization/components/layout.vue'),
+    children: [
+      {
+        path: '/organization/company',
+        name: 'company',
+        component: () => import('@/views/Organization/index.vue'),
+        meta: {
+          title: '单位维护'
+        }
+      },
+      {
+        path: '/organization/group',
+        name: 'group',
+        component: () => import('@/views/Organization/index.vue'),
+        meta: {
+          title: '集团维护'
+        }
+      },
+      {
+        path: '/organization/cohort',
+        name: 'cohort',
+        component: () => import('@/views/Organization/friend.vue'),
+        meta: {
+          title: '单位群组'
+        }
+      },
+      {
+        path: '/organization/friend',
+        name: 'friend',
+        component: () => import('@/views/Organization/friend.vue'),
+        meta: {
+          title: '我的好友'
+        }
+      },
+      {
+        path: '/organization/deptDeatil',
+        name: 'deptDeatil',
+        component: () => import('@/views/Organization/deptDetail.vue'),
+        meta: {
+          title: '部门维护'
+        }
+      },
+      {
+        path: '/organization/companyList',
+        name: 'companyList',
+        component: () => import('@/views/Organization/companyList.vue'),
+        meta: {
+          title: '单位维护'
+        }
+      }
+    ]
+  },
+  {
+    component: () => import('@/views/Organization/OrganizationTable/index.vue'),
+    name: 'organizationTable',
+    path: '/organizationTable',
+
+    meta: {
+      keepAlive: false,
+      title: '关系'
+    }
   },
   {
     component: () => import('@/views/Work/home.vue'),

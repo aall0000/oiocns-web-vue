@@ -293,12 +293,12 @@ const handleContextChange = (item: MenuItemType) => {
         position: relative;
         display: flex;
         justify-content: space-between;
-        padding: 10px;
+        padding: 5px;
         border-radius: 6px;
 
         &:hover,
         &.active {
-          // color: #409eff;
+          color: var(--el-menu-active-color);
           background-color: #f4f4f4;
         }
 
