@@ -43,9 +43,6 @@
     height: 100%;
     padding: 3px;
     background: #f0f2f5;
-    .info {
-      height: 26%;
-    }
     .users{
       height: 74%;
     }

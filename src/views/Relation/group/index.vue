@@ -1,11 +1,11 @@
 <template>
   <div class="container">
     <div class="tree">
-      <Tree @groupNodeClick="groupNodeClick"/>
+      <Tree @groupNodeClick="nodeClick"/>
     </div>
     <card class="content">
       <div class="info">
-        <Info :group="group"/>
+        <Info :group="group" ref="info"/>
       </div>
       <div class="companies">
         <Companies/>
@@ -14,18 +14,18 @@
   </div>
 </template>
 <script lang="ts" setup>
-  import Tree from './Tree.vue'
-  import Info from './Info.vue'
-  import Companies from './Companies.vue'
+  import Tree from './tree.vue'
+  import Info from './info.vue'
+  import Companies from './companies.vue'
   import { ref } from 'vue';
 
   let group = ref({})
 
-  const groupNodeClick = (group: any)=>{
-    console.log("group===", group);
-    group.value = group
-  }
+  const info = ref(null);
 
+  const nodeClick = (selectItem: any)=>{
+    info.value.selectItemChange(selectItem);
+  }
 </script>
 <style lang="scss" scoped>
 .container {
