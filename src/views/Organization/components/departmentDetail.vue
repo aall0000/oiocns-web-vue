@@ -19,7 +19,9 @@
           </tr>
           <tr>
             <td class="left">备注</td>
-            <td class="column">{{selectItem.remark}}</td>
+            <td class="column" colspan="3">
+              <span class="remark">{{selectItem.remark}}</span>
+            </td>
           </tr>
         </table>
       </ul>
@@ -372,6 +374,14 @@
       text-align: left;
       padding: 0 20px;
       background: #fff;
+    }
+
+    .remark{
+      display: -webkit-box;
+      -webkit-line-clamp: 10;
+      -webkit-box-orient: vertical;
+      width: 100%;
+      overflow: hidden;
     }
   }
 </style>
