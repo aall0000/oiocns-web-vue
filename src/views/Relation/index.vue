@@ -27,10 +27,14 @@
   const { workspaceData,queryInfo } = storeToRefs(store)
 
   const isMySpace = ref<boolean>(workspaceData.value.id == queryInfo.value.id)
-  
+  // const isMySpace = ref<boolean>(true)
   const isShowMenu = ref<boolean>(false)
   
   const currentRouter = ref<string>(router.currentRoute.value.fullPath)
+  if(currentRouter.value.length < 12){
+    currentRouter.value = "/relation/friend"
+    router.push(currentRouter.value)
+  }
 
   onMounted(() => {
     isShowMenu.value = true
@@ -108,6 +112,15 @@
     width: 140px;
     height: calc(100% - 15px);
     background: #fff;
+    border-right: solid 1px var(--el-menu-border-color);
+
+    .is-active{
+      background-color: #f4f4f4;
+    }
+
+    .el-menu {
+      border: none;
+    }
   }
   .resize {
     cursor: col-resize;

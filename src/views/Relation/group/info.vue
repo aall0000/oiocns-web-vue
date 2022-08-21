@@ -2,7 +2,7 @@
   <div class="department-info">
     <div class="deptment-info">
       <div class="deptment-info-btns">
-        <div class="left-name">节点信息</div>
+        <div class="left-name">集团信息</div>
       </div>
     </div>
     <div class="tab-list">
@@ -10,13 +10,15 @@
         <table class="table-mytable">
           <tr>
             <td class="left">节点名称</td>
-            <td class="column">{{ group.name }}</td>
+            <td class="column">{{selectItem?.data?.name}}</td>
             <td class="left">节点编码</td>
-            <td class="column">{{ group.code }}</td>
+            <td class="column">{{selectItem?.data?.teamCode}}</td>
           </tr>
           <tr>
             <td class="left">节点描述</td>
-            <td class="column">{{ group.remark }}</td>
+            <td class="column" colspan="3">
+              <span class="remark">{{selectItem?.data?.teamRemark}}</span>
+            </td>
           </tr>
         </table>
       </ul>
@@ -53,7 +55,20 @@
 	})
   let dialogVisible = ref<boolean>(false)
   let formData: any = ref({})
+  let selectItem = ref<any>({})
 
+  // 获取单位树点击的信息
+  const selectItemChange = (data: any) => {
+    selectItem.value = data;
+  };
+  defineExpose({ selectItemChange });
+
+
+  watch(selectItem, () => {
+    console.log(selectItem.value)
+    console.log("selectItem改变了");
+  });
+  
   // 修改集团
   const updateGroup = ()=> {
 

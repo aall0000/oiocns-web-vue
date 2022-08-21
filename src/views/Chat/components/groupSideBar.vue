@@ -14,7 +14,7 @@
           <div :class="['con-body', props.active.spaceId === item.id && props.active.id === child.id ? 'active' : '']"
             v-for="child in item.chats" :key="child.id" v-if="openIdArr.includes(item.id)"
             @contextmenu.prevent.stop="(e: MouseEvent) => handleContextClick(e, child)">
-            <HeadImg :name="child.name" />
+            <HeadImg :name="child.name" :label="child.label" />
             <div class="group-con-dot" v-show="child.count > 0">
               <span>{{ child.count }}</span>
             </div>
@@ -22,8 +22,7 @@
               <el-tooltip class="box-item" :disabled="child.name.length < 7" :content="child.name"
                 placement="right-start">
                 <p class="group-con-show-name">
-                  <span class="group-con-show-name-label">{{ props.myId === child.id ? `我 (${child.name})` : child.name
-                  }}</span>
+                  <span class="group-con-show-name-label">{{ props.myId === child.id ? `我 (${child.name})` : child.name}}</span>
                   <span class="group-con-show-name-time">{{ handleFormatDate(child.msgTime) }} </span>
                 </p>
               </el-tooltip>
@@ -34,7 +33,7 @@
           <div :class="['con-body', props.active.spaceId === item.id && props.active.id === child.id ? 'active' : '']"
             v-for="child in item.chats.filter(v=>v?.count>0)" :key="child.id+child.name" v-else
             @contextmenu.prevent.stop="(e: MouseEvent) => handleContextClick(e, child)">
-            <HeadImg :name="child.name" />
+            <HeadImg :name="child.name" :label="child.label"/>
             <div class="group-con-dot" v-show="child.count > 0">
               <span>{{ child.count }}</span>
             </div>
@@ -42,8 +41,7 @@
               <el-tooltip class="box-item" :disabled="child.name.length < 7" :content="child.name"
                 placement="right-start">
                 <p class="group-con-show-name">
-                  <span class="group-con-show-name-label">{{ props.myId === child.id ? `我 (${child.name})` : child.name
-                  }}</span>
+                  <span class="group-con-show-name-label">{{ props.myId === child.id ? `我 (${child.name})` : child.name}}</span>
                   <span class="group-con-show-name-time">{{ handleFormatDate(child.msgTime) }} </span>
                 </p>
               </el-tooltip>
@@ -295,12 +293,12 @@ const handleContextChange = (item: MenuItemType) => {
         position: relative;
         display: flex;
         justify-content: space-between;
-        padding: 10px;
+        padding: 5px;
         border-radius: 6px;
 
         &:hover,
         &.active {
-          // color: #409eff;
+          color: var(--el-menu-active-color);
           background-color: #f4f4f4;
         }
 
@@ -325,7 +323,7 @@ const handleContextChange = (item: MenuItemType) => {
         &-label {
           font-size: 14px;
           font-weight: bold;
-          max-width: 120px;
+          max-width: 100px;
           text-overflow: ellipsis;
           overflow: hidden;
           white-space: nowrap;

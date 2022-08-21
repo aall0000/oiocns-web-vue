@@ -11,13 +11,15 @@
         <table class="table-mytable">
           <tr>
             <td class="left">节点名称</td>
-            <td class="column">{{selectItem?.class?.name}}</td>
+            <td class="column">{{selectItem?.data?.name}}</td>
             <td class="left">节点编码</td>
-            <td class="column">{{selectItem?.class?.code}}</td>
+            <td class="column">{{selectItem?.data?.teamCode}}</td>
           </tr>
           <tr>
             <td class="left">节点描述</td>
-            <td class="column">{{selectItem?.class?.remark}}</td>
+            <td class="column" colspan="3">
+              <span class="remark">{{selectItem?.data?.teamRemark}}</span>
+            </td>
           </tr>
         </table>
       </ul>
@@ -114,6 +116,14 @@
       text-align: left;
       padding: 0 20px;
       background: #fff;
+    }
+    
+    .remark{
+      display: -webkit-box;
+      -webkit-line-clamp: 10;
+      -webkit-box-orient: vertical;
+      width: 100%;
+      overflow: hidden;
     }
   }
 </style>

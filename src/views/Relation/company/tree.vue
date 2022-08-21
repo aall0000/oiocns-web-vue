@@ -8,13 +8,13 @@
         </el-icon>
         <template #dropdown>
           <el-dropdown-menu>
-            <el-dropdown-item  @click="deptDialogVisible = true">
+            <el-dropdown-item @click="deptDialogVisible = true">
               <el-icon class="el-icon--right">
                 <plus />
               </el-icon>
               新增部门
             </el-dropdown-item>
-            <el-dropdown-item  @click="jobDialogVisible = true">
+            <el-dropdown-item @click="jobDialogVisible = true">
               <el-icon class="el-icon--right">
                 <plus />
               </el-icon>
@@ -35,8 +35,8 @@
       </el-input>
     </div>
     <div class="tree">
-      <el-tree :data="orgTree" ref="treeRef" @node-click="nodeClick" node-key="id" :highlightCurrent="true" :default-expanded-keys="defaultExpandedKeys"
-        :filter-node-method="filterNode">
+      <el-tree :data="orgTree" ref="treeRef" @node-click="nodeClick" node-key="id" :highlightCurrent="true"
+        :default-expanded-keys="defaultExpandedKeys" :filter-node-method="filterNode">
         <template #default="{ node, data }">
           <span class="custom-tree-node">
             <div class="tree-box">
@@ -44,7 +44,7 @@
                 <School />
               </el-icon>
               <span>{{ data.label }}</span>
-              <el-tag size="small">{{ data.class.typeName }}</el-tag>
+              <el-tag size="small">{{ data.data.typeName }}</el-tag>
             </div>
           </span>
         </template>
@@ -57,38 +57,20 @@
 
   </el-card>
 
-  <el-dialog
-    v-model="deptDialogVisible"
-    title="请录入部门信息"
-    width="40%"
-    center
-    append-to-body
-    @close="dialogHide"
-  >
+  <el-dialog v-model="deptDialogVisible" title="请录入部门信息" width="40%" center append-to-body @close="dialogHide">
     <div>
       <el-form-item label="部门名称" style="width: 100%">
-        <el-input v-model="formData.name" placeholder="请输入" clearable style="width: 100%"/>
+        <el-input v-model="formData.name" placeholder="请输入" clearable style="width: 100%" />
       </el-form-item>
       <el-form-item label="部门编号" style="width: 100%">
-        <el-input v-model="formData.code" placeholder="请输入" clearable style="width: 100%"/>
+        <el-input v-model="formData.code" placeholder="请输入" clearable style="width: 100%" />
       </el-form-item>
       <el-form-item label="上级节点" style="width: 100%">
-        <el-cascader
-          :props="cascaderProps"
-          :options="cascaderTree"
-          v-model="formData.parentIds"
-          style="width: 100%"
-          placeholder="请选择"
-        />
+        <el-cascader :props="cascaderProps" :options="cascaderTree" v-model="formData.parentIds" style="width: 100%"
+          placeholder="请选择" />
       </el-form-item>
       <el-form-item label="部门简介" style="width: 100%">
-        <el-input
-          v-model="formData.remark"
-          :autosize="{ minRows: 5 }"
-          placeholder="请输入"
-          type="textarea"
-          clearable
-        />
+        <el-input v-model="formData.remark" :autosize="{ minRows: 5 }" placeholder="请输入" type="textarea" clearable />
       </el-form-item>
     </div>
     <template #footer>
@@ -99,38 +81,20 @@
     </template>
   </el-dialog>
 
-  <el-dialog
-    v-model="jobDialogVisible"
-    title="请录入工作组信息"
-    width="40%"
-    center
-    append-to-body
-    @close="dialogHide"
-  >
+  <el-dialog v-model="jobDialogVisible" title="请录入工作组信息" width="40%" center append-to-body @close="dialogHide">
     <div>
       <el-form-item label="工作组名称" style="width: 100%">
-        <el-input v-model="formData.name" placeholder="请输入" clearable style="width: 100%"/>
+        <el-input v-model="formData.name" placeholder="请输入" clearable style="width: 100%" />
       </el-form-item>
       <el-form-item label="工作组编号" style="width: 100%">
-        <el-input v-model="formData.code" placeholder="请输入" clearable  style="width: 100%"/>
+        <el-input v-model="formData.code" placeholder="请输入" clearable style="width: 100%" />
       </el-form-item>
       <el-form-item label="上级节点" style="width: 100%">
-        <el-cascader
-          :props="cascaderProps"
-          :options="cascaderTree"
-          v-model="formData.parentIds"
-          style="width: 100%"
-          placeholder="请选择"
-        />
+        <el-cascader :props="cascaderProps" :options="cascaderTree" v-model="formData.parentIds" style="width: 100%"
+          placeholder="请选择" />
       </el-form-item>
       <el-form-item label="工作组简介" style="width: 100%">
-        <el-input
-          v-model="formData.remark"
-          :autosize="{ minRows: 5 }"
-          placeholder="请输入"
-          type="textarea"
-          clearable
-        />
+        <el-input v-model="formData.remark" :autosize="{ minRows: 5 }" placeholder="请输入" type="textarea" clearable />
       </el-form-item>
     </div>
     <template #footer>
@@ -146,17 +110,19 @@
 <script lang="ts" setup>
   import { ref, onMounted, watch} from 'vue'
   import $services from '@/services'
-  import { ElMessage, ElTree } from 'element-plus';
+  import { ElMessage, ElTree, ExpandTrigger } from 'element-plus';
   import { useRouter } from 'vue-router';
 
+
+  const router = useRouter()
   const emit = defineEmits(['nodeClick'])
   let deptDialogVisible = ref<boolean>(false)
   let jobDialogVisible = ref<boolean>(false)
 
   let formData = ref<any>({})
-
   const cascaderProps = {
     checkStrictly: true,
+    // expandTrigger: ExpandTrigger.HOVER,
     value: 'id',
   }
 
@@ -168,62 +134,19 @@
 
   // 加载单位
   const loadOrgTree = () => {
-    $services.company.queryInfo({}).then(async (res: any) => {
-      if (res.success) {
-        let root = createNode(res.data)
-        await loadDepartments(root)
-        await loadJobs(root)
-        orgTree.value = []
-        defaultExpandedKeys.value.push(root.id)
-        orgTree.value.push(root)
-        cascaderTree.value = filter(JSON.parse(JSON.stringify(orgTree.value)));
-      }
+    $services.company.getCompanyTree({}).then((res: any)=>{
+      orgTree.value.push(res.data)
+      defaultExpandedKeys.value = [res.data.id]
     })
   }
 
   // 过滤掉工作组作为表单级联数据
-  const filter = (nodes: OrgTreeModel[]): OrgTreeModel[]=>{
+  const filter = (nodes: OrgTreeModel[]): OrgTreeModel[] => {
     nodes = nodes.filter(node => node.class?.typeName !== '工作组')
-    for(const node of nodes){
+    for (const node of nodes) {
       node.children = filter(node.children)
     }
     return nodes;
-  }
-
-  // 加载部门
-  const loadDepartments = async (node: OrgTreeModel) => {
-    let { data, success } = await $services.company.getDepartments({
-      data: { id: node.id, offset: 0, limit: 1000000 }
-    })
-    if (success && data.total && data.total > 0) {
-      for (let item: TargetModel of data.result) {
-        let leaf = createNode(item)
-        await loadDepartments(leaf)
-        await loadJobs(leaf)
-        node.children.push(leaf)
-      }
-    }
-  }
-
-  // 加载工作组
-  const loadJobs = async (node: OrgTreeModel) => {
-    let { data, success } = await $services.company.getJobs({
-      data: { id: node.id, offset: 0, limit: 1000000 }
-    })
-    if (success && data.total && data.total > 0) {
-      for (let item: TargetModel of data.result) {
-        node.children.push(createNode(item))
-      }
-    }
-  }
-
-  const createNode = (data: TargetModel): OrgTreeModel=>{
-    return {
-      id: data.id,
-      label: data.name,
-      class: data,
-      children: []
-    }
   }
 
   // 树点击事件
@@ -245,8 +168,6 @@
     console.log('nodeAttribute', nodeAttribute)
     console.log('event', event)
     emit('nodeClick', val)
-
-
   }
   // 树节点搜索
   const filterNode = (value: string, data: any) => {
@@ -284,7 +205,6 @@
     }).then((res: ResultType) => {
       if (res.success) {
         deptDialogVisible.value = false
-        formData.value = {}
         loadOrgTree()
         ElMessage({
           message: res.msg,
@@ -318,7 +238,6 @@
     }).then((res: ResultType) => {
       if (res.success) {
         deptDialogVisible.value = false
-        formData.value = {}
         loadOrgTree()
         ElMessage({
           message: res.msg,
@@ -333,13 +252,12 @@
     })
   }
 
-  // 修改组织树节点
-   const router = useRouter()
-  const modifyOrgTree = ()=>{
+  // 修改组织树维护
+  const modifyOrgTree = () => {
     router.push({ path: '/relation/org' })
   }
 
-  //获取树
+  //获取部门
   onMounted(() => {
     loadOrgTree()
   })
@@ -348,48 +266,52 @@
 
 
 <style lang="scss" scoped>
-  .card{
-    height: 100%;
-  }
+.card {
+  height: 100%;
+}
 
-  .tree-btns {
-    display: flex;
-    justify-content: space-between;
-    padding: 0 24px;
+.tree-btns {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 24px;
 
-    .el-button--small {
-      padding: 12px 6px;
-    }
+  .el-button--small {
+    padding: 12px 6px;
   }
-  .search {
-    padding: 12px;
-    .el-input__inner {
-      font-size: 12px;
-    }
-  }
+}
 
-  .custom-tree-node {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    word-spacing: nowrap;
-    display: flex;
+.search {
+  padding: 12px;
+
+  .el-input__inner {
+    font-size: 12px;
+  }
+}
+
+.custom-tree-node {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-spacing: nowrap;
+  display: flex;
+  cursor: pointer;
+}
+
+.tree {
+  height: 100%;
+
+  .weihu-wrap {
+    padding-bottom: 10px;
+    text-align: center;
+    background-color: #fff;
+    border-top: 1px solid #ccc;
     cursor: pointer;
-  }
 
-  .tree {
-    height: 100%;
-    .weihu-wrap {
-      padding-bottom: 10px;
-      text-align: center;
-      background-color: #fff;
-      border-top: 1px solid #ccc;
-      cursor: pointer;
-      &-txt {
-        color: $mainColor;
-        font-size: 16px;
-      }
+    &-txt {
+      color: $mainColor;
+      font-size: 16px;
     }
   }
+}
 
   .tree-box {
     display: flex;
@@ -399,6 +321,11 @@
     }
   }
 
-
+.bottom {
+  position: fixed;
+  bottom: 0; //这里换成top:0;就悬浮在头部
+  width: 100%;
+  z-index: 100;
+}
 </style>
 

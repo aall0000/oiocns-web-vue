@@ -18,7 +18,8 @@
         <el-table-column prop="remark" label="群简介" />
         <el-table-column prop="name" label="操作">
           <template #default="scope">
-            <el-button @click="deleteCohort(scope.row.id)" type="primary">退出群</el-button>
+            <el-button @click="exitCohort(scope.row.id)" type="primary">退出群</el-button>
+            <el-button v-if="myId == scope.row.belongId" @click="deleteCohort(scope.row.id)" type="primary">解散群</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -61,6 +62,10 @@
 import $services from '@/services'
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
+import { useUserStore } from '@/store/user'
+  
+const { queryInfo } = useUserStore()
+const myId = queryInfo.id
 
 let selectId = ref<string>()
 const cohortDialog = ref<boolean>(false)
@@ -113,6 +118,29 @@ const applyJoinCohort = () => {
       }
     })
 }
+//退出群
+const exitCohort = (id: string) =>{
+  $services.person
+    .cancelJoin({
+      data: {
+        id: id
+      }
+    })
+    .then((res: ResultType) => {
+      if (res.code == 200) {
+        ElMessage({
+          message: '退出成功',
+          type: 'warning'
+        })
+        getQunList()
+      } else {
+        ElMessage({
+          message: res.msg,
+          type: 'warning'
+        })
+      }
+    })
+}
 
 //删除群
 const deleteCohort = (id: string) => {
@@ -125,9 +153,10 @@ const deleteCohort = (id: string) => {
     .then((res: ResultType) => {
       if (res.code == 200) {
         ElMessage({
-          message: '删除成功',
+          message: '解散成功',
           type: 'warning'
         })
+        getQunList()
       } else {
         ElMessage({
           message: res.msg,

@@ -37,7 +37,7 @@
             <el-form-item label="座右铭">
               <el-input
                 v-model="formModel.motto"
-                :rows="2"
+                :rows="6"
                 type="textarea"
                 placeholder="座右铭"
               />

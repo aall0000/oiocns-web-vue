@@ -107,7 +107,7 @@ export const useUserStore = defineStore({
         .getJoinedCompany({
           data: {
             offset: current,
-            limit: 10
+            limit: 100
           }
         })
         .then((res: ResultType) => {
@@ -118,6 +118,9 @@ export const useUserStore = defineStore({
             // } else {
             //   this.userCompanys = res.data.result ? res.data.result : []
             // }
+            if(!res.data.result){
+              return
+            }
             this.userCompanys = [{
               id: this.userInfo.workspaceId,
               name: this.userInfo.workspaceName
