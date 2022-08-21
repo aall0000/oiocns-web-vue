@@ -1,5 +1,30 @@
 <template>
   <el-card class="card">
+    <li class="con tree-btns">
+      <div class="title">部门管理</div>
+      <el-dropdown>
+        <el-icon color="#154ad8" :size="20">
+          <CirclePlus />
+        </el-icon>
+        <template #dropdown>
+          <el-dropdown-menu>
+            <el-dropdown-item  @click="deptDialogVisible = true">
+              <el-icon class="el-icon--right">
+                <plus />
+              </el-icon>
+              新增部门
+            </el-dropdown-item>
+            <el-dropdown-item  @click="jobDialogVisible = true">
+              <el-icon class="el-icon--right">
+                <plus />
+              </el-icon>
+              新增工作组
+            </el-dropdown-item>
+          </el-dropdown-menu>
+        </template>
+      </el-dropdown>
+
+    </li>
     <div>
       <el-input class="search" v-model="filterText" placeholder="搜索部门">
         <template #suffix>
@@ -9,84 +34,222 @@
         </template>
       </el-input>
     </div>
-    <el-tree
-      :props="defaultProps"
-      lazy
-      highlight-current
-      ref="treeRef"
-      @node-click="nodeClick"
-      :load="load"
-      :filter-node-method="filterNode"
-      >
+    <div class="tree">
+      <el-tree :data="orgTree" ref="treeRef" @node-click="nodeClick" node-key="id" :highlightCurrent="true" :default-expanded-keys="defaultExpandedKeys"
+        :filter-node-method="filterNode">
         <template #default="{ node, data }">
           <span class="custom-tree-node">
             <div class="tree-box">
               <el-icon>
                 <School />
               </el-icon>
-              <span class="tree-box__text">{{ node.label }}</span>
+              <span>{{ data.label }}</span>
+              <el-tag size="small">{{ data.class.typeName }}</el-tag>
             </div>
           </span>
         </template>
-    </el-tree>
+      </el-tree>
+
+      <div class="weihu-wrap" @click="updateNode">
+        <span class="weihu-wrap-txt">部门维护</span>
+      </div>
+    </div>
+
   </el-card>
+
+  <el-dialog
+    v-model="deptDialogVisible"
+    title="请录入部门信息"
+    width="40%"
+    center
+    append-to-body
+    @close="dialogHide"
+  >
+    <div>
+      <el-form-item label="部门名称" style="width: 100%">
+        <el-input v-model="formData.name" placeholder="请输入" clearable style="width: 100%"/>
+      </el-form-item>
+      <el-form-item label="部门编号" style="width: 100%">
+        <el-input v-model="formData.code" placeholder="请输入" clearable style="width: 100%"/>
+      </el-form-item>
+      <el-form-item label="上级节点" style="width: 100%">
+        <el-cascader
+          :props="cascaderProps"
+          :options="cascaderTree"
+          v-model="formData.parentIds"
+          style="width: 100%"
+          placeholder="请选择"
+        />
+      </el-form-item>
+      <el-form-item label="部门简介" style="width: 100%">
+        <el-input
+          v-model="formData.remark"
+          :autosize="{ minRows: 5 }"
+          placeholder="请输入"
+          type="textarea"
+          clearable
+        />
+      </el-form-item>
+    </div>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="dialogHide">取消</el-button>
+        <el-button type="primary" @click="createDept">确认</el-button>
+      </span>
+    </template>
+  </el-dialog>
+
+  <el-dialog
+    v-model="jobDialogVisible"
+    title="请录入工作组信息"
+    width="40%"
+    center
+    append-to-body
+    @close="dialogHide"
+  >
+    <div>
+      <el-form-item label="工作组名称" style="width: 100%">
+        <el-input v-model="formData.name" placeholder="请输入" clearable style="width: 100%"/>
+      </el-form-item>
+      <el-form-item label="工作组编号" style="width: 100%">
+        <el-input v-model="formData.code" placeholder="请输入" clearable  style="width: 100%"/>
+      </el-form-item>
+      <el-form-item label="上级节点" style="width: 100%">
+        <el-cascader
+          :props="cascaderProps"
+          :options="cascaderTree"
+          v-model="formData.parentIds"
+          style="width: 100%"
+          placeholder="请选择"
+        />
+      </el-form-item>
+      <el-form-item label="工作组简介" style="width: 100%">
+        <el-input
+          v-model="formData.remark"
+          :autosize="{ minRows: 5 }"
+          placeholder="请输入"
+          type="textarea"
+          clearable
+        />
+      </el-form-item>
+    </div>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="dialogHide">取消</el-button>
+        <el-button type="primary" @click="createJob">确认</el-button>
+      </span>
+    </template>
+  </el-dialog>
+
 </template>
 
 <script lang="ts" setup>
-  import { ref, reactive, onMounted } from 'vue'
+  import { ref, reactive, onMounted, watch} from 'vue'
   import $services from '@/services'
+  import { ElMessage, ElTree, ExpandTrigger } from 'element-plus';
+import { update } from 'lodash';
 
-  const emit = defineEmits(['groupNodeClick'])
+  const emit = defineEmits(['nodeClick'])
+  let deptDialogVisible = ref<boolean>(false)
+  let jobDialogVisible = ref<boolean>(false)
 
-  const defaultProps = {
-    children: 'children',
-    label: 'label',
-    isLeaf: 'leaf'
-  }
+  let formData = ref<any>({})
 
   const state = reactive({
-    options: [],
-    isShowCode: false,
-    isShowName: true,
-    isShowUnit: false,
-    nodeData: {
-      childNodes: [] as []
-    },
-    resolveData: Function as (data: any) => void
   })
 
-
-  // 当前用户的集团
-  let groups = reactive([])
-  let groupIndex = ref<number>(0);
-
-  const filterText = ref('')
-
-  // 查询单位
-  const getGroupList = () => {
-    $services.company
-      .companyGetGroups({
-        data: {
-          offset: 0,
-          limit: 1000
-        }
-      })
-      .then((res: ResultType) => {
-        if (res.data.result) {
-          groups = res.data.result
-          state.options = groups.map(g => {
-            return {value: g.id, label: g.name}
-          })
-          console.log("options===", state.options)
-        } else {
-          groups = []
-        }
-      })
+  const cascaderProps = {
+    checkStrictly: true,
+    // expandTrigger: ExpandTrigger.HOVER,
+    value: 'id',
   }
 
+  const defaultExpandedKeys = ref([])
+  const filterText = ref('')
+  const treeRef = ref<InstanceType<typeof ElTree>>()
+  let orgTree = ref<OrgTreeModel[]>([])
+  let cascaderTree = ref<OrgTreeModel[]>([])
+
+  // 加载单位
+  const loadOrgTree = () => {
+    $services.company.queryInfo({}).then(async (res: any) => {
+      if (res.success) {
+        let root = createNode(res.data)
+        await loadDepartments(root)
+        await loadJobs(root)
+        orgTree.value = []
+        defaultExpandedKeys.value.push(root.id)
+        orgTree.value.push(root)
+        cascaderTree.value = filter(JSON.parse(JSON.stringify(orgTree.value)));
+      }
+    })
+  }
+
+  // 过滤掉工作组作为表单级联数据
+  const filter = (nodes: OrgTreeModel[]): OrgTreeModel[]=>{
+    nodes = nodes.filter(node => node.class?.typeName !== '工作组')
+    for(const node of nodes){
+      node.children = filter(node.children)
+    }
+    return nodes;
+  }
+
+  // 加载部门
+  const loadDepartments = async (node: OrgTreeModel) => {
+    let { data, success } = await $services.company.getDepartments({
+      data: { id: node.id, offset: 0, limit: 1000000 }
+    })
+    if (success && data.total && data.total > 0) {
+      for (let item: TargetModel of data.result) {
+        let leaf = createNode(item)
+        await loadDepartments(leaf)
+        await loadJobs(leaf)
+        node.children.push(leaf)
+      }
+    }
+  }
+
+  // 加载工作组
+  const loadJobs = async (node: OrgTreeModel) => {
+    let { data, success } = await $services.company.getJobs({
+      data: { id: node.id, offset: 0, limit: 1000000 }
+    })
+    if (success && data.total && data.total > 0) {
+      for (let item: TargetModel of data.result) {
+        node.children.push(createNode(item))
+      }
+    }
+  }
+
+  const createNode = (data: TargetModel): OrgTreeModel=>{
+    return {
+      id: data.id,
+      label: data.name,
+      class: data,
+      children: []
+    }
+  }
+  // 树点击事件
   const nodeClick = (val: any, nodeAttribute?: any, event?: any) => {
-    console.log("groupNodeClick===", val)
-    emit('groupNodeClick', val)
+    // 设置表单上级节点
+    if (nodeAttribute) {
+      let parentIdArr: any = []
+      const level = nodeAttribute.level
+      for (let i = 0; i < level; i++) {
+        console.log("nodeAttribute.data.value", nodeAttribute.data)
+        parentIdArr = [...[nodeAttribute.data.value], ...parentIdArr]
+        nodeAttribute = nodeAttribute.parent
+      }
+      formData.value.parentIds = parentIdArr
+      console.log('parentIds', formData.value)
+    }
+    console.log('nodeAttribute.parent', nodeAttribute.parent)
+    console.log('val', val)
+    console.log('nodeAttribute', nodeAttribute)
+    console.log('event', event)
+    emit('nodeClick', val)
+
+
   }
   // 树节点搜索
   const filterNode = (value: string, data: any) => {
@@ -94,99 +257,154 @@
     return data.label.includes(value)
   }
 
-  const load = (node: any, resolve: (data: any) => void) => {
-    if (node.level === 0) {
-      state.nodeData = node
-      state.resolveData = resolve
-      getGroupsInfo(resolve)
-    }
-    if (node.level >= 1) {
-      getSubGroups(node, resolve)
-    }
-  }
-
-  //获取集团信息
-  async function getGroupsInfo(resolve: any) {
-    let arr: any = []
-    $services.company
-      .companyGetGroups({
-        data: {
-          offset: 0,
-          limit: 1000
-        }
-      })
-      .then((res: ResultType) => {
-        if (res.data.result) {
-          let resData = [res.data.result[groupIndex.value]]
-          resData.forEach((element: any) => {
-            var obj = {
-              id: element.id,
-              value:element.id,
-              label: element.name,
-              code: element.code,
-              children: [] as []
-            }
-            arr.push(obj)
-          })
-        }
-        return resolve(arr)
-      })
-  }
-  //获取子集团
-  async function getSubGroups(node: any, resolve: any) {
-    let arr: any = []
-    await $services.company
-      .getSubgroups({
-        data: { id: node.data.id, offset: 0, limit: 1000 }
-      })
-      .then((res: ResultType) => {
-        if (res.data.result) {
-          let resData = JSON.parse(JSON.stringify(res.data.result))
-          resData.forEach((element: any) => {
-            var obj = {
-              id: element.id,
-              value:element.id,
-              label: element.name,
-              code: element.code,
-              children: [] as [],
-              team: element.team,
-              type: 'org'
-            }
-            arr.push(obj)
-          })
-        }
-        return resolve(arr)
-      })
-  }
-
-    //获取部门
-  onMounted(() => {
-    //查询集团
-    getGroupList()
+  watch(filterText, (val) => {
+    treeRef.value!.filter(val)
   })
+
+  //关闭弹窗清空
+  const dialogHide = () => {
+    formData.value = {}
+    deptDialogVisible.value = false
+    jobDialogVisible.value = false
+  }
+
+  // 创建部门
+  const createDept = () => {
+    let parentId = null;
+    const parentIds = formData.value.parentIds;
+    if (parentIds.length > 0) {
+      parentId = parentIds[parentIds.length - 1]
+    }
+    $services.company.createDepartment({
+      data: {
+        id: formData.value.id,
+        code: formData.value.code,
+        name: formData.value.name,
+        parentId: parentId,
+        teamName: formData.value.name,
+        teamRemark: formData.value.remark
+      }
+    }).then((res: ResultType) => {
+      if (res.success) {
+        deptDialogVisible.value = false
+        loadOrgTree()
+        ElMessage({
+          message: res.msg,
+          type: 'success'
+        })
+      } else {
+        ElMessage({
+          message: res.msg,
+          type: 'error'
+        })
+      }
+    })
+  }
+
+  // 创建工作组
+  const createJob  = () => {
+    let parentId = null;
+    const parentIds = formData.value.parentIds;
+    if (parentIds.length > 0) {
+      parentId = parentIds[parentIds.length - 1]
+    }
+    $services.company.createJob({
+      data: {
+        id: formData.value.id,
+        code: formData.value.code,
+        name: formData.value.name,
+        parentId: parentId,
+        teamName: formData.value.name,
+        teamRemark: formData.value.remark
+      }
+    }).then((res: ResultType) => {
+      if (res.success) {
+        deptDialogVisible.value = false
+        loadOrgTree()
+        ElMessage({
+          message: res.msg,
+          type: 'success'
+        })
+      } else {
+        ElMessage({
+          message: res.msg,
+          type: 'error'
+        })
+      }
+    })
+  }
+
+  // 修改组织树节点
+  const updateNode = ()=>{
+
+  }
+
+  //获取部门
+  onMounted(() => {
+    loadOrgTree()
+  })
+
+
 
 </script>
 <style lang="scss" scoped>
-    .card{
-      height: 100%;
-    }
-    .search {
-      .el-input__inner {
-        font-size: 12px;
-      }
-    }
+  .card{
+    height: 100%;
+  }
 
-    .custom-tree-node {
-      overflow: hidden;
-      text-overflow: ellipsis;
-      word-spacing: nowrap;
+  .tree-btns {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 24px;
+
+    .el-button--small {
+      padding: 12px 6px;
     }
-    .tree-box {
-      display: flex;
-      align-items: center;
-      &__text {
-        margin-left: 5px;
+  }
+  .search {
+    padding: 12px;
+    .el-input__inner {
+      font-size: 12px;
+    }
+  }
+
+  .custom-tree-node {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-spacing: nowrap;
+    display: flex;
+    cursor: pointer;
+  }
+
+  .tree {
+    height: 100%;
+    .weihu-wrap {
+      padding-bottom: 10px;
+      text-align: center;
+      background-color: #fff;
+      border-top: 1px solid #ccc;
+      cursor: pointer;
+      &-txt {
+        color: $mainColor;
+        font-size: 16px;
       }
     }
+  }
+
+  .tree-box {
+    display: flex;
+    align-items: center;
+    &__text {
+      margin-left: 5px;
+    }
+  }
+
+  .bottom {
+    position: fixed;
+    bottom: 0;//这里换成top:0;就悬浮在头部
+    width: 100%;
+    z-index: 100;
+  }
+
 </style>
 

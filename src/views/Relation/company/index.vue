@@ -1,14 +1,14 @@
 <template>
   <div class="container">
     <div class="tree">
-      <Tree @groupNodeClick="groupNodeClick"/>
+      <Tree @nodeClick="nodeClick"/>
     </div>
     <card class="content">
       <div class="info">
-        <Info :group="group"/>
+        <Info ref="info"/>
       </div>
       <div class="users">
-        <Users/>
+        <Body :selectItem="{}"/>
       </div>
     </card>
   </div>
@@ -16,14 +16,14 @@
 <script lang="ts" setup>
   import Tree from './tree.vue'
   import Info from './info.vue'
-  import Users from './body.vue'
+  import Body from './body.vue'
   import { ref } from 'vue';
 
-  let group = ref({})
 
-  const groupNodeClick = (group: any)=>{
-    console.log("group===", group);
-    group.value = group
+  const info = ref(null);
+
+  const nodeClick = (selectItem: any)=>{
+    info.value.selectItemChange(selectItem);
   }
 
 </script>
@@ -36,12 +36,13 @@
   display: flex;
 
   .tree {
-    width: 25%;
+    width: 23%;
   }
   .content{
-    width: 75%;
+    width: 77%;
     height: 100%;
     padding: 3px;
+    background: #f0f2f5;
     .info {
       height: 26%;
     }
