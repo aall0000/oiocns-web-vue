@@ -100,6 +100,14 @@ const mainRouter: RouteRecordRaw[] = [
           title: '我的好友'
         }
       },
+      {
+        path: '/relation/org',
+        name: 'org',
+        component: () => import('@/views/Relation/org/index.vue'),
+        meta: {
+          title: '单位维护'
+        }
+      },
     ]
   },
   {

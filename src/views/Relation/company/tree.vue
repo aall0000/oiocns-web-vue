@@ -50,7 +50,7 @@
         </template>
       </el-tree>
 
-      <div class="weihu-wrap" @click="updateNode">
+      <div class="weihu-wrap" @click="modifyOrgTree">
         <span class="weihu-wrap-txt">部门维护</span>
       </div>
     </div>
@@ -144,10 +144,10 @@
 </template>
 
 <script lang="ts" setup>
-  import { ref, reactive, onMounted, watch} from 'vue'
+  import { ref, onMounted, watch} from 'vue'
   import $services from '@/services'
-  import { ElMessage, ElTree, ExpandTrigger } from 'element-plus';
-import { update } from 'lodash';
+  import { ElMessage, ElTree } from 'element-plus';
+  import { useRouter } from 'vue-router';
 
   const emit = defineEmits(['nodeClick'])
   let deptDialogVisible = ref<boolean>(false)
@@ -155,12 +155,8 @@ import { update } from 'lodash';
 
   let formData = ref<any>({})
 
-  const state = reactive({
-  })
-
   const cascaderProps = {
     checkStrictly: true,
-    // expandTrigger: ExpandTrigger.HOVER,
     value: 'id',
   }
 
@@ -229,6 +225,7 @@ import { update } from 'lodash';
       children: []
     }
   }
+
   // 树点击事件
   const nodeClick = (val: any, nodeAttribute?: any, event?: any) => {
     // 设置表单上级节点
@@ -287,6 +284,7 @@ import { update } from 'lodash';
     }).then((res: ResultType) => {
       if (res.success) {
         deptDialogVisible.value = false
+        formData.value = {}
         loadOrgTree()
         ElMessage({
           message: res.msg,
@@ -320,6 +318,7 @@ import { update } from 'lodash';
     }).then((res: ResultType) => {
       if (res.success) {
         deptDialogVisible.value = false
+        formData.value = {}
         loadOrgTree()
         ElMessage({
           message: res.msg,
@@ -335,18 +334,19 @@ import { update } from 'lodash';
   }
 
   // 修改组织树节点
-  const updateNode = ()=>{
-
+   const router = useRouter()
+  const modifyOrgTree = ()=>{
+    router.push({ path: '/relation/org' })
   }
 
-  //获取部门
+  //获取树
   onMounted(() => {
     loadOrgTree()
   })
 
-
-
 </script>
+
+
 <style lang="scss" scoped>
   .card{
     height: 100%;
@@ -399,12 +399,6 @@ import { update } from 'lodash';
     }
   }
 
-  .bottom {
-    position: fixed;
-    bottom: 0;//这里换成top:0;就悬浮在头部
-    width: 100%;
-    z-index: 100;
-  }
 
 </style>
 
