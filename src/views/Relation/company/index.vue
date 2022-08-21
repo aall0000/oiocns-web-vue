@@ -7,8 +7,8 @@
       <div class="info">
         <Info ref="info"/>
       </div>
-      <div class="users">
-        <Body :selectItem="{}"/>
+      <div class="body">
+        <Body ref="body"/>
       </div>
     </card>
   </div>
@@ -21,9 +21,11 @@
 
 
   const info = ref(null);
+  const body = ref(null);
 
   const nodeClick = (selectItem: any)=>{
     info.value.selectItemChange(selectItem);
+    body.value.selectItemChange(selectItem);
   }
 
 </script>
@@ -43,8 +45,11 @@
     height: 100%;
     padding: 3px;
     background: #f0f2f5;
-    .users{
-      height: 74%;
+    .info{
+      padding: 3px;
+    }
+    .body{
+      height: 75%;
     }
   }
 }

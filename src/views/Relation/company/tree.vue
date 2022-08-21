@@ -125,6 +125,8 @@
     // expandTrigger: ExpandTrigger.HOVER,
     value: 'id',
   }
+  // 节点ID和对象映射关系
+  const parentIdMap: any = {}
 
   const defaultExpandedKeys = ref([])
   const filterText = ref('')
@@ -135,14 +137,39 @@
   // 加载单位
   const loadOrgTree = () => {
     $services.company.getCompanyTree({}).then((res: any)=>{
+      orgTree.value = []
       orgTree.value.push(res.data)
+      initIdMap(orgTree.value)
+      cascaderTree.value = filter(JSON.parse(JSON.stringify(orgTree.value)))
       defaultExpandedKeys.value = [res.data.id]
     })
   }
 
+  // 初始化ID和对象映射关系
+  const initIdMap = (nodes: any[]) => {
+    for(const node of nodes){
+      parentIdMap[node.id] = node
+      if(node.children){
+        initIdMap(node.children)
+      }
+    }
+  }
+  // 获取父节点到根节点的ID列表
+  const getParentIds = (node: any, parentIds: any[]): any[] =>{
+    const parentId = node.data.parentId
+    if(parentId && parentId != '0'){
+      parentIds.push(parentId)
+    }
+    const parentNode = parentIdMap[parentId]
+    if(parentNode){
+      parentIds = getParentIds(parentNode, parentIds)
+    }
+    return parentIds;
+  }
+
   // 过滤掉工作组作为表单级联数据
   const filter = (nodes: OrgTreeModel[]): OrgTreeModel[] => {
-    nodes = nodes.filter(node => node.class?.typeName !== '工作组')
+    nodes = nodes.filter(node => node.data?.typeName !== '工作组')
     for (const node of nodes) {
       node.children = filter(node.children)
     }
@@ -151,23 +178,10 @@
 
   // 树点击事件
   const nodeClick = (val: any, nodeAttribute?: any, event?: any) => {
-    // 设置表单上级节点
-    if (nodeAttribute) {
-      let parentIdArr: any = []
-      const level = nodeAttribute.level
-      for (let i = 0; i < level; i++) {
-        console.log("nodeAttribute.data.value", nodeAttribute.data)
-        parentIdArr = [...[nodeAttribute.data.value], ...parentIdArr]
-        nodeAttribute = nodeAttribute.parent
-      }
-      formData.value.parentIds = parentIdArr
-      console.log('parentIds', formData.value)
-    }
-    console.log('nodeAttribute.parent', nodeAttribute.parent)
-    console.log('val', val)
-    console.log('nodeAttribute', nodeAttribute)
-    console.log('event', event)
     emit('nodeClick', val)
+    let parentIds: any[] = val.data.typeName == '工作组'? [] : [val.id]
+    parentIds = getParentIds(val, parentIds).reverse();
+    formData.value.parentIds = parentIds
   }
   // 树节点搜索
   const filterNode = (value: string, data: any) => {
@@ -181,7 +195,7 @@
 
   //关闭弹窗清空
   const dialogHide = () => {
-    formData.value = {}
+    formData.value = {parentIds: formData.value.parentIds}
     deptDialogVisible.value = false
     jobDialogVisible.value = false
   }
@@ -204,7 +218,7 @@
       }
     }).then((res: ResultType) => {
       if (res.success) {
-        deptDialogVisible.value = false
+        dialogHide()
         loadOrgTree()
         ElMessage({
           message: res.msg,
@@ -237,7 +251,7 @@
       }
     }).then((res: ResultType) => {
       if (res.success) {
-        deptDialogVisible.value = false
+        dialogHide()
         loadOrgTree()
         ElMessage({
           message: res.msg,

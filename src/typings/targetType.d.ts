@@ -19,5 +19,5 @@ type TargetModel = {
       id: string,
       label: string,
       children: OrgTreeModel[],
-      class: TargetModel
+      data: TargetModel
   }

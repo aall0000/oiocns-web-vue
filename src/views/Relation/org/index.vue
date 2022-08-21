@@ -19,17 +19,34 @@
         >
           <el-table-column type="selection" width="50"/>
           <el-table-column prop="label" label="名称" width="330"/>
-          <el-table-column prop="class.code" label="编码" width="230"/>
-          <el-table-column prop="class.typeName" label="类型"  width="120">
+          <el-table-column prop="data.code" label="编码" width="230"/>
+          <el-table-column prop="data.typeName" label="类型"  width="120">
             <template #default="scope">
-              <el-tag>{{ scope.row.class.typeName }}</el-tag>
+              <el-tag>{{ scope.row.data.typeName }}</el-tag>
             </template>
           </el-table-column>
-          <el-table-column prop="class.updateTime" label="更新时间" />
+          <el-table-column prop="data.teamRemark" label="描述" />
           <el-table-column label="操作" width="150">
             <template #default="{ row }">
-
-              <el-button link type="primary" size="small" :disabled="row.class.typeName == '工作组'" @click="create(row)">新增</el-button>
+              <el-dropdown :disabled="row.data.typeName =='工作组'">
+                <el-button link type="primary" size="small" :disabled="row.data.typeName =='工作组'">新增</el-button>
+                <template #dropdown>
+                  <el-dropdown-menu>
+                    <el-dropdown-item @click="create(row, '部门')">
+                      <el-icon class="el-icon--right">
+                        <plus />
+                      </el-icon>
+                      新增部门
+                    </el-dropdown-item>
+                    <el-dropdown-item @click="create(row, '工作组')">
+                      <el-icon class="el-icon--right">
+                        <plus />
+                      </el-icon>
+                      新增工作组
+                    </el-dropdown-item>
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
               <el-button link type="primary" size="small" @click="edit(row)">编辑</el-button>
               <el-popconfirm
                 title="确认删除?"
@@ -38,10 +55,9 @@
                 @confirm="handleDel(row)"
               >
                 <template #reference>
-                  <el-button link type="danger" size="small"  :disabled="row.class.typeName == '公司'">删除</el-button>
+                  <el-button link type="danger" size="small"  :disabled="row.data.typeName == '公司'">删除</el-button>
                 </template>
               </el-popconfirm>
-
             </template>
           </el-table-column>
         </el-table>
@@ -74,7 +90,7 @@
       </el-form-item>
       <el-form-item label="部门简介" style="width: 100%">
         <el-input
-          v-model="formData.remark"
+          v-model="formData.teamRemark"
           :autosize="{ minRows: 5 }"
           placeholder="请输入"
           type="textarea"
@@ -117,7 +133,7 @@
       </el-form-item>
       <el-form-item label="部门简介" style="width: 100%">
         <el-input
-          v-model="formData.remark"
+          v-model="formData.teamRemark"
           :autosize="{ minRows: 5 }"
           placeholder="请输入"
           type="textarea"
@@ -128,7 +144,7 @@
     <template #footer>
       <span class="dialog-footer">
         <el-button @click="dialogHide">取消</el-button>
-        <el-button type="primary" @click="createDept">确认</el-button>
+        <el-button type="primary" @click="editDept">确认</el-button>
       </span>
     </template>
   </el-dialog>
@@ -160,7 +176,7 @@
       </el-form-item>
       <el-form-item label="工作组简介" style="width: 100%">
         <el-input
-          v-model="formData.remark"
+          v-model="formData.teamRemark"
           :autosize="{ minRows: 5 }"
           placeholder="请输入"
           type="textarea"
@@ -202,7 +218,7 @@
       </el-form-item>
       <el-form-item label="工作组简介" style="width: 100%">
         <el-input
-          v-model="formData.remark"
+          v-model="formData.teamRemark"
           :autosize="{ minRows: 5 }"
           placeholder="请输入"
           type="textarea"
@@ -213,20 +229,19 @@
     <template #footer>
       <span class="dialog-footer">
         <el-button @click="dialogHide">取消</el-button>
-        <el-button type="primary" @click="createJob">确认</el-button>
+        <el-button type="primary" @click="editJob">确认</el-button>
       </span>
     </template>
   </el-dialog>
 
 </template>
 <script lang="ts" setup>
-  import { ref, onMounted, watch} from 'vue'
+  import { ref, onMounted} from 'vue'
   import $services from '@/services'
-  import { ElMessage, ElTree } from 'element-plus';
+  import { ElMessage } from 'element-plus';
   import { useRouter } from 'vue-router';
 
   const router = useRouter()
-  const emit = defineEmits(['nodeClick'])
   let createDeptDialogVisible = ref<boolean>(false)
   let editDeptDialogVisible = ref<boolean>(false)
   let createJobDialogVisible = ref<boolean>(false)
@@ -239,85 +254,118 @@
     value: 'id',
   }
 
+    // 节点ID和对象映射关系
+  const parentIdMap: any = {}
+
   let orgTree = ref<OrgTreeModel[]>([])
   let cascaderTree = ref<OrgTreeModel[]>([])
 
   // 加载单位
   const loadOrgTree = () => {
-    $services.company.queryInfo({}).then(async (res: any) => {
-      if (res.success) {
-        let root = createNode(res.data)
-        await loadDepartments(root)
-        await loadJobs(root)
-        orgTree.value = []
-        orgTree.value.push(root)
-
-        console.log("orgTree", orgTree.value)
-      }
+    $services.company.getCompanyTree({}).then((res: any)=>{
+      orgTree.value = []
+      orgTree.value.push(res.data)
+      initIdMap(orgTree.value)
+      cascaderTree.value = filter(JSON.parse(JSON.stringify(orgTree.value)))
     })
   }
 
-  // 加载部门
-  const loadDepartments = async (node: OrgTreeModel) => {
-    let { data, success } = await $services.company.getDepartments({
-      data: { id: node.id, offset: 0, limit: 1000000 }
-    })
-    if (success && data.total && data.total > 0) {
-      for (let item: TargetModel of data.result) {
-        let leaf = createNode(item)
-        await loadDepartments(leaf)
-        await loadJobs(leaf)
-        node.children.push(leaf)
+  // 初始化ID和对象映射关系
+  const initIdMap = (nodes: any[]) => {
+    for(const node of nodes){
+      parentIdMap[node.id] = node
+      if(node.children){
+        initIdMap(node.children)
       }
     }
   }
-
-  // 加载工作组
-  const loadJobs = async (node: OrgTreeModel) => {
-    let { data, success } = await $services.company.getJobs({
-      data: { id: node.id, offset: 0, limit: 1000000 }
-    })
-    if (success && data.total && data.total > 0) {
-      for (let item: TargetModel of data.result) {
-        node.children.push(createNode(item))
-      }
+  // 获取父节点到根节点的ID列表
+  const getParentIds = (node: any, parentIds: any[]): any[] =>{
+    const parentId = node.data.parentId
+    if(parentId && parentId != '0'){
+      parentIds.push(parentId)
     }
+    const parentNode = parentIdMap[parentId]
+    if(parentNode){
+      parentIds = getParentIds(parentNode, parentIds)
+    }
+    return parentIds;
   }
 
-  const createNode = (data: TargetModel): OrgTreeModel=>{
-    return {
-      id: data.id,
-      label: data.name,
-      class: data,
-      children: []
+  // 过滤掉工作组作为表单级联数据
+  const filter = (nodes: OrgTreeModel[]): OrgTreeModel[] => {
+    nodes = nodes.filter(node => node.data?.typeName !== '工作组')
+    for (const node of nodes) {
+      node.children = filter(node.children)
     }
+    return nodes;
   }
+
   // 返回
   const goback = () => {
     router.go(-1)
   }
 
   // 新增
-  const create = (row: any) =>{
-    if(row.class.typeName == '工作组'){
+  const create = (row: any, type: string) =>{
+    if(type == '工作组'){
       createJobDialogVisible.value = true;
     } else {
       createDeptDialogVisible.value = true;
     }
+    let parentIds: any[] = [row.id]
+    parentIds = getParentIds(row, parentIds).reverse();
+    formData.value.parentIds = parentIds
   }
 
   // 编辑
   const edit = (row: any) =>{
-    if(row.class.typeName == '工作组'){
+    if(row.data.typeName == '工作组'){
       editJobDialogVisible.value = true;
     } else {
       editDeptDialogVisible.value = true;
     }
+    const parentIds = getParentIds(row, []).reverse();
+      const obj = row.data;
+    console.log("parentId===", obj.parentId)
+    console.log("parentIds===", parentIds)
+
+    formData.value.parentIds = parentIds
+
+    formData.value = {...formData.value, ...obj}
+
+
   }
 
   // 删除行
-  const handleDel = async (row: any) =>{
+  const handleDel = (row: any) =>{
+    if(row.data.typeName == '部门'){
+      deleteDept(row)
+    } else {
+      deleteJob(row)
+    }
+  }
+
+  // 删除部门
+  const deleteDept = async (row: any) =>{
     const { success } = await $services.company.deleteDepartment({data: {id: row.id}})
+    if (success) {
+      ElMessage({
+        message: '删除成功!',
+        type: 'success'
+      })
+      loadOrgTree()
+    } else {
+      ElMessage({
+        message: '删除失败!',
+        type: 'error'
+      })
+    }
+  }
+
+  // 删除工作组
+  const deleteJob = async (row: any) =>{
+    const { success } = await $services.company.deleteJob({data: {id: row.id}})
     if (success) {
       ElMessage({
         message: '删除成功!',
@@ -334,7 +382,7 @@
 
   //关闭弹窗清空
   const dialogHide = () => {
-    formData.value = {}
+    formData.value = {parentIds: formData.value.parentIds}
     createDeptDialogVisible.value = false
     editDeptDialogVisible.value = false
     createJobDialogVisible.value = false
@@ -355,12 +403,40 @@
         name: formData.value.name,
         parentId: parentId,
         teamName: formData.value.name,
-        teamRemark: formData.value.remark
+        teamRemark: formData.value.teamRemark
       }
     }).then((res: ResultType) => {
       if (res.success) {
-        createDeptDialogVisible.value = false
-        formData.value = {}
+        dialogHide()
+        loadOrgTree()
+        ElMessage({
+          message: res.msg,
+          type: 'success'
+        })
+      } else {
+        ElMessage({
+          message: res.msg,
+          type: 'error'
+        })
+      }
+    })
+  }
+
+  // 编辑部门
+  const editDept = ()=>{
+    let parentId = null;
+    const parentIds = formData.value.parentIds;
+    if (parentIds.length > 0) {
+      parentId = parentIds[parentIds.length - 1]
+    }
+    console.log("parentIds===", parentIds)
+    console.log("parentId===", parentId)
+    formData.value.parentId = parentId
+    $services.company.updateDepartment({                 // Todo  可能接口bug
+      data: formData.value
+    }).then((res: ResultType) => {
+      if (res.success) {
+        dialogHide()
         loadOrgTree()
         ElMessage({
           message: res.msg,
@@ -388,13 +464,40 @@
         code: formData.value.code,
         name: formData.value.name,
         parentId: parentId,
+        thingId: formData.value.thingId,
         teamName: formData.value.name,
-        teamRemark: formData.value.remark
+        teamRemark: formData.value.teamRemark
       }
     }).then((res: ResultType) => {
       if (res.success) {
-        createJobDialogVisible.value = false
-        formData.value = {}
+        dialogHide()
+        loadOrgTree()
+        ElMessage({
+          message: res.msg,
+          type: 'success'
+        })
+      } else {
+        ElMessage({
+          message: res.msg,
+          type: 'error'
+        })
+      }
+    })
+  }
+
+  // 编辑工作组
+  const editJob = ()=>{
+    let parentId = null;
+    const parentIds = formData.value.parentIds;
+    if (parentIds.length > 0) {
+      parentId = parentIds[parentIds.length - 1]
+    }
+    formData.value.parentId = parentId
+    $services.company.updateJob({
+      data: formData.value
+    }).then((res: ResultType) => {
+      if (res.success) {
+        dialogHide()
         loadOrgTree()
         ElMessage({
           message: res.msg,

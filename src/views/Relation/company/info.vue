@@ -1,22 +1,22 @@
 <template>
   <div class="info">
     <div class="header">
-      <div class="title">单位信息</div>
+      <div class="title">{{title}}信息</div>
       <div class="box-btns">
-        <el-button small link type="primary" @click="dialogVisible = true">编辑</el-button>
+        <el-button small link type="primary" @click="handleUpdate">编辑</el-button>
       </div>
     </div>
     <div class="tab-list">
       <ul class="next-dept">
         <table class="table-mytable">
           <tr>
-            <td class="left">节点名称</td>
+            <td class="left">{{title}}名称</td>
             <td class="column">{{selectItem?.data?.name}}</td>
-            <td class="left">节点编码</td>
+            <td class="left">{{title}}编码</td>
             <td class="column">{{selectItem?.data?.teamCode}}</td>
           </tr>
           <tr>
-            <td class="left">节点描述</td>
+            <td class="left">描述</td>
             <td class="column" colspan="3">
               <span class="remark">{{selectItem?.data?.teamRemark}}</span>
             </td>
@@ -26,15 +26,15 @@
     </div>
   </div>
 
-  <el-dialog v-model="dialogVisible" title="请输入部门名称" width="30%">
-    <el-form-item label="部门名称">
-      <el-input v-model="formData.name" placeholder="Please input" clearable />
+  <el-dialog v-model="dialogVisible" :title="'请编辑' + title + '信息'" width="30%">
+    <el-form-item :label="title + '名称'">
+      <el-input v-model="formData.name" :placeholder="'请输入' + title + '名称'" clearable />
     </el-form-item>
-    <el-form-item label="部门编号">
-      <el-input v-model="formData.code" placeholder="Please input" clearable />
+    <el-form-item :label="title + '编号'">
+      <el-input v-model="formData.code" :placeholder="'请输入' + title + '描述'" clearable />
     </el-form-item>
-    <el-form-item label="部门简介">
-      <el-input v-model="formData.remark" placeholder="Please input" clearable />
+    <el-form-item :label="title + '描述'">
+      <el-input v-model="formData.teamRemark" :placeholder="'请输入' + title + '描述'" clearable />
     </el-form-item>
     <template #footer>
       <span class="dialog-footer">
@@ -47,8 +47,9 @@
 <script lang="ts" setup>
   import $services from '@/services'
   import { ref, reactive, onMounted, watch } from 'vue'
-  import { ElMessage, ElMessageBox } from 'element-plus'
+  import { ElMessage, valueEquals } from 'element-plus'
 
+  let title = ref<string>('单位')
   let selectItem = ref<any>({})
   let dialogVisible = ref<boolean>(false)
   let formData: any = ref({})
@@ -56,6 +57,13 @@
   // 获取单位树点击的信息
   const selectItemChange = (data: any) => {
     selectItem.value = data;
+    const obj = data.data;
+    if(obj.typeName == '公司'){
+      title.value = '单位'
+    } else {
+      title.value = obj.typeName
+    }
+
   };
   defineExpose({ selectItemChange });
 
@@ -67,7 +75,35 @@
 
 
   // 修改信息
-  const update = ()=> {
+  const handleUpdate = ()=> {
+    if(!selectItem.value.id){
+      ElMessage.warning('请左侧选择部门或者工作组！')
+      return
+    }
+    formData.value = selectItem.value.data
+    dialogVisible.value = true
+  }
+
+  // 保存
+  const update = ()=>{
+    const data = {...formData.value, ...selectItem.value.data};
+    let url = null;
+    if(data.typeName == '公司'){
+      url = 'update'
+    } else if(data.typeName == '部门'){
+      url = 'updateDepartment'
+    } else if(data.typeName == '工作组'){
+      url = 'updateJob'
+    }
+    $services.company[url]({
+      data
+    }).then((res: ResultType) => {
+      if (res.code == 200 && res.success) {
+        dialogVisible.value = false
+        ElMessage.success('信息修改成功!')
+        selectItem.value.data = data
+      }
+    })
 
   }
 </script>
@@ -117,7 +153,7 @@
       padding: 0 20px;
       background: #fff;
     }
-    
+
     .remark{
       display: -webkit-box;
       -webkit-line-clamp: 10;
