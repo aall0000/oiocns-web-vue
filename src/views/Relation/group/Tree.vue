@@ -93,7 +93,6 @@
           state.options = groups.map(g => {
             return {value: g.id, label: g.name}
           })
-          console.log("options===", state.options)
         } else {
           groups = []
         }
