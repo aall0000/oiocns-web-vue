@@ -23,6 +23,7 @@
             <el-form-item label="真实姓名">
               <el-input v-model="formModel.realName" />
             </el-form-item>
+
             <el-form-item label="手机号">
               <el-input v-model="formModel.phone" />
             </el-form-item>
@@ -35,12 +36,7 @@
             style="max-width: 800px"
           >
             <el-form-item label="座右铭">
-              <el-input
-                v-model="formModel.motto"
-                :rows="6"
-                type="textarea"
-                placeholder="座右铭"
-              />
+              <el-input v-model="formModel.motto" :rows="6" type="textarea" placeholder="座右铭" />
             </el-form-item>
           </el-form>
           <div class="button">
@@ -84,7 +80,7 @@
     account: '',
     realName: '',
     phone: '',
-    motto: '',
+    motto: ''
   })
 
   onBeforeMount(() => {

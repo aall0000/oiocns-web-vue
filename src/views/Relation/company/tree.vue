@@ -35,7 +35,7 @@
       </el-input>
     </div>
     <div class="tree">
-      <el-tree :data="orgTree" ref="treeRef" @node-click="nodeClick" node-key="id" :highlightCurrent="true"
+      <el-tree :data="orgTree"  ref="treeRef" @node-click="nodeClick" node-key="id" 
         :default-expanded-keys="defaultExpandedKeys" :filter-node-method="filterNode">
         <template #default="{ node, data }">
           <span class="custom-tree-node">
@@ -49,12 +49,11 @@
           </span>
         </template>
       </el-tree>
-
-      <div class="weihu-wrap" @click="modifyOrgTree">
+      
+    </div>
+    <div class="weihu-wrap" @click="modifyOrgTree">
         <span class="weihu-wrap-txt">部门维护</span>
       </div>
-    </div>
-
   </el-card>
 
   <el-dialog v-model="deptDialogVisible" title="请录入部门信息" width="40%" center append-to-body @close="dialogHide">
@@ -110,7 +109,7 @@
 <script lang="ts" setup>
   import { ref, onMounted, watch} from 'vue'
   import $services from '@/services'
-  import { ElMessage, ElTree, ExpandTrigger } from 'element-plus';
+  import { ElMessage} from 'element-plus';
   import { useRouter } from 'vue-router';
 
 
@@ -270,7 +269,6 @@
   const modifyOrgTree = () => {
     router.push({ path: '/relation/org' })
   }
-
   //获取部门
   onMounted(() => {
     loadOrgTree()
@@ -278,10 +276,19 @@
 
 </script>
 
-
+<style lang="scss">
+.tree .el-tree-node__content {
+  height: 30px;
+  font-size: 14px;
+}
+.tree .el-tag{
+  margin-left: 5px;
+}
+</style>
 <style lang="scss" scoped>
 .card {
-  height: 100%;
+  height: 97%;
+  position: relative;
 }
 
 .tree-btns {
@@ -312,14 +319,19 @@
 
 .tree {
   height: 100%;
-
+  position: relative;
+  max-height: calc(100% - 60px);
   .weihu-wrap {
-    padding-bottom: 10px;
     text-align: center;
     background-color: #fff;
     border-top: 1px solid #ccc;
     cursor: pointer;
-
+    position: absolute;
+    bottom: 10px;
+    width:100%;
+    height: 30px;
+    line-height: 30px;
+    left:0;
     &-txt {
       color: $mainColor;
       font-size: 16px;
@@ -332,6 +344,9 @@
     align-items: center;
     &__text {
       margin-left: 5px;
+    }
+    &span{
+      font-size: 16px;
     }
   }
 
