@@ -32,7 +32,7 @@
         </div>
         <div
           :class="['apps', activeRouter.includes(item.path) ? 'active' : '']"
-          v-if="item.name === '应用'"
+          v-if="item.name === '开始'"
         >
           <el-popover placement="right-end" title="小应用" :width="350" trigger="click">
             <el-collapse v-model="activeNames">
@@ -123,9 +123,9 @@
       { name: '工作台', icon: 'House', path: '/workHome' },
       { name: '消息', icon: 'ChatDotRound', path: '/chat' },
       { name: '关系', icon: 'Avatar', path: '/relation' },
-      { name: '组织', icon: 'Avatar', path: '/organization' },
-      { name: '市场', icon: 'GoodsFilled', path: '/market' },
-      { name: '应用', icon: 'Grid', path: '/appStpre', bottom: true },
+      // { name: '组织', icon: 'Avatar', path: '/organization' },
+      { name: '应用', icon: 'GoodsFilled', path: '/market' },
+      { name: '开始', icon: 'Grid', path: '/appStpre', bottom: true },
       { name: '数据', icon: 'Share', path: '/thing' },
       {
         name: '我的',
@@ -145,21 +145,6 @@
   const visible = ref(false)
   const left = ref(0)
   const top = ref(0)
-  // const mainMenus = [
-  //   { name: '工作台', icon: 'House', path: '/workHome' },
-  //   { name: '消息', icon: 'ChatDotRound', path: '/chat' },
-  //   { name: '关系', icon: 'Avatar', path: '/organization' },
-  //   { name: '市场', icon: 'GoodsFilled', path: '/appStore' },
-  //   { name: '应用', icon: 'Grid', path: '/appStpre', bottom: true },
-  //   { name: '数据', icon: 'Share', path: '/thing' },
-  //   {
-  //     name: '我的',
-  //     icon: 'Operation',
-  //     path: IsSelfSpace ? '/user' : '/company',
-  //     key: IsSelfSpace ? '/user/' : '/company/',
-  //     bottom: true
-  //   }
-  // ]
   const appUse = [
     { id: '1', name: '资产管理', icon: img1, path: '/appUse1' },
     { id: '2', name: '苹果插件', icon: img2, path: '/appUse2' },
@@ -280,7 +265,7 @@
       })
   }
   const handleRouterChage = (item: any) => {
-    if (item.name !== '应用') {
+    if (item.name !== '开始') {
       // active.value = item.name
       router.push(item.path)
     } else {
