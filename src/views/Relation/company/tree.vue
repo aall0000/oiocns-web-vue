@@ -1,5 +1,5 @@
 <template>
-  <el-card class="card" :body-style="{height:'calc(100% - 20px)'}">
+  <el-card class="card">
     <li class="con tree-btns">
       <div class="title">部门管理</div>
       <el-dropdown>
@@ -287,7 +287,8 @@
 </style>
 <style lang="scss" scoped>
 .card {
-  height: 100%;
+  height: 97%;
+  position: relative;
 }
 
 .tree-btns {
@@ -327,10 +328,10 @@
     cursor: pointer;
     position: absolute;
     bottom: 10px;
-    width:calc(23% - 5px);
+    width:100%;
     height: 30px;
     line-height: 30px;
-    left:5px;
+    left:0;
     &-txt {
       color: $mainColor;
       font-size: 16px;
