@@ -1,5 +1,5 @@
 <template>
-  <el-card class="card">
+  <el-card class="card" :body-style="{height:'100%'}">
     <li class="con tree-btns">
       <div class="title">部门管理</div>
       <el-dropdown>
@@ -35,7 +35,7 @@
       </el-input>
     </div>
     <div class="tree">
-      <el-tree :data="orgTree" ref="treeRef" @node-click="nodeClick" node-key="id" :highlightCurrent="true"
+      <el-tree :data="orgTree"  ref="treeRef" @node-click="nodeClick" node-key="id" 
         :default-expanded-keys="defaultExpandedKeys" :filter-node-method="filterNode">
         <template #default="{ node, data }">
           <span class="custom-tree-node">
@@ -49,12 +49,11 @@
           </span>
         </template>
       </el-tree>
-
-      <div class="weihu-wrap" @click="modifyOrgTree">
+      
+    </div>
+    <div class="weihu-wrap" @click="modifyOrgTree">
         <span class="weihu-wrap-txt">部门维护</span>
       </div>
-    </div>
-
   </el-card>
 
   <el-dialog v-model="deptDialogVisible" title="请录入部门信息" width="40%" center append-to-body @close="dialogHide">
@@ -110,7 +109,7 @@
 <script lang="ts" setup>
   import { ref, onMounted, watch} from 'vue'
   import $services from '@/services'
-  import { ElMessage, ElTree, ExpandTrigger } from 'element-plus';
+  import { ElMessage} from 'element-plus';
   import { useRouter } from 'vue-router';
 
 
@@ -270,7 +269,6 @@
   const modifyOrgTree = () => {
     router.push({ path: '/relation/org' })
   }
-
   //获取部门
   onMounted(() => {
     loadOrgTree()
@@ -312,14 +310,17 @@
 
 .tree {
   height: 100%;
-
+  position: relative;
+  max-height: calc(100% - 60px);
   .weihu-wrap {
-    padding-bottom: 10px;
     text-align: center;
     background-color: #fff;
     border-top: 1px solid #ccc;
     cursor: pointer;
-
+    position: absolute;
+    bottom: 10px;
+    width:calc(23% - 5px);
+    left:5px;
     &-txt {
       color: $mainColor;
       font-size: 16px;
@@ -332,6 +333,9 @@
     align-items: center;
     &__text {
       margin-left: 5px;
+    }
+    &span{
+      font-size: 16px;
     }
   }
 

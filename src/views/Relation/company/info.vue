@@ -118,6 +118,7 @@
     display: flex;
     padding: 10px;
     padding-top: 16px;
+    box-sizing: border-box;
     .title {
       text-align: left;
       font-size: 16px;
@@ -134,6 +135,7 @@
   .tab-list {
     padding: 10px;
     padding-top: 2px;
+    box-sizing: border-box;
   }
   .next-dept {
     tr {
@@ -151,6 +153,7 @@
       width: 39.6%;
       text-align: left;
       padding: 0 20px;
+      box-sizing: border-box;
       background: #fff;
     }
 
