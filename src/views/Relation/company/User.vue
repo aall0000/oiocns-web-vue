@@ -4,9 +4,8 @@
         <div class="title">{{props.selectItem.label}}</div>
         <div class="box-btns">
           <div v-if="props.selectItem?.data?.typeName == '公司'">
-            <el-button small link type="primary">添加成员</el-button>
-            <el-button small link type="primary">查看申请(5)</el-button>
-            <el-button small link type="primary">操作离职</el-button>
+            <el-button small link type="primary" @click="pullPersonDialog = true">添加成员</el-button>
+            <el-button small link type="primary" @click="viewApplication">查看申请</el-button>
           </div>
           <div v-if="props.selectItem?.data?.typeName == '部门' || props.selectItem?.data?.typeName == '工作组'">
             <el-button small link type="primary">分配人员</el-button>
@@ -25,21 +24,37 @@
       >
         <el-table-column type="selection" />
         <el-table-column prop="code" label="账号" />
-        <el-table-column prop="trueName" label="姓名" />
-        <el-table-column prop="teamCode" label="手机号" />
+        <el-table-column prop="name" label="姓名" />
+        <el-table-column prop="team.code" label="手机号" />
         <el-table-column label="操作" width="100">
           <template #default="{ row }">
-              <el-button link type="primary" size="small">编辑</el-button>
+            <div v-if="props.selectItem?.data?.typeName == '公司'">
               <el-popconfirm
                 title="确认删除?"
                 confirm-button-text="确认"
                 cancel-button-text="取消"
+                @confirm="removeFrom(row)"
               >
                 <template #reference>
-                  <el-button link type="danger" size="small">删除</el-button>
+                  <el-button link type="danger" size="small">操作离职</el-button>
                 </template>
               </el-popconfirm>
-            </template>
+            </div>
+
+            <div v-if="props.selectItem?.data?.typeName == '部门' || props.selectItem?.data?.typeName == '工作组'">
+              <el-button link type="danger" size="small">分配人员</el-button>
+              <el-popconfirm
+                title="确认删除?"
+                confirm-button-text="确认"
+                cancel-button-text="取消"
+                @confirm="removeFrom(row)"
+              >
+                <template #reference>
+                  <el-button link type="danger" size="small">移除成员</el-button>
+                </template>
+              </el-popconfirm>
+            </div>
+          </template>
         </el-table-column>
       </el-table>
 
@@ -49,6 +64,31 @@
         layout="total,prev, pager, next," :total="pageStore.total" />
     </div>
 
+
+  <el-dialog v-model="pullPersonDialog" @close="hideAddPreson" title="添加人员到单位" width="30%">
+    <el-select
+      v-model="inviter"
+      filterable
+      remote
+      reserve-keyword
+      placeholder="请输入要查的人或者手机号"
+      :remote-method="searchPersons"
+      :loading="loading"
+    >
+      <el-option
+        v-for="item in inviterOptions"
+        :key="item.value"
+        :label="item.label"
+        :value="item.value"
+      />
+    </el-select>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="hideAddPreson">取消</el-button>
+        <el-button type="primary" @click="pullPerson">确认</el-button>
+      </span>
+    </template>
+  </el-dialog>
 </template>
 <script lang='ts' setup>
 import $services from '@/services'
@@ -56,6 +96,7 @@ import { onMounted, reactive, toRefs, ref, watch } from 'vue';
 import { useUserStore } from '@/store/user'
 import { useRouter } from "vue-router";
 import { storeToRefs } from 'pinia';
+import { ElMessage } from 'element-plus';
 
 const props = defineProps<{
   selectItem: any,     // 节点数据
@@ -99,15 +140,107 @@ const getUsers = ()=>{
         limit: 100
       }
     }).then((res: ResultType) => {
+      console.log("resdata===", res.data)
       if (res.code == 200 && res.success) {
-        users = res.data;
+        users.value = res.data.result;
       }
     })
   }
 }
 
+
+// 搜索人
+const searchPersons = (query: string) => {
+  inviterOptions.value = []
+  if(!query){
+    return
+  }
+  loading.value = true
+  $services.person
+    .searchPersons({data: { text: query, offset: 0, limit: 10 }})
+    .then((res: ResultType) => {
+      loading.value = false
+      if (res.success && res.data.result) {
+        const users = res.data.result
+        inviterOptions.value = users.map((u: any) => {
+          return {value: u.id, label: u.name}
+        })
+      } else {
+        ElMessage({
+          message: '未找到用户!',
+          type: 'warning'
+        })
+      }
+    })
+}
+
+interface ListItem {
+  value: string
+  label: string
+}
+const inviterOptions = ref<ListItem[]>([])
+const inviter = ref('')
+const pullPersonDialog = ref<boolean>(false)
+const hideAddPreson = () => {
+  inviter.value = ''
+  pullPersonDialog.value = false
+}
+//邀请加入单位
+const pullPerson = () => {
+  $services.company
+    .pullPerson({
+      data: {
+        id: props.selectItem.id,
+        targetIds: [inviter.value]
+      }
+    })
+    .then((res: ResultType) => {
+      if (res.success) {
+        ElMessage({
+          message: '添加成功',
+          type: 'success'
+        })
+        getUsers()
+      }
+      inviter.value = ''
+      pullPersonDialog.value = false
+    })
+}
+
+//查看申请
+const viewApplication = (row: any) => {
+  router.push('/cardDetail')
+}
+
+// 移除
+const removeFrom = (row: any) =>{
+  let url;
+  if(props.selectItem?.data?.typeName == '公司'){
+    url = 'removeFromCompany'
+  } else if(props.selectItem?.data?.typeName == '部门'){
+    url = 'removeFromDepartment'
+  } else if(props.selectItem?.data?.typeName == '工作组'){
+    url = 'removeFromJob'
+  }
+  $services.company[url]({
+    data: {
+      id: props.selectItem.id,
+      targetIds: [row.id]
+    }
+  }).then((res: ResultType) => {
+    getUsers()
+    if (res.success) {
+      ElMessage({
+        message: '操作成功',
+        type: 'success'
+      })
+    }
+  })
+}
+
+
 onMounted(() => {
-  console.log("selectItem.value", props.selectItem)
+  getUsers()
 })
 
 watch(props, () => {
