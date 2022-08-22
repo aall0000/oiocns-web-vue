@@ -12,7 +12,7 @@
         stripe
         :border="true"
         style="width: 100%; margin: 0 auto"
-        height="390"
+        height="290"
         :cell-style="{ 'text-align': 'center' }"
         @select="handleSelect"
       >
