@@ -108,6 +108,7 @@ onMounted(() => {
 }
 
 .search {
+  font-size: 12px;
   .el-input__inner {
     font-size: 12px;
   }

@@ -53,7 +53,7 @@
       height: 25%;
     }
     .body{
-      height: 72%;
+      height: 73%;
     }
   }
 }
