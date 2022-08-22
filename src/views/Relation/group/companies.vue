@@ -14,7 +14,7 @@
       </div>
 
       <el-table
-        :data="users"
+        :data="companies"
         stripe
         :border="true"
         style="width: 100%; margin: 0 auto"
@@ -48,14 +48,14 @@
     </div>
 
 
-  <el-dialog v-model="pullPersonDialog" @close="hidePullPreson" title="添加人员到单位" width="30%">
+  <el-dialog v-model="pullPersonDialog" @close="hidePullPreson" title="添加单位到集团" width="30%">
     <el-select
       v-model="inviter"
       filterable
       remote
       reserve-keyword
-      placeholder="请输入要查的人或者手机号"
-      :remote-method="searchPersons"
+      placeholder="请输入要查找的单位"
+      :remote-method="searchCompany"
       :loading="loading"
     >
       <el-option
@@ -103,7 +103,7 @@ const props = defineProps<{
   selectItem: any,     // 节点数据
 }>()
 // 表格用户数据
-let users = ref<any>([])
+let companies = ref<any>([])
 
 const router = useRouter()
 // 表格分页数据
@@ -140,30 +140,30 @@ const getUsers = ()=>{
       }
     }).then((res: ResultType) => {
       if (res.code == 200 && res.success) {
-        users.value = res.data.result;
+        companies.value = res.data.result;
       }
     })
   }
 }
-// 搜索人
-const searchPersons = (query: string) => {
+// 搜索单位
+const searchCompany = (query: string) => {
   inviterOptions.value = []
   if(!query){
     return
   }
   loading.value = true
-  $services.person
-    .searchPersons({data: { filter: query, offset: 0, limit: 10 }})
+  $services.company
+    .searchCompany({data: { filter: query, offset: 0, limit: 10 }})
     .then((res: ResultType) => {
       loading.value = false
       if (res.success && res.data.result) {
-        const users = res.data.result
-        inviterOptions.value = users.map((u: any) => {
+        const companies = res.data.result
+        inviterOptions.value = companies.map((u: any) => {
           return {value: u.id, label: u.name}
         })
       } else {
         ElMessage({
-          message: '未找到用户!',
+          message: '未找到单位!',
           type: 'warning'
         })
       }
@@ -181,7 +181,7 @@ const hidePullPreson = () => {
   inviter.value = ''
   pullPersonDialog.value = false
 }
-//邀请加入单位
+//拉单位进集团
 const pullPerson = () => {
   $services.company
     .pullPerson({
@@ -211,12 +211,10 @@ const viewApplication = (row: any) => {
 // 移除
 const removeFrom = (row: any) =>{
   let url;
-  if(props.selectItem?.data?.typeName == '公司'){
-    url = 'removeFromCompany'
-  } else if(props.selectItem?.data?.typeName == '部门'){
-    url = 'removeFromDepartment'
-  } else if(props.selectItem?.data?.typeName == '工作组'){
-    url = 'removeFromJob'
+  if(props.selectItem?.data?.typeName == '集团'){
+    url = 'removeFromGroup'
+  } else if(props.selectItem?.data?.typeName == '子集团'){
+    url = 'removeFromSubgroup'
   }
   $services.company[url]({
     data: {
@@ -246,7 +244,7 @@ const filterTableData = computed(() => {
 })
 
 
-// 分配人员
+// 分配单位
 const assign = () => {
 
 }
