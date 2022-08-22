@@ -107,7 +107,7 @@ const mainRouter: RouteRecordRaw[] = [
         meta: {
           title: '单位维护'
         }
-      },
+      }
     ]
   },
   {
@@ -211,7 +211,7 @@ const mainRouter: RouteRecordRaw[] = [
     }
   },
   {
-    component: () => import('@/views/Work/appStore.vue'),
+    component: () => import('@/views/Market/index.vue'),
     name: 'appStore',
     path: '/appStore',
     meta: {
