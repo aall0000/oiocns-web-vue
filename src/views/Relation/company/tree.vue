@@ -35,7 +35,7 @@
       </el-input>
     </div>
     <div class="tree">
-        <el-tree :data="orgTree"  ref="treeRef" @node-click="nodeClick" node-key="id" 
+        <el-tree :data="orgTree"  ref="treeRef" @node-click="nodeClick" node-key="id"
           :default-expanded-keys="defaultExpandedKeys" :filter-node-method="filterNode">
           <template #default="{ node, data }">
             <span class="custom-tree-node">
@@ -126,9 +126,9 @@
   // 节点ID和对象映射关系
   const parentIdMap: any = {}
 
-  const defaultExpandedKeys = ref([])
-  const filterText = ref('')
-  const treeRef = ref<InstanceType<typeof ElTree>>()
+  let defaultExpandedKeys = ref([])
+  let filterText = ref('')
+  const treeRef = ref<any>()
   let orgTree = ref<OrgTreeModel[]>([])
   let cascaderTree = ref<OrgTreeModel[]>([])
 

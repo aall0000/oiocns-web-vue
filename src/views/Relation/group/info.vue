@@ -1,21 +1,22 @@
 <template>
-  <div class="department-info">
-    <div class="deptment-info">
-      <div class="deptment-info-btns">
-        <div class="left-name">集团信息</div>
+  <div class="info">
+    <div class="header">
+      <div class="title">集团信息</div>
+      <div class="box-btns">
+        <el-button small link type="primary" @click="handleUpdate">编辑</el-button>
       </div>
     </div>
     <div class="tab-list">
       <ul class="next-dept">
         <table class="table-mytable">
           <tr>
-            <td class="left">节点名称</td>
+            <td class="left">集团名称</td>
             <td class="column">{{selectItem?.data?.name}}</td>
-            <td class="left">节点编码</td>
+            <td class="left">集团编码</td>
             <td class="column">{{selectItem?.data?.teamCode}}</td>
           </tr>
           <tr>
-            <td class="left">节点描述</td>
+            <td class="left">描述</td>
             <td class="column" colspan="3">
               <span class="remark">{{selectItem?.data?.teamRemark}}</span>
             </td>
@@ -23,93 +24,109 @@
         </table>
       </ul>
     </div>
-
-    <el-dialog v-model="dialogVisible" title="请输入部门名称" width="30%">
-      <el-form-item label="部门名称">
-        <el-input v-model="formData.name" placeholder="Please input" clearable />
-      </el-form-item>
-      <el-form-item label="部门编号">
-        <el-input v-model="formData.code" placeholder="Please input" clearable />
-      </el-form-item>
-      <el-form-item label="部门简介">
-        <el-input v-model="formData.remark" placeholder="Please input" clearable />
-      </el-form-item>
-      <template #footer>
-        <span class="dialog-footer">
-          <el-button @click="dialogVisible = false">取消</el-button>
-          <el-button type="primary" @click="updateGroup">确认</el-button>
-        </span>
-      </template>
-    </el-dialog>
-
   </div>
+
+  <el-dialog v-model="dialogVisible" :title="'请编辑集团信息'" width="30%">
+    <el-form-item :label="'集团名称'">
+      <el-input v-model="formData.name" :placeholder="'请输入集团名称'" clearable />
+    </el-form-item>
+    <el-form-item :label="'集团编号'">
+      <el-input v-model="formData.code" :placeholder="'请输入集团描述'" clearable />
+    </el-form-item>
+    <el-form-item :label="'集团描述'">
+      <el-input v-model="formData.teamRemark" :placeholder="'请输入集团描述'" clearable />
+    </el-form-item>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="dialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="update">确认</el-button>
+      </span>
+    </template>
+  </el-dialog>
 </template>
 <script lang="ts" setup>
   import $services from '@/services'
-  import { ref, reactive, onMounted, watch } from 'vue'
-  import { ElMessage, ElMessageBox } from 'element-plus'
+  import { ref, watch } from 'vue'
+  import { ElMessage } from 'element-plus'
 
-	const props = defineProps({
-		group: Object,
-    default: {}
-	})
+
+  let selectItem = ref<any>({})
   let dialogVisible = ref<boolean>(false)
   let formData: any = ref({})
-  let selectItem = ref<any>({})
 
   // 获取单位树点击的信息
   const selectItemChange = (data: any) => {
     selectItem.value = data;
+    const obj = data.data
   };
   defineExpose({ selectItemChange });
 
 
   watch(selectItem, () => {
-    console.log(selectItem.value)
-    console.log("selectItem改变了");
+    console.log('22222222222', selectItem)
   });
-  
-  // 修改集团
-  const updateGroup = ()=> {
+
+
+  // 修改信息
+  const handleUpdate = ()=> {
+    if(!selectItem.value.id){
+      ElMessage.warning('请左侧选择部门或者工作组！')
+      return
+    }
+    formData.value = selectItem.value.data
+    dialogVisible.value = true
+  }
+
+  // 保存
+  const update = ()=>{
+    const data = {...formData.value, ...selectItem.value.data};
+    let url = null;
+    if(data.typeName == '集团'){
+      url = 'updateGroup'
+    } else if(data.typeName == '子集团'){
+      url = 'updateSubGroup'
+    }
+    $services.company[url]({
+      data
+    }).then((res: ResultType) => {
+      if (res.code == 200 && res.success) {
+        dialogVisible.value = false
+        ElMessage.success('信息修改成功!')
+        selectItem.value.data = data
+      }
+    })
 
   }
 </script>
 
 <style lang="scss" scoped>
-  .department-info {
-    box-sizing: border-box;
-    padding: 15px 20px;
-    background: #fff;
-    margin-bottom: 10px;
-    border-radius: 5px;
+  .info {
+    height: 100%;
+    width: 100%;
+    background-color: #fff;
   }
-  .deptment-info {
-    background: #fff;
-    margin-bottom: 15px;
-    .deptment-info-name {
-      font-size: 18px;
+  .header {
+    display: flex;
+    padding: 10px;
+    padding-top: 16px;
+    box-sizing: border-box;
+    .title {
+      text-align: left;
+      font-size: 16px;
+      width: 30%;
       font-weight: bold;
-      .info-num {
-        font-size: 14px;
-        font-weight: normal;
-        padding: 0 10px;
-      }
     }
-    .deptment-info-btns {
-      display: flex;
-      justify-content: space-between;
-      padding-top: 10px;
-      .left-name {
-        font-size: 18px;
-        font-weight: bold;
-        display: flex;
-        align-items: center;
-      }
-      .edit {
-        font-size: 14px;
-        font-weight: bold;
-      }
+    .box-btns {
+      text-align: right;
+      padding-right: 14px;
+      padding-bottom: 10px;
+      width: 70%;
     }
+  }
+  .tab-list {
+    padding: 10px;
+    padding-top: 2px;
+    box-sizing: border-box;
   }
   .next-dept {
     tr {
@@ -127,7 +144,16 @@
       width: 39.6%;
       text-align: left;
       padding: 0 20px;
+      box-sizing: border-box;
       background: #fff;
+    }
+
+    .remark{
+      display: -webkit-box;
+      -webkit-line-clamp: 10;
+      -webkit-box-orient: vertical;
+      width: 100%;
+      overflow: hidden;
     }
   }
 </style>
