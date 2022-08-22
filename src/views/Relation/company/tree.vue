@@ -35,21 +35,20 @@
       </el-input>
     </div>
     <div class="tree">
-      <el-tree :data="orgTree"  ref="treeRef" @node-click="nodeClick" node-key="id" 
-        :default-expanded-keys="defaultExpandedKeys" :filter-node-method="filterNode">
-        <template #default="{ node, data }">
-          <span class="custom-tree-node">
-            <div class="tree-box">
-              <el-icon>
-                <School />
-              </el-icon>
-              <span>{{ data.label }}</span>
-              <el-tag size="small">{{ data.data.typeName }}</el-tag>
-            </div>
-          </span>
-        </template>
-      </el-tree>
-      
+        <el-tree :data="orgTree"  ref="treeRef" @node-click="nodeClick" node-key="id" 
+          :default-expanded-keys="defaultExpandedKeys" :filter-node-method="filterNode">
+          <template #default="{ node, data }">
+            <span class="custom-tree-node">
+              <div class="tree-box">
+                <el-icon>
+                  <School />
+                </el-icon>
+                <span>{{ data.label }}</span>
+                <el-tag size="small">{{ data.data.typeName }}</el-tag>
+              </div>
+            </span>
+          </template>
+        </el-tree>
     </div>
     <div class="weihu-wrap" @click="modifyOrgTree">
         <span class="weihu-wrap-txt">部门维护</span>
@@ -287,7 +286,7 @@
 </style>
 <style lang="scss" scoped>
 .card {
-  height: 97%;
+  height: calc(98% - 2px);
   position: relative;
 }
 
@@ -302,6 +301,7 @@
 }
 
 .search {
+  font-size: 12px;
   padding: 12px;
 
   .el-input__inner {
@@ -318,9 +318,8 @@
 }
 
 .tree {
-  height: 100%;
   position: relative;
-  max-height: calc(100% - 60px);
+  max-height: 70%;
   .weihu-wrap {
     text-align: center;
     background-color: #fff;
