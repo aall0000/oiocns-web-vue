@@ -113,7 +113,7 @@
 <script lang='ts' setup>
 import $services from '@/services'
 import DiyTable from '@/components/diyTable/index.vue'
-import { onMounted, reactive, ref, watch } from 'vue';
+import { onMounted, reactive, ref, watch,computed } from 'vue';
 import { useUserStore } from '@/store/user'
 import { useRouter } from "vue-router";
 import { ElMessage } from 'element-plus';
