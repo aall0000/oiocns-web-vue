@@ -3,14 +3,14 @@
     <div class="tree">
       <Tree @nodeClick="nodeClick"/>
     </div>
-    <card class="content">
+    <div class="content" style="overflow: hidden;">
       <div class="info">
         <Info ref="info"/>
       </div>
       <div class="body">
         <Body ref="body"/>
       </div>
-    </card>
+    </div>
   </div>
 </template>
 <script lang="ts" setup>
@@ -35,6 +35,7 @@
   height: 100%;
   background: #f0f2f5;
   padding: 3px;
+  box-sizing: border-box;
   display: flex;
 
   .tree {
@@ -43,13 +44,16 @@
   .content{
     width: 77%;
     height: 100%;
-    padding: 3px;
+    padding:0 3px;
+    box-sizing: border-box;
     background: #f0f2f5;
     .info{
       padding: 3px;
+      box-sizing: border-box;
+      height: 25%;
     }
     .body{
-      height: 75%;
+      height: 73%;
     }
   }
 }
