@@ -90,7 +90,7 @@
         }
       })
       .then((res: ResultType) => {
-        if (res.success) {
+        if (res.code == 200) {
           dialogVisible.value = false
           getList(props.selectItem.id)
           ElMessage({
@@ -125,9 +125,10 @@
         }
       })
       .then((res: ResultType) => {
-        if (res.success) {
-          const { total = 0 } = res.data
-          listNum.value = total
+        if (res.data.result) {
+          listNum.value = res.data.total
+        } else {
+          listNum.value = 0
         }
       })
   }
@@ -141,9 +142,10 @@
         }
       })
       .then((res: ResultType) => {
-        if (res.success) {
-          const { total = 0 } = res.data
-          listNum.value = total
+        if (res.data && res.data.result) {
+          listNum.value = res.data.total
+        } else {
+          listNum.value = 0
         }
       })
   }

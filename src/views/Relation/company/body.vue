@@ -1,0 +1,47 @@
+<template>
+  <div class="container">
+    <el-tabs v-model="activeName" class="tabs" @tab-click="handleClick">
+      <el-tab-pane label="人员列表" name="user">
+        <User></User>
+      </el-tab-pane>
+      <el-tab-pane label="身份列表" name="identity">
+        <Identity></Identity>
+      </el-tab-pane>
+    </el-tabs>
+  </div>
+</template>
+<script lang="ts" setup>
+import { ref } from 'vue'
+import type { TabsPaneContext } from 'element-plus'
+import User from './User.vue'
+import Identity from './Identity.vue'
+
+const activeName = ref('user')
+let selectItem = ref<any>({})
+
+const handleClick = (tab: TabsPaneContext, event: Event) => {
+  console.log(tab, event)
+}
+
+// 获取单位树点击的信息
+const selectItemChange = (data: any) => {
+  selectItem.value = data;
+};
+defineExpose({ selectItemChange });
+
+</script>
+
+<style lang="scss" scoped>
+.container{
+  height: 100%;
+  width: 100%;
+  background-color: #fff;
+  padding: 3px;
+}
+.tabs {
+  width: 100%;
+  background-color: #fff;
+  padding: 16px;
+}
+
+</style>

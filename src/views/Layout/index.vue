@@ -84,6 +84,8 @@
 
     .main-menu-content {
       width: max-content;
+      box-shadow: 0px 2px 1px 2px #efefef;
+      z-index: 1;
     }
 
     .main-wrap {

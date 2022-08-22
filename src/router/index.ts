@@ -65,6 +65,52 @@ const mainRouter: RouteRecordRaw[] = [
     }
   },
   {
+    path: '/relation',
+    component: () => import('@/views/Relation/index.vue'),
+    children: [
+      {
+        path: '/relation/company',
+        name: 'company1',
+        component: () => import('@/views/Relation/company/index.vue'),
+        meta: {
+          title: '单位维护'
+        }
+      },
+      {
+        path: '/relation/group',
+        name: 'group1',
+        component: () => import('@/views/Relation/group/index.vue'),
+        meta: {
+          title: '集团维护'
+        }
+      },
+      {
+        path: '/relation/cohort',
+        name: 'cohort1',
+        component: () => import('@/views/Relation/cohort/index.vue'),
+        meta: {
+          title: '单位群组'
+        }
+      },
+      {
+        path: '/relation/friend',
+        name: 'friend1',
+        component: () => import('@/views/Relation/friend/index.vue'),
+        meta: {
+          title: '我的好友'
+        }
+      },
+      {
+        path: '/relation/org',
+        name: 'org',
+        component: () => import('@/views/Relation/org/index.vue'),
+        meta: {
+          title: '单位维护'
+        }
+      },
+    ]
+  },
+  {
     path: '/organization',
     component: () => import('@/views/Organization/components/layout.vue'),
     children: [
@@ -101,8 +147,8 @@ const mainRouter: RouteRecordRaw[] = [
         }
       },
       {
-        path: '/organization/deptDetail',
-        name: 'deptDetail',
+        path: '/organization/deptDeatil',
+        name: 'deptDeatil',
         component: () => import('@/views/Organization/deptDetail.vue'),
         meta: {
           title: '部门维护'

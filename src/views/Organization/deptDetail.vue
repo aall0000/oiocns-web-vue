@@ -30,7 +30,7 @@
         <el-table-column prop="thingId" label="部门编码" />
         <el-table-column prop="updateTime" label="更新时间" />
         <el-table-column label="操作" width="100">
-          <template #default="{ row }">
+          <template #default="{ row  }">
             <el-popconfirm
               title="确认删除?"
               @confirm="handleDelItem(row)"
@@ -60,8 +60,8 @@
     @close="dialogHide"
   >
     <div class="main-dialog">
-      <el-form-item class="main-item" label="创建类型" style="width: 100%">
-        <el-radio-group v-model="roleType" class="ml-4">
+       <el-form-item class="main-item" label="创建类型" style="width: 100%">
+        <el-radio-group v-model="roleType" class="ml-4" >
           <el-radio label="1" size="large">创建子部门</el-radio>
           <el-radio label="2" size="large">创建工作组</el-radio>
         </el-radio-group>
@@ -94,12 +94,8 @@
     <template #footer>
       <span class="dialog-footer">
         <el-button @click="dialogHide">取消</el-button>
-        <el-button type="primary" v-if="createOfEdit == 1" @click="createDepartment"
-          >确认</el-button
-        >
-        <el-button type="primary" v-if="createOfEdit == 2" @click="updateDepartment"
-          >确认</el-button
-        >
+        <el-button type="primary" v-if="createOfEdit ==1" @click="createDepartment">确认</el-button>
+        <el-button type="primary" v-if="createOfEdit ==2" @click="updateDepartment">确认</el-button>
       </span>
     </template>
   </el-dialog>
@@ -134,35 +130,35 @@
         }
       })
       .then((res: ResultType) => {
-        let arr: any = []
-        if (res.success) {
-          res.data.result.forEach((element: any) => {
-            let obj = element
-            obj.hasChildren = true
-            obj.parent = [workspaceData.value.id]
+        let arr:any = []
+        if(res.data.result){
+          res.data.result.forEach((element:any) => {
+            let obj = element;
+            obj.hasChildren = true;
+            obj.parent= [workspaceData.value.id]
             arr.push(obj)
-          })
+          });
         }
         tableData.list = [...arr]
-        API.company
-          .getJobs({
-            data: {
-              id: userUnitInfo.value.id,
-              offset: 0,
-              limit: 100
-            }
-          })
-          .then((res: ResultType) => {
-            let arr: any = []
-            if (res.success) {
-              res.data.result.forEach((element: any) => {
-                let obj = element
-                obj.parent = [workspaceData.value.id]
-                arr.push(obj)
-              })
-              tableData.list = [...tableData.list, ...arr]
-            }
-          })
+          API.company
+            .getJobs({
+              data: {
+                id: userUnitInfo.value.id,
+                offset: 0,
+                limit: 100
+              }
+            })
+            .then((res: ResultType) => {
+              let arr:any =[]
+               if(res.data.result){
+                 res.data.result.forEach((element:any) => {
+                  let obj = element;
+                  obj.parent= [workspaceData.value.id]
+                  arr.push(obj)
+                });
+                tableData.list = [...tableData.list, ...arr]
+               }  
+            })
       })
   }
 
@@ -180,13 +176,13 @@
   }
   //弹窗信息
   const fromData = reactive({
-    id: '',
-    parentId: '',
+    id:'',
+    parentId:'',
     departmentName: '',
     departmentTeamName: '',
     departmentTeamCode: '',
     departmentTeamRemark: '',
-    thingId: ''
+    thingId:'',
   })
   //上级节点id
   const upNodeId = ref<any>({ list: [] })
@@ -195,29 +191,30 @@
   //显示弹窗
   const createOfEdit = ref<number>(1) //创建1 编辑2
   const showEdit = (row: any) => {
-    createOfEdit.value = 2
-    if (row.typeName == '工作组') {
+    
+    createOfEdit.value=2
+    if(row.typeName =='工作组'){
       roleType.value = '2'
-    } else {
+    }else{
       roleType.value = '1'
     }
-    fromData.id = row.id
-    fromData.parentId = row.parent[row.parent.length - 1]
+    fromData.id= row.id;
+    fromData.parentId = row.parent[row.parent.length-1];
     fromData.departmentTeamRemark = row.team.remark
-    fromData.departmentTeamCode = row.code
+    fromData.departmentTeamCode =row.code
     fromData.departmentName = row.name
-    fromData.thingId = row.thingId
+    fromData.thingId = row.thingId;
     dialogVisible.value = true
-    let arr = row.parent
-    upNodeId.value.list = arr
+    let arr = row.parent;
+    upNodeId.value.list = arr;
   }
-  const showCreate = (row: any) => {
-    createOfEdit.value = 1
-    upNodeId.value.list = []
-    fromData.id = ''
-    fromData.parentId = ''
-    fromData.departmentTeamRemark = ''
-    fromData.departmentTeamCode = ''
+  const showCreate = (row:any)=>{
+    createOfEdit.value=1
+    upNodeId.value.list =[]
+    fromData.id ='';
+    fromData.parentId= ''
+    fromData.departmentTeamRemark =''
+    fromData.departmentTeamCode  = ''
     fromData.departmentName = ''
     dialogVisible.value = true
   }
@@ -244,11 +241,11 @@
     if (upNodeId.value.list.length > 0) {
       parentId = upNodeId.value.list[upNodeId.value.list.length - 1]
     }
-    let requestType
+    let requestType;
     if (roleType.value == '1') {
-      requestType = 'createDepartment' //创建部门
+       requestType = 'createDepartment' //创建部门
     } else {
-      requestType = 'createJob' //创建工作组
+       requestType = 'createJob' //创建工作组
     }
     API.company[requestType]({
       data: {
@@ -260,23 +257,23 @@
         teamRemark: fromData.departmentTeamRemark
       }
     }).then((res: ResultType) => {
-      if (res.success) {
+      if (res.code == 200) {
         dialogVisible.value = false
         state.nodeData.childNodes = []
         loadNode(state.nodeData, state.resolveData)
       }
     })
   }
-  const updateDepartment = () => {
+  const  updateDepartment = ()=>{
     let parentId = 0
     if (upNodeId.value.list.length > 0) {
       parentId = upNodeId.value.list[upNodeId.value.list.length - 1]
     }
-    let requestType
+    let requestType;
     if (roleType.value == '1') {
-      requestType = 'updateDepartment' //创建部门
+       requestType = 'updateDepartment' //创建部门
     } else {
-      requestType = 'updateJob' //创建工作组
+       requestType = 'updateJob' //创建工作组
     }
     API.company[requestType]({
       data: {
@@ -284,7 +281,7 @@
         code: fromData.departmentTeamCode,
         name: fromData.departmentName,
         parentId: parentId,
-        thingId: fromData.thingId,
+        thingId:fromData.thingId,
         teamRemark: fromData.departmentTeamRemark
       }
     }).then((res: ResultType) => {
@@ -296,15 +293,15 @@
     })
   }
   const loadNode = (node: any, resolve: (data: any) => void) => {
-    if (node.level === 0) {
-      getQueryInfo(resolve)
-    }
-    if (node.level >= 1) {
-      getDepartmentsList(node, resolve)
-    }
+      if (node.level === 0) {
+        getQueryInfo(resolve)
+      }
+      if (node.level >= 1) {
+        getDepartmentsList(node, resolve)
+      }
   }
   //上级切换
-  const handleChange = (value: any) => {
+  const handleChange = (value:any) => {
     console.log(value)
   }
   //选中人员
@@ -347,18 +344,16 @@
   //根节点数据
   async function getQueryInfo(resolve: any) {
     await API.company.queryInfo({}).then((res: ResultType) => {
-      if (res.success) {
-        let obj = [
-          {
-            value: res.data.id,
-            children: [] as string[],
-            label: res.data.name,
-            id: res.data.id,
-            remark: res.data.team.remark
-          }
-        ]
-        return resolve(obj)
-      }
+      let obj = [
+        {
+          value: res.data.id,
+          children: [] as string[],
+          label: res.data.name,
+          id: res.data.id,
+          remark: res.data.team.remark
+        }
+      ]
+      return resolve(obj)
     })
   }
   async function getDepartmentsList(node: any, resolve: any) {
@@ -369,7 +364,7 @@
         data: { id: node.data.id, offset: 0, limit: 1000 }
       })
       .then((res: ResultType) => {
-        if (res.success) {
+        if (res.data.result) {
           let resData = res.data.result
           resData.forEach((element: any) => {
             let obj = {
@@ -395,7 +390,7 @@
         }
       })
       .then((res: ResultType) => {
-        if (res.success) {
+        if (res.data) {
           if (res.data.result) {
             let resData = res.data.result
             resData.forEach((element: any) => {
@@ -431,11 +426,11 @@
   }
   //table
   const load = (row: User, treeNode: unknown, resolve: (date: User[]) => void) => {
-    loadList(row, treeNode, resolve)
+    loadList(row,treeNode,resolve)
   }
-  const loadList = (row: any, treeNode: any, resolve: any) => {
-    console.log('ccccc', treeNode)
-    let dataList: any = []
+  const loadList = (row:any,treeNode:any,resolve:any) => {
+    console.log('ccccc',treeNode)
+    let dataList:any = []
     API.company
       .getDepartments({
         data: {
@@ -445,41 +440,41 @@
         }
       })
       .then((res: ResultType) => {
-        let arr: any = []
-        if (res.success) {
-          res.data.result.forEach((element: any) => {
-            let obj = element
-            obj.hasChildren = true
-            if (!row.parent) {
-              obj.parent = [row.id]
-            } else {
-              obj.parent = [...row.parent, row.id]
+        let arr:any = []
+        if(res.data.result){
+          res.data.result.forEach((element:any) => {
+            let obj = element;
+            obj.hasChildren = true;
+            if(!row.parent){
+              obj.parent = [row.id];
+            }else{
+              obj.parent = [...row.parent,row.id];
             }
             arr.push(obj)
-          })
-
+          });
+         
           dataList = [...arr]
         }
-        API.company
-          .getJobs({
-            data: {
-              id: row.id,
-              offset: 0,
-              limit: 100
-            }
-          })
+          API.company
+            .getJobs({
+              data: {
+                id: row.id,
+                offset: 0,
+                limit: 100
+              }
+            })
           .then((res: ResultType) => {
-            let arr: any = []
-            if (res.success) {
-              res.data.result.forEach((element: any) => {
-                let obj = element
-                if (!row.parent) {
-                  obj.parent = [row.id]
-                } else {
-                  obj.parent = [...row.parent, row.id]
+            let arr:any = []
+            if(res.data.result){
+              res.data.result.forEach((element:any) => {
+                let obj = element;
+                if(!row.parent){
+                  obj.parent = [row.id];
+                }else{
+                  obj.parent = [...row.parent,row.id];
                 }
                 arr.push(obj)
-              })
+              });
               dataList = [...dataList, ...arr]
             }
             resolve(dataList)

@@ -1,30 +1,35 @@
 <template>
-  <div class="header">单位维护</div>
+    <div class="card">
+      <div class="header">
+        <div class="title">身份列表</div>
+        <div class="box-btns">
+          <el-button small link type="primary" @click="dialogVisible = true">添加身份</el-button>
+        </div>
+      </div>
 
-  <div class='deptDetail-wrap'>
-    <div class="detail-box box">
-      <ul class="box-btns flex justify-between">
-        <li class="box-btns-title">单位列表</li>
-        <li class="box-btns-con ">
-          <el-button small link type="primary" @click="handleGoback">返回</el-button>
-          <!-- <el-button small link type="danger">删除</el-button> -->
-          <el-button small link type="primary" @click="dialogVisible = true">新增</el-button>
-        </li>
-      </ul>
-      <el-table class="box-table" v-loading="loading" :data="pageStore.tableData" stripe border
-        header-row-class-name="table_header_class" @select="handleSelect">
-        <el-table-column type="selection" width="50" />
-        <el-table-column prop="id" label="序号">
-          <template #default="{ $index }">
-            {{ pagination.limit * (pagination.current - 1) + $index + 1 }}
-          </template>
-        </el-table-column>
-        <el-table-column prop="name" label="单位名称" />
-        <el-table-column prop="thingId" label="单位编码" />
-        <el-table-column prop="updateTime" label="更新时间" />
+      <el-table
+        :data="pageStore.tableData"
+        stripe
+        :border="true"
+        style="width: 100%; margin: 0 auto"
+        height="390"
+        :cell-style="{ 'text-align': 'center' }"
+        @select="handleSelect"
+      >
+        <el-table-column type="selection" />
+        <el-table-column prop="code" label="名称" />
+        <el-table-column prop="name" label="编码" />
+        <el-table-column prop="trueName" label="所属集团" />
+        <el-table-column prop="teamCode" label="所属单位" />
+        <el-table-column prop="remark" label="描述" />
         <el-table-column label="操作" width="100">
           <template #default="{ row }">
-            <el-popconfirm title="确认删除?" @confirm="handleDelItem(row)" confirm-button-text="确认" cancel-button-text="取消">
+            <el-button link type="primary" size="small">编辑</el-button>
+            <el-popconfirm
+              title="确认删除?"
+              confirm-button-text="确认"
+              cancel-button-text="取消"
+            >
               <template #reference>
                 <el-button link type="danger" size="small">删除</el-button>
               </template>
@@ -32,23 +37,30 @@
           </template>
         </el-table-column>
       </el-table>
+
       <el-pagination class="page-pagination" @size-change="(e: any) => handlePaginationChange(e, 'limit')"
-        @current-change="(e: any) => handlePaginationChange(e, 'current')" small background
+        @current-change="(e: any) => handlePaginationChange(e, 'current')" background
         :page-sizes="[10, 20, 50, 100]" v-model:currentPage="pagination.current" v-model:page-size="pagination.limit"
         layout="total,prev, pager, next," :total="pageStore.total" />
     </div>
-  </div>
 
 
-  <el-dialog v-model="dialogVisible" title="请输入单位名称" width="30%">
-    <el-form-item label="单位名称">
+
+  <el-dialog v-model="dialogVisible" title="请输入身份信息" width="30%">
+    <el-form-item label="身份名称">
       <el-input v-model="fromData.departmentName" placeholder="请输入单位名称" clearable />
     </el-form-item>
-    <el-form-item label="单位编号">
-      <el-input v-model="fromData.departmentTeamCode" placeholder="请输入单位编号" clearable />
+    <el-form-item label="身份编号">
+      <el-input v-model="fromData.departmentTeamCode" placeholder="请输入身份编号" clearable />
     </el-form-item>
-    <el-form-item label="单位简介">
-      <el-input v-model="fromData.departmentTeamRemark" placeholder="请输入单位简介" type="textarea" clearable />
+    <el-form-item label="所属集团">
+      <el-input v-model="fromData.departmentTeamCode" placeholder="请输入所属集团" clearable />
+    </el-form-item>
+    <el-form-item label="所属单位">
+      <el-input v-model="fromData.departmentTeamCode" placeholder="请输入所属单位" clearable />
+    </el-form-item>
+    <el-form-item label="身份描述">
+      <el-input v-model="fromData.departmentTeamRemark" placeholder="请输入身份描述" type="textarea" clearable />
     </el-form-item>
     <template #footer>
       <span class="dialog-footer">
@@ -66,10 +78,10 @@ import { onMounted, reactive, toRefs, ref } from 'vue';
 import { useUserStore } from '@/store/user'
 import { useRouter } from "vue-router";
 import { storeToRefs } from 'pinia';
-import { nextTick } from "process";
+
 const store = useUserStore()
 const router = useRouter()
-const { userUnitInfo, workspaceData } = storeToRefs(store)
+const { workspaceData } = storeToRefs(store)
 // 表格分页数据
 const pagination: { current: number, limit: number } = reactive({ current: 1, limit: 10 })
 // 表格数据加载状态
@@ -170,38 +182,34 @@ const handleGoback = () => {
 </script>
 
 <style lang='scss' scoped>
-.header {
-  padding: 0 14px;
-  height: 40px;
-  background-color: #fff;
-  margin-bottom: 5px;
-  line-height: 40px;
-}
 
-.deptDetail-wrap {
-  flex-grow: 1;
-  padding: 14px;
+.card {
+  height: 100%;
+  width: 100%;
   background-color: #fff;
+  padding: 10px;
 
-  .box-btns {
-    padding-bottom: 10px;
+  .header {
+    display: flex;
+
+    .title {
+      text-align: left;
+      font-size: 16px;
+      width: 30%;
+      font-weight: bold;
+    }
+    .box-btns {
+      text-align: right;
+      padding-right: 14px;
+      padding-bottom: 10px;
+      width: 70%;
+    }
   }
 
-  .detail-box {
+  .page-pagination {
+    padding: 10px;
     display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    height: 100%;
-
-    .box-table {
-      flex-grow: 1;
-    }
-
-    .page-pagination {
-      padding: 10px 0;
-      display: flex;
-      justify-content: end;
-    }
+    justify-content: end;
   }
 }
 </style>

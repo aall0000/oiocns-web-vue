@@ -3,7 +3,10 @@
     <!-- 左侧 -->
     <el-col class="" :span="4">
       <div style="display: flex; align-items: center" @mouseleave="handleClose()">
-        <img class="logo" src="@/assets/img/avatar.jpg" alt="logo" />
+        <!-- <img class="logo" src="@/assets/img/avatar.jpg" alt="logo" /> -->
+        <div class="select-item__imgSelect" style="margin-right: 10px;">
+          {{ workspaceData?.name.slice(0, 1)}}
+        </div>
         <div class="col-box" @click="onClickUnit">
           <div class="col-text">{{ workspaceData?.name || '' }}</div>
           <div class="col-icon"
@@ -90,7 +93,7 @@
     <el-col :span="8" class="flex col-right">
       <el-dropdown trigger="click">
         <span class="el-dropdown-link">
-          <headImg :name="queryInfo.name.slice(0, 1)" class="smallIcon"></headImg>
+          <headImg :name="queryInfo.name.slice(0, 1)" class="smallIcon" :label="''"></headImg>
           <span>{{ queryInfo.name }}</span>
           <el-icon style="margin-left: 15px">
             <CaretBottom />
@@ -98,11 +101,11 @@
         </span>
         <template #dropdown>
           <el-dropdown-menu>
-            <el-dropdown-item>Action 1</el-dropdown-item>
-            <el-dropdown-item> 语言切换 </el-dropdown-item>
-            <el-dropdown-item>首页配置</el-dropdown-item>
-            <el-dropdown-item>信息设置</el-dropdown-item>
-            <el-dropdown-item>帮助中心</el-dropdown-item>
+            <el-dropdown-item @click="toWork">首页配置</el-dropdown-item>
+            <el-dropdown-item @click="toSetting">信息设置</el-dropdown-item>
+            <el-dropdown-item >帮助中心 </el-dropdown-item>
+            <el-dropdown-item >切换语言 </el-dropdown-item>
+            <el-dropdown-item >切换主题 </el-dropdown-item>
             <el-dropdown-item @click="exitLogin">退出登录</el-dropdown-item>
           </el-dropdown-menu>
         </template>
@@ -228,7 +231,7 @@
         data: {
           text: query,
           offset: 0,
-          limit: 10
+          limit: 100
         }
       })
       .then((res: ResultType) => {
@@ -332,7 +335,10 @@
         }
       })
   }
-  const Setting = () => {
+  const toWork = ()=>{
+      router.push('/workHome')
+  }
+  const toSetting = () => {
     if (store.workspaceData.name === '个人空间') {
       router.push('/user')
     } else {
@@ -352,6 +358,7 @@
   }
   .col-text {
     white-space: nowrap;
+    font-size: 16px;
   }
   .seletc-drop__box {
     cursor: pointer;
@@ -396,6 +403,7 @@
     box-shadow: 0px 6px 9px rgba(0, 0, 0, 0.161);
     border-radius: 0 0 4px 4px;
     z-index: 2;
+    min-width: 250px;
   }
   .col-box {
     cursor: pointer;
@@ -409,19 +417,18 @@
   }
   .joinBox {
     display: flex;
+    border-top: 1px solid #e0e0e0;
   }
   .joinBtn {
     margin: 10px;
     display: flex;
-    height: 30px;
+    height: 35px;
     background: #ffffff;
-    border-radius: 2px;
-    border: 1px solid #d9d9d9;
     text-align: center;
     align-items: center;
     cursor: pointer;
-    font-size: 12px;
-    padding: 10px;
+    font-size: 16px;
+    padding: 10px 20px;
     color: rgba(0, 0, 0, 0.65);
     &:hover {
       color: #154ad8;
@@ -435,7 +442,7 @@
     .smallIcon {
       font-size: 18px;
       border-radius: 50px;
-      width: 30px;
+      width: 20px;
       transform: scale(0.7, 0.7);
     }
   }

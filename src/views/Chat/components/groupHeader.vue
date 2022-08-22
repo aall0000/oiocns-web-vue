@@ -1,16 +1,11 @@
 <template>
   <div class="group-header-wrap">
     <ul class="user flex">
-      <HeadImg :name="info.detail.name" />
+      <HeadImg :name="info.detail.name" :label="''"/>
       <li class="user-info">
         <div class="user-info-top flex">
-          <p class="user-info-top-name">{{ info.detail.name }}</p>
+          <p class="user-info-top-name">{{ info.detail.name }}<span v-if="info.total > 0">({{ info.total }}人)</span></p>
           <el-tag size="small">{{info.detail.label}}</el-tag>
-        </div>
-        <div class="user-info-num" v-show="info.total">
-          <el-icon>
-            <User />
-          </el-icon> {{ info.total }}
         </div>
       </li>
     </ul>

@@ -112,7 +112,9 @@ export default {
     getAllCohorts: company + '/get/all/cohorts', //查询所有群聊
     getAllDepartments: company + '/get/all/departments', //查询所有部门
     getAllJobs: company + '/get/all/jobs', //查询所有岗位
-    getAllSubgroups: company + '/get/all/subgroups' //查询所有子集团
+    getAllSubgroups: company + '/get/all/subgroups', //查询所有子集团
+    getCompanyTree: company + '/get/company/tree', //查询单位组织树
+    getGroupTree: company + '/get/group/tree', //查询集团组织树
   },
   msg: {
     // /orginone/orgchat/real/send/msg

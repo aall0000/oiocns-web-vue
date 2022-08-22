@@ -11,43 +11,41 @@
             :inline="true"
             :label-position="labelPosition"
             label-width="100px"
-            :model="formLabelAlign"
+            :model="formModel"
             style="max-width: 800px"
           >
-            <el-form-item label="姓名">
-              <el-input v-model="formLabelAlign.trueName" />
+            <el-form-item label="昵称">
+              <el-input v-model="formModel.nickName" />
             </el-form-item>
-            <el-form-item label="账户名">
-              <el-input disabled v-model="formLabelAlign.code" />
+            <el-form-item label="账号">
+              <el-input v-model="formModel.account" />
             </el-form-item>
-            <el-form-item label="用户ID">
-              <el-input disabled v-model="formLabelAlign.idCardNum" />
+            <el-form-item label="真实姓名">
+              <el-input v-model="formModel.realName" />
             </el-form-item>
 
             <el-form-item label="手机号">
-              <el-input v-model="formLabelAlign.tel" />
+              <el-input v-model="formModel.phone" />
             </el-form-item>
           </el-form>
           <el-form
             class="form2"
             :label-position="labelPosition"
             label-width="100px"
-            :model="formLabelAlign"
+            :model="formModel"
             style="max-width: 800px"
           >
-            <el-form-item label="个人简介">
-              <el-input
-                v-model="formLabelAlign.remark"
-                :rows="2"
-                type="textarea"
-                placeholder="个人简介"
-              />
+            <el-form-item label="座右铭">
+              <el-input v-model="formModel.motto" :rows="6" type="textarea" placeholder="座右铭" />
             </el-form-item>
           </el-form>
           <div class="button">
             <el-button> + 新增更多描述</el-button>
-
-            <el-button type="primary">更新信息</el-button>
+            <el-popconfirm title="确认更新" @confirm="update()">
+              <template #reference>
+                <el-button type="primary">更新信息</el-button>
+              </template>
+            </el-popconfirm>
           </div>
         </div>
         <div class="bodyRight">
@@ -77,13 +75,12 @@
   const store = useUserStore()
   const labelPosition = ref<'top'>('top')
 
-  const formLabelAlign = reactive({
-    trueName: '',
-    idCardNum: '',
-    code: '',
-    tel: '',
-    name: '',
-    remark: ''
+  const formModel = reactive({
+    nickName: '',
+    account: '',
+    realName: '',
+    phone: '',
+    motto: ''
   })
 
   onBeforeMount(() => {
@@ -97,42 +94,42 @@
       })
       .then((res: ResultType) => {
         if (res.success) {
-          formLabelAlign.trueName = res.data.team.name
-          formLabelAlign.name = res.data.name
-          formLabelAlign.idCardNum = res.data.id
-          formLabelAlign.code = res.data.code
-          formLabelAlign.tel = res.data.team.code
-          formLabelAlign.remark = res.data.team.remark
-          console.log(res)
+          formModel.nickName = res.data.name
+          formModel.account = res.data.code
+          formModel.realName = res.data.team.name
+          formModel.phone = res.data.team.code
+          formModel.motto = res.data.team.remark
         }
       })
   }
-  // const update = () => {
-  //   $services.person
-  //     .update({
-  //       data: {
-  //         id: store.queryInfo.id,
-  //         name: formLabelAlign.name,
-  //         code: formLabelAlign.code,
-  //         teamName: formLabelAlign.trueName,
-  //         teamCode: formLabelAlign.tel,
-  //         teamRemark: formLabelAlign.remark
-  //       }
-  //     })
-  //     .then((res: ResultType) => {
-  //       if (res.success) {
-  //         ElMessage({
-  //           message: '更新成功',
-  //           type: 'success'
-  //         })
-  //       } else {
-  //         ElMessage({
-  //           message: res.msg,
-  //           type: 'warning'
-  //         })
-  //       }
-  //     })
-  // }
+  const update = () => {
+    $services.person
+      .update({
+        data: {
+          id: store.queryInfo.id,
+          name: formModel.nickName,
+          code: formModel.account,
+          thingId: store.queryInfo.thingId,
+          teamName: formModel.realName,
+          teamCode: formModel.phone,
+          teamRemark: formModel.motto,
+          teamAuthId: store.queryInfo.team.authId
+        }
+      })
+      .then((res: ResultType) => {
+        if (res.success) {
+          ElMessage({
+            message: '更新成功',
+            type: 'success'
+          })
+        } else {
+          ElMessage({
+            message: res.msg,
+            type: 'warning'
+          })
+        }
+      })
+  }
 
   // const options = regionData
   // const selectedOptions: Array<number> = []
