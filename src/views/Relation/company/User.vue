@@ -16,7 +16,7 @@
         stripe
         :border="true"
         style="width: 100%; margin: 0 auto"
-        height="250px"
+        height="310px"
         :cell-style="{ 'text-align': 'center' }"
       >
         <el-table-column type="selection" />
