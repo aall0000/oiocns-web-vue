@@ -69,8 +69,6 @@
 
 
   watch(selectItem, () => {
-    console.log(selectItem.value)
-    console.log("selectItem改变了");
   });
 
 

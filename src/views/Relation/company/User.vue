@@ -1,18 +1,22 @@
 <template>
     <div class="card">
       <div class="header">
-        <div class="title">人员列表</div>
+        <div class="title">{{props.selectItem.label}}</div>
         <div class="box-btns">
-          <el-button small link type="primary">添加成员</el-button>
-          <el-button small link type="primary">查看申请(5)</el-button>
-          <el-button small link type="primary">操作离职</el-button>
-          <el-button small link type="primary">分配人员</el-button>
-          <el-button small link type="primary">移除人员</el-button>
+          <div v-if="props.selectItem?.data?.typeName == '公司'">
+            <el-button small link type="primary">添加成员</el-button>
+            <el-button small link type="primary">查看申请(5)</el-button>
+            <el-button small link type="primary">操作离职</el-button>
+          </div>
+          <div v-if="props.selectItem?.data?.typeName == '部门' || props.selectItem?.data?.typeName == '工作组'">
+            <el-button small link type="primary">分配人员</el-button>
+            <el-button small link type="primary">移除人员</el-button>
+          </div>
         </div>
       </div>
 
       <el-table
-        :data="pageStore.tableData"
+        :data="users"
         stripe
         :border="true"
         style="width: 100%; margin: 0 auto"
@@ -21,10 +25,8 @@
       >
         <el-table-column type="selection" />
         <el-table-column prop="code" label="账号" />
-        <el-table-column prop="name" label="昵称" />
         <el-table-column prop="trueName" label="姓名" />
         <el-table-column prop="teamCode" label="手机号" />
-        <el-table-column prop="remark" label="座右铭" />
         <el-table-column label="操作" width="100">
           <template #default="{ row }">
               <el-button link type="primary" size="small">编辑</el-button>
@@ -49,12 +51,17 @@
 
 </template>
 <script lang='ts' setup>
-import API from "@/services"
-import { onMounted, reactive, toRefs, ref } from 'vue';
+import $services from '@/services'
+import { onMounted, reactive, toRefs, ref, watch } from 'vue';
 import { useUserStore } from '@/store/user'
 import { useRouter } from "vue-router";
 import { storeToRefs } from 'pinia';
 
+const props = defineProps<{
+  selectItem: any,     // 节点数据
+}>()
+
+let users = ref<any>([])
 
 const router = useRouter()
 // 表格分页数据
@@ -67,17 +74,45 @@ const pageStore = reactive({
   total: 0
 })
 
-
 // 处理表格分页操作
 const handlePaginationChange = (newVal: number, type: "current" | 'limit') => {
   pagination[type] = newVal
   // 获取数据
 }
 
+// 加载用户
+const getUsers = ()=>{
+  const data = props.selectItem?.data
+  if(data){
+    let url = '';
+    if(data.typeName == '公司'){
+      url = 'getPersons'
+    } else if(data.typeName == '部门'){
+      url = 'getDepartments'
+    } else if(data.typeName == '工作组'){
+      url = 'getJobPersons'
+    }
+    $services.company[url]({
+      data: {
+        id: props.selectItem.id,
+        offset: 0,
+        limit: 100
+      }
+    }).then((res: ResultType) => {
+      if (res.code == 200 && res.success) {
+        users = res.data;
+      }
+    })
+  }
+}
 
 onMounted(() => {
-
+  console.log("selectItem.value", props.selectItem)
 })
+
+watch(props, () => {
+  getUsers()
+});
 
 </script>
 

@@ -2,10 +2,10 @@
   <div class="container">
     <el-tabs v-model="activeName" class="tabs" @tab-click="handleClick">
       <el-tab-pane label="人员列表" name="user">
-        <User></User>
+        <User :selectItem="selectItem"></User>
       </el-tab-pane>
       <el-tab-pane label="身份列表" name="identity">
-        <Identity></Identity>
+        <Identity :selectItem="selectItem"></Identity>
       </el-tab-pane>
     </el-tabs>
   </div>
@@ -41,7 +41,7 @@ defineExpose({ selectItemChange });
 .tabs {
   width: 100%;
   background-color: #fff;
-  padding: 16px;
+  padding: 18px;
 }
 
 </style>

@@ -1,7 +1,7 @@
 <template>
     <div class="card">
       <div class="header">
-        <div class="title">身份列表</div>
+        <div class="title">{{selectItem.label}}</div>
         <div class="box-btns">
           <el-button small link type="primary" @click="dialogVisible = true">添加身份</el-button>
         </div>
@@ -65,7 +65,7 @@
     <template #footer>
       <span class="dialog-footer">
         <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="addCompanyToGroup">确认</el-button>
+        <el-button type="primary" @click="addIdentity">确认</el-button>
       </span>
     </template>
   </el-dialog>
@@ -78,6 +78,10 @@ import { onMounted, reactive, toRefs, ref } from 'vue';
 import { useUserStore } from '@/store/user'
 import { useRouter } from "vue-router";
 import { storeToRefs } from 'pinia';
+
+const props = defineProps<{
+  selectItem: any,     // 节点数据
+}>()
 
 const store = useUserStore()
 const router = useRouter()
@@ -155,8 +159,8 @@ const handleSelect = (key: Array<any>) => {
 }
 
 
-// 提交弹窗表单
-const addCompanyToGroup = () => {
+// 新增身份
+const addIdentity = () => {
   API.company
     .createDepartment({
       data: {
@@ -175,10 +179,6 @@ const addCompanyToGroup = () => {
 }
 
 
-// 返回上一页
-const handleGoback = () => {
-  router.go(-1)
-}
 </script>
 
 <style lang='scss' scoped>
