@@ -211,15 +211,6 @@ const mainRouter: RouteRecordRaw[] = [
     }
   },
   {
-    component: () => import('@/views/Market/index.vue'),
-    name: 'appStore',
-    path: '/appStore',
-    meta: {
-      keepAlive: false,
-      title: '应用市场'
-    }
-  },
-  {
     component: () => import('@/views/Person/application/index.vue'),
     name: 'application',
     path: '/application',
@@ -276,7 +267,60 @@ const mainRouter: RouteRecordRaw[] = [
       }
     ]
   },
-
+  {
+    path: '/market',
+    // component: () => import('@/views/Layout/msgLayout/layout.vue'),
+    children: [
+      {
+        path: '/market',
+        name: 'market',
+        component: () => import('@/views/Market/index.vue'),
+        meta: {
+          title: '应用市场'
+        }
+      },
+      {
+        path: '/market/appList',
+        name: 'marketAppList',
+        component: () => import('@/views/Market/AppList/index.vue'),
+        meta: {
+          title: '应用列表'
+        }
+      },
+      {
+        path: '/market/approval',
+        name: 'marketApproval',
+        component: () => import('@/views/Market/Approval/index.vue'),
+        meta: {
+          title: '审批页'
+        }
+      },
+      {
+        path: '/market/appShelves',
+        name: 'marketAppShelves',
+        component: () => import('@/views/Market/AppShelves/index.vue'),
+        meta: {
+          title: '应用上架'
+        }
+      },
+      {
+        path: '/market/order',
+        name: 'marketOrder',
+        component: () => import('@/views/Market/Order/index.vue'),
+        meta: {
+          title: '订单页面'
+        }
+      },
+      {
+        path: '/market/shopCar',
+        name: 'userShopCar',
+        component: () => import('@/views/Market/ShopCar/index.vue'),
+        meta: {
+          title: '购物车'
+        }
+      }
+    ]
+  },
   {
     path: '/company',
     redirect: '/company/unitMsg',
