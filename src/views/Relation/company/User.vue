@@ -8,8 +8,7 @@
             <el-button small link type="primary" @click="viewApplication">查看申请</el-button>
           </div>
           <div v-if="props.selectItem?.data?.typeName == '部门' || props.selectItem?.data?.typeName == '工作组'">
-            <el-button small link type="primary">分配人员</el-button>
-            <el-button small link type="primary">移除人员</el-button>
+            <el-button small link type="primary" @click="assignDialog = true">分配人员</el-button>
           </div>
         </div>
       </div>
@@ -65,7 +64,7 @@
     </div>
 
 
-  <el-dialog v-model="pullPersonDialog" @close="hideAddPreson" title="添加人员到单位" width="30%">
+  <el-dialog v-model="pullPersonDialog" @close="hidePullPreson" title="添加人员到单位" width="30%">
     <el-select
       v-model="inviter"
       filterable
@@ -84,24 +83,42 @@
     </el-select>
     <template #footer>
       <span class="dialog-footer">
-        <el-button @click="hideAddPreson">取消</el-button>
+        <el-button @click="hidePullPreson">取消</el-button>
         <el-button type="primary" @click="pullPerson">确认</el-button>
       </span>
     </template>
   </el-dialog>
+
+  <el-dialog v-model="assignDialog" @close="hideAssignDialog" :title="'分配人员 => ' + selectItem.label" width="50%">
+    <el-table :data="filterTableData" style="width: 100%">
+      <el-table-column label="账号" prop="date" />
+      <el-table-column label="名称" prop="name" />
+      <el-table-column label="手机号" prop="name" />
+      <el-table-column align="right">
+        <template #header>
+          <el-input v-model="search" placeholder="搜索" />
+        </template>
+      </el-table-column>
+    </el-table>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="hideAssignDialog">取消</el-button>
+        <el-button type="primary" @click="assign">确认</el-button>
+      </span>
+    </template>
+  </el-dialog>
+
 </template>
 <script lang='ts' setup>
 import $services from '@/services'
-import { onMounted, reactive, toRefs, ref, watch } from 'vue';
-import { useUserStore } from '@/store/user'
+import { computed, onMounted, reactive, ref, watch } from 'vue';
 import { useRouter } from "vue-router";
-import { storeToRefs } from 'pinia';
 import { ElMessage } from 'element-plus';
 
 const props = defineProps<{
   selectItem: any,     // 节点数据
 }>()
-
+// 表格用户数据
 let users = ref<any>([])
 
 const router = useRouter()
@@ -140,15 +157,12 @@ const getUsers = ()=>{
         limit: 100
       }
     }).then((res: ResultType) => {
-      console.log("resdata===", res.data)
       if (res.code == 200 && res.success) {
         users.value = res.data.result;
       }
     })
   }
 }
-
-
 // 搜索人
 const searchPersons = (query: string) => {
   inviterOptions.value = []
@@ -157,7 +171,7 @@ const searchPersons = (query: string) => {
   }
   loading.value = true
   $services.person
-    .searchPersons({data: { text: query, offset: 0, limit: 10 }})
+    .searchPersons({data: { filter: query, offset: 0, limit: 10 }})
     .then((res: ResultType) => {
       loading.value = false
       if (res.success && res.data.result) {
@@ -181,7 +195,7 @@ interface ListItem {
 const inviterOptions = ref<ListItem[]>([])
 const inviter = ref('')
 const pullPersonDialog = ref<boolean>(false)
-const hideAddPreson = () => {
+const hidePullPreson = () => {
   inviter.value = ''
   pullPersonDialog.value = false
 }
@@ -236,6 +250,56 @@ const removeFrom = (row: any) =>{
       })
     }
   })
+}
+
+const assignDialog = ref<boolean>(false)
+const hideAssignDialog = ()=>{
+  assignDialog.value = false
+}
+
+// 过滤数据
+const search = ref('')
+const filterTableData = computed(() => {
+  return []
+})
+
+
+// 分配人员
+const assign = () => {
+
+}
+
+//分配部门
+const assignDepartment = (id: string, targetIds: string[]) => {
+  $services.company
+    .assignDepartment({
+      data: { id, targetIds }
+    })
+    .then((res: ResultType) => {
+      if (res.success) {
+        ElMessage({
+          message: '分配成功',
+          type: 'success'
+        })
+        hideAssignDialog()
+      }
+    })
+}
+//分配工作组
+const assignJob = (id: string, targetIds: string[]) => {
+  $services.company
+    .assignJob({
+      data: { id, targetIds }
+    })
+    .then((res: ResultType) => {
+      if (res.success) {
+        ElMessage({
+          message: '分配成功',
+          type: 'success'
+        })
+        hideAssignDialog()
+      }
+    })
 }
 
 
