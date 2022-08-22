@@ -78,6 +78,7 @@
                 {{ scope.column.label }}
               </template>
             </el-table-column>
+             <el-table-column v-else :key="'column' + index" v-bind="item"></el-table-column>
           </template>
         </el-table>
       </div>
@@ -178,7 +179,7 @@
   } = toRefs(props)
 
   const handleCurrent: any = computed(() => {
-    return (state.page.currentPage - 1) * state.page.pageSize + 1
+    return (state.page.currentPage - 1) * state.page.pageSize
   })
 
   const state = reactive({
@@ -272,14 +273,14 @@
     selectAll(false, false)
     page.value.pageSize = val
     page.value.currentPage = 1
-    emit('handleUpdate')
+    emit('handleUpdate',page.value)
   }
   const handleCurrentChange = (val: any) => {
     diyTable.value.clearSelection()
     isAllSelect.value = true
     selectAll(false, false)
     page.value.currentPage = val
-    emit('handleUpdate')
+    emit('handleUpdate',page.value)
   }
 
   /**

@@ -6,8 +6,7 @@
       </div>
       <div class="topRight">
         <el-button type="primary" @click="create"> 创建集团</el-button>
-        <el-button>批量导入/导出</el-button>
-        <el-button>查看申请记录</el-button>
+        <el-button type="primary" @click="create"> 邀请加入集团</el-button>
       </div>
     </div>
     <div class="createdBody" v-if="types === '全部'">

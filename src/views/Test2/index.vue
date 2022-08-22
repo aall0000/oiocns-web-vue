@@ -9,6 +9,9 @@
       <template #unit="scope">
         <div>{{ scope.row.groupName }}</div>
       </template>
+      <template #groupCode="scope">
+        <div>{{ scope.row.groupName }}</div>
+      </template>
     </DiyTable>
   </div>
 </template>
@@ -465,7 +468,8 @@
       {
         prop: 'groupCode',
         label: '集团编码',
-        width: '180'
+        width: '180',
+        name:'groupCode'
       },
       {
         prop: 'groupName',

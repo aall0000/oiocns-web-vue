@@ -40,9 +40,7 @@
           <template #default="{ node, data }">
             <span class="custom-tree-node">
               <div class="tree-box">
-                <el-icon>
-                  <School />
-                </el-icon>
+                <img src="@/assets/img/zuzhijiagou.jpg" class="tree-icon" />
                 <span>{{ data.label }}</span>
                 <el-tag size="small">{{ data.data.typeName }}</el-tag>
               </div>
@@ -278,7 +276,7 @@
 <style lang="scss">
 .tree .el-tree-node__content {
   height: 30px;
-  font-size: 14px;
+  font-size: 16px;
 }
 .tree .el-tag{
   margin-left: 5px;
@@ -286,7 +284,7 @@
 </style>
 <style lang="scss" scoped>
 .card {
-  height: calc(98% - 2px);
+  height: 100%;
   position: relative;
 }
 
@@ -320,6 +318,13 @@
 .tree {
   position: relative;
   max-height: 70%;
+  .tree-icon{
+    width: 14px;
+    height: 14px;
+    display: block;
+    margin-top: -3px;
+    margin-right: 3px;
+  }
   .weihu-wrap {
     text-align: center;
     background-color: #fff;
