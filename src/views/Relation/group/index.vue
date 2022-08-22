@@ -3,14 +3,14 @@
     <div class="tree">
       <Tree @groupNodeClick="nodeClick"/>
     </div>
-    <card class="content">
+    <div class="content">
       <div class="info">
         <Info :group="group" ref="info"/>
       </div>
       <div class="companies">
         <Companies/>
       </div>
-    </card>
+    </div>
   </div>
 </template>
 <script lang="ts" setup>
