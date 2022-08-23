@@ -20,7 +20,7 @@
 <script setup lang="ts">
   import diytab from '@components/diyTable/index.vue'
   import $services from '@/services'
-  import { ref, reactive } from 'vue'
+  import { ref, reactive ,onMounted ,nextTick} from 'vue'
   import { ElMessage } from 'element-plus'
 
 
@@ -48,7 +48,9 @@
   const list = ref<ListItem[]>([])
   const value = ref('')
   const loading = ref(false)
-
+  onMounted(() => {
+    remoteMethod()
+  })
   const remoteMethod = () => {
     console.log('ccccc',value.value)
     if (value.value) {
@@ -79,7 +81,6 @@
                 arr.push(obj)
               })
               pageStore.total = res.data.total;
-              diyTable.value.state.loading = false
               diyTable.value.state.page.total = pageStore.total
             }
             list.value = arr
@@ -89,9 +90,13 @@
               type: 'warning'
             })
           }
+          diyTable.value.state.loading = false
         })
     } else {
       list.value = []
+      nextTick(()=>{
+        diyTable.value.state.loading = false    
+      })
     }
   }
 

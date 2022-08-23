@@ -44,7 +44,7 @@ const addFriends = (arr:Array<arrList>) => {
   $services.person
     .applyJoin({
       data: {
-        id: arr
+        id: arr.join(',')
       }
     })
     .then((res: ResultType) => {
@@ -54,11 +54,7 @@ const addFriends = (arr:Array<arrList>) => {
           type: 'warning'
         })
         friendDialog.value = false
-      } else {
-        ElMessage({
-          message: res.msg,
-          type: 'warning'
-        })
+        getFriendList()
       }
     })
 }
@@ -72,7 +68,7 @@ onMounted(() => {
 const state = reactive({ qunList: [], friendList: [] })
 const getFriendList = async () => {
   await $services.person
-    .getFriends({ data: { offset: 0, limit: 10 } })
+    .getFriends({ data: { offset: 0, limit: 20 } })
     .then((res: ResultType) => {
       const { result = [] } = res.data
       state.friendList = result?.map(
@@ -117,7 +113,6 @@ const checkFriend=(val:any)=>{
     val.value.forEach((element:any) => {
       arr.push(element.id)
     });
-    
     addFriends(arr)
   }else{
     friendDialog.value = false;
