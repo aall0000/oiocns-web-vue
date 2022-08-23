@@ -5,12 +5,8 @@
   <div class="user-head-img-wrap" v-if="url">
     <img class="user-img" :src="url ?? img" alt="" srcset="" />
   </div>
-  <div
-    class="user-head-img-wrap txt-img"
-    v-else
-    :style="type == 'circle' ? 'border-radius:50%' : ''"
-  >
-    <span>{{ name && name.slice(0, 2).toLocaleUpperCase() }}</span>
+  <div :class="['user-head-img-wrap', 'txt-img', isSquare ? 'square-box' : 'circle-box']" v-else>
+    <span>{{ name && name.slice(0, limit).toLocaleUpperCase() }}</span>
   </div>
 </template>
 
@@ -20,14 +16,16 @@
 
   type Props = {
     name: string
-    label: string
-    url?: string
-    type?: string
+    label?: string
+    url?: string //图片地址
+    limit?: number // 文字展示长度
+    class?:string
+    isSquare?: boolean //是否方形展示 true--方形  false--圆形
   }
 
   const props = defineProps<Props>()
 
-  const { name = '', url, label = '' } = toRefs(props)
+  const { name = '', url, label = '', limit = 2,isSquare=true } = props
 </script>
 
 <style lang="scss" scoped>
@@ -42,7 +40,6 @@
     min-width: 40px;
     height: 40px;
     margin-right: 10px;
-    border-radius: 4px;
 
     &.txt-img {
       background-color: #409eff;
@@ -59,7 +56,12 @@
       width: 46px;
       height: 46px;
       margin-right: 15px;
-      border-radius: 4px;
     }
+  }
+  .square-box {
+    border-radius: 4px;
+  }
+  .circle-box {
+    border-radius: 50%;
   }
 </style>

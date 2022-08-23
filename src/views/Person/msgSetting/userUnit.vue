@@ -1,114 +1,123 @@
 <template>
   <div class="userUnit">
     <div class="title">
-      <div class="body">
-        <div class="created">
-          <el-tabs v-model="activeName" @tab-click="handleClick">
-            <el-tab-pane label="全部" name="1"> </el-tab-pane>
-            <!-- <el-tab-pane label="已加入" name="2"></el-tab-pane>
+      <el-tabs v-model="activeName" @tab-click="handleClick">
+        <el-tab-pane label="全部" name="1"> </el-tab-pane>
+        <!-- <el-tab-pane label="已加入" name="2"></el-tab-pane>
               <el-tab-pane label="拒绝" name="3"> </el-tab-pane> -->
-          </el-tabs>
-          <div class="createdTop">
-            <div class="topLeft">
-              <el-input class="search" placeholder="搜索单位名" :suffix-icon="Search" />
-            </div>
-            <div class="topRight">
-              <el-button type="primary" @click="showdialogShow">创建单位</el-button>
-              <el-button type="primary" @click="addCompany = true">申请加入单位</el-button>
-              <!-- <el-button>查看申请记录</el-button> -->
-            </div>
-          </div>
-          <div class="createdBody">
-            <el-table :data="dataList.list" stripe style="width: 98%">
-              <el-table-column prop="name" label="单位名称" />
-              <el-table-column prop="code" label="统一社会信用代码" />
-              <el-table-column prop="isMain" label="是否主单位" />
-              <el-table-column prop="belongId" label="管理员" />
-              <el-table-column prop="createTime" label="创建时间" />
-              <el-table-column prop="state" label="申请状态" />
-              <el-table-column prop="option" label="操作">
-                <template #default="scope">
-                  <el-popconfirm title="确认删除?" @confirm="handleDelete(scope.row.id)">
-                    <template #reference>
-                      <el-button type="danger">退出单位</el-button>
-                    </template>
-                  </el-popconfirm>
-                </template>
-              </el-table-column>
-            </el-table>
-          </div>
-          <el-dialog v-model="addCompany" title="搜索单位" width="30%">
-            <el-select
-              v-model="value"
-              filterable
-              remote
-              reserve-keyword
-              placeholder="搜索单位"
-              :remote-method="remoteMethod"
-              :loading="loading"
-              style="width: 100%"
-            >
-              <el-option
-                v-for="item in options"
-                :key="item.value"
-                :value="item.value"
-                :label="`${item.label}(${item.name})`"
-                style="height: 50px; width: 550px"
-              >
-                <div
-                  style="
-                    height: 50px;
-                    width: 100%;
-                    display: flex;
-                    justify-content: flex-start;
-                    align-items: center;
-                    border-bottom: 1px solid #f0f2f5;
-                  "
-                >
-                  <div style="height: 50px; width: 15%; margin-top: 5px">
-                    <headImg
-                      :name="item.name.slice(0, 1)" :label="''"
-                      style="transform: scale(0.7, 0.7); border-radius: 50px; font-size: 19px"
-                    ></headImg>
-                  </div>
-                  <div style="height: 50px; width: 85%; margin-bottom: 5px">
-                    <p
-                      style="
-                        height: 25px;
-                        font-weight: 600;
-                        overflow: hidden;
-                        text-overflow: ellipsis;
-                        white-space: nowrap;
-                      "
-                      >{{ item.label }}({{ item.name }})</p
-                    >
-                    <p
-                      style="
-                        height: 25px;
-                        color: #ccc;
-                        overflow: hidden;
-                        text-overflow: ellipsis;
-                        white-space: nowrap;
-                      "
-                      >{{ item.remark }}</p
-                    >
-                  </div>
-                </div>
-              </el-option>
-            </el-select>
-            <template #footer>
-              <span class="dialog-footer">
-                <el-button @click="addCompany = false">取消</el-button>
-                <el-button type="primary" @click="addCompanyFun">确认</el-button>
-              </span>
-            </template>
-          </el-dialog>
-          <CreateUnitDialog
-            :dialogShow="dialogShow"
-            @switchCreateCompany="closeDialog"
-          ></CreateUnitDialog>
+      </el-tabs>
+    </div>
+    <div class="created">
+      <div class="createdTop">
+        <div class="topLeft">
+          <el-input class="search" placeholder="搜索单位名" :suffix-icon="Search" />
+        </div>
+        <div class="topRight">
+          <el-button type="primary" @click="showdialogShow">创建单位</el-button>
+          <el-button type="primary" @click="addCompany = true">申请加入单位</el-button>
+          <!-- <el-button>查看申请记录</el-button> -->
         </div>
       </div>
+      <div class="createdBody">
+        <el-table :data="dataList.list" stripe style="width: 98%">
+          <el-table-column prop="name" label="单位名称" />
+          <el-table-column prop="code" label="统一社会信用代码" />
+          <el-table-column prop="isMain" label="是否主单位" />
+          <el-table-column prop="belongId" label="管理员" />
+          <el-table-column prop="createTime" label="创建时间" />
+          <el-table-column prop="state" label="申请状态" />
+          <el-table-column prop="option" label="操作">
+            <template #default="scope">
+              <el-popconfirm title="确认删除?" @confirm="handleDelete(scope.row.id)">
+                <template #reference>
+                  <el-button type="danger">退出单位</el-button>
+                </template>
+              </el-popconfirm>
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
+      <div class="createdBottom">
+        <el-pagination
+          :page-size="pageSize"
+          :pager-count="5"
+          layout="total, prev, pager, next, jumper"
+          :total="totals"
+          :current-page="currentPage"
+          @current-change="handleCurrentChange"
+        />
+      </div>
+      <el-dialog v-model="addCompany" title="搜索单位" width="30%">
+        <el-select
+          v-model="value"
+          filterable
+          remote
+          reserve-keyword
+          placeholder="搜索单位"
+          :remote-method="remoteMethod"
+          :loading="loading"
+          style="width: 100%"
+        >
+          <el-option
+            v-for="item in options"
+            :key="item.value"
+            :value="item.value"
+            :label="`${item.label}(${item.name})`"
+            style="height: 50px; width: 550px"
+          >
+            <div
+              style="
+                height: 50px;
+                width: 100%;
+                display: flex;
+                justify-content: flex-start;
+                align-items: center;
+                border-bottom: 1px solid #f0f2f5;
+              "
+            >
+              <div style="height: 50px; width: 15%; margin-top: 5px">
+                <headImg
+                  :name="item.name.slice(0, 1)"
+                  :label="''"
+                  style="transform: scale(0.7, 0.7); border-radius: 50px; font-size: 19px"
+                ></headImg>
+              </div>
+              <div style="height: 50px; width: 85%; margin-bottom: 5px">
+                <p
+                  style="
+                    height: 25px;
+                    font-weight: 600;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                  "
+                  >{{ item.label }}({{ item.name }})</p
+                >
+                <p
+                  style="
+                    height: 25px;
+                    color: #ccc;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                  "
+                  >{{ item.remark }}</p
+                >
+              </div>
+            </div>
+          </el-option>
+        </el-select>
+        <template #footer>
+          <span class="dialog-footer">
+            <el-button @click="addCompany = false">取消</el-button>
+            <el-button type="primary" @click="addCompanyFun">确认</el-button>
+          </span>
+        </template>
+      </el-dialog>
+      <CreateUnitDialog
+        :dialogShow="dialogShow"
+        @switchCreateCompany="closeDialog"
+      ></CreateUnitDialog>
     </div>
   </div>
 </template>
@@ -123,11 +132,24 @@
   import headImg from '@/views/Chat/components/headImg.vue'
   import CreateUnitDialog from '@/views/Layout/components/createUnitDialog.vue'
   const store = useUserStore()
-
+  let currentPage = ref<number>(1)
+  let pageSize = ref<number>(5)
+  let offset = ref<number>(0)
+  let totals = ref<any>(5)
   const activeName = ref('1')
   //tab切换
+
   const handleClick = (tab: TabsPaneContext, event: Event) => {
     console.log(tab, event)
+  }
+  const handleCurrentChange = (val: number) => {
+    // console.log(val)
+    // console.log(pageSize.value)
+
+    offset.value = (val - 1) * pageSize.value
+    // console.log(offset.value)
+    getList(offset.value, pageSize.value)
+    // currentPage.value = val
   }
   const handleDelete = (id: string) => {
     $services.company
@@ -159,20 +181,22 @@
   }
   const dataList = reactive<listType>({ list: [] })
   onMounted(() => {
-    getList()
+    getList(offset.value, pageSize.value)
   })
   //获取单位列表
-  const getList = () => {
+  const getList = (offset: number, pageSize: number) => {
     $services.company
       .getJoinedCompany({
         data: {
-          offset: 0,
-          limit: 100
+          offset: offset,
+          limit: pageSize
         }
       })
       .then((res: ResultType) => {
         if (res.success) {
-          dataList.list = res.data.result
+          const { result = [], total = 0 } = res.data
+          dataList.list = result
+          totals.value = total
         }
       })
   }
@@ -238,75 +262,81 @@
       })
   }
   type dialogType = {
-    key:string,
-    value:boolean
+    key: string
+    value: boolean
   }
   const dialogShow = ref<dialogType>({
-    key:'unit',
-    value:false
+    key: 'unit',
+    value: false
   })
-  const showdialogShow = ()=>{
-    dialogShow.value.value = true;
+  const showdialogShow = () => {
+    dialogShow.value.value = true
   }
-  const closeDialog = ()=>{
+  const closeDialog = () => {
     location.reload()
   }
 </script>
 <style lang="scss" scoped>
   .userUnit {
-    height: calc(100vh - 230px);
-    background-color: #fff;
-    .pageHeader {
-      width: 100%;
-      height: 35px;
-      background-color: #fff;
-    }
+    height: 100%;
+    background-color: #eff0f4;
     .title {
+      height: 10%;
+      background-color: #fff;
       :deep(.el-tabs__item) {
         font-size: 20px !important;
         font-weight: 600;
         margin-left: 30px;
+        height: 100%;
+        padding-top: 45px;
         border-color: #1a5773;
       }
       :deep(.el-tabs__header) {
         margin: 0;
       }
-      .body {
-        height: 600px;
-        width: 100%;
-        border-left: 10px solid #eff0f4;
-        border-top: 16px solid #eff0f4;
-        border-right: 16px solid #eff0f4;
+    }
+
+    .created {
+      width: 100%;
+      height: 70%;
+      background: #fff;
+      border-left: 10px solid #eff0f4;
+      border-top: 10px solid #eff0f4;
+      border-right: 16px solid #eff0f4;
+
+      .createdTop {
+        width: 95%;
+        margin: 30px;
         display: flex;
+        justify-content: space-between;
       }
-    }
-    .bottom {
-      height: calc(100vh - 770px);
-      background-color: #eff0f4;
-      display: flex;
-      .content {
-        margin: auto;
-        color: #aaa;
+      .createdBody {
+        margin: 30px;
       }
-    }
-  }
-  .created {
-    width: 100%;
-    height: 100vh;
-    background: #fff;
-    .createdTop {
-      width: 95%;
-      margin: 30px;
-      display: flex;
-      justify-content: space-between;
-    }
-    .createdBody {
-      margin: 30px;
       .createdBottom {
         position: absolute;
         right: 30px;
         bottom: 30px;
       }
     }
+    // .title {
+    //   :deep(.el-tabs__item) {
+    //     font-size: 20px !important;
+    //     font-weight: 600;
+    //     margin-left: 30px;
+    //     border-color: #1a5773;
+    //   }
+    //   :deep(.el-tabs__header) {
+    //     margin: 0;
+    //   }
+    //   .body {
+    //     height: 600px;
+    //     width: 100%;
+    //     border-left: 10px solid #eff0f4;
+    //     border-top: 16px solid #eff0f4;
+    //     border-right: 16px solid #eff0f4;
+    //     display: flex;
+    //   }
+    // }
   }
 </style>

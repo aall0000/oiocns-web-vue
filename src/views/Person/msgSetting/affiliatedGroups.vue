@@ -8,7 +8,7 @@
             <GroupsAdd types="全部" />
           </div>
         </el-tab-pane>
-        <el-tab-pane label="创建的" name="second">
+        <!-- <el-tab-pane label="创建的" name="second">
           <div class="body">
             <GroupsAdd types="创建的" />
           </div>
@@ -17,7 +17,7 @@
           <div class="body">
             <GroupsAdd types="已加入" />
           </div>
-        </el-tab-pane>
+        </el-tab-pane> -->
       </el-tabs>
     </div>
   </div>

@@ -183,7 +183,7 @@
   })
 
   const state = reactive({
-    loading: true,
+    loading: false,
     multipleSelection: [], //多选
     //分页信息
     page: {
