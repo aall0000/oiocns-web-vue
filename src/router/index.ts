@@ -318,7 +318,16 @@ const mainRouter: RouteRecordRaw[] = [
         meta: {
           title: '购物车'
         }
+      },
+      {
+        path: '/market/marketUser',
+        name: 'marketUser',
+        component: () => import('@/views/Market/MarketUser/index.vue'),
+        meta: {
+          title: '市场用户管理'
+        }
       }
+
     ]
   },
   {
