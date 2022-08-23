@@ -8,7 +8,7 @@
             <el-button small link type="primary" @click="viewApplication">查看申请</el-button>
           </div>
           <div v-if="props.selectItem?.data?.typeName == '部门' || props.selectItem?.data?.typeName == '工作组'">
-            <el-button small link type="primary" @click="assignDialog = true">分配人员</el-button>
+            <el-button small link type="primary" @click="showAssignDialog">分配人员</el-button>
           </div>
         </div>
       </div>
@@ -47,7 +47,6 @@
                   <el-button link type="danger" size="small" @click="showDialog(scope.row)">操作离职</el-button>
                 </div>
                 <div v-if="props.selectItem?.data?.typeName == '部门' || props.selectItem?.data?.typeName == '工作组'">
-                  <el-button link type="danger" size="small">分配人员</el-button>
                   <el-button link type="danger" size="small" @click="showDialog(scope.row)" >移除成员</el-button>
                 </div>
             </template>
@@ -65,7 +64,7 @@
       </span>
     </template>
   </el-dialog>
-  <el-dialog v-model="pullPersonDialog" @close="pullPreson" title="添加人员到单位" width="30%">
+  <el-dialog v-model="pullPersonDialog" @close="hidePullPreson" title="添加人员到单位" width="30%">
     <el-select
       v-model="inviter"
       filterable
@@ -91,16 +90,26 @@
   </el-dialog>
 
   <el-dialog v-model="assignDialog" @close="hideAssignDialog" :title="'分配人员 => ' + selectItem.label" width="50%">
-    <el-table :data="filterTableData" style="width: 100%">
-      <el-table-column label="账号" prop="date" />
-      <el-table-column label="名称" prop="name" />
-      <el-table-column label="手机号" prop="name" />
-      <el-table-column align="right">
-        <template #header>
-          <el-input v-model="search" placeholder="搜索" />
-        </template>
-      </el-table-column>
-    </el-table>
+    <el-input v-model="assignSearch" class="search" placeholder="搜索用户" @input="assignSearchChange">
+      <template #prefix>
+        <el-icon class="el-input__icon"><Search /></el-icon>
+      </template>
+    </el-input>
+    <DiyTable
+      ref="assignTable"
+      :hasTableHead="true"
+      :tableData="companyUsers"
+      :options="{
+        expandAll: false,
+        checkBox: true,
+        order: true,
+        noPage: false
+      }"
+      @handleUpdate="assignTableChange"
+      :tableHead="columns"
+      :style="{height: '350px'}"
+    >
+    </DiyTable>
     <template #footer>
       <span class="dialog-footer">
         <el-button @click="hideAssignDialog">取消</el-button>
@@ -113,15 +122,18 @@
 <script lang='ts' setup>
 import $services from '@/services'
 import DiyTable from '@/components/diyTable/index.vue'
-import { onMounted, reactive, ref, watch,computed } from 'vue';
+import { onMounted, reactive, ref, watch } from 'vue';
 import { useRouter } from "vue-router";
 import { ElMessage } from 'element-plus';
-
+import { Search } from '@element-plus/icons-vue'
 
 const props = defineProps<{
   selectItem: any,     // 节点数据
   tabHeight:number,
 }>()
+
+const company = ref<any>({})
+
 const tableHead = ref([
   {
     prop: 'code',
@@ -151,6 +163,28 @@ const tableHead = ref([
 ])
 let users = ref<any>([])
 
+const columns = ref([
+  {
+    prop: 'code',
+    label: '账号',
+    width: '180',
+  },
+  {
+    prop: 'name',
+    label: '姓名',
+    width: '240',
+    name:'name',
+  },
+  {
+    prop: 'team.code',
+    label: '手机号',
+    width: '330',
+    name:'teamCode',
+  }
+])
+let companyUsers = ref<any>([])
+
+
 const router = useRouter()
 // 表格数据加载状态
 const loading = ref<boolean>(false)
@@ -163,6 +197,7 @@ const pageStore = reactive({
 })
 
 const diyTable = ref(null)
+const assignTable = ref(null)
 
 // 加载用户
 const getUsers = ()=>{
@@ -171,8 +206,9 @@ const getUsers = ()=>{
     let url = '';
     if(data.typeName == '公司'){
       url = 'getPersons'
+      company.value = JSON.parse(JSON.stringify(data))
     } else if(data.typeName == '部门'){
-      url = 'getDepartments'
+      url = 'getDepartmentPersons'
     } else if(data.typeName == '工作组'){
       url = 'getJobPersons'
     }
@@ -185,7 +221,6 @@ const getUsers = ()=>{
     }).then((res: ResultType) => {
       if (res.code == 200 && res.success) {
         users.value = res.data.result;
-        console.log(diyTable.value)
         pageStore.total = res.data.total;
         diyTable.value.state.loading = false
         diyTable.value.state.page.total = pageStore.total;
@@ -193,6 +228,8 @@ const getUsers = ()=>{
     })
   }
 }
+
+
 // 搜索人
 const searchPersons = (query: string) => {
   inviterOptions.value = []
@@ -229,6 +266,7 @@ const hidePullPreson = () => {
   inviter.value = ''
   pullPersonDialog.value = false
 }
+
 //邀请加入单位
 const pullPerson = () => {
   $services.company
@@ -297,24 +335,72 @@ const showDialog = (row:rowType)=>{
   rowItem.value = row;
 }
 
+
+// 加载公司所有用户
+const getCompanyUsers = (filter?: string)=>{
+  let data = {
+    id: company.value.id,
+    offset: (pageStore.currentPage-1)*pageStore.pageSize,
+    limit: pageStore.pageSize
+  }
+  if(filter){
+    data = {...data, ...{filter}}
+  }
+  if(company.value){
+    $services.company.getPersons({
+      data,
+    }).then((res: ResultType) => {
+      if (res.code == 200 && res.success) {
+        // 去除已分配到当前部门或者工作组的用户
+        let us = res.data.result
+        let userIds =  []
+        if(users.value){
+          userIds = users.value.map((u: any) => u.id);
+        }
+        const set: Set<string> = new Set(userIds)
+        companyUsers.value = us.filter((u: any) => !set.has(u.id))
+        pageStore.total = res.data.total - userIds.length
+        assignTable.value.state.loading = false
+        assignTable.value.state.page.total = pageStore.total;
+      }
+    })
+  }
+}
+
 const assignDialog = ref<boolean>(false)
 const hideAssignDialog = ()=>{
   assignDialog.value = false
+  getCompanyUsers()
+}
+
+const showAssignDialog = ()=>{
+  assignDialog.value = true
+  getCompanyUsers()
 }
 
 // 过滤数据
-const search = ref('')
-const filterTableData = computed(() => {
-  return []
-})
-
-//拉人
-const pullPreson =()=>{
-
+const assignSearch = ref('')
+const assignTableChange = (page: any)=>{
+  pageStore.currentPage = page.currentPage
+  pageStore.pageSize = page.pageSize
+  getCompanyUsers()
 }
+
+// 分配页面搜索用户变化
+const assignSearchChange = (e: string)=>{
+  getCompanyUsers(e)
+}
+
+
 // 分配人员
 const assign = () => {
-
+  console.log("assignTable", assignTable?.value?.state?.multipleSelection)
+  const userIds = assignTable?.value?.state?.multipleSelection.map((u: any) => u.id);
+  if(props.selectItem?.data?.typeName == '部门'){
+    assignDepartment(props.selectItem.id, userIds)
+  } else if(props.selectItem?.data?.typeName == '工作组'){
+    assignJob(props.selectItem.id, userIds)
+  }
 }
 
 //分配部门
@@ -331,6 +417,7 @@ const assignDepartment = (id: string, targetIds: string[]) => {
         })
         hideAssignDialog()
       }
+      getUsers()
     })
 }
 //分配工作组
@@ -347,6 +434,7 @@ const assignJob = (id: string, targetIds: string[]) => {
         })
         hideAssignDialog()
       }
+      getUsers()
     })
 }
 
@@ -386,10 +474,8 @@ watch(props, () => {
     }
   }
 
-  .page-pagination {
-    padding: 10px;
-    display: flex;
-    justify-content: end;
+  .search {
+    width: 50%;
   }
 }
 </style>
