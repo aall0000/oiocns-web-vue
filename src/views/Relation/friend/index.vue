@@ -4,7 +4,7 @@
     <div class="operate">
       <div class="operate-btns">
         <div class="edit">
-          <el-button type="primary" @click="friendDialog = true">添加好友</el-button>
+          <el-button type="primary" @click="friendShow">添加好友</el-button>
         </div>
       </div>
     </div>
@@ -24,7 +24,7 @@
         </el-table-column>
       </el-table>
     </div>
-    <searchFriend  v-if="friendDialog" @checkFriend='checkFriend'/>
+    <searchFriend  v-if="friendDialog" @closeDialog="closeDialog"  @checkFriend='checkFriend'/>
   </div>
 </template>
 <script lang="ts" setup>
@@ -117,6 +117,12 @@ const checkFriend=(val:any)=>{
   }else{
     friendDialog.value = false;
   }
+}
+const closeDialog = ()=>{
+   friendDialog.value = false;
+}
+const friendShow = ()=>{
+  friendDialog.value = true;
 }
 </script>
 <style lang="scss" scoped>

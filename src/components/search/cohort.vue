@@ -1,6 +1,6 @@
 <template>
 
-  <el-dialog v-model="dialogVisible" append-to-body	:before-close="closeDialog" title="搜索人员 " width="60%">
+  <el-dialog v-model="dialogVisible" append-to-body	:before-close="closeDialog" title="搜索群" width="60%">
     <el-input v-model="value" @input="remoteMethod" placeholder="请输入" />
     <diytab
       ref="diyTable"
@@ -57,8 +57,8 @@
     
     if (value.value) {
       // loading.value = true
-      $services.person
-        .searchPersons({
+      $services.cohort
+        .searchCohorts({
           data: {
             filter: value.value,
             offset: (pageStore.currentPage - 1) * pageStore.pageSize,
@@ -126,51 +126,35 @@
   }
   const tableHead = ref([
     {
-      prop: 'code',
-      label: '账号',
-      width: '100'
-    },
-    {
-      prop: 'name',
-      label: '昵称',
-      width: '100',
-      name: 'name'
-    },
-
-    {
       prop: 'trueName',
-      label: '姓名',
+      label: '群名称',
       width: '150',
       name: 'trueName'
     },
     {
       prop: 'teamCode',
-      label: '手机号',
+      label: '群编号',
       width: '150',
       name: 'teamCode'
     },
     {
       prop: 'remark',
-      label: '座右铭',
+      label: '群简介',
       name: 'reamrk'
     }
   ])
   const options = ref<any>({
     checkBox: true,
     order: true,
-    selectLimit:1,
     defaultSort: { prop: 'createTime', order: 'descending' },
     treeProps: {
-      children: 'children',
-      hasChildren: 'hasChildren',
+    children: 'children',
+    hasChildren: 'hasChildren'
     }
-  })
+})
 </script>
 
 <style lang="scss" scoped>
-  :deep(.el-table__header-wrapper .el-checkbox){
-    display: none;
-  }
   .foot{
     display: flex;
     width: 100%;

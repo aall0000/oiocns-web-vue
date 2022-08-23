@@ -6,7 +6,7 @@
       </div>
       <div class="topRight">
         <el-button type="primary" @click="create"> 创建集团</el-button>
-        <el-button type="primary" @click="addGroup = true"> 申请加入集团</el-button>
+        <el-button type="primary" @click="friendShow"> 申请加入集团</el-button>
       </div>
     </div>
     <div class="createdBody" v-if="types === '全部'">
@@ -170,6 +170,7 @@
         </span>
       </template>
     </el-dialog>
+    <searchGroup v-if="friendDialog" @closeDialog="closeDialog"  @checkFriend='checkFriend'></searchGroup>
   </div>
 </template>
 <script lang="ts" setup>
@@ -179,6 +180,8 @@
   import { ref } from 'vue'
   import { useUserStore } from '@/store/user'
   import { ElMessage } from 'element-plus'
+  import searchGroup from '@/components/search/group.vue'
+
   const store = useUserStore()
   const state = reactive({ tableData: [] })
   const state1 = reactive({ tableData: [] })
@@ -315,10 +318,9 @@
   const loading = ref(false)
   const remoteMethod = (query: string) => {
     if (query) {
-      $services.company
-        .companyGetGroups({
+      $services.company.searchGroups({
           data: {
-            filter: '',
+            filter: query,
             offset: 0,
             limit: 10
           }
@@ -347,11 +349,11 @@
       options.value = []
     }
   }
-  const addGroupFun = () => {
+  const addGroupFun = (arr:Array<arrList>) => {
     $services.company
       .applyJoinGroup({
         data: {
-          id: value.value
+          id: arr.join(',')
         }
       })
       .then((res: ResultType) => {
@@ -360,10 +362,32 @@
             message: '申请成功',
             type: 'warning'
           })
-          addGroup.value = false
+          friendDialog.value = false
         }
       })
   }
+  const friendDialog = ref<boolean>(false)
+
+  const closeDialog = ()=>{
+    friendDialog.value = false;
+  }
+  const friendShow = ()=>{
+    friendDialog.value = true;
+  }
+  type arrList = {
+    id:string
+  }
+  const checkFriend=(val:any)=>{
+  if(val.value.length>0){
+    let arr:Array<arrList> =[]
+    val.value.forEach((element:any) => {
+      arr.push(element.id)
+    });
+    addGroupFun(arr)
+  }else{
+    friendDialog.value = false;
+  }
+}
 </script>
 <style lang="scss">
   .created {
