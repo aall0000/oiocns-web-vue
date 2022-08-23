@@ -1,20 +1,19 @@
 <template>
   <div class="container">
-    <el-tabs v-model="activeName" class="tabs" ref="tabs" @tab-click="handleClick">
-      <el-tab-pane label="人员列表" name="user">
-        <User :tabHeight='tabHeight' :selectItem="selectItem"></User>
+    <el-tabs v-model="activeName" class="tabs" @tab-click="handleClick">
+      <el-tab-pane label="单位列表" name="user">
+        <Companies :selectItem="selectItem"></Companies>
       </el-tab-pane>
-      <el-tab-pane label="身份列表" name="identity">
-        <Identity :selectItem="selectItem"></Identity>
+      <el-tab-pane label="职权树" name="identity">
+
       </el-tab-pane>
     </el-tabs>
   </div>
 </template>
 <script lang="ts" setup>
-import { ref,onMounted } from 'vue'
+import { ref } from 'vue'
 import type { TabsPaneContext } from 'element-plus'
-import User from './User.vue'
-import Identity from './Identity.vue'
+import Companies from './companies.vue';
 
 const activeName = ref('user')
 let selectItem = ref<any>({})
@@ -28,14 +27,7 @@ const selectItemChange = (data: any) => {
   selectItem.value = data;
 };
 defineExpose({ selectItemChange });
-const tabs = ref(null)
-const tabHeight = ref<number>(400)
-window.addEventListener('resize',function () {
-  tabHeight.value=tabs.value.clientHeight
-})
-onMounted(() => {
-  tabHeight.value=tabs.value.clientHeight
-})
+
 </script>
 
 <style lang="scss" scoped>

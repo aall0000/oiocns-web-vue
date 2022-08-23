@@ -35,14 +35,12 @@
       </el-input>
     </div>
     <div class="tree">
-        <el-tree :data="orgTree"  ref="treeRef" @node-click="nodeClick" node-key="id" 
+        <el-tree :data="orgTree"  ref="treeRef" @node-click="nodeClick" node-key="id"
           :default-expanded-keys="defaultExpandedKeys" :filter-node-method="filterNode">
           <template #default="{ node, data }">
             <span class="custom-tree-node">
               <div class="tree-box">
-                <el-icon>
-                  <School />
-                </el-icon>
+                <img src="@/assets/img/zuzhijiagou.jpg" class="tree-icon" />
                 <span>{{ data.label }}</span>
                 <el-tag size="small">{{ data.data.typeName }}</el-tag>
               </div>
@@ -126,9 +124,9 @@
   // 节点ID和对象映射关系
   const parentIdMap: any = {}
 
-  const defaultExpandedKeys = ref([])
-  const filterText = ref('')
-  const treeRef = ref<InstanceType<typeof ElTree>>()
+  let defaultExpandedKeys = ref([])
+  let filterText = ref('')
+  const treeRef = ref<any>()
   let orgTree = ref<OrgTreeModel[]>([])
   let cascaderTree = ref<OrgTreeModel[]>([])
 
@@ -140,6 +138,7 @@
       initIdMap(orgTree.value)
       cascaderTree.value = filter(JSON.parse(JSON.stringify(orgTree.value)))
       defaultExpandedKeys.value = [res.data.id]
+      nodeClick(res.data)
     })
   }
 
@@ -278,7 +277,7 @@
 <style lang="scss">
 .tree .el-tree-node__content {
   height: 30px;
-  font-size: 14px;
+  font-size: 16px;
 }
 .tree .el-tag{
   margin-left: 5px;
@@ -286,7 +285,7 @@
 </style>
 <style lang="scss" scoped>
 .card {
-  height: calc(98% - 2px);
+  height: 100%;
   position: relative;
 }
 
@@ -320,6 +319,13 @@
 .tree {
   position: relative;
   max-height: 70%;
+  .tree-icon{
+    width: 14px;
+    height: 14px;
+    display: block;
+    margin-top: -3px;
+    margin-right: 3px;
+  }
   .weihu-wrap {
     text-align: center;
     background-color: #fff;

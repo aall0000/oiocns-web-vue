@@ -51,9 +51,9 @@ export default {
     giveIdentity: cohort + '/give/identity', //给群成员身份
     joinRefuse: cohort + '/join/refuse', //加群组拒绝
     joinSuccess: cohort + '/join/success', //加群组通过
-    pullPerson: cohort + '/pull/person', //拉人进群组
+    pullPerson: cohort + '/pull/persons', //拉人进群组
     removeIdentity: cohort + '/remove/identity', //移除群成员身份
-    removePerson: cohort + '/remove/person', //移除群成员
+    removePerson: cohort + '/remove/persons', //移除群成员
     searchCohorts: cohort + '/search/cohorts', //搜索群聊
     update: cohort + '/update' //变更群组
   },
@@ -95,7 +95,8 @@ export default {
     joinApproval: company + '/join/approval', //加申请审批
     joinRefuse: company + '/join/refuse', //加申请拒绝
     joinSuccess: company + '/join/success', //加申请通过
-    pullPerson: company + '/pull/person', //拉人进单位
+    pullPerson: company + '/pull/persons', //拉人进单位
+    pullCompanys: company + '/pull/companys', //拉人进单位
     queryInfo: company + '/query/info', //查询当前单位详细信息
     removeFromCompany: company + '/remove/from/company', //移除单位成员
     removeFromDepartment: company + '/remove/from/department', //移除部门成员

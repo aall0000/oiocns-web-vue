@@ -13,6 +13,7 @@
               <el-input class="search" placeholder="搜索单位名" :suffix-icon="Search" />
             </div>
             <div class="topRight">
+              <el-button type="primary" @click="showdialogShow">创建单位</el-button>
               <el-button type="primary" @click="addCompany = true">申请加入单位</el-button>
               <!-- <el-button>查看申请记录</el-button> -->
             </div>
@@ -102,6 +103,10 @@
               </span>
             </template>
           </el-dialog>
+          <CreateUnitDialog
+            :dialogShow="dialogShow"
+            @switchCreateCompany="closeDialog"
+          ></CreateUnitDialog>
         </div>
       </div>
     </div>
@@ -116,6 +121,9 @@
   import type { TabsPaneContext } from 'element-plus'
   import { ElMessage } from 'element-plus'
   import headImg from '@/views/Chat/components/headImg.vue'
+  import CreateUnitDialog from '@/views/Layout/components/createUnitDialog.vue'
+  const store = useUserStore()
+
   const activeName = ref('1')
   //tab切换
   const handleClick = (tab: TabsPaneContext, event: Event) => {
@@ -228,6 +236,20 @@
           addCompany.value = false
         }
       })
+  }
+  type dialogType = {
+    key:string,
+    value:boolean
+  }
+  const dialogShow = ref<dialogType>({
+    key:'unit',
+    value:false
+  })
+  const showdialogShow = ()=>{
+    dialogShow.value.value = true;
+  }
+  const closeDialog = ()=>{
+    location.reload()
   }
 </script>
 <style lang="scss" scoped>

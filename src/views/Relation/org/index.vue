@@ -28,8 +28,9 @@
           <el-table-column prop="data.teamRemark" label="描述" />
           <el-table-column label="操作" width="150">
             <template #default="{ row }">
-              <el-dropdown :disabled="row.data.typeName =='工作组'">
-                <el-button link type="primary" size="small" :disabled="row.data.typeName =='工作组'" style="margin-top:3px">新增</el-button>
+                <div class="cell-box"> 
+                  <el-dropdown :disabled="row.data.typeName =='工作组'">
+                <el-button link type="primary" size="small" :disabled="row.data.typeName =='工作组'">新增</el-button>
                 <template #dropdown>
                   <el-dropdown-menu>
                     <el-dropdown-item @click="create(row, '部门')">
@@ -58,6 +59,7 @@
                   <el-button link type="danger" size="small"  style="margin-left:0" :disabled="row.data.typeName == '公司'">删除</el-button>
                 </template>
               </el-popconfirm>
+                </div>
             </template>
           </el-table-column>
         </el-table>
@@ -525,7 +527,10 @@
   width: 100%;
   background-color: #fff;
   padding: 10px;
-
+  .cell-box{
+    display: flex;
+    align-items: center;
+  }
   .header {
     display: flex;
 

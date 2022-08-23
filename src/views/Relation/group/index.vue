@@ -1,14 +1,14 @@
 <template>
   <div class="container">
     <div class="tree">
-      <Tree @groupNodeClick="nodeClick"/>
+      <Tree @nodeClick="nodeClick"/>
     </div>
-    <div class="content">
+    <div class="content" style="overflow: hidden;">
       <div class="info">
-        <Info :group="group" ref="info"/>
+        <Info ref="info"/>
       </div>
-      <div class="companies">
-        <Companies/>
+      <div class="body">
+        <Body ref="body"/>
       </div>
     </div>
   </div>
@@ -16,16 +16,17 @@
 <script lang="ts" setup>
   import Tree from './tree.vue'
   import Info from './info.vue'
-  import Companies from './companies.vue'
+  import Body from './body.vue'
   import { ref } from 'vue';
 
-  let group = ref({})
-
   const info = ref(null);
+  const body = ref(null);
 
   const nodeClick = (selectItem: any)=>{
     info.value.selectItemChange(selectItem);
+    body.value.selectItemChange(selectItem);
   }
+
 </script>
 <style lang="scss" scoped>
 .container {
@@ -33,20 +34,25 @@
   height: 100%;
   background: #f0f2f5;
   padding: 3px;
+  box-sizing: border-box;
   display: flex;
 
   .tree {
-    width: 25%;
+    width: 23%;
   }
   .content{
-    width: 75%;
+    width: 77%;
     height: 100%;
-    padding: 3px;
-    .info {
-      height: 26%;
+    padding:0 3px;
+    box-sizing: border-box;
+    background: #f0f2f5;
+    .info{
+      padding: 3px;
+      box-sizing: border-box;
+      height: 25%;
     }
-    .companies{
-      height: 74%;
+    .body{
+      height: 73%;
     }
   }
 }

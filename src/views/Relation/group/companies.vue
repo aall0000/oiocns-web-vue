@@ -1,73 +1,111 @@
 <template>
-    <el-card class="card">
+    <div class="card">
       <div class="header">
-        <div class="title">单位列表</div>
+        <div class="title">{{props.selectItem.label}}</div>
         <div class="box-btns">
-          <el-button small link type="primary" @click="handleGoback">查看申请(5)</el-button>
-          <el-button small link type="primary" @click="dialogVisible = true">邀请单位</el-button>
+          <div v-if="props.selectItem?.data?.typeName == '集团'">
+            <el-button small link type="primary" @click="pullCompanyDialog = true">添加单位</el-button>
+            <el-button small link type="primary" @click="viewApplication">查看申请</el-button>
+          </div>
+          <div v-if="props.selectItem?.data?.typeName == '子集团' || props.selectItem?.data?.typeName == '工作组'">
+            <el-button small link type="primary" @click="assignDialog = true">分配单位</el-button>
+          </div>
         </div>
       </div>
 
-      <el-table class="box-table" v-loading="loading" :data="pageStore.tableData" stripe border
-        header-row-class-name="table_header_class" @select="handleSelect">
-        <el-table-column type="selection" width="50" />
-        <el-table-column prop="id" label="序号">
-          <template #default="{ $index }">
-            {{ pagination.limit * (pagination.current - 1) + $index + 1 }}
-          </template>
-        </el-table-column>
-        <el-table-column prop="name" label="单位名称" />
-        <el-table-column prop="thingId" label="单位编码" />
-        <el-table-column prop="updateTime" label="更新时间" />
+      <el-table
+        :data="companies"
+        stripe
+        :border="true"
+        style="width: 100%; margin: 0 auto"
+        height="280px"
+        :cell-style="{ 'text-align': 'center' }"
+      >
+        <el-table-column type="selection" />
+        <el-table-column prop="code" label="编号" />
+        <el-table-column prop="name" label="名称" />
+        <el-table-column prop="team.code" label="简介" />
         <el-table-column label="操作" width="100">
           <template #default="{ row }">
-            <el-popconfirm title="确认移除?" @confirm="handleDelItem(row)" confirm-button-text="确认" cancel-button-text="取消">
+            <el-popconfirm
+              title="确认删除?"
+              confirm-button-text="确认"
+              cancel-button-text="取消"
+              @confirm="removeFrom(row)"
+            >
               <template #reference>
-                <el-button link type="danger" size="small">移除</el-button>
-                <el-button link type="danger" size="small">调整</el-button>
+                <el-button link type="danger" size="small">移除单位</el-button>
               </template>
             </el-popconfirm>
           </template>
         </el-table-column>
       </el-table>
+
       <el-pagination class="page-pagination" @size-change="(e: any) => handlePaginationChange(e, 'limit')"
-        @current-change="(e: any) => handlePaginationChange(e, 'current')" small background
+        @current-change="(e: any) => handlePaginationChange(e, 'current')" background
         :page-sizes="[10, 20, 50, 100]" v-model:currentPage="pagination.current" v-model:page-size="pagination.limit"
         layout="total,prev, pager, next," :total="pageStore.total" />
-    </el-card>
+    </div>
 
 
-
-  <el-dialog v-model="dialogVisible" title="请输入单位名称" width="30%">
-    <el-form-item label="单位名称">
-      <el-input v-model="fromData.departmentName" placeholder="请输入单位名称" clearable />
-    </el-form-item>
-    <el-form-item label="单位编号">
-      <el-input v-model="fromData.departmentTeamCode" placeholder="请输入单位编号" clearable />
-    </el-form-item>
-    <el-form-item label="单位简介">
-      <el-input v-model="fromData.departmentTeamRemark" placeholder="请输入单位简介" type="textarea" clearable />
-    </el-form-item>
+  <el-dialog v-model="pullCompanyDialog" @close="hidePullPreson" title="添加单位到集团" width="30%">
+    <el-select
+      v-model="inviter"
+      filterable
+      remote
+      reserve-keyword
+      placeholder="请输入要查找的单位"
+      :remote-method="searchCompany"
+      :loading="loading"
+    >
+      <el-option
+        v-for="item in inviterOptions"
+        :key="item.value"
+        :label="item.label"
+        :value="item.value"
+      />
+    </el-select>
     <template #footer>
       <span class="dialog-footer">
-        <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="addCompanyToGroup">确认</el-button>
+        <el-button @click="hidePullPreson">取消</el-button>
+        <el-button type="primary" @click="pullCompany">确认</el-button>
       </span>
     </template>
   </el-dialog>
 
+  <el-dialog v-model="assignDialog" @close="hideAssignDialog" :title="'分配人员 => ' + selectItem.label" width="50%">
+    <el-table :data="filterTableData" style="width: 100%">
+      <el-table-column label="账号" prop="date" />
+      <el-table-column label="名称" prop="name" />
+      <el-table-column label="手机号" prop="name" />
+      <el-table-column align="right">
+        <template #header>
+          <el-input v-model="search" placeholder="搜索" />
+        </template>
+      </el-table-column>
+    </el-table>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="hideAssignDialog">取消</el-button>
+        <el-button type="primary" @click="assign">确认</el-button>
+      </span>
+    </template>
+  </el-dialog>
 
 </template>
 <script lang='ts' setup>
-import API from "@/services"
-import { onMounted, reactive, toRefs, ref } from 'vue';
-import { useUserStore } from '@/store/user'
+import $services from '@/services'
+import { computed, onMounted, reactive, ref, watch } from 'vue';
 import { useRouter } from "vue-router";
-import { storeToRefs } from 'pinia';
-import { nextTick } from "process";
-const store = useUserStore()
+import { ElMessage } from 'element-plus';
+
+const props = defineProps<{
+  selectItem: any,     // 节点数据
+}>()
+// 表格用户数据
+let companies = ref<any>([])
+
 const router = useRouter()
-const { userUnitInfo, workspaceData } = storeToRefs(store)
 // 表格分页数据
 const pagination: { current: number, limit: number } = reactive({ current: 1, limit: 10 })
 // 表格数据加载状态
@@ -77,94 +115,185 @@ const pageStore = reactive({
   tableData: [],
   total: 0
 })
-let groupId = ref<any>();
-
-// 获取表格数据
-const getTableList = async () => {
-  if(groupId.value){
-    loading.value = true
-    // Todo 判断 getSubgroupCompanies
-    const { data, success } = await API.company.getGroupCompanies({
-      data: {
-        id: groupId.value,
-        offset: (pagination.current - 1) * pagination.limit,
-        limit: pagination.limit
-      }
-    })
-    loading.value = false
-    if (success) {
-      const { result = [], total = 0 } = data
-      pageStore.tableData = result
-      pageStore.total = total
-    }
-  }
-}
-
-// 删除表格信息
-const handleDelItem = async (row: any) => {
-  console.log("row=====", row);                // Todo
-  const { success } = await API.company.removeFromGroup({
-    data: {
-      id: row.id,
-    }
-  })
-  if (success) {
-    getTableList()
-  }
-}
 
 // 处理表格分页操作
 const handlePaginationChange = (newVal: number, type: "current" | 'limit') => {
   pagination[type] = newVal
-  getTableList()
-}
-//弹窗信息
-const fromData = reactive({
-  departmentName: "",
-  departmentTeamName: "",
-  departmentTeamCode: "",
-  departmentTeamRemark: ""
-})
-// 弹窗显示
-const dialogVisible = ref<boolean>(false)
-
-onMounted(() => {
-  groupId.value= router.currentRoute.value.query.id;
-  getTableList()
-})
-
-//选中人员
-let selectArr = reactive<Array<any>>([])
-const handleSelect = (key: Array<any>) => {
-  selectArr = key
-  console.log('selectArr', selectArr)
+  // 获取数据
 }
 
-
-// 提交弹窗表单
-const addCompanyToGroup = () => {
-  API.company
-    .createDepartment({
+// 加载用户
+const getUsers = ()=>{
+  const data = props.selectItem?.data
+  if(data){
+    let url = '';
+    if(data.typeName == '集团'){
+      url = 'getGroupCompanies'
+    } else if(data.typeName == '子集团'){
+      url = 'getSubgroupCompanies'
+    }
+    $services.company[url]({
       data: {
-        id: workspaceData.value.id,
-        code: fromData.departmentTeamCode,
-        name: fromData.departmentName,
-        parentId: 0,
-        teamName: fromData.departmentTeamName,
-        teamRemark: fromData.departmentTeamRemark
+        id: props.selectItem.id,
+        offset: 0,
+        limit: 100
+      }
+    }).then((res: ResultType) => {
+      if (res.code == 200 && res.success) {
+        companies.value = res.data.result;
       }
     })
-    .then(() => {
-      getTableList()
-      dialogVisible.value = false
+  } else {
+    companies.value = []
+  }
+}
+// 搜索单位
+const searchCompany = (query: string) => {
+  inviterOptions.value = []
+  if(!query){
+    return
+  }
+  loading.value = true
+  $services.company
+    .searchCompany({data: { filter: query, offset: 0, limit: 10 }})
+    .then((res: ResultType) => {
+      loading.value = false
+      if (res.success && res.data.result) {
+        const companies = res.data.result
+        inviterOptions.value = companies.map((u: any) => {
+          return {value: u.id, label: u.name}
+        })
+      } else {
+        ElMessage({
+          message: '未找到单位!',
+          type: 'warning'
+        })
+      }
+    })
+}
+
+interface ListItem {
+  value: string
+  label: string
+}
+const inviterOptions = ref<ListItem[]>([])
+const inviter = ref('')
+const pullCompanyDialog = ref<boolean>(false)
+const hidePullPreson = () => {
+  inviter.value = ''
+  pullCompanyDialog.value = false
+}
+//拉单位进集团
+const pullCompany = () => {
+  $services.company
+    .pullCompany({
+      data: {
+        id: props.selectItem.id,
+        targetIds: [inviter.value]
+      }
+    })
+    .then((res: ResultType) => {
+      if (res.success) {
+        ElMessage({
+          message: '添加成功',
+          type: 'success'
+        })
+        getUsers()
+      }
+      inviter.value = ''
+      pullCompanyDialog.value = false
+    })
+}
+
+//查看申请
+const viewApplication = (row: any) => {
+  router.push('/cardDetail')
+}
+
+// 移除
+const removeFrom = (row: any) =>{
+  let url;
+  if(props.selectItem?.data?.typeName == '集团'){
+    url = 'removeFromGroup'
+  } else if(props.selectItem?.data?.typeName == '子集团'){
+    url = 'removeFromSubgroup'
+  }
+  $services.company[url]({
+    data: {
+      id: props.selectItem.id,
+      targetIds: [row.id]
+    }
+  }).then((res: ResultType) => {
+    getUsers()
+    if (res.success) {
+      ElMessage({
+        message: '操作成功',
+        type: 'success'
+      })
+    }
+  })
+}
+
+const assignDialog = ref<boolean>(false)
+const hideAssignDialog = ()=>{
+  assignDialog.value = false
+}
+
+// 过滤数据
+const search = ref('')
+const filterTableData = computed(() => {
+  return []
+})
+
+
+// 分配单位
+const assign = () => {
+
+}
+
+//分配部门
+const assignDepartment = (id: string, targetIds: string[]) => {
+  $services.company
+    .assignDepartment({
+      data: { id, targetIds }
+    })
+    .then((res: ResultType) => {
+      if (res.success) {
+        ElMessage({
+          message: '分配成功',
+          type: 'success'
+        })
+        hideAssignDialog()
+      }
+    })
+}
+//分配工作组
+const assignJob = (id: string, targetIds: string[]) => {
+  $services.company
+    .assignJob({
+      data: { id, targetIds }
+    })
+    .then((res: ResultType) => {
+      if (res.success) {
+        ElMessage({
+          message: '分配成功',
+          type: 'success'
+        })
+        hideAssignDialog()
+      }
     })
 }
 
 
-// 返回上一页
-const handleGoback = () => {
-  router.go(-1)
-}
+onMounted(() => {
+  getUsers()
+})
+
+watch(props, () => {
+  console.log('===================6666', props.selectItem)
+  getUsers()
+});
+
 </script>
 
 <style lang='scss' scoped>
@@ -173,6 +302,7 @@ const handleGoback = () => {
   height: 100%;
   width: 100%;
   background-color: #fff;
+  padding: 10px;
 
   .header {
     display: flex;
@@ -191,23 +321,10 @@ const handleGoback = () => {
     }
   }
 
-
-
-  .detail-box {
+  .page-pagination {
+    padding: 10px;
     display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    height: 100%;
-
-    .box-table {
-      flex-grow: 1;
-    }
-
-    .page-pagination {
-      padding: 10px 0;
-      display: flex;
-      justify-content: end;
-    }
+    justify-content: end;
   }
 }
 </style>
