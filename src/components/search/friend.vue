@@ -158,15 +158,19 @@
   const options = ref<any>({
     checkBox: true,
     order: true,
+    selectLimit:1,
     defaultSort: { prop: 'createTime', order: 'descending' },
     treeProps: {
-    children: 'children',
-    hasChildren: 'hasChildren'
+      children: 'children',
+      hasChildren: 'hasChildren',
     }
-})
+  })
 </script>
 
 <style lang="scss" scoped>
+  :deep(.el-table__header-wrapper .el-checkbox){
+    display: none;
+  }
   .foot{
     display: flex;
     width: 100%;

@@ -118,12 +118,8 @@ const applyJoinCohort = (arr:Array<arrList>) => {
           message: '申请成功',
           type: 'warning'
         })
-        cohortDialog.value = false
-      } else {
-        ElMessage({
-          message: res.msg,
-          type: 'warning'
-        })
+        friendDialog.value = false
+        getQunList()
       }
     })
 }
@@ -208,4 +204,5 @@ const createCohort = () => {
     }
   }
 }
+
 </style>

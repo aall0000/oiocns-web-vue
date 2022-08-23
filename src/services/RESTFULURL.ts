@@ -62,7 +62,7 @@ export default {
   },
   company: {
     applyJoin: company + '/apply/join', //申请加入单位
-    applyJoinGroup: company + 'apply/join/group', //申请加入集团
+    applyJoinGroup: company + '/apply/join/group', //申请加入集团
     assignDepartment: company + '/assign/department', //分配部门
     assignJob: company + '/assign/job', //分配岗位
     assignSubgroup: company + '/assign/subgroup', //分配子集团
@@ -118,6 +118,7 @@ export default {
     getAllSubgroups: company + '/get/all/subgroups', //查询所有子集团
     getCompanyTree: company + '/get/company/tree', //查询单位组织树
     getGroupTree: company + '/get/group/tree', //查询集团组织树
+    searchGroups: company + '/search/groups', //查询集团
   },
   market: {
     merchandise: market+'​/approval​/merchandise',//商品上架审核

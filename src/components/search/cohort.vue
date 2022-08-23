@@ -57,7 +57,7 @@
     
     if (value.value) {
       // loading.value = true
-      $services.person
+      $services.cohort
         .searchCohorts({
           data: {
             filter: value.value,
@@ -126,32 +126,20 @@
   }
   const tableHead = ref([
     {
-      prop: 'code',
-      label: '账号',
-      width: '100'
-    },
-    {
-      prop: 'name',
-      label: '昵称',
-      width: '100',
-      name: 'name'
-    },
-
-    {
       prop: 'trueName',
-      label: '姓名',
+      label: '群名称',
       width: '150',
       name: 'trueName'
     },
     {
       prop: 'teamCode',
-      label: '手机号',
+      label: '群编号',
       width: '150',
       name: 'teamCode'
     },
     {
       prop: 'remark',
-      label: '座右铭',
+      label: '群简介',
       name: 'reamrk'
     }
   ])
