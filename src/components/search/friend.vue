@@ -1,5 +1,6 @@
 <template>
-  <el-dialog v-model="dialogVisible" title="搜索人员 " width="60%" draggable>
+
+  <el-dialog v-model="dialogVisible" append-to-body	:before-close="closeDialog" title="搜索人员 " width="60%">
     <el-input v-model="value" @input="remoteMethod" placeholder="请输入" />
     <diytab
       ref="diyTable"
@@ -34,7 +35,8 @@
   })
   
   const emit = defineEmits([
-    'checkFriend'
+    'checkFriend',
+    'closeDialog'
   ])
 
   interface ListItem {
@@ -52,9 +54,9 @@
     remoteMethod()
   })
   const remoteMethod = () => {
-    console.log('ccccc',value.value)
+    
     if (value.value) {
-      loading.value = true
+      // loading.value = true
       $services.person
         .searchPersons({
           data: {
@@ -69,19 +71,24 @@
           if (res.code == 200) {
             if (res.data.result != undefined) {
               let states = res.data.result
-              states.forEach((el: any) => {
-                let obj = {
-                    id:el.id,
-                    code: el.code,
-                    name: el.name,
-                    trueName: el.team.name,
-                    teamCode: el.team.code,
-                    remark: el.team.remark
-                }
-                arr.push(obj)
-              })
-              pageStore.total = res.data.total;
-              diyTable.value.state.page.total = pageStore.total
+              if(states){
+                states.forEach((el: any) => {
+                  let obj = {
+                      id:el.id,
+                      code: el.code,
+                      name: el.name,
+                      trueName: el.team.name,
+                      teamCode: el.team.code,
+                      remark: el.team.remark
+                  }
+                  arr.push(obj)
+                })
+                pageStore.total = res.data.total;
+                diyTable.value.state.page.total = pageStore.total
+              }else{
+                
+              }
+              
             }
             list.value = arr
           } else {
@@ -90,12 +97,13 @@
               type: 'warning'
             })
           }
-          diyTable.value.state.loading = false
+          // diyTable.value.state.loading = false
         })
     } else {
       list.value = []
       nextTick(()=>{
-        diyTable.value.state.loading = false    
+        console.log(diyTable.value)
+        // diyTable.value.state.loading = false    
       })
     }
   }
@@ -111,6 +119,10 @@
   }
   const checkFriend = () =>{
     emit('checkFriend',checkList)
+  }
+
+  const closeDialog = ()=>{
+    emit('closeDialog',false)
   }
   const tableHead = ref([
     {

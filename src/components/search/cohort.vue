@@ -1,6 +1,6 @@
 <template>
 
-  <el-dialog v-model="dialogVisible" append-to-body	:before-close="closeDialog" title="搜索人员 " width="60%">
+  <el-dialog v-model="dialogVisible" append-to-body	:before-close="closeDialog" title="搜索群" width="60%">
     <el-input v-model="value" @input="remoteMethod" placeholder="请输入" />
     <diytab
       ref="diyTable"
@@ -58,7 +58,7 @@
     if (value.value) {
       // loading.value = true
       $services.person
-        .searchPersons({
+        .searchCohorts({
           data: {
             filter: value.value,
             offset: (pageStore.currentPage - 1) * pageStore.pageSize,

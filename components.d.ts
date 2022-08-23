@@ -9,6 +9,7 @@ declare module '@vue/runtime-core' {
   export interface GlobalComponents {
     AppCommon: typeof import('./src/components/protal/components/appCommon.vue')['default']
     AppMarket: typeof import('./src/components/protal/components/appMarket.vue')['default']
+    Cohort: typeof import('./src/components/search/cohort.vue')['default']
     Company: typeof import('./src/components/search/company.vue')['default']
     DiyTable: typeof import('./src/components/diyTable/index.vue')['default']
     ElAside: typeof import('element-plus/es')['ElAside']
@@ -55,6 +56,7 @@ declare module '@vue/runtime-core' {
     ElTooltip: typeof import('element-plus/es')['ElTooltip']
     ElTree: typeof import('element-plus/es')['ElTree']
     Friend: typeof import('./src/components/search/friend.vue')['default']
+    Group: typeof import('./src/components/search/group.vue')['default']
     Head: typeof import('./src/components/protal/components/head.vue')['default']
     HeadImg: typeof import('./src/components/headImg.vue')['default']
     Invitate: typeof import('./src/components/protal/components/invitate.vue')['default']
