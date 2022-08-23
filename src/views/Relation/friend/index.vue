@@ -24,32 +24,27 @@
         </el-table-column>
       </el-table>
     </div>
-
-    <el-dialog v-model="friendDialog" title='添加好友' width="30%">
-      <el-select v-model="value" filterable remote reserve-keyword
-        placeholder='请输入要查找的好友名' :remote-method="remoteMethod" :loading="loading">
-        <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
-      </el-select>
-      <template #footer>
-        <span class="dialog-footer">
-          <el-button @click="friendDialog = false">取消</el-button>
-          <el-button type="primary" @click="addFriends">确认</el-button>
-        </span>
-      </template>
-    </el-dialog>
+    <searchFriend  v-if="friendDialog" @checkFriend='checkFriend'/>
   </div>
 </template>
 <script lang="ts" setup>
 import $services from '@/services'
+import searchFriend from '@/components/search/friend.vue'
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 
 const friendDialog = ref<boolean>(false)
-const addFriends = () => {
+
+type arrList = {
+  id:string
+}
+
+const addFriends = (arr:Array<arrList>) => {
+  console.log('arrr',arr)
   $services.person
     .applyJoin({
       data: {
-        id: value.value
+        id: arr
       }
     })
     .then((res: ResultType) => {
@@ -116,54 +111,16 @@ const deleteFriend = (id: string) => {
       }
     })
 }
-
-interface ListItem {
-  value: string
-  label: string
-}
-const options = ref<ListItem[]>([])
-const value = ref('')
-const loading = ref(false)
-
-const remoteMethod = (query: string) => {
-  if (query) {
-    loading.value = true
-    $services.person
-      .searchPersons({
-        data: {
-          text: query,
-          offset: 0,
-          limit: 10
-        }
-      })
-      .then((res: ResultType) => {
-        if (res.code == 200) {
-          let arr: { value: any; label: any }[] = []
-          console.log(res.data.result != undefined, res.data.result)
-          if (res.data.result != undefined) {
-            let states = res.data.result
-            states.forEach((el: any) => {
-              let obj = {
-                value: el.id,
-                label: el.name
-              }
-              arr.push(obj)
-            })
-            options.value = arr
-            loading.value = false
-          } else {
-            options.value = arr
-            loading.value = false
-          }
-        } else {
-          ElMessage({
-            message: res.msg,
-            type: 'warning'
-          })
-        }
-      })
-  } else {
-    options.value = []
+const checkFriend=(val:any)=>{
+  if(val.value.length>0){
+    let arr:Array<arrList> =[]
+    val.value.forEach((element:any) => {
+      arr.push(element.id)
+    });
+    
+    addFriends(arr)
+  }else{
+    friendDialog.value = false;
   }
 }
 </script>
