@@ -19,6 +19,7 @@
     label?: string
     url?: string //图片地址
     limit?: number // 文字展示长度
+    class?:string
     isSquare?: boolean //是否方形展示 true--方形  false--圆形
   }
 

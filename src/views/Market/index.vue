@@ -9,27 +9,48 @@
       <ul class="box-ul">
         <p class="box-ul-title">我的应用</p>
         <li class="app-card">
-          <el-card class="app-card-item" shadow="always" v-for="o in 8">
-            <div class="app-card-item-con">
-              <div class="app-card-item-con-top flex">
-                <HeadImg name="测试" :limit="1" :isSquare="false" />
-                <p>应用名称</p>
-              </div>
-            </div>
-            <div class="app-card-item-footer">
-              <el-button small>按钮1</el-button><el-button small>按钮2</el-button> </div>
-          </el-card>
+          <ShopCard v-for="item in baseData" :info="item" :key="item.id">
+            <template #footer>
+              <el-button class="btn" type="primary" link small @click="hadleClick(item)"
+                >设置</el-button
+              >
+              <el-divider direction="vertical" />
+              <el-button class="btn" link small>移除应用</el-button>
+            </template>
+          </ShopCard>
         </li>
+        <el-pagination style="justify-content: end" layout="prev, pager, next" :total="50" />
+      </ul>
+      <ul class="box-ul">
+        <p class="box-ul-title">其他应用</p>
+        <li class="app-card">
+          <ShopCard v-for="item in baseData" :info="item" :key="item.id">
+            <template #footer>
+              <el-button class="btn" type="primary" link small>设置</el-button>
+              <el-divider direction="vertical" />
+              <el-button class="btn" link small>移除应用</el-button>
+            </template>
+          </ShopCard>
+        </li>
+        <el-pagination style="justify-content: end" layout="prev, pager, next" :total="50" />
       </ul>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import HeadImg from '@/components/headImg.vue'
+  import ShopCard from './components/shopCard.vue'
+  import { baseData } from './config'
+
+  const hadleClick = (item: any) => {
+    console.log('村上春树', item.name)
+  }
 </script>
 
 <style lang="scss" scoped>
+  :deep(.el-card__body) {
+    padding: 0;
+  }
   .market-layout {
     width: 100%;
     height: 100%;
@@ -39,11 +60,13 @@ import HeadImg from '@/components/headImg.vue'
       justify-content: flex-end;
       align-items: center;
       height: 60px;
+      padding: 0 20px;
     }
     .market-content {
       padding: 20px;
       margin-top: 4px;
-      height: calc(100% - 64px);
+      height: calc(100vh - 124px);
+      overflow-y: auto;
     }
     .box {
       background-color: #fff;
@@ -54,16 +77,7 @@ import HeadImg from '@/components/headImg.vue'
         }
         .app-card {
           display: flex;
-          // justify-content: ;
           flex-wrap: wrap;
-          &-item {
-            width: 24%;
-            min-width: 200px;
-            height: 184px;
-            margin-bottom: 10px;
-            margin-right: 1%;
-            // background-color: aqua;
-          }
         }
       }
     }
