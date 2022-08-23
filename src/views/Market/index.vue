@@ -3,7 +3,7 @@
     <el-card shadow="always" class="market-head flex">
       <el-button type="primary">注册</el-button>
       <el-button type="primary">订单</el-button>
-      <el-button type="primary">市场</el-button>
+      <el-button type="primary" @click="goMarket">市场</el-button>
     </el-card>
     <div class="market-content box">
       <ul class="box-ul">
@@ -41,6 +41,13 @@
 <script setup lang="ts">
   import ShopCard from './components/shopCard.vue'
   import { baseData } from './config'
+  import { useRouter } from 'vue-router'
+
+  const router = useRouter()
+
+  const goMarket = () => {
+    router.push({ path: '/market/markList' })
+  }
 
   const hadleClick = (item: any) => {
     console.log('村上春树', item.name)

@@ -1,158 +1,175 @@
 <template>
-  <div class="appLayout">
-    <div class="appLayout-btn">
+  <div class="market-layout">
+    <el-card shadow="always" class="market-head flex">
       <el-button type="primary">购物车</el-button>
-    </div>
-    <div class="appLayout-box">
-      <div class="appLayout-header">我的市场</div>
-      <div class="appLayout-content">
-        <div class="appLayout-content__box">
-          <Card
-            v-for="item in state.myApp"
-            style="height: 184px; width: 22%"
-            class="appLayout-content__card"
-          ></Card>
-        </div>
-        <div class="footer-pagination">
-          <el-pagination
-            @current-change="handleCurrentChange"
-            v-bind="state.page"
-            :pager-count="5"
-            style="text-align: right; margin-top: 10px"
-          ></el-pagination>
-        </div>
-      </div>
-    </div>
-    <div class="appLayout-box">
-      <div class="appLayout-header">我加入的市场</div>
-      <div class="appLayout-content">
-        <div class="appLayout-content__box">
-          <Card
-            v-for="item in state.myApp"
-            style="height: 184px; width: 40%"
-            class="appLayout-content__card"
+    </el-card>
+    <div class="market-content box">
+      <ul class="box-ul">
+        <p class="box-ul-title">我的市场</p>
+        <li class="app-card" v-if="state.myMarket.length !== 0">
+          <ShopCard
+            v-for="item in state.myMarket"
+            :info="item"
+            :key="item.id"
+            @click="gotoApp(item)"
           >
-          </Card>
-        </div>
-        <div class="footer-pagination">
-          <el-pagination
-            @current-change="handleCurrentJoinChange"
-            v-bind="state.page"
-            :pager-count="5"
-            style="text-align: right; margin-top: 10px"
-          ></el-pagination>
-        </div>
-      </div>
+            <template #footer>
+              <el-button class="btn" type="primary" link small @click="hadleClick(item)"
+                >退出市场</el-button
+              >
+              <el-divider direction="vertical" />
+              <el-button class="btn" link small>用户管理</el-button>
+            </template>
+          </ShopCard>
+        </li>
+        <div v-else>暂无数据</div>
+        <el-pagination
+          v-if="state.myMarket.length !== 0"
+          @current-change="handleCurrentChange"
+          v-bind="state.pageMy"
+          :pager-count="5"
+          style="text-align: right; margin-top: 10px; justify-content: end"
+        />
+      </ul>
+      <ul class="box-ul">
+        <p class="box-ul-title">我加入的市场</p>
+        <li class="app-card" v-if="state.joinMarket.length !== 0">
+          <ShopCard v-for="item in state.joinMarket" :info="item" :key="item.id">
+            <template #footer>
+              <el-button class="btn" type="primary" link small>退出市场</el-button>
+              <el-divider direction="vertical" />
+              <el-button class="btn" link small>用户管理</el-button>
+            </template>
+          </ShopCard>
+        </li>
+        <div v-else> 暂无数据 </div>
+        <el-pagination
+          v-if="state.joinMarket.length !== 0"
+          @current-change="handleCurrentChange"
+          v-bind="state.pageJoin"
+          :pager-count="5"
+          style="text-align: right; margin-top: 10px; justify-content: end"
+        />
+      </ul>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-  import { onMounted, reactive } from 'vue'
-  import Card from './components/card.vue'
+  import { reactive, onMounted } from 'vue'
+  import ShopCard from '../components/shopCard.vue'
+  import { useRouter } from 'vue-router'
   import $services from '@/services'
 
+  const router = useRouter()
+
   const state = reactive({
-    myApp: [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}],
-    page: {
-      total: 0, // 总条数
-      currentPage: 1, // 当前页
-      pageSize: 12, // 每页条数
-      layout: 'total, prev, pager, next, '
-    },
+    myMarket: [],
     joinMarket: [],
-    myMarket: []
+    pageMy: {
+      total: 0, // 总条数
+      currentPage: 0, // 当前页
+      pageSize: 20, // 每页条数
+      pageSizes: [20, 30, 50], // 分页数量列表
+      layout: 'total, prev, pager, next'
+    },
+    pageJoin: {
+      total: 0, // 总条数
+      currentPage: 0, // 当前页
+      pageSize: 20, // 每页条数
+      pageSizes: [20, 30, 50], // 分页数量列表
+      layout: 'total, prev, pager, next'
+    }
   })
 
   onMounted(() => {
-    getMyData()
-    getOwnData()
+    getMyMarketData()
+    getJoinMarketData()
   })
 
-  const getMyData = async () => {
-    state.myMarket = await $services.appstore.searchManager({
-      data: {
-        offset: 0,
-        limit: 12,
-        filter: ''
-      }
-    })
+  const handleSizeChange = () => {}
+  const handleCurrentChange = () => {}
+
+  const gotoApp = (item: { id: string }) => {
+    router.push({ path: '/market/appList', query: { data: item.id } })
   }
 
-  const getOwnData = async () => {
-    state.joinMarket = await $services.appstore.searchOwn({
-      data: {
-        offset: 0,
-        limit: 5,
-        filter: ''
-      }
-    })
+  const getMyMarketData = () => {
+    $services.appstore
+      .searchManager({
+        data: {
+          offset: state.pageMy.currentPage,
+          limit: 10,
+          filter: ''
+        }
+      })
+      .then((res: ResultType) => {
+        if (res.code == 200) {
+          state.myMarket = res.data.result
+          state.pageMy.total = res.data.total
+        }
+      })
+  }
+  const getJoinMarketData = () => {
+    $services.appstore
+      .searchOwn({
+        data: {
+          offset: state.pageJoin.currentPage,
+          limit: 10,
+          filter: ''
+        }
+      })
+      .then((res: ResultType) => {
+        if (res.code == 200) {
+          state.joinMarket = res.data.result
+          state.pageJoin.total = res.data.total
+        }
+      })
   }
 
-  /**
-   * el-pagination 分页配置
-   */
-  const handleCurrentChange = (val: any) => {}
-  const handleCurrentJoinChange = (val: any) => {}
+  const hadleClick = (item: any) => {
+    console.log('村上春树', item.name)
+  }
 </script>
 
 <style lang="scss" scoped>
-  .footer-pagination {
-    position: absolute;
-    right: 0;
-    bottom: 0;
-    margin: 10px;
+  :deep(.el-card__body) {
+    padding: 0;
   }
-  .el-button {
-    margin-right: 10px;
-  }
-  .appLayout {
+  .market-layout {
     width: 100%;
     height: 100%;
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    &-btn {
-      width: 100%;
-      height: 60px;
-      background-color: #fff;
+    min-width: 1000px;
+    .market-head {
       display: flex;
-      flex-direction: row-reverse;
+      justify-content: flex-end;
       align-items: center;
+      height: 60px;
+      padding: 0 20px;
     }
-    &-content {
-      position: relative;
-      padding: 20px;
-      flex: 1;
-      width: 100%;
-      &__box {
-        width: 100%;
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: space-between;
-      }
-      &__card {
-        margin-right: 24px;
-      }
-      &__card:last-child {
-        margin-right: unset;
-      }
+    .market-content {
+      padding: 16px;
+      // margin-top: 4px;
+      height: calc(100vh - 124px);
+      overflow-y: auto;
     }
-    &-box {
-      display: flex;
-      flex-direction: column;
-      background-color: #fff;
-      width: 100%;
-      flex: 1;
-      overflow: auto;
-      margin-top: 10px;
-    }
-    &-header {
-      margin: 16px 0 16px 24px;
-      font-size: 16px;
-      font-weight: 600;
-      color: rgba(0, 0, 0, 0.85);
-      line-height: 22px;
+    .box {
+      .box-ul + .box-ul {
+        margin-top: 10px;
+      }
+      &-ul {
+        background-color: #fff;
+        padding: 10px 24px;
+
+        &-title {
+          font-weight: bold;
+          padding-bottom: 10px;
+        }
+        .app-card {
+          display: flex;
+          flex-wrap: wrap;
+        }
+      }
     }
   }
 </style>
