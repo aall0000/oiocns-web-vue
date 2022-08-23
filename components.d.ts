@@ -7,8 +7,10 @@ export {}
 
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
+    AppCard: typeof import('./src/components/appCard/index.vue')['default']
     AppCommon: typeof import('./src/components/protal/components/appCommon.vue')['default']
     AppMarket: typeof import('./src/components/protal/components/appMarket.vue')['default']
+    DiyPagination: typeof import('./src/components/diyPagination/index.vue')['default']
     DiyTable: typeof import('./src/components/diyTable/index.vue')['default']
     ElAside: typeof import('element-plus/es')['ElAside']
     ElButton: typeof import('element-plus/es')['ElButton']
