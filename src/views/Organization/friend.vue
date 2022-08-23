@@ -111,12 +111,14 @@
         </span>
       </template>
     </el-dialog>
+    <serachFriend></serachFriend>
   </div>
 </template>
 <script lang="ts" setup>
   import $services from '@/services'
   import { ref, reactive, onMounted, watch } from 'vue'
   import { useUserStore } from '@/store/user'
+  import serachFriend from '@/components/search/friend.vue'
   import { storeToRefs } from 'pinia'
   import { ElMessage } from 'element-plus'
   import { useRouter } from 'vue-router'

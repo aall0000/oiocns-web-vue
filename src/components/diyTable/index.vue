@@ -211,7 +211,8 @@
     'hideDrop',
     'handleSortChange',
     'handleRowClick',
-    'handleUpdate'
+    'handleUpdate',
+    'selectionChange'
   ])
 
   const cellStyle = ({
@@ -262,6 +263,7 @@
 
   const handleSelectionChange = (val: any) => {
     multipleSelection.value = val
+    emit('selectionChange',multipleSelection.value)
   }
 
   /**
