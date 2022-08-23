@@ -93,7 +93,7 @@
     <el-col :span="8" class="flex col-right">
       <el-dropdown trigger="click">
         <span class="el-dropdown-link">
-          <headImg :name="queryInfo.name.slice(0, 1)" class="smallIcon" :label="''"></headImg>
+          <headImg :name="queryInfo.name.slice(0, 1)" class="smallIcon"></headImg>
           <span>{{ queryInfo.name }}</span>
           <el-icon style="margin-left: 15px">
             <CaretBottom />
@@ -147,7 +147,7 @@
   import CreateUnitDialog from './createUnitDialog.vue'
   import JoinUnitDialog from './joinUnitDialog.vue'
   import SearchDialog from './searchDialog.vue'
-  import headImg from '@/views/Chat/components/headImg.vue'
+  import headImg from '@/components/headImg.vue'
   const store = useUserStore()
   const SearchInfo = ref('')
   const router = useRouter()

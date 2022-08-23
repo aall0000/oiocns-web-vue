@@ -30,7 +30,7 @@
   </el-dialog>
 </template>
 <script lang="ts" setup>
-import HeadImg from './headImg.vue'
+import HeadImg from '@/components/headImg.vue'
 import { ref } from 'vue';
 type prop = {
   info: any
