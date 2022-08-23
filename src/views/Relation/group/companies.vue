@@ -4,7 +4,7 @@
         <div class="title">{{props.selectItem.label}}</div>
         <div class="box-btns">
           <div v-if="props.selectItem?.data?.typeName == '集团'">
-            <el-button small link type="primary" @click="pullPersonDialog = true">添加单位</el-button>
+            <el-button small link type="primary" @click="pullCompanysDialog = true">添加单位</el-button>
             <el-button small link type="primary" @click="viewApplication">查看申请</el-button>
           </div>
           <div v-if="props.selectItem?.data?.typeName == '子集团' || props.selectItem?.data?.typeName == '工作组'">
@@ -48,7 +48,7 @@
     </div>
 
 
-  <el-dialog v-model="pullPersonDialog" @close="hidePullPreson" title="添加单位到集团" width="30%">
+  <el-dialog v-model="pullCompanysDialog" @close="hidePullPreson" title="添加单位到集团" width="30%">
     <el-select
       v-model="inviter"
       filterable
@@ -68,7 +68,7 @@
     <template #footer>
       <span class="dialog-footer">
         <el-button @click="hidePullPreson">取消</el-button>
-        <el-button type="primary" @click="pullPerson">确认</el-button>
+        <el-button type="primary" @click="pullCompanys">确认</el-button>
       </span>
     </template>
   </el-dialog>
@@ -143,6 +143,8 @@ const getUsers = ()=>{
         companies.value = res.data.result;
       }
     })
+  } else {
+    companies.value = []
   }
 }
 // 搜索单位
@@ -176,15 +178,15 @@ interface ListItem {
 }
 const inviterOptions = ref<ListItem[]>([])
 const inviter = ref('')
-const pullPersonDialog = ref<boolean>(false)
+const pullCompanysDialog = ref<boolean>(false)
 const hidePullPreson = () => {
   inviter.value = ''
-  pullPersonDialog.value = false
+  pullCompanysDialog.value = false
 }
 //拉单位进集团
-const pullPerson = () => {
+const pullCompanys = () => {
   $services.company
-    .pullPerson({
+    .pullCompanys({
       data: {
         id: props.selectItem.id,
         targetIds: [inviter.value]
@@ -199,7 +201,7 @@ const pullPerson = () => {
         getUsers()
       }
       inviter.value = ''
-      pullPersonDialog.value = false
+      pullCompanysDialog.value = false
     })
 }
 
@@ -288,6 +290,7 @@ onMounted(() => {
 })
 
 watch(props, () => {
+  console.log('===================6666', props.selectItem)
   getUsers()
 });
 
