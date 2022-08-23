@@ -138,6 +138,7 @@
       initIdMap(orgTree.value)
       cascaderTree.value = filter(JSON.parse(JSON.stringify(orgTree.value)))
       defaultExpandedKeys.value = [res.data.id]
+      nodeClick(res.data)
     })
   }
 

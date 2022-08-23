@@ -25,7 +25,7 @@
         <el-table-column prop="name" label="姓名" />
         <el-table-column prop="team.code" label="手机号" />
         <el-table-column label="操作" width="100">
-          
+
         </el-table-column>
       </el-table> -->
 
@@ -114,48 +114,44 @@
 import $services from '@/services'
 import DiyTable from '@/components/diyTable/index.vue'
 import { onMounted, reactive, ref, watch,computed } from 'vue';
-import { useUserStore } from '@/store/user'
 import { useRouter } from "vue-router";
 import { ElMessage } from 'element-plus';
-import { ArrowUp } from '@element-plus/icons-vue';
-import { fa } from 'element-plus/es/locale';
+
 
 const props = defineProps<{
   selectItem: any,     // 节点数据
   tabHeight:number,
 }>()
 const tableHead = ref([
-      {
-        prop: 'code',
-        label: '账号',
-        width: '180',
-      },
-      {
-        prop: 'name',
-        label: '姓名',
-        width: '240',
-        name:'name',
-      },
-      {
-        prop: 'team.code',
-        label: '手机号',
-        width: '330',
-        name:'teamCode',
-      },
-      {
-        type: 'slot',
-        label: '操作',
-        fixed: 'right',
-        align: 'center',
-        width: '150',
-        name: 'operate'
-      }
-    ])
+  {
+    prop: 'code',
+    label: '账号',
+    width: '180',
+  },
+  {
+    prop: 'name',
+    label: '姓名',
+    width: '240',
+    name:'name',
+  },
+  {
+    prop: 'team.code',
+    label: '手机号',
+    width: '330',
+    name:'teamCode',
+  },
+  {
+    type: 'slot',
+    label: '操作',
+    fixed: 'right',
+    align: 'center',
+    width: '150',
+    name: 'operate'
+  }
+])
 let users = ref<any>([])
 
 const router = useRouter()
-// 表格分页数据
-const pagination: { current: number, limit: number } = reactive({ current: 1, limit: 10 })
 // 表格数据加载状态
 const loading = ref<boolean>(false)
 // 表格展示数据
@@ -166,11 +162,6 @@ const pageStore = reactive({
   total: 0
 })
 
-// 处理表格分页操作
-const handlePaginationChange = (newVal: number, type: "current" | 'limit') => {
-  pagination[type] = newVal
-  // 获取数据
-}
 const diyTable = ref(null)
 
 // 加载用户
@@ -259,11 +250,12 @@ const pullPerson = () => {
       pullPersonDialog.value = false
     })
 }
-const handleUpdate = (page:any)=>{
+const handleUpdate = (page: any)=>{
   pageStore.currentPage = page.currentPage
   pageStore.pageSize = page.pageSize
   getUsers()
 }
+
 //查看申请
 const viewApplication = (row: any) => {
   router.push('/cardDetail')
@@ -297,7 +289,7 @@ const removeFrom = (row: any) =>{
 }
 type rowType ={
   id:string
-}  
+}
 const rowItem = ref<rowType>()
 const removeDialog = ref<boolean>(false)
 const showDialog = (row:rowType)=>{
