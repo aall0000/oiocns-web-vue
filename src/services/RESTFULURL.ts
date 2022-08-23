@@ -5,7 +5,7 @@ const company = '/orginone/organization/company'
 const history = '/orginone/orgchat/history'
 const market = '​/orginone​/appstore​/market​'
 const order = '​/orginone​/appstore​/order'
-const product = '​/orginone​/appstore​/product'
+const product = '/orginone/appstore/product'
 const msg = '/orginone/orgchat/real'
 const appstore = '/orginone/appstore/market'
 export default {
@@ -165,12 +165,12 @@ export default {
     queryDistributionAuth : product+ '/query/distribution/auth', //查询产品资源职权分配记录
     queryDistributionTarget : product+ '/query/distribution/target', //查询产品资源组织/个人分配记录
     queryInfo : product+ '/query/info', //查询产品详细信息
-    querySelfResource : product+ '/query/self/resource', //查询组织/个人拥有的资源列表
+    queryOwnResource : product+ '/query/own/resource', //查询组织/个人拥有的资源列表
     register : product+ '/register', //产品登记
     searchMerchandiseList : product+ '​/search​/merchandise​/List', //根据产品查询产品上架信息
     searchMerchandiseApply : product+ '​/search​/merchandise​/apply', //查询产品上架申请
     searchResource : product+ '/search/resource', //查询产品资源列表
-    searchSelfProduct : product+ '/search/self/product', //模糊查找组织/个人产品
+    searchOwnProduct : product + '/search/own/product', //模糊查找组织/个人产品
     searchShare : product+ '/search/share', //查询产品分享情况
     searchShareProduct : product+ '/search/share/product', //模糊查找分享商品
     searchWebappmenu : product+ '/search​/webappmenu', //查询产品资源菜单

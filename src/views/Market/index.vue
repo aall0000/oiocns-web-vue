@@ -12,11 +12,21 @@
         <li class="app-card">
           <ShopCard v-for="item in baseData" :info="item" :key="item.id">
             <template #footer>
-              <el-button class="btn" type="primary" link small @click="hadleClick(item)"
-                >设置</el-button
-              >
+              <el-dropdown @command="handleCommand">
+                <el-button class="btn" type="primary" link small @click="hadleClick(item)">
+                  设置
+                </el-button>
+                <template #dropdown>
+                  <el-dropdown-menu>
+                    <el-dropdown-item v-for="action in actionOptionsOfOwn" :command="action.value">
+                      {{ action.label }}
+                    </el-dropdown-item>
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
+
               <el-divider direction="vertical" />
-              <el-button class="btn" link small>移除应用</el-button>
+              <el-button class="btn" link small @click="deleteApp(item)">移除应用</el-button>
             </template>
           </ShopCard>
         </li>
@@ -27,9 +37,23 @@
         <li class="app-card">
           <ShopCard v-for="item in baseData" :info="item" :key="item.id">
             <template #footer>
-              <el-button class="btn" type="primary" link small>设置</el-button>
+              <el-dropdown @command="(value) => handleCommand('other', value)">
+                <el-button class="btn" type="primary" link small @click="hadleClick(item)">
+                  设置
+                </el-button>
+                <template #dropdown>
+                  <el-dropdown-menu>
+                    <el-dropdown-item
+                      v-for="action in actionOptionsOfOther"
+                      :command="action.value"
+                    >
+                      {{ action.label }}
+                    </el-dropdown-item>
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
               <el-divider direction="vertical" />
-              <el-button class="btn" link small>移除应用</el-button>
+              <el-button class="btn" link small @click="deleteApp(item)">移除应用</el-button>
             </template>
           </ShopCard>
         </li>
@@ -40,10 +64,54 @@
 </template>
 
 <script setup lang="ts">
+  import API from '@/services'
+  import { ElMessage, ElMessageBox } from 'element-plus'
+  import { computed, onMounted } from 'vue'
   import ShopCard from './components/shopCard.vue'
-  import { baseData } from './config'
+  import { baseData, actionOptionsOfOther, actionOptionsOfOwn } from './config'
   import { useRouter } from 'vue-router'
   const router = useRouter()
+
+  onMounted(() => {
+    // 获取列表
+    getPageList()
+  })
+
+  // 获取我的应用列表
+  const getPageList = () => {
+    const { result, success } = API.product.queryOwnResource({
+      data: { offset: 0, limit: 10, filter: '' }
+    })
+
+    console.log('获取展示列表', result, success)
+  }
+
+  const deleteApp = (item: any) => {
+    console.log('删除', item)
+    ElMessageBox.confirm(`确认删除  ${item.name}?`, '提示', {
+      confirmButtonText: '确认',
+      cancelButtonText: '取消',
+      type: 'warning'
+    })
+      .then(() => {
+        const { success } = API.product.deleteResource({
+          data: { id: item.id }
+        })
+        if (success) {
+          getPageList()
+          ElMessage({
+            type: 'success',
+            message: '操作成功'
+          })
+        }
+      })
+      .catch(() => {})
+  }
+
+  const goMarket = () => {
+    router.push({ path: '/market/markList' })
+  }
+
   const hadleClick = (item: any) => {
     console.log('村上春树', item.name)
   }
@@ -68,7 +136,7 @@
       padding: 0 20px;
     }
     .market-content {
-      padding: 16px;
+      padding: 16px 16px 0;
       // margin-top: 4px;
       height: calc(100vh - 124px);
       overflow-y: auto;
@@ -83,7 +151,7 @@
 
         &-title {
           font-weight: bold;
-          padding-bottom: 10px;
+          padding: 8px 0;
         }
         .app-card {
           display: flex;

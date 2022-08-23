@@ -44,10 +44,10 @@
           >
             <template #operate="scope" >
                 <div v-if="props.selectItem?.data?.typeName == '公司'">
-                  <el-button link type="danger" size="small" @click="showDialog(scope.row)">操作离职</el-button>
+                  <el-button link type="danger" size="small" @click="removeFrom(scope.row)">操作离职</el-button>
                 </div>
                 <div v-if="props.selectItem?.data?.typeName == '部门' || props.selectItem?.data?.typeName == '工作组'">
-                  <el-button link type="danger" size="small" @click="showDialog(scope.row)" >移除成员</el-button>
+                  <el-button link type="danger" size="small" @click="removeFrom(scope.row)" >移除成员</el-button>
                 </div>
             </template>
           </DiyTable>
@@ -55,15 +55,6 @@
        </div>
     </div>
 
-  <el-dialog v-model="removeDialog" title="确认删除吗？" width="30%" draggable>
-    <span style="text-align:center;width:100%">删除以后无法找回</span>
-    <template #footer>
-      <span class="dialog-footer">
-        <el-button @click="removeDialog = false">取消</el-button>
-        <el-button type="primary" @click="removeFrom">确认</el-button>
-      </span>
-    </template>
-  </el-dialog>
   <el-dialog v-model="pullPersonDialog" @close="hidePullPreson" title="添加人员到单位" width="30%">
     <el-select
       v-model="inviter"
@@ -124,7 +115,7 @@ import $services from '@/services'
 import DiyTable from '@/components/diyTable/index.vue'
 import { onMounted, reactive, ref, watch } from 'vue';
 import { useRouter } from "vue-router";
-import { ElMessage } from 'element-plus';
+import { ElMessage, ElMessageBox } from 'element-plus';
 import { Search } from '@element-plus/icons-vue'
 
 const props = defineProps<{
@@ -301,40 +292,49 @@ const viewApplication = (row: any) => {
 
 // 移除
 const removeFrom = (row: any) =>{
-  let url;
+  let url: string;
+  let title: string;
   if(props.selectItem?.data?.typeName == '公司'){
     url = 'removeFromCompany'
+    title = `操作离职，将删除 ${row.name} 在单位的信息，确定操作吗？`
   } else if(props.selectItem?.data?.typeName == '部门'){
     url = 'removeFromDepartment'
+    title = `确定把 ${row.name} 从当前部门移除吗？`
   } else if(props.selectItem?.data?.typeName == '工作组'){
     url = 'removeFromJob'
+    title = `确定把 ${row.name} 从当前部门移除吗？`
   }
-  $services.company[url]({
-    data: {
-      id: props.selectItem.id,
-      targetIds: [rowItem.value.id]
+  ElMessageBox.confirm(
+    title,
+    '警告',
+    {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
     }
-  }).then((res: ResultType) => {
-    getUsers()
-    if (res.success) {
-      removeDialog.value = false;
-      ElMessage({
-        message: '操作成功',
-        type: 'success'
-      })
-    }
+  ).then(() => {
+    $services.company[url]({
+      data: {
+        id: props.selectItem.id,
+        targetIds: [row.id]
+      }
+    }).then((res: ResultType) => {
+      getUsers()
+      if (res.success) {
+        ElMessage({
+          message: '操作成功',
+          type: 'success'
+        })
+      }
+    })
   })
-}
-type rowType ={
-  id:string
-}
-const rowItem = ref<rowType>()
-const removeDialog = ref<boolean>(false)
-const showDialog = (row:rowType)=>{
-  removeDialog.value = true;
-  rowItem.value = row;
-}
+  .catch(() => {
+    console.log('移除成功!')
+  })
 
+
+
+}
 
 // 加载公司所有用户
 const getCompanyUsers = (filter?: string)=>{

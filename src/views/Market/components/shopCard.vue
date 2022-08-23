@@ -8,7 +8,7 @@
   >
     <div class="app-card-item-con">
       <div class="app-card-item-con-top flex">
-        <HeadImg :name="info.name" :limit="1" :isSquare="false" />
+        <HeadImg :name="info.name" :url="appImg" :imgWidth="48" :limit="1" :isSquare="false" />
         <div class="app-con">
           <p class="app-con-title">{{ info.name }}</p>
           <div class="app-card-item-con-desc">
@@ -26,6 +26,7 @@
 <script lang="ts" setup>
   import { reactive, toRefs } from 'vue'
   import HeadImg from '@/components/headImg.vue'
+  import appImg from '@/assets/img/app_icon.png'
   // hoverItem--鼠标移入item的id 用于展示按钮区域
   const state: { hoverItem: string } = reactive({ hoverItem: '' })
   type shopInfoType = {
@@ -56,7 +57,7 @@
       display: flex;
       flex-direction: column;
       padding: 24px;
-      &-title {
+      .app-con-title {
         color: #000000d9;
         font-size: 16px;
         font-weight: 400;
