@@ -34,7 +34,7 @@
       <el-input v-model="formData.code" :placeholder="'请输入集团描述'" clearable />
     </el-form-item>
     <el-form-item :label="'集团描述'">
-      <el-input v-model="formData.teamRemark" :placeholder="'请输入集团描述'" clearable />
+      <el-input v-model="formData.teamRemark" :placeholder="'请输入集团描述'" :autosize="{ minRows: 5 }" type="textarea" clearable />
     </el-form-item>
     <template #footer>
       <span class="dialog-footer">
@@ -63,7 +63,6 @@
 
 
   watch(selectItem, () => {
-    console.log('22222222222', selectItem)
   });
 
 
