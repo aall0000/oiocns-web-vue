@@ -314,10 +314,9 @@
         margin: 30px;
       }
       .createdBottom {
-        display: flex;
-        margin-top: 100px;
-        margin-right: 50px;
-        justify-content: end;
+        position: absolute;
+        right: 30px;
+        bottom: 30px;
       }
     }
     // .title {
