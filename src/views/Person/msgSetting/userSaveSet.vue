@@ -19,12 +19,12 @@
 </script>
 <style lang="scss" scoped>
   .userSaveSet {
-    height: calc(100vh - 235px);
-    background-color: #fff;
+    height: 100%;
+    background-color: #eff0f4;
 
     .pageHeader {
       width: 100%;
-      height: 70px;
+      height: 10%;
       background-color: #fff;
       .header {
         margin-top: 20px;
@@ -38,21 +38,12 @@
       }
     }
     .body {
-      height: 600px;
+      height: 60%;
       width: 100%;
+      background-color: #fff;
       border-left: 10px solid #eff0f4;
       border-top: 16px solid #eff0f4;
       border-right: 16px solid #eff0f4;
-      display: flex;
-    }
-    .bottom {
-      height: calc(100vh - 760px);
-      background-color: #eff0f4;
-      display: flex;
-      .content {
-        margin: auto;
-        color: #aaa;
-      }
     }
   }
 </style>
