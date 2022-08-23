@@ -90,8 +90,8 @@
   const handleSizeChange = () => {}
   const handleCurrentChange = () => {}
 
-  const gotoApp = (item: { id: string }) => {
-    router.push({ path: '/market/appList', query: { data: item.id } })
+  const gotoApp = (item) => {
+    router.push({ path: '/market/appList', query: { data: JSON.stringify(item) } })
   }
 
   const getMyMarketData = () => {

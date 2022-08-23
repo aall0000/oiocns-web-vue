@@ -12,7 +12,7 @@
         <div class="app-con">
           <p class="app-con-title">{{ info.name }}</p>
           <div class="app-card-item-con-desc">
-            {{ info.desc }}
+            {{ info.remark }}
           </div>
         </div>
       </div>
@@ -33,7 +33,7 @@
     key?: string
     info: {
       name: string
-      desc: string
+      remark: string
       url?: string
       id?: string
     }

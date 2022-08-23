@@ -3,7 +3,7 @@
     <el-card shadow="always" class="market-head flex">
       <el-button type="primary">注册</el-button>
       <el-button type="primary">订单</el-button>
-      <el-button type="primary">市场</el-button>
+      <el-button type="primary" @click="goMarket">市场</el-button>
     </el-card>
     <div class="market-content box">
       <ul class="box-ul">
@@ -36,13 +36,16 @@
         <li class="app-card">
           <ShopCard v-for="item in baseData" :info="item" :key="item.id">
             <template #footer>
-              <el-dropdown @command="(value)=>handleCommand('other',value)">
+              <el-dropdown @command="(value) => handleCommand('other', value)">
                 <el-button class="btn" type="primary" link small @click="hadleClick(item)">
                   设置
                 </el-button>
                 <template #dropdown>
                   <el-dropdown-menu>
-                    <el-dropdown-item v-for="action in actionOptionsOfOther" :command="action.value">
+                    <el-dropdown-item
+                      v-for="action in actionOptionsOfOther"
+                      :command="action.value"
+                    >
                       {{ action.label }}
                     </el-dropdown-item>
                   </el-dropdown-menu>
@@ -65,6 +68,9 @@
   import { computed, onMounted } from 'vue'
   import ShopCard from './components/shopCard.vue'
   import { baseData, actionOptionsOfOther, actionOptionsOfOwn } from './config'
+  import { useRouter } from 'vue-router'
+
+  const router = useRouter()
 
   onMounted(() => {
     // 获取列表
@@ -100,6 +106,10 @@
         }
       })
       .catch(() => {})
+  }
+
+  const goMarket = () => {
+    router.push({ path: '/market/markList' })
   }
 
   const hadleClick = (item: any) => {

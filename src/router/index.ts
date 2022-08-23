@@ -280,9 +280,17 @@ const mainRouter: RouteRecordRaw[] = [
         }
       },
       {
+        path: '/market/markList',
+        name: 'marketMarkList',
+        component: () => import('@/views/Market/AppList/index.vue'),
+        meta: {
+          title: '市场列表'
+        }
+      },
+      {
         path: '/market/appList',
         name: 'marketAppList',
-        component: () => import('@/views/Market/AppList/index.vue'),
+        component: () => import('@/views/Market/AppList/appList.vue'),
         meta: {
           title: '应用列表'
         }
