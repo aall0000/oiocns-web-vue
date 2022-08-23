@@ -64,11 +64,38 @@ export const baseData = [
     desc: '测试desc2',
     url: '测试url2',
     id: '11'
-  },
+  }
   // {
   //   name: '测试name3',
   //   desc: '测试desc3',
   //   url: '测试url4',
   //   id: '21'
   // }
+]
+
+// 我的应用操作列表
+export const actionOptionsOfOwn: Array<OptionType> = [
+  {
+    label: '删除',
+    value: 'delete'
+  },
+  {
+    label: '上架',
+    value: 'delete'
+  },
+  {
+    label: '分享',
+    value: 'delete'
+  }
+]
+// 其他应用操作列表
+export const actionOptionsOfOther = [
+  {
+    label: '退订',
+    value: 'delete'
+  },
+  {
+    label: '分享',
+    value: 'delete'
+  }
 ]
