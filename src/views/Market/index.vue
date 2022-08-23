@@ -63,14 +63,19 @@
       padding: 0 20px;
     }
     .market-content {
-      padding: 20px;
-      margin-top: 4px;
+      padding: 16px;
+      // margin-top: 4px;
       height: calc(100vh - 124px);
       overflow-y: auto;
     }
     .box {
-      background-color: #fff;
+      .box-ul + .box-ul {
+        margin-top: 10px;
+      }
       &-ul {
+        background-color: #fff;
+        padding: 10px 24px;
+
         &-title {
           font-weight: bold;
           padding-bottom: 10px;
