@@ -44,8 +44,6 @@
 </script>
 
 <style lang="scss" scoped>
-  .shop-card-wrap {
-  }
 
   .app-card-item {
     width: 24%;
