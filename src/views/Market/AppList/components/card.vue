@@ -1,6 +1,6 @@
 <template>
   <div class="cardLayout">
-    <div class="cardtop">
+    <div class="cardtop" @click="gotoNext">
       <div class="cardtop-img"><HeadImg name="测试市场" label="" type="circle"></HeadImg> </div>
       <div class="cardtop-box">
         <div class="cardtop-box__name">测试市场</div>
@@ -19,6 +19,13 @@
 
 <script setup lang="ts">
   import HeadImg from '@/views/Chat/components/headImg.vue'
+  import { useRouter } from 'vue-router'
+
+  const router = useRouter()
+
+  const gotoNext = () => {
+    router.push({ path: '/market/appList', query: {} })
+  }
 </script>
 
 <style lang="scss" scoped>
@@ -60,6 +67,7 @@
     }
   }
   .cardtop {
+    cursor: pointer;
     display: flex;
     width: 100%;
     height: 70%;

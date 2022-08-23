@@ -1,42 +1,20 @@
 <template>
   <div class="appLayout">
-    <div class="appLayout-btn">
-      <el-button type="primary">购物车</el-button>
-    </div>
     <div class="appLayout-box">
-      <div class="appLayout-header">我的市场</div>
+      <div class="appLayout-header">应用列表</div>
       <div class="appLayout-content">
         <div class="appLayout-content__box">
           <Card
             v-for="item in state.myApp"
-            style="height: 184px; width: 22%"
+            style="height: 184px; width: 322px"
             class="appLayout-content__card"
           ></Card>
         </div>
         <div class="footer-pagination">
           <el-pagination
+            background
+            @size-change="handleSizeChange"
             @current-change="handleCurrentChange"
-            v-bind="state.page"
-            :pager-count="5"
-            style="text-align: right; margin-top: 10px"
-          ></el-pagination>
-        </div>
-      </div>
-    </div>
-    <div class="appLayout-box">
-      <div class="appLayout-header">我加入的市场</div>
-      <div class="appLayout-content">
-        <div class="appLayout-content__box">
-          <Card
-            v-for="item in state.myApp"
-            style="height: 184px; width: 40%"
-            class="appLayout-content__card"
-          >
-          </Card>
-        </div>
-        <div class="footer-pagination">
-          <el-pagination
-            @current-change="handleCurrentJoinChange"
             v-bind="state.page"
             :pager-count="5"
             style="text-align: right; margin-top: 10px"
@@ -53,12 +31,13 @@
   import $services from '@/services'
 
   const state = reactive({
-    myApp: [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}],
+    myApp: [{}, {}, {}, {}, {}],
     page: {
       total: 0, // 总条数
       currentPage: 1, // 当前页
-      pageSize: 12, // 每页条数
-      layout: 'total, prev, pager, next, '
+      pageSize: 20, // 每页条数
+      pageSizes: [20, 30, 50], // 分页数量列表
+      layout: 'total, prev, pager, next, sizes'
     },
     joinMarket: [],
     myMarket: []
@@ -73,7 +52,7 @@
     state.myMarket = await $services.appstore.searchManager({
       data: {
         offset: 0,
-        limit: 12,
+        limit: 5,
         filter: ''
       }
     })
@@ -93,7 +72,7 @@
    * el-pagination 分页配置
    */
   const handleCurrentChange = (val: any) => {}
-  const handleCurrentJoinChange = (val: any) => {}
+  const handleSizeChange = (val: any) => {}
 </script>
 
 <style lang="scss" scoped>
@@ -110,8 +89,6 @@
     width: 100%;
     height: 100%;
     padding: 10px;
-    display: flex;
-    flex-direction: column;
     &-btn {
       width: 100%;
       height: 60px;
@@ -128,7 +105,6 @@
       &__box {
         width: 100%;
         display: flex;
-        flex-wrap: wrap;
         justify-content: space-between;
       }
       &__card {
@@ -139,13 +115,12 @@
       }
     }
     &-box {
-      display: flex;
-      flex-direction: column;
       background-color: #fff;
       width: 100%;
-      flex: 1;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
       overflow: auto;
-      margin-top: 10px;
     }
     &-header {
       margin: 16px 0 16px 24px;

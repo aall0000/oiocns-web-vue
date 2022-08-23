@@ -4,6 +4,7 @@ const person = '/orginone/organization/person'
 const company = '/orginone/organization/company'
 const history = '/orginone/orgchat/history'
 const msg = '/orginone/orgchat/real'
+const appstore = '/orginone/appstore/market'
 export default {
   // 人员接口
   person: {
@@ -32,7 +33,7 @@ export default {
     remove: person + '/remove', //删除好友
     removeIdentity: person + '/remove/identity', //删除好友身份
     searchPersons: person + '/search/persons', //搜索人员
-    update: person + '/update', //变更信息
+    update: person + '/update' //变更信息
   },
   cohort: {
     applyJoin: cohort + '/apply/join', //申请加群组
@@ -115,7 +116,7 @@ export default {
     getAllJobs: company + '/get/all/jobs', //查询所有岗位
     getAllSubgroups: company + '/get/all/subgroups', //查询所有子集团
     getCompanyTree: company + '/get/company/tree', //查询单位组织树
-    getGroupTree: company + '/get/group/tree', //查询集团组织树
+    getGroupTree: company + '/get/group/tree' //查询集团组织树
   },
   msg: {
     // /orginone/orgchat/real/send/msg
@@ -124,10 +125,14 @@ export default {
   // 历史记录
   history: {
     getCohortMsg: history + '/query/cohort/msg', // 获取群聊天历史聊天信息
-    getFriendMsg: history + '/query/friend/msg', // 获取好友历史聊天信息
+    getFriendMsg: history + '/query/friend/msg' // 获取好友历史聊天信息
   },
   diyHome: {
     diy: (str: string) => `${str}`
+  },
+  appstore: {
+    searchOwn: appstore + '/search/own',
+    searchManager: appstore + '/search/manager'
   }
   //others
 }
