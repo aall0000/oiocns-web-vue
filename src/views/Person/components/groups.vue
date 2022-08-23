@@ -6,7 +6,7 @@
       </div>
       <div class="topRight">
         <el-button type="primary" @click="create"> 创建集团</el-button>
-        <el-button type="primary" @click="create"> 邀请加入集团</el-button>
+        <el-button type="primary" @click="addGroup = true"> 申请加入集团</el-button>
       </div>
     </div>
     <div class="createdBody" v-if="types === '全部'">
@@ -101,6 +101,72 @@
         <span class="dialog-footer">
           <el-button @click="dialogVisible = false">取消</el-button>
           <el-button type="primary" @click="save">确认</el-button>
+        </span>
+      </template>
+    </el-dialog>
+    <el-dialog v-model="addGroup" title="搜索集团" width="30%">
+      <el-select
+        v-model="value"
+        filterable
+        remote
+        reserve-keyword
+        placeholder="搜索集团"
+        :remote-method="remoteMethod"
+        :loading="loading"
+        style="width: 100%"
+      >
+        <el-option
+          v-for="item in options"
+          :key="item.value"
+          :value="item.value"
+          :label="`${item.label}(${item.name})`"
+          style="height: 50px; width: 550px"
+        >
+          <div
+            style="
+              height: 50px;
+              width: 100%;
+              display: flex;
+              justify-content: flex-start;
+              align-items: center;
+              border-bottom: 1px solid #f0f2f5;
+            "
+          >
+            <div style="height: 50px; width: 15%; margin-top: 5px">
+              <headImg
+                :name="item.name.slice(0, 1)" :label="''"
+                style="transform: scale(0.7, 0.7); border-radius: 50px; font-size: 19px"
+              ></headImg>
+            </div>
+            <div style="height: 50px; width: 85%; margin-bottom: 5px">
+              <p
+                style="
+                  height: 25px;
+                  font-weight: 600;
+                  overflow: hidden;
+                  text-overflow: ellipsis;
+                  white-space: nowrap;
+                "
+                >{{ item.label }}({{ item.name }})</p
+              >
+              <p
+                style="
+                  height: 25px;
+                  color: #ccc;
+                  overflow: hidden;
+                  text-overflow: ellipsis;
+                  white-space: nowrap;
+                "
+                >{{ item.remark }}</p
+              >
+            </div>
+          </div>
+        </el-option>
+      </el-select>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="addGroup = false">取消</el-button>
+          <el-button type="primary" @click="addGroupFun">确认</el-button>
         </span>
       </template>
     </el-dialog>
@@ -236,6 +302,67 @@
         }
       }
     }
+  }
+  interface ListItem {
+    value: string
+    label: string
+    remark: string
+    name: string
+  }
+  const addGroup = ref<boolean>(false)
+  const options = ref<ListItem[]>([])
+  const value = ref('')
+  const loading = ref(false)
+  const remoteMethod = (query: string) => {
+    if (query) {
+      $services.company
+        .companyGetGroups({
+          data: {
+            filter: '',
+            offset: 0,
+            limit: 10
+          }
+        })
+        .then((res: ResultType) => {
+          if (res.success) {
+            let states = res.data.result
+            let arr: { value: any; label: any; remark: any; name: any }[] = []
+            states.forEach((el: any) => {
+              let obj = {
+                value: el.id,
+                label: el.name,
+                remark: el.team.remark,
+                name: el.team.name
+              }
+              arr.push(obj)
+            })
+            options.value = arr
+            loading.value = false
+          } else {
+            options.value = []
+            loading.value = false
+          }
+        })
+    } else {
+      options.value = []
+    }
+  }
+  const addGroupFun = () => {
+    $services.company
+      .applyJoinGroup({
+        data: {
+          id: value.value
+        }
+      })
+      .then((res: ResultType) => {
+        if (res.success) {
+          ElMessage({
+            message: '申请成功',
+            type: 'warning'
+          })
+          addGroup.value = false
+        }
+      })
   }
 </script>
 <style lang="scss">
