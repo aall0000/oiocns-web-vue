@@ -16,15 +16,15 @@
             :overId="item.id"
             @click="gotoApp(item)"
           >
-            <template>
-              <el-button class="btn" type="primary" link small @click.stop="hadleClick(item)"
-                >删除市场</el-button
-              >
-              <el-divider direction="vertical" />
-              <el-button class="btn" link small @click.stop="hadleUserManage(item)"
-                >用户管理</el-button
-              >
-            </template>
+            <!-- <template> -->
+            <el-button class="btn" type="primary" link small @click.stop="hadleClick(item)"
+              >删除市场</el-button
+            >
+            <el-divider direction="vertical" />
+            <el-button class="btn" link small @click.stop="hadleUserManage(item)"
+              >用户管理</el-button
+            >
+            <!-- </template> -->
           </ShopCard>
         </li>
         <div v-else>暂无数据</div>
@@ -47,7 +47,7 @@
             @click="gotoApp(item)"
           >
             <!-- <template #footer> -->
-            <el-button class="btn" type="primary" link small @click="marketQuit(item)"
+            <el-button class="btn" type="primary" link small @click.stop="marketQuit(item)"
               >退出市场</el-button
             >
             <!-- <el-divider direction="vertical" />
@@ -92,7 +92,7 @@
   import ShopCard from '../components/shopCard.vue'
   import { useRouter } from 'vue-router'
   import $services from '@/services'
-  import { ElMessage } from 'element-plus'
+  import { ElMessage, ElMessageBox } from 'element-plus'
   import MarketCreate from '../components/marketCreate.vue'
   import { useUserStore } from '@/store/user'
   const router = useRouter()
