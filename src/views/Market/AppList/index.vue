@@ -1,7 +1,8 @@
 <template>
   <div class="market-layout">
     <el-card shadow="always" class="market-head flex">
-      <el-button type="primary">购物车</el-button>
+      <el-button type="primary" @click.stop="linkOrder()">我的订单</el-button>
+      <el-button type="primary" @click.stop="linkShopCar()">购物车</el-button>
     </el-card>
     <div class="market-content box">
       <ul class="box-ul">
@@ -105,6 +106,14 @@
   const handleCurrentJoinChange = (val: number) => {
     state.pageJoin.currentPage = val
     getJoinMarketData()
+  }
+
+  const linkOrder = () => {
+    router.push({ path: '/market/order'})
+  }
+
+  const linkShopCar = () => {
+    router.push({ path: '/market/shopCar'})
   }
 
   const hadleUserManage = (item: { id: number }) => {
