@@ -2,16 +2,16 @@
   <div class="market-layout">
     <div class="market-content box">
       <ul class="box-ul">
-        <p class="box-ul-title">我的市场</p>
+        <p class="box-ul-title">应用列表</p>
         <li class="app-card" v-if="state.myAppList.length !== 0">
           <ShopCard v-for="item in state.myAppList" :info="item" :key="item.id">
-            <template #footer>
-              <el-button class="btn" type="primary" link small @click="hadleClick(item)"
-                >退出市场</el-button
-              >
-              <el-divider direction="vertical" />
-              <el-button class="btn" link small>用户管理</el-button>
-            </template>
+            <!-- <template #footer> -->
+            <el-button class="btn" type="primary" link small @click="hadleClick(item)"
+              >退出市场</el-button
+            >
+            <el-divider direction="vertical" />
+            <el-button class="btn" link small>用户管理</el-button>
+            <!-- </template> -->
           </ShopCard>
         </li>
         <div v-else>暂无数据</div>
