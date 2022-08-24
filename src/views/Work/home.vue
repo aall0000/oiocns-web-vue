@@ -3,9 +3,9 @@
   <div class="baseLayout">
     <el-tabs v-model="editableTabsValue" type="card" editable class="demo-tabs" @edit="handleTabsEdit">
       <el-tab-pane :closable="false" :label="'工作台'" :name="0">
-        <TheHome style="margin-top: 4px"></TheHome>
+        <TheHome style="margin-top: 4px"/>
       </el-tab-pane>
-      <el-tab-pane v-for="item in userOtherData.workspaceData.content" :key="item.name" :label="item.title"
+      <el-tab-pane v-for="item in userOtherData.homeComplist" :key="item.name" :label="item.title"
         :name="item.name">
         <div class="layout-con" id="workSpace">
           <grid-layout ref="gridlayout" :layout="item.temps" :col-num="12" :row-height="27.5"
