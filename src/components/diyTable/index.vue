@@ -524,4 +524,7 @@
       flex-wrap: wrap;
     }
   }
+   :deep(.el-table__header-wrapper .el-checkbox){
+    display: none;
+  }
 </style>
