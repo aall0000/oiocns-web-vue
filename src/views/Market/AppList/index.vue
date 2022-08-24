@@ -14,15 +14,15 @@
             :key="item.id"
             @click="gotoApp(item)"
           >
-            <!-- <template #footer> -->
-            <el-button class="btn" type="primary" link small @click.stop="hadleClick(item)"
-              >删除市场</el-button
-            >
-            <el-divider direction="vertical" />
-            <el-button class="btn" link small @click.stop="hadleUserManage(item)"
-              >用户管理</el-button
-            >
-            <!-- </template> -->
+            <template>
+              <el-button class="btn" type="primary" link small @click.stop="hadleClick(item)"
+                >删除市场</el-button
+              >
+              <el-divider direction="vertical" />
+              <el-button class="btn" link small @click.stop="hadleUserManage(item)"
+                >用户管理</el-button
+              >
+            </template>
           </ShopCard>
         </li>
         <div v-else>暂无数据</div>
@@ -109,11 +109,11 @@
   }
 
   const linkOrder = () => {
-    router.push({ path: '/market/order'})
+    router.push({ path: '/market/order' })
   }
 
   const linkShopCar = () => {
-    router.push({ path: '/market/shopCar'})
+    router.push({ path: '/market/shopCar' })
   }
 
   const hadleUserManage = (item: { id: number }) => {
