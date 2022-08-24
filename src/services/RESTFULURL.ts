@@ -124,9 +124,8 @@ export default {
   },
   market: {
     merchandise: market + '​/approval​/merchandise', //商品上架审核
-    create: market + '​/create', //创建市场
-    
-    createOrderByStaging: market + '/create/order/by/staging', //购物车发起订单
+    create: market + '/create', //创建市场
+    createOrderByStaging: market + '​/create​/order​/by​/staging', //购物车发起订单
     delete: market + '​/delete', //删除市场
     deleteStaging: market + '/delete/staging', //移除暂存区/购物车
     joinStaging: market + '​/join/staging', //加入暂存区/购物车
@@ -197,6 +196,7 @@ export default {
     marketDel: appstore + '/delete',
     merchandise: appstore + '/search/merchandise',
     member: appstore + '/search/member',
+    create: appstore + '/create',
     removeMemver: appstore + '/remove/member'
   }
   //others

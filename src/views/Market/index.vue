@@ -9,8 +9,10 @@
       <ul class="box-ul">
         <p class="box-ul-title">我的应用</p>
         <li class="app-card">
-          <ShopCard v-for="item in state.myAppList" :info="item" :key="item.id" :overId="item.id">
-            <el-dropdown @command="(value) => handleCommand('own', value, item)" placement="top">
+          <MarketCreate :info="add" @myclick="addApp" />
+          <ShopCard v-for="item in state.myAppList" :info="item" :key="item.id">
+            <!-- <template> -->
+            <el-dropdown @command="(value) => handleCommand('own', value)" placement="top">
               <el-button class="btn" type="primary" link small> 设置 </el-button>
               <template #dropdown>
                 <el-dropdown-menu>
@@ -24,7 +26,11 @@
             <el-button class="btn" link small @click="deleteApp(item)">移除应用</el-button>
           </ShopCard>
         </li>
-        <el-pagination style="justify-content: end" layout="prev, pager, next" :total="state.myAppToast" />
+        <el-pagination
+          style="justify-content: end"
+          layout="prev, pager, next"
+          :total="state.myAppToast"
+        />
       </ul>
       <ul class="box-ul">
         <p class="box-ul-title">其他应用</p>
@@ -84,6 +90,8 @@
   import { baseData, actionOptionsOfOther, actionOptionsOfOwn } from './config'
   import { useRouter } from 'vue-router'
   import type { FormInstance, FormRules } from 'element-plus'
+  import MarketCreate from './components/marketCreate.vue'
+  const add: string = '从应用市场中添加'
   // 注册页面实例
   const registerFormRef = ref<FormInstance>()
   const router = useRouter()
@@ -213,8 +221,11 @@
     if (!formEl) return
     formEl.resetFields()
   }
+  const addApp = () => {
+    console.log('aaa')
+  }
   const linkOrder = () => {
-    router.push({ path: '/market/order'})
+    router.push({ path: '/market/order' })
   }
   // 路由跳转
   const GoPage = (path: string) => {
