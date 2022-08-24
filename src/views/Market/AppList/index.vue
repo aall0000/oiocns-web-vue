@@ -6,7 +6,7 @@
     <div class="market-content box">
       <ul class="box-ul">
         <p class="box-ul-title">我的市场</p>
-        <li class="app-card" v-if="state.myMarket.length !== 0">
+        <li class="app-card" v-if="state.myMarket?.length !== 0">
           <ShopCard
             v-for="item in state.myMarket"
             :info="item"
@@ -26,7 +26,7 @@
         </li>
         <div v-else>暂无数据</div>
         <el-pagination
-          v-if="state.myMarket.length !== 0"
+          v-if="state.myMarket?.length !== 0"
           @current-change="handleCurrentChange"
           v-bind="state.pageMy"
           :pager-count="5"
@@ -35,7 +35,7 @@
       </ul>
       <ul class="box-ul">
         <p class="box-ul-title">我加入的市场</p>
-        <li class="app-card" v-if="state.joinMarket.length !== 0">
+        <li class="app-card" v-if="state.joinMarket?.length !== 0">
           <ShopCard v-for="item in state.joinMarket" :info="item" :key="item.id">
             <!-- <template #footer> -->
             <el-button class="btn" type="primary" link small>退出市场</el-button>
