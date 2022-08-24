@@ -39,6 +39,7 @@
       <ul class="box-ul">
         <p class="box-ul-title">我加入的市场</p>
         <li class="app-card" v-if="state.joinMarket?.length !== 0">
+          <MarketCreate :info="add" @click="dialogVisible = true" />
           <ShopCard v-for="item in state.joinMarket" :info="item" :key="item.id" :overId="item.id">
             <!-- <template #footer> -->
             <el-button class="btn" type="primary" link small>退出市场</el-button>
@@ -84,7 +85,7 @@
   import ShopCard from '../components/shopCard.vue'
   import { useRouter } from 'vue-router'
   import $services from '@/services'
-  import { ElMessage } from 'element-plus'
+  import { ElMessage, ElMessageBox } from 'element-plus'
   import MarketCreate from '../components/marketCreate.vue'
   import { useUserStore } from '@/store/user'
   const router = useRouter()
