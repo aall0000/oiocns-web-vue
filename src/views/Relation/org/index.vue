@@ -8,7 +8,6 @@
       </div>
       <div>
         <el-table
-          class="box-table"
           :data="orgTree"
           stripe
           row-key="id"
@@ -16,6 +15,7 @@
           lazy
           :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
           default-expand-all
+          class="table"
         >
           <el-table-column type="selection" width="50"/>
           <el-table-column prop="label" label="名称" width="330"/>
@@ -28,7 +28,7 @@
           <el-table-column prop="data.teamRemark" label="描述" />
           <el-table-column label="操作" width="150">
             <template #default="{ row }">
-                <div class="cell-box"> 
+                <div class="cell-box">
                   <el-dropdown :disabled="row.data.typeName =='工作组'">
                 <el-button link type="primary" size="small" :disabled="row.data.typeName =='工作组'">新增</el-button>
                 <template #dropdown>
@@ -328,10 +328,7 @@
       editDeptDialogVisible.value = true;
     }
     const parentIds = getParentIds(row, []).reverse();
-      const obj = row.data;
-    console.log("parentId===", obj.parentId)
-    console.log("parentIds===", parentIds)
-
+    const obj = row.data;
     formData.value.parentIds = parentIds
 
     formData.value = {...formData.value, ...obj}
@@ -431,10 +428,8 @@
     if (parentIds.length > 0) {
       parentId = parentIds[parentIds.length - 1]
     }
-    console.log("parentIds===", parentIds)
-    console.log("parentId===", parentId)
     formData.value.parentId = parentId
-    $services.company.updateDepartment({                 // Todo  可能接口bug
+    $services.company.updateDepartment({
       data: formData.value
     }).then((res: ResultType) => {
       if (res.success) {
@@ -548,10 +543,9 @@
     }
   }
 
-  .page-pagination {
-    padding: 10px;
-    display: flex;
-    justify-content: end;
+  .table {
+    width: 100%;
+    height: calc(100vh - 150px);
   }
 }
 </style>

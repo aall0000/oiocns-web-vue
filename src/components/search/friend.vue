@@ -168,9 +168,7 @@
 </script>
 
 <style lang="scss" scoped>
-  :deep(.el-table__header-wrapper .el-checkbox){
-    display: none;
-  }
+ 
   .foot{
     display: flex;
     width: 100%;

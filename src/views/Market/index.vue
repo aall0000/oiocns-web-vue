@@ -3,7 +3,7 @@
     <el-card shadow="always" class="market-head flex">
       <el-button type="primary" @click="registerVisible = true">注册</el-button>
       <el-button type="primary">订单</el-button>
-      <el-button type="primary" @click="goMarket">市场</el-button>
+      <el-button type="primary" @click="GoPage('/market/markList')">市场</el-button>
     </el-card>
     <div class="market-content box">
       <ul class="box-ul">
@@ -116,8 +116,8 @@ version: "1" -->
   })
 
   // 获取我的应用列表
-  const getPageList =async () => {
-    const { data, success } =await API.product.searchOwnProduct({
+  const getPageList = async () => {
+    const { data, success } = await API.product.searchOwnProduct({
       data: { offset: 0, limit: 10, filter: '' }
     })
     if (success) {
@@ -196,7 +196,7 @@ version: "1" -->
         message: '请输入应用编码',
         trigger: 'blur'
       }
-    ],
+    ]
   })
   // 重置表单
   const resetForm = (formEl: FormInstance) => {
@@ -206,8 +206,8 @@ version: "1" -->
   }
 
   // 路由跳转
-  const goMarket = () => {
-    router.push({ path: '/market/markList' })
+  const GoPage = (path: string) => {
+    router.push(path)
   }
 </script>
 

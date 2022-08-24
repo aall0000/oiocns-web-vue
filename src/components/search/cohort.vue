@@ -146,6 +146,7 @@
   const options = ref<any>({
     checkBox: true,
     order: true,
+    selectLimit:1,
     defaultSort: { prop: 'createTime', order: 'descending' },
     treeProps: {
     children: 'children',
