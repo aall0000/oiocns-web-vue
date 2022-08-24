@@ -5,6 +5,7 @@
       :tableName="tableName"
       :tableData="state.tableData"
       :tableHead="state.tableHead"
+      @handleUpdate="handleUpdate"
     >
       <template #unit="scope">
         <div>{{ scope.row.groupName }}</div>
@@ -63,6 +64,18 @@
   onMounted(() => {
     getData()
   })
+
+  type page = {
+    currentPage: number
+    layout: string
+    pageSize: number
+    pageSizes: Array<number>
+    total: number
+  }
+
+  const handleUpdate = (val: page) => {
+    getData()
+  }
 
   const getData = () => {
     $services.appstore
