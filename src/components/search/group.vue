@@ -1,6 +1,6 @@
 <template>
 
-  <el-dialog v-model="dialogVisible" append-to-body	:before-close="closeDialog" title="搜索人员 " width="60%">
+  <el-dialog v-model="dialogVisible" append-to-body	:before-close="closeDialog" title="搜索集团" width="60%">
     <el-input v-model="value" @input="remoteMethod" placeholder="请输入" />
     <diytab
       ref="diyTable"
@@ -11,6 +11,9 @@
       @selectionChange="selectionChange"
       :tableHead="tableHead"
     >
+     <template #remark="scope">
+      <div class="remark-box"> {{ scope.row.remark }}</div>
+    </template>
     </diytab>
     <div class="foot">
         <el-button type="primary" @click="checkFriend">确定</el-button>
@@ -57,8 +60,8 @@
     
     if (value.value) {
       // loading.value = true
-      $services.person
-        .searchPersons({
+      $services.company
+        .searchGroups({
           data: {
             filter: value.value,
             offset: (pageStore.currentPage - 1) * pageStore.pageSize,
@@ -126,34 +129,17 @@
   }
   const tableHead = ref([
     {
-      prop: 'code',
-      label: '账号',
-      width: '100'
-    },
-    {
       prop: 'name',
-      label: '昵称',
-      width: '100',
+      label: '单位名称',
+      width: '200',
       name: 'name'
     },
-
     {
-      prop: 'trueName',
-      label: '姓名',
-      width: '150',
-      name: 'trueName'
-    },
-    {
-      prop: 'teamCode',
-      label: '手机号',
-      width: '150',
-      name: 'teamCode'
-    },
-    {
+      type: 'slot',
       prop: 'remark',
-      label: '座右铭',
-      name: 'reamrk'
-    }
+      label: '集团简介',
+      name: 'remark'
+    },
   ])
   const options = ref<any>({
     checkBox: true,
@@ -162,19 +148,23 @@
     defaultSort: { prop: 'createTime', order: 'descending' },
     treeProps: {
       children: 'children',
-      hasChildren: 'hasChildren',
+      hasChildren: 'hasChildren'
     }
-  })
+})
 </script>
-
-<style lang="scss" scoped>
-  :deep(.el-table__header-wrapper .el-checkbox){
-    display: none;
+<style>
+  ::v-deep .el-checkbox{
+    display: none !important;
   }
+</style>
+<style lang="scss" scoped>
   .foot{
     display: flex;
     width: 100%;
     margin-top: 30px;
     justify-content: center;
+  }
+  .remark-box{
+    overflow:hidden; text-overflow:ellipsis; display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2;
   }
 </style>

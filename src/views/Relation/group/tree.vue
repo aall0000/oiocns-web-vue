@@ -7,7 +7,7 @@
       </el-select>
     </div>
 
-    <div>
+    <div class="search-wrap">
       <el-input class="search" v-model="filterText" placeholder="搜索集团">
         <template #suffix>
           <el-icon class="el-input__icon">
@@ -15,10 +15,13 @@
           </el-icon>
         </template>
       </el-input>
-
-      <el-icon color="#154ad8" :size="20" @click="createGroupDialogVisible = true">
-        <CirclePlus />
-      </el-icon>
+      <li class="con tree-btns">
+        <div class="title">集团管理</div>
+        <el-icon color="#154ad8" :size="20" @click="createGroupDialogVisible = true">
+          <CirclePlus />
+        </el-icon>
+      </li>
+     
     </div>
 
     <div class="tree">
@@ -230,7 +233,15 @@ watch(filterText, (val) => {
 .card {
   height: 100%;
 }
+.tree-btns {
+  padding: 10px 0;
+  display: flex;
+  justify-content: space-between;
+}
 
+.search-wrap{
+  margin-top: 10px;
+}
 .search {
   font-size: 12px;
   .el-input__inner {
