@@ -4,9 +4,9 @@
       <el-tab-pane label="人员列表" name="user">
         <User :tabHeight='tabHeight' :selectItem="selectItem"></User>
       </el-tab-pane>
-      <el-tab-pane label="身份列表" name="identity">
+      <!-- <el-tab-pane label="身份列表" name="identity">
         <Identity :selectItem="selectItem"></Identity>
-      </el-tab-pane>
+      </el-tab-pane> -->
     </el-tabs>
   </div>
 </template>
