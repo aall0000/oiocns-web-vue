@@ -3,6 +3,7 @@
       <div class="header">
         <div class="title">身份管理</div>
         <div class="box-btns">
+          <el-button small link type="primary" @click="goback">返回</el-button>
           <el-button small link type="primary" @click="dialogVisible = true">添加身份</el-button>
         </div>
       </div>
@@ -178,6 +179,10 @@ const addIdentity = () => {
     })
 }
 
+// 返回
+const goback = () => {
+  router.go(-1)
+}
 
 </script>
 
