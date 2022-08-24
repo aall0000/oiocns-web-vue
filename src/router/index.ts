@@ -110,7 +110,7 @@ const mainRouter: RouteRecordRaw[] = [
       },
       {
         path: '/relation/authority',
-        name: 'org',
+        name: 'authority',
         component: () => import('@/views/Relation/authority/index.vue'),
         meta: {
           title: '角色管理'
@@ -118,7 +118,7 @@ const mainRouter: RouteRecordRaw[] = [
       },
       {
         path: '/relation/identity',
-        name: 'org',
+        name: 'identity',
         component: () => import('@/views/Relation/identity/index.vue'),
         meta: {
           title: '身份管理'
