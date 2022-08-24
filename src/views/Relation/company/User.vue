@@ -12,29 +12,8 @@
           </div>
         </div>
       </div>
-
-      <!-- <el-table
-        :data="users"
-        stripe
-        :border="true"
-        style="width: 100%; margin: 0 auto"
-        height="280px"
-      >
-        <el-table-column type="selection" />
-        <el-table-column prop="code" label="账号" />
-        <el-table-column prop="name" label="姓名" />
-        <el-table-column prop="team.code" label="手机号" />
-        <el-table-column label="操作" width="100">
-
-        </el-table-column>
-      </el-table> -->
-
-      <!-- <el-pagination class="page-pagination" @size-change="(e: any) => handlePaginationChange(e, 'limit')"
-        @current-change="(e: any) => handlePaginationChange(e, 'current')" background
-        :page-sizes="[10, 20, 50, 100]" v-model:currentPage="pagination.current" v-model:page-size="pagination.limit"
-        layout="total,prev, pager, next," :total="pageStore.total" /> -->
-       <div :style="{height:tabHeight-35+'px'}">
-         <div style="width: 100%; height: 100%">
+      <div :style="{height:tabHeight-35+'px'}">
+        <div style="width: 100%; height: 100%">
           <DiyTable
             ref="diyTable"
             :hasTableHead="true"
@@ -52,7 +31,7 @@
             </template>
           </DiyTable>
         </div>
-       </div>
+      </div>
     </div>
 
   <el-dialog v-model="pullPersonDialog" @close="hidePullPreson" title="添加人员到单位" width="30%">
@@ -182,8 +161,8 @@ const loading = ref<boolean>(false)
 // 表格展示数据
 const pageStore = reactive({
   tableData: [],
-  currentPage:1,
-  pageSize:20,
+  currentPage: 1,
+  pageSize: 20,
   total: 0
 })
 
@@ -331,9 +310,6 @@ const removeFrom = (row: any) =>{
   .catch(() => {
     console.log('移除成功!')
   })
-
-
-
 }
 
 // 加载公司所有用户
@@ -343,7 +319,7 @@ const getCompanyUsers = (filter?: string)=>{
     offset: (pageStore.currentPage-1)*pageStore.pageSize,
     limit: pageStore.pageSize
   }
-  if(filter){
+  if(filter && filter.trim() != ''){
     data = {...data, ...{filter}}
   }
   if(company.value){
@@ -352,7 +328,7 @@ const getCompanyUsers = (filter?: string)=>{
     }).then((res: ResultType) => {
       if (res.code == 200 && res.success) {
         // 去除已分配到当前部门或者工作组的用户
-        let us = res.data.result
+        let us = res.data.result || []
         let userIds =  []
         if(users.value){
           userIds = users.value.map((u: any) => u.id);
@@ -394,7 +370,6 @@ const assignSearchChange = (e: string)=>{
 
 // 分配人员
 const assign = () => {
-  console.log("assignTable", assignTable?.value?.state?.multipleSelection)
   const userIds = assignTable?.value?.state?.multipleSelection.map((u: any) => u.id);
   if(props.selectItem?.data?.typeName == '部门'){
     assignDepartment(props.selectItem.id, userIds)

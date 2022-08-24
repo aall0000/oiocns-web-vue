@@ -4,7 +4,7 @@
     <div class="operate">
       <div class="operate-btns">
         <div class="edit">
-          <el-button type="primary" @click="cohortDialog = true">添加群</el-button>
+          <el-button type="primary" @click="friendShow">添加群</el-button>
           <el-button type="primary" @click="addQun = true">创建群</el-button>
         </div>
       </div>
@@ -27,19 +27,7 @@
     <!-- <div class="page-pagination">
       <el-pagination small background layout="prev, pager, next" :total="50" class="mt-4" />
     </div> -->
-    <el-dialog v-model="cohortDialog" title='添加群' width="30%">
-      <el-select v-model="value" filterable remote reserve-keyword
-        :placeholder="'请输入要查找的群'" :remote-method="remoteMethod" :loading="loading">
-        <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
-      </el-select>
-      <template #footer>
-        <span class="dialog-footer">
-          <el-button @click="cohortDialog = false">取消</el-button>
-          <el-button type="primary" @click="applyJoinCohort">确认</el-button>
-        </span>
-      </template>
-    </el-dialog>
-
+    <searchCohort  v-if="friendDialog" @closeDialog="closeDialog"  @checkFriend='checkFriend'/>
     <el-dialog v-model="addQun" title="创建群" width="30%">
       <el-form-item label="群名称">
         <el-input v-model="qunName" placeholder="请输入群名称" clearable />
@@ -63,7 +51,8 @@ import $services from '@/services'
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { useUserStore } from '@/store/user'
-  
+import searchCohort from '@/components/search/cohort.vue'
+
 const { queryInfo } = useUserStore()
 const myId = queryInfo.id
 
@@ -95,12 +84,32 @@ const getQunList = async () => {
     )
   }
 }
-
-const applyJoinCohort = () => {
+const friendDialog = ref<boolean>(false)
+const closeDialog = ()=>{
+   friendDialog.value = false;
+}
+const friendShow = ()=>{
+  friendDialog.value = true;
+}
+type arrList = {
+  id:string
+}
+const checkFriend=(val:any)=>{
+  if(val.value.length>0){
+    let arr:Array<arrList> =[]
+    val.value.forEach((element:any) => {
+      arr.push(element.id)
+    });
+    applyJoinCohort(arr)
+  }else{
+    friendDialog.value = false;
+  }
+}
+const applyJoinCohort = (arr:Array<arrList>) => {
   $services.cohort
     .applyJoin({
       data: {
-        id: value.value
+        id: arr.join(',')
       }
     })
     .then((res: ResultType) => {
@@ -109,12 +118,8 @@ const applyJoinCohort = () => {
           message: '申请成功',
           type: 'warning'
         })
-        cohortDialog.value = false
-      } else {
-        ElMessage({
-          message: res.msg,
-          type: 'warning'
-        })
+        friendDialog.value = false
+        getQunList()
       }
     })
 }
@@ -133,11 +138,6 @@ const exitCohort = (id: string) =>{
           type: 'warning'
         })
         getQunList()
-      } else {
-        ElMessage({
-          message: res.msg,
-          type: 'warning'
-        })
       }
     })
 }
@@ -157,11 +157,6 @@ const deleteCohort = (id: string) => {
           type: 'warning'
         })
         getQunList()
-      } else {
-        ElMessage({
-          message: res.msg,
-          type: 'warning'
-        })
       }
     })
 }
@@ -188,61 +183,8 @@ const createCohort = () => {
         })
         addQun.value = false
         getQunList()
-      } else {
-        ElMessage({
-          message: res.msg,
-          type: 'warning'
-        })
       }
     })
-}
-interface ListItem {
-  value: string
-  label: string
-}
-const options = ref<ListItem[]>([])
-const value = ref('')
-const loading = ref(false)
-
-const remoteMethod = (query: string) => {
-  if (query) {
-    loading.value = true
-    $services.cohort
-      .searchCohorts({
-        data: {
-          text: query,
-          offset: 0,
-          limit: 10
-        }
-      })
-      .then((res: ResultType) => {
-        if (res.code == 200) {
-          let arr: { value: any; label: any }[] = []
-          if (res.data.result != undefined) {
-            let states = res.data.result
-            states.forEach((el: any) => {
-              let obj = {
-                value: el.id,
-                label: el.name
-              }
-              arr.push(obj)
-            })
-            options.value = arr
-            loading.value = false
-          } else {
-            options.value = arr
-            loading.value = false
-          }
-        } else {
-          ElMessage({
-            message: res.msg,
-            type: 'warning'
-          })
-        }
-      })
-  } else {
-    options.value = []
-  }
 }
 </script>
 <style lang="scss" scoped>
@@ -262,4 +204,5 @@ const remoteMethod = (query: string) => {
     }
   }
 }
+
 </style>

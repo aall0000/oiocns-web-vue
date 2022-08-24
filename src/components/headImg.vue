@@ -40,6 +40,7 @@ import { computed } from 'vue';
 
   .user-head-img-wrap {
     width: v-bind(imgWidthStyle);
+    min-width: v-bind(imgWidthStyle);
     height: v-bind(imgWidthStyle);
     margin-right: 10px;
 

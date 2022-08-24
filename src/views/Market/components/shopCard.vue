@@ -19,7 +19,7 @@
     </div>
     <!-- v-show="hoverItem === info.id" -->
     <div class="app-card-item-footer" v-show="hoverItem === info.id">
-      <slot name="footer" />
+      <slot />
     </div>
   </el-card>
 </template>
@@ -31,14 +31,10 @@
   const state: { hoverItem: string } = reactive({ hoverItem: '' })
   type shopInfoType = {
     key?: string
-    info: {
-      name: string
-      remark: string
-      url?: string
-      id?: string
-    }
+    info: MarketShopType
   }
   const props = defineProps<shopInfoType>()
+console.log('cscs',props.info);
 
   const { info } = props
   const { hoverItem } = toRefs(state)
