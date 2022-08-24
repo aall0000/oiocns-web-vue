@@ -30,7 +30,7 @@
   const state: { hoverItem: string } = reactive({ hoverItem: '' })
   type shopInfoType = {
     key?: string
-    info: MarketShopType
+    info: ProductType
     overId?: string //当前鼠标移入id
   }
   const props = defineProps<shopInfoType>()

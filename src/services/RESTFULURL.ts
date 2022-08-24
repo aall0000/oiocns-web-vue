@@ -6,7 +6,6 @@ const history = '/orginone/orgchat/history'
 const market = '/orginone/appstore/market'
 const order = '/orginone/appstore/order'
 const product = '/orginone/appstore/product'
-const msg = '/orginone/orgchat/real'
 const appstore = '/orginone/appstore/market'
 export default {
   // 人员接口
@@ -130,7 +129,7 @@ export default {
     deleteStaging: market + '/delete/staging', //移除暂存区/购物车
     joinStaging: market + '​/join/staging', //加入暂存区/购物车
     publishMerchandise: market + '​/publish/merchandise', //上架商品
-    searchAll: market + '​/search/all', //查询所有市场
+    searchAll: market +'/search/all', //查询所有市场
     searchManager: market + '​/search/manager', //查询自己管理的市场
     searchMerchandise: market + '​/search/merchandise', //查询市场中所有商品
     searchMerchandiseApply: market + '​/search/merchandise/apply', //查询产品上架申请
