@@ -10,9 +10,9 @@
         <p class="box-ul-title">我的应用</p>
         <li class="app-card">
           <MarketCreate :info="add" @myclick="addApp" />
-          <ShopCard v-for="item in state.myAppList" :info="item" :key="item.id">
+          <ShopCard v-for="item in state.myAppList" :info="item" :key="item.id" :over-id="item.id">
             <!-- <template> -->
-            <el-dropdown @command="(value) => handleCommand('own', value)" placement="top">
+            <el-dropdown @command="(value) => handleCommand('own', value,item)" placement="top">
               <el-button class="btn" type="primary" link small> 设置 </el-button>
               <template #dropdown>
                 <el-dropdown-menu>

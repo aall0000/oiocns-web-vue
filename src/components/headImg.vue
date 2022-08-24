@@ -31,8 +31,6 @@
     imgWidth: 40
   })
   const { name, url, label, limit, isSquare, imgWidth } = props
-  console.log('isSquare', props, isSquare)
-
   const imgWidthStyle = computed(() => {
     return imgWidth + 'px'
   })
