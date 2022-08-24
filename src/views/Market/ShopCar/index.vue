@@ -42,7 +42,7 @@
                     :label="item.id"
                     @change="checkedChange(item)"
                     >{{ item.merchandise.caption }}</el-checkbox
-                  >{{  '市场名称' || item.merchandise.caption }}
+                  >{{   item.market.name }}
                   <div>
                     <!-- 删除按钮 -->
                     <el-button type="text" icon="el-icon-delete" @click="deleteStaging(item.id)" />

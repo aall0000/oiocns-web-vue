@@ -139,11 +139,11 @@ export default {
     updateMarket: market + '​/update/market' //更新市场
   },
   order: {
-    orderConfirm: order + '/confirm/detail', //确认订单详情(买方确认收货)
+    orderConfirm: order + '/confirm', //确认订单详情(买方确认收货)
     create: order + '/create', //创建订单
     createPay: order + '/create/pay', //创建支付
     delete: order + '/delete', //删除订单
-    deliverMerchandise: order + '/deliver/merchandise', //交付订单详情中的商品
+    deliverMerchandise: order + '/deliver', //交付订单详情中的商品
     searchBuyList: order + '/search/buy/list', //买方查询购买订单列表
     searchDetailList: order + '/search/detail/list', //查询订单详情信息
     searchMerchandiseSellList: order + '​/search​/merchandise​/sell​/list', //卖方查询指定商品售卖订单列表

@@ -496,7 +496,7 @@ const pay = async (id: string, price: number, paymentType: string) => {
   await $services.order
     .createPay({
       data: {
-        orderId: id,
+        orderId: parseInt(id),
         price: price,
         paymentType: paymentType
       }
