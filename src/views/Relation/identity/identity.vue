@@ -15,10 +15,6 @@
             </el-icon>
           </li>
         </div>
-        <el-menu-item>身份1</el-menu-item>
-        <el-menu-item>身份2</el-menu-item>
-        <el-menu-item>身份3</el-menu-item>
-        <el-menu-item>身份4</el-menu-item>
       </el-menu>
   </div>
 </template>
