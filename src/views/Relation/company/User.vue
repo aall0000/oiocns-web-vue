@@ -103,6 +103,7 @@
         expandAll: false,
         checkBox: true,
         order: true,
+        selectLimit:0,
         noPage: false
       }"
       @handleUpdate="assignTableChange"

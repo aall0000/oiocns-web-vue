@@ -72,12 +72,6 @@
               border-bottom: 1px solid #f0f2f5;
             "
           >
-            <div style="height: 50px; margin-top: 5px">
-              <headImg
-                :name="item.name.slice(0, 1)" :label="''"
-                style="transform: scale(0.7, 0.7); border-radius: 50px; font-size: 19px"
-              ></headImg>
-            </div>
             <div style="height: 50px; margin-bottom: 5px">
               <p style="height: 25px; font-weight: 600; overflow: hidden; text-overflow: ellipsis"
                 >{{ item.label }}({{ item.name }})</p
@@ -122,7 +116,6 @@
   import { storeToRefs } from 'pinia'
   import { ElMessage } from 'element-plus'
   import { useRouter } from 'vue-router'
-  import headImg from '@/views/Chat/components/headImg.vue'
   const store = useUserStore()
   const router = useRouter()
   const { queryInfo } = storeToRefs(store)
