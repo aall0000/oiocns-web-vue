@@ -57,7 +57,6 @@
   // 获取单位树点击的信息
   const selectItemChange = (data: any) => {
     selectItem.value = data;
-    const obj = data.data
   };
   defineExpose({ selectItemChange });
 

@@ -14,11 +14,13 @@
             @click="gotoApp(item)"
           >
             <template #footer>
-              <el-button class="btn" type="primary" link small @click="hadleClick(item)"
-                >退出市场</el-button
+              <el-button class="btn" type="primary" link small @click.stop="hadleClick(item)"
+                >删除市场</el-button
               >
               <el-divider direction="vertical" />
-              <el-button class="btn" link small>用户管理</el-button>
+              <el-button class="btn" link small @click.stop="hadleUserManage(item)"
+                >用户管理</el-button
+              >
             </template>
           </ShopCard>
         </li>
@@ -37,15 +39,15 @@
           <ShopCard v-for="item in state.joinMarket" :info="item" :key="item.id">
             <template #footer>
               <el-button class="btn" type="primary" link small>退出市场</el-button>
-              <el-divider direction="vertical" />
-              <el-button class="btn" link small>用户管理</el-button>
+              <!-- <el-divider direction="vertical" />
+              <el-button class="btn" link small>用户管理</el-button> -->
             </template>
           </ShopCard>
         </li>
         <div v-else> 暂无数据 </div>
         <el-pagination
           v-if="state.joinMarket.length !== 0"
-          @current-change="handleCurrentChange"
+          @current-change="handleCurrentJoinChange"
           v-bind="state.pageJoin"
           :pager-count="5"
           style="text-align: right; margin-top: 10px; justify-content: end"
@@ -56,28 +58,36 @@
 </template>
 
 <script setup lang="ts">
-  import { reactive, onMounted } from 'vue'
+  import { reactive, onMounted, computed } from 'vue'
   import ShopCard from '../components/shopCard.vue'
   import { useRouter } from 'vue-router'
   import $services from '@/services'
+  import { ElMessage } from 'element-plus'
 
   const router = useRouter()
+
+  const handleCurrentMy: any = computed(() => {
+    return (state.pageMy.currentPage - 1) * state.pageMy.pageSize
+  })
+  const handleCurrentJoin: any = computed(() => {
+    return (state.pageJoin.currentPage - 1) * state.pageJoin.pageSize
+  })
 
   const state = reactive({
     myMarket: [],
     joinMarket: [],
     pageMy: {
       total: 0, // 总条数
-      currentPage: 0, // 当前页
-      pageSize: 20, // 每页条数
-      pageSizes: [20, 30, 50], // 分页数量列表
+      currentPage: 1, // 当前页
+      current: handleCurrentMy,
+      pageSize: 12, // 每页条数
       layout: 'total, prev, pager, next'
     },
     pageJoin: {
       total: 0, // 总条数
-      currentPage: 0, // 当前页
-      pageSize: 20, // 每页条数
-      pageSizes: [20, 30, 50], // 分页数量列表
+      currentPage: 1, // 当前页
+      current: handleCurrentJoin,
+      pageSize: 12, // 每页条数
       layout: 'total, prev, pager, next'
     }
   })
@@ -87,8 +97,19 @@
     getJoinMarketData()
   })
 
-  const handleSizeChange = () => {}
-  const handleCurrentChange = () => {}
+  const handleCurrentChange = (val: number) => {
+    state.pageMy.currentPage = val
+    getMyMarketData()
+    console.log(val)
+  }
+  const handleCurrentJoinChange = (val: number) => {
+    state.pageJoin.currentPage = val
+    getJoinMarketData()
+  }
+
+  const hadleUserManage = (item: { id: number }) => {
+    router.push({ path: '/market/userManage', query: { data: item.id } })
+  }
 
   const gotoApp = (item: { id: string }) => {
     router.push({ path: '/market/appList', query: { data: item.id } })
@@ -98,8 +119,8 @@
     $services.appstore
       .searchManager({
         data: {
-          offset: state.pageMy.currentPage,
-          limit: 10,
+          offset: state.pageMy.current,
+          limit: state.pageMy.pageSize,
           filter: ''
         }
       })
@@ -114,8 +135,8 @@
     $services.appstore
       .searchOwn({
         data: {
-          offset: state.pageJoin.currentPage,
-          limit: 10,
+          offset: state.pageJoin.current,
+          limit: state.pageJoin.pageSize,
           filter: ''
         }
       })
@@ -128,7 +149,21 @@
   }
 
   const hadleClick = (item: any) => {
-    console.log('村上春树', item.name)
+    $services.appstore
+      .marketDel({
+        data: {
+          id: item.id
+        }
+      })
+      .then((res: ResultType) => {
+        if (res.code == 200) {
+          getMyMarketData()
+          ElMessage({
+            message: '删除成功',
+            type: 'success'
+          })
+        }
+      })
   }
 </script>
 
