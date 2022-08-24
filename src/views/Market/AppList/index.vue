@@ -3,13 +3,12 @@
     <el-card shadow="always" class="market-head flex">
       <el-button type="primary" @click.stop="linkOrder()">我的订单</el-button>
       <el-button type="primary" @click.stop="linkShopCar()">购物车</el-button>
-      <el-button type="primary" @click.stop="createMarket">创建市场</el-button>
-      <el-button type="primary" @click.stop="joinMarket">加入市场</el-button>
     </el-card>
     <div class="market-content box">
       <ul class="box-ul">
         <p class="box-ul-title">我的市场</p>
-        <li class="app-card" v-if="state.myMarket?.length !== 0">
+        <li class="app-card" v-if="state.myMarket.length !== 0">
+          <MarketCreate :info="add" @click="dialogVisible = true" />
           <ShopCard
             v-for="item in state.myMarket"
             :info="item"
@@ -17,15 +16,15 @@
             :overId="item.id"
             @click="gotoApp(item)"
           >
-            <!-- <template #footer> -->
-            <el-button class="btn" type="primary" link small @click.stop="hadleClick(item)"
-              >删除市场</el-button
-            >
-            <el-divider direction="vertical" />
-            <el-button class="btn" link small @click.stop="hadleUserManage(item)"
-              >用户管理</el-button
-            >
-            <!-- </template> -->
+            <template>
+              <el-button class="btn" type="primary" link small @click.stop="hadleClick(item)"
+                >删除市场</el-button
+              >
+              <el-divider direction="vertical" />
+              <el-button class="btn" link small @click.stop="hadleUserManage(item)"
+                >用户管理</el-button
+              >
+            </template>
           </ShopCard>
         </li>
         <div v-else>暂无数据</div>
@@ -66,25 +65,45 @@
         />
       </ul>
     </div>
+    <el-dialog v-model="dialogVisible" title="提示" width="30%">
+      <el-form :model="form" label-width="120px">
+        <el-form-item label="市场名称">
+          <el-input v-model="form.name" style="width: 80%" />
+        </el-form-item>
+        <el-form-item label="市场编码">
+          <el-input v-model="form.code" style="width: 80%" />
+        </el-form-item>
+        <el-form-item label="市场简介">
+          <el-input v-model="form.remark" style="width: 80%" />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="dialogVisible = false">取消</el-button>
+          <el-button type="primary" @click="create">确认</el-button>
+        </span>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
-  import { reactive, onMounted, computed } from 'vue'
+  import { reactive, onMounted, computed, ref } from 'vue'
   import ShopCard from '../components/shopCard.vue'
   import { useRouter } from 'vue-router'
   import $services from '@/services'
-  import { ElMessage, ElMessageBox } from 'element-plus'
-
+  import { ElMessage } from 'element-plus'
+  import MarketCreate from '../components/marketCreate.vue'
+  import { useUserStore } from '@/store/user'
   const router = useRouter()
-
+  const store = useUserStore()
   const handleCurrentMy: any = computed(() => {
     return (state.pageMy.currentPage - 1) * state.pageMy.pageSize
   })
   const handleCurrentJoin: any = computed(() => {
     return (state.pageJoin.currentPage - 1) * state.pageJoin.pageSize
   })
-
+  const add: string = '创建市场'
   const state = reactive({
     myMarket: [],
     joinMarket: [],
@@ -219,6 +238,37 @@
           })
       })
       .catch(() => {})
+  }
+  const dialogVisible = ref(false)
+  const form = reactive({
+    name: '',
+    code: '',
+    samrId: '',
+    remark: '',
+    authId: '',
+    public: true
+  })
+  //创建市场
+  const create = () => {
+    $services.appstore
+      .create({
+        data: {
+          name: form.name,
+          code: form.code,
+          samrId: store.queryInfo.id,
+          remark: form.remark,
+          authId: store.queryInfo.team.authId,
+          public: form.public
+        }
+      })
+      .then((res: ResultType) => {
+        if (res.success) {
+          ElMessage({
+            message: '删除成功',
+            type: 'success'
+          })
+        }
+      })
   }
 </script>
 

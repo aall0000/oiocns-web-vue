@@ -13,7 +13,7 @@
           row-key="id"
           :border="true"
           lazy
-          :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
+          :tree-props="{ children: 'nodes'}"
           default-expand-all
           class="table"
         >

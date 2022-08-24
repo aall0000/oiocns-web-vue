@@ -33,7 +33,7 @@
           <div :class="['con-body', props.active.spaceId === item.id && props.active.id === child.id ? 'active' : '']"
             v-for="child in item.chats.filter(v=>v?.count>0)" :key="child.id+child.name" v-else
             @contextmenu.prevent.stop="(e: MouseEvent) => handleContextClick(e, child)">
-            <HeadImg :name="child.name" :label="child.label"/>
+            <HeadImg :name="child.name" :label="child.label" />
             <div class="group-con-dot" v-show="child.count > 0">
               <span>{{ child.count }}</span>
             </div>
