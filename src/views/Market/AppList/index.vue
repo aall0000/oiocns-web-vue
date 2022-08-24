@@ -1,7 +1,8 @@
 <template>
   <div class="market-layout">
     <el-card shadow="always" class="market-head flex">
-      <el-button type="primary">购物车</el-button>
+      <el-button type="primary" @click.stop="linkOrder()">我的订单</el-button>
+      <el-button type="primary" @click.stop="linkShopCar()">购物车</el-button>
     </el-card>
     <div class="market-content box">
       <ul class="box-ul">
@@ -12,22 +13,23 @@
             v-for="item in state.myMarket"
             :info="item"
             :key="item.id"
+            :overId="item.id"
             @click="gotoApp(item)"
           >
-            <template #footer>
-              <el-button class="btn" type="primary" link small @click.stop="hadleClick(item)"
-                >删除市场</el-button
-              >
-              <el-divider direction="vertical" />
-              <el-button class="btn" link small @click.stop="hadleUserManage(item)"
-                >用户管理</el-button
-              >
-            </template>
+            <!-- <template #footer> -->
+            <el-button class="btn" type="primary" link small @click.stop="hadleClick(item)"
+              >删除市场</el-button
+            >
+            <el-divider direction="vertical" />
+            <el-button class="btn" link small @click.stop="hadleUserManage(item)"
+              >用户管理</el-button
+            >
+            <!-- </template> -->
           </ShopCard>
         </li>
         <div v-else>暂无数据</div>
         <el-pagination
-          v-if="state.myMarket.length !== 0"
+          v-if="state.myMarket?.length !== 0"
           @current-change="handleCurrentChange"
           v-bind="state.pageMy"
           :pager-count="5"
@@ -36,13 +38,13 @@
       </ul>
       <ul class="box-ul">
         <p class="box-ul-title">我加入的市场</p>
-        <li class="app-card" v-if="state.joinMarket.length !== 0">
-          <ShopCard v-for="item in state.joinMarket" :info="item" :key="item.id">
-            <template #footer>
-              <el-button class="btn" type="primary" link small>退出市场</el-button>
-              <!-- <el-divider direction="vertical" />
+        <li class="app-card" v-if="state.joinMarket?.length !== 0">
+          <ShopCard v-for="item in state.joinMarket" :info="item" :key="item.id" :overId="item.id">
+            <!-- <template #footer> -->
+            <el-button class="btn" type="primary" link small>退出市场</el-button>
+            <!-- <el-divider direction="vertical" />
               <el-button class="btn" link small>用户管理</el-button> -->
-            </template>
+            <!-- </template> -->
           </ShopCard>
         </li>
         <div v-else> 暂无数据 </div>
@@ -128,6 +130,14 @@
     getJoinMarketData()
   }
 
+  const linkOrder = () => {
+    router.push({ path: '/market/order' })
+  }
+
+  const linkShopCar = () => {
+    router.push({ path: '/market/shopCar' })
+  }
+
   const hadleUserManage = (item: { id: number }) => {
     router.push({ path: '/market/userManage', query: { data: item.id } })
   }
@@ -170,21 +180,29 @@
   }
 
   const hadleClick = (item: any) => {
-    $services.appstore
-      .marketDel({
-        data: {
-          id: item.id
-        }
-      })
-      .then((res: ResultType) => {
-        if (res.code == 200) {
-          getMyMarketData()
-          ElMessage({
-            message: '删除成功',
-            type: 'success'
+    ElMessageBox.confirm(`确认删除  ${item.name}?`, '提示', {
+      confirmButtonText: '确认',
+      cancelButtonText: '取消',
+      type: 'warning'
+    })
+      .then(() => {
+        $services.appstore
+          .marketDel({
+            data: {
+              id: item.id
+            }
           })
-        }
+          .then((res: ResultType) => {
+            if (res.code == 200) {
+              getMyMarketData()
+              ElMessage({
+                message: '删除成功',
+                type: 'success'
+              })
+            }
+          })
       })
+      .catch(() => {})
   }
   const dialogVisible = ref(false)
   const form = reactive({

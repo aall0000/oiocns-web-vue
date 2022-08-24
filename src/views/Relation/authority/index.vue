@@ -1,7 +1,10 @@
 <template>
     <div class="card">
       <div class="header">
-        <div class="title">{{props.selectItem.label}}</div>
+        <div class="title">角色维护</div>
+        <div class="box-btns">
+          <el-button small link type="primary" @click="goback">返回</el-button>
+        </div>
       </div>
       <div>
         <el-table
@@ -15,18 +18,13 @@
           class="table"
         >
           <el-table-column type="selection" width="50"/>
-          <el-table-column prop="label" label="名称" width="330"/>
-          <el-table-column prop="data.code" label="编码" width="230"/>
-          <el-table-column prop="data.typeName" label="类型"  width="120">
-            <template #default="scope">
-              <el-tag>{{ scope.row.data.typeName }}</el-tag>
-            </template>
-          </el-table-column>
-          <el-table-column prop="data.teamRemark" label="描述" />
+          <el-table-column prop="name" label="名称" width="330"/>
+          <el-table-column prop="code" label="编码" width="230"/>
+          <el-table-column prop="remark" label="备注" />
           <el-table-column label="操作" width="150">
             <template #default="{ row }">
               <div class="cell-box">
-                <el-button link type="primary" size="small" @click="create(row, '工作组')">新增</el-button>
+                <el-button link type="primary" size="small">新增</el-button>
                 <el-button link type="primary" size="small" @click="edit(row)">编辑</el-button>
                 <el-popconfirm
                   title="确认删除?"
@@ -35,7 +33,7 @@
                   @confirm="handleDel(row)"
                 >
                   <template #reference>
-                    <el-button link type="danger" size="small"  style="margin-left: 0">删除</el-button>
+                    <el-button link type="danger" size="small"  style="margin-left:0">删除</el-button>
                   </template>
                 </el-popconfirm>
               </div>
@@ -90,7 +88,7 @@
 
   <el-dialog
     v-model="editDeptDialogVisible"
-    title="请编辑部门信息"
+    title="请编辑角色信息"
     width="40%"
     center
     append-to-body
@@ -222,10 +220,6 @@
   import { ElMessage } from 'element-plus';
   import { useRouter } from 'vue-router';
 
-  const props = defineProps<{
-    selectItem: any,     // 节点数据
-  }>()
-
   const router = useRouter()
   let createDeptDialogVisible = ref<boolean>(false)
   let editDeptDialogVisible = ref<boolean>(false)
@@ -233,6 +227,7 @@
   let editJobDialogVisible = ref<boolean>(false)
 
   let formData = ref<any>({})
+  let belongId = ref<any>({})
 
   const cascaderProps = {
     checkStrictly: true,
@@ -242,16 +237,17 @@
     // 节点ID和对象映射关系
   const parentIdMap: any = {}
 
-  let orgTree = ref<OrgTreeModel[]>([])
-  let cascaderTree = ref<OrgTreeModel[]>([])
+  let orgTree = ref<any[]>([])
+  let cascaderTree = ref<any[]>([])
 
   // 加载单位
   const loadOrgTree = () => {
-    $services.company.getCompanyTree({}).then((res: any)=>{
+    $services.company.getAuthorityTree({data: {id: belongId.value}}).then((res: any)=>{
+      console.log('res======================', res.data)
       orgTree.value = []
       orgTree.value.push(res.data)
       initIdMap(orgTree.value)
-      cascaderTree.value = filter(JSON.parse(JSON.stringify(orgTree.value)))
+      cascaderTree = orgTree
     })
   }
 
@@ -277,14 +273,6 @@
     return parentIds;
   }
 
-  // 过滤掉工作组作为表单级联数据
-  const filter = (nodes: OrgTreeModel[]): OrgTreeModel[] => {
-    nodes = nodes.filter(node => node.data?.typeName !== '工作组')
-    for (const node of nodes) {
-      node.children = filter(node.children)
-    }
-    return nodes;
-  }
 
   // 返回
   const goback = () => {
@@ -494,6 +482,7 @@
 
   // 获取树
   onMounted(() => {
+    belongId.value = router.currentRoute.value.query?.belongId
     loadOrgTree()
   })
 </script>
@@ -504,6 +493,7 @@
   height: 100%;
   width: 100%;
   background-color: #fff;
+  padding: 10px;
   .cell-box{
     display: flex;
     align-items: center;
@@ -516,13 +506,18 @@
       font-size: 16px;
       width: 30%;
       font-weight: bold;
-      padding: 10px;
+    }
+    .box-btns {
+      text-align: right;
+      padding-right: 14px;
+      padding-bottom: 10px;
+      width: 70%;
     }
   }
 
   .table {
     width: 100%;
-    height: calc(100vh - 360px);
+    height: calc(100vh - 150px);
   }
 }
 </style>

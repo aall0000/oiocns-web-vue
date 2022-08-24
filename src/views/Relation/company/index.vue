@@ -29,19 +29,22 @@
   }
   const screenHeight = ref<number>(0)
   window.addEventListener('resize',function () {
-    tabHeight.value=container.value.clientHeight - 6 - infoWrap.value.clientHeight
+    if(container.value && infoWrap.value){
+      tabHeight.value=container.value.clientHeight - 6 - infoWrap.value.clientHeight
+    }
   })
   const container = ref(null)
   const infoWrap = ref(null)
   const tabHeight = ref<number>(400)
   onMounted(() => {
-    console.log( )
-    tabHeight.value=container.value.clientHeight - 6 - infoWrap.value.clientHeight
+    if(container.value && infoWrap.value){
+      tabHeight.value=container.value.clientHeight - 6 - infoWrap.value.clientHeight
+    }
   })
   watch(
     () => screenHeight.value,
     (newValue, oldValue) => {
-     
+
     },
     { immediate: true }
   )

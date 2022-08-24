@@ -4,6 +4,8 @@
       <div class="title">{{title}}信息</div>
       <div class="box-btns">
         <el-button small link type="primary" @click="handleUpdate">编辑</el-button>
+        <el-button small link type="primary" @click="toAuth">角色管理</el-button>
+        <el-button small link type="primary" @click="toIdentity">身份管理</el-button>
       </div>
     </div>
     <div class="tab-list">
@@ -46,8 +48,9 @@
 </template>
 <script lang="ts" setup>
   import $services from '@/services'
-  import { ref, reactive, onMounted, watch } from 'vue'
-  import { ElMessage, valueEquals } from 'element-plus'
+  import { ref, watch } from 'vue'
+  import { ElMessage } from 'element-plus'
+  import router from '@/router';
 
   let title = ref<string>('单位')
   let selectItem = ref<any>({})
@@ -102,8 +105,16 @@
         selectItem.value.data = data
       }
     })
-
   }
+  // 跳转至角色管理页面
+  const toAuth = ()=>{
+    router.push({ path: '/relation/authority', query: { belongId:  selectItem.value.id }})
+  }
+  // 跳转至身份管理页面
+  const toIdentity = ()=>{
+    router.push({ path: '/relation/identity', query: { belongId:  selectItem.value.id }})
+  }
+
 </script>
 
 <style lang="scss" scoped>

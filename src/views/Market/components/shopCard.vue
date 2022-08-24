@@ -3,8 +3,7 @@
     class="shop-card-wrap app-card-item"
     shadow="always"
     :key="info.id"
-    @mouseover="hoverItem = info.id"
-    @mouseleave="hoverItem = ''"
+    @mouseover="handleWatchMouseOver(info.id)"
   >
     <div class="app-card-item-con">
       <div class="app-card-item-con-top flex">
@@ -18,7 +17,7 @@
       </div>
     </div>
     <!-- v-show="hoverItem === info.id" -->
-    <div class="app-card-item-footer" v-show="hoverItem === info.id">
+    <div class="app-card-item-footer" v-show="props.overId === info.id">
       <slot />
     </div>
   </el-card>
@@ -32,16 +31,17 @@
   type shopInfoType = {
     key?: string
     info: MarketShopType
+    overId?: string //当前鼠标移入id
   }
   const props = defineProps<shopInfoType>()
-console.log('cscs',props.info);
-
   const { info } = props
-  const { hoverItem } = toRefs(state)
+  const emit = defineEmits(['handleMouseOver'])
+  const handleWatchMouseOver = (selectId: string) => {
+    emit('handleMouseOver', selectId)
+  }
 </script>
 
 <style lang="scss" scoped>
-
   .app-card-item {
     width: 24%;
     min-width: 200px;

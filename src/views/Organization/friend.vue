@@ -105,7 +105,6 @@
         </span>
       </template>
     </el-dialog>
-    <serachFriend></serachFriend>
   </div>
 </template>
 <script lang="ts" setup>
