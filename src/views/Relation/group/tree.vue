@@ -188,7 +188,6 @@ const createGroup = ()=>{
   if (parentIds.length > 0) {
     parentId = parentIds[parentIds.length - 1]
   }
-  console.log('parentId=========', parentId)
   // return
   $services.company.createSubgroup({
     data: {

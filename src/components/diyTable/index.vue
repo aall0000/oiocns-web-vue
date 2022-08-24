@@ -61,7 +61,7 @@
             v-if="options.order"
             type="index"
             label="序号"
-            width="100"
+            width="70"
           ></el-table-column>
           <template v-for="(item, index) in tableHead">
             <el-table-column
