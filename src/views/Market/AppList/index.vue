@@ -62,7 +62,7 @@
   import ShopCard from '../components/shopCard.vue'
   import { useRouter } from 'vue-router'
   import $services from '@/services'
-  import { ElMessage } from 'element-plus'
+  import { ElMessage, ElMessageBox } from 'element-plus'
 
   const router = useRouter()
 
@@ -149,21 +149,29 @@
   }
 
   const hadleClick = (item: any) => {
-    $services.appstore
-      .marketDel({
-        data: {
-          id: item.id
-        }
-      })
-      .then((res: ResultType) => {
-        if (res.code == 200) {
-          getMyMarketData()
-          ElMessage({
-            message: '删除成功',
-            type: 'success'
+    ElMessageBox.confirm(`确认删除  ${item.name}?`, '提示', {
+      confirmButtonText: '确认',
+      cancelButtonText: '取消',
+      type: 'warning'
+    })
+      .then(() => {
+        $services.appstore
+          .marketDel({
+            data: {
+              id: item.id
+            }
           })
-        }
+          .then((res: ResultType) => {
+            if (res.code == 200) {
+              getMyMarketData()
+              ElMessage({
+                message: '删除成功',
+                type: 'success'
+              })
+            }
+          })
       })
+      .catch(() => {})
   }
 </script>
 

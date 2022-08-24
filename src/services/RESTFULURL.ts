@@ -193,7 +193,7 @@ export default {
     searchOwn: appstore + '/search/own',
     searchManager: appstore + '/search/manager',
     marketDel: appstore + '/delete',
-    merchandise: appstore + '/merchandise',
+    merchandise: appstore + '/search/merchandise',
     member: appstore + '/search/member',
     removeMemver: appstore + '/remove/member'
   }
