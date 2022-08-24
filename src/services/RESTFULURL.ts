@@ -124,16 +124,17 @@ export default {
   market: {
     merchandise: market + '​/approval​/merchandise', //商品上架审核
     create: market + '​/create', //创建市场
-    createOrderByStaging: market + '​/create​/order​/by​/staging', //购物车发起订单
+    
+    createOrderByStaging: market + '/create/order/by/staging', //购物车发起订单
     delete: market + '​/delete', //删除市场
-    deleteStaging: market + '​/delete/staging', //移除暂存区/购物车
+    deleteStaging: market + '/delete/staging', //移除暂存区/购物车
     joinStaging: market + '​/join/staging', //加入暂存区/购物车
     publishMerchandise: market + '​/publish/merchandise', //上架商品
     searchAll: market + '​/search/all', //查询所有市场
     searchManager: market + '​/search/manager', //查询自己管理的市场
     searchMerchandise: market + '​/search/merchandise', //查询市场中所有商品
     searchMerchandiseApply: market + '​/search/merchandise/apply', //查询产品上架申请
-    searchStaging: market + '​/search/staging', //查询购物车
+    searchStaging: market + '/search/staging', //查询购物车
     unpublishMerchandise: market + '​/unpublish/merchandise', //下架商品
     updateMarket: market + '​/update/market' //更新市场
   },

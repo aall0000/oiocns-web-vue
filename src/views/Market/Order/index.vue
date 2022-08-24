@@ -183,8 +183,9 @@ const searchSellList = async () => {
       }
     })
     .then((res: ResultType) => {
-      //       const { result = [], total = 0 } = res.data
-      var result = [
+      var { result = [], total = 0 } = res.data
+      console.log(res.data)
+       result = result.length>0?result:[
         {
           id: '348129171096636636',
           name: '邵一刀的待出售订单(海贼王-白胡子手办)2022-02-22 14:05:30',
@@ -495,7 +496,7 @@ const pay = async (id: string, price: number, paymentType: string) => {
   await $services.order
     .createPay({
       data: {
-        orderId: parseInt(id),
+        orderId: id,
         price: price,
         paymentType: paymentType
       }

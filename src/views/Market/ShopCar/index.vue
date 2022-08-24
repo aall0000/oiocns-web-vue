@@ -114,9 +114,10 @@ const getTableList = async () => {
     })
     .then((res: ResultType) => {
   
-      // const { result = [], total = 0 } = res.data
+      var { result = [], total = 0 } = res.data
       // debugger
-      var result: any = [
+      
+      result = result.length>0?result: [
         {
           id: '348129171096636636',
           name: '邵一刀的待出售订单(海贼王-白胡子手办)2022-02-22 14:05:30',
@@ -488,7 +489,7 @@ const handlePaginationChange = (newVal: number, type: 'current' | 'limit') => {
   getTableList()
 }
 
-//购物车发起订单(批量)
+//创建订单(批量)
 const createOrderByStaging = async () => {
   var checkedStagIds = pageStore.tableData.filter(item=>item.checked).map(item=>item.id)
   console.log(checkedStagIds)
@@ -510,7 +511,7 @@ const createOrderByStaging = async () => {
       if (res.code == 200) {
         getTableList()
         ElMessage({
-          message: '移除成功',
+          message: '创建订单成功',
           type: 'warning'
         })
       } else {
@@ -536,7 +537,6 @@ const deleteStagings = () => {
   //要改为并发删除
   for(let item of pageStore.tableData){
     if (item.checked) {
-      // deleteStaging(item.id)
       $services.market
       .deleteStaging({
         data: {

@@ -2,7 +2,7 @@
   <div class="market-layout">
     <el-card shadow="always" class="market-head flex">
       <el-button type="primary" @click="registerVisible = true">注册</el-button>
-      <el-button type="primary">订单</el-button>
+      <el-button type="primary" @click.stop="linkOrder()">订单</el-button>
       <el-button type="primary" @click="GoPage('/market/markList')">市场</el-button>
     </el-card>
     <div class="market-content box">
@@ -204,7 +204,9 @@ version: "1" -->
     if (!formEl) return
     formEl.resetFields()
   }
-
+  const linkOrder = () => {
+    router.push({ path: '/market/order'})
+  }
   // 路由跳转
   const GoPage = (path: string) => {
     router.push(path)
