@@ -39,8 +39,14 @@
       <ul class="box-ul">
         <p class="box-ul-title">我加入的市场</p>
         <li class="app-card" v-if="state.joinMarket?.length !== 0">
-          <MarketCreate :info="add" @click="dialogVisible = true" />
-          <ShopCard v-for="item in state.joinMarket" :info="item" :key="item.id" :overId="item.id">
+          <MarketCreate :info="add1" @click="dialogVisible = true" />
+          <ShopCard
+            v-for="item in state.joinMarket"
+            :info="item"
+            :key="item.id"
+            :overId="item.id"
+            @click="gotoApp(item)"
+          >
             <!-- <template #footer> -->
             <el-button class="btn" type="primary" link small @click.stop="marketQuit(item)"
               >退出市场</el-button
@@ -99,6 +105,7 @@
     return (state.pageJoin.currentPage - 1) * state.pageJoin.pageSize
   })
   const add: string = '创建市场'
+  const add1: string = '加入市场'
   const state = reactive({
     myMarket: [],
     joinMarket: [],
