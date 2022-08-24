@@ -11,6 +11,7 @@ declare module '@vue/runtime-core' {
     AppMarket: typeof import('./src/components/protal/components/appMarket.vue')['default']
     Cohort: typeof import('./src/components/search/cohort.vue')['default']
     Company: typeof import('./src/components/search/company.vue')['default']
+    DiyButton: typeof import('./src/components/diyButton/index.vue')['default']
     DiyTable: typeof import('./src/components/diyTable/index.vue')['default']
     ElAside: typeof import('element-plus/es')['ElAside']
     ElButton: typeof import('element-plus/es')['ElButton']
