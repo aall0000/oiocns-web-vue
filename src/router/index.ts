@@ -107,6 +107,22 @@ const mainRouter: RouteRecordRaw[] = [
         meta: {
           title: '单位维护'
         }
+      },
+      {
+        path: '/relation/authority',
+        name: 'authority',
+        component: () => import('@/views/Relation/authority/index.vue'),
+        meta: {
+          title: '角色管理'
+        }
+      },
+      {
+        path: '/relation/identity',
+        name: 'identity',
+        component: () => import('@/views/Relation/identity/index.vue'),
+        meta: {
+          title: '身份管理'
+        }
       }
     ]
   },

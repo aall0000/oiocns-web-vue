@@ -124,6 +124,12 @@ const tableHead = ref([
     name:'teamCode',
   },
   {
+    prop: 'team.remark',
+    label: '座右铭',
+    width: '330',
+    name:'teamRemark',
+  },
+  {
     type: 'slot',
     label: '操作',
     fixed: 'right',
