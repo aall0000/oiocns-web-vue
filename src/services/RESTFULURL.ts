@@ -3,8 +3,8 @@ const cohort = '/orginone/organization/cohort'
 const person = '/orginone/organization/person'
 const company = '/orginone/organization/company'
 const history = '/orginone/orgchat/history'
-const market = '​/orginone​/appstore​/market​'
-const order = '​/orginone​/appstore​/order'
+const market = '/orginone/appstore/market'
+const order = '/orginone/appstore/order'
 const product = '/orginone/appstore/product'
 const msg = '/orginone/orgchat/real'
 const appstore = '/orginone/appstore/market'
@@ -119,30 +119,32 @@ export default {
     getAllJobs: company + '/get/all/jobs', //查询所有岗位
     getAllSubgroups: company + '/get/all/subgroups', //查询所有子集团
     getCompanyTree: company + '/get/company/tree', //查询单位组织树
-    getGroupTree: company + '/get/group/tree' //查询集团组织树
+    getGroupTree: company + '/get/group/tree', //查询集团组织树
+    getAuthorityTree: company + '/get/authority/tree' //查询组织继承职权树
   },
   market: {
     merchandise: market + '​/approval​/merchandise', //商品上架审核
     create: market + '​/create', //创建市场
-    createOrderByStaging: market + '​/create​/order​/by​/staging', //购物车发起订单
+    
+    createOrderByStaging: market + '/create/order/by/staging', //购物车发起订单
     delete: market + '​/delete', //删除市场
-    deleteStaging: market + '​/delete/staging', //移除暂存区/购物车
+    deleteStaging: market + '/delete/staging', //移除暂存区/购物车
     joinStaging: market + '​/join/staging', //加入暂存区/购物车
     publishMerchandise: market + '​/publish/merchandise', //上架商品
     searchAll: market + '​/search/all', //查询所有市场
     searchManager: market + '​/search/manager', //查询自己管理的市场
     searchMerchandise: market + '​/search/merchandise', //查询市场中所有商品
     searchMerchandiseApply: market + '​/search/merchandise/apply', //查询产品上架申请
-    searchStaging: market + '​/search/staging', //查询购物车
+    searchStaging: market + '/search/staging', //查询购物车
     unpublishMerchandise: market + '​/unpublish/merchandise', //下架商品
     updateMarket: market + '​/update/market' //更新市场
   },
   order: {
-    orderConfirm: order + '/confirm/detail', //确认订单详情(买方确认收货)
+    orderConfirm: order + '/confirm', //确认订单详情(买方确认收货)
     create: order + '/create', //创建订单
     createPay: order + '/create/pay', //创建支付
     delete: order + '/delete', //删除订单
-    deliverMerchandise: order + '/deliver/merchandise', //交付订单详情中的商品
+    deliverMerchandise: order + '/deliver', //交付订单详情中的商品
     searchBuyList: order + '/search/buy/list', //买方查询购买订单列表
     searchDetailList: order + '/search/detail/list', //查询订单详情信息
     searchMerchandiseSellList: order + '​/search​/merchandise​/sell​/list', //卖方查询指定商品售卖订单列表

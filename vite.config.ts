@@ -122,6 +122,9 @@ export default defineConfig(({ command, mode }) => {
       // 扩展访问端口
       host: settings.host,
       hmr: true,
+      watch: {
+        usePolling: true   // WSL必须，否则热更新无效
+      },
       proxy: settings.proxyFlag
         ? {
             '/orginone': {
