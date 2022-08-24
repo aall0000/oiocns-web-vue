@@ -24,12 +24,12 @@
             <el-button class="btn" link small @click="deleteApp(item)">移除应用</el-button>
           </ShopCard>
         </li>
-        <el-pagination style="justify-content: end" layout="prev, pager, next" :total="50" />
+        <el-pagination style="justify-content: end" layout="prev, pager, next" :total="state.myAppToast" />
       </ul>
       <ul class="box-ul">
         <p class="box-ul-title">其他应用</p>
         <li class="app-card">
-          <ShopCard v-for="item in baseData" :info="item" :key="item.id">
+          <!-- <ShopCard v-for="item in baseData" :info="item" :key="item.id">
             <el-dropdown @command="(value) => handleCommand('other', value, item)" placement="top">
               <el-button class="btn" type="primary" link small> 设置 </el-button>
               <template #dropdown>
@@ -42,13 +42,13 @@
             </el-dropdown>
             <el-divider direction="vertical" />
             <el-button class="btn" link small @click="deleteApp(item)">移除应用</el-button>
-          </ShopCard>
+          </ShopCard> -->
         </li>
-        <el-pagination
+        <!-- <el-pagination
           style="justify-content: end"
           layout="prev, pager, next"
           :total="state.myAppToast"
-        />
+        /> -->
       </ul>
     </div>
   </div>
