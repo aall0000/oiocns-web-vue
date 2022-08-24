@@ -1,23 +1,23 @@
 <template>
-  <div class="container">
+  <div class="container" ref="container">
     <div class="tree">
       <Tree @nodeClick="nodeClick"/>
     </div>
-    <card class="content">
-      <div class="info">
+    <div class="content">
+      <div class="info" ref="infoWrap">
         <Info ref="info"/>
       </div>
-      <div class="body">
-        <Body ref="body"/>
+      <div class="body" ref="bodyWrap" :style="{height:tabHeight+'px'}">
+        <Body ref="body" :tabHeight='tabHeight'/>
       </div>
-    </card>
+    </div>
   </div>
 </template>
 <script lang="ts" setup>
   import Tree from './tree.vue'
   import Info from './info.vue'
   import Body from './body.vue'
-  import { ref } from 'vue';
+  import { ref ,onMounted,watch} from 'vue';
 
 
   const info = ref(null);
@@ -27,7 +27,27 @@
     info.value.selectItemChange(selectItem);
     body.value.selectItemChange(selectItem);
   }
+  const screenHeight = ref<number>(0)
+  window.addEventListener('resize',function () {
+    if(container.value && infoWrap.value){
+      tabHeight.value=container.value.clientHeight - 6 - infoWrap.value.clientHeight
+    }
+  })
+  const container = ref(null)
+  const infoWrap = ref(null)
+  const tabHeight = ref<number>(400)
+  onMounted(() => {
+    if(container.value && infoWrap.value){
+      tabHeight.value=container.value.clientHeight - 6 - infoWrap.value.clientHeight
+    }
+  })
+  watch(
+    () => screenHeight.value,
+    (newValue, oldValue) => {
 
+    },
+    { immediate: true }
+  )
 </script>
 <style lang="scss" scoped>
 .container {
@@ -35,6 +55,7 @@
   height: 100%;
   background: #f0f2f5;
   padding: 3px;
+  box-sizing: border-box;
   display: flex;
 
   .tree {
@@ -43,13 +64,16 @@
   .content{
     width: 77%;
     height: 100%;
-    padding: 3px;
+    padding:0 3px;
+    box-sizing: border-box;
     background: #f0f2f5;
+    overflow: hidden;
     .info{
       padding: 3px;
+      box-sizing: border-box;
     }
     .body{
-      height: 75%;
+      height: 400px;
     }
   }
 }

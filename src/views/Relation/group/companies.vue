@@ -1,178 +1,400 @@
 <template>
-    <el-card class="card">
-      <div class="header">
-        <div class="title">单位列表</div>
-        <div class="box-btns">
-          <el-button small link type="primary" @click="handleGoback">查看申请(5)</el-button>
-          <el-button small link type="primary" @click="dialogVisible = true">邀请单位</el-button>
+  <div class="card">
+    <div class="header">
+      <div class="title">{{props.selectItem.label}}</div>
+      <div class="box-btns">
+        <div v-if="props.selectItem?.data?.typeName == '集团'">
+          <el-button small link type="primary" @click="pullCompanysDialog = true">添加单位</el-button>
+          <el-button small link type="primary" @click="viewApplication">查看申请</el-button>
+        </div>
+        <div v-if="props.selectItem?.data?.typeName == '子集团' || props.selectItem?.data?.typeName == '工作组'">
+          <el-button small link type="primary" @click="showAssignDialog">分配单位</el-button>
         </div>
       </div>
+    </div>
 
-      <el-table class="box-table" v-loading="loading" :data="pageStore.tableData" stripe border
-        header-row-class-name="table_header_class" @select="handleSelect">
-        <el-table-column type="selection" width="50" />
-        <el-table-column prop="id" label="序号">
-          <template #default="{ $index }">
-            {{ pagination.limit * (pagination.current - 1) + $index + 1 }}
+    <div :style="{height:tabHeight-35+'px'}">
+      <div style="width: 100%; height: 100%">
+        <DiyTable
+          ref="diyTable"
+          :hasTableHead="true"
+          :tableData="companies"
+          @handleUpdate="handleUpdate"
+          :tableHead="tableHead"
+        >
+          <template #operate="scope" >
+            <el-button link type="danger" size="small" :disabled="scope.row.id == selectItem.data?.belongId" @click="removeFrom(scope.row)">移除单位</el-button>
           </template>
-        </el-table-column>
-        <el-table-column prop="name" label="单位名称" />
-        <el-table-column prop="thingId" label="单位编码" />
-        <el-table-column prop="updateTime" label="更新时间" />
-        <el-table-column label="操作" width="100">
-          <template #default="{ row }">
-            <el-popconfirm title="确认移除?" @confirm="handleDelItem(row)" confirm-button-text="确认" cancel-button-text="取消">
-              <template #reference>
-                <el-button link type="danger" size="small">移除</el-button>
-                <el-button link type="danger" size="small">调整</el-button>
-              </template>
-            </el-popconfirm>
-          </template>
-        </el-table-column>
-      </el-table>
-      <el-pagination class="page-pagination" @size-change="(e: any) => handlePaginationChange(e, 'limit')"
-        @current-change="(e: any) => handlePaginationChange(e, 'current')" small background
-        :page-sizes="[10, 20, 50, 100]" v-model:currentPage="pagination.current" v-model:page-size="pagination.limit"
-        layout="total,prev, pager, next," :total="pageStore.total" />
-    </el-card>
+        </DiyTable>
+      </div>
+    </div>
+  </div>
 
-
-
-  <el-dialog v-model="dialogVisible" title="请输入单位名称" width="30%">
-    <el-form-item label="单位名称">
-      <el-input v-model="fromData.departmentName" placeholder="请输入单位名称" clearable />
-    </el-form-item>
-    <el-form-item label="单位编号">
-      <el-input v-model="fromData.departmentTeamCode" placeholder="请输入单位编号" clearable />
-    </el-form-item>
-    <el-form-item label="单位简介">
-      <el-input v-model="fromData.departmentTeamRemark" placeholder="请输入单位简介" type="textarea" clearable />
-    </el-form-item>
+  <el-dialog v-model="pullCompanysDialog" @close="hidePullPreson" title="添加单位到集团" width="30%">
+    <el-select
+      v-model="inviter"
+      filterable
+      remote
+      reserve-keyword
+      placeholder="请输入要查找的单位"
+      :remote-method="searchCompany"
+      :loading="loading"
+    >
+      <el-option
+        v-for="item in inviterOptions"
+        :key="item.value"
+        :label="item.label"
+        :value="item.value"
+      />
+    </el-select>
     <template #footer>
       <span class="dialog-footer">
-        <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="addCompanyToGroup">确认</el-button>
+        <el-button @click="hidePullPreson">取消</el-button>
+        <el-button type="primary" @click="pullCompanys">确认</el-button>
       </span>
     </template>
   </el-dialog>
 
+  <el-dialog v-model="assignDialog" @close="hideAssignDialog" :title="'分配单位 => ' + selectItem.label" width="50%">
+    <el-input v-model="assignSearch" class="search" placeholder="搜索单位" @input="assignSearchChange">
+      <template #prefix>
+        <el-icon class="el-input__icon"><Search /></el-icon>
+      </template>
+    </el-input>
+    <DiyTable
+      ref="assignTable"
+      :hasTableHead="true"
+      :tableData="groupCompanies"
+      :options="{
+        expandAll: false,
+        checkBox: true,
+        order: true,
+        noPage: false,
+        selectLimit: 20
+      }"
+      @handleUpdate="assignTableChange"
+      :tableHead="columns"
+      :style="{height: '350px'}"
+    >
+    </DiyTable>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="hideAssignDialog">取消</el-button>
+        <el-button type="primary" @click="assign">确认</el-button>
+      </span>
+    </template>
+  </el-dialog>
 
 </template>
 <script lang='ts' setup>
-import API from "@/services"
-import { onMounted, reactive, toRefs, ref } from 'vue';
-import { useUserStore } from '@/store/user'
+import $services from '@/services'
+import DiyTable from '@/components/diyTable/index.vue'
+import { onMounted, reactive, ref, watch } from 'vue';
 import { useRouter } from "vue-router";
-import { storeToRefs } from 'pinia';
-import { nextTick } from "process";
-const store = useUserStore()
+import { ElMessage, ElMessageBox } from 'element-plus';
+
+const props = defineProps<{
+  selectItem: any,     // 节点数据
+  tabHeight: number,
+}>()
+const rootGroup = ref<any>({})
+// 表格用户数据
+let companies = ref<any>([])
+
 const router = useRouter()
-const { userUnitInfo, workspaceData } = storeToRefs(store)
-// 表格分页数据
-const pagination: { current: number, limit: number } = reactive({ current: 1, limit: 10 })
 // 表格数据加载状态
 const loading = ref<boolean>(false)
 // 表格展示数据
 const pageStore = reactive({
   tableData: [],
+  currentPage: 1,
+  pageSize: 20,
   total: 0
 })
-let groupId = ref<any>();
 
-// 获取表格数据
-const getTableList = async () => {
-  if(groupId.value){
-    loading.value = true
-    // Todo 判断 getSubgroupCompanies
-    const { data, success } = await API.company.getGroupCompanies({
+const diyTable = ref(null)
+const assignTable = ref(null)
+
+const tableHead = ref([
+  {
+    prop: 'name',
+    label: '名称',
+    width: '250',
+    name:'name',
+  },
+  {
+    prop: 'code',
+    label: '编码',
+    width: '180',
+  },
+  {
+    prop: 'team.code',
+    label: '简介',
+    width: '330',
+    name:'teamCode',
+  },
+  {
+    type: 'slot',
+    label: '操作',
+    fixed: 'right',
+    align: 'center',
+    width: '120',
+    name: 'operate'
+  }
+])
+
+const columns = ref([
+    {
+    prop: 'name',
+    label: '名称',
+    width: '240',
+    name:'name',
+  },
+  {
+    prop: 'code',
+    label: '编码',
+    width: '180',
+  },
+  {
+    prop: 'team.code',
+    label: '简介',
+    width: '330',
+    name:'teamCode',
+  }
+])
+let groupCompanies = ref<any>([])
+
+const handleUpdate = (page: any)=>{
+  pageStore.currentPage = page.currentPage
+  pageStore.pageSize = page.pageSize
+  getCompanies()
+}
+
+// 加载单位
+const getCompanies = ()=>{
+  const data = props.selectItem?.data
+  if(data){
+    let url = '';
+    if(data.typeName == '集团'){
+      url = 'getGroupCompanies'
+      rootGroup.value = JSON.parse(JSON.stringify(data))
+    } else if(data.typeName == '子集团'){
+      url = 'getSubgroupCompanies'
+    }
+    $services.company[url]({
       data: {
-        id: groupId.value,
-        offset: (pagination.current - 1) * pagination.limit,
-        limit: pagination.limit
+        id: props.selectItem.id,
+        offset: (pageStore.currentPage-1)*pageStore.pageSize,
+        limit: pageStore.pageSize
+      }
+    }).then((res: ResultType) => {
+      if (res.code == 200 && res.success) {
+        companies.value = res.data.result;
+        pageStore.total = res.data.total;
+        diyTable.value.state.loading = false
+        diyTable.value.state.page.total = pageStore.total;
       }
     })
-    loading.value = false
-    if (success) {
-      const { result = [], total = 0 } = data
-      pageStore.tableData = result
-      pageStore.total = total
-    }
   }
 }
+// 搜索单位
+const searchCompany = (query: string) => {
+  inviterOptions.value = []
+  if(!query){
+    return
+  }
+  loading.value = true
+  $services.company
+    .searchCompany({data: { filter: query, offset: 0, limit: 10 }})
+    .then((res: ResultType) => {
+      loading.value = false
+      if (res.success && res.data.result) {
+        const companies = res.data.result
+        inviterOptions.value = companies.map((u: any) => {
+          return {value: u.id, label: u.name}
+        })
+      } else {
+        ElMessage({
+          message: '未找到单位!',
+          type: 'warning'
+        })
+      }
+    })
+}
 
-// 删除表格信息
-const handleDelItem = async (row: any) => {
-  console.log("row=====", row);                // Todo
-  const { success } = await API.company.removeFromGroup({
-    data: {
-      id: row.id,
+interface ListItem {
+  value: string
+  label: string
+}
+const inviterOptions = ref<ListItem[]>([])
+const inviter = ref('')
+const pullCompanysDialog = ref<boolean>(false)
+const hidePullPreson = () => {
+  inviter.value = ''
+  pullCompanysDialog.value = false
+}
+//拉单位进集团
+const pullCompanys = () => {
+  $services.company
+    .pullCompanys({
+      data: {
+        id: props.selectItem.id,
+        targetIds: [inviter.value]
+      }
+    })
+    .then((res: ResultType) => {
+      if (res.success) {
+        ElMessage({
+          message: '添加成功',
+          type: 'success'
+        })
+        getCompanies()
+      }
+      inviter.value = ''
+      pullCompanysDialog.value = false
+    })
+}
+
+//查看申请
+const viewApplication = (row: any) => {
+  router.push('/cardDetail')
+}
+
+// 移除
+const removeFrom = (row: any) =>{
+  let url: string;
+  let title: string;
+  if(props.selectItem?.data?.typeName == '集团'){
+    url = 'removeFromGroup'
+    title = `确定把 ${row.name} 从集团移除吗？`
+  } else if(props.selectItem?.data?.typeName == '子集团'){
+    url = 'removeFromSubgroup'
+    title = `确定把 ${row.name} 从子集团移除吗？`
+  }
+  ElMessageBox.confirm(
+    title,
+    '警告',
+    {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
     }
+  ).then(() => {
+    $services.company[url]({
+      data: {
+        id: props.selectItem.id,
+        targetIds: [row.id]
+      }
+    }).then((res: ResultType) => {
+      getCompanies()
+      if (res.success) {
+        ElMessage({
+          message: '操作成功',
+          type: 'success'
+        })
+      }
+    })
   })
-  if (success) {
-    getTableList()
+  .catch(() => {
+    console.log('移除成功!')
+  })
+}
+
+// 加载根集团所有单位
+const getGroupCompanies = (filter?: string)=>{
+  let data = {
+    id: rootGroup.value.id,
+    offset: (pageStore.currentPage-1)*pageStore.pageSize,
+    limit: pageStore.pageSize
+  }
+  if(filter && filter.trim() != ''){
+    data = {...data, ...{filter}}
+  }
+  if(rootGroup.value){
+    $services.company.getGroupCompanies({
+      data,
+    }).then((res: ResultType) => {
+      if (res.code == 200 && res.success) {
+        // 去除已分配到当前部门或者工作组的用户
+        let us = res.data.result || []
+        let companyIds =  []
+        console.log('companies.value', companies.value)
+        if(companies.value){
+          companyIds = companies.value.map((c: any) => c.id);
+        }
+        const set: Set<string> = new Set(companyIds)
+        groupCompanies.value = us.filter((u: any) => !set.has(u.id))
+        pageStore.total = res.data.total - companyIds.length
+        assignTable.value.state.loading = false
+        assignTable.value.state.page.total = pageStore.total;
+      }
+    })
   }
 }
 
-// 处理表格分页操作
-const handlePaginationChange = (newVal: number, type: "current" | 'limit') => {
-  pagination[type] = newVal
-  getTableList()
+const assignDialog = ref<boolean>(false)
+const hideAssignDialog = ()=>{
+  assignDialog.value = false
+  getGroupCompanies()
 }
-//弹窗信息
-const fromData = reactive({
-  departmentName: "",
-  departmentTeamName: "",
-  departmentTeamCode: "",
-  departmentTeamRemark: ""
-})
-// 弹窗显示
-const dialogVisible = ref<boolean>(false)
+
+const showAssignDialog = ()=>{
+  assignDialog.value = true
+  getGroupCompanies()
+}
+
+// 过滤数据
+const assignSearch = ref('')
+const assignTableChange = (page: any)=>{
+  pageStore.currentPage = page.currentPage
+  pageStore.pageSize = page.pageSize
+  getGroupCompanies()
+}
+
+// 分配页面搜索用户变化
+const assignSearchChange = (e: string)=>{
+  console.log('eeeeeeeeeeeee', e)
+  getGroupCompanies(e)
+}
+
+
+// 分配单位到子集团
+const assign = () => {
+  const companyIds = assignTable?.value?.state?.multipleSelection.map((u: any) => u.id);
+  const data = { id: props.selectItem.id, targetIds: companyIds }
+  $services.company
+    .assignSubgroup({ data })
+    .then((res: ResultType) => {
+      if (res.success) {
+        ElMessage({
+          message: '分配成功',
+          type: 'success'
+        })
+        hideAssignDialog()
+      }
+      getCompanies()
+    })
+}
+
 
 onMounted(() => {
-  groupId.value= router.currentRoute.value.query.id;
-  getTableList()
+  getCompanies()
 })
 
-//选中人员
-let selectArr = reactive<Array<any>>([])
-const handleSelect = (key: Array<any>) => {
-  selectArr = key
-  console.log('selectArr', selectArr)
-}
+watch(props, () => {
+  getCompanies()
+});
 
-
-// 提交弹窗表单
-const addCompanyToGroup = () => {
-  API.company
-    .createDepartment({
-      data: {
-        id: workspaceData.value.id,
-        code: fromData.departmentTeamCode,
-        name: fromData.departmentName,
-        parentId: 0,
-        teamName: fromData.departmentTeamName,
-        teamRemark: fromData.departmentTeamRemark
-      }
-    })
-    .then(() => {
-      getTableList()
-      dialogVisible.value = false
-    })
-}
-
-
-// 返回上一页
-const handleGoback = () => {
-  router.go(-1)
-}
 </script>
 
 <style lang='scss' scoped>
+
 
 .card {
   height: 100%;
   width: 100%;
   background-color: #fff;
+  padding: 10px;
 
   .header {
     display: flex;
@@ -191,23 +413,8 @@ const handleGoback = () => {
     }
   }
 
-
-
-  .detail-box {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    height: 100%;
-
-    .box-table {
-      flex-grow: 1;
-    }
-
-    .page-pagination {
-      padding: 10px 0;
-      display: flex;
-      justify-content: end;
-    }
+  .search {
+    width: 50%;
   }
 }
 </style>

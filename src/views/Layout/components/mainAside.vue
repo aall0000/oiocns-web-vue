@@ -124,7 +124,7 @@
       { name: '消息', icon: 'ChatDotRound', path: '/chat' },
       { name: '关系', icon: 'Avatar', path: '/relation' },
       { name: '组织', icon: 'Avatar', path: '/organization' },
-      { name: '市场', icon: 'GoodsFilled', path: '/appStore' },
+      { name: '商店', icon: 'GoodsFilled', path: '/market' },
       { name: '应用', icon: 'Grid', path: '/appStpre', bottom: true },
       { name: '数据', icon: 'Share', path: '/thing' },
       {

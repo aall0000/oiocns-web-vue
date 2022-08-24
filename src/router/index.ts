@@ -108,6 +108,22 @@ const mainRouter: RouteRecordRaw[] = [
           title: '单位维护'
         }
       },
+      {
+        path: '/relation/authority',
+        name: 'authority',
+        component: () => import('@/views/Relation/authority/index.vue'),
+        meta: {
+          title: '角色管理'
+        }
+      },
+      {
+        path: '/relation/identity',
+        name: 'identity',
+        component: () => import('@/views/Relation/identity/index.vue'),
+        meta: {
+          title: '身份管理'
+        }
+      }
     ]
   },
   {
@@ -211,15 +227,6 @@ const mainRouter: RouteRecordRaw[] = [
     }
   },
   {
-    component: () => import('@/views/Work/appStore.vue'),
-    name: 'appStore',
-    path: '/appStore',
-    meta: {
-      keepAlive: false,
-      title: '应用市场'
-    }
-  },
-  {
     component: () => import('@/views/Person/application/index.vue'),
     name: 'application',
     path: '/application',
@@ -276,7 +283,85 @@ const mainRouter: RouteRecordRaw[] = [
       }
     ]
   },
+  {
+    path: '/market',
+    // component: () => import('@/views/Layout/msgLayout/layout.vue'),
+    children: [
+      {
+        path: '/market',
+        name: 'market',
+        component: () => import('@/views/Market/index.vue'),
+        meta: {
+          title: '应用市场'
+        }
+      },
+      {
+        path: '/market/markList',
+        name: 'marketMarkList',
+        component: () => import('@/views/Market/AppList/index.vue'),
+        meta: {
+          title: '市场列表'
+        }
+      },
+      {
+        path: '/market/appList',
+        name: 'marketAppList',
+        component: () => import('@/views/Market/AppList/appList.vue'),
+        meta: {
+          title: '应用列表'
+        }
+      },
+      {
+        path: '/market/userManage',
+        name: 'marketUserManage',
+        component: () => import('@/views/Market/AppList/userManage.vue'),
+        meta: {
+          title: '用户管理'
+        }
+      },
+      {
+        path: '/market/approval',
+        name: 'marketApproval',
+        component: () => import('@/views/Market/Approval/index.vue'),
+        meta: {
+          title: '审批页'
+        }
+      },
+      {
+        path: '/market/appShelves',
+        name: 'marketAppShelves',
+        component: () => import('@/views/Market/AppShelves/index.vue'),
+        meta: {
+          title: '应用上架'
+        }
+      },
+      {
+        path: '/market/order',
+        name: 'marketOrder',
+        component: () => import('@/views/Market/Order/index.vue'),
+        meta: {
+          title: '订单页面'
+        }
+      },
+      {
+        path: '/market/shopCar',
+        name: 'userShopCar',
+        component: () => import('@/views/Market/ShopCar/index.vue'),
+        meta: {
+          title: '购物车'
+        }
+      },
+      {
+        path: '/market/marketUser',
+        name: 'marketUser',
+        component: () => import('@/views/Market/MarketUser/index.vue'),
+        meta: {
+          title: '市场用户管理'
+        }
+      }
 
+    ]
+  },
   {
     path: '/company',
     redirect: '/company/unitMsg',

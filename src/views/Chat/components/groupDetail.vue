@@ -110,7 +110,7 @@
 <script lang="ts" setup>
 import $services from '@/services'
 import { ElMessage } from 'element-plus'
-import HeadImg from './headImg.vue'
+import HeadImg from '@/components/headImg.vue'
 import { reactive, ref, toRefs } from 'vue'
 
 

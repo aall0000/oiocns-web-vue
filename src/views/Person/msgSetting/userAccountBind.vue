@@ -19,8 +19,8 @@
 </script>
 <style lang="scss" scoped>
   .userAccountBind {
-    height: calc(100vh - 235px);
-    background-color: #fff;
+    height: 100%;
+    background-color: #eff0f4;
 
     .pageHeader {
       width: 100%;
@@ -38,8 +38,9 @@
       }
     }
     .body {
-      height: 600px;
+      height: 60%;
       width: 100%;
+      background-color: #fff;
       border-left: 10px solid #eff0f4;
       border-top: 16px solid #eff0f4;
       border-right: 16px solid #eff0f4;

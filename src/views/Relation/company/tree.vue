@@ -35,26 +35,22 @@
       </el-input>
     </div>
     <div class="tree">
-      <el-tree :data="orgTree" ref="treeRef" @node-click="nodeClick" node-key="id" :highlightCurrent="true"
-        :default-expanded-keys="defaultExpandedKeys" :filter-node-method="filterNode">
-        <template #default="{ node, data }">
-          <span class="custom-tree-node">
-            <div class="tree-box">
-              <el-icon>
-                <School />
-              </el-icon>
-              <span>{{ data.label }}</span>
-              <el-tag size="small">{{ data.data.typeName }}</el-tag>
-            </div>
-          </span>
-        </template>
-      </el-tree>
-
-      <div class="weihu-wrap" @click="modifyOrgTree">
+        <el-tree :data="orgTree"  ref="treeRef" @node-click="nodeClick" node-key="id"
+          :default-expanded-keys="defaultExpandedKeys" :filter-node-method="filterNode">
+          <template #default="{ node, data }">
+            <span class="custom-tree-node">
+              <div class="tree-box">
+                <img src="@/assets/img/zuzhijiagou.jpg" class="tree-icon" />
+                <span>{{ data.label }}</span>
+                <el-tag size="small">{{ data.data.typeName }}</el-tag>
+              </div>
+            </span>
+          </template>
+        </el-tree>
+    </div>
+    <div class="weihu-wrap" @click="modifyOrgTree">
         <span class="weihu-wrap-txt">部门维护</span>
       </div>
-    </div>
-
   </el-card>
 
   <el-dialog v-model="deptDialogVisible" title="请录入部门信息" width="40%" center append-to-body @close="dialogHide">
@@ -81,7 +77,7 @@
     </template>
   </el-dialog>
 
-  <el-dialog v-model="jobDialogVisible" title="请录入工作组信息" width="40%" center append-to-body @close="dialogHide">
+  <el-dialog v-model="jobDialogVisible"  title="请录入工作组信息" width="40%" center append-to-body @close="dialogHide">
     <div>
       <el-form-item label="工作组名称" style="width: 100%">
         <el-input v-model="formData.name" placeholder="请输入" clearable style="width: 100%" />
@@ -89,7 +85,7 @@
       <el-form-item label="工作组编号" style="width: 100%">
         <el-input v-model="formData.code" placeholder="请输入" clearable style="width: 100%" />
       </el-form-item>
-      <el-form-item label="上级节点" style="width: 100%">
+      <el-form-item class="dialog-workGroup" label="上级节点" style="width: 100%">
         <el-cascader :props="cascaderProps" :options="cascaderTree" v-model="formData.parentIds" style="width: 100%"
           placeholder="请选择" />
       </el-form-item>
@@ -110,7 +106,7 @@
 <script lang="ts" setup>
   import { ref, onMounted, watch} from 'vue'
   import $services from '@/services'
-  import { ElMessage, ElTree, ExpandTrigger } from 'element-plus';
+  import { ElMessage} from 'element-plus';
   import { useRouter } from 'vue-router';
 
 
@@ -128,9 +124,9 @@
   // 节点ID和对象映射关系
   const parentIdMap: any = {}
 
-  const defaultExpandedKeys = ref([])
-  const filterText = ref('')
-  const treeRef = ref<InstanceType<typeof ElTree>>()
+  let defaultExpandedKeys = ref([])
+  let filterText = ref('')
+  const treeRef = ref<any>()
   let orgTree = ref<OrgTreeModel[]>([])
   let cascaderTree = ref<OrgTreeModel[]>([])
 
@@ -142,6 +138,7 @@
       initIdMap(orgTree.value)
       cascaderTree.value = filter(JSON.parse(JSON.stringify(orgTree.value)))
       defaultExpandedKeys.value = [res.data.id]
+      nodeClick(res.data)
     })
   }
 
@@ -270,7 +267,6 @@
   const modifyOrgTree = () => {
     router.push({ path: '/relation/org' })
   }
-
   //获取部门
   onMounted(() => {
     loadOrgTree()
@@ -278,10 +274,24 @@
 
 </script>
 
-
+<style lang="scss">
+.tree .el-tree-node__content {
+  height: 30px;
+  font-size: 16px;
+}
+.tree .el-tag{
+  margin-left: 5px;
+}
+.dialog-workGroup{
+  .el-form-item__label{
+    width: 82px;
+  }
+}
+</style>
 <style lang="scss" scoped>
 .card {
   height: 100%;
+  position: relative;
 }
 
 .tree-btns {
@@ -295,6 +305,7 @@
 }
 
 .search {
+  font-size: 12px;
   padding: 12px;
 
   .el-input__inner {
@@ -311,15 +322,26 @@
 }
 
 .tree {
-  height: 100%;
-
+  position: relative;
+  max-height: 70%;
+  .tree-icon{
+    width: 14px;
+    height: 14px;
+    display: block;
+    margin-top: -3px;
+    margin-right: 3px;
+  }
   .weihu-wrap {
-    padding-bottom: 10px;
     text-align: center;
     background-color: #fff;
     border-top: 1px solid #ccc;
     cursor: pointer;
-
+    position: absolute;
+    bottom: 10px;
+    width:100%;
+    height: 30px;
+    line-height: 30px;
+    left:0;
     &-txt {
       color: $mainColor;
       font-size: 16px;
@@ -332,6 +354,9 @@
     align-items: center;
     &__text {
       margin-left: 5px;
+    }
+    &span{
+      font-size: 16px;
     }
   }
 

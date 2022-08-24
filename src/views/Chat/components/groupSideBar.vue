@@ -66,7 +66,7 @@
 <script lang="ts" setup name="groupSideBar">
 import { computed, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
 import { formatDate } from '@/utils/index'
-import HeadImg from './headImg.vue'
+import HeadImg from '@/components/headImg.vue'
 
 type propType = {
   active: ImMsgChildType,//当前激活聊天对象信息
@@ -81,7 +81,7 @@ const searchValue = ref<string>('')
 // 是否已加载--判断是否需要默认打开
 const isMounted = ref<boolean>(false)
 
-// 外侧打开状态
+// 外侧打开状态-持久化展示
 const outList=ref<any>(new Map())
 
 //根据搜索条件-输出展示列表
@@ -193,12 +193,6 @@ const handleContextChange = (item: MenuItemType) => {
       break;
     case 2:
       // props.clearHistoryMsg()
-      break;
-    case 3:
-
-      break;
-    case 4:
-
       break;
 
     default:

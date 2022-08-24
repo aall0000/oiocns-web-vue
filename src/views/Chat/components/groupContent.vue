@@ -27,7 +27,7 @@
           <!-- {{ item.msgBody }} -->
         </div>
         <!-- <img class="con-img" src="@/assets/img/userIcon/ic_06.png" alt=""> -->
-        <HeadImg :name="getUserName(myId)" :label="''"/>
+        <HeadImg :name="getUserName(myId)"/>
       </li>
     </template>
     <!-- 鼠标右键 -->
@@ -62,7 +62,7 @@
   } from 'vue'
   import { debounce } from '@/utils/tools'
   import { useUserStore } from '@/store/user'
-  import HeadImg from './headImg.vue'
+  import HeadImg from '@/components/headImg.vue'
 
   type Props = {
     list: any[] //消息列表
