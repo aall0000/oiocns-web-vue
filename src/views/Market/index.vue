@@ -3,8 +3,7 @@
     <el-card shadow="always" class="market-head flex">
       <el-button type="primary" @click="registerVisible = true">注册</el-button>
       <el-button type="primary">订单</el-button>
-      <el-button type="primary">市场</el-button>
-      <el-button type="primary" @click="goUser">用户管理</el-button>
+      <el-button type="primary" @click="GoPage('/market/markList')">市场</el-button>
     </el-card>
     <div class="market-content box">
       <ul class="box-ul">
@@ -207,11 +206,8 @@ version: "1" -->
   }
 
   // 路由跳转
-  const goMarket = () => {
-    router.push({ path: '/market/markList' })
-  }
-  const goUser = () => {
-    router.push('/market/marketUser')
+  const GoPage = (path: string) => {
+    router.push(path)
   }
 </script>
 

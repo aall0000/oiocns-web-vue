@@ -13,15 +13,15 @@
             :key="item.id"
             @click="gotoApp(item)"
           >
-            <template #footer>
-              <el-button class="btn" type="primary" link small @click.stop="hadleClick(item)"
-                >删除市场</el-button
-              >
-              <el-divider direction="vertical" />
-              <el-button class="btn" link small @click.stop="hadleUserManage(item)"
-                >用户管理</el-button
-              >
-            </template>
+            <!-- <template #footer> -->
+            <el-button class="btn" type="primary" link small @click.stop="hadleClick(item)"
+              >删除市场</el-button
+            >
+            <el-divider direction="vertical" />
+            <el-button class="btn" link small @click.stop="hadleUserManage(item)"
+              >用户管理</el-button
+            >
+            <!-- </template> -->
           </ShopCard>
         </li>
         <div v-else>暂无数据</div>
@@ -37,11 +37,11 @@
         <p class="box-ul-title">我加入的市场</p>
         <li class="app-card" v-if="state.joinMarket.length !== 0">
           <ShopCard v-for="item in state.joinMarket" :info="item" :key="item.id">
-            <template #footer>
-              <el-button class="btn" type="primary" link small>退出市场</el-button>
-              <!-- <el-divider direction="vertical" />
+            <!-- <template #footer> -->
+            <el-button class="btn" type="primary" link small>退出市场</el-button>
+            <!-- <el-divider direction="vertical" />
               <el-button class="btn" link small>用户管理</el-button> -->
-            </template>
+            <!-- </template> -->
           </ShopCard>
         </li>
         <div v-else> 暂无数据 </div>
@@ -62,7 +62,7 @@
   import ShopCard from '../components/shopCard.vue'
   import { useRouter } from 'vue-router'
   import $services from '@/services'
-  import { ElMessage } from 'element-plus'
+  import { ElMessage, ElMessageBox } from 'element-plus'
 
   const router = useRouter()
 
@@ -149,21 +149,29 @@
   }
 
   const hadleClick = (item: any) => {
-    $services.appstore
-      .marketDel({
-        data: {
-          id: item.id
-        }
-      })
-      .then((res: ResultType) => {
-        if (res.code == 200) {
-          getMyMarketData()
-          ElMessage({
-            message: '删除成功',
-            type: 'success'
+    ElMessageBox.confirm(`确认删除  ${item.name}?`, '提示', {
+      confirmButtonText: '确认',
+      cancelButtonText: '取消',
+      type: 'warning'
+    })
+      .then(() => {
+        $services.appstore
+          .marketDel({
+            data: {
+              id: item.id
+            }
           })
-        }
+          .then((res: ResultType) => {
+            if (res.code == 200) {
+              getMyMarketData()
+              ElMessage({
+                message: '删除成功',
+                type: 'success'
+              })
+            }
+          })
       })
+      .catch(() => {})
   }
 </script>
 
