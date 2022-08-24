@@ -69,7 +69,8 @@
         expandAll: false,
         checkBox: true,
         order: true,
-        noPage: false
+        noPage: false,
+        selectLimit: 20
       }"
       @handleUpdate="assignTableChange"
       :tableHead="columns"

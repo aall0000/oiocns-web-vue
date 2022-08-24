@@ -5,7 +5,7 @@
         <Companies :tabHeight='tabHeight' :selectItem="selectItem"></Companies>
       </el-tab-pane>
       <el-tab-pane label="角色体系" name="identity">
-
+        <Authority :selectItem="selectItem"></Authority>
       </el-tab-pane>
     </el-tabs>
   </div>
@@ -14,6 +14,7 @@
 import { ref, onMounted } from 'vue'
 import type { TabsPaneContext } from 'element-plus'
 import Companies from './companies.vue';
+import Authority from './authority.vue';
 
 const activeName = ref('companies')
 let selectItem = ref<any>({})
@@ -26,13 +27,17 @@ defineExpose({ selectItemChange });
 const tabs = ref(null)
 const tabHeight = ref<number>(400)
 window.addEventListener('resize', function () {
-  tabHeight.value=tabs.value.clientHeight
+  if(tabs.value){
+    tabHeight.value=tabs.value.clientHeight
+  }
 })
 const handleClick = (tab: TabsPaneContext, event: Event) => {
   console.log(tab, event)
 }
 onMounted(() => {
-  tabHeight.value=tabs.value.clientHeight
+  if(tabs.value){
+    tabHeight.value=tabs.value.clientHeight
+  }
 })
 
 </script>
