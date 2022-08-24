@@ -17,7 +17,7 @@
   import Tree from './tree.vue'
   import Info from './info.vue'
   import Body from './body.vue'
-  import { ref ,onMounted,watch} from 'vue';
+  import { ref, onMounted, watch} from 'vue';
 
 
   const info = ref(null);

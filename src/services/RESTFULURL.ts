@@ -197,7 +197,8 @@ export default {
     merchandise: appstore + '/search/merchandise',
     member: appstore + '/search/member',
     create: appstore + '/create',
-    removeMemver: appstore + '/remove/member'
+    removeMemver: appstore + '/remove/member',
+    marketQuit: appstore + '/quit'
   }
   //others
 }
