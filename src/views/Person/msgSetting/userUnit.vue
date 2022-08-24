@@ -14,7 +14,7 @@
             </div>
             <div class="topRight">
               <el-button type="primary" @click="showdialogShow">创建单位</el-button>
-              <el-button type="primary" @click="addCompany = true">申请加入单位</el-button>
+              <el-button type="primary" @click="friendShow">申请加入单位</el-button>
               <!-- <el-button>查看申请记录</el-button> -->
             </div>
           </div>
@@ -37,76 +37,11 @@
               </el-table-column>
             </el-table>
           </div>
-          <el-dialog v-model="addCompany" title="搜索单位" width="30%">
-            <el-select
-              v-model="value"
-              filterable
-              remote
-              reserve-keyword
-              placeholder="搜索单位"
-              :remote-method="remoteMethod"
-              :loading="loading"
-              style="width: 100%"
-            >
-              <el-option
-                v-for="item in options"
-                :key="item.value"
-                :value="item.value"
-                :label="`${item.label}(${item.name})`"
-                style="height: 50px; width: 550px"
-              >
-                <div
-                  style="
-                    height: 50px;
-                    width: 100%;
-                    display: flex;
-                    justify-content: flex-start;
-                    align-items: center;
-                    border-bottom: 1px solid #f0f2f5;
-                  "
-                >
-                  <div style="height: 50px; width: 15%; margin-top: 5px">
-                    <headImg
-                      :name="item.name.slice(0, 1)" :label="''"
-                      style="transform: scale(0.7, 0.7); border-radius: 50px; font-size: 19px"
-                    ></headImg>
-                  </div>
-                  <div style="height: 50px; width: 85%; margin-bottom: 5px">
-                    <p
-                      style="
-                        height: 25px;
-                        font-weight: 600;
-                        overflow: hidden;
-                        text-overflow: ellipsis;
-                        white-space: nowrap;
-                      "
-                      >{{ item.label }}({{ item.name }})</p
-                    >
-                    <p
-                      style="
-                        height: 25px;
-                        color: #ccc;
-                        overflow: hidden;
-                        text-overflow: ellipsis;
-                        white-space: nowrap;
-                      "
-                      >{{ item.remark }}</p
-                    >
-                  </div>
-                </div>
-              </el-option>
-            </el-select>
-            <template #footer>
-              <span class="dialog-footer">
-                <el-button @click="addCompany = false">取消</el-button>
-                <el-button type="primary" @click="addCompanyFun">确认</el-button>
-              </span>
-            </template>
-          </el-dialog>
           <CreateUnitDialog
             :dialogShow="dialogShow"
             @switchCreateCompany="closeDialog"
           ></CreateUnitDialog>
+          <searchCompany v-if="friendDialog" @closeDialog="closeDialog"  @checkFriend='checkFriend'></searchCompany>
         </div>
       </div>
     </div>
@@ -120,7 +55,7 @@
   import { useUserStore } from '@/store/user'
   import type { TabsPaneContext } from 'element-plus'
   import { ElMessage } from 'element-plus'
-  import headImg from '@/views/Chat/components/headImg.vue'
+  import searchCompany from '@/components/search/company.vue'
   import CreateUnitDialog from '@/views/Layout/components/createUnitDialog.vue'
   const store = useUserStore()
 
@@ -182,49 +117,11 @@
     remark: string
     name: string
   }
-  const addCompany = ref<boolean>(false)
-  const options = ref<ListItem[]>([])
-  const value = ref('')
-  const loading = ref(false)
-  const remoteMethod = (query: string) => {
-    if (query) {
-      $services.company
-        .searchCompany({
-          data: {
-            text: query,
-            offset: 0,
-            limit: 10
-          }
-        })
-        .then((res: ResultType) => {
-          if (res.success) {
-            let states = res.data.result
-            let arr: { value: any; label: any; remark: any; name: any }[] = []
-            states.forEach((el: any) => {
-              let obj = {
-                value: el.id,
-                label: el.name,
-                remark: el.team.remark,
-                name: el.team.name
-              }
-              arr.push(obj)
-            })
-            options.value = arr
-            loading.value = false
-          } else {
-            options.value = []
-            loading.value = false
-          }
-        })
-    } else {
-      options.value = []
-    }
-  }
-  const addCompanyFun = () => {
+  const addCompanyFun = (arr:Array<arrList>) => {
     $services.company
       .applyJoin({
         data: {
-          id: value.value
+          id: arr.join(',')
         }
       })
       .then((res: ResultType) => {
@@ -233,7 +130,7 @@
             message: '申请成功',
             type: 'warning'
           })
-          addCompany.value = false
+          friendDialog.value = false
         }
       })
   }
@@ -250,6 +147,24 @@
   }
   const closeDialog = ()=>{
     location.reload()
+  }
+  type arrList = {
+    id:string
+  }
+  const friendDialog = ref<boolean>(false)
+  const checkFriend=(val:any)=>{
+    if(val.value.length>0){
+      let arr:Array<arrList> =[]
+      val.value.forEach((element:any) => {
+        arr.push(element.id)
+      });
+      addCompanyFun(arr)
+    }else{
+      friendDialog.value = false;
+    }
+  }
+  const friendShow = ()=>{
+    friendDialog.value = true;
   }
 </script>
 <style lang="scss" scoped>

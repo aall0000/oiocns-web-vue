@@ -7,7 +7,7 @@
       </el-select>
     </div>
 
-    <div>
+    <div class="search-wrap">
       <el-input class="search" v-model="filterText" placeholder="搜索集团">
         <template #suffix>
           <el-icon class="el-input__icon">
@@ -15,25 +15,29 @@
           </el-icon>
         </template>
       </el-input>
-
-      <el-icon color="#154ad8" :size="20" @click="createGroupDialogVisible = true">
-        <CirclePlus />
-      </el-icon>
+      <li class="con tree-btns">
+        <div class="title">集团管理</div>
+        <el-icon color="#154ad8" :size="20" @click="createGroupDialogVisible = true">
+          <CirclePlus />
+        </el-icon>
+      </li>
+     
     </div>
 
-    <el-tree :data="orgTree" highlight-current ref="treeRef" @node-click="nodeClick"
-      :filter-node-method="filterNode" :default-expanded-keys="defaultExpandedKeys">
-      <template #default="{ node, data }">
-        <span class="custom-tree-node">
-          <div class="tree-box">
-            <el-icon>
-              <School />
-            </el-icon>
-            <span class="tree-box__text">{{ node.label }}</span>
-          </div>
-        </span>
-      </template>
-    </el-tree>
+    <div class="tree">
+        <el-tree :data="orgTree"  ref="treeRef" @node-click="nodeClick" node-key="id"
+          :default-expanded-keys="defaultExpandedKeys" :filter-node-method="filterNode">
+          <template #default="{ node, data }">
+            <span class="custom-tree-node">
+              <div class="tree-box">
+                <img src="@/assets/img/zuzhijiagou.jpg" class="tree-icon" />
+                <span>{{ data.label }}</span>
+                <!-- <el-tag size="small">{{ data.data.typeName }}</el-tag> -->
+              </div>
+            </span>
+          </template>
+        </el-tree>
+    </div>
 
   </el-card>
 
@@ -161,7 +165,7 @@ const loadOrgTree = (id?: string)=>{
     initIdMap(orgTree.value)
     cascaderTree.value = orgTree.value
     defaultExpandedKeys.value = [res.data.id]
-    console.log("defaultExpandedKeys", defaultExpandedKeys.value)
+    nodeClick(res.data)
   })
 }
 
@@ -187,7 +191,6 @@ const createGroup = ()=>{
   if (parentIds.length > 0) {
     parentId = parentIds[parentIds.length - 1]
   }
-  console.log('parentId=========', parentId)
   // return
   $services.company.createSubgroup({
     data: {
@@ -230,7 +233,15 @@ watch(filterText, (val) => {
 .card {
   height: 100%;
 }
+.tree-btns {
+  padding: 10px 0;
+  display: flex;
+  justify-content: space-between;
+}
 
+.search-wrap{
+  margin-top: 10px;
+}
 .search {
   font-size: 12px;
   .el-input__inner {
@@ -242,6 +253,16 @@ watch(filterText, (val) => {
   overflow: hidden;
   text-overflow: ellipsis;
   word-spacing: nowrap;
+  display: flex;
+  cursor: pointer;
+}
+
+.tree-icon{
+  width: 14px;
+  height: 14px;
+  display: block;
+  margin-top: -3px;
+  margin-right: 3px;
 }
 
 .tree-box {

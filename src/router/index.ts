@@ -280,11 +280,27 @@ const mainRouter: RouteRecordRaw[] = [
         }
       },
       {
-        path: '/market/appList',
-        name: 'marketAppList',
+        path: '/market/markList',
+        name: 'marketMarkList',
         component: () => import('@/views/Market/AppList/index.vue'),
         meta: {
+          title: '市场列表'
+        }
+      },
+      {
+        path: '/market/appList',
+        name: 'marketAppList',
+        component: () => import('@/views/Market/AppList/appList.vue'),
+        meta: {
           title: '应用列表'
+        }
+      },
+      {
+        path: '/market/userManage',
+        name: 'marketUserManage',
+        component: () => import('@/views/Market/AppList/userManage.vue'),
+        meta: {
+          title: '用户管理'
         }
       },
       {
@@ -318,7 +334,16 @@ const mainRouter: RouteRecordRaw[] = [
         meta: {
           title: '购物车'
         }
+      },
+      {
+        path: '/market/marketUser',
+        name: 'marketUser',
+        component: () => import('@/views/Market/MarketUser/index.vue'),
+        meta: {
+          title: '市场用户管理'
+        }
       }
+
     ]
   },
   {

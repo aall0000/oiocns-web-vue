@@ -53,6 +53,7 @@
           <el-table-column
             v-if="options.checkBox"
             type="selection"
+            highlight-current-row
             :selectable="checkSelectable"
             width="50"
           >
@@ -61,7 +62,7 @@
             v-if="options.order"
             type="index"
             label="序号"
-            width="100"
+            width="70"
           ></el-table-column>
           <template v-for="(item, index) in tableHead">
             <el-table-column
@@ -140,6 +141,7 @@
       checkBox: any
       order: any
       noPage: boolean
+      selectLimit:number //限制选择个数，默认20
     }
     batchOperate: any[]
     queryParams: any[]
@@ -157,7 +159,8 @@
         expandAll: false,
         checkBox: false,
         order: true,
-        noPage: false
+        noPage: false,
+        selectLimit:0,
       }
     },
     batchOperate: () => [],
@@ -183,7 +186,7 @@
   })
 
   const state = reactive({
-    loading: true,
+    loading: false,
     multipleSelection: [], //多选
     //分页信息
     page: {
@@ -211,7 +214,8 @@
     'hideDrop',
     'handleSortChange',
     'handleRowClick',
-    'handleUpdate'
+    'handleUpdate',
+    'selectionChange'
   ])
 
   const cellStyle = ({
@@ -245,23 +249,35 @@
   }
 
   const checkSelectable = (row: any) => {
-    if (row.children && !row.below) {
-      if (row.children.length !== 0) {
+
+    if(props.options.selectLimit>0){
+      if(props.options.selectLimit < multipleSelection.value.length){
+        var obj = multipleSelection.value[multipleSelection.value.length-1]
+        diyTable.value.clearSelection()
+        diyTable.value!.toggleRowSelection(obj, undefined)
+      }
+      return true
+    }else{
+      
+      if (row.children && !row.below) {
+        if (row.children.length !== 0) {
+          return false
+        } else {
+          return true
+        }
+      } else if (row.below == true) {
+        return false
+      } else if (row.saleStatus === 3) {
         return false
       } else {
         return true
       }
-    } else if (row.below == true) {
-      return false
-    } else if (row.saleStatus === 3) {
-      return false
-    } else {
-      return true
     }
   }
 
   const handleSelectionChange = (val: any) => {
     multipleSelection.value = val
+    emit('selectionChange',multipleSelection.value)
   }
 
   /**
@@ -507,5 +523,8 @@
       display: flex;
       flex-wrap: wrap;
     }
+  }
+   :deep(.el-table__header-wrapper .el-checkbox){
+    display: none;
   }
 </style>

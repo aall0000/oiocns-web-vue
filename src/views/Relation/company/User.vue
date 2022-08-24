@@ -8,33 +8,12 @@
             <el-button small link type="primary" @click="viewApplication">查看申请</el-button>
           </div>
           <div v-if="props.selectItem?.data?.typeName == '部门' || props.selectItem?.data?.typeName == '工作组'">
-            <el-button small link type="primary" @click="assignDialog = true">分配人员</el-button>
+            <el-button small link type="primary" @click="showAssignDialog">分配人员</el-button>
           </div>
         </div>
       </div>
-
-      <!-- <el-table
-        :data="users"
-        stripe
-        :border="true"
-        style="width: 100%; margin: 0 auto"
-        height="280px"
-      >
-        <el-table-column type="selection" />
-        <el-table-column prop="code" label="账号" />
-        <el-table-column prop="name" label="姓名" />
-        <el-table-column prop="team.code" label="手机号" />
-        <el-table-column label="操作" width="100">
-          
-        </el-table-column>
-      </el-table> -->
-
-      <!-- <el-pagination class="page-pagination" @size-change="(e: any) => handlePaginationChange(e, 'limit')"
-        @current-change="(e: any) => handlePaginationChange(e, 'current')" background
-        :page-sizes="[10, 20, 50, 100]" v-model:currentPage="pagination.current" v-model:page-size="pagination.limit"
-        layout="total,prev, pager, next," :total="pageStore.total" /> -->
-       <div :style="{height:tabHeight-35+'px'}">
-         <div style="width: 100%; height: 100%">
+      <div :style="{height:tabHeight-35+'px'}">
+        <div style="width: 100%; height: 100%">
           <DiyTable
             ref="diyTable"
             :hasTableHead="true"
@@ -44,28 +23,18 @@
           >
             <template #operate="scope" >
                 <div v-if="props.selectItem?.data?.typeName == '公司'">
-                  <el-button link type="danger" size="small" @click="showDialog(scope.row)">操作离职</el-button>
+                  <el-button link type="danger" size="small" @click="removeFrom(scope.row)">操作离职</el-button>
                 </div>
                 <div v-if="props.selectItem?.data?.typeName == '部门' || props.selectItem?.data?.typeName == '工作组'">
-                  <el-button link type="danger" size="small">分配人员</el-button>
-                  <el-button link type="danger" size="small" @click="showDialog(scope.row)" >移除成员</el-button>
+                  <el-button link type="danger" size="small" @click="removeFrom(scope.row)" >移除成员</el-button>
                 </div>
             </template>
           </DiyTable>
         </div>
-       </div>
+      </div>
     </div>
 
-  <el-dialog v-model="removeDialog" title="确认删除吗？" width="30%" draggable>
-    <span style="text-align:center;width:100%">删除以后无法找回</span>
-    <template #footer>
-      <span class="dialog-footer">
-        <el-button @click="removeDialog = false">取消</el-button>
-        <el-button type="primary" @click="removeFrom">确认</el-button>
-      </span>
-    </template>
-  </el-dialog>
-  <el-dialog v-model="pullPersonDialog" @close="pullPreson" title="添加人员到单位" width="30%">
+  <el-dialog v-model="pullPersonDialog" @close="hidePullPreson" title="添加人员到单位" width="30%">
     <el-select
       v-model="inviter"
       filterable
@@ -91,16 +60,27 @@
   </el-dialog>
 
   <el-dialog v-model="assignDialog" @close="hideAssignDialog" :title="'分配人员 => ' + selectItem.label" width="50%">
-    <el-table :data="filterTableData" style="width: 100%">
-      <el-table-column label="账号" prop="date" />
-      <el-table-column label="名称" prop="name" />
-      <el-table-column label="手机号" prop="name" />
-      <el-table-column align="right">
-        <template #header>
-          <el-input v-model="search" placeholder="搜索" />
-        </template>
-      </el-table-column>
-    </el-table>
+    <el-input v-model="assignSearch" class="search" placeholder="搜索用户" @input="assignSearchChange">
+      <template #prefix>
+        <el-icon class="el-input__icon"><Search /></el-icon>
+      </template>
+    </el-input>
+    <DiyTable
+      ref="assignTable"
+      :hasTableHead="true"
+      :tableData="companyUsers"
+      :options="{
+        expandAll: false,
+        checkBox: true,
+        order: true,
+        selectLimit:0,
+        noPage: false
+      }"
+      @handleUpdate="assignTableChange"
+      :tableHead="columns"
+      :style="{height: '350px'}"
+    >
+    </DiyTable>
     <template #footer>
       <span class="dialog-footer">
         <el-button @click="hideAssignDialog">取消</el-button>
@@ -113,65 +93,82 @@
 <script lang='ts' setup>
 import $services from '@/services'
 import DiyTable from '@/components/diyTable/index.vue'
-import { onMounted, reactive, ref, watch,computed } from 'vue';
-import { useUserStore } from '@/store/user'
+import { onMounted, reactive, ref, watch } from 'vue';
 import { useRouter } from "vue-router";
-import { ElMessage } from 'element-plus';
-import { ArrowUp } from '@element-plus/icons-vue';
-import { fa } from 'element-plus/es/locale';
+import { ElMessage, ElMessageBox } from 'element-plus';
+import { Search } from '@element-plus/icons-vue'
 
 const props = defineProps<{
   selectItem: any,     // 节点数据
   tabHeight:number,
 }>()
+
+const company = ref<any>({})
+
 const tableHead = ref([
-      {
-        prop: 'code',
-        label: '账号',
-        width: '180',
-      },
-      {
-        prop: 'name',
-        label: '姓名',
-        width: '240',
-        name:'name',
-      },
-      {
-        prop: 'team.code',
-        label: '手机号',
-        width: '330',
-        name:'teamCode',
-      },
-      {
-        type: 'slot',
-        label: '操作',
-        fixed: 'right',
-        align: 'center',
-        width: '150',
-        name: 'operate'
-      }
-    ])
+  {
+    prop: 'code',
+    label: '账号',
+    width: '180',
+  },
+  {
+    prop: 'name',
+    label: '姓名',
+    width: '240',
+    name:'name',
+  },
+  {
+    prop: 'team.code',
+    label: '手机号',
+    width: '330',
+    name:'teamCode',
+  },
+  {
+    type: 'slot',
+    label: '操作',
+    fixed: 'right',
+    align: 'center',
+    width: '150',
+    name: 'operate'
+  }
+])
 let users = ref<any>([])
 
+const columns = ref([
+  {
+    prop: 'code',
+    label: '账号',
+    width: '180',
+  },
+  {
+    prop: 'name',
+    label: '姓名',
+    width: '240',
+    name:'name',
+  },
+  {
+    prop: 'team.code',
+    label: '手机号',
+    width: '330',
+    name:'teamCode',
+  }
+])
+let companyUsers = ref<any>([])
+
+
 const router = useRouter()
-// 表格分页数据
-const pagination: { current: number, limit: number } = reactive({ current: 1, limit: 10 })
 // 表格数据加载状态
 const loading = ref<boolean>(false)
 // 表格展示数据
 const pageStore = reactive({
   tableData: [],
-  currentPage:1,
-  pageSize:20,
+  currentPage: 1,
+  pageSize: 20,
   total: 0
 })
 
-// 处理表格分页操作
-const handlePaginationChange = (newVal: number, type: "current" | 'limit') => {
-  pagination[type] = newVal
-  // 获取数据
-}
 const diyTable = ref(null)
+const assignTable = ref(null)
 
 // 加载用户
 const getUsers = ()=>{
@@ -180,8 +177,9 @@ const getUsers = ()=>{
     let url = '';
     if(data.typeName == '公司'){
       url = 'getPersons'
+      company.value = JSON.parse(JSON.stringify(data))
     } else if(data.typeName == '部门'){
-      url = 'getDepartments'
+      url = 'getDepartmentPersons'
     } else if(data.typeName == '工作组'){
       url = 'getJobPersons'
     }
@@ -194,7 +192,6 @@ const getUsers = ()=>{
     }).then((res: ResultType) => {
       if (res.code == 200 && res.success) {
         users.value = res.data.result;
-        console.log(diyTable.value)
         pageStore.total = res.data.total;
         diyTable.value.state.loading = false
         diyTable.value.state.page.total = pageStore.total;
@@ -202,6 +199,8 @@ const getUsers = ()=>{
     })
   }
 }
+
+
 // 搜索人
 const searchPersons = (query: string) => {
   inviterOptions.value = []
@@ -238,6 +237,7 @@ const hidePullPreson = () => {
   inviter.value = ''
   pullPersonDialog.value = false
 }
+
 //邀请加入单位
 const pullPerson = () => {
   $services.company
@@ -259,11 +259,12 @@ const pullPerson = () => {
       pullPersonDialog.value = false
     })
 }
-const handleUpdate = (page:any)=>{
+const handleUpdate = (page: any)=>{
   pageStore.currentPage = page.currentPage
   pageStore.pageSize = page.pageSize
   getUsers()
 }
+
 //查看申请
 const viewApplication = (row: any) => {
   router.push('/cardDetail')
@@ -271,58 +272,111 @@ const viewApplication = (row: any) => {
 
 // 移除
 const removeFrom = (row: any) =>{
-  let url;
+  let url: string;
+  let title: string;
   if(props.selectItem?.data?.typeName == '公司'){
     url = 'removeFromCompany'
+    title = `操作离职，将删除 ${row.name} 在单位的信息，确定操作吗？`
   } else if(props.selectItem?.data?.typeName == '部门'){
     url = 'removeFromDepartment'
+    title = `确定把 ${row.name} 从当前部门移除吗？`
   } else if(props.selectItem?.data?.typeName == '工作组'){
     url = 'removeFromJob'
+    title = `确定把 ${row.name} 从当前部门移除吗？`
   }
-  $services.company[url]({
-    data: {
-      id: props.selectItem.id,
-      targetIds: [rowItem.value.id]
+  ElMessageBox.confirm(
+    title,
+    '警告',
+    {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
     }
-  }).then((res: ResultType) => {
-    getUsers()
-    if (res.success) {
-      removeDialog.value = false;
-      ElMessage({
-        message: '操作成功',
-        type: 'success'
-      })
-    }
+  ).then(() => {
+    $services.company[url]({
+      data: {
+        id: props.selectItem.id,
+        targetIds: [row.id]
+      }
+    }).then((res: ResultType) => {
+      getUsers()
+      if (res.success) {
+        ElMessage({
+          message: '操作成功',
+          type: 'success'
+        })
+      }
+    })
+  })
+  .catch(() => {
+    console.log('移除成功!')
   })
 }
-type rowType ={
-  id:string
-}  
-const rowItem = ref<rowType>()
-const removeDialog = ref<boolean>(false)
-const showDialog = (row:rowType)=>{
-  removeDialog.value = true;
-  rowItem.value = row;
+
+// 加载公司所有用户
+const getCompanyUsers = (filter?: string)=>{
+  let data = {
+    id: company.value.id,
+    offset: (pageStore.currentPage-1)*pageStore.pageSize,
+    limit: pageStore.pageSize
+  }
+  if(filter && filter.trim() != ''){
+    data = {...data, ...{filter}}
+  }
+  if(company.value){
+    $services.company.getPersons({
+      data,
+    }).then((res: ResultType) => {
+      if (res.code == 200 && res.success) {
+        // 去除已分配到当前部门或者工作组的用户
+        let us = res.data.result || []
+        let userIds =  []
+        if(users.value){
+          userIds = users.value.map((u: any) => u.id);
+        }
+        const set: Set<string> = new Set(userIds)
+        companyUsers.value = us.filter((u: any) => !set.has(u.id))
+        pageStore.total = res.data.total - userIds.length
+        assignTable.value.state.loading = false
+        assignTable.value.state.page.total = pageStore.total;
+      }
+    })
+  }
 }
 
 const assignDialog = ref<boolean>(false)
 const hideAssignDialog = ()=>{
   assignDialog.value = false
+  getCompanyUsers()
+}
+
+const showAssignDialog = ()=>{
+  assignDialog.value = true
+  getCompanyUsers()
 }
 
 // 过滤数据
-const search = ref('')
-const filterTableData = computed(() => {
-  return []
-})
-
-//拉人
-const pullPreson =()=>{
-
+const assignSearch = ref('')
+const assignTableChange = (page: any)=>{
+  pageStore.currentPage = page.currentPage
+  pageStore.pageSize = page.pageSize
+  getCompanyUsers()
 }
+
+// 分配页面搜索用户变化
+const assignSearchChange = (e: string)=>{
+  getCompanyUsers(e)
+}
+
+
 // 分配人员
 const assign = () => {
-
+  const userIds = assignTable?.value?.state?.multipleSelection.map((u: any) => u.id);
+  if(props.selectItem?.data?.typeName == '部门'){
+    assignDepartment(props.selectItem.id, userIds)
+  } else if(props.selectItem?.data?.typeName == '工作组'){
+    assignJob(props.selectItem.id, userIds)
+  }
 }
 
 //分配部门
@@ -339,6 +393,7 @@ const assignDepartment = (id: string, targetIds: string[]) => {
         })
         hideAssignDialog()
       }
+      getUsers()
     })
 }
 //分配工作组
@@ -355,6 +410,7 @@ const assignJob = (id: string, targetIds: string[]) => {
         })
         hideAssignDialog()
       }
+      getUsers()
     })
 }
 
@@ -394,10 +450,8 @@ watch(props, () => {
     }
   }
 
-  .page-pagination {
-    padding: 10px;
-    display: flex;
-    justify-content: end;
+  .search {
+    width: 50%;
   }
 }
 </style>
