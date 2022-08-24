@@ -86,7 +86,14 @@ export const useAnyData = defineStore({
             return data.state
         },
         setWorkspace(data: WorkSpaceType) {
-            this.workspace = { ...data }
+            this.workspace = data ? { ...data } : {workspace: {
+                id: '',
+                content: [], // 组件内容
+                user: {
+                    name: '用户组件',
+                    content: []
+                }
+            }}
         }
     }
 })

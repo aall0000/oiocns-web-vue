@@ -290,10 +290,12 @@ export default defineComponent({
         console.log('index', data)
         ohterData.setWorkspace(data)
       })
-
-
       getLayout() // 加载默认的可编辑模块
+    })
 
+    onBeforeUnmount(() => {
+      
+      UserOtherDataConnection.unSubscribed(`${store.workspaceData.id}`)
     })
 
     // method位置
@@ -304,12 +306,7 @@ export default defineComponent({
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        // let arr = JSON.parse(JSON.stringify(state.userComponentList))
-        // arr.forEach((el) => {
-        //   if (el.id === item.id) {
-        //     arr.splice(arr.indexOf(el), 1)
-        //   }
-        // })
+        
         let params = {
 
           workspaceId: store.workspaceData.id,
@@ -323,26 +320,7 @@ export default defineComponent({
           })
 
         }
-        // $services.diyHome
-        //   .diy(`/anydata/object/set/${params.userId}.${params.workspaceId}.user`, {
-        //     data: {
-        //       operation: 'replaceAll',
-        //       data: {
-        //         name: '用户组件',
-        //         // temps: props.dialogShow.sendData
-        //         content: params.content
-        //       }
-        //     }
-        //   })
-        //   .then((res: ResultType) => {
-        //     if (res.state) {
-        //       ElMessage({
-        //         message: '删除成功',
-        //         type: 'success'
-        //       })
-        //       getUserComponents()
-        //     }
-        //   })
+        
       })
     }
     // 获取用户组件
@@ -378,14 +356,7 @@ export default defineComponent({
       const nowLayout = ohterData?.homeComplist.length > 0 ? ohterData?.homeComplist.find(n => n.name === parseInt(nowEditLayout)) : null
       console.log('首页layout布局', nowLayout)
       state.layout = nowLayout ? [...nowLayout.temps] : []
-      // state.onValue = route.query.onValue
-      // state.tabsData = JSON.parse(route.query.tabsData)
-
-      // state.tabsData.forEach((el) => {
-      //   if (el.name == state.onValue) {
-      //     state.layout = el.temps
-      //   }
-      // })
+     
     }
     // 确认按钮
     // const submitHome = () => {

@@ -66,20 +66,22 @@ const state = reactive({
 })
 
 onMounted(() => {
-  // 订阅工作空间数据变化
-  UserOtherDataConnection.subscribed(`${store.workspaceData.id}`, (data) => {
-    userOtherData.setWorkspace(data)
-  })
-  
   // 当前标签index
   const templateContentLen = userOtherData.homeComplist ? userOtherData.homeComplist.length :0
-  editableTabsValue.value = templateContentLen > 0 ? userOtherData.homeComplist[templateContentLen - 1].name : 0
-
+  editableTabsValue.value = templateContentLen > 0 ? templateContentLen-1:0
+  // 订阅工作空间数据变化
+  UserOtherDataConnection.subscribed(`${store.workspaceData.id}`, (data) => {
+    console.log('home===',data)
+    userOtherData.setWorkspace(data)
+    editableTabsValue.value = templateContentLen > 0 ? templateContentLen-1:0
+  })
+  
+  
 })
-// onBeforeUnmount(() => {
-//   console.log('页面即将销毁')
-//   UserOtherDataConnection.unSubscribed(`${store.workspaceData.id}`)
-// })
+onBeforeUnmount(() => {
+ 
+  UserOtherDataConnection.unSubscribed(`${store.workspaceData.id}`)
+})
 // 删除tab
 const removeTabs = async (targetName: TabPanelName) => {
   const tabs = userOtherData.homeComplist.filter(el => el.name !== targetName)
