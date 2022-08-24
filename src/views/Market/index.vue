@@ -9,6 +9,7 @@
       <ul class="box-ul">
         <p class="box-ul-title">我的应用</p>
         <li class="app-card">
+          <MarketCreate :info="add" @myclick="addApp" />
           <ShopCard v-for="item in state.myAppList" :info="item" :key="item.id">
             <!-- <template> -->
             <el-dropdown @command="(value) => handleCommand('own', value)" placement="top">
@@ -97,6 +98,8 @@ version: "1" -->
   import { baseData, actionOptionsOfOther, actionOptionsOfOwn } from './config'
   import { useRouter } from 'vue-router'
   import type { FormInstance, FormRules } from 'element-plus'
+  import MarketCreate from './components/marketCreate.vue'
+  const add: string = '从应用市场中添加'
   // 注册页面实例
   const registerFormRef = ref<FormInstance>()
   const router = useRouter()
@@ -203,6 +206,9 @@ version: "1" -->
     registerVisible.value = false
     if (!formEl) return
     formEl.resetFields()
+  }
+  const addApp = () => {
+    console.log('aaa')
   }
 
   // 路由跳转
