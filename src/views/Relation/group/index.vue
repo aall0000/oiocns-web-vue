@@ -1,14 +1,14 @@
 <template>
-  <div class="container">
+  <div class="container" ref="container">
     <div class="tree">
-      <Tree @groupNodeClick="nodeClick"/>
+      <Tree @nodeClick="nodeClick"/>
     </div>
     <div class="content">
-      <div class="info">
-        <Info :group="group" ref="info"/>
+      <div class="info" ref="infoWrap">
+        <Info ref="info"/>
       </div>
-      <div class="companies">
-        <Companies/>
+      <div class="body" ref="bodyWrap" :style="{height:tabHeight+'px'}">
+        <Body ref="body" :tabHeight='tabHeight'/>
       </div>
     </div>
   </div>
@@ -16,16 +16,35 @@
 <script lang="ts" setup>
   import Tree from './tree.vue'
   import Info from './info.vue'
-  import Companies from './companies.vue'
-  import { ref } from 'vue';
-
-  let group = ref({})
+  import Body from './body.vue'
+  import { ref ,onMounted,watch} from 'vue';
 
   const info = ref(null);
+  const body = ref(null);
 
   const nodeClick = (selectItem: any)=>{
     info.value.selectItemChange(selectItem);
+    body.value.selectItemChange(selectItem);
   }
+  const screenHeight = ref<number>(0)
+  window.addEventListener('resize',function () {
+    tabHeight.value=container.value.clientHeight - 6 - infoWrap.value.clientHeight
+  })
+  const container = ref(null)
+  const infoWrap = ref(null)
+  const tabHeight = ref<number>(400)
+  onMounted(() => {
+    console.log( )
+    tabHeight.value=container.value.clientHeight - 6 - infoWrap.value.clientHeight
+  })
+  watch(
+    () => screenHeight.value,
+    (newValue, oldValue) => {
+
+    },
+    { immediate: true }
+  )
+
 </script>
 <style lang="scss" scoped>
 .container {
@@ -33,20 +52,25 @@
   height: 100%;
   background: #f0f2f5;
   padding: 3px;
+  box-sizing: border-box;
   display: flex;
 
   .tree {
-    width: 25%;
+    width: 23%;
   }
   .content{
-    width: 75%;
+    width: 77%;
     height: 100%;
-    padding: 3px;
-    .info {
-      height: 26%;
+    padding:0 3px;
+    box-sizing: border-box;
+    background: #f0f2f5;
+    overflow: hidden;
+    .info{
+      padding: 3px;
+      box-sizing: border-box;
     }
-    .companies{
-      height: 74%;
+    .body{
+      height: 400px;
     }
   }
 }

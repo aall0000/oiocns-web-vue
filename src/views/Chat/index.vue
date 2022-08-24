@@ -124,9 +124,9 @@
           const { groups = [] } = data
           console.log('链接成功', data)
           sessionList.value = [...groups]
-
+          // 把自己加入 名称map
           setUserNameMap(queryInfo.id, queryInfo.name)
-          // 存储用户id=>名称
+          // 存储用户名称map id=>名称
           groups.forEach((item: ImMsgType) => {
             if (item?.chats?.length > 0) {
               item?.chats?.forEach((child: ImMsgChildType) => {
@@ -186,7 +186,7 @@
 
     // msgMap.value.set(sessionId + '_' + data.spaceId, [...oldMsg, data])
     // 根据新信息更新导航信息
-    handleNewMsgShow(data)
+    handleNewMsgShow({...data})
     contentWrapRef.value.goPageEnd()
   }
 

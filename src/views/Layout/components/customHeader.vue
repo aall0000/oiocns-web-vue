@@ -41,7 +41,7 @@
 
             <div class="joinBox">
               <div class="joinBtn" @click="createCompany">创建单位</div>
-              <div class="joinBtn" @click="joinCompany">加入单位</div>
+              <div class="joinBtn" @click="friendShow">加入单位</div>
             </div>
           </div>
         </div>
@@ -93,7 +93,7 @@
     <el-col :span="8" class="flex col-right">
       <el-dropdown trigger="click">
         <span class="el-dropdown-link">
-          <headImg :name="queryInfo.name.slice(0, 1)" class="smallIcon" :label="''"></headImg>
+          <headImg :name="queryInfo.name" :limit="1" class="smallIcon"></headImg>
           <span>{{ queryInfo.name }}</span>
           <el-icon style="margin-left: 15px">
             <CaretBottom />
@@ -112,6 +112,7 @@
       </el-dropdown>
     </el-col>
   </el-row>
+  <searchCompany v-if="friendDialog" @closeDialog="closeDialog"  @checkFriend='checkFriend'></searchCompany>
   <template v-for="item in dialogShow" :key="item.key">
     <CreateUnitDialog
       v-if="item.key == 'unit' && item.value"
@@ -119,13 +120,6 @@
       @closeDialog="closeDialog"
       @switchCreateCompany="switchCreateCompany"
     ></CreateUnitDialog>
-    <JoinUnitDialog
-      v-if="item.key == 'join' && item.value"
-      :dialogShow="item"
-      @joinSubmit="joinSubmit"
-      @remoteMethod="remoteMethod"
-      @closeDialog="closeDialog"
-    ></JoinUnitDialog>
     <SearchDialog
       v-if="item.key == 'search' && item.value"
       :dialogShow="item"
@@ -145,9 +139,10 @@
   import $services from '@/services'
   import { ElMessage } from 'element-plus'
   import CreateUnitDialog from './createUnitDialog.vue'
+  import searchCompany from '@/components/search/company.vue'
   import JoinUnitDialog from './joinUnitDialog.vue'
   import SearchDialog from './searchDialog.vue'
-  import headImg from '@/views/Chat/components/headImg.vue'
+  import headImg from '@/components/headImg.vue'
   const store = useUserStore()
   const SearchInfo = ref('')
   const router = useRouter()
@@ -206,46 +201,38 @@
   // const mouseleave = () => {
   //   showSearch.value = false
   // }
-
-  const joinSubmit = (data: string) => {
+  const friendDialog = ref<boolean>(false)
+  type arrList = {
+    id:string
+  }
+  const checkFriend=(val:any)=>{
+    if(val.value.length>0){
+      let arr:Array<arrList> =[]
+      val.value.forEach((element:any) => {
+        arr.push(element.id)
+      });
+      joinSubmit(arr)
+    }else{
+      friendDialog.value = false;
+    }
+  }
+  const friendShow = ()=>{
+    friendDialog.value = true;
+  }
+  const joinSubmit = (arr: any) => {
     $services.company
       .applyJoin({
         data: {
-          id: data
+          id: arr.join('')
         }
       })
       .then((res: ResultType) => {
         if (res.code == 200) {
+          friendDialog.value = false;
           ElMessage({
             message: '申请成功',
             type: 'success'
           })
-          closeDialog('join')
-        }
-      })
-  }
-
-  const remoteMethod = (query: string, callback: any) => {
-    $services.company
-      .searchCompany({
-        data: {
-          text: query,
-          offset: 0,
-          limit: 100
-        }
-      })
-      .then((res: ResultType) => {
-        if (res.data.result) {
-          let states = res.data.result
-          let arr: { value: any; label: any }[] = []
-          states.forEach((el: any) => {
-            let obj = {
-              value: el.id,
-              label: el.name
-            }
-            arr.push(obj)
-          })
-          callback(arr)
         }
       })
   }
@@ -267,15 +254,8 @@
       }
     })
   }
-  const joinCompany = () => {
-    dialogShow.map((el) => {
-      if (el.key == 'join') {
-        el.value = true
-        btnType.value = false
-      }
-    })
-  }
   const closeDialog = (key: string) => {
+    friendDialog.value = false;
     dialogShow.map((el) => {
       if (el.key == key) {
         el.value = false

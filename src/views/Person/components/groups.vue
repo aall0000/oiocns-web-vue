@@ -6,8 +6,7 @@
       </div>
       <div class="topRight">
         <el-button type="primary" @click="create"> 创建集团</el-button>
-        <el-button>批量导入/导出</el-button>
-        <el-button>查看申请记录</el-button>
+        <el-button type="primary" @click="friendShow"> 申请加入集团</el-button>
       </div>
     </div>
     <div class="createdBody" v-if="types === '全部'">
@@ -105,6 +104,7 @@
         </span>
       </template>
     </el-dialog>
+    <searchGroup v-if="friendDialog" @closeDialog="closeDialog"  @checkFriend='checkFriend'></searchGroup>
   </div>
 </template>
 <script lang="ts" setup>
@@ -114,6 +114,8 @@
   import { ref } from 'vue'
   import { useUserStore } from '@/store/user'
   import { ElMessage } from 'element-plus'
+  import searchGroup from '@/components/search/group.vue'
+
   const store = useUserStore()
   const state = reactive({ tableData: [] })
   const state1 = reactive({ tableData: [] })
@@ -238,6 +240,88 @@
       }
     }
   }
+  interface ListItem {
+    value: string
+    label: string
+    remark: string
+    name: string
+  }
+  const addGroup = ref<boolean>(false)
+  const options = ref<ListItem[]>([])
+  const value = ref('')
+  const loading = ref(false)
+  const remoteMethod = (query: string) => {
+    if (query) {
+      $services.company.searchGroups({
+          data: {
+            filter: query,
+            offset: 0,
+            limit: 10
+          }
+        })
+        .then((res: ResultType) => {
+          if (res.success) {
+            let states = res.data.result
+            let arr: { value: any; label: any; remark: any; name: any }[] = []
+            states.forEach((el: any) => {
+              let obj = {
+                value: el.id,
+                label: el.name,
+                remark: el.team.remark,
+                name: el.team.name
+              }
+              arr.push(obj)
+            })
+            options.value = arr
+            loading.value = false
+          } else {
+            options.value = []
+            loading.value = false
+          }
+        })
+    } else {
+      options.value = []
+    }
+  }
+  const addGroupFun = (arr:any) => {
+    $services.company
+      .applyJoinGroup({
+        data: {
+          id: arr.join(',')
+        }
+      })
+      .then((res: ResultType) => {
+        if (res.success) {
+          ElMessage({
+            message: '申请成功',
+            type: 'warning'
+          })
+          friendDialog.value = false
+        }
+      })
+  }
+  const friendDialog = ref<boolean>(false)
+
+  const closeDialog = ()=>{
+    friendDialog.value = false;
+  }
+  const friendShow = ()=>{
+    friendDialog.value = true;
+  }
+  type arrList = {
+    id:string
+  }
+  const checkFriend=(val:any)=>{
+  if(val.value.length>0){
+    let arr:Array<arrList> =[]
+    val.value.forEach((element:any) => {
+      arr.push(element.id)
+    });
+    addGroupFun(arr)
+  }else{
+    friendDialog.value = false;
+  }
+}
 </script>
 <style lang="scss">
   .created {

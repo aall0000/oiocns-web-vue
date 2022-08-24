@@ -34,7 +34,7 @@
       <el-input v-model="formData.code" :placeholder="'请输入' + title + '描述'" clearable />
     </el-form-item>
     <el-form-item :label="title + '描述'">
-      <el-input v-model="formData.teamRemark" :placeholder="'请输入' + title + '描述'" clearable />
+      <el-input v-model="formData.teamRemark" :placeholder="'请输入' + title + '描述'" :autosize="{ minRows: 5 }" type="textarea" clearable />
     </el-form-item>
     <template #footer>
       <span class="dialog-footer">
