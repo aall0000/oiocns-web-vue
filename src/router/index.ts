@@ -296,6 +296,14 @@ const mainRouter: RouteRecordRaw[] = [
         }
       },
       {
+        path: '/market/userManage',
+        name: 'marketUserManage',
+        component: () => import('@/views/Market/AppList/userManage.vue'),
+        meta: {
+          title: '用户管理'
+        }
+      },
+      {
         path: '/market/approval',
         name: 'marketApproval',
         component: () => import('@/views/Market/Approval/index.vue'),
