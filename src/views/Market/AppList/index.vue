@@ -12,6 +12,7 @@
             v-for="item in state.myMarket"
             :info="item"
             :key="item.id"
+            :overId="item.id"
             @click="gotoApp(item)"
           >
             <!-- <template #footer> -->
@@ -37,7 +38,7 @@
       <ul class="box-ul">
         <p class="box-ul-title">我加入的市场</p>
         <li class="app-card" v-if="state.joinMarket?.length !== 0">
-          <ShopCard v-for="item in state.joinMarket" :info="item" :key="item.id">
+          <ShopCard v-for="item in state.joinMarket" :info="item" :key="item.id" :overId="item.id">
             <!-- <template #footer> -->
             <el-button class="btn" type="primary" link small>退出市场</el-button>
             <!-- <el-divider direction="vertical" />
@@ -109,11 +110,11 @@
   }
 
   const linkOrder = () => {
-    router.push({ path: '/market/order'})
+    router.push({ path: '/market/order' })
   }
 
   const linkShopCar = () => {
-    router.push({ path: '/market/shopCar'})
+    router.push({ path: '/market/shopCar' })
   }
 
   const hadleUserManage = (item: { id: number }) => {
