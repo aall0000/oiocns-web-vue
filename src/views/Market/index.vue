@@ -9,7 +9,7 @@
       <ul class="box-ul">
         <p class="box-ul-title">我的应用</p>
         <li class="app-card">
-          <MarketCreate :info="add" @myclick="addApp" />
+          <MarketCreate :info="add" @myclick="GoPage('/market/markList')" />
           <ShopCard v-for="item in state.myAppList" :info="item" :key="item.id" :over-id="item.id">
             <!-- <template> -->
             <el-dropdown @command="(value) => handleCommand('own', value, item)" placement="top">
