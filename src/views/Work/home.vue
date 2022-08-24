@@ -72,7 +72,7 @@ onMounted(() => {
   })
   
   // 当前标签index
-  const templateContentLen = userOtherData.homeComplist.length
+  const templateContentLen = userOtherData.homeComplist ? userOtherData.homeComplist.length :0
   editableTabsValue.value = templateContentLen > 0 ? userOtherData.homeComplist[templateContentLen - 1].name : 0
 
 })
