@@ -9,9 +9,8 @@
       <ul class="box-ul">
         <p class="box-ul-title">我的应用</p>
         <li class="app-card">
-          <ShopCard v-for="item in state.myAppList" :info="item" :key="item.id">
-            <!-- <template> -->
-            <el-dropdown @command="(value) => handleCommand('own', value)" placement="top">
+          <ShopCard v-for="item in state.myAppList" :info="item" :key="item.id" :overId="item.id">
+            <el-dropdown @command="(value) => handleCommand('own', value, item)" placement="top">
               <el-button class="btn" type="primary" link small> 设置 </el-button>
               <template #dropdown>
                 <el-dropdown-menu>
@@ -23,7 +22,6 @@
             </el-dropdown>
             <el-divider direction="vertical" />
             <el-button class="btn" link small @click="deleteApp(item)">移除应用</el-button>
-            <!-- </template> -->
           </ShopCard>
         </li>
         <el-pagination style="justify-content: end" layout="prev, pager, next" :total="50" />
@@ -31,8 +29,8 @@
       <ul class="box-ul">
         <p class="box-ul-title">其他应用</p>
         <li class="app-card">
-          <!-- <ShopCard v-for="item in baseData" :info="item" :key="item.id">
-            <el-dropdown @command="(value) => handleCommand('other', value)" placement="top">
+          <ShopCard v-for="item in baseData" :info="item" :key="item.id">
+            <el-dropdown @command="(value) => handleCommand('other', value, item)" placement="top">
               <el-button class="btn" type="primary" link small> 设置 </el-button>
               <template #dropdown>
                 <el-dropdown-menu>
@@ -44,13 +42,17 @@
             </el-dropdown>
             <el-divider direction="vertical" />
             <el-button class="btn" link small @click="deleteApp(item)">移除应用</el-button>
-          </ShopCard> -->
+          </ShopCard>
         </li>
-        <el-pagination style="justify-content: end" layout="prev, pager, next" :total="50" />
+        <el-pagination
+          style="justify-content: end"
+          layout="prev, pager, next"
+          :total="state.myAppToast"
+        />
       </ul>
     </div>
   </div>
-  <el-dialog v-model="registerVisible" title="Tips" width="600px" draggable>
+  <el-dialog v-model="registerVisible" title="注册应用" width="600px" draggable>
     <el-form ref="registerFormRef" :model="form" label-width="120px" :rules="rules">
       <el-form-item label="应用名称" prop="name">
         <el-input v-model="form.name" />
@@ -73,21 +75,6 @@
     </template>
   </el-dialog>
 </template>
-<!-- authority: "所属权"
-belongId: "340896682281668608"
-code: "prod0044"
-createTime: "2022-08-23 17:22:13.106"
-createUser: "340896682281668608"
-endTime: "2022-08-23 17:22:13.106"
-id: "349966573160763392"
-name: "测试应用0044"
-source: "创建的"
-status: 1
-thingId: "348057847231287296"
-remark: "app"
-updateTime: "2022-08-23 17:22:13.106"
-updateUser: "340896682281668608"
-version: "1" -->
 
 <script setup lang="ts">
   import API from '@/services'
@@ -101,18 +88,25 @@ version: "1" -->
   const registerFormRef = ref<FormInstance>()
   const router = useRouter()
   type StateType = {
-    myAppList: MarketShopType[]
-    otherAppList: MarketShopType[]
+    myAppList: MarketShopType[] //我的应用
+    myAppToast: number
+    otherAppList: MarketShopType[] //其他应用
+    otherToast: number
+    marketOptions: any[] //所有市场列表
   }
 
   const state: StateType = reactive({
     myAppList: [],
-    otherAppList: []
+    myAppToast: 0,
+    otherAppList: [],
+    otherToast: 0,
+    marketOptions: []
   })
 
   onMounted(() => {
     // 获取列表
     getPageList()
+    getMarketOptions()
   })
 
   // 获取我的应用列表
@@ -128,13 +122,13 @@ version: "1" -->
 
   // 移除app
   const deleteApp = (item: any) => {
-    ElMessageBox.confirm(`确认删除  ${item.name}?`, '提示', {
+    ElMessageBox.confirm(`确认删除  ${item.name}?`, '警告', {
       confirmButtonText: '确认',
       cancelButtonText: '取消',
       type: 'warning'
     })
-      .then(() => {
-        const { success } = API.product.deleteResource({
+      .then(async () => {
+        const { success } = await API.product.delete({
           data: { id: item.id }
         })
         if (success) {
@@ -149,8 +143,12 @@ version: "1" -->
   }
 
   // 处理 设置 菜单选择事件
-  const handleCommand = (type: 'own' | 'other', command: string | number | object) => {
-    console.log('菜单选择事件', type, command)
+  const handleCommand = (
+    type: 'own' | 'other',
+    command: string | number | object,
+    item: MarketShopType
+  ) => {
+    console.log('菜单选择事件', type, command, item)
   }
   // 注册页面弹窗
   const registerVisible = ref<boolean>(false)
@@ -163,12 +161,12 @@ version: "1" -->
   })
 
   // 提交注册
-  const onRegisterSubmit = async (formEl: FormInstance | undefined) => {
+  const onRegisterSubmit = (formEl: FormInstance | undefined) => {
     if (!formEl) return
-    await formEl.validate((valid, fields) => {
+    formEl.validate(async (valid, fields) => {
       if (valid) {
         console.log('submit!', form)
-        const { success } = API.product.register({
+        const { success } = await API.product.register({
           data: form
         })
         if (success) {
@@ -184,7 +182,7 @@ version: "1" -->
       }
     })
   }
-  // 验证规则
+  // 注册验证规则
   const rules = reactive<FormRules>({
     name: [
       { required: true, message: '请输入应用名称', trigger: 'blur' },
@@ -198,7 +196,18 @@ version: "1" -->
       }
     ]
   })
-  // 重置表单
+
+  // 获取市场列表
+  const getMarketOptions = async () => {
+    const { data, success } = await API.product.searchAll({
+      data: { offset: 0, limit: 10000, filter: '' }
+    })
+    if (success) {
+      const { result = [] } = data
+      state.myAppList = [...result]
+    }
+  }
+  // 重置注册表单
   const resetForm = (formEl: FormInstance) => {
     registerVisible.value = false
     if (!formEl) return
