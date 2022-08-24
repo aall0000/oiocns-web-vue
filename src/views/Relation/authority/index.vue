@@ -1,7 +1,10 @@
 <template>
     <div class="card">
       <div class="header">
-        <div class="title">{{props.selectItem.label}}</div>
+        <div class="title">角色维护</div>
+        <div class="box-btns">
+          <el-button small link type="primary" @click="goback">返回</el-button>
+        </div>
       </div>
       <div>
         <el-table
@@ -26,7 +29,7 @@
           <el-table-column label="操作" width="150">
             <template #default="{ row }">
               <div class="cell-box">
-                <el-button link type="primary" size="small" @click="create(row, '工作组')">新增</el-button>
+                <el-button link type="primary" size="small" :disabled="row.data.typeName =='工作组'">新增</el-button>
                 <el-button link type="primary" size="small" @click="edit(row)">编辑</el-button>
                 <el-popconfirm
                   title="确认删除?"
@@ -35,7 +38,7 @@
                   @confirm="handleDel(row)"
                 >
                   <template #reference>
-                    <el-button link type="danger" size="small"  style="margin-left: 0">删除</el-button>
+                    <el-button link type="danger" size="small"  style="margin-left:0" :disabled="row.data.typeName == '公司'">删除</el-button>
                   </template>
                 </el-popconfirm>
               </div>
@@ -221,10 +224,6 @@
   import $services from '@/services'
   import { ElMessage } from 'element-plus';
   import { useRouter } from 'vue-router';
-
-  const props = defineProps<{
-    selectItem: any,     // 节点数据
-  }>()
 
   const router = useRouter()
   let createDeptDialogVisible = ref<boolean>(false)
@@ -504,6 +503,7 @@
   height: 100%;
   width: 100%;
   background-color: #fff;
+  padding: 10px;
   .cell-box{
     display: flex;
     align-items: center;
@@ -516,13 +516,18 @@
       font-size: 16px;
       width: 30%;
       font-weight: bold;
-      padding: 10px;
+    }
+    .box-btns {
+      text-align: right;
+      padding-right: 14px;
+      padding-bottom: 10px;
+      width: 70%;
     }
   }
 
   .table {
     width: 100%;
-    height: calc(100vh - 360px);
+    height: calc(100vh - 150px);
   }
 }
 </style>

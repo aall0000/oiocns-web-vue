@@ -31,10 +31,14 @@ defineExpose({ selectItemChange });
 const tabs = ref(null)
 const tabHeight = ref<number>(400)
 window.addEventListener('resize',function () {
-  tabHeight.value=tabs.value.clientHeight
+  if(tabs.value){
+    tabHeight.value=tabs.value.clientHeight
+  }
 })
 onMounted(() => {
-  tabHeight.value=tabs.value.clientHeight
+  if(tabs.value){
+    tabHeight.value=tabs.value.clientHeight
+  }
 })
 </script>
 
