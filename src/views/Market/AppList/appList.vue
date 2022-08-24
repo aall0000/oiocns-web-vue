@@ -6,11 +6,9 @@
         <li class="app-card" v-if="state.myAppList.length !== 0">
           <ShopCard v-for="item in state.myAppList" :info="item" :key="item.id">
             <!-- <template #footer> -->
-            <el-button class="btn" type="primary" link small @click="hadleClick(item)"
-              >退出市场</el-button
-            >
-            <el-divider direction="vertical" />
-            <el-button class="btn" link small>用户管理</el-button>
+            <el-button class="btn" type="primary" link small>订阅</el-button>
+            <!-- <el-divider direction="vertical" />
+            <el-button class="btn" link small>用户管理</el-button> -->
             <!-- </template> -->
           </ShopCard>
         </li>
@@ -64,7 +62,7 @@
 
   const getData = () => {
     $services.appstore
-      .searchManager({
+      .merchandise({
         data: {
           id: route.query.data,
           offset: state.pageMy.currentPage,
@@ -74,7 +72,7 @@
       })
       .then((res: ResultType) => {
         if (res.code == 200) {
-          state.myAppList = res.data.result
+          state.myAppList = res.data.result || []
           state.pageMy.total = res.data.total
         }
       })
