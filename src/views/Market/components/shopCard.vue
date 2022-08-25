@@ -17,7 +17,7 @@
       </div>
     </div>
     <!-- v-show="hoverItem === info.id" -->
-    <div class="app-card-item-footer" v-show="props.overId === info.id">
+    <div class="app-card-item-footer" v-show="props.overId === info.id" @click.stop>
       <slot />
     </div>
   </el-card>
