@@ -39,7 +39,7 @@
       <ul class="box-ul">
         <p class="box-ul-title">我加入的市场</p>
         <li class="app-card" v-if="state.joinMarket?.length !== 0">
-          <MarketCreate :info="add1" @click="dialogVisible = true" />
+          <MarketCreate :info="add1" @click="state.dialogShow.value = true" />
           <ShopCard
             v-for="item in state.joinMarket"
             :info="item"
@@ -66,18 +66,8 @@
         />
       </ul>
     </div>
-    <el-dialog v-model="dialogVisible" title="提示" width="30%">
-      <el-form :model="form" label-width="120px">
-        <el-form-item label="市场名称">
-          <el-input v-model="form.name" style="width: 80%" />
-        </el-form-item>
-        <el-form-item label="市场编码">
-          <el-input v-model="form.code" style="width: 80%" />
-        </el-form-item>
-        <el-form-item label="市场简介">
-          <el-input v-model="form.remark" style="width: 80%" />
-        </el-form-item>
-      </el-form>
+    <el-dialog v-model="dialogVisible" title="加入市场" width="30%">
+      <el-form :model="form" label-width="120px"> </el-form>
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="dialogVisible = false">取消</el-button>
@@ -85,11 +75,21 @@
         </span>
       </template>
     </el-dialog>
+
+    <diySearch
+      :dialogShow="state.dialogShow"
+      title="加入市场"
+      placeholder="搜索市场"
+      @submit="submit"
+      @remoteMethod="remoteMethod"
+      @closeDialog="closeDialog"
+    ></diySearch>
   </div>
 </template>
 
 <script setup lang="ts">
   import { reactive, onMounted, computed, ref } from 'vue'
+  import diySearch from '@/components/diySearch/index.vue'
   import ShopCard from '../components/shopCard.vue'
   import { useRouter } from 'vue-router'
   import $services from '@/services'
@@ -122,6 +122,9 @@
       current: handleCurrentJoin,
       pageSize: 12, // 每页条数
       layout: 'total, prev, pager, next'
+    },
+    dialogShow: {
+      value: false
     }
   })
 
@@ -129,9 +132,6 @@
     getMyMarketData()
     getJoinMarketData()
   })
-
-  const createMarket = () => {}
-  const joinMarket = () => {}
 
   const handleCurrentChange = (val: number) => {
     state.pageMy.currentPage = val
@@ -271,6 +271,53 @@
           })
         }
       })
+  }
+  const remoteMethod = (query: string, callback: any) => {
+    $services.appstore
+      .searchAll({
+        data: {
+          offset: 0,
+          limit: 100,
+          filter: query
+        }
+      })
+      .then((res: ResultType) => {
+        console.log(res)
+
+        if (res.data.result) {
+          let states = res.data.result
+          let arr: { value: any; label: any }[] = []
+          states.forEach((el: any) => {
+            let obj = {
+              value: el.id,
+              label: el.name
+            }
+            arr.push(obj)
+          })
+          callback(arr)
+        }
+      })
+  }
+  const submit = (data: any) => {
+    $services.appstore
+      .applyJoin({
+        data: {
+          id: data
+        }
+      })
+      .then((res: ResultType) => {
+        if (res.success) {
+          ElMessage({
+            message: '加入成功',
+            type: 'success'
+          })
+          state.dialogShow.value = false
+          getJoinMarketData()
+        }
+      })
+  }
+  const closeDialog = (data: { value: boolean }) => {
+    state.dialogShow.value = false
   }
 </script>
 
