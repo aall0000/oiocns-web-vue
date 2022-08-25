@@ -1,0 +1,138 @@
+<template>
+  <div class="market-layout">
+    <div class="market-content box" style="height: 100%">
+      <ul class="box-ul">
+        <li class="app-card" v-if="dataList.length !== 0">
+          <ShopCard v-for="item in dataList" :info="item" :key="item.id">
+            <template #rightIcon>
+              <div class="shopCar" @click.stop="addShopCar(item)">
+                <el-icon><ShoppingCart /></el-icon>
+              </div>
+            </template>
+
+            <!-- <template #footer> -->
+            <el-button class="btn" type="primary" link small>订阅</el-button>
+            <!-- <el-divider direction="vertical" />
+            <el-button class="btn" link small>用户管理</el-button> -->
+            <!-- </template> -->
+          </ShopCard>
+        </li>
+        <div v-else>暂无数据</div>
+        <div class="pagination">
+          <el-pagination
+            v-if="dataList.length !== 0"
+            @current-change="handleCurrentChange"
+            v-bind="state.page"
+            :pager-count="5"
+            style="text-align: right; margin-top: 10px; justify-content: end"
+          />
+        </div>
+      </ul>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+  import { reactive, computed } from 'vue'
+  import $services from '@/services'
+  import { ElMessage } from 'element-plus'
+  import ShopCard from '../../components/shopCard.vue'
+  const emit = defineEmits(['handleUpdate'])
+  const props = defineProps({
+    dataList: {
+      type: Object
+    }
+  })
+
+  const handleCurrent: any = computed(() => {
+    return (state.page.currentPage - 1) * state.page.pageSize
+  })
+
+  const state = reactive({
+    page: {
+      total: 0, // 总条数
+      currentPage: 1, // 当前页
+      current: handleCurrent,
+      pageSize: 20, // 每页条数
+      pageSizes: [20, 30, 50], // 分页数量列表
+      layout: 'total, prev, pager, next'
+    }
+  })
+
+  const handleCurrentChange = (val: number) => {
+    state.page.currentPage = val
+    emit('handleUpdate')
+  }
+
+  const addShopCar = (data) => {
+    $services.appstore
+      .staging({
+        data: {
+          id: data.id
+        }
+      })
+      .then((res: ResultType) => {
+        if (res.code == 200) {
+          ElMessage({
+            message: '添加成功',
+            type: 'success'
+          })
+        }
+      })
+  }
+
+  defineExpose({
+    state
+  })
+</script>
+
+<style lang="scss" scoped>
+  :deep(.el-card__body) {
+    padding: 0;
+  }
+  .shopCar {
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    cursor: pointer;
+    background-color: rgb(62, 96, 217);
+    color: #fff;
+  }
+  .pagination {
+    position: absolute;
+    bottom: 0;
+    right: 10px;
+  }
+  .market-layout {
+    width: 100%;
+    height: 100%;
+    min-width: 1000px;
+    .market-head {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      height: 60px;
+      padding: 0 20px;
+    }
+    .box {
+      .box-ul + .box-ul {
+        margin-top: 10px;
+      }
+      &-ul {
+        position: relative;
+        background-color: #fff;
+        height: 100%;
+        &-title {
+          font-weight: bold;
+          padding-bottom: 10px;
+        }
+        .app-card {
+          display: flex;
+          flex-wrap: wrap;
+        }
+      }
+    }
+  }
+</style>
