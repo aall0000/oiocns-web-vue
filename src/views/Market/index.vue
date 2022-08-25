@@ -80,6 +80,16 @@
       </span>
     </template>
   </el-dialog>
+  <el-dialog v-model="publishVisible" title="上架应用" width="600px" draggable>
+    <putaway-comp :info="selectProductItem" ref="putawayRef" @closeDialog="publishVisible = false">
+      <template #btns>
+        <div class="putaway-footer" style="text-align: right">
+          <el-button @click="publishVisible = false">取消</el-button>
+          <el-button type="primary" @click="putawaySubmit()"> 确认</el-button>
+        </div>
+      </template>
+    </putaway-comp>
+  </el-dialog>
 </template>
 
 <script setup lang="ts">
@@ -87,6 +97,7 @@
   import { ElMessage, ElMessageBox } from 'element-plus'
   import { onMounted, reactive, ref } from 'vue'
   import ShopCard from './components/shopCard.vue'
+  import PutawayComp from './components/putawayComp.vue'
   import { baseData, actionOptionsOfOther, actionOptionsOfOwn } from './config'
   import { useRouter } from 'vue-router'
   import type { FormInstance, FormRules } from 'element-plus'
@@ -114,7 +125,6 @@
   onMounted(() => {
     // 获取列表
     getPageList()
-    getMarketOptions()
   })
 
   // 获取我的应用列表
@@ -150,6 +160,8 @@
       .catch(() => {})
   }
 
+  // 记录当前操作的 应用信息
+  const selectProductItem = ref<ProductType>()
   // 处理 设置 菜单选择事件
   const handleCommand = (
     type: 'own' | 'other',
@@ -157,7 +169,20 @@
     item: ProductType
   ) => {
     console.log('菜单选择事件', type, command, item)
+    selectProductItem.value = item
+    switch (command) {
+      case 'share':
+        break
+      case 'putaway':
+        publishVisible.value = true
+        break
+      case 'unsubscribe':
+        break
+      default:
+        break
+    }
   }
+
   // 注册页面弹窗
   const registerVisible = ref<boolean>(false)
 
@@ -181,7 +206,7 @@
           getPageList()
           ElMessage({
             type: 'success',
-            message: '注册成功'
+            message: '应用注册成功'
           })
           resetForm(formEl)
         }
@@ -205,28 +230,40 @@
     ]
   })
 
-  // 获取市场列表
-  const getMarketOptions = async () => {
-    const { data, success } = await API.market.searchAll({
-      data: { offset: 0, limit: 10000, filter: '' }
-    })
-    if (success) {
-      const { result = [] } = data
-      state.myAppList = [...result]
-    }
-  }
   // 重置注册表单
   const resetForm = (formEl: FormInstance) => {
     registerVisible.value = false
     if (!formEl) return
     formEl.resetFields()
   }
-  const addApp = () => {
-    console.log('aaa')
+
+  // 上架应用功能
+  const publishVisible = ref<boolean>(false)
+  const putawayRef = ref<any>()
+  // 提交上架
+  const putawaySubmit = () => {
+    putawayRef.value.onPutawaySubmit()
+    // if (!formEl) return
+    // formEl.validate(async (valid, fields) => {
+    //   if (valid) {
+    //     console.log('上架submit!', form)
+    //     // const { success } = await API.product.register({
+    //     //   data: form
+    //     // })
+    //     // if (success) {
+    //     //   // getPageList()
+    //     //   ElMessage({
+    //     //     type: 'success',
+    //     //     message: '应用上架成功'
+    //     //   })
+    //     //   resetForm(formEl)
+    //     // }
+    //   } else {
+    //     console.log('上架error submit!', fields)
+    //   }
+    // })
   }
-  const linkOrder = () => {
-    router.push({ path: '/market/order' })
-  }
+
   // 路由跳转
   const GoPage = (path: string) => {
     router.push(path)
