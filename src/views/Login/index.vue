@@ -36,9 +36,12 @@
   import { useUserStore } from '@/store/user'
   import { useRouter } from 'vue-router'
   import { ElMessage } from 'element-plus'
+  import UserOtherDataConnection from '@/utils/hubConnection'
+  import { useAnyData } from '@/store/anyData'
 
   const carousel = ref<any>()
   const store = useUserStore()
+  const { setMessageNoRead } = useAnyData()
   const router = useRouter()
   let btnLoading = ref(false)
 
@@ -69,6 +72,11 @@
         setCookie('', '', -1)
       }
       router.push({ path: 'workHome' })
+      // 订阅未读消息数量
+      UserOtherDataConnection.subscribed(`message.noread`, (data) => {
+        // console.log('noread===',data)
+        setMessageNoRead(data)
+      })
     })
   }
   const registerUser = (data: any) => {

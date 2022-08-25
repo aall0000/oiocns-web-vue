@@ -6,6 +6,7 @@ import { setGlobalProperties } from '@/services'
 import setupGlobalComponent from '@/components/global'
 import setupSvgIcon from '@/icons'
 import { createPinia } from 'pinia'
+import UserOtherDataConnection from '@/utils/hubConnection'
 import '@/assets/style/app.scss'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import InfiniteScroll from 'element-plus'
@@ -16,7 +17,7 @@ import piniaPersist from 'pinia-plugin-persist'
 const pinia = createPinia()
 
 const app = createApp(App)
-
+UserOtherDataConnection.start()
 // 图标引入
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
   app.component(key, component)
@@ -32,3 +33,4 @@ app.use(InfiniteScroll)
 // await router.isReady()
 
 app.mount('#app')
+
