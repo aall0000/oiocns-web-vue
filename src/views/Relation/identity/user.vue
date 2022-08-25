@@ -1,16 +1,7 @@
 <template>
     <div class="card">
       <div class="header">
-        <div class="title">{{props.selectItem.label}}</div>
-        <div class="box-btns">
-          <div v-if="props.selectItem?.data?.typeName == '公司'">
-            <el-button small link type="primary" @click="pullPersonDialog = true">添加成员</el-button>
-            <el-button small link type="primary" @click="viewApplication">查看申请</el-button>
-          </div>
-          <div v-if="props.selectItem?.data?.typeName == '部门' || props.selectItem?.data?.typeName == '工作组'">
-            <el-button small link type="primary" @click="showAssignDialog">分配人员</el-button>
-          </div>
-        </div>
+        <div class="title">{{selectItem.name}}</div>
       </div>
       <div :style="{height:tabHeight-35+'px'}">
         <div style="width: 100%; height: 100%">
@@ -22,10 +13,10 @@
             :tableHead="tableHead"
           >
             <template #operate="scope" >
-                <div v-if="props.selectItem?.data?.typeName == '公司'">
+                <div v-if="selectItem?.data?.typeName == '公司'">
                   <el-button link type="danger" size="small" @click="removeFrom(scope.row)">操作离职</el-button>
                 </div>
-                <div v-if="props.selectItem?.data?.typeName == '部门' || props.selectItem?.data?.typeName == '工作组'">
+                <div v-if="selectItem?.data?.typeName == '部门' || selectItem?.data?.typeName == '工作组'">
                   <el-button link type="danger" size="small" @click="removeFrom(scope.row)" >移除成员</el-button>
                 </div>
             </template>
@@ -54,7 +45,7 @@
     <template #footer>
       <span class="dialog-footer">
         <el-button @click="hidePullPreson">取消</el-button>
-        <el-button type="primary" @click="pullPerson">确认</el-button>
+        <el-button type="primary">确认</el-button>
       </span>
     </template>
   </el-dialog>
@@ -184,20 +175,12 @@ const assignTable = ref(null)
 
 // 加载用户
 const getUsers = ()=>{
-  const data = props.selectItem?.data
+  console.log('aaaaaaaaa',selectItem)
+  const data = selectItem
   if(data){
-    let url = '';
-    if(data.typeName == '公司'){
-      url = 'getPersons'
-      company.value = JSON.parse(JSON.stringify(data))
-    } else if(data.typeName == '部门'){
-      url = 'getDepartmentPersons'
-    } else if(data.typeName == '工作组'){
-      url = 'getJobPersons'
-    }
-    $services.company[url]({
+    $services.cohort.getIdentityPerson({
       data: {
-        id: props.selectItem.id,
+        id: selectItem.value.id,
         offset: (pageStore.currentPage-1)*pageStore.pageSize,
         limit: pageStore.pageSize
       }
@@ -250,49 +233,24 @@ const hidePullPreson = () => {
   pullPersonDialog.value = false
 }
 
-//邀请加入单位
-const pullPerson = () => {
-  $services.company
-    .pullPerson({
-      data: {
-        id: props.selectItem.id,
-        targetIds: [inviter.value]
-      }
-    })
-    .then((res: ResultType) => {
-      if (res.success) {
-        ElMessage({
-          message: '添加成功',
-          type: 'success'
-        })
-        getUsers()
-      }
-      inviter.value = ''
-      pullPersonDialog.value = false
-    })
-}
 const handleUpdate = (page: any)=>{
   pageStore.currentPage = page.currentPage
   pageStore.pageSize = page.pageSize
   getUsers()
 }
 
-//查看申请
-const viewApplication = (row: any) => {
-  router.push('/cardDetail')
-}
 
 // 移除
 const removeFrom = (row: any) =>{
   let url: string;
   let title: string;
-  if(props.selectItem?.data?.typeName == '公司'){
+  if(selectItem?.data?.typeName == '公司'){
     url = 'removeFromCompany'
     title = `操作离职，将删除 ${row.name} 在单位的信息，确定操作吗？`
-  } else if(props.selectItem?.data?.typeName == '部门'){
+  } else if(selectItem?.data?.typeName == '部门'){
     url = 'removeFromDepartment'
     title = `确定把 ${row.name} 从当前部门移除吗？`
-  } else if(props.selectItem?.data?.typeName == '工作组'){
+  } else if(selectItem?.data?.typeName == '工作组'){
     url = 'removeFromJob'
     title = `确定把 ${row.name} 从当前部门移除吗？`
   }
@@ -307,7 +265,7 @@ const removeFrom = (row: any) =>{
   ).then(() => {
     $services.company[url]({
       data: {
-        id: props.selectItem.id,
+        id: selectItem.id,
         targetIds: [row.id]
       }
     }).then((res: ResultType) => {
@@ -384,10 +342,10 @@ const assignSearchChange = (e: string)=>{
 // 分配人员
 const assign = () => {
   const userIds = assignTable?.value?.state?.multipleSelection.map((u: any) => u.id);
-  if(props.selectItem?.data?.typeName == '部门'){
-    assignDepartment(props.selectItem.id, userIds)
-  } else if(props.selectItem?.data?.typeName == '工作组'){
-    assignJob(props.selectItem.id, userIds)
+  if(selectItem?.data?.typeName == '部门'){
+    assignDepartment(selectItem.id, userIds)
+  } else if(selectItem?.data?.typeName == '工作组'){
+    assignJob(selectItem.id, userIds)
   }
 }
 
@@ -408,30 +366,10 @@ const assignDepartment = (id: string, targetIds: string[]) => {
       getUsers()
     })
 }
-//分配工作组
-const assignJob = (id: string, targetIds: string[]) => {
-  $services.company
-    .assignJob({
-      data: { id, targetIds }
-    })
-    .then((res: ResultType) => {
-      if (res.success) {
-        ElMessage({
-          message: '分配成功',
-          type: 'success'
-        })
-        hideAssignDialog()
-      }
-      getUsers()
-    })
-}
 
 
-onMounted(() => {
-  getUsers()
-})
 
-watch(props, () => {
+watch(selectItem, () => {
   getUsers()
 });
 
