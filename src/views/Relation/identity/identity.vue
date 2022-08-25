@@ -2,7 +2,7 @@
   <div class="container">
     <div class="wrap">
       <div>
-        <div class="title">当前组织:</div>
+        <div class="title">当前组织:{{router.currentRoute.value.query?.name}}</div>
       </div>
 
       <div class="search-wrap">
@@ -32,6 +32,15 @@
         </el-form-item>
         <el-form-item label="角色编号" style="width: 100%">
           <el-input v-model="formData.code" placeholder="请输入" clearable style="width: 100%" />
+        </el-form-item>
+        <el-form-item label="上级节点" style="width: 100%">
+        <el-cascader
+          :props="cascaderProps"
+          :options="cascaderTree"
+          v-model="formData.parentIds"
+          style="width: 100%"
+          placeholder="请选择"
+        />
         </el-form-item>
         <el-form-item label="角色简介" style="width: 100%">
           <el-input v-model="formData.remark" :autosize="{ minRows: 5 }" placeholder="请输入" type="textarea" clearable />
@@ -64,10 +73,6 @@
   const checkItem = (val: any) => {
     emit('itemClick', val)
   }
-  onMounted(()=>{
-    belongId.value = router.currentRoute.value.query.belongId
-    loadIdentities()
-  })
   // 加载身份
   const loadIdentities = ()=>{
     $services.cohort.getIdentitys({
@@ -91,18 +96,53 @@
         name:formData.name,
         code:formData.code,
         remark:formData.remark,
-        authId:''
+        authId:formData.parentIds[formData.parentIds.length-1]
       }
     }).then((res: ResultType) => {
       if (res.success) {
-        identityList.list = res.data.result
-        console.log(identityList.list)
-
+        ElMessage({
+          message: '创建成功!',
+          type: 'success'
+        })
+        loadIdentities()
       }
     })
   }
+  // 节点ID和对象映射关系
+  const parentIdMap: any = {}
+
+  let authorityTree = ref<any[]>([])
+  let cascaderTree = ref<any[]>([])
+
+  const cascaderProps = {
+    checkStrictly: true,
+    value: 'id',
+    label: 'name',
+    children: 'nodes',
+  }
+
+  // 加载职权树
+  const loadAuthorityTree = () => {
+    $services.company.getAuthorityTree({data: {id: belongId.value}}).then((res: any)=>{
+      authorityTree.value = []
+      authorityTree.value.push(res.data)
+      initIdMap(authorityTree.value)
+      cascaderTree.value = authorityTree.value
+    })
+  }
+  // 初始化ID和对象映射关系
+  const initIdMap = (nodes: any[]) => {
+    for(const node of nodes){
+      parentIdMap[node.id] = node
+      if(node.nodes){
+        initIdMap(node.nodes)
+      }
+    }
+  }
   onMounted(() => {
     belongId.value = router.currentRoute.value.query?.belongId
+    loadIdentities()
+    loadAuthorityTree()
   })
 
 
