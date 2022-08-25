@@ -96,9 +96,9 @@
   const registerFormRef = ref<FormInstance>()
   const router = useRouter()
   type StateType = {
-    myAppList: MarketShopType[] //我的应用
+    myAppList: ProductType[] //我的应用
     myAppToast: number
-    otherAppList: MarketShopType[] //其他应用
+    otherAppList: ProductType[] //其他应用
     otherToast: number
     marketOptions: any[] //所有市场列表
   }
@@ -154,7 +154,7 @@
   const handleCommand = (
     type: 'own' | 'other',
     command: string | number | object,
-    item: MarketShopType
+    item: ProductType
   ) => {
     console.log('菜单选择事件', type, command, item)
   }
