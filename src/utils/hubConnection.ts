@@ -14,7 +14,7 @@ type UserOtherDataConnectionType = {
     stop: () => void, // 关闭链接
     subscribed: (key: string, callback: (data: any) => void) => void // 订阅数据
     set: (methodsName: string, data?: any) => Promise<{ state: any; data: any; }> // 更新数据
-    delete: (key:string) => void, // 删除数据
+    delete: (key:string) =>  Promise<{ state: any; data: any; }>, // 删除数据
     unSubscribed: (key: string)=>void // 取消订阅
     _updated: () => void // 订阅时，当数据发生更变时通知，不对外使用
 }
@@ -62,8 +62,8 @@ const UserOtherDataConnection: UserOtherDataConnectionType = {
     set: async (methodsName: string, setData?: any) => {
         return await UserOtherDataConnection.connection.invoke("Set", `${useUserStore().queryInfo.id}.${methodsName}`, setData)
     },
-    delete: (key: string)=> {
-        UserOtherDataConnection.connection.invoke("Delete", `${useUserStore().queryInfo.id}.${key}`)
+    delete: async (key: string)=> {
+        return await UserOtherDataConnection.connection.invoke("Delete", `${useUserStore().queryInfo.id}.${key}`)
     },
     unSubscribed:(key: string)=> {
         if (!UserOtherDataConnection.subscribedKeys[key]) return

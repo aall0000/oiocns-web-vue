@@ -133,6 +133,7 @@
   import InfiniteScroll from 'element-plus'
   import { ref, watch, onMounted, reactive, computed } from 'vue'
   import { Search } from '@element-plus/icons-vue'
+  import UserOtherDataConnection from '@/utils/hubConnection'
   import { storeToRefs } from 'pinia'
   import { useRouter } from 'vue-router'
   import { useUserStore } from '@/store/user'
@@ -329,6 +330,8 @@
     sessionStorage.clear()
     store.resetState()
     router.push('/login')
+    //  取消该账号的未读消息订阅
+    UserOtherDataConnection.unSubscribed(`message.noread`)
   }
 </script>
 

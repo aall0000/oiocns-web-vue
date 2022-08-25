@@ -15,38 +15,43 @@
             v-for="child in item.chats" :key="child.id" v-if="openIdArr.includes(item.id)"
             @contextmenu.prevent.stop="(e: MouseEvent) => handleContextClick(e, child)">
             <HeadImg :name="child.name" :label="child.label" />
-            <div class="group-con-dot" v-show="child.count > 0">
-              <span>{{ child.count }}</span>
+            <div class="group-con-dot" v-show="ohterData.messageNoReadMap[child.id]">
+              <span>{{ ohterData.messageNoReadMap[child.id] }}</span>
+              <!-- <span>{{ child.count }}</span> -->
             </div>
             <div class="group-con-show" @click="changeInfo(child, item.id)">
               <el-tooltip class="box-item" :disabled="child.name.length < 7" :content="child.name"
                 placement="right-start">
                 <p class="group-con-show-name">
-                  <span class="group-con-show-name-label">{{ props.myId === child.id ? `我 (${child.name})` : child.name}}</span>
+                  <span class="group-con-show-name-label">{{ props.myId === child.id ? `我 (${child.name})` :
+                      child.name
+                  }}</span>
                   <span class="group-con-show-name-time">{{ handleFormatDate(child.msgTime) }} </span>
                 </p>
               </el-tooltip>
-              <p class="group-con-show-msg" v-if="child.msgType!=='recall'" v-html="child?.msgBody"></p>
-              <p class="group-con-show-msg" v-else >{{child?.showTxt}}</p>
+              <p class="group-con-show-msg" v-if="child.msgType !== 'recall'" v-html="child?.msgBody"></p>
+              <p class="group-con-show-msg" v-else>{{ child?.showTxt }}</p>
             </div>
           </div>
           <div :class="['con-body', props.active.spaceId === item.id && props.active.id === child.id ? 'active' : '']"
-            v-for="child in item.chats.filter(v=>v?.count>0)" :key="child.id+child.name" v-else
+            v-for="child in item.chats.filter(v => ohterData.messageNoReadMap[v?.id] > 0)" :key="child.id + child.name" v-else
             @contextmenu.prevent.stop="(e: MouseEvent) => handleContextClick(e, child)">
-            <HeadImg :name="child.name" :label="child.label"/>
-            <div class="group-con-dot" v-show="child.count > 0">
-              <span>{{ child.count }}</span>
+            <HeadImg :name="child.name" :label="child.label" />
+            <div class="group-con-dot" v-show="ohterData.messageNoReadMap[child.id] > 0">
+              <span>{{ ohterData.messageNoReadMap[child.id] }}</span>
             </div>
             <div class="group-con-show" @click="changeInfo(child, item.id)">
               <el-tooltip class="box-item" :disabled="child.name.length < 7" :content="child.name"
                 placement="right-start">
                 <p class="group-con-show-name">
-                  <span class="group-con-show-name-label">{{ props.myId === child.id ? `我 (${child.name})` : child.name}}</span>
+                  <span class="group-con-show-name-label">{{ props.myId === child.id ? `我 (${child.name})` :
+                      child.name
+                  }}</span>
                   <span class="group-con-show-name-time">{{ handleFormatDate(child.msgTime) }} </span>
                 </p>
               </el-tooltip>
-              <p class="group-con-show-msg" v-if="child.msgType!=='recall'" v-html="child?.msgBody"></p>
-              <p class="group-con-show-msg" v-else >{{child?.showTxt}}</p>
+              <p class="group-con-show-msg" v-if="child.msgType !== 'recall'" v-html="child?.msgBody"></p>
+              <p class="group-con-show-msg" v-else>{{ child?.showTxt }}</p>
             </div>
           </div>
         </li>
@@ -67,12 +72,14 @@
 import { computed, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
 import { formatDate } from '@/utils/index'
 import HeadImg from '@/components/headImg.vue'
+import { useAnyData } from '@/store/anyData'
+
 
 type propType = {
   active: ImMsgChildType,//当前激活聊天对象信息
   sessionList: ImMsgType[],//当前会话列表
   clearHistoryMsg: Function,//清空记录
-  myId: string
+  myId: string,
 }
 const props = defineProps<propType>()
 // 会话列表搜索关键字
@@ -82,7 +89,9 @@ const searchValue = ref<string>('')
 const isMounted = ref<boolean>(false)
 
 // 外侧打开状态-持久化展示
-const outList=ref<any>(new Map())
+const outList = ref<any>(new Map())
+// 消息未读数量
+const ohterData = useAnyData()
 
 //根据搜索条件-输出展示列表
 const showList = computed((): ImMsgType[] => {
@@ -107,16 +116,16 @@ const showList = computed((): ImMsgType[] => {
     isMounted.value = true
   }
 
-    // showInfoArr.forEach((child: ImMsgType) => {
-    //   child?.chats.forEach((item: ImMsgChildType)=>{
-    //     if (item.count>0) {
-    //      const oldArr = outList.value.get(child.id)??[]
-    //       outList.value.set(child.id,[...oldArr,item.id])
-    //     }
-    //   })
+  // showInfoArr.forEach((child: ImMsgType) => {
+  //   child?.chats.forEach((item: ImMsgChildType)=>{
+  //     if (item.count>0) {
+  //      const oldArr = outList.value.get(child.id)??[]
+  //       outList.value.set(child.id,[...oldArr,item.id])
+  //     }
+  //   })
 
-    // })
-    // console.log('outList',outList.value);
+  // })
+  // console.log('outList',outList.value);
 
   return showInfoArr
 })
@@ -126,7 +135,8 @@ const emit = defineEmits(['update:active'])
 const changeInfo = (item: ImMsgChildType, spaceId: string) => {
   openIdArr.value.push(spaceId)
   // 触发父组件值更新
-  item.count = 0
+  // item.count = 0
+  ohterData.clearMessageNodread(item.id)
   emit('update:active', { ...item, spaceId })
 }
 
@@ -255,7 +265,7 @@ const handleContextChange = (item: MenuItemType) => {
   }
 
   &::-webkit-scrollbar-thumb:vertical:active {
-    background-color: #83c7ff;
+    background-color: $colorBlueLight;
   }
 
   .group-con {
@@ -278,7 +288,7 @@ const handleContextChange = (item: MenuItemType) => {
         color: #111;
 
         &.active {
-          color: #409eff;
+          color: $colorBlueLight;
           border-bottom: none;
         }
       }
@@ -375,6 +385,7 @@ const handleContextChange = (item: MenuItemType) => {
     .context-menu-item {
       padding: 5px;
       cursor: pointer;
+
       &:hover {
         background-color: #e3e3e3;
       }

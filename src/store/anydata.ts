@@ -44,7 +44,7 @@ type WorkSpaceType = {
 
 export const useAnyData = defineStore({
     id: "userAnyData",
-    state: (): { workspace: WorkSpaceType } => {
+    state: (): { workspace: WorkSpaceType, messageNoReadMap: Record<string, number> } => {
         return {
             workspace: {
                 id: '',
@@ -53,13 +53,15 @@ export const useAnyData = defineStore({
                     name: '用户组件',
                     content: []
                 }
-            }
+            },
+            messageNoReadMap: {}
         }
     },
+   
     getters: {
         homeComplist: (state) => state.workspace.content, // 首页配置组件
-        userComplist: (state) => state.workspace.user.content // 用户组件
-
+        userComplist: (state) => state.workspace.user.content, // 用户组件
+        noReadMap : (state) => state.messageNoReadMap // 未读数量
     },
     actions: {
         // 更新用户组件配置
@@ -85,15 +87,43 @@ export const useAnyData = defineStore({
             this.workspace.content = params.content
             return data.state
         },
+        // 设置个人空间全部数据
         setWorkspace(data: WorkSpaceType) {
-            this.workspace = data ? { ...data } : {workspace: {
-                id: '',
-                content: [], // 组件内容
-                user: {
-                    name: '用户组件',
-                    content: []
+            this.workspace = data ? { ...data } : {
+                workspace: {
+                    id: '',
+                    content: [], // 组件内容
+                    user: {
+                        name: '用户组件',
+                        content: []
+                    }
                 }
-            }}
+            }
+        },
+        // 更新已读未读消息数量
+        async updateMessageNoread(userid: string, count: number) {
+            const newCount = (this.messageNoReadMap[userid]  ||0)+count
+            const { state } = await UserOtherDataConnection.set(`message.noread.${userid}`,
+                {
+                    operation: 'replaceAll',
+                    data: newCount
+                })
+            if (state) {
+                this.messageNoReadMap[userid] = newCount
+            }
+        },
+        async clearMessageNodread(userid: string){
+            const { state } = await UserOtherDataConnection.delete(`message.noread.${userid}`)
+            if (state) {
+                delete this.messageNoReadMap[userid] 
+            }
+       
+        },
+        // 初始化未读数量
+        setMessageNoRead(data: Record<string, number>) {
+            
+            this.messageNoReadMap = data 
+            console.log("newnoread",data)
         }
     }
 })
