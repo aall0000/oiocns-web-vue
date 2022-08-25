@@ -272,7 +272,8 @@ const mainRouter: RouteRecordRaw[] = [
         meta: {
           title: '安全设置'
         }
-      }
+      },
+
     ]
   },
   {

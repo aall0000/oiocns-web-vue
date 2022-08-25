@@ -16,15 +16,15 @@
             :overId="item.id"
             @click="gotoApp(item)"
           >
-            <template>
-              <el-button class="btn" type="primary" link small @click.stop="hadleClick(item)"
-                >删除市场</el-button
-              >
-              <el-divider direction="vertical" />
-              <el-button class="btn" link small @click.stop="hadleUserManage(item)"
-                >用户管理</el-button
-              >
-            </template>
+            <!-- <template> -->
+            <el-button class="btn" type="primary" link small @click.stop="hadleClick(item)"
+              >删除市场</el-button
+            >
+            <el-divider direction="vertical" />
+            <el-button class="btn" link small @click.stop="hadleUserManage(item)"
+              >用户管理</el-button
+            >
+            <!-- </template> -->
           </ShopCard>
         </li>
         <div v-else>暂无数据</div>
@@ -39,9 +39,18 @@
       <ul class="box-ul">
         <p class="box-ul-title">我加入的市场</p>
         <li class="app-card" v-if="state.joinMarket?.length !== 0">
-          <ShopCard v-for="item in state.joinMarket" :info="item" :key="item.id" :overId="item.id">
+          <MarketCreate :info="add1" @click="dialogVisible = true" />
+          <ShopCard
+            v-for="item in state.joinMarket"
+            :info="item"
+            :key="item.id"
+            :overId="item.id"
+            @click="gotoApp(item)"
+          >
             <!-- <template #footer> -->
-            <el-button class="btn" type="primary" link small>退出市场</el-button>
+            <el-button class="btn" type="primary" link small @click.stop="marketQuit(item)"
+              >退出市场</el-button
+            >
             <!-- <el-divider direction="vertical" />
               <el-button class="btn" link small>用户管理</el-button> -->
             <!-- </template> -->
@@ -96,6 +105,7 @@
     return (state.pageJoin.currentPage - 1) * state.pageJoin.pageSize
   })
   const add: string = '创建市场'
+  const add1: string = '加入市场'
   const state = reactive({
     myMarket: [],
     joinMarket: [],
@@ -119,6 +129,9 @@
     getMyMarketData()
     getJoinMarketData()
   })
+
+  const createMarket = () => {}
+  const joinMarket = () => {}
 
   const handleCurrentChange = (val: number) => {
     state.pageMy.currentPage = val
@@ -178,7 +191,31 @@
         }
       })
   }
-
+  const marketQuit = (item: any) => {
+    ElMessageBox.confirm(`确认退出  ${item.name}?`, '提示', {
+      confirmButtonText: '确认',
+      cancelButtonText: '取消',
+      type: 'warning'
+    })
+      .then(() => {
+        $services.appstore
+          .marketQuit({
+            data: {
+              id: item.id
+            }
+          })
+          .then((res: ResultType) => {
+            if (res.code == 200) {
+              getJoinMarketData()
+              ElMessage({
+                message: '退出成功',
+                type: 'success'
+              })
+            }
+          })
+      })
+      .catch(() => {})
+  }
   const hadleClick = (item: any) => {
     ElMessageBox.confirm(`确认删除  ${item.name}?`, '提示', {
       confirmButtonText: '确认',

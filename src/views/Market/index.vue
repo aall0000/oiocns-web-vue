@@ -9,10 +9,10 @@
       <ul class="box-ul">
         <p class="box-ul-title">我的应用</p>
         <li class="app-card">
-          <MarketCreate :info="add" @myclick="addApp" />
-          <ShopCard v-for="item in state.myAppList" :info="item" :key="item.id">
+          <MarketCreate :info="add" @myclick="GoPage('/market/markList')" />
+          <ShopCard v-for="item in state.myAppList" :info="item" :key="item.id" :over-id="item.id">
             <!-- <template> -->
-            <el-dropdown  placement="top">
+            <el-dropdown @command="(value) => handleCommand('own', value, item)" placement="top">
               <el-button class="btn" type="primary" link small> 设置 </el-button>
               <template #dropdown>
                 <el-dropdown-menu>
@@ -96,9 +96,9 @@
   const registerFormRef = ref<FormInstance>()
   const router = useRouter()
   type StateType = {
-    myAppList: MarketShopType[] //我的应用
+    myAppList: ProductType[] //我的应用
     myAppToast: number
-    otherAppList: MarketShopType[] //其他应用
+    otherAppList: ProductType[] //其他应用
     otherToast: number
     marketOptions: any[] //所有市场列表
   }
@@ -154,7 +154,7 @@
   const handleCommand = (
     type: 'own' | 'other',
     command: string | number | object,
-    item: MarketShopType
+    item: ProductType
   ) => {
     console.log('菜单选择事件', type, command, item)
   }

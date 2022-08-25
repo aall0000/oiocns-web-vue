@@ -12,14 +12,14 @@
         <table class="table-mytable">
           <tr>
             <td class="left">名称</td>
-            <td class="column">{{selectItem?.data?.name}}</td>
+            <td class="column">{{selectItem?.name}}</td>
             <td class="left">编码</td>
-            <td class="column">{{selectItem?.data?.teamCode}}</td>
+            <td class="column">{{selectItem?.code}}</td>
           </tr>
           <tr>
             <td class="left">描述</td>
             <td class="column" colspan="3">
-              <span class="remark">{{selectItem?.data?.teamRemark}}</span>
+              <span class="remark">{{selectItem?.remark}}</span>
             </td>
           </tr>
         </table>
