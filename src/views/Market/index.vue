@@ -55,11 +55,11 @@
             <el-button class="btn" link small @click="deleteApp(item)">移除应用</el-button>
           </ShopCard>
         </li>
-        <!-- <el-pagination
+        <el-pagination
           style="justify-content: end"
           layout="prev, pager, next"
-          :total="state.ownTotal"
-        /> -->
+          :total="state.shareTotal"
+        />
       </ul>
     </div>
   </div>
