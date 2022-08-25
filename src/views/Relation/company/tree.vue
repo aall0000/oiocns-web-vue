@@ -35,7 +35,7 @@
       </el-input>
     </div>
     <div class="tree">
-        <el-tree :data="orgTree"  ref="treeRef" @node-click="nodeClick" node-key="id"
+        <el-tree :data="orgTree" :expand-on-click-node="false" ref="treeRef" @node-click="nodeClick" node-key="id"
           :default-expanded-keys="defaultExpandedKeys" :filter-node-method="filterNode">
           <template #default="{ node, data }">
             <span class="custom-tree-node">
