@@ -20,6 +20,7 @@
         {{ dialogShow.sendData.createTime }}
       </el-descriptions-item>
     </el-descriptions>
+
     <template #footer>
       <span class="dialog-footer">
         <el-button type="primary" @click="submit">分配人员</el-button>
@@ -30,7 +31,7 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, reactive } from 'vue'
+  import { ref, reactive, computed } from 'vue'
   import $services from '@/services'
   import { ElMessage } from 'element-plus'
 
@@ -47,4 +48,11 @@
   }
 </script>
 
-<style scoped></style>
+<style lang="scss" scoped>
+  :deep(.el-descriptions__content) {
+    display: -webkit-box;
+    -webkit-box-orient: vertical; /*设置方向*/
+    -webkit-line-clamp: 3; /*设置超过为省略号的行数*/
+    overflow: hidden;
+  }
+</style>
