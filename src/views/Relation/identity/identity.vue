@@ -2,7 +2,7 @@
   <div class="container">
     <div class="wrap">
       <div>
-        <div class="title">当前组织:{{router.currentRoute.value.query?.name}}</div>
+        <div class="title">当前组织：{{router.currentRoute.value.query?.name}}</div>
       </div>
 
       <div class="search-wrap">
@@ -20,20 +20,27 @@
         </li>
       </div>
       <div>
-        <div class="text item" v-for="(item,index) in  identityList.list" :key="index" @click="checkItem(item)">
-          {{item.name}}
-        </div>
+        <el-menu
+          default-active="2"
+          class="el-menu-vertical-demo"
+        >
+          <el-menu-item :index="index" v-for="(item, index) in  identityList.list" @click="checkItem(item)">
+            <span>{{item.name}}</span>
+          </el-menu-item>
+        </el-menu>
       </div>
     </div>
-    <el-dialog v-model="createIdntity" title="请录入角色信息" width="40%" center append-to-body @close="dialogHide">
+
+
+    <el-dialog v-model="createIdntity" title="请录入身份信息" width="40%" center append-to-body @close="dialogHide">
       <div>
-        <el-form-item label="角色名称" style="width: 100%">
+        <el-form-item label="身份名称" style="width: 100%">
           <el-input v-model="formData.name" placeholder="请输入" clearable style="width: 100%" />
         </el-form-item>
-        <el-form-item label="角色编号" style="width: 100%">
+        <el-form-item label="身份编号" style="width: 100%">
           <el-input v-model="formData.code" placeholder="请输入" clearable style="width: 100%" />
         </el-form-item>
-        <el-form-item label="上级节点" style="width: 100%">
+        <el-form-item label="所属角色" style="width: 100%">
         <el-cascader
           :props="cascaderProps"
           :options="cascaderTree"
@@ -42,7 +49,7 @@
           placeholder="请选择"
         />
         </el-form-item>
-        <el-form-item label="角色简介" style="width: 100%">
+        <el-form-item label="身份简介" style="width: 100%">
           <el-input v-model="formData.remark" :autosize="{ minRows: 5 }" placeholder="请输入" type="textarea" clearable />
         </el-form-item>
       </div>
@@ -58,7 +65,6 @@
 <script lang="ts" setup>
   // @ts-nocheck
   import { ref, onMounted,reactive } from 'vue'
-  import { useRoute } from 'vue-router';
   import $services from '@/services'
   const emit = defineEmits(['itemClick'])
 
@@ -104,6 +110,7 @@
           message: '创建成功!',
           type: 'success'
         })
+        dialogHide()
         loadIdentities()
       }
     })
@@ -139,6 +146,11 @@
       }
     }
   }
+
+  const dialogHide = ()=>{
+    createIdntity.value = false
+  }
+
   onMounted(() => {
     belongId.value = router.currentRoute.value.query?.belongId
     loadIdentities()
@@ -180,9 +192,11 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  cursor: pointer;
 }
 .text {
   font-size: 14px;
+  cursor: pointer;
 }
 
 .item {
