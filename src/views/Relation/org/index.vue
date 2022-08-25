@@ -49,7 +49,7 @@
                 </template>
               </el-dropdown>
               <el-button link type="primary" size="small" @click="edit(row)">编辑</el-button>
-      
+
                   <el-button link type="danger" size="small"  style="margin-left:0" @click="handleDel(row)" :disabled="row.data.typeName == '公司'">删除</el-button>
                 </div>
             </template>
@@ -333,24 +333,22 @@
     let title: string;
     title = `确定把 ${row.data.name} 移除吗？`
     ElMessageBox.confirm(
-    title,
-    '警告',
-    {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      type: 'warning'
-    }
-  ).then(() => {
-     if(row.data.typeName == '部门'){
-      deleteDept(row)
-    } else {
-      deleteJob(row)
-    }
-  })
-  .catch(() => {
-
-  })
-   
+      title,
+      '警告',
+      {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }
+    ).then(() => {
+      if(row.data.typeName == '部门'){
+        deleteDept(row)
+      } else {
+        deleteJob(row)
+      }
+    })
+    .catch(() => {
+    })
   }
 
   // 删除部门

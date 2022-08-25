@@ -78,6 +78,7 @@ export default {
     deleteGroup: company + '/delete/group', //删除集团
     deleteJob: company + '/delete/job', //删除岗位
     deleteSubgroup: company + '/delete/subgroup', //删除子集团
+    deleteAuthority: company + '/delete/authority', //删除职权
     getAuthorityIdentities: company + '/get/authority/identitys', //查询职权身份
     getAuthorities: company + '/get/authoritys', //查询职权
     getDepartmentPersons: company + '/get/department/persons', //查询部门员工
