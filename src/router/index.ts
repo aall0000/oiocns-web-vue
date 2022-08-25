@@ -273,14 +273,7 @@ const mainRouter: RouteRecordRaw[] = [
           title: '安全设置'
         }
       },
-      {
-        path: '/user/test',
-        name: 'test',
-        component: () => import('@/views/Person/msgSetting/test.vue'),
-        meta: {
-          title: '测试'
-        }
-      }
+
     ]
   },
   {
