@@ -2,8 +2,13 @@
   <div class="market-layout">
     <div class="market-content box" style="height: 100%">
       <ul class="box-ul">
-        <li class="app-card" v-if="dataList.length !== 0">
-          <ShopCard v-for="item in dataList" :info="item" :key="item.id">
+        <li class="app-card" v-if="dataList?.length !== 0">
+          <ShopCard
+            v-for="item in dataList"
+            :info="item"
+            :key="item.id"
+            @click="handleCardInfo(item)"
+          >
             <template #rightIcon>
               <div class="shopCar" @click.stop="addShopCar(item)">
                 <el-icon><ShoppingCart /></el-icon>
@@ -30,6 +35,13 @@
       </ul>
     </div>
   </div>
+  <template v-for="item in state.dialogShow" :key="item.key">
+    <AppInfoDialog
+      v-if="item.key == 'info' && item.value"
+      :dialogShow="item"
+      @closeDialog="closeDialog"
+    ></AppInfoDialog>
+  </template>
 </template>
 
 <script setup lang="ts">
@@ -37,6 +49,7 @@
   import $services from '@/services'
   import { ElMessage } from 'element-plus'
   import ShopCard from '../../components/shopCard.vue'
+  import AppInfoDialog from './appInfoDialog.vue'
   const emit = defineEmits(['handleUpdate'])
   const props = defineProps({
     dataList: {
@@ -56,15 +69,38 @@
       pageSize: 20, // 每页条数
       pageSizes: [20, 30, 50], // 分页数量列表
       layout: 'total, prev, pager, next'
-    }
+    },
+    dialogShow: [
+      {
+        key: 'info',
+        value: false
+      }
+    ]
   })
+
+  // 查看卡片详情
+  const handleCardInfo = (item: any) => {
+    state.dialogShow.map((el: { value: boolean; key: string; sendData?: any }) => {
+      if (el.key == 'info') {
+        el.value = true
+        el.sendData = item
+      }
+    })
+  }
+  const closeDialog = (val: string) => {
+    state.dialogShow.map((el: { value: boolean; key: string }) => {
+      if (el.key == val) {
+        el.value = false
+      }
+    })
+  }
 
   const handleCurrentChange = (val: number) => {
     state.page.currentPage = val
     emit('handleUpdate')
   }
 
-  const addShopCar = (data) => {
+  const addShopCar = (data: any) => {
     $services.appstore
       .staging({
         data: {

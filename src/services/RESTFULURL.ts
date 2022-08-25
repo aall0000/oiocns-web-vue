@@ -78,6 +78,7 @@ export default {
     deleteGroup: company + '/delete/group', //删除集团
     deleteJob: company + '/delete/job', //删除岗位
     deleteSubgroup: company + '/delete/subgroup', //删除子集团
+    deleteAuthority: company + '/delete/authority', //删除职权
     getAuthorityIdentities: company + '/get/authority/identitys', //查询职权身份
     getAuthorities: company + '/get/authoritys', //查询职权
     getDepartmentPersons: company + '/get/department/persons', //查询部门员工
@@ -168,6 +169,7 @@ export default {
     queryInfo: product + '/query/info', //查询产品详细信息
     queryOwnResource: product + '/query/own/resource', //查询组织/个人拥有的资源列表
     register: product + '/register', //产品登记
+    publish: product + '/publish', //产品登记
     searchMerchandiseList: product + '​/search​/merchandise​/List', //根据产品查询产品上架信息
     searchMerchandiseApply: product + '​/search​/merchandise​/apply', //查询产品上架申请
     searchResource: product + '/search/resource', //查询产品资源列表
