@@ -10,7 +10,12 @@
         <p class="box-ul-title">我的应用</p>
         <li class="app-card">
           <MarketCreate :info="add" @myclick="GoPage('/market/markList')" />
-          <ShopCard v-for="item in state.myAppList" :info="item" :key="item.id" :over-id="item.id">
+          <ShopCard
+            v-for="item in state.ownProductList"
+            :info="item"
+            :key="item.id"
+            :over-id="item.id"
+          >
             <!-- <template> -->
             <el-dropdown @command="(value) => handleCommand('own', value, item)" placement="top">
               <el-button class="btn" type="primary" link small> 设置 </el-button>
@@ -29,13 +34,13 @@
         <el-pagination
           style="justify-content: end"
           layout="prev, pager, next"
-          :total="state.myAppToast"
+          :total="state.ownTotal"
         />
       </ul>
       <ul class="box-ul">
         <p class="box-ul-title">其他应用</p>
         <li class="app-card">
-          <!-- <ShopCard v-for="item in baseData" :info="item" :key="item.id">
+          <ShopCard v-for="item in state.shareProductList" :info="item" :key="item.id">
             <el-dropdown @command="(value) => handleCommand('other', value, item)" placement="top">
               <el-button class="btn" type="primary" link small> 设置 </el-button>
               <template #dropdown>
@@ -48,17 +53,17 @@
             </el-dropdown>
             <el-divider direction="vertical" />
             <el-button class="btn" link small @click="deleteApp(item)">移除应用</el-button>
-          </ShopCard> -->
+          </ShopCard>
         </li>
         <!-- <el-pagination
           style="justify-content: end"
           layout="prev, pager, next"
-          :total="state.myAppToast"
+          :total="state.ownTotal"
         /> -->
       </ul>
     </div>
   </div>
-  <el-dialog v-model="registerVisible" title="注册应用" width="600px" draggable>
+  <el-dialog v-model="registerVisible" title="注册应用" width="600px" draggable :close-on-click-modal="false">
     <el-form ref="registerFormRef" :model="form" label-width="120px" :rules="rules">
       <el-form-item label="应用名称" prop="name">
         <el-input v-model="form.name" />
@@ -80,7 +85,7 @@
       </span>
     </template>
   </el-dialog>
-  <el-dialog v-model="publishVisible" title="上架应用" width="600px" draggable>
+  <el-dialog v-model="publishVisible" title="上架应用" width="600px" draggable :close-on-click-modal="false">
     <putaway-comp :info="selectProductItem" ref="putawayRef" @closeDialog="publishVisible = false">
       <template #btns>
         <div class="putaway-footer" style="text-align: right">
@@ -90,6 +95,9 @@
       </template>
     </putaway-comp>
   </el-dialog>
+  <el-dialog v-model="shareVisible" title="分享应用" width="600px" draggable :close-on-click-modal="false">
+    <share-comp :info="selectProductItem" />
+  </el-dialog>
 </template>
 
 <script setup lang="ts">
@@ -98,6 +106,7 @@
   import { onMounted, reactive, ref } from 'vue'
   import ShopCard from './components/shopCard.vue'
   import PutawayComp from './components/putawayComp.vue'
+  import ShareComp from './components/shareComp.vue'
   import { baseData, actionOptionsOfOther, actionOptionsOfOwn } from './config'
   import { useRouter } from 'vue-router'
   import type { FormInstance, FormRules } from 'element-plus'
@@ -107,34 +116,38 @@
   const registerFormRef = ref<FormInstance>()
   const router = useRouter()
   type StateType = {
-    myAppList: ProductType[] //我的应用
-    myAppToast: number
-    otherAppList: ProductType[] //其他应用
-    otherToast: number
+    ownProductList: ProductType[] //我的应用
+    ownTotal: number
+    shareProductList: ProductType[] //其他应用
+    shareTotal: number
     marketOptions: any[] //所有市场列表
   }
 
   const state: StateType = reactive({
-    myAppList: [],
-    myAppToast: 0,
-    otherAppList: [],
-    otherToast: 0,
+    ownProductList: [],
+    ownTotal: 0,
+    shareProductList: [],
+    shareTotal: 0,
     marketOptions: []
   })
 
   onMounted(() => {
     // 获取列表
-    getPageList()
+    getProductList('own')
+    getProductList('share')
   })
 
   // 获取我的应用列表
-  const getPageList = async () => {
-    const { data, success } = await API.product.searchOwnProduct({
+  const getProductList = async (type: 'own' | 'share') => {
+    const { data, success } = await API.product[
+      type === 'own' ? 'searchOwnProduct' : 'searchShareProduct'
+    ]({
       data: { offset: 0, limit: 10, filter: '' }
     })
     if (success) {
-      const { result = [] } = data
-      state.myAppList = [...result]
+      const { result = [], total = 0 } = data
+      state[`${type}ProductList`] = [...result]
+      state[`${type}Total`] = total
     }
   }
 
@@ -150,7 +163,7 @@
           data: { id: item.id }
         })
         if (success) {
-          getPageList()
+          getProductList('own')
           ElMessage({
             type: 'success',
             message: '操作成功'
@@ -172,6 +185,7 @@
     selectProductItem.value = item
     switch (command) {
       case 'share':
+        shareVisible.value = true
         break
       case 'putaway':
         publishVisible.value = true
@@ -203,7 +217,7 @@
           data: form
         })
         if (success) {
-          getPageList()
+          getProductList('own')
           ElMessage({
             type: 'success',
             message: '应用注册成功'
@@ -243,26 +257,10 @@
   // 提交上架
   const putawaySubmit = () => {
     putawayRef.value.onPutawaySubmit()
-    // if (!formEl) return
-    // formEl.validate(async (valid, fields) => {
-    //   if (valid) {
-    //     console.log('上架submit!', form)
-    //     // const { success } = await API.product.register({
-    //     //   data: form
-    //     // })
-    //     // if (success) {
-    //     //   // getPageList()
-    //     //   ElMessage({
-    //     //     type: 'success',
-    //     //     message: '应用上架成功'
-    //     //   })
-    //     //   resetForm(formEl)
-    //     // }
-    //   } else {
-    //     console.log('上架error submit!', fields)
-    //   }
-    // })
   }
+
+  // 分享功能
+  const shareVisible = ref<boolean>(false)
 
   // 路由跳转
   const GoPage = (path: string) => {
