@@ -45,7 +45,7 @@ import { computed } from 'vue';
     margin-right: 10px;
 
     &.txt-img {
-      background-color: #409eff;
+      background-color: $colorBlueMain;
       display: flex;
       justify-content: center;
       align-items: center;

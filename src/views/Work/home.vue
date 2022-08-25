@@ -3,7 +3,7 @@
   <div class="baseLayout">
     <el-tabs v-model="editableTabsValue" type="card" editable class="demo-tabs" @edit="handleTabsEdit">
       <el-tab-pane :closable="false" :label="'工作台'" :name="0">
-        <TheHome style="margin-top: 4px"/>
+        <TheHome />
       </el-tab-pane>
       <el-tab-pane v-for="item in userOtherData.homeComplist" :key="item.name" :label="item.title"
         :name="item.name">
@@ -148,12 +148,13 @@ const handleTabsEdit = (targetName: TabPanelName, action: 'remove' | 'add') => {
 }
 
 :deep(.el-tabs--card > .el-tabs__header) {
-  border: unset;
+  // border: unset;
+  border-bottom: 0;
 }
 
 :deep(.el-tabs__content) {
   overflow: auto;
-  height: calc(100vh - 102px);
+  // height: calc(100vh - 102px);
   background-color: rgb(241, 241, 248);
   clear: both;
 }
@@ -176,7 +177,8 @@ const handleTabsEdit = (targetName: TabPanelName, action: 'remove' | 'add') => {
 
 .baseLayout {
   width: 100%;
-  height: 100%;
+  height: calc(100vh - 102px);
+  // height: 100%;
   background-color: rgb(241, 241, 248);
 }
 
