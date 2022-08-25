@@ -48,7 +48,7 @@ export default {
     getAuthIdentity: cohort + '/get/authority/identitys', //查询职权身份
     getAuthority: cohort + '/get/authoritys', //查询职权
     getIdentityPerson: cohort + '/get/identity/persons', //查询身份的人
-    getIdentities: cohort + '/get/identitys', //查询身份
+    getIdentitys: cohort + '/get/identitys', //查询身份
     getJoinedCohorts: cohort + '/get/joined/cohorts', //查询我加入的群
     getPersons: cohort + '/get/persons', //查询群成员
     getSubAuthorities: cohort + '/get/subauthoritys', //查询子职权
