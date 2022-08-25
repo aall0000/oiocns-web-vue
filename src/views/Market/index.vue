@@ -1,10 +1,19 @@
 <template>
   <div class="market-layout">
-    <el-card shadow="always" class="market-head flex">
+    <MarketCard>
+      <template #left>
+        <span>总记录数:20条</span>
+      </template>
+      <template #right>
+        <el-button type="primary" @click="registerVisible = true">注册应用</el-button>
+        <el-button type="primary" @click="GoPage('/market/markList')">去市场</el-button>
+      </template>
+    </MarketCard>
+    <!-- <el-card shadow="always" class="market-head flex">
       <el-button type="primary" @click="registerVisible = true">注册应用</el-button>
-      <!-- <el-button type="primary" @click.stop="linkOrder()">订单</el-button> -->
+
       <el-button type="primary" @click="GoPage('/market/markList')">去市场</el-button>
-    </el-card>
+    </el-card> -->
     <div class="market-content box">
       <ul class="box-ul">
         <p class="box-ul-title">我的应用</p>
@@ -111,6 +120,7 @@
   import { useRouter } from 'vue-router'
   import type { FormInstance, FormRules } from 'element-plus'
   import MarketCreate from './components/marketCreate.vue'
+  import MarketCard from '@/components/marketCard/index.vue'
   const add: string = '从应用市场中添加'
   // 注册页面实例
   const registerFormRef = ref<FormInstance>()
