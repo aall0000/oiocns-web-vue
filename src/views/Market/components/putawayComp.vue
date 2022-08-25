@@ -3,7 +3,7 @@
     ref="formRef"
     :model="formLabelAlign"
     :rules="rules"
-    label-position="left"
+    label-position="right"
     label-width="130px"
     class="publishComp-wrap"
     style="max-width: 500px"
