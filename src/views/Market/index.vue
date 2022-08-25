@@ -10,7 +10,12 @@
         <p class="box-ul-title">我的应用</p>
         <li class="app-card">
           <MarketCreate :info="add" @myclick="GoPage('/market/markList')" />
-          <ShopCard v-for="item in state.myAppList" :info="item" :key="item.id" :over-id="item.id">
+          <ShopCard
+            v-for="item in state.ownProductList"
+            :info="item"
+            :key="item.id"
+            :over-id="item.id"
+          >
             <!-- <template> -->
             <el-dropdown @command="(value) => handleCommand('own', value, item)" placement="top">
               <el-button class="btn" type="primary" link small> 设置 </el-button>
@@ -29,13 +34,13 @@
         <el-pagination
           style="justify-content: end"
           layout="prev, pager, next"
-          :total="state.myAppToast"
+          :total="state.ownTotal"
         />
       </ul>
       <ul class="box-ul">
         <p class="box-ul-title">其他应用</p>
         <li class="app-card">
-          <!-- <ShopCard v-for="item in baseData" :info="item" :key="item.id">
+          <ShopCard v-for="item in state.shareProductList" :info="item" :key="item.id">
             <el-dropdown @command="(value) => handleCommand('other', value, item)" placement="top">
               <el-button class="btn" type="primary" link small> 设置 </el-button>
               <template #dropdown>
@@ -48,17 +53,17 @@
             </el-dropdown>
             <el-divider direction="vertical" />
             <el-button class="btn" link small @click="deleteApp(item)">移除应用</el-button>
-          </ShopCard> -->
+          </ShopCard>
         </li>
-        <!-- <el-pagination
+        <el-pagination
           style="justify-content: end"
           layout="prev, pager, next"
-          :total="state.myAppToast"
-        /> -->
+          :total="state.shareTotal"
+        />
       </ul>
     </div>
   </div>
-  <el-dialog v-model="registerVisible" title="注册应用" width="600px" draggable>
+  <el-dialog v-model="registerVisible" title="注册应用" width="600px" draggable :close-on-click-modal="false">
     <el-form ref="registerFormRef" :model="form" label-width="120px" :rules="rules">
       <el-form-item label="应用名称" prop="name">
         <el-input v-model="form.name" />
@@ -80,6 +85,19 @@
       </span>
     </template>
   </el-dialog>
+  <el-dialog v-model="publishVisible" title="上架应用" width="600px" draggable :close-on-click-modal="false">
+    <putaway-comp :info="selectProductItem" ref="putawayRef" @closeDialog="publishVisible = false">
+      <template #btns>
+        <div class="putaway-footer" style="text-align: right">
+          <el-button @click="publishVisible = false">取消</el-button>
+          <el-button type="primary" @click="putawaySubmit()"> 确认</el-button>
+        </div>
+      </template>
+    </putaway-comp>
+  </el-dialog>
+  <el-dialog v-model="shareVisible" title="分享应用" width="600px" draggable :close-on-click-modal="false">
+    <share-comp :info="selectProductItem" />
+  </el-dialog>
 </template>
 
 <script setup lang="ts">
@@ -87,6 +105,8 @@
   import { ElMessage, ElMessageBox } from 'element-plus'
   import { onMounted, reactive, ref } from 'vue'
   import ShopCard from './components/shopCard.vue'
+  import PutawayComp from './components/putawayComp.vue'
+  import ShareComp from './components/shareComp.vue'
   import { baseData, actionOptionsOfOther, actionOptionsOfOwn } from './config'
   import { useRouter } from 'vue-router'
   import type { FormInstance, FormRules } from 'element-plus'
@@ -96,35 +116,38 @@
   const registerFormRef = ref<FormInstance>()
   const router = useRouter()
   type StateType = {
-    myAppList: ProductType[] //我的应用
-    myAppToast: number
-    otherAppList: ProductType[] //其他应用
-    otherToast: number
+    ownProductList: ProductType[] //我的应用
+    ownTotal: number
+    shareProductList: ProductType[] //其他应用
+    shareTotal: number
     marketOptions: any[] //所有市场列表
   }
 
   const state: StateType = reactive({
-    myAppList: [],
-    myAppToast: 0,
-    otherAppList: [],
-    otherToast: 0,
+    ownProductList: [],
+    ownTotal: 0,
+    shareProductList: [],
+    shareTotal: 0,
     marketOptions: []
   })
 
   onMounted(() => {
     // 获取列表
-    getPageList()
-    getMarketOptions()
+    getProductList('own')
+    getProductList('share')
   })
 
   // 获取我的应用列表
-  const getPageList = async () => {
-    const { data, success } = await API.product.searchOwnProduct({
+  const getProductList = async (type: 'own' | 'share') => {
+    const { data, success } = await API.product[
+      type === 'own' ? 'searchOwnProduct' : 'searchShareProduct'
+    ]({
       data: { offset: 0, limit: 10, filter: '' }
     })
     if (success) {
-      const { result = [] } = data
-      state.myAppList = [...result]
+      const { result = [], total = 0 } = data
+      state[`${type}ProductList`] = [...result]
+      state[`${type}Total`] = total
     }
   }
 
@@ -140,7 +163,7 @@
           data: { id: item.id }
         })
         if (success) {
-          getPageList()
+          getProductList('own')
           ElMessage({
             type: 'success',
             message: '操作成功'
@@ -150,6 +173,8 @@
       .catch(() => {})
   }
 
+  // 记录当前操作的 应用信息
+  const selectProductItem = ref<ProductType>()
   // 处理 设置 菜单选择事件
   const handleCommand = (
     type: 'own' | 'other',
@@ -157,7 +182,21 @@
     item: ProductType
   ) => {
     console.log('菜单选择事件', type, command, item)
+    selectProductItem.value = item
+    switch (command) {
+      case 'share':
+        shareVisible.value = true
+        break
+      case 'putaway':
+        publishVisible.value = true
+        break
+      case 'unsubscribe':
+        break
+      default:
+        break
+    }
   }
+
   // 注册页面弹窗
   const registerVisible = ref<boolean>(false)
 
@@ -178,10 +217,10 @@
           data: form
         })
         if (success) {
-          getPageList()
+          getProductList('own')
           ElMessage({
             type: 'success',
-            message: '注册成功'
+            message: '应用注册成功'
           })
           resetForm(formEl)
         }
@@ -205,28 +244,24 @@
     ]
   })
 
-  // 获取市场列表
-  const getMarketOptions = async () => {
-    const { data, success } = await API.market.searchAll({
-      data: { offset: 0, limit: 10000, filter: '' }
-    })
-    if (success) {
-      const { result = [] } = data
-      state.myAppList = [...result]
-    }
-  }
   // 重置注册表单
   const resetForm = (formEl: FormInstance) => {
     registerVisible.value = false
     if (!formEl) return
     formEl.resetFields()
   }
-  const addApp = () => {
-    console.log('aaa')
+
+  // 上架应用功能
+  const publishVisible = ref<boolean>(false)
+  const putawayRef = ref<any>()
+  // 提交上架
+  const putawaySubmit = () => {
+    putawayRef.value.onPutawaySubmit()
   }
-  const linkOrder = () => {
-    router.push({ path: '/market/order' })
-  }
+
+  // 分享功能
+  const shareVisible = ref<boolean>(false)
+
   // 路由跳转
   const GoPage = (path: string) => {
     router.push(path)
