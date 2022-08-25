@@ -1,62 +1,106 @@
 <template>
-    <div class="card">
-      <div class="header">
-        <div class="title">角色维护</div>
-        <div class="box-btns">
-          <el-button small link type="primary" @click="goback">返回</el-button>
-        </div>
-      </div>
-      <div>
-        <el-table
-          :data="orgTree"
-          stripe
-          row-key="id"
+    <div class="container">
+      <!-- <el-card>
+        <el-descriptions
+          title="组织信息"
+          :column="2"
           :border="true"
-          lazy
-          :tree-props="{ children: 'nodes'}"
-          default-expand-all
-          class="table"
         >
-          <el-table-column type="selection" width="50"/>
-          <el-table-column prop="name" label="名称" width="330"/>
-          <el-table-column prop="code" label="编码" width="230"/>
-          <el-table-column prop="remark" label="备注" />
-          <el-table-column label="操作" width="150">
-            <template #default="{ row }">
-              <div class="cell-box">
-                <el-button link type="primary" size="small">新增</el-button>
-                <el-button link type="primary" size="small" @click="edit(row)">编辑</el-button>
-                <el-popconfirm
-                  title="确认删除?"
-                  confirm-button-text="确认"
-                  cancel-button-text="取消"
-                  @confirm="handleDel(row)"
-                >
-                  <template #reference>
-                    <el-button link type="danger" size="small"  style="margin-left:0">删除</el-button>
-                  </template>
-                </el-popconfirm>
+          <template #extra>
+            <a small class="goback" link type="primary" @click="goback">返回</a>
+          </template>
+          <el-descriptions-item>
+            <template #label>
+              <div class="cell-item">
+                名称
               </div>
             </template>
-          </el-table-column>
-        </el-table>
-      </div>
+            {{org?.name}}
+          </el-descriptions-item>
+          <el-descriptions-item>
+            <template #label>
+              <div class="cell-item">
+                编码
+              </div>
+            </template>
+            {{org?.code}}
+          </el-descriptions-item>
+          <el-descriptions-item>
+            <template #label>
+              <div class="cell-item">
+                描述
+              </div>
+            </template>
+            {{org?.teamRemark}}
+          </el-descriptions-item>
+        </el-descriptions>
+      </el-card> -->
+      <el-card class="box-card">
+        <template #header>
+          <div class="card-header">
+            <span>角色维护</span>
+            <el-button class="button" type="primary" text @click="goback">返回</el-button>
+          </div>
+        </template>
+
+        <div>
+          <el-table
+            :data="authorityTree"
+            stripe
+            row-key="id"
+            :border="true"
+            lazy
+            :tree-props="{ children: 'nodes'}"
+            default-expand-all
+            class="table"
+          >
+            <el-table-column type="selection" width="50"/>
+            <el-table-column prop="name" label="名称" width="330"/>
+            <el-table-column prop="code" label="编码" width="230"/>
+            <el-table-column prop="belong.name" label="所属" width="230">
+              <template #default="belong">
+                {{ belong.row.belong?.name }}
+                <el-tag v-if="belong.row.belong?.typeName">{{ belong.row.belong?.typeName }}</el-tag>
+              </template>
+            </el-table-column>
+            <el-table-column prop="remark" label="备注" />
+            <el-table-column label="操作" width="150">
+              <template #default="{ row }">
+                <div class="cell-box">
+                  <el-button link type="primary" size="small" @click="create(row)">新增</el-button>
+                  <el-button link type="primary" size="small" @click="edit(row)">编辑</el-button>
+                  <el-popconfirm
+                    title="确认删除?"
+                    confirm-button-text="确认"
+                    cancel-button-text="取消"
+                    @confirm="handleDel(row)"
+                  >
+                    <template #reference>
+                      <el-button link type="danger" size="small">删除</el-button>
+                    </template>
+                  </el-popconfirm>
+                </div>
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
+      </el-card>
     </div>
-<!-- ===============================================部门表单===================================== -->
+
   <el-dialog
-    v-model="createDeptDialogVisible"
-    title="请录入部门信息"
+    v-model="createDialogVisible"
+    title="请录入角色信息"
     width="40%"
     center
     append-to-body
     @close="dialogHide"
   >
     <div>
-      <el-form-item label="部门名称" style="width: 100%">
+      <el-form-item label="角色名称" style="width: 100%">
         <el-input v-model="formData.name" placeholder="请输入" clearable style="width: 100%"/>
       </el-form-item>
-      <el-form-item label="部门编号" style="width: 100%">
-        <el-input v-model="formData.code" placeholder="请输入" clearable style="width: 100%"/>
+      <el-form-item label="角色编号" style="width: 100%">
+        <el-input v-model="formData.code" placeholder="请输入" clearable  style="width: 100%"/>
       </el-form-item>
       <el-form-item label="上级节点" style="width: 100%">
         <el-cascader
@@ -67,9 +111,9 @@
           placeholder="请选择"
         />
       </el-form-item>
-      <el-form-item label="部门简介" style="width: 100%">
+      <el-form-item label="角色简介" style="width: 100%">
         <el-input
-          v-model="formData.teamRemark"
+          v-model="formData.remark"
           :autosize="{ minRows: 5 }"
           placeholder="请输入"
           type="textarea"
@@ -78,16 +122,15 @@
       </el-form-item>
     </div>
     <template #footer>
-      <span class="dialog-footer">
+      <span>
         <el-button @click="dialogHide">取消</el-button>
-        <el-button type="primary" @click="createDept">确认</el-button>
+        <el-button type="primary" @click="createAuth">确认</el-button>
       </span>
     </template>
   </el-dialog>
 
-
   <el-dialog
-    v-model="editDeptDialogVisible"
+    v-model="editDialogVisible"
     title="请编辑角色信息"
     width="40%"
     center
@@ -95,53 +138,10 @@
     @close="dialogHide"
   >
     <div>
-      <el-form-item label="部门名称" style="width: 100%">
+      <el-form-item label="角色名称" style="width: 100%">
         <el-input v-model="formData.name" placeholder="请输入" clearable style="width: 100%"/>
       </el-form-item>
-      <el-form-item label="部门编号" style="width: 100%">
-        <el-input v-model="formData.code" placeholder="请输入" clearable style="width: 100%"/>
-      </el-form-item>
-      <el-form-item label="上级节点" style="width: 100%">
-        <el-cascader
-          :props="cascaderProps"
-          :options="cascaderTree"
-          v-model="formData.parentIds"
-          style="width: 100%"
-          placeholder="请选择"
-        />
-      </el-form-item>
-      <el-form-item label="部门简介" style="width: 100%">
-        <el-input
-          v-model="formData.teamRemark"
-          :autosize="{ minRows: 5 }"
-          placeholder="请输入"
-          type="textarea"
-          clearable
-        />
-      </el-form-item>
-    </div>
-    <template #footer>
-      <span class="dialog-footer">
-        <el-button @click="dialogHide">取消</el-button>
-        <el-button type="primary" @click="editDept">确认</el-button>
-      </span>
-    </template>
-  </el-dialog>
-
-<!-- ===============================================工作组表单===================================== -->
-  <el-dialog
-    v-model="createJobDialogVisible"
-    title="请录入工作组信息"
-    width="40%"
-    center
-    append-to-body
-    @close="dialogHide"
-  >
-    <div>
-      <el-form-item label="工作组名称" style="width: 100%">
-        <el-input v-model="formData.name" placeholder="请输入" clearable style="width: 100%"/>
-      </el-form-item>
-      <el-form-item label="工作组编号" style="width: 100%">
+      <el-form-item label="角色编号" style="width: 100%">
         <el-input v-model="formData.code" placeholder="请输入" clearable  style="width: 100%"/>
       </el-form-item>
       <el-form-item label="上级节点" style="width: 100%">
@@ -153,9 +153,9 @@
           placeholder="请选择"
         />
       </el-form-item>
-      <el-form-item label="工作组简介" style="width: 100%">
+      <el-form-item label="角色简介" style="width: 100%">
         <el-input
-          v-model="formData.teamRemark"
+          v-model="formData.remark"
           :autosize="{ minRows: 5 }"
           placeholder="请输入"
           type="textarea"
@@ -164,51 +164,9 @@
       </el-form-item>
     </div>
     <template #footer>
-      <span class="dialog-footer">
+      <span>
         <el-button @click="dialogHide">取消</el-button>
-        <el-button type="primary" @click="createJob">确认</el-button>
-      </span>
-    </template>
-  </el-dialog>
-
-  <el-dialog
-    v-model="editJobDialogVisible"
-    title="请编辑工作组信息"
-    width="40%"
-    center
-    append-to-body
-    @close="dialogHide"
-  >
-    <div>
-      <el-form-item label="工作组名称" style="width: 100%">
-        <el-input v-model="formData.name" placeholder="请输入" clearable style="width: 100%"/>
-      </el-form-item>
-      <el-form-item label="工作组编号" style="width: 100%">
-        <el-input v-model="formData.code" placeholder="请输入" clearable  style="width: 100%"/>
-      </el-form-item>
-      <el-form-item label="上级节点" style="width: 100%">
-        <el-cascader
-          :props="cascaderProps"
-          :options="cascaderTree"
-          v-model="formData.parentIds"
-          style="width: 100%"
-          placeholder="请选择"
-        />
-      </el-form-item>
-      <el-form-item label="工作组简介" style="width: 100%">
-        <el-input
-          v-model="formData.teamRemark"
-          :autosize="{ minRows: 5 }"
-          placeholder="请输入"
-          type="textarea"
-          clearable
-        />
-      </el-form-item>
-    </div>
-    <template #footer>
-      <span class="dialog-footer">
-        <el-button @click="dialogHide">取消</el-button>
-        <el-button type="primary" @click="editJob">确认</el-button>
+        <el-button type="primary" @click="editAuth">确认</el-button>
       </span>
     </template>
   </el-dialog>
@@ -220,34 +178,35 @@
   import { ElMessage } from 'element-plus';
   import { useRouter } from 'vue-router';
 
+  // 1. 组织职权； 2. 个人职权；3. 群组职权  Todo
   const router = useRouter()
-  let createDeptDialogVisible = ref<boolean>(false)
-  let editDeptDialogVisible = ref<boolean>(false)
-  let createJobDialogVisible = ref<boolean>(false)
-  let editJobDialogVisible = ref<boolean>(false)
+  let createDialogVisible = ref<boolean>(false)
+  let editDialogVisible = ref<boolean>(false)
 
+  let org = ref<any>({})
   let formData = ref<any>({})
   let belongId = ref<any>({})
 
   const cascaderProps = {
     checkStrictly: true,
     value: 'id',
+    label: 'name',
+    children: 'nodes',
   }
 
-    // 节点ID和对象映射关系
+  // 节点ID和对象映射关系
   const parentIdMap: any = {}
 
-  let orgTree = ref<any[]>([])
+  let authorityTree = ref<any[]>([])
   let cascaderTree = ref<any[]>([])
 
-  // 加载单位
-  const loadOrgTree = () => {
+  // 加载职权树
+  const loadAuthorityTree = () => {
     $services.company.getAuthorityTree({data: {id: belongId.value}}).then((res: any)=>{
-      console.log('res======================', res.data)
-      orgTree.value = []
-      orgTree.value.push(res.data)
-      initIdMap(orgTree.value)
-      cascaderTree = orgTree
+      authorityTree.value = []
+      authorityTree.value.push(res.data)
+      initIdMap(authorityTree.value)
+      cascaderTree.value = authorityTree.value
     })
   }
 
@@ -255,14 +214,14 @@
   const initIdMap = (nodes: any[]) => {
     for(const node of nodes){
       parentIdMap[node.id] = node
-      if(node.children){
-        initIdMap(node.children)
+      if(node.nodes){
+        initIdMap(node.nodes)
       }
     }
   }
   // 获取父节点到根节点的ID列表
   const getParentIds = (node: any, parentIds: any[]): any[] =>{
-    const parentId = node.data.parentId
+    const parentId = node.parentId
     if(parentId && parentId != '0'){
       parentIds.push(parentId)
     }
@@ -280,12 +239,8 @@
   }
 
   // 新增
-  const create = (row: any, type: string) =>{
-    if(type == '工作组'){
-      createJobDialogVisible.value = true;
-    } else {
-      createDeptDialogVisible.value = true;
-    }
+  const create = (row: any) =>{
+    createDialogVisible.value = true;
     let parentIds: any[] = [row.id]
     parentIds = getParentIds(row, parentIds).reverse();
     formData.value.parentIds = parentIds
@@ -293,38 +248,22 @@
 
   // 编辑
   const edit = (row: any) =>{
-    if(row.data.typeName == '工作组'){
-      editJobDialogVisible.value = true;
-    } else {
-      editDeptDialogVisible.value = true;
-    }
+    editDialogVisible.value = true;
     const parentIds = getParentIds(row, []).reverse();
-    const obj = row.data;
     formData.value.parentIds = parentIds
-
-    formData.value = {...formData.value, ...obj}
-
-
+    formData.value = {...formData.value, ...row}
   }
+
 
   // 删除行
-  const handleDel = (row: any) =>{
-    if(row.data.typeName == '部门'){
-      deleteDept(row)
-    } else {
-      deleteJob(row)
-    }
-  }
-
-  // 删除部门
-  const deleteDept = async (row: any) =>{
+  const handleDel = async (row: any) =>{
     const { success } = await $services.company.deleteDepartment({data: {id: row.id}})
     if (success) {
       ElMessage({
         message: '删除成功!',
         type: 'success'
       })
-      loadOrgTree()
+      loadAuthorityTree()
     } else {
       ElMessage({
         message: '删除失败!',
@@ -333,52 +272,35 @@
     }
   }
 
-  // 删除工作组
-  const deleteJob = async (row: any) =>{
-    const { success } = await $services.company.deleteJob({data: {id: row.id}})
-    if (success) {
-      ElMessage({
-        message: '删除成功!',
-        type: 'success'
-      })
-      loadOrgTree()
-    } else {
-      ElMessage({
-        message: '删除失败!',
-        type: 'error'
-      })
-    }
-  }
 
-  //关闭弹窗清空
+  // 关闭弹窗清空
   const dialogHide = () => {
     formData.value = {parentIds: formData.value.parentIds}
-    createDeptDialogVisible.value = false
-    editDeptDialogVisible.value = false
-    createJobDialogVisible.value = false
-    editJobDialogVisible.value = false
+    createDialogVisible.value = false
+    editDialogVisible.value = false
   }
 
-  // 创建部门
-  const createDept = () => {
+  // 创建组织员工职权
+  const createAuth = () => {
     let parentId = null;
     const parentIds = formData.value.parentIds;
     if (parentIds.length > 0) {
       parentId = parentIds[parentIds.length - 1]
     }
-    $services.company.createDepartment({
+    $services.company.createAuthority({
       data: {
         id: formData.value.id,
         code: formData.value.code,
         name: formData.value.name,
         parentId: parentId,
-        teamName: formData.value.name,
-        teamRemark: formData.value.teamRemark
+        public: true,
+        remark: formData.value.remark,
+        belongId: belongId.value,
       }
     }).then((res: ResultType) => {
       if (res.success) {
         dialogHide()
-        loadOrgTree()
+        loadAuthorityTree()
         ElMessage({
           message: res.msg,
           type: 'success'
@@ -392,8 +314,8 @@
     })
   }
 
-  // 编辑部门
-  const editDept = ()=>{
+  // 编辑角色
+  const editAuth = ()=>{
     let parentId = null;
     const parentIds = formData.value.parentIds;
     if (parentIds.length > 0) {
@@ -405,68 +327,7 @@
     }).then((res: ResultType) => {
       if (res.success) {
         dialogHide()
-        loadOrgTree()
-        ElMessage({
-          message: res.msg,
-          type: 'success'
-        })
-      } else {
-        ElMessage({
-          message: res.msg,
-          type: 'error'
-        })
-      }
-    })
-  }
-
-  // 创建工作组
-  const createJob  = () => {
-    let parentId = null;
-    const parentIds = formData.value.parentIds;
-    if (parentIds.length > 0) {
-      parentId = parentIds[parentIds.length - 1]
-    }
-    $services.company.createJob({
-      data: {
-        id: formData.value.id,
-        code: formData.value.code,
-        name: formData.value.name,
-        parentId: parentId,
-        thingId: formData.value.thingId,
-        teamName: formData.value.name,
-        teamRemark: formData.value.teamRemark
-      }
-    }).then((res: ResultType) => {
-      if (res.success) {
-        dialogHide()
-        loadOrgTree()
-        ElMessage({
-          message: res.msg,
-          type: 'success'
-        })
-      } else {
-        ElMessage({
-          message: res.msg,
-          type: 'error'
-        })
-      }
-    })
-  }
-
-  // 编辑工作组
-  const editJob = ()=>{
-    let parentId = null;
-    const parentIds = formData.value.parentIds;
-    if (parentIds.length > 0) {
-      parentId = parentIds[parentIds.length - 1]
-    }
-    formData.value.parentId = parentId
-    $services.company.updateJob({
-      data: formData.value
-    }).then((res: ResultType) => {
-      if (res.success) {
-        dialogHide()
-        loadOrgTree()
+        loadAuthorityTree()
         ElMessage({
           message: res.msg,
           type: 'success'
@@ -483,41 +344,40 @@
   // 获取树
   onMounted(() => {
     belongId.value = router.currentRoute.value.query?.belongId
-    loadOrgTree()
+    org.value = router.currentRoute.value.query
+    loadAuthorityTree()
   })
 </script>
 
 <style lang="scss" scoped>
-
-.card {
+.goback{
+  cursor: pointer;
+}
+.container {
   height: 100%;
   width: 100%;
   background-color: #fff;
-  padding: 10px;
+  padding: 5px;
   .cell-box{
     display: flex;
     align-items: center;
   }
-  .header {
-    display: flex;
-
-    .title {
-      text-align: left;
-      font-size: 16px;
-      width: 30%;
-      font-weight: bold;
-    }
-    .box-btns {
-      text-align: right;
-      padding-right: 14px;
-      padding-bottom: 10px;
-      width: 70%;
-    }
-  }
-
   .table {
     width: 100%;
-    height: calc(100vh - 150px);
+    height: 100%;
   }
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.box-card {
+  width: 100%;
+  height: 99%;
 }
 </style>
