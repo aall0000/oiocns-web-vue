@@ -79,7 +79,7 @@
                 {{ scope.column.label }}
               </template>
             </el-table-column>
-             <el-table-column v-else :key="'column' + index" v-bind="item"></el-table-column>
+            <el-table-column v-else :key="'column' + index" v-bind="item"></el-table-column>
           </template>
         </el-table>
       </div>
@@ -117,7 +117,7 @@
 
 <script setup lang="ts">
   import { stubFalse } from 'lodash'
-  import { ref, reactive, toRefs, computed } from 'vue'
+  import { ref, reactive, toRefs, computed,onMounted } from 'vue'
   import { useUserStore } from '@/store/user'
 
   const store = useUserStore()
@@ -137,11 +137,11 @@
     tableHead: any[]
     tableData: any[]
     options: {
-      expandAll: boolean
-      checkBox: any
-      order: any
-      noPage: boolean
-      selectLimit:number //限制选择个数，默认20
+      expandAll?: boolean
+      checkBox?: any
+      order?: any
+      noPage?: boolean
+      selectLimit?: number //限制选择个数，默认20
     }
     batchOperate: any[]
     queryParams: any[]
@@ -160,7 +160,7 @@
         checkBox: false,
         order: true,
         noPage: false,
-        selectLimit:0,
+        selectLimit: 0
       }
     },
     batchOperate: () => [],
@@ -249,16 +249,14 @@
   }
 
   const checkSelectable = (row: any) => {
-
-    if(props.options.selectLimit>0){
-      if(props.options.selectLimit < multipleSelection.value.length){
-        var obj = multipleSelection.value[multipleSelection.value.length-1]
+    if (props.options.selectLimit > 0) {
+      if (props.options.selectLimit < multipleSelection.value.length) {
+        var obj = multipleSelection.value[multipleSelection.value.length - 1]
         diyTable.value.clearSelection()
         diyTable.value!.toggleRowSelection(obj, undefined)
       }
       return true
-    }else{
-      
+    } else {
       if (row.children && !row.below) {
         if (row.children.length !== 0) {
           return false
@@ -277,7 +275,7 @@
 
   const handleSelectionChange = (val: any) => {
     multipleSelection.value = val
-    emit('selectionChange',multipleSelection.value)
+    emit('selectionChange', multipleSelection.value)
   }
 
   /**
@@ -289,16 +287,18 @@
     selectAll(false, false)
     page.value.pageSize = val
     page.value.currentPage = 1
-    emit('handleUpdate',page.value)
+    emit('handleUpdate', page.value)
   }
   const handleCurrentChange = (val: any) => {
     diyTable.value.clearSelection()
     isAllSelect.value = true
     selectAll(false, false)
     page.value.currentPage = val
-    emit('handleUpdate',page.value)
+    emit('handleUpdate', page.value)
   }
-
+  onMounted(() => {
+    console.log('props.options.selectLimit',props.options.selectLimit)
+  })
   /**
    * 鼠标进入表格是隐藏groupselect的drop
    */
@@ -524,7 +524,7 @@
       flex-wrap: wrap;
     }
   }
-   :deep(.el-table__header-wrapper .el-checkbox){
+  :deep(.el-table__header-wrapper .el-checkbox) {
     display: none;
   }
 </style>

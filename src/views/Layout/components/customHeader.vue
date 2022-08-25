@@ -93,7 +93,7 @@
     <el-col :span="8" class="flex col-right">
       <el-dropdown trigger="click">
         <span class="el-dropdown-link">
-          <headImg :name="queryInfo.name" :limit="1" class="smallIcon"></headImg>
+          <headImg :name="queryInfo.name" :limit="1" :imgWidth="40" :isSquare="false"></headImg>
           <span>{{ queryInfo.name }}</span>
           <el-icon style="margin-left: 15px">
             <CaretBottom />

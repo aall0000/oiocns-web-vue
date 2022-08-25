@@ -1,20 +1,25 @@
 <template>
   <div class="market-layout">
-    <el-card shadow="always" class="market-head flex">
-      <el-button type="primary" @click.stop="linkOrder()">我的订单</el-button>
-      <el-button type="primary" @click.stop="linkShopCar()">购物车</el-button>
-    </el-card>
+    <MarketCard>
+      <template #right>
+        <el-button type="primary" @click.stop="linkOrder()">我的订单</el-button>
+        <el-button type="primary" @click.stop="linkShopCar()">购物车</el-button>
+      </template>
+    </MarketCard>
+
     <div class="market-content box">
       <ul class="box-ul">
         <p class="box-ul-title">我的市场</p>
         <li class="app-card" v-if="state.myMarket?.length !== 0">
+          <MarketCreate :info="add" @click="dialogVisible = true" />
           <ShopCard
             v-for="item in state.myMarket"
             :info="item"
             :key="item.id"
+            :overId="item.id"
             @click="gotoApp(item)"
           >
-            <!-- <template #footer> -->
+            <!-- <template> -->
             <el-button class="btn" type="primary" link small @click.stop="hadleClick(item)"
               >删除市场</el-button
             >
@@ -25,7 +30,7 @@
             <!-- </template> -->
           </ShopCard>
         </li>
-        <div v-else>暂无数据</div>
+        <div v-else><MarketCreate :info="add" @click="dialogVisible = true" /></div>
         <el-pagination
           v-if="state.myMarket?.length !== 0"
           @current-change="handleCurrentChange"
@@ -37,15 +42,24 @@
       <ul class="box-ul">
         <p class="box-ul-title">我加入的市场</p>
         <li class="app-card" v-if="state.joinMarket?.length !== 0">
-          <ShopCard v-for="item in state.joinMarket" :info="item" :key="item.id">
+          <MarketCreate :info="add1" @click="state.dialogShow.value = true" />
+          <ShopCard
+            v-for="item in state.joinMarket"
+            :info="item"
+            :key="item.id"
+            :overId="item.id"
+            @click="gotoApp(item)"
+          >
             <!-- <template #footer> -->
-            <el-button class="btn" type="primary" link small>退出市场</el-button>
+            <el-button class="btn" type="primary" link small @click.stop="marketQuit(item)"
+              >退出市场</el-button
+            >
             <!-- <el-divider direction="vertical" />
               <el-button class="btn" link small>用户管理</el-button> -->
             <!-- </template> -->
           </ShopCard>
         </li>
-        <div v-else> 暂无数据 </div>
+        <div v-else> <MarketCreate :info="add1" @click="state.dialogShow.value = true" /></div>
         <el-pagination
           v-if="state.joinMarket.length !== 0"
           @current-change="handleCurrentJoinChange"
@@ -55,25 +69,46 @@
         />
       </ul>
     </div>
+    <el-dialog v-model="dialogVisible" title="加入市场" width="30%">
+      <el-form :model="form" label-width="120px"> </el-form>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="dialogVisible = false">取消</el-button>
+          <el-button type="primary" @click="create">确认</el-button>
+        </span>
+      </template>
+    </el-dialog>
+
+    <diySearch
+      :dialogShow="state.dialogShow"
+      title="加入市场"
+      placeholder="搜索市场"
+      @submit="submit"
+      @remoteMethod="remoteMethod"
+      @closeDialog="closeDialog"
+    ></diySearch>
   </div>
 </template>
 
 <script setup lang="ts">
-  import { reactive, onMounted, computed } from 'vue'
+  import { reactive, onMounted, computed, ref } from 'vue'
+  import diySearch from '@/components/diySearch/index.vue'
   import ShopCard from '../components/shopCard.vue'
   import { useRouter } from 'vue-router'
   import $services from '@/services'
   import { ElMessage, ElMessageBox } from 'element-plus'
-
+  import MarketCreate from '../components/marketCreate.vue'
+  import { useUserStore } from '@/store/user'
   const router = useRouter()
-
+  const store = useUserStore()
   const handleCurrentMy: any = computed(() => {
     return (state.pageMy.currentPage - 1) * state.pageMy.pageSize
   })
   const handleCurrentJoin: any = computed(() => {
     return (state.pageJoin.currentPage - 1) * state.pageJoin.pageSize
   })
-
+  const add: string = '创建市场'
+  const add1: string = '加入市场'
   const state = reactive({
     myMarket: [],
     joinMarket: [],
@@ -90,6 +125,9 @@
       current: handleCurrentJoin,
       pageSize: 12, // 每页条数
       layout: 'total, prev, pager, next'
+    },
+    dialogShow: {
+      value: false
     }
   })
 
@@ -109,11 +147,11 @@
   }
 
   const linkOrder = () => {
-    router.push({ path: '/market/order'})
+    router.push({ path: '/market/order' })
   }
 
   const linkShopCar = () => {
-    router.push({ path: '/market/shopCar'})
+    router.push({ path: '/market/shopCar' })
   }
 
   const hadleUserManage = (item: { id: number }) => {
@@ -156,7 +194,31 @@
         }
       })
   }
-
+  const marketQuit = (item: any) => {
+    ElMessageBox.confirm(`确认退出  ${item.name}?`, '提示', {
+      confirmButtonText: '确认',
+      cancelButtonText: '取消',
+      type: 'warning'
+    })
+      .then(() => {
+        $services.appstore
+          .marketQuit({
+            data: {
+              id: item.id
+            }
+          })
+          .then((res: ResultType) => {
+            if (res.code == 200) {
+              getJoinMarketData()
+              ElMessage({
+                message: '退出成功',
+                type: 'success'
+              })
+            }
+          })
+      })
+      .catch(() => {})
+  }
   const hadleClick = (item: any) => {
     ElMessageBox.confirm(`确认删除  ${item.name}?`, '提示', {
       confirmButtonText: '确认',
@@ -182,6 +244,86 @@
       })
       .catch(() => {})
   }
+  const dialogVisible = ref(false)
+  const form = reactive({
+    name: '',
+    code: '',
+    samrId: '',
+    remark: '',
+    authId: '',
+    public: true
+  })
+  //创建市场
+  const create = () => {
+    $services.appstore
+      .create({
+        data: {
+          name: form.name,
+          code: form.code,
+          samrId: store.queryInfo.id,
+          remark: form.remark,
+          authId: store.queryInfo.team.authId,
+          public: form.public
+        }
+      })
+      .then((res: ResultType) => {
+        if (res.success) {
+          ElMessage({
+            message: '创建成功',
+            type: 'success'
+          })
+        }
+        dialogVisible.value = false
+        getMyMarketData()
+      })
+  }
+  const remoteMethod = (query: string, callback: any) => {
+    $services.appstore
+      .searchAll({
+        data: {
+          offset: 0,
+          limit: 100,
+          filter: query
+        }
+      })
+      .then((res: ResultType) => {
+        console.log(res)
+
+        if (res.data.result) {
+          let states = res.data.result
+          let arr: { value: any; label: any }[] = []
+          states.forEach((el: any) => {
+            let obj = {
+              value: el.id,
+              label: el.name
+            }
+            arr.push(obj)
+          })
+          callback(arr)
+        }
+      })
+  }
+  const submit = (data: any) => {
+    $services.appstore
+      .applyJoin({
+        data: {
+          id: data
+        }
+      })
+      .then((res: ResultType) => {
+        if (res.success) {
+          ElMessage({
+            message: '加入成功',
+            type: 'success'
+          })
+          state.dialogShow.value = false
+          getJoinMarketData()
+        }
+      })
+  }
+  const closeDialog = (data: { value: boolean }) => {
+    state.dialogShow.value = false
+  }
 </script>
 
 <style lang="scss" scoped>
@@ -202,7 +344,7 @@
     .market-content {
       padding: 16px;
       // margin-top: 4px;
-      height: calc(100vh - 124px);
+      height: calc(100vh - 70px);
       overflow-y: auto;
     }
     .box {

@@ -7,6 +7,9 @@
   >
     <div class="app-card-item-con">
       <div class="app-card-item-con-top flex">
+        <div class="app-card-rightIcon">
+          <slot name="rightIcon"></slot>
+        </div>
         <HeadImg :name="info.name" :url="appImg" :imgWidth="48" :limit="1" :isSquare="false" />
         <div class="app-con">
           <p class="app-con-title">{{ info.name }}</p>
@@ -17,7 +20,7 @@
       </div>
     </div>
     <!-- v-show="hoverItem === info.id" -->
-    <div class="app-card-item-footer" v-show="props.overId === info.id">
+    <div class="app-card-item-footer" v-show="props.overId === info.id" @click.stop>
       <slot />
     </div>
   </el-card>
@@ -30,7 +33,7 @@
   const state: { hoverItem: string } = reactive({ hoverItem: '' })
   type shopInfoType = {
     key?: string
-    info: MarketShopType
+    info: ProductType
     overId?: string //当前鼠标移入id
   }
   const props = defineProps<shopInfoType>()
@@ -42,7 +45,16 @@
 </script>
 
 <style lang="scss" scoped>
+  :deep(.el-card__body) {
+    padding: 0;
+  }
+  .app-card-rightIcon {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+  }
   .app-card-item {
+    position: relative;
     width: 24%;
     min-width: 200px;
     height: 184px;

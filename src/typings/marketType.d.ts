@@ -1,10 +1,12 @@
+//常规option类型
 interface OptionType {
   value: string
   label?: string
   id?: string | number
 }
 
-interface MarketShopType {
+// 应用商品数据类型
+interface ProductType {
   authority?: string
   belongId?: string
   code: string

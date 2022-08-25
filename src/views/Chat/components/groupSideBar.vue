@@ -79,7 +79,7 @@ type propType = {
   active: ImMsgChildType,//当前激活聊天对象信息
   sessionList: ImMsgType[],//当前会话列表
   clearHistoryMsg: Function,//清空记录
-  myId: string,
+  myId: string
 }
 const props = defineProps<propType>()
 // 会话列表搜索关键字

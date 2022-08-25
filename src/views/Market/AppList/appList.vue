@@ -1,131 +1,180 @@
 <template>
-  <div class="market-layout">
-    <div class="market-content box">
-      <ul class="box-ul">
-        <p class="box-ul-title">应用列表</p>
-        <li class="app-card" v-if="state.myAppList.length !== 0">
-          <ShopCard v-for="item in state.myAppList" :info="item" :key="item.id">
-            <!-- <template #footer> -->
-            <el-button class="btn" type="primary" link small>订阅</el-button>
-            <!-- <el-divider direction="vertical" />
-            <el-button class="btn" link small>用户管理</el-button> -->
-            <!-- </template> -->
-          </ShopCard>
-        </li>
-        <div v-else>暂无数据</div>
-        <div class="pagination">
-          <el-pagination
-            v-if="state.myAppList.length !== 0"
-            @current-change="handleCurrentChange"
-            v-bind="state.pageMy"
-            :pager-count="5"
-            style="text-align: right; margin-top: 10px; justify-content: end"
-          />
-        </div>
-      </ul>
+  <div class="appListLayout">
+    <div class="appListLayout-container">
+      <div class="appListLayout-header">
+        <p>应用列表</p>
+        <el-button type="primary">购物车</el-button>
+      </div>
+      <div class="appListLayout-content">
+        <AppCard
+          v-if="value1"
+          ref="appCard"
+          :dataList="state.myAppList"
+          @handleUpdate="handleCardUpdate"
+          @click="handleCardInfo"
+        ></AppCard>
+        <DiyTable
+          v-else
+          ref="diyTable"
+          :hasTitle="true"
+          :tableData="state.myAppList"
+          :tableHead="state.tableHead"
+          @handleUpdate="handleUpdate"
+        >
+          <template #operate="scope">
+            <TheTableButton :data="scope.row" @update="getData"></TheTableButton>
+          </template>
+        </DiyTable>
+      </div>
+      <div class="appListLayout-radio" v-if="state.myAppList.length > 0">
+        <p style="margin-right: 20px">切换视图</p>
+        <el-switch v-model="value1" />
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-  import { reactive, onMounted } from 'vue'
-  import ShopCard from '../components/shopCard.vue'
+  import { reactive, onMounted, ref, watch, nextTick } from 'vue'
   import { useRoute } from 'vue-router'
   import $services from '@/services'
+  import AppCard from './components/appCard.vue'
+  import DiyTable from '@/components/diyTable/index.vue'
+  import TheTableButton from './components/theTableButton2.vue'
 
   const route = useRoute()
+  const diyTable = ref(null)
+  const value1 = ref(true)
+  const appCard = ref(null)
 
   const state = reactive({
-    myAppList: [],
-    pageMy: {
-      total: 0, // 总条数
-      currentPage: 0, // 当前页
-      pageSize: 20, // 每页条数
-      pageSizes: [20, 30, 50], // 分页数量列表
-      layout: 'total, prev, pager, next'
-    },
-    pageJoin: {
-      total: 0, // 总条数
-      currentPage: 0, // 当前页
-      pageSize: 20, // 每页条数
-      pageSizes: [20, 30, 50], // 分页数量列表
-      layout: 'total, prev, pager, next'
-    }
+    myAppList: [
+      {
+        name: '123',
+        remark: '32123'
+      }
+    ],
+    tableHead: [
+      {
+        prop: 'name',
+        label: '应用名称'
+      },
+      {
+        prop: 'remark',
+        label: '应用描述'
+      },
+      {
+        prop: 'createTime',
+        label: '创建时间'
+      },
+      {
+        type: 'slot',
+        label: '操作',
+        fixed: 'right',
+        align: 'center',
+        width: '80',
+        name: 'operate'
+      }
+    ]
+  })
+
+  watch(value1, (val) => {
+    nextTick(() => {
+      if (val) {
+        appCard.value.state.page.currentPage = 1
+        getData()
+      } else {
+        diyTable.value.state.page.currentPage = 1
+        getTableData()
+      }
+    })
   })
 
   onMounted(() => {
     getData()
   })
 
-  const handleSizeChange = () => {}
-  const handleCurrentChange = () => {}
+  // 卡片切换页数
+  const handleCardUpdate = () => {
+    getData()
+  }
+  // 表格切换页数
+  const handleUpdate = (page: any) => {
+    getTableData()
+  }
+
+  const getTableData = () => {
+    $services.appstore
+      .merchandise({
+        data: {
+          id: route.query.data,
+          offset: diyTable.value.state.page.current,
+          limit: diyTable.value.state.page.pageSize,
+          filter: ''
+        }
+      })
+      .then((res: ResultType) => {
+        if (res.code == 200) {
+          // state.myAppList = res.data.result || []
+          diyTable.value.state.page.total = res.data.total || 0
+        }
+      })
+  }
 
   const getData = () => {
     $services.appstore
       .merchandise({
         data: {
           id: route.query.data,
-          offset: state.pageMy.currentPage,
-          limit: 10,
+          offset: appCard.value.state.page.current,
+          limit: 12,
           filter: ''
         }
       })
       .then((res: ResultType) => {
         if (res.code == 200) {
-          state.myAppList = res.data.result || []
-          state.pageMy.total = res.data.total
+          // state.myAppList = res.data.result || []
+          appCard.value.state.page.total = res.data.total || 0
         }
       })
-  }
-
-  const hadleClick = (item: any) => {
-    console.log('村上春树', item.name)
   }
 </script>
 
 <style lang="scss" scoped>
-  :deep(.el-card__body) {
-    padding: 0;
-  }
-  .pagination {
-    position: absolute;
-    bottom: 0;
-    right: 10px;
-  }
-  .market-layout {
+  .appListLayout {
     width: 100%;
-    height: 100%;
-    min-width: 1000px;
-    .market-head {
+    height: calc(100vh - 60px);
+    padding: 16px;
+    &-radio {
       display: flex;
-      justify-content: flex-end;
       align-items: center;
-      height: 60px;
-      padding: 0 20px;
+      position: absolute;
+      left: 16px;
+      bottom: 0px;
     }
-    .market-content {
-      padding: 16px;
-      // margin-top: 4px;
-      height: calc(100vh - 60px);
-      overflow-y: auto;
+    &-container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      background-color: #fff;
+      overflow: auto;
+      display: flex;
+      flex-direction: column;
     }
-    .box {
-      .box-ul + .box-ul {
-        margin-top: 10px;
-      }
-      &-ul {
-        position: relative;
-        background-color: #fff;
-        padding: 10px 24px;
-        height: 100%;
-        &-title {
-          font-weight: bold;
-          padding-bottom: 10px;
-        }
-        .app-card {
-          display: flex;
-          flex-wrap: wrap;
-        }
+    &-content {
+      width: 100%;
+      flex: 1;
+      padding: 0 24px;
+    }
+    &-header {
+      padding: 16px 24px 16px 24px;
+      display: flex;
+      width: 100%;
+      align-items: center;
+      justify-content: space-between;
+      p {
+        font-weight: 600;
+        color: rgba(0, 0, 0, 0.85);
       }
     }
   }

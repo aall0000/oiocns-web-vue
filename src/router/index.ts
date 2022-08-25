@@ -273,14 +273,7 @@ const mainRouter: RouteRecordRaw[] = [
           title: '安全设置'
         }
       },
-      {
-        path: '/user/test',
-        name: 'test',
-        component: () => import('@/views/Person/msgSetting/test.vue'),
-        meta: {
-          title: '测试'
-        }
-      }
+
     ]
   },
   {
@@ -445,9 +438,32 @@ function setPath(routerArr: any[], pathStr = '') {
     return obj
   })
 }
+
+//面包屑路由
+function breadcrumbPath(mainRouter:any[]){
+  for(let i = 0;i < mainRouter.length;i++){
+    if(mainRouter[i].path == '/market'){
+      return mainRouter[i].children.map((item: { path: string; meta: { title: string };index:string })=>{
+        let obj: { path: string; name: string;index:string} = {
+          path: item.path,
+          name: item.meta.title,
+          index:item.path.split('/').filter((item) => item && item.trim()).at(-1)
+        }
+        return obj
+      })
+
+
+    }
+  }
+
+
+
+}
+console.log('ly',breadcrumbPath(mainRouter));
+
 // 根据业务路由导出菜单列表用于渲染导航
 export const menuList: any = setPath(mainRouter)
-
+export const marketPathList: any = breadcrumbPath(mainRouter)
 export function setupRouter(app: App<Element>) {
   app.use(router)
 }

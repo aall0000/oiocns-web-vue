@@ -6,7 +6,6 @@ const history = '/orginone/orgchat/history'
 const market = '/orginone/appstore/market'
 const order = '/orginone/appstore/order'
 const product = '/orginone/appstore/product'
-const msg = '/orginone/orgchat/real'
 const appstore = '/orginone/appstore/market'
 export default {
   // 人员接口
@@ -48,7 +47,7 @@ export default {
     getAuthIdentity: cohort + '/get/authority/identitys', //查询职权身份
     getAuthority: cohort + '/get/authoritys', //查询职权
     getIdentityPerson: cohort + '/get/identity/persons', //查询身份的人
-    getIdentities: cohort + '/get/identitys', //查询身份
+    getIdentitys: cohort + '/get/identitys', //查询身份
     getJoinedCohorts: cohort + '/get/joined/cohorts', //查询我加入的群
     getPersons: cohort + '/get/persons', //查询群成员
     getSubAuthorities: cohort + '/get/subauthoritys', //查询子职权
@@ -79,6 +78,7 @@ export default {
     deleteGroup: company + '/delete/group', //删除集团
     deleteJob: company + '/delete/job', //删除岗位
     deleteSubgroup: company + '/delete/subgroup', //删除子集团
+    deleteAuthority: company + '/delete/authority', //删除职权
     getAuthorityIdentities: company + '/get/authority/identitys', //查询职权身份
     getAuthorities: company + '/get/authoritys', //查询职权
     getDepartmentPersons: company + '/get/department/persons', //查询部门员工
@@ -124,14 +124,13 @@ export default {
   },
   market: {
     merchandise: market + '​/approval​/merchandise', //商品上架审核
-    create: market + '​/create', //创建市场
-    
-    createOrderByStaging: market + '/create/order/by/staging', //购物车发起订单
+    create: market + '/create', //创建市场
+    createOrderByStaging: market + '​/create​/order​/by​/staging', //购物车发起订单
     delete: market + '​/delete', //删除市场
     deleteStaging: market + '/delete/staging', //移除暂存区/购物车
     joinStaging: market + '​/join/staging', //加入暂存区/购物车
     publishMerchandise: market + '​/publish/merchandise', //上架商品
-    searchAll: market + '​/search/all', //查询所有市场
+    searchAll: market +'/search/all', //查询所有市场
     searchManager: market + '​/search/manager', //查询自己管理的市场
     searchMerchandise: market + '​/search/merchandise', //查询市场中所有商品
     searchMerchandiseApply: market + '​/search/merchandise/apply', //查询产品上架申请
@@ -170,6 +169,7 @@ export default {
     queryInfo: product + '/query/info', //查询产品详细信息
     queryOwnResource: product + '/query/own/resource', //查询组织/个人拥有的资源列表
     register: product + '/register', //产品登记
+    publish: product + '/publish', //产品登记
     searchMerchandiseList: product + '​/search​/merchandise​/List', //根据产品查询产品上架信息
     searchMerchandiseApply: product + '​/search​/merchandise​/apply', //查询产品上架申请
     searchResource: product + '/search/resource', //查询产品资源列表
@@ -197,7 +197,12 @@ export default {
     marketDel: appstore + '/delete',
     merchandise: appstore + '/search/merchandise',
     member: appstore + '/search/member',
-    removeMemver: appstore + '/remove/member'
+    create: appstore + '/create',
+    removeMemver: appstore + '/remove/member',
+    marketQuit: appstore + '/quit',
+    searchAll: appstore + '/search/all',
+    applyJoin: appstore + '/apply/join',
+    staging: appstore + '/staging'
   }
   //others
 }
