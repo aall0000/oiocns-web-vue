@@ -45,6 +45,9 @@
 </script>
 
 <style lang="scss" scoped>
+  :deep(.el-card__body) {
+    padding: 0;
+  }
   .app-card-rightIcon {
     position: absolute;
     right: 10px;
