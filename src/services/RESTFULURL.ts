@@ -197,7 +197,10 @@ export default {
     member: appstore + '/search/member',
     create: appstore + '/create',
     removeMemver: appstore + '/remove/member',
-    marketQuit: appstore + '/quit'
+    marketQuit: appstore + '/quit',
+    searchAll: appstore + '/search/all',
+    applyJoin: appstore + '/apply/join',
+    staging: appstore + '/staging'
   }
   //others
 }
