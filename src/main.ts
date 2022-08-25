@@ -16,7 +16,6 @@ import piniaPersist from 'pinia-plugin-persist'
 const pinia = createPinia()
 
 const app = createApp(App)
-
 // 图标引入
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
   app.component(key, component)
