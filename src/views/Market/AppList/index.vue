@@ -10,7 +10,7 @@
     <div class="market-content box">
       <ul class="box-ul">
         <p class="box-ul-title">我的市场</p>
-        <li class="app-card" v-if="state.myMarket.length !== 0">
+        <li class="app-card" v-if="state.myMarket?.length !== 0">
           <MarketCreate :info="add" @click="dialogVisible = true" />
           <ShopCard
             v-for="item in state.myMarket"
@@ -30,7 +30,7 @@
             <!-- </template> -->
           </ShopCard>
         </li>
-        <div v-else>暂无数据</div>
+        <div v-else><MarketCreate :info="add" @click="dialogVisible = true" /></div>
         <el-pagination
           v-if="state.myMarket?.length !== 0"
           @current-change="handleCurrentChange"
@@ -59,7 +59,7 @@
             <!-- </template> -->
           </ShopCard>
         </li>
-        <div v-else> 暂无数据 </div>
+        <div v-else> <MarketCreate :info="add1" @click="state.dialogShow.value = true" /></div>
         <el-pagination
           v-if="state.joinMarket.length !== 0"
           @current-change="handleCurrentJoinChange"
@@ -344,7 +344,7 @@
     .market-content {
       padding: 16px;
       // margin-top: 4px;
-      height: calc(100vh - 124px);
+      height: calc(100vh - 70px);
       overflow-y: auto;
     }
     .box {
