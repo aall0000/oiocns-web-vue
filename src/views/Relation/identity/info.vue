@@ -27,34 +27,47 @@
     </div>
   </div>
 
-  <el-dialog v-model="dialogVisible" :title="'请编辑集团信息'" width="30%">
-    <el-form-item :label="'集团名称'">
-      <el-input v-model="formData.name" :placeholder="'请输入集团名称'" clearable />
-    </el-form-item>
-    <el-form-item :label="'集团编号'">
-      <el-input v-model="formData.code" :placeholder="'请输入集团描述'" clearable />
-    </el-form-item>
-    <el-form-item :label="'集团描述'">
-      <el-input v-model="formData.teamRemark" :placeholder="'请输入集团描述'" :autosize="{ minRows: 5 }" type="textarea" clearable />
-    </el-form-item>
-    <template #footer>
-      <span class="dialog-footer">
-        <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="update">确认</el-button>
-      </span>
-    </template>
-  </el-dialog>
+  <el-dialog v-model="dialogVisible" title="修改角色信息" width="40%" center append-to-body @close="dialogHide">
+      <div>
+        <el-form-item label="角色名称" style="width: 100%">
+          <el-input v-model="formData.name" placeholder="请输入" clearable style="width: 100%" />
+        </el-form-item>
+        <el-form-item label="角色编号" style="width: 100%">
+          <el-input v-model="formData.code" placeholder="请输入" clearable style="width: 100%" />
+        </el-form-item>
+        <el-form-item label="上级节点" style="width: 100%">
+        <el-cascader
+          :props="cascaderProps"
+          :options="cascaderTree"
+          v-model="formData.parentIds"
+          style="width: 100%"
+          placeholder="请选择"
+        />
+        </el-form-item>
+        <el-form-item label="角色简介" style="width: 100%">
+          <el-input v-model="formData.remark" :autosize="{ minRows: 5 }" placeholder="请输入" type="textarea" clearable />
+        </el-form-item>
+      </div>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="dialogHide">取消</el-button>
+          <el-button type="primary" @click="updateIdentity">确认</el-button>
+        </span>
+      </template>
+    </el-dialog>
 </template>
 <script lang="ts" setup>
   import $services from '@/services'
-  import { ref, watch } from 'vue'
+  import { ref, reactive,watch,onMounted } from 'vue'
   import { ElMessage } from 'element-plus'
   import router from '@/router';
 
   let selectItem = ref<any>({})
   let dialogVisible = ref<boolean>(false)
-  let formData: any = ref({})
-
+  let formData: any = ref({
+    name:''
+  })
+  const belongId= ref<any>()
   // 获取单位树点击的信息
   const selectItemChange = (data: any) => {
     selectItem.value = data;
@@ -69,16 +82,20 @@
   // 修改信息
   const handleUpdate = ()=> {
     if(!selectItem.value.id){
-      ElMessage.warning('请左侧选择部门或者工作组！')
+      ElMessage.warning('请左侧选择角色')
       return
     }
-    formData.value = selectItem.value.data
+    formData.value = selectItem.value
+    console.log(formData,selectItem)
     dialogVisible.value = true
+    formData.parentIds = selectItem.authId
   }
-
+  const dialogHide = ()=>{
+     dialogVisible.value = false
+  }
   // 保存
-  const update = ()=>{
-    const data = {...formData.value, ...selectItem.value.data};
+  const updateIdentity = ()=>{
+    const data = {...formData.value};
     let url = null;
     if(data.typeName == '集团'){
       url = 'updateGroup'
@@ -95,16 +112,42 @@
       }
     })
   }
+  
+  // 节点ID和对象映射关系
+  const parentIdMap: any = {}
 
-  // 跳转至角色管理页面
-  const toAuth = ()=>{
-    router.push({ path: '/relation/authority', query: { belongId: selectItem.value.id }})
-  }
-  // 跳转至身份管理页面
-  const toIdentity = ()=>{
-    router.push({ path: '/relation/identity', query: { belongId:  selectItem.value.id }})
+  let authorityTree = ref<any[]>([])
+  let cascaderTree = ref<any[]>([])
+
+  const cascaderProps = {
+    checkStrictly: true,
+    value: 'id',
+    label: 'name',
+    children: 'nodes',
   }
 
+  // 加载职权树
+  const loadAuthorityTree = () => {
+    $services.company.getAuthorityTree({data: {id: belongId.value}}).then((res: any)=>{
+      authorityTree.value = []
+      authorityTree.value.push(res.data)
+      initIdMap(authorityTree.value)
+      cascaderTree.value = authorityTree.value
+    })
+  }
+  // 初始化ID和对象映射关系
+  const initIdMap = (nodes: any[]) => {
+    for(const node of nodes){
+      parentIdMap[node.id] = node
+      if(node.nodes){
+        initIdMap(node.nodes)
+      }
+    }
+  }
+  onMounted(() => {
+    belongId.value = router.currentRoute.value.query?.belongId
+    loadAuthorityTree();
+  })
   const goback = () => {
     router.go(-1)
   }

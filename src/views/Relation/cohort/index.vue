@@ -70,7 +70,7 @@ const state = reactive({ qunList: []})
 
 // 获取我加入的群列表
 const getQunList = async () => {
-  const res = await $services.cohort.getJoinedCohorts({ data: { offset: 0, limit: 1000 } })
+  const res = await $services.cohort.getJoinedCohorts({ data: { offset: 0, limit: 10000 } })
   const { data, err } = res
   if (!err) {
     const { result = [] } = data

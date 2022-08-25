@@ -175,7 +175,6 @@ const assignTable = ref(null)
 
 // 加载用户
 const getUsers = ()=>{
-  console.log('aaaaaaaaa',selectItem)
   const data = selectItem
   if(data){
     $services.cohort.getIdentityPerson({
