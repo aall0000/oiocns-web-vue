@@ -41,8 +41,10 @@
 
 <script lang="ts" setup>
   import { useUserStore } from '@/store/user'
-  import API from '@/services'
+  import { useAnyData } from '@/store/anyData'
+  // import API from '@/services'
   import * as signalR from '@microsoft/signalr'
+  import UserOtherDataConnection from '@/utils/hubConnection'
   import {
     onMounted,
     reactive,
@@ -61,6 +63,7 @@
   import GroupDetail from './components/groupDetail.vue'
   import { ElMessage } from 'element-plus'
   import { useRouter } from 'vue-router'
+ 
   interface infoType {
     detail: ImMsgChildType
     userList: userType[]
@@ -68,6 +71,7 @@
     typeName: string
   }
   const { setUserNameMap, userToken, queryInfo } = useUserStore()
+  const { updateMessageNoread,setMessageNoRead } = useAnyData()
   const router = useRouter()
   provide('reWrite', ref(''))
   // 是否展示导航
@@ -75,7 +79,7 @@
   const isShowDetail = ref<boolean>(false)
   // 消息信息列表
   const msgMap = ref(new Map())
-
+  
   // 记录历史记录上次搜索信息
   const lastQueryParams = ref<any>({})
 
@@ -114,7 +118,13 @@
 
   onMounted(() => {
     isShowMenu.value = true
-    // 开始链接
+    // 订阅未读消息
+    UserOtherDataConnection.subscribed(`message.noread`, (data) => {
+      // console.log('noread===', data)
+      setMessageNoRead(data)
+    })
+ 
+    // 开始链接接受聊天数据
     connection
       .start()
       .then(async () => {
@@ -153,6 +163,7 @@
       console.log('链接关闭了')
       msgMap.value.clear()
     })
+    
   })
 
   // 处理接受消息
@@ -267,6 +278,7 @@
   }
 
   const handleNewMsgShow = (data: any) => {
+    
     const silderList = sessionList.value
     sessionList.value = silderList.map((item: any) => {
       // 匹配会话空间
@@ -291,6 +303,7 @@
             val.msgType = data.msgType
             if (val.id != activeInfo.value.id || item.id != activeInfo.value.spaceId) {
               val.count = (val.count || 0) + 1
+              updateMessageNoread(sessionId,1)
             }
             arr.unshift(val)
             let key = val.id + '_' + item.id

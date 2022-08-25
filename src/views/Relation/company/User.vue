@@ -4,7 +4,7 @@
         <div class="title">{{props.selectItem.label}}</div>
         <div class="box-btns">
           <div v-if="props.selectItem?.data?.typeName == '公司'">
-            <el-button small link type="primary" @click="pullPersonDialog = true">添加成员</el-button>
+            <el-button small link type="primary" @click="friendDialog = true">添加成员</el-button>
             <el-button small link type="primary" @click="viewApplication">查看申请</el-button>
           </div>
           <div v-if="props.selectItem?.data?.typeName == '部门' || props.selectItem?.data?.typeName == '工作组'">
@@ -33,31 +33,7 @@
         </div>
       </div>
     </div>
-
-  <el-dialog v-model="pullPersonDialog" @close="hidePullPreson" title="添加人员到单位" width="30%">
-    <el-select
-      v-model="inviter"
-      filterable
-      remote
-      reserve-keyword
-      placeholder="请输入要查的人或者手机号"
-      :remote-method="searchPersons"
-      :loading="loading"
-    >
-      <el-option
-        v-for="item in inviterOptions"
-        :key="item.value"
-        :label="item.label"
-        :value="item.value"
-      />
-    </el-select>
-    <template #footer>
-      <span class="dialog-footer">
-        <el-button @click="hidePullPreson">取消</el-button>
-        <el-button type="primary" @click="pullPerson">确认</el-button>
-      </span>
-    </template>
-  </el-dialog>
+  <searchFriend  v-if="friendDialog" :selectLimit='0' @closeDialog="closeDialog"  @checkFriend='checkFriend'/>
 
   <el-dialog v-model="assignDialog" @close="hideAssignDialog" :title="'分配人员 => ' + selectItem.label" width="50%">
     <el-input v-model="assignSearch" class="search" placeholder="搜索用户" @input="assignSearchChange">
@@ -97,7 +73,7 @@ import { onMounted, reactive, ref, watch } from 'vue';
 import { useRouter } from "vue-router";
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { Search } from '@element-plus/icons-vue'
-
+import searchFriend from '@/components/search/friend.vue'
 const props = defineProps<{
   selectItem: any,     // 节点数据
   tabHeight:number,
@@ -206,37 +182,26 @@ const getUsers = ()=>{
   }
 }
 
-
-// 搜索人
-const searchPersons = (query: string) => {
-  inviterOptions.value = []
-  if(!query){
-    return
+const friendDialog = ref<boolean>(false)
+const closeDialog = ()=>{
+   friendDialog.value = false;
+}
+type arrList = {
+  id:string
+}
+const checkFriend=(val:any)=>{
+  if(val.value.length>0){
+    let arr:Array<arrList> =[]
+    val.value.forEach((element:any) => {
+      arr.push(element.id)
+    });
+    pullPerson(arr)
+  }else{
+    friendDialog.value = false;
   }
-  loading.value = true
-  $services.person
-    .searchPersons({data: { filter: query, offset: 0, limit: 10 }})
-    .then((res: ResultType) => {
-      loading.value = false
-      if (res.success && res.data.result) {
-        const users = res.data.result
-        inviterOptions.value = users.map((u: any) => {
-          return {value: u.id, label: u.name}
-        })
-      } else {
-        ElMessage({
-          message: '未找到用户!',
-          type: 'warning'
-        })
-      }
-    })
 }
+// 搜索人
 
-interface ListItem {
-  value: string
-  label: string
-}
-const inviterOptions = ref<ListItem[]>([])
 const inviter = ref('')
 const pullPersonDialog = ref<boolean>(false)
 const hidePullPreson = () => {
@@ -245,12 +210,12 @@ const hidePullPreson = () => {
 }
 
 //邀请加入单位
-const pullPerson = () => {
+const pullPerson = (arr:any) => {
   $services.company
     .pullPerson({
       data: {
         id: props.selectItem.id,
-        targetIds: [inviter.value]
+        targetIds: arr
       }
     })
     .then((res: ResultType) => {
@@ -261,8 +226,7 @@ const pullPerson = () => {
         })
         getUsers()
       }
-      inviter.value = ''
-      pullPersonDialog.value = false
+      friendDialog.value = false;
     })
 }
 const handleUpdate = (page: any)=>{
@@ -419,7 +383,6 @@ const assignJob = (id: string, targetIds: string[]) => {
       getUsers()
     })
 }
-
 
 onMounted(() => {
   getUsers()

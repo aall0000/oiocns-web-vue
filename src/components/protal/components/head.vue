@@ -4,23 +4,23 @@
       <img class="header-left-img" src="@/assets/img/头像.png" alt="" />
       <!-- <div class="header-left__avater">俞</div> -->
       <div class="header-left-box">
-        <div class="header-left-box__top">{{ getTimeState() }}，{{ queryInfo.name }}</div>
+        <div class="header-left-box__top">{{ getTimeState() }} {{ queryInfo.name }}!</div>
         <div class="header-left-box__btm">管理⼈员 | 本次登录 {{ getTime }}</div>
       </div>
     </div>
     <div class="header-right">
-      <div class="header-right-box">
+      <div class="header-right-box" >
         <div class="header-right-top">审核</div>
-        <div class="header-right-btm" @click="jumpApproval('1')" style="color:#589ef8">
+        <el-link class="header-right-btm" @click="jumpApproval('1')" :underline="false">
             {{approvalNum}}
-        </div>
+        </el-link>
       </div>
       <div class="divide"></div>
       <div class="header-right-box">
         <div class="header-right-top">申请</div>
-        <div class="header-right-btm" @click="jumpApproval('2')" style="color:#589ef8">
+        <el-link class="header-right-btm" @click="jumpApproval('2')" :underline="false" >
             {{applyNum}}
-        </div>
+        </el-link>
       </div>
       <!-- <div class="divide"></div>
       <div class="header-right-box">
@@ -58,13 +58,13 @@ const getTimeState = () => {
   let state = ``
   // 判断当前时间段
   if (hours >= 0 && hours <= 10) {
-    state = `早上好!`
+    state = `早上好,`
   } else if (hours > 10 && hours <= 14) {
-    state = `中午好!`
+    state = `中午好,`
   } else if (hours > 14 && hours <= 18) {
-    state = `下午好!`
+    state = `下午好,`
   } else if (hours > 18 && hours <= 24) {
-    state = `晚上好!`
+    state = `晚上好,`
   }
   return state
 }
@@ -123,15 +123,17 @@ const jumpApproval = (type:string)=>{
 <style lang='scss' scoped>
 .divide {
   width: 1px;
-  height: 60px;
+  height: 40px;
   background: rgb(233, 233, 233);
 }
 .header {
   width: 100%;
   height: 100%;
+  // min-height: 90px;
   background-color: #fff;
   display: flex;
   justify-content: space-between;
+  padding-right: 24px;
   &-left {
     display: flex;
     align-items: center;
@@ -170,20 +172,22 @@ const jumpApproval = (type:string)=>{
     display: flex;
     align-items: center;
     &-box {
-      margin-right: 20px;
-      margin-left: 20px;
+      padding-right: 32px;
+      padding-left: 32px;
       display: flex;
       flex-direction: column;
       justify-content: center;
     }
     &-top {
       margin-bottom: 5px;
+      color: #909399;
     }
     &-btm {
       display: flex;
-      font-size: 20px;
-      font-weight: 600;
+      font-size: 22px;
+      // font-weight: 600;
       flex-direction: row-reverse;
+      // color: $colorBlueMain;
       &__btmText {
         font-size: 14px;
         color: rgb(143, 143, 143);

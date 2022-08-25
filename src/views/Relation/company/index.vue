@@ -9,7 +9,7 @@
         <Info ref="info"/>
       </div>
       <div class="body" ref="bodyWrap" :style="{height:tabHeight+'px'}">
-        <Body ref="body" :tabHeight='tabHeight'/>
+        <Body ref="body" />
       </div>
     </div>
   </div>
