@@ -7,6 +7,9 @@
   >
     <div class="app-card-item-con">
       <div class="app-card-item-con-top flex">
+        <div class="app-card-rightIcon">
+          <slot name="rightIcon"></slot>
+        </div>
         <HeadImg :name="info.name" :url="appImg" :imgWidth="48" :limit="1" :isSquare="false" />
         <div class="app-con">
           <p class="app-con-title">{{ info.name }}</p>
@@ -42,7 +45,13 @@
 </script>
 
 <style lang="scss" scoped>
+  .app-card-rightIcon {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+  }
   .app-card-item {
+    position: relative;
     width: 24%;
     min-width: 200px;
     height: 184px;

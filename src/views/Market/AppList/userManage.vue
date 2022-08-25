@@ -35,15 +35,15 @@
     tableData: [],
     tableHead: [
       {
-        prop: 'typeName',
+        prop: 'target.typeName',
         label: '类型'
       },
       {
-        prop: 'code',
+        prop: 'target.code',
         label: '编码'
       },
       {
-        prop: 'name',
+        prop: 'target.name',
         label: '名称'
       },
       {
