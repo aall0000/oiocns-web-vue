@@ -1,11 +1,11 @@
 <template>
-  <el-dialog append-to-body v-model="dialogShow.value" title="加入单位" width="30%">
+  <el-dialog append-to-body v-model="dialogShow.value" :title="title" width="30%">
     <el-select
       v-model="value"
       filterable
       remote
       reserve-keyword
-      placeholder="搜索单位"
+      :placeholder="placeholder"
       :remote-method="remoteMethod"
       :loading="loading"
       style="width: 100%"
@@ -34,6 +34,14 @@
   const props = defineProps({
     dialogShow: {
       type: Object
+    },
+    title: {
+      type: String,
+      default: ''
+    },
+    placeholder: {
+      type: String,
+      default: ''
     }
   })
   const state = reactive({
@@ -61,10 +69,10 @@
   }
 
   const submit = () => {
-    emit('joinSubmit', value.value)
+    emit('submit', value.value)
   }
   const closeDialog = () => {
-    emit('closeDialog', 'join')
+    emit('closeDialog', props.dialogShow)
   }
 </script>
 

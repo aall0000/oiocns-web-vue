@@ -99,11 +99,16 @@
 
   // 跳转至角色管理页面
   const toAuth = ()=>{
-    router.push({ path: '/relation/authority'})
+    router.push({ path: '/relation/authority', query: {
+      belongId: selectItem.value.id,
+      name: selectItem.value.label,
+      code: selectItem.value.data.code,
+      teamRemark: selectItem.value.data.teamRemark
+    }})
   }
   // 跳转至身份管理页面
   const toIdentity = ()=>{
-    router.push({ path: '/relation/identity'})
+    router.push({ path: '/relation/identity', query: { belongId:  selectItem.value.id }})
   }
 </script>
 

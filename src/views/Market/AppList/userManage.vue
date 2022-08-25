@@ -5,6 +5,7 @@
       :tableName="tableName"
       :tableData="state.tableData"
       :tableHead="state.tableHead"
+      @handleUpdate="handleUpdate"
     >
       <template #unit="scope">
         <div>{{ scope.row.groupName }}</div>
@@ -34,15 +35,15 @@
     tableData: [],
     tableHead: [
       {
-        prop: 'typeName',
+        prop: 'target.typeName',
         label: '类型'
       },
       {
-        prop: 'code',
+        prop: 'target.code',
         label: '编码'
       },
       {
-        prop: 'name',
+        prop: 'target.name',
         label: '名称'
       },
       {
@@ -63,6 +64,18 @@
   onMounted(() => {
     getData()
   })
+
+  type page = {
+    currentPage: number
+    layout: string
+    pageSize: number
+    pageSizes: Array<number>
+    total: number
+  }
+
+  const handleUpdate = (val: page) => {
+    getData()
+  }
 
   const getData = () => {
     $services.appstore

@@ -12,7 +12,7 @@
 
 <script lang="ts" setup>
   import img from '@/assets/img/toux.jpg'
-import { computed } from 'vue';
+  import { computed } from 'vue'
 
   type Props = {
     name: string
@@ -24,11 +24,16 @@ import { computed } from 'vue';
     imgWidth?: number
   }
 
-  const props = defineProps<Props>()
-
-  const { name = '', url, label = '', limit = 2, isSquare = true, imgWidth = 40 } = props
-
-  const imgWidthStyle= computed(()=>{return imgWidth+'px' })
+  const props = withDefaults(defineProps<Props>(), {
+    label: '',
+    limit: 2,
+    isSquare: true,
+    imgWidth: 40
+  })
+  const { name, url, label, limit, isSquare, imgWidth } = props
+  const imgWidthStyle = computed(() => {
+    return imgWidth + 'px'
+  })
 </script>
 
 <style lang="scss" scoped>

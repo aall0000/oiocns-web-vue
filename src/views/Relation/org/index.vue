@@ -49,16 +49,8 @@
                 </template>
               </el-dropdown>
               <el-button link type="primary" size="small" @click="edit(row)">编辑</el-button>
-              <el-popconfirm
-                title="确认删除?"
-                confirm-button-text="确认"
-                cancel-button-text="取消"
-                @confirm="handleDel(row)"
-              >
-                <template #reference>
-                  <el-button link type="danger" size="small"  style="margin-left:0" :disabled="row.data.typeName == '公司'">删除</el-button>
-                </template>
-              </el-popconfirm>
+
+                  <el-button link type="danger" size="small"  style="margin-left:0" @click="handleDel(row)" :disabled="row.data.typeName == '公司'">删除</el-button>
                 </div>
             </template>
           </el-table-column>
@@ -240,7 +232,7 @@
 <script lang="ts" setup>
   import { ref, onMounted} from 'vue'
   import $services from '@/services'
-  import { ElMessage } from 'element-plus';
+  import { ElMessage,ElMessageBox } from 'element-plus';
   import { useRouter } from 'vue-router';
 
   const router = useRouter()
@@ -338,11 +330,25 @@
 
   // 删除行
   const handleDel = (row: any) =>{
-    if(row.data.typeName == '部门'){
-      deleteDept(row)
-    } else {
-      deleteJob(row)
-    }
+    let title: string;
+    title = `确定把 ${row.data.name} 移除吗？`
+    ElMessageBox.confirm(
+      title,
+      '警告',
+      {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }
+    ).then(() => {
+      if(row.data.typeName == '部门'){
+        deleteDept(row)
+      } else {
+        deleteJob(row)
+      }
+    })
+    .catch(() => {
+    })
   }
 
   // 删除部门
