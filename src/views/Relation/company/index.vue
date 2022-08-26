@@ -9,7 +9,7 @@
         <Info ref="info"/>
       </div>
       <div class="body" ref="bodyWrap" :style="{height:tabHeight+'px'}">
-        <Body ref="body" :tabHeight='tabHeight'/>
+        <Body ref="body" />
       </div>
     </div>
   </div>
@@ -30,21 +30,19 @@
     info.value.selectItemChange(selectItem);
     body.value.selectItemChange(selectItem);
   }
-  const screenHeight = ref<number>(0)
-  window.addEventListener('resize',function () {
-    if(container.value && infoWrap.value){
-      tabHeight.value=container.value.clientHeight - 6 - infoWrap.value.clientHeight
-    }
-  })
   const container = ref(null)
   const infoWrap = ref(null)
-  const tabHeight = ref<number>(400)
+  const tabHeight = ref<number>(10)
   onMounted(() => {
     if(container.value && infoWrap.value){
       tabHeight.value=container.value.clientHeight - 6 - infoWrap.value.clientHeight
     }
     dragControllerDiv()
-      
+  })
+  window.addEventListener('resize',function () {
+    if(container.value && infoWrap.value){
+      tabHeight.value=container.value.clientHeight - 6 - infoWrap.value.clientHeight
+    }
   })
   // 拖拽移动实现
   const dragControllerDiv = () => {

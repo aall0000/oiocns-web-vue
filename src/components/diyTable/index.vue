@@ -117,7 +117,7 @@
 
 <script setup lang="ts">
   import { stubFalse } from 'lodash'
-  import { ref, reactive, toRefs, computed } from 'vue'
+  import { ref, reactive, toRefs, computed,onMounted } from 'vue'
   import { useUserStore } from '@/store/user'
 
   const store = useUserStore()
@@ -177,8 +177,8 @@
     tableData,
     options,
     batchOperate,
-    queryParams,
-    cell
+    // queryParams,
+    // cell
   } = toRefs(props)
 
   const handleCurrent: any = computed(() => {
@@ -296,7 +296,9 @@
     page.value.currentPage = val
     emit('handleUpdate', page.value)
   }
-
+  onMounted(() => {
+    console.log('props.options.selectLimit',props.options.selectLimit)
+  })
   /**
    * 鼠标进入表格是隐藏groupselect的drop
    */
@@ -519,6 +521,7 @@
   @media screen and (max-width: 1280px) {
     .diy-table__header {
       display: flex;
+      display: none;
       flex-wrap: wrap;
     }
   }

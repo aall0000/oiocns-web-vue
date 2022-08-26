@@ -37,12 +37,17 @@
   })
   const container = ref(null)
   const infoWrap = ref(null)
-  const tabHeight = ref<number>(400)
+  const tabHeight = ref<number>(100)
   onMounted(() => {
     if(container.value && infoWrap.value){
       tabHeight.value=container.value.clientHeight - 6 - infoWrap.value.clientHeight
     }
-     dragControllerDiv()
+    dragControllerDiv()
+  })
+  window.addEventListener('resize',function () {
+    if(container.value && infoWrap.value){
+      tabHeight.value=container.value.clientHeight - 6 - infoWrap.value.clientHeight
+    }
   })
   watch(
     () => screenHeight.value,

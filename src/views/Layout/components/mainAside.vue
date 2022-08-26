@@ -120,15 +120,15 @@
   }
   const state: StateType = reactive({
     mainMenus: [
-      { name: '工作台', icon: 'House', path: '/workHome' },
-      { name: '消息', icon: 'ChatDotRound', path: '/chat' },
-      { name: '关系', icon: 'Avatar', path: '/relation' },
-      { name: '应用', icon: 'GoodsFilled', path: '/market' },
-      { name: '开始', icon: 'Grid', path: '/appStpre', bottom: true },
-      { name: '数据', icon: 'Share', path: '/thing' },
+      { name: '工作台', icon: 'DataAnalysis', path: '/workHome' },
+      { name: '消息', icon: 'ChatDotSquare', path: '/chat' },
+      { name: '关系', icon: 'SetUp', path: '/relation' },
+      { name: '应用', icon: 'Suitcase', path: '/market' },
+      { name: '开始', icon: 'Menu', path: '/appStpre', bottom: true },
+      { name: '数据', icon: 'SetUp', path: '/thing' },
       {
         name: '我的',
-        icon: 'Operation',
+        icon: 'User',
         path: IsSelfSpace ? '/user' : '/company',
         bottom: true
       }

@@ -2,36 +2,19 @@
   <el-dialog center v-model="dialogShow.value" title="配置首页" width="30%">
     <div class="diy-dialog-body">
       <div style="margin-top: 30px; display: flex; justify-content: center">
-        <el-radio v-model="radio" label="1">覆盖</el-radio>
-        <el-radio v-model="radio" label="2">新增</el-radio>
+        <el-radio v-model="radio" label="0">覆盖</el-radio>
+        <el-radio v-model="radio" label="1">新增</el-radio>
       </div>
       <div style="margin-top: 30px; margin-left: 52px">
-        <el-form
-          ref="ruleFormRef"
-          :model="state.form"
-          :rules="rules"
-          label-width="80px"
-          v-if="radio == '1'"
-        >
+        <el-form ref="ruleFormRef" :model="state.form" :rules="rules" label-width="80px" v-if="radio === '0'">
           <el-form-item label="模板列表" prop="id">
             <el-select v-model="state.form.id" placeholder="请选择">
-              <el-option
-                v-for="item in state.tabsList"
-                :key="item.value"
-                :label="item.title"
-                :value="item.id"
-              >
+              <el-option v-for="item in state.tabsList" :key="item.id" :label="item.title" :value="item.id">
               </el-option>
             </el-select>
           </el-form-item>
         </el-form>
-        <el-form
-          ref="ruleFormRef"
-          :model="state.form"
-          :rules="rules"
-          label-width="80px"
-          v-if="radio == '2'"
-        >
+        <el-form ref="ruleFormRef" :model="state.form" :rules="rules" label-width="80px" v-if="radio === '1'">
           <el-form-item label="名称" prop="name">
             <el-input v-model="state.form.name"></el-input>
           </el-form-item>
@@ -48,189 +31,150 @@
 </template>
 
 <script setup lang="ts">
-  import { ElMessage } from 'element-plus'
-  import $services from '@/services'
-  import { useUserStore } from '@/store/user'
-  import type { FormInstance, FormRules } from 'element-plus'
-  import { reactive, ref, onMounted, computed } from 'vue'
-  import { useRoute, useRouter } from 'vue-router'
-  const ruleFormRef = ref<FormInstance>()
-  const emit = defineEmits(['closeDialog'])
-  const props = defineProps({
-    dialogShow: {
-      type: Object
-    },
-    allData: {
-      type: Object
-    }
-  })
-  const route = useRoute()
-  const router = useRouter()
-  const store = useUserStore()
-  const loading = ref(false)
-  const radio = ref('1')
-  const state = reactive({
-    form: {
-      id: '',
-      name: ''
-    },
-    options: {
-      labelWidth: '100px'
-    },
-    tabsList: [],
-    currentPage: 1,
-    pageSize: 9999999,
-    data: {
-      name: '首页配置',
-      content: [],
-      user: {
-        name: '用户组件',
-        content: []
-      }
-    }
-  })
-  const rules = reactive<FormRules>({
-    name: [{ required: true, message: '请输入名称', trigger: 'blur' }]
-  })
+import { ElMessage } from 'element-plus'
+import $services from '@/services'
+import { useUserStore } from '@/store/user'
+import { useAnyData } from '@/store/anydata'
+import type { FormInstance, FormRules } from 'element-plus'
+import { reactive, ref, onMounted, computed } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { nanoid } from 'nanoid'
+const ruleFormRef = ref<FormInstance>()
+const emit = defineEmits(['closeDialog'])
+const props = defineProps({
+  dialogShow: {
+    type: Object
+  },
+  // allData: {
+  //   type: Object
+  // }
+})
+const route = useRoute()
+const router = useRouter()
+const store = useUserStore()
+const otherData = useAnyData()
+const loading = ref(false)
+const radio = ref<string>('1')
+const state = reactive({
+  form: {
+    id: '',
+    name: ''
+  },
+  options: {
+    labelWidth: '100px'
+  },
+  tabsList: [],
+  currentPage: 1,
+  pageSize: 9999999,
+  data: {}
+  // name: '首页配置',
+  // content: [],
+  // user: {
+  //   name: '用户组件',
+  //   content: []
+  // }
 
-  onMounted(() => {
-    state.tabsList = JSON.parse(route.query.tabsData as string)
-    state.data = JSON.parse(JSON.stringify(props.allData))
-  })
-  // 自动生成id
-  const guid = computed(() => {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-      var r = (Math.random() * 16) | 0,
-        v = c == 'x' ? r : (r & 0x3) | 0x8
-      return v.toString(16)
-    })
-  })
-  const handleClick = async (formEl: FormInstance | undefined) => {
-    if (!formEl) return
-    await formEl.validate((valid, fields) => {
-      if (valid) {
-        if (radio.value === '1') {
-          state.tabsList.forEach((el) => {
-            if (el.id == state.form.id) {
-              el.temps = props.dialogShow.sendData || []
-            }
-          })
-          // let params = {
-          //   userId: store.queryInfo.id,
-          //   content: state.tabsList
-          // }
-          state.data.content = state.tabsList
-          let params = {
-            workspaceId: store.workspaceData.id,
-            userId: store.queryInfo.id,
-            content: state.tabsList
+})
+const rules: FormRules = reactive({
+  name: [{ required: true, message: '请输入名称', trigger: 'blur' }]
+})
+
+onMounted(() => {
+  state.tabsList = [...otherData?.homeComplist||[]]
+  // state.data = otherData.workspaceData
+})
+// // 自动生成id
+// const guid = computed(() => {
+//   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+//     var r = (Math.random() * 16) | 0,
+//       v = c == 'x' ? r : (r & 0x3) | 0x8
+//     return v.toString(16)
+//   })
+// })
+const handleClick = async (formEl: FormInstance | undefined) => {
+  if (!formEl) return
+  formEl.validate((valid, fields) => {
+    if (valid) {
+      let newTabs = []
+      if (radio.value==='0') {
+        
+        newTabs = state.tabsList.map(el => {
+          if (el.id === state.form.id) {
+            el.temps = [...props.dialogShow.sendData] || []
           }
-          $services.diyHome
-            .diy(`/anydata/object/set/${params.userId}.${params.workspaceId}`, {
-              data: {
-                operation: 'replaceAll',
-                data: state.data
-              }
-            })
-            .then((res: ResultType) => {
-              if (res.state) {
-                ElMessage({
-                  message: '覆盖成功',
-                  type: 'success'
-                })
-                handleClose()
-              }
-            })
-        } else {
-          let tabIndex = 0
-          tabIndex = state.tabsList[state.tabsList.length - 1]?.name || 0
-          state.tabsList.push({
-            id: guid.value,
-            name: ++tabIndex,
-            title: state.form.name,
-            temps: props.dialogShow.sendData
-          })
-          let params = {
-            workspaceId: store.workspaceData.id,
-            userId: store.queryInfo.id,
-            content: state.tabsList
-          }
-          state.data.content = state.tabsList
-          $services.diyHome
-            .diy(`/anydata/object/set/${params.userId}.${params.workspaceId}`, {
-              data: {
-                operation: 'replaceAll',
-                data: state.data
-              }
-            })
-            .then((res: ResultType) => {
-              if (res.state) {
-                ElMessage({
-                  message: '添加成功',
-                  type: 'success'
-                })
-                handleClose()
-                router.push({ path: '/workHome' })
-              }
-            })
-        }
+          return el 
+        })
       } else {
-        console.log('error submit!', fields)
+        let tabIndex = state.tabsList[state.tabsList.length - 1]?.name || 0
+        newTabs = [...state.tabsList,{
+          id: nanoid(),
+          name: ++tabIndex,
+          title: state.form.name,
+          temps: props.dialogShow.sendData
+        }]
       }
-    })
-  }
-  const saveData = () => {
-    let params = {
-      userId: store.queryInfo.id,
-      workspaceId: store.workspaceData.id
+    
+      let params = {
+        workspaceId: store.workspaceData.id,
+        userId: store.queryInfo.id,
+        content: newTabs
+      }
+      saveData(params, !radio.value ? '覆盖' : '添加')
+    } else {
+      console.log('error submit!', fields)
     }
-    $services.diyHome
-      .diy(`/anydata/object/set/${params.userId}.${params.workspaceId}`, {
-        data: {
-          operation: 'replaceAll',
-          data: state.data
-        }
-      })
-      .then((res: ResultType) => {
-        if (res.state) {
-          ElMessage({
-            message: '删除成功',
-            type: 'success'
-          })
-        }
-      })
+  })
+}
+const saveData = async (params: { workspaceId: string, userId: string, content: any }, message: string) => {
+  const sucsse = await otherData.updateHomeSpace(params)
+  if (sucsse) {
+    ElMessage({
+      message: message + '成功',
+      type: 'success'
+    })
+    handleClose()
+    router.push({ path: '/workHome' })
   }
-  const handleClose = () => {
-    emit('closeDialog', props.dialogShow.key)
-  }
+
+}
+const handleClose = () => {
+  emit('closeDialog', props.dialogShow.key)
+}
 </script>
 
 <style lang="scss" scoped>
-  :deep(.el-select) {
-    width: 100%;
+:deep(.el-select) {
+  width: 100%;
+}
+
+:deep(.el-input) {
+  width: 70%;
+}
+
+.diy-dialog-body .el-form {
+  justify-content: space-between;
+}
+
+.diy-dialog-footer .el-button:first-child {
+  margin-right: 20px;
+}
+
+.form-shape {
+  width: 100%;
+}
+
+img {
+  width: 200px;
+  height: 200px;
+}
+
+.photoBtn {
+  margin: 20px 0;
+
+  .el-button,
+  .el-button--default:focus {
+    padding: 8px;
+    font-size: 10px;
   }
-  :deep(.el-input) {
-    width: 70%;
-  }
-  .diy-dialog-body .el-form {
-    justify-content: space-between;
-  }
-  .diy-dialog-footer .el-button:first-child {
-    margin-right: 20px;
-  }
-  .form-shape {
-    width: 100%;
-  }
-  img {
-    width: 200px;
-    height: 200px;
-  }
-  .photoBtn {
-    margin: 20px 0;
-    .el-button,
-    .el-button--default:focus {
-      padding: 8px;
-      font-size: 10px;
-    }
-  }
+}
 </style>

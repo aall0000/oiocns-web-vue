@@ -1,5 +1,5 @@
 <template>
-  <div class="card">
+  <div class="card" ref="cardHeight">
     <div class="header">
       <div class="title">{{props.selectItem.label}}</div>
       <div class="box-btns">
@@ -13,7 +13,7 @@
       </div>
     </div>
 
-    <div :style="{height:tabHeight-35+'px'}">
+    <div :style="{height:tabHeight-30+'px'}">
       <div style="width: 100%; height: 100%">
         <DiyTable
           ref="diyTable"
@@ -29,31 +29,7 @@
       </div>
     </div>
   </div>
-
-  <el-dialog v-model="pullCompanysDialog" @close="hidePullPreson" title="添加单位到集团" width="30%">
-    <el-select
-      v-model="inviter"
-      filterable
-      remote
-      reserve-keyword
-      placeholder="请输入要查找的单位"
-      :remote-method="searchCompany"
-      :loading="loading"
-    >
-      <el-option
-        v-for="item in inviterOptions"
-        :key="item.value"
-        :label="item.label"
-        :value="item.value"
-      />
-    </el-select>
-    <template #footer>
-      <span class="dialog-footer">
-        <el-button @click="hidePullPreson">取消</el-button>
-        <el-button type="primary" @click="pullCompanys">确认</el-button>
-      </span>
-    </template>
-  </el-dialog>
+  <searchCompany  v-if="pullCompanysDialog" :selectLimit='0' @closeDialog="closeDialog"  @checkFriend='checkFriend'/>
 
   <el-dialog v-model="assignDialog" @close="hideAssignDialog" :title="'分配单位 => ' + selectItem.label" width="50%">
     <el-input v-model="assignSearch" class="search" placeholder="搜索单位" @input="assignSearchChange">
@@ -89,13 +65,13 @@
 <script lang='ts' setup>
 import $services from '@/services'
 import DiyTable from '@/components/diyTable/index.vue'
-import { onMounted, reactive, ref, watch } from 'vue';
+import { onMounted, reactive, ref, watch ,nextTick} from 'vue';
 import { useRouter } from "vue-router";
 import { ElMessage, ElMessageBox } from 'element-plus';
+import searchCompany from '@/components/search/company.vue'
 
 const props = defineProps<{
   selectItem: any,     // 节点数据
-  tabHeight: number,
 }>()
 const rootGroup = ref<any>({})
 // 表格用户数据
@@ -119,18 +95,15 @@ const tableHead = ref([
   {
     prop: 'name',
     label: '名称',
-    width: '250',
     name:'name',
   },
   {
     prop: 'code',
     label: '编码',
-    width: '180',
   },
   {
     prop: 'team.code',
     label: '简介',
-    width: '330',
     name:'teamCode',
   },
   {
@@ -138,7 +111,6 @@ const tableHead = ref([
     label: '操作',
     fixed: 'right',
     align: 'center',
-    width: '120',
     name: 'operate'
   }
 ])
@@ -197,49 +169,36 @@ const getCompanies = ()=>{
     })
   }
 }
-// 搜索单位
-const searchCompany = (query: string) => {
-  inviterOptions.value = []
-  if(!query){
-    return
-  }
-  loading.value = true
-  $services.company
-    .searchCompany({data: { filter: query, offset: 0, limit: 10 }})
-    .then((res: ResultType) => {
-      loading.value = false
-      if (res.success && res.data.result) {
-        const companies = res.data.result
-        inviterOptions.value = companies.map((u: any) => {
-          return {value: u.id, label: u.name}
-        })
-      } else {
-        ElMessage({
-          message: '未找到单位!',
-          type: 'warning'
-        })
-      }
-    })
+const pullCompanysDialog = ref<boolean>(false)
+const closeDialog = ()=>{
+   pullCompanysDialog.value = false;
 }
-
+type arrList = {
+  id:string
+}
+const checkFriend=(val:any)=>{
+  if(val.value.length>0){
+    let arr:Array<arrList> =[]
+    val.value.forEach((element:any) => {
+      arr.push(element.id)
+    });
+    pullCompanys(arr)
+  }else{
+    pullCompanysDialog.value = false;
+  }
+}
 interface ListItem {
   value: string
   label: string
 }
-const inviterOptions = ref<ListItem[]>([])
-const inviter = ref('')
-const pullCompanysDialog = ref<boolean>(false)
-const hidePullPreson = () => {
-  inviter.value = ''
-  pullCompanysDialog.value = false
-}
+
 //拉单位进集团
-const pullCompanys = () => {
+const pullCompanys = (arr:any) => {
   $services.company
     .pullCompanys({
       data: {
         id: props.selectItem.id,
-        targetIds: [inviter.value]
+        targetIds: arr
       }
     })
     .then((res: ResultType) => {
@@ -250,7 +209,6 @@ const pullCompanys = () => {
         })
         getCompanies()
       }
-      inviter.value = ''
       pullCompanysDialog.value = false
     })
 }
@@ -376,10 +334,17 @@ const assign = () => {
     })
 }
 
-
+const cardHeight = ref(null)
+const tabHeight = ref<number>(100)
 onMounted(() => {
   getCompanies()
+  nextTick(()=>{
+    let headerHeight = cardHeight.value?.clientHeight
+    console.log('let headerHeight = cardHeight.value?.clientHeight',headerHeight)
+    tabHeight.value = headerHeight
+  })
 })
+
 
 watch(props, () => {
   getCompanies()

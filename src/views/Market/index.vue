@@ -42,6 +42,7 @@
         </li>
         <el-pagination
           style="justify-content: end"
+          hide-on-single-page
           layout="prev, pager, next"
           :total="state.ownTotal"
         />
@@ -49,7 +50,7 @@
       <ul class="box-ul">
         <p class="box-ul-title">其他应用</p>
         <li class="app-card">
-          <ShopCard v-for="item in state.shareProductList" :info="item" :key="item.id">
+          <ShopCard v-for="item in state.shareProductList" :info="item" :key="item.id" :over-id="item.id">
             <el-dropdown @command="(value) => handleCommand('other', value, item)" placement="top">
               <el-button class="btn" type="primary" link small> 设置 </el-button>
               <template #dropdown>
@@ -66,13 +67,20 @@
         </li>
         <el-pagination
           style="justify-content: end"
+          hide-on-single-page
           layout="prev, pager, next"
           :total="state.shareTotal"
         />
       </ul>
     </div>
   </div>
-  <el-dialog v-model="registerVisible" title="注册应用" width="600px" draggable :close-on-click-modal="false">
+  <el-dialog
+    v-model="registerVisible"
+    title="注册应用"
+    width="600px"
+    draggable
+    :close-on-click-modal="false"
+  >
     <el-form ref="registerFormRef" :model="form" label-width="120px" :rules="rules">
       <el-form-item label="应用名称" prop="name">
         <el-input v-model="form.name" />
@@ -94,7 +102,13 @@
       </span>
     </template>
   </el-dialog>
-  <el-dialog v-model="publishVisible" title="上架应用" width="600px" draggable :close-on-click-modal="false">
+  <el-dialog
+    v-model="publishVisible"
+    title="上架应用"
+    width="600px"
+    draggable
+    :close-on-click-modal="false"
+  >
     <putaway-comp :info="selectProductItem" ref="putawayRef" @closeDialog="publishVisible = false">
       <template #btns>
         <div class="putaway-footer" style="text-align: right">
@@ -104,7 +118,14 @@
       </template>
     </putaway-comp>
   </el-dialog>
-  <el-dialog v-model="shareVisible" title="分享应用" width="600px" draggable :close-on-click-modal="false">
+  <el-dialog
+    v-model="shareVisible"
+    custom-class="share-dialog"
+    title="分享应用"
+    width="600px"
+    draggable
+    :close-on-click-modal="false"
+  >
     <share-comp :info="selectProductItem" />
   </el-dialog>
 </template>
@@ -278,10 +299,12 @@
   }
 </script>
 
-<style lang="scss" scoped>
-  :deep(.el-card__body) {
-    padding: 0;
+<style>
+  .share-dialog > .el-dialog__body {
+    padding: 10px 20px;
   }
+</style>
+<style lang="scss" scoped>
   .market-layout {
     width: 100%;
     height: 100%;
