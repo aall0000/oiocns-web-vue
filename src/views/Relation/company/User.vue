@@ -1,5 +1,5 @@
 <template>
-    <div class="card">
+    <div class="card" ref="cardHeight">
       <div class="header">
         <div class="title">{{props.selectItem.label}}</div>
         <div class="box-btns">
@@ -12,7 +12,7 @@
           </div>
         </div>
       </div>
-      <div :style="{height:tabHeight-35+'px'}">
+      <div :style="{height:tableHeight-20+'px'}">
         <div style="width: 100%; height: 100%">
           <DiyTable
             ref="diyTable"
@@ -69,14 +69,13 @@
 <script lang='ts' setup>
 import $services from '@/services'
 import DiyTable from '@/components/diyTable/index.vue'
-import { onMounted, reactive, ref, watch } from 'vue';
+import { nextTick, onMounted, reactive, ref, watch } from 'vue';
 import { useRouter } from "vue-router";
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { Search } from '@element-plus/icons-vue'
 import searchFriend from '@/components/search/friend.vue'
 const props = defineProps<{
   selectItem: any,     // 节点数据
-  tabHeight:number,
 }>()
 
 const company = ref<any>({})
@@ -383,9 +382,14 @@ const assignJob = (id: string, targetIds: string[]) => {
       getUsers()
     })
 }
-
+const cardHeight = ref(null)
+const tableHeight = ref<number>(100)
 onMounted(() => {
   getUsers()
+  nextTick(()=>{
+    let headerHeight = cardHeight.value?.clientHeight
+    tableHeight.value = headerHeight
+  })
 })
 
 watch(props, () => {
@@ -400,7 +404,6 @@ watch(props, () => {
   height: 100%;
   width: 100%;
   background-color: #fff;
-  padding: 10px;
 
   .header {
     display: flex;

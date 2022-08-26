@@ -177,8 +177,8 @@
     tableData,
     options,
     batchOperate,
-    queryParams,
-    cell
+    // queryParams,
+    // cell
   } = toRefs(props)
 
   const handleCurrent: any = computed(() => {
@@ -521,6 +521,7 @@
   @media screen and (max-width: 1280px) {
     .diy-table__header {
       display: flex;
+      display: none;
       flex-wrap: wrap;
     }
   }
