@@ -50,7 +50,12 @@
       <ul class="box-ul">
         <p class="box-ul-title">其他应用</p>
         <li class="app-card">
-          <ShopCard v-for="item in state.shareProductList" :info="item" :key="item.id" :over-id="item.id">
+          <ShopCard
+            v-for="item in state.shareProductList"
+            :info="item"
+            :key="item.id"
+            :over-id="item.id"
+          >
             <el-dropdown @command="(value) => handleCommand('other', value, item)" placement="top">
               <el-button class="btn" type="primary" link small> 设置 </el-button>
               <template #dropdown>
@@ -119,6 +124,34 @@
     </putaway-comp>
   </el-dialog>
   <el-dialog
+    v-model="groupVisible"
+    custom-class="group-dialog"
+    title="选择集团"
+    width="600px"
+    draggable
+    :close-on-click-modal="false"
+  >
+    <el-select
+      v-model="selectedValue"
+      @change="changeGroupIndex"
+      value-key="id"
+      placeholder="请选择集团"
+    >
+      <el-option
+        v-for="item in state.options"
+        :key="item.value"
+        :label="item.label"
+        :value="item.value"
+      />
+    </el-select>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="groupVisible = false">取消</el-button>
+        <el-button type="primary" @click="openShareDialog">确定</el-button>
+      </span>
+    </template>
+  </el-dialog>
+  <el-dialog
     v-model="shareVisible"
     custom-class="share-dialog"
     title="分享应用"
@@ -126,7 +159,7 @@
     draggable
     :close-on-click-modal="false"
   >
-    <share-comp :info="selectProductItem" />
+    <share-comp :info="selectProductItem" :selectedValue="selectedValue" />
   </el-dialog>
 </template>
 
@@ -142,6 +175,7 @@
   import type { FormInstance, FormRules } from 'element-plus'
   import MarketCreate from './components/marketCreate.vue'
   import MarketCard from '@/components/marketCard/index.vue'
+  import { appendFile } from 'fs'
   const add: string = '从应用市场中添加'
   // 注册页面实例
   const registerFormRef = ref<FormInstance>()
@@ -152,6 +186,7 @@
     shareProductList: ProductType[] //其他应用
     shareTotal: number
     marketOptions: any[] //所有市场列表
+    options: any[] //集团列表
   }
 
   const state: StateType = reactive({
@@ -159,7 +194,8 @@
     ownTotal: 0,
     shareProductList: [],
     shareTotal: 0,
-    marketOptions: []
+    marketOptions: [],
+    options: []
   })
 
   onMounted(() => {
@@ -180,6 +216,19 @@
       state[`${type}ProductList`] = [...result]
       state[`${type}Total`] = total
     }
+  }
+  // 切换集团
+  const changeGroupIndex = (id: string) => {
+    loadOrgTree(id)
+  }
+  // 加载集团树
+  const loadOrgTree = (id?: string) => {
+    const group = groups.find((g) => g.id == id || g.name == selectedValue.value)
+    API.company
+      .getGroupTree({
+        data: { id: group.id }
+      })
+      .then((res: any) => {})
   }
 
   // 移除app
@@ -216,7 +265,7 @@
     selectProductItem.value = item
     switch (command) {
       case 'share':
-        shareVisible.value = true
+        openGroupDialog()
         break
       case 'putaway':
         publishVisible.value = true
@@ -226,6 +275,36 @@
       default:
         break
     }
+  }
+
+  //打开分享弹窗
+  const openShareDialog = () => {
+    groupVisible.value = false
+    shareVisible.value = true
+  }
+
+  //  打开集团选择弹窗
+  const openGroupDialog = () => {
+    API.company
+      .companyGetGroups({
+        data: {
+          offset: 0,
+          limit: 1000
+        }
+      })
+      .then((res: ResultType) => {
+        if (res.data.result && res.data.result.length > 0) {
+          groups = res.data.result
+          state.options = groups.map((g) => {
+            return { value: g.id, label: g.name }
+          })
+          selectedValue.value = groups[0].name
+          groupVisible.value = true
+          // loadOrgTree(groups[0].id)
+        } else {
+          groups = []
+        }
+      })
   }
 
   // 注册页面弹窗
@@ -290,9 +369,14 @@
     putawayRef.value.onPutawaySubmit()
   }
 
+  // 当前用户的集团
+  let groups = reactive([])
+  // 当前选中的集团
+  let selectedValue = ref<string>()
   // 分享功能
   const shareVisible = ref<boolean>(false)
-
+  // 选择集团功能
+  const groupVisible = ref<boolean>(false)
   // 路由跳转
   const GoPage = (path: string) => {
     router.push(path)
@@ -300,11 +384,20 @@
 </script>
 
 <style>
+  .group-dialog > .el-dialog__body {
+    padding: 10px 20px;
+    height: 100px;
+    display: flex;
+    align-items: center;
+  }
   .share-dialog > .el-dialog__body {
     padding: 10px 20px;
   }
 </style>
 <style lang="scss" scoped>
+  .el-select {
+    width: 100%;
+  }
   .market-layout {
     width: 100%;
     height: 100%;
