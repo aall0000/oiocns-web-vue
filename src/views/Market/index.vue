@@ -1,9 +1,6 @@
 <template>
   <div class="market-layout">
     <MarketCard>
-      <template #left>
-        <span>总记录数:20条</span>
-      </template>
       <template #right>
         <el-button type="primary" @click="registerVisible = true">注册应用</el-button>
         <el-button type="primary" @click="GoPage('/market/markList')">去市场</el-button>

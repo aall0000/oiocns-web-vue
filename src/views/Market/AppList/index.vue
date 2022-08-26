@@ -3,6 +3,8 @@
     <MarketCard>
       <template #right>
         <el-button type="primary" @click.stop="linkOrder()">我的订单</el-button>
+        <el-button type="primary" @click="GoPage('/market/userApply')">我的申请</el-button>
+        <el-button type="primary" @click="GoPage('/market/managerApproval')">申请审批</el-button>
         <el-button type="primary" @click.stop="linkShopCar()">购物车</el-button>
       </template>
     </MarketCard>
@@ -11,7 +13,7 @@
       <ul class="box-ul">
         <p class="box-ul-title">我的市场</p>
         <li class="app-card" v-if="state.myMarket?.length !== 0">
-          <MarketCreate :info="add" @click="dialogVisible = true" />
+          <MarketCreate :info="add" @click="dialogVisible1 = true" />
           <ShopCard
             v-for="item in state.myMarket"
             :info="item"
@@ -30,7 +32,7 @@
             <!-- </template> -->
           </ShopCard>
         </li>
-        <div v-else><MarketCreate :info="add" @click="dialogVisible = true" /></div>
+        <div v-else><MarketCreate :info="add" @click="dialogVisible1 = true" /></div>
         <el-pagination
           v-if="state.myMarket?.length !== 0"
           @current-change="handleCurrentChange"
@@ -69,11 +71,26 @@
         />
       </ul>
     </div>
-    <el-dialog v-model="dialogVisible" title="加入市场" width="30%">
-      <el-form :model="form" label-width="120px"> </el-form>
+    <el-dialog v-model="dialogVisible1" title="创建市场" width="30%">
+      <el-form :model="form" label-width="120px">
+        <el-form-item label="市场名称">
+          <el-input v-model="form.name" style="width: 80%" />
+        </el-form-item>
+        <el-form-item label="市场编码">
+          <el-input v-model="form.code" style="width: 80%" />
+        </el-form-item>
+        <el-form-item label="市场简介">
+          <el-input v-model="form.remark" style="width: 80%" />
+        </el-form-item>
+        <el-form-item label="市场是否公开">
+          <el-select v-model="form.public" style="width: 80%" placeholder="是否公开">
+            <el-option v-for="item in options" :label="item.label" :value="item.value" />
+          </el-select>
+        </el-form-item>
+      </el-form>
       <template #footer>
         <span class="dialog-footer">
-          <el-button @click="dialogVisible = false">取消</el-button>
+          <el-button @click="dialogVisible1 = false">取消</el-button>
           <el-button type="primary" @click="create">确认</el-button>
         </span>
       </template>
@@ -145,7 +162,9 @@
     state.pageJoin.currentPage = val
     getJoinMarketData()
   }
-
+  const GoPage = (path: string) => {
+    router.push(path)
+  }
   const linkOrder = () => {
     router.push({ path: '/market/order' })
   }
@@ -244,7 +263,8 @@
       })
       .catch(() => {})
   }
-  const dialogVisible = ref(false)
+  const dialogVisible1 = ref(false)
+
   const form = reactive({
     name: '',
     code: '',
@@ -253,6 +273,16 @@
     authId: '',
     public: true
   })
+  const options = [
+    {
+      value: true,
+      label: 'true'
+    },
+    {
+      value: false,
+      label: 'false'
+    }
+  ]
   //创建市场
   const create = () => {
     $services.appstore
@@ -273,7 +303,7 @@
             type: 'success'
           })
         }
-        dialogVisible.value = false
+        dialogVisible1.value = false
         getMyMarketData()
       })
   }
