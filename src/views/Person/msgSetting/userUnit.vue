@@ -41,7 +41,7 @@
             :dialogShow="dialogShow"
             @switchCreateCompany="closeDialog"
           ></CreateUnitDialog>
-          <searchCompany v-if="friendDialog" @closeDialog="closeDialog"  @checkFriend='checkFriend'></searchCompany>
+          <searchCompany v-if="friendDialog" @closeDialog="closeDialog" :serachType="3" @checksSearch='checksSearch'></searchCompany>
         </div>
       </div>
     </div>
@@ -55,7 +55,7 @@
   import { useUserStore } from '@/store/user'
   import type { TabsPaneContext } from 'element-plus'
   import { ElMessage } from 'element-plus'
-  import searchCompany from '@/components/search/company.vue'
+  import searchCompany from '@/components/searchs/index.vue'
   import CreateUnitDialog from '@/views/Layout/components/createUnitDialog.vue'
   const store = useUserStore()
 
@@ -152,7 +152,7 @@
     id:string
   }
   const friendDialog = ref<boolean>(false)
-  const checkFriend=(val:any)=>{
+  const checksSearch=(val:any)=>{
     if(val.value.length>0){
       let arr:Array<arrList> =[]
       val.value.forEach((element:any) => {

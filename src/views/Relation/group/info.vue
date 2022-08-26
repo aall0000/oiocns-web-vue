@@ -9,22 +9,16 @@
       </div>
     </div>
     <div class="tab-list">
-      <ul class="next-dept">
-        <table class="table-mytable">
-          <tr>
-            <td class="left">集团名称</td>
-            <td class="column">{{selectItem?.data?.name}}</td>
-            <td class="left">集团编码</td>
-            <td class="column">{{selectItem?.data?.teamCode}}</td>
-          </tr>
-          <tr>
-            <td class="left">描述</td>
-            <td class="column" colspan="3">
-              <span class="remark">{{selectItem?.data?.teamRemark}}</span>
-            </td>
-          </tr>
-        </table>
-      </ul>
+      <el-descriptions :column="2" border>
+        <el-descriptions-item :label="'集团名称'" label-align="center" align="center" label-class-name="my-label"
+          class-name="my-content" >{{selectItem?.data?.name}}</el-descriptions-item >
+        <el-descriptions-item :label="'集团编码'"
+          label-align="center"
+          align="center"
+          label-class-name="my-label"
+          class-name="my-content">{{selectItem?.data?.teamCode}}</el-descriptions-item>
+        <el-descriptions-item label="描述" :span="2" label-align="center" align="center">{{selectItem?.data?.teamRemark}}</el-descriptions-item>
+      </el-descriptions>
     </div>
   </div>
 
