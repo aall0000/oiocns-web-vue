@@ -3,7 +3,7 @@
     <div class="appListLayout-container">
       <div class="appListLayout-header">
         <p>应用列表</p>
-        <el-button type="primary">购物车</el-button>
+        <el-button type="primary" @click.stop="linkShopCar()">购物车</el-button>
       </div>
       <div class="appListLayout-content">
         <AppCard
@@ -35,13 +35,14 @@
 
 <script setup lang="ts">
   import { reactive, onMounted, ref, watch, nextTick } from 'vue'
-  import { useRoute } from 'vue-router'
+  import { useRoute,useRouter } from 'vue-router'
   import $services from '@/services'
   import AppCard from './components/appCard.vue'
   import DiyTable from '@/components/diyTable/index.vue'
   import TheTableButton from './components/theTableButton2.vue'
 
   const route = useRoute()
+    const router = useRouter()
   const diyTable = ref(null)
   const value1 = ref(true)
   const appCard = ref(null)
@@ -49,8 +50,10 @@
   const state = reactive({
     myAppList: [
       {
-        name: '123',
-        remark: '32123'
+        id: '5664',
+        name: '测试应用0044',
+        code: '测试应用0044',
+        remark: 'app'
       }
     ],
     tableHead: [
@@ -88,7 +91,9 @@
       }
     })
   })
-
+  const linkShopCar = () => {
+    router.push({ path: '/market/shopCar' })
+  }
   onMounted(() => {
     getData()
   })

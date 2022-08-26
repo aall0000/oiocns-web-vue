@@ -166,7 +166,7 @@ const getTableList = async () => {
   await $services.market
     .searchStaging({
       data: {
-        id: '349876516303278080', //市场id （需删除）
+        id: 0, //市场id （需删除）
         offset: (pagination.current - 1) * pagination.limit,
         limit: pagination.limit,
         filter: ''

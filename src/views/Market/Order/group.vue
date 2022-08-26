@@ -26,6 +26,10 @@
         </div>
       </el-card>
     </el-space>
+      <el-button-group>
+    <el-button style="color: aliceblue;font-weight:bold;background-color:orange" round>加入购物车</el-button>
+    <el-button style="color: aliceblue;font-weight:bold;background-color:red" round>立即购买</el-button>
+  </el-button-group>
   </div>
         <payView v-if="payDialog.show" :order="payDialog.data" @close="closePay"></payView>
       <el-pagination

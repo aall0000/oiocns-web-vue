@@ -520,8 +520,8 @@ const closePay = async () => {
 //         paymentType: paymentType
 //       }
 //     })
-//     .then((res: ResultType) => {
-//       if (res.code == 100) {
+//     .then((res: ResultType) => {res.code == 200
+//       if (res.code == 200) {
 //         getTableList(searchType.value)
 //         ElMessage({
 //           message: '支付成功',
@@ -544,7 +544,7 @@ const cancelOrder = async (id: string) => {
       }
     })
     .then((res: ResultType) => {
-      if (res.code == 100) {
+      if (res.code == 200) {
         getTableList(searchType.value)
         ElMessage({
           message: '取消订单成功',
@@ -563,7 +563,7 @@ const delivery = async (id: string) => {
       }
     })
     .then((res: ResultType) => {
-      if (res.code == 100) {
+      if (res.code == 200) {
         getTableList(searchType.value)
         ElMessage({
           message: '确认发货成功',
@@ -582,7 +582,7 @@ const accept = async (id: string) => {
       }
     })
     .then((res: ResultType) => {
-      if (res.code == 100) {
+      if (res.code == 200) {
         getTableList(searchType.value)
         ElMessage({
           message: '确认收货成功',
@@ -628,7 +628,7 @@ const remoteMethod = (query: string) => {
         }
       })
       .then((res: ResultType) => {
-        if (res.code == 100) {
+        if (res.code == 200) {
           let arr: { value: any; label: any }[] = []
           console.log(res.data.result != undefined, res.data.result)
           if (res.data.result != undefined) {
