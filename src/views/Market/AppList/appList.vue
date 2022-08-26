@@ -11,6 +11,7 @@
           ref="appCard"
           :dataList="state.myAppList"
           @handleUpdate="handleCardUpdate"
+          @click="handleCardInfo"
         ></AppCard>
         <DiyTable
           v-else
@@ -92,6 +93,7 @@
   onMounted(() => {
     getData()
   })
+
   // 卡片切换页数
   const handleCardUpdate = () => {
     getData()
@@ -100,7 +102,6 @@
   const handleUpdate = (page: any) => {
     getTableData()
   }
-  const addShopCar = () => {}
 
   const getTableData = () => {
     $services.appstore
@@ -136,10 +137,6 @@
           appCard.value.state.page.total = res.data.total || 0
         }
       })
-  }
-
-  const hadleClick = (item: any) => {
-    console.log('村上春树', item.name)
   }
 </script>
 

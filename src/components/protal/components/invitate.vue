@@ -5,7 +5,7 @@
       <div class="invitateLayout-box__topText">邀请更多成员</div>
       <div class="invitateLayout-box__btmText">邀请更多成员加⼊团队吧！</div>
     </div>
-    <el-icon><ArrowRight /></el-icon>
+    <el-icon :size="20" color="#909399"><ArrowRight /></el-icon>
   </div>
 </template>
 
@@ -32,6 +32,7 @@ export default defineComponent({
   background: #fff;
   display: flex;
   align-items: center;
+  min-height: 120px;
   &-img {
     width: 100px;
     height: 100px;
@@ -40,13 +41,14 @@ export default defineComponent({
   &-box {
     margin-left: 40px;
     &__topText {
-      font-size: 18px;
+      font-size: 16px;
       font-weight: 600;
-      margin-bottom: 40px;
+      margin-bottom: 30px;
+      
     }
     &__btmText {
       color: rgb(108, 108, 108);
-      font-size: 16px;
+      // font-size: 16px;
     }
   }
 }

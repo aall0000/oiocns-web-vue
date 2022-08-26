@@ -41,7 +41,9 @@
     'checkFriend',
     'closeDialog'
   ])
-
+  const props = defineProps({
+    selectLimit:{}
+  })
   interface ListItem {
     code: string
     name: string
@@ -55,6 +57,9 @@
   const loading = ref(false)
   onMounted(() => {
     remoteMethod()
+    if(props.selectLimit ===0){
+      options.value.selectLimit = 0
+    }
   })
   const remoteMethod = () => {
     

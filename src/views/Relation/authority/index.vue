@@ -39,7 +39,7 @@
         <template #header>
           <div class="card-header">
             <span>角色维护</span>
-            <el-button class="button" type="primary" text @click="goback">返回</el-button>
+            <!-- <el-button class="button" type="primary" text @click="goback">返回</el-button> -->
           </div>
         </template>
 
@@ -68,17 +68,8 @@
               <template #default="{ row }">
                 <div class="cell-box">
                   <el-button link type="primary" size="small" @click="create(row)">新增</el-button>
-                  <el-button link type="primary" size="small" @click="edit(row)">编辑</el-button>
-                  <el-popconfirm
-                    title="确认删除?"
-                    confirm-button-text="确认"
-                    cancel-button-text="取消"
-                    @confirm="handleDel(row)"
-                  >
-                    <template #reference>
-                      <el-button link type="danger" size="small">删除</el-button>
-                    </template>
-                  </el-popconfirm>
+                  <el-button link type="primary" size="small" @click="edit(row)"  :disabled="!row.parentId">编辑</el-button>
+                  <el-button link type="danger" size="small" @click="handleDel(row)" :disabled="!row.parentId">删除</el-button>
                 </div>
               </template>
             </el-table-column>
@@ -175,7 +166,7 @@
 <script lang="ts" setup>
   import { ref, onMounted} from 'vue'
   import $services from '@/services'
-  import { ElMessage } from 'element-plus';
+  import { ElMessage, ElMessageBox } from 'element-plus';
   import { useRouter } from 'vue-router';
 
   // 1. 组织职权； 2. 个人职权；3. 群组职权  Todo
@@ -257,7 +248,26 @@
 
   // 删除行
   const handleDel = async (row: any) =>{
-    const { success } = await $services.company.deleteDepartment({data: {id: row.id}})
+    let title: string;
+    title = `确定把 ${row.name} 删除吗？`
+    ElMessageBox.confirm(
+      title,
+      '警告',
+      {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }
+    ).then(() => {
+      deleteCompanyAuthority(row)
+    })
+    .catch(() => {
+    })
+  }
+
+  // 删除组织职权
+  const deleteCompanyAuthority = async (row: any)=>{
+    const { success } = await $services.company.deleteAuthority({data: {id: row.id}})
     if (success) {
       ElMessage({
         message: '删除成功!',
@@ -270,6 +280,16 @@
         type: 'error'
       })
     }
+  }
+
+  // 删除群组职权
+  const deleteCohortAuthority = (row: any)=>{
+
+  }
+
+  // 删除个人职权
+  const deletePersonAuthority = (row: any)=>{
+
   }
 
 
@@ -314,7 +334,7 @@
     })
   }
 
-  // 编辑角色
+  // 编辑职权
   const editAuth = ()=>{
     let parentId = null;
     const parentIds = formData.value.parentIds;
@@ -322,7 +342,7 @@
       parentId = parentIds[parentIds.length - 1]
     }
     formData.value.parentId = parentId
-    $services.company.updateDepartment({
+    $services.company.updateAuthority({
       data: formData.value
     }).then((res: ResultType) => {
       if (res.success) {
@@ -364,7 +384,7 @@
   }
   .table {
     width: 100%;
-    height: 100%;
+    height: calc(100vh - 350px)
   }
 }
 
@@ -378,6 +398,5 @@
 
 .box-card {
   width: 100%;
-  height: 99%;
 }
 </style>

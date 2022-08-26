@@ -117,7 +117,7 @@
   }
   // 跳转至身份管理页面
   const toIdentity = ()=>{
-    router.push({ path: '/relation/identity', query: { belongId:  selectItem.value.id }})
+    router.push({ path: '/relation/identity', query: { belongId:  selectItem.value.id,name:selectItem.value.label }})
   }
 
 </script>

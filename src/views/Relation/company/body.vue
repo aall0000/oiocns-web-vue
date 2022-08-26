@@ -1,9 +1,9 @@
 <template>
   <div class="container">
-    <el-tabs v-model="activeName" class="tabs" ref="tabs" @tab-click="handleClick">
+    <el-tabs v-model="activeName" class="tabs" ref="tabs"  @tab-click="handleClick">
       <el-tab-pane label="人员列表" name="user">
-        <User :tabHeight='tabHeight' :selectItem="selectItem"></User>
       </el-tab-pane>
+      <User :tabHeight='tabHeight' :selectItem="selectItem"></User>
       <!-- <el-tab-pane label="身份列表" name="identity">
         <Identity :selectItem="selectItem"></Identity>
       </el-tab-pane> -->
@@ -55,6 +55,9 @@ onMounted(() => {
   overflow: hidden;
   background-color: #fff;
   padding: 18px;
+  :deep(.el-tabs__content){
+    height: calc(100% - 65px);
+  }
 }
 
 </style>

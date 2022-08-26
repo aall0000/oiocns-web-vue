@@ -34,7 +34,7 @@ const { data } = response
   switch (data.code) {
     case 500:
       ElMessage({
-        message: data.msg,
+        message: data.msg.replace(/[^\u4E00-\u9FA5]/g,''),
         type: 'warning'
       })
       break

@@ -2,6 +2,9 @@
     <div class="card">
       <div class="header">
         <div class="title">{{selectItem.name}}</div>
+        <div class="box-btns">
+          <el-button small link type="primary" @click="showGiveDialog">指派身份</el-button>
+        </div>
       </div>
       <div :style="{height:tabHeight-35+'px'}">
         <div style="width: 100%; height: 100%">
@@ -13,51 +16,21 @@
             :tableHead="tableHead"
           >
             <template #operate="scope" >
-                <div v-if="selectItem?.data?.typeName == '公司'">
-                  <el-button link type="danger" size="small" @click="removeFrom(scope.row)">操作离职</el-button>
-                </div>
-                <div v-if="selectItem?.data?.typeName == '部门' || selectItem?.data?.typeName == '工作组'">
-                  <el-button link type="danger" size="small" @click="removeFrom(scope.row)" >移除成员</el-button>
-                </div>
+              <el-button link type="danger" size="small" @click="removeFrom(scope.row)" >移除人员</el-button>
             </template>
           </DiyTable>
         </div>
       </div>
     </div>
 
-  <el-dialog v-model="pullPersonDialog" @close="hidePullPreson" title="添加人员到单位" width="30%">
-    <el-select
-      v-model="inviter"
-      filterable
-      remote
-      reserve-keyword
-      placeholder="请输入要查的人或者手机号"
-      :remote-method="searchPersons"
-      :loading="loading"
-    >
-      <el-option
-        v-for="item in inviterOptions"
-        :key="item.value"
-        :label="item.label"
-        :value="item.value"
-      />
-    </el-select>
-    <template #footer>
-      <span class="dialog-footer">
-        <el-button @click="hidePullPreson">取消</el-button>
-        <el-button type="primary">确认</el-button>
-      </span>
-    </template>
-  </el-dialog>
-
-  <el-dialog v-model="assignDialog" @close="hideAssignDialog" :title="'分配人员 => ' + selectItem.label" width="50%">
-    <el-input v-model="assignSearch" class="search" placeholder="搜索用户" @input="assignSearchChange">
+  <el-dialog v-model="giveDialog" @close="hideGiveDialog" :title="'给人员 => ' + selectItem.name + ' 身份'" width="50%">
+    <el-input v-model="giveSearch" class="search" placeholder="搜索用户" @input="giveSearchChange">
       <template #prefix>
         <el-icon class="el-input__icon"><Search /></el-icon>
       </template>
     </el-input>
     <DiyTable
-      ref="assignTable"
+      ref="giveTable"
       :hasTableHead="true"
       :tableData="companyUsers"
       :options="{
@@ -67,15 +40,15 @@
         selectLimit:0,
         noPage: false
       }"
-      @handleUpdate="assignTableChange"
+      @handleUpdate="giveTableChange"
       :tableHead="columns"
       :style="{height: '350px'}"
     >
     </DiyTable>
     <template #footer>
       <span class="dialog-footer">
-        <el-button @click="hideAssignDialog">取消</el-button>
-        <el-button type="primary" @click="assign">确认</el-button>
+        <el-button @click="hideGiveDialog">取消</el-button>
+        <el-button type="primary" @click="giveIdentity">确认</el-button>
       </span>
     </template>
   </el-dialog>
@@ -85,13 +58,12 @@
 import $services from '@/services'
 import DiyTable from '@/components/diyTable/index.vue'
 import { onMounted, reactive, ref, watch } from 'vue';
-import { useRouter } from "vue-router";
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { Search } from '@element-plus/icons-vue'
 
 const props = defineProps<{
   selectItem: any,     // 节点数据
-  tabHeight:number,
+  tabHeight: number,
 }>()
 
 let selectItem = ref<any>({})
@@ -158,10 +130,6 @@ const columns = ref([
 ])
 let companyUsers = ref<any>([])
 
-
-const router = useRouter()
-// 表格数据加载状态
-const loading = ref<boolean>(false)
 // 表格展示数据
 const pageStore = reactive({
   tableData: [],
@@ -171,11 +139,10 @@ const pageStore = reactive({
 })
 
 const diyTable = ref(null)
-const assignTable = ref(null)
+const giveTable = ref(null)
 
-// 加载用户
+// 加载身份下的用户
 const getUsers = ()=>{
-  console.log('aaaaaaaaa',selectItem)
   const data = selectItem
   if(data){
     $services.cohort.getIdentityPerson({
@@ -195,44 +162,6 @@ const getUsers = ()=>{
   }
 }
 
-
-// 搜索人
-const searchPersons = (query: string) => {
-  inviterOptions.value = []
-  if(!query){
-    return
-  }
-  loading.value = true
-  $services.person
-    .searchPersons({data: { filter: query, offset: 0, limit: 10 }})
-    .then((res: ResultType) => {
-      loading.value = false
-      if (res.success && res.data.result) {
-        const users = res.data.result
-        inviterOptions.value = users.map((u: any) => {
-          return {value: u.id, label: u.name}
-        })
-      } else {
-        ElMessage({
-          message: '未找到用户!',
-          type: 'warning'
-        })
-      }
-    })
-}
-
-interface ListItem {
-  value: string
-  label: string
-}
-const inviterOptions = ref<ListItem[]>([])
-const inviter = ref('')
-const pullPersonDialog = ref<boolean>(false)
-const hidePullPreson = () => {
-  inviter.value = ''
-  pullPersonDialog.value = false
-}
-
 const handleUpdate = (page: any)=>{
   pageStore.currentPage = page.currentPage
   pageStore.pageSize = page.pageSize
@@ -240,22 +169,11 @@ const handleUpdate = (page: any)=>{
 }
 
 
-// 移除
+// 移除身份下的人员
 const removeFrom = (row: any) =>{
-  let url: string;
-  let title: string;
-  if(selectItem?.data?.typeName == '公司'){
-    url = 'removeFromCompany'
-    title = `操作离职，将删除 ${row.name} 在单位的信息，确定操作吗？`
-  } else if(selectItem?.data?.typeName == '部门'){
-    url = 'removeFromDepartment'
-    title = `确定把 ${row.name} 从当前部门移除吗？`
-  } else if(selectItem?.data?.typeName == '工作组'){
-    url = 'removeFromJob'
-    title = `确定把 ${row.name} 从当前部门移除吗？`
-  }
+  let url: string = 'removeIdentity';
   ElMessageBox.confirm(
-    title,
+    `确定把 ${row.name} 从当前身份移除吗？`,
     '警告',
     {
       confirmButtonText: '确定',
@@ -265,7 +183,7 @@ const removeFrom = (row: any) =>{
   ).then(() => {
     $services.company[url]({
       data: {
-        id: selectItem.id,
+        id: selectItem.value.id,
         targetIds: [row.id]
       }
     }).then((res: ResultType) => {
@@ -298,7 +216,7 @@ const getCompanyUsers = (filter?: string)=>{
       data,
     }).then((res: ResultType) => {
       if (res.code == 200 && res.success) {
-        // 去除已分配到当前部门或者工作组的用户
+        // 去除已分配到身份
         let us = res.data.result || []
         let userIds =  []
         if(users.value){
@@ -307,53 +225,44 @@ const getCompanyUsers = (filter?: string)=>{
         const set: Set<string> = new Set(userIds)
         companyUsers.value = us.filter((u: any) => !set.has(u.id))
         pageStore.total = res.data.total - userIds.length
-        assignTable.value.state.loading = false
-        assignTable.value.state.page.total = pageStore.total;
+        giveTable.value.state.loading = false
+        giveTable.value.state.page.total = pageStore.total;
       }
     })
   }
 }
 
-const assignDialog = ref<boolean>(false)
-const hideAssignDialog = ()=>{
-  assignDialog.value = false
-  getCompanyUsers()
+const giveDialog = ref<boolean>(false)
+const hideGiveDialog = ()=>{
+  giveDialog.value = false
+  getUsers()
 }
 
-const showAssignDialog = ()=>{
-  assignDialog.value = true
+const showGiveDialog = ()=>{
+  giveDialog.value = true
   getCompanyUsers()
 }
 
 // 过滤数据
-const assignSearch = ref('')
-const assignTableChange = (page: any)=>{
+const giveSearch = ref('')
+const giveTableChange = (page: any)=>{
   pageStore.currentPage = page.currentPage
   pageStore.pageSize = page.pageSize
   getCompanyUsers()
 }
 
 // 分配页面搜索用户变化
-const assignSearchChange = (e: string)=>{
+const giveSearchChange = (e: string)=>{
   getCompanyUsers(e)
 }
 
 
-// 分配人员
-const assign = () => {
-  const userIds = assignTable?.value?.state?.multipleSelection.map((u: any) => u.id);
-  if(selectItem?.data?.typeName == '部门'){
-    assignDepartment(selectItem.id, userIds)
-  } else if(selectItem?.data?.typeName == '工作组'){
-    assignJob(selectItem.id, userIds)
-  }
-}
-
-//分配部门
-const assignDepartment = (id: string, targetIds: string[]) => {
+// 给人员身份
+const giveIdentity = () => {
+  const userIds = giveTable?.value?.state?.multipleSelection.map((u: any) => u.id);
   $services.company
-    .assignDepartment({
-      data: { id, targetIds }
+    .giveIdentity({
+      data: { id: selectItem.value.id, targetIds: userIds }
     })
     .then((res: ResultType) => {
       if (res.success) {
@@ -361,13 +270,11 @@ const assignDepartment = (id: string, targetIds: string[]) => {
           message: '分配成功',
           type: 'success'
         })
-        hideAssignDialog()
+        hideGiveDialog()
       }
       getUsers()
     })
 }
-
-
 
 watch(selectItem, () => {
   getUsers()

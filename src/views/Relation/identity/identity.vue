@@ -2,7 +2,7 @@
   <div class="container">
     <div class="wrap">
       <div>
-        <div class="title">当前组织:</div>
+        <div class="title">当前组织：{{router.currentRoute.value.query?.name}}</div>
       </div>
 
       <div class="search-wrap">
@@ -20,20 +20,36 @@
         </li>
       </div>
       <div>
-        <div class="text item" v-for="(item,index) in  identityList.list" :key="index" @click="checkItem(item)">
-          {{item.name}}
-        </div>
+        <el-menu
+          default-active="2"
+          class="el-menu-vertical-demo"
+        >
+          <el-menu-item :index="index" v-for="(item, index) in  identityList.list" @click="checkItem(item)">
+            <span>{{item.name}}</span>
+          </el-menu-item>
+        </el-menu>
       </div>
     </div>
-    <el-dialog v-model="createIdntity" title="请录入角色信息" width="40%" center append-to-body @close="dialogHide">
+
+
+    <el-dialog v-model="createIdntity" title="请录入身份信息" width="40%" center append-to-body @close="dialogHide">
       <div>
-        <el-form-item label="角色名称" style="width: 100%">
+        <el-form-item label="身份名称" style="width: 100%">
           <el-input v-model="formData.name" placeholder="请输入" clearable style="width: 100%" />
         </el-form-item>
-        <el-form-item label="角色编号" style="width: 100%">
+        <el-form-item label="身份编号" style="width: 100%">
           <el-input v-model="formData.code" placeholder="请输入" clearable style="width: 100%" />
         </el-form-item>
-        <el-form-item label="角色简介" style="width: 100%">
+        <el-form-item label="所属角色" style="width: 100%">
+        <el-cascader
+          :props="cascaderProps"
+          :options="cascaderTree"
+          v-model="formData.parentIds"
+          style="width: 100%"
+          placeholder="请选择"
+        />
+        </el-form-item>
+        <el-form-item label="身份简介" style="width: 100%">
           <el-input v-model="formData.remark" :autosize="{ minRows: 5 }" placeholder="请输入" type="textarea" clearable />
         </el-form-item>
       </div>
@@ -49,7 +65,6 @@
 <script lang="ts" setup>
   // @ts-nocheck
   import { ref, onMounted,reactive } from 'vue'
-  import { useRoute } from 'vue-router';
   import $services from '@/services'
   const emit = defineEmits(['itemClick'])
 
@@ -64,10 +79,6 @@
   const checkItem = (val: any) => {
     emit('itemClick', val)
   }
-  onMounted(()=>{
-    belongId.value = router.currentRoute.value.query.belongId
-    loadIdentities()
-  })
   // 加载身份
   const loadIdentities = ()=>{
     $services.cohort.getIdentitys({
@@ -91,18 +102,59 @@
         name:formData.name,
         code:formData.code,
         remark:formData.remark,
-        authId:''
+        authId:formData.parentIds[formData.parentIds.length-1]
       }
     }).then((res: ResultType) => {
       if (res.success) {
-        identityList.list = res.data.result
-        console.log(identityList.list)
-
+        ElMessage({
+          message: '创建成功!',
+          type: 'success'
+        })
+        dialogHide()
+        loadIdentities()
       }
     })
   }
+  // 节点ID和对象映射关系
+  const parentIdMap: any = {}
+
+  let authorityTree = ref<any[]>([])
+  let cascaderTree = ref<any[]>([])
+
+  const cascaderProps = {
+    checkStrictly: true,
+    value: 'id',
+    label: 'name',
+    children: 'nodes',
+  }
+
+  // 加载职权树
+  const loadAuthorityTree = () => {
+    $services.company.getAuthorityTree({data: {id: belongId.value}}).then((res: any)=>{
+      authorityTree.value = []
+      authorityTree.value.push(res.data)
+      initIdMap(authorityTree.value)
+      cascaderTree.value = authorityTree.value
+    })
+  }
+  // 初始化ID和对象映射关系
+  const initIdMap = (nodes: any[]) => {
+    for(const node of nodes){
+      parentIdMap[node.id] = node
+      if(node.nodes){
+        initIdMap(node.nodes)
+      }
+    }
+  }
+
+  const dialogHide = ()=>{
+    createIdntity.value = false
+  }
+
   onMounted(() => {
     belongId.value = router.currentRoute.value.query?.belongId
+    loadIdentities()
+    loadAuthorityTree()
   })
 
 
@@ -140,9 +192,11 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  cursor: pointer;
 }
 .text {
   font-size: 14px;
+  cursor: pointer;
 }
 
 .item {
