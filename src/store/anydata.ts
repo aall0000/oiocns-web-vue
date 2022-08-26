@@ -5,7 +5,7 @@
     message 已读未读
 */
 import { defineStore } from 'pinia'
-import UserOtherDataConnection from '@/utils/hubConnection'
+import anyStore from '@/utils/hubConnection'
 
 type UsingSpace = {
     id: string;
@@ -46,84 +46,54 @@ export const useAnyData = defineStore({
     id: "userAnyData",
     state: (): { workspace: WorkSpaceType, messageNoReadMap: Record<string, number> } => {
         return {
-            workspace: {
-                id: '',
-                content: [], // 组件内容
-                user: {
-                    name: '用户组件',
-                    content: []
-                }
-            },
+            workspace: null,
             messageNoReadMap: {}
         }
     },
-   
     getters: {
-        homeComplist: (state) => state.workspace.content, // 首页配置组件
-        userComplist: (state) => state.workspace.user.content, // 用户组件
-        noReadMap : (state) => state.messageNoReadMap // 未读数量
+        homeComplist: (state) => state.workspace?.content || [], // 首页配置组件
+        userComplist: (state) => state.workspace?.user?.content || [], // 用户组件
+        noReadMap: (state) => state.messageNoReadMap // 未读数量
     },
     actions: {
         // 更新用户组件配置
-        async updateUserSpace(params: { workspaceId: string, content: UserSpace[] }) {
+        updateUserSpace(params: { workspaceId: string, content: UserSpace[] }) {
             console.log('更新用户组件', params.content)
-            const data = await UserOtherDataConnection.set(`${params.workspaceId}.user.content`,
-                {
-                    operation: 'replaceAll',
-                    data: params.content
-                })
-            this.workspace.user.content = params.content
-            return data.state
-
+            anyStore.set(`${params.workspaceId}.user.content`,
+            {
+                operation: 'replaceAll',
+                data: params.content
+            })
         },
         // 更新工作空间配置
-        async updateHomeSpace(params: { workspaceId: string, content: UsingSpace[] }) {
+        updateHomeSpace(params: { workspaceId: string, content: UsingSpace[] }) {
             console.log('更新工作空间配置', params.content)
-            const data = await UserOtherDataConnection.set(`${params.workspaceId}.content`,
-                {
-                    operation: 'replaceAll',
-                    data: params.content || []
-                })
-            this.workspace.content = params.content
-            return data.state
+            anyStore.set(`${params.workspaceId}.content`,
+            {
+                operation: 'replaceAll',
+                data: params.content || []
+            })
         },
         // 设置个人空间全部数据
         setWorkspace(data: WorkSpaceType) {
-            this.workspace = data ? { ...data } : {
-                workspace: {
-                    id: '',
-                    content: [], // 组件内容
-                    user: {
-                        name: '用户组件',
-                        content: []
-                    }
-                }
-            }
+            this.workspace = data
         },
         // 更新已读未读消息数量
-        async updateMessageNoread(userid: string, count: number) {
-            const newCount = (this.messageNoReadMap[userid]  ||0)+count
-            const { state } = await UserOtherDataConnection.set(`message.noread.${userid}`,
-                {
-                    operation: 'replaceAll',
-                    data: newCount
-                })
-            if (state) {
-                this.messageNoReadMap[userid] = newCount
-            }
+        updateMessageNoread(userid: string, count: number) {
+            const newCount = (this.messageNoReadMap[userid] || 0) + count
+            anyStore.set(`message.noread.${userid}`,
+            {
+                operation: 'replaceAll',
+                data: newCount
+            })
         },
-        async clearMessageNodread(userid: string){
-            const { state } = await UserOtherDataConnection.delete(`message.noread.${userid}`)
-            if (state) {
-                delete this.messageNoReadMap[userid] 
-            }
-       
+        clearMessageNodread(userid: string) {
+            anyStore.delete(`message.noread.${userid}`)
         },
         // 初始化未读数量
         setMessageNoRead(data: Record<string, number>) {
-            
-            this.messageNoReadMap = data 
-            console.log("newnoread",data)
+            this.messageNoReadMap = data
+            console.log("newnoread", data)
         }
     }
 })

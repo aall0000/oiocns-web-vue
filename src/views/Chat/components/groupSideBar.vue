@@ -72,7 +72,7 @@
 import { computed, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
 import { formatDate } from '@/utils/index'
 import HeadImg from '@/components/headImg.vue'
-import { useAnyData } from '@/store/anyData'
+import { useAnyData } from '@/store/anydata'
 
 
 type propType = {

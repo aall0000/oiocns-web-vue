@@ -150,7 +150,6 @@ import $services from '@/services'
 import { useUserStore } from '@/store/user'
 import { useAnyData } from '@/store/anydata'
 import { useRouter, useRoute } from 'vue-router'
-import UserOtherDataConnection from '@/utils/hubConnection'
 
 export default defineComponent({
   components: {
@@ -285,17 +284,7 @@ export default defineComponent({
     // mouted位置
     onMounted(() => {
       getCanvasBg()
-
-      UserOtherDataConnection.subscribed(`${store.workspaceData.id}`, (data) => {
-        console.log('index', data)
-        ohterData.setWorkspace(data)
-      })
       getLayout() // 加载默认的可编辑模块
-    })
-
-    onBeforeUnmount(() => {
-      
-      UserOtherDataConnection.unSubscribed(`${store.workspaceData.id}`)
     })
 
     // method位置
