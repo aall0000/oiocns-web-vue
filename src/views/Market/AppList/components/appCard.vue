@@ -5,8 +5,9 @@
         <li class="app-card" v-if="dataList?.length !== 0">
           <ShopCard
             v-for="item in dataList"
-            :info="item"
+            :info="item.id"
             :key="item.id"
+            :cardContent="true"
             @click="handleCardInfo(item)"
           >
             <template #rightIcon>
@@ -14,7 +15,21 @@
                 <el-icon><ShoppingCart /></el-icon>
               </div>
             </template>
+            <template #content>
+              <div class="shopCar-box">
+                <div class="app-con-title">{{ item.caption }}</div>
+                <div class="app-con-info" v-if="item.sellAuth !== '所属权'"
+                  >使用天数：{{ item.days }}</div
+                >
+                <div class="app-con-info">价格：{{ item.price }}</div>
 
+                <div class="app-con-info">售卖权属：{{ item.sellAuth }}</div>
+                <!-- <div class="app-con-info">上架时间：{{ item.createTime.substring(0, 11) }}</div> -->
+              </div>
+              <div class="app-card-item-con-desc"
+                ><p>{{ item.information }}</p></div
+              >
+            </template>
             <!-- <template #footer> -->
             <el-button class="btn" type="primary" link small>订阅</el-button>
             <!-- <el-divider direction="vertical" />
@@ -123,6 +138,33 @@
 </script>
 
 <style lang="scss" scoped>
+  .app-con-title {
+    color: #000000d9;
+    font-size: 16px;
+    font-weight: 600;
+  }
+  .app-con-info {
+    font-size: 12px;
+    font-weight: 400;
+  }
+  .app-card-item-con-desc {
+    font-size: 12px;
+    font-weight: 400;
+    color: rgba(0, 0, 0, 0.45);
+
+    position: absolute;
+    bottom: 50px;
+    width: 100%;
+    left: 0;
+    height: 30px;
+    padding: 0px 24px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    word-break: break-all;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
   :deep(.el-card__body) {
     padding: 0;
   }
