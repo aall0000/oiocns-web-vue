@@ -14,16 +14,14 @@
     </el-card>
     <el-card class="share-box">
       <el-tabs v-model="activeName" class="demo-tabs" @tab-click="handleClick">
-        <el-tab-pane label="User" name="first">User</el-tab-pane>
-        <el-tab-pane label="Config" name="second">Config</el-tab-pane>
-        <el-tab-pane label="Role" name="third">Role</el-tab-pane>
-        <el-tab-pane label="Task" name="fourth">Task</el-tab-pane>
+        <el-tab-pane label="按集团分享" name="first"></el-tab-pane>
+        <!-- <el-tab-pane label="按职权分享" name="second"></el-tab-pane> -->
       </el-tabs>
     </el-card>
   </div>
 </template>
 <script lang="ts" setup>
-  import { ref } from 'vue'
+  import { ref, onMounted } from 'vue'
   import type { TabsPaneContext } from 'element-plus'
   type PropType = {
     info: ProductType
@@ -33,6 +31,14 @@
   console.log('展示数据', props.info)
 
   const activeName = ref('first')
+
+  onMounted(() => {
+    // getAuthorityData()
+  })
+
+  // const getAuthorityData = () => {
+  //   $services.company.getAuthorityTree({ data: { id: belongId.value } }).then((res: any) => {})
+  // }
 
   const handleClick = (tab: TabsPaneContext, event: Event) => {
     console.log(tab, event)

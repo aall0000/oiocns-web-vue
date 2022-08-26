@@ -4,15 +4,15 @@
       <!-- 左侧 -->
       <div class="left">
         <el-breadcrumb separator="/">
-          <el-breadcrumb-item :to="{ path: '/' }">应用市场</el-breadcrumb-item>
-          <el-breadcrumb-item
-            ><a href="/">{{ activeRouterName }}</a></el-breadcrumb-item
-          >
+          <el-breadcrumb-item :to="{ path: '/market' }">应用市场</el-breadcrumb-item>
+          <el-breadcrumb-item v-if="activeRouter !== '/market'">{{
+            activeRouterName
+          }}</el-breadcrumb-item>
         </el-breadcrumb>
       </div>
       <div class="right">
         <!-- 右侧 -->
-        <slot name="right"> 按钮区域 </slot>
+        <slot name="right"> </slot>
       </div>
     </div>
   </el-card>
