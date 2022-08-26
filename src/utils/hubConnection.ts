@@ -10,8 +10,8 @@ type anyStoreType = {
     _subscribedKeys: Record<string, (data: any) => void>, // 订阅的值和回调方法
     start: () => void, // 创建及启动链接
     stop: () => void, // 关闭链接
-    connected: () => boolean // connected
-    setPrefix: (str: string) => void,
+    isConnected: () => boolean //  判断该链接的状态是否为connected
+    setPrefix: (str: string) => void, // 设置链接前缀，默认设置为userid
     subscribed: (key: string, callback: (data: any) => void) => void // 订阅数据
     set: (methodsName: string, data?: any) => Promise<{ state: any; data: any; }> // 更新数据
     delete: (key: string) => Promise<{ state: any; data: any; }>, // 删除数据
@@ -39,19 +39,19 @@ const anyStore: anyStoreType = {
                 }, 2000);
             })// 开启链接
     },
-    connected: () => {
+    isConnected: () => {
         if (anyStore._connection != null) {
             return anyStore._connection.state == signalR.HubConnectionState.Connected
         }
         return false
     },
     stop: () => {
-        if (anyStore.connected()) {
+        if (anyStore.isConnected()) {
             anyStore._connection.stop()
         }
     },
     setPrefix: (str: string) => {
-        if (anyStore._prefix != str && anyStore.connected()) {
+        if (anyStore._prefix != str && anyStore.isConnected()) {
             Object.keys(anyStore._subscribedKeys).forEach((key: string) => {
                 if (key.startsWith(anyStore._prefix)) {
                     delete anyStore._subscribedKeys[key]
@@ -66,7 +66,7 @@ const anyStore: anyStoreType = {
         if (anyStore._prefix == "") return;
         let fullKey = anyStore._prefix + "." + key
         if (!anyStore._subscribedKeys[fullKey]) {
-            if(!anyStore.connected()){
+            if(!anyStore.isConnected()){
                 setTimeout(()=>{
                     anyStore.subscribed(key, callback)
                 }, 1000)
@@ -74,7 +74,7 @@ const anyStore: anyStoreType = {
                 anyStore._subscribedKeys[fullKey] = callback
                 const { data, state: success } = await anyStore._connection.invoke("Subscribed", fullKey)
                 if (success) {
-                    console.log("已订阅=======", fullKey)
+                    console.log("已订阅===", fullKey)
                     callback.call(callback, data)
                 }
             }
@@ -92,8 +92,8 @@ const anyStore: anyStoreType = {
         let fullKey = `${anyStore._prefix}.${key}`
         if (!anyStore._subscribedKeys[fullKey]) return
         delete anyStore._subscribedKeys[fullKey]
-        anyStore.connected() && anyStore._connection.invoke("UnSubscribed", fullKey).then(()=>{
-            console.log("已订阅=======", fullKey)
+        anyStore.isConnected() && anyStore._connection.invoke("UnSubscribed", fullKey).then(()=>{
+            console.log("取消订阅===", fullKey)
         })
     },
     // 收到数据更新的消息，本地可回调 （私有方法）

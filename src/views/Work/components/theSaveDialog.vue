@@ -1,5 +1,5 @@
 <template>
-  <el-dialog center v-model="dialogShow.value" title="配置首页" width="30%">
+  <el-dialog v-model="dialogShow.value" title="配置首页" width="30%">
     <div class="diy-dialog-body">
       <div style="margin-top: 30px; display: flex; justify-content: center">
         <el-radio v-model="radio" label="0">覆盖</el-radio>

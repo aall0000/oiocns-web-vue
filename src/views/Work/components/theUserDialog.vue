@@ -1,5 +1,5 @@
 <template>
-  <el-dialog center v-model="dialogShow.value" title="添加用户组件" width="40%">
+  <el-dialog  v-model="dialogShow.value" title="添加用户组件" width="600px">
     <div class="diy-dialog-body">
       <div style="margin-top: 30px; margin-left: 52px">
         <el-form ref="ruleFormRef" :model="pageData.form" :rules="rules" label-width="150px">
@@ -66,7 +66,7 @@ const rules = reactive<FormRules>({
   url: [
     { required: true, message: '请输入链接', trigger: 'blur' },
     {
-      pattern: /^((http:|https:)+(\/\/)+(www)+\.[^\s]*?(([A-Za-z0-9]+-[A-Za-z0-9]+|[A-Za-z0-9]+)\.))+([a-z]+)[/?:]?.*$/, 
+      pattern: /^((http:|https:)+(\/\/)+(([A-Za-z0-9]+-[A-Za-z0-9]+|[A-Za-z0-9]+)\.))+([a-z]+)[/?:]?.*$/, 
       message: '请输入正确的链接地址，eg: https://www.baidu.com'
     }
   ],
