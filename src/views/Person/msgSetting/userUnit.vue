@@ -65,25 +65,41 @@
     console.log(tab, event)
   }
   const handleDelete = (id: string) => {
-    $services.company
-      .companyDelete({
-        data: {
-          id: id
-        }
-      })
-      .then((res: ResultType) => {
-        if (res.success) {
-          ElMessage({
-            message: '删除成功',
-            type: 'success'
-          })
-        } else {
-          ElMessage({
-            message: res.msg,
-            type: 'warning'
-          })
-        }
-      })
+    $services.person
+    .cancelJoin({
+      data: {
+        id: id
+      }
+    })
+    .then((res: ResultType) => {
+      if (res.code == 200) {
+        ElMessage({
+          message: '退出成功',
+          type: 'warning'
+        })
+        getList()
+        // getQunList()
+      }
+    })
+    // $services.company
+    //   .companyDelete({
+    //     data: {
+    //       id: id
+    //     }
+    //   })
+    //   .then((res: ResultType) => {
+    //     if (res.success) {
+    //       ElMessage({
+    //         message: '删除成功',
+    //         type: 'success'
+    //       })
+    //     } else {
+    //       ElMessage({
+    //         message: res.msg,
+    //         type: 'warning'
+    //       })
+    //     }
+    //   })
   }
   type listItem = {
     id: string

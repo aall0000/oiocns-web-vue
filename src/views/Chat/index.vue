@@ -41,10 +41,10 @@
 
 <script lang="ts" setup>
   import { useUserStore } from '@/store/user'
-  import { useAnyData } from '@/store/anyData'
+  import { useAnyData } from '@/store/anydata'
   // import API from '@/services'
   import * as signalR from '@microsoft/signalr'
-  import UserOtherDataConnection from '@/utils/hubConnection'
+  import anyStore from '@/utils/hubConnection'
   import {
     onMounted,
     reactive,
@@ -118,8 +118,9 @@
 
   onMounted(() => {
     isShowMenu.value = true
+    anyStore.setPrefix(myId)
     // 订阅未读消息
-    UserOtherDataConnection.subscribed(`message.noread`, (data) => {
+    anyStore.subscribed(`message.noread`, (data) => {
       // console.log('noread===', data)
       setMessageNoRead(data)
     })
@@ -225,6 +226,7 @@
   onBeforeUnmount(() => {
     // 离开页面关闭链接
     connection.stop()
+    anyStore.unSubscribed(myId)
   })
 
   // 监听所选聊天对象

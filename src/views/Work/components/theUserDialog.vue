@@ -102,14 +102,12 @@ const handleClick = async (formEl: FormInstance | undefined) => {
           height: parseInt(pageData.form.height)
         }]
       }
-      const success = ohterData.updateUserSpace(params)
-      if (success) {
-        ElMessage({
-          message: '添加成功',
-          type: 'success'
-        })
-        handleClose()
-      }
+      ohterData.updateUserSpace(params)
+      ElMessage({
+        message: '添加成功',
+        type: 'success'
+      })
+      handleClose()
       // $services.diyHome
       //   .diy(`/anydata/object/set/${params.userId}.${params.workspaceId}.user`, {
       //     data: {

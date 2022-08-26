@@ -11,7 +11,6 @@
           ref="appCard"
           :dataList="state.myAppList"
           @handleUpdate="handleCardUpdate"
-          @click="handleCardInfo"
         ></AppCard>
         <DiyTable
           v-else

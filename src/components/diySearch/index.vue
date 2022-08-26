@@ -69,7 +69,7 @@
   }
 
   const submit = () => {
-    emit('submit', value.value)
+    // emit('submit', value.value)
   }
   const closeDialog = () => {
     emit('closeDialog', props.dialogShow)

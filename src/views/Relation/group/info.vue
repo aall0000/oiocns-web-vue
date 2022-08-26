@@ -28,7 +28,7 @@
     </div>
   </div>
 
-  <el-dialog v-model="dialogVisible" :title="'请编辑集团信息'" width="30%">
+  <el-dialog v-model="dialogVisible" :title="'请编辑集团信息'" width="50%">
     <el-form-item :label="'集团名称'">
       <el-input v-model="formData.name" :placeholder="'请输入集团名称'" clearable />
     </el-form-item>

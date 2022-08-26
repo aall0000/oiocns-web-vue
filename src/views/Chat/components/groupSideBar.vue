@@ -72,7 +72,7 @@
 import { computed, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
 import { formatDate } from '@/utils/index'
 import HeadImg from '@/components/headImg.vue'
-import { useAnyData } from '@/store/anyData'
+import { useAnyData } from '@/store/anydata'
 
 
 type propType = {
@@ -355,8 +355,8 @@ const handleContextChange = (item: MenuItemType) => {
 
     &-dot {
       position: absolute;
-      left: 42px;
-      top: 2px;
+      left: 35px;
+      top: -5px;
       min-width: 18px;
       width: max-content;
       height: 20px;

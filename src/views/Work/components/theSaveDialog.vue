@@ -126,16 +126,13 @@ const handleClick = async (formEl: FormInstance | undefined) => {
   })
 }
 const saveData = async (params: { workspaceId: string, userId: string, content: any }, message: string) => {
-  const sucsse = await otherData.updateHomeSpace(params)
-  if (sucsse) {
-    ElMessage({
-      message: message + '成功',
-      type: 'success'
-    })
-    handleClose()
-    router.push({ path: '/workHome' })
-  }
-
+  otherData.updateHomeSpace(params)
+  ElMessage({
+    message: message + '成功',
+    type: 'success'
+  })
+  handleClose()
+  router.push({ path: '/workHome' })
 }
 const handleClose = () => {
   emit('closeDialog', props.dialogShow.key)
