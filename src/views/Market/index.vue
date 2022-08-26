@@ -124,6 +124,7 @@
     </putaway-comp>
   </el-dialog>
   <el-dialog
+    v-if="groupVisible"
     v-model="groupVisible"
     custom-class="group-dialog"
     title="选择集团"
@@ -131,12 +132,7 @@
     draggable
     :close-on-click-modal="false"
   >
-    <el-select
-      v-model="selectedValue"
-      @change="changeGroupIndex"
-      value-key="id"
-      placeholder="请选择集团"
-    >
+    <el-select v-model="selectedValue" value-key="id" placeholder="请选择集团">
       <el-option
         v-for="item in state.options"
         :key="item.value"
@@ -152,6 +148,7 @@
     </template>
   </el-dialog>
   <el-dialog
+    v-if="shareVisible"
     v-model="shareVisible"
     custom-class="share-dialog"
     title="分享应用"
@@ -159,7 +156,11 @@
     draggable
     :close-on-click-modal="false"
   >
-    <share-comp :info="selectProductItem" :selectedValue="selectedValue" />
+    <share-comp
+      :info="selectProductItem"
+      :selectedValue="selectedValue"
+      @closeDialog="closeDialog"
+    />
   </el-dialog>
 </template>
 
@@ -169,7 +170,7 @@
   import { onMounted, reactive, ref } from 'vue'
   import ShopCard from './components/shopCard.vue'
   import PutawayComp from './components/putawayComp.vue'
-  import ShareComp from './components/shareComp.vue'
+  import ShareComp from './components/shareDialog.vue'
   import { baseData, actionOptionsOfOther, actionOptionsOfOwn } from './config'
   import { useRouter } from 'vue-router'
   import type { FormInstance, FormRules } from 'element-plus'
@@ -204,6 +205,11 @@
     getProductList('share')
   })
 
+  // 关闭分享弹窗
+  const closeDialog = () => {
+    shareVisible.value = false
+  }
+
   // 获取我的应用列表
   const getProductList = async (type: 'own' | 'share') => {
     const { data, success } = await API.product[
@@ -216,19 +222,6 @@
       state[`${type}ProductList`] = [...result]
       state[`${type}Total`] = total
     }
-  }
-  // 切换集团
-  const changeGroupIndex = (id: string) => {
-    loadOrgTree(id)
-  }
-  // 加载集团树
-  const loadOrgTree = (id?: string) => {
-    const group = groups.find((g) => g.id == id || g.name == selectedValue.value)
-    API.company
-      .getGroupTree({
-        data: { id: group.id }
-      })
-      .then((res: any) => {})
   }
 
   // 移除app
@@ -279,8 +272,15 @@
 
   //打开分享弹窗
   const openShareDialog = () => {
-    groupVisible.value = false
-    shareVisible.value = true
+    if (!selectedValue.value) {
+      ElMessage({
+        type: 'warning',
+        message: '请选择集团'
+      })
+    } else {
+      groupVisible.value = false
+      shareVisible.value = true
+    }
   }
 
   //  打开集团选择弹窗
@@ -298,7 +298,7 @@
           state.options = groups.map((g) => {
             return { value: g.id, label: g.name }
           })
-          selectedValue.value = groups[0].name
+          selectedValue.value = groups[0].value
           groupVisible.value = true
           // loadOrgTree(groups[0].id)
         } else {
@@ -372,7 +372,7 @@
   // 当前用户的集团
   let groups = reactive([])
   // 当前选中的集团
-  let selectedValue = ref<string>()
+  let selectedValue = ref<string>('')
   // 分享功能
   const shareVisible = ref<boolean>(false)
   // 选择集团功能
