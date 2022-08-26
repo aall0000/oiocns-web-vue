@@ -1,5 +1,5 @@
 <template>
-  <div class="card">
+  <div class="card" ref="cardHeight">
     <div class="header">
       <div class="title">{{props.selectItem.label}}</div>
       <div class="box-btns">
@@ -13,7 +13,7 @@
       </div>
     </div>
 
-    <div :style="{height:tabHeight-35+'px'}">
+    <div :style="{height:tabHeight-30+'px'}">
       <div style="width: 100%; height: 100%">
         <DiyTable
           ref="diyTable"
@@ -65,14 +65,13 @@
 <script lang='ts' setup>
 import $services from '@/services'
 import DiyTable from '@/components/diyTable/index.vue'
-import { onMounted, reactive, ref, watch } from 'vue';
+import { onMounted, reactive, ref, watch ,nextTick} from 'vue';
 import { useRouter } from "vue-router";
 import { ElMessage, ElMessageBox } from 'element-plus';
 import searchCompany from '@/components/search/company.vue'
 
 const props = defineProps<{
   selectItem: any,     // 节点数据
-  tabHeight: number,
 }>()
 const rootGroup = ref<any>({})
 // 表格用户数据
@@ -96,18 +95,15 @@ const tableHead = ref([
   {
     prop: 'name',
     label: '名称',
-    width: '250',
     name:'name',
   },
   {
     prop: 'code',
     label: '编码',
-    width: '180',
   },
   {
     prop: 'team.code',
     label: '简介',
-    width: '330',
     name:'teamCode',
   },
   {
@@ -115,7 +111,6 @@ const tableHead = ref([
     label: '操作',
     fixed: 'right',
     align: 'center',
-    width: '120',
     name: 'operate'
   }
 ])
@@ -339,10 +334,17 @@ const assign = () => {
     })
 }
 
-
+const cardHeight = ref(null)
+const tabHeight = ref<number>(100)
 onMounted(() => {
   getCompanies()
+  nextTick(()=>{
+    let headerHeight = cardHeight.value?.clientHeight
+    console.log('let headerHeight = cardHeight.value?.clientHeight',headerHeight)
+    tabHeight.value = headerHeight
+  })
 })
+
 
 watch(props, () => {
   getCompanies()
