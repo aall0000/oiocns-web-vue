@@ -64,6 +64,8 @@ export const useAnyData = defineStore({
                 operation: 'replaceAll',
                 data: params.content
             })
+            this.workspace.user = this.workspace.user || {}
+            this.workspace.user.content = params.content
         },
         // 更新工作空间配置
         updateHomeSpace(params: { workspaceId: string, content: UsingSpace[] }) {
@@ -73,6 +75,7 @@ export const useAnyData = defineStore({
                 operation: 'replaceAll',
                 data: params.content || []
             })
+            this.workspace.content = params.content
         },
         // 设置个人空间全部数据
         setWorkspace(data: WorkSpaceType) {
@@ -86,9 +89,11 @@ export const useAnyData = defineStore({
                 operation: 'replaceAll',
                 data: newCount
             })
+            this.messageNoReadMap[userid] = newCount
         },
         clearMessageNodread(userid: string) {
             anyStore.delete(`message.noread.${userid}`)
+            delete this.messageNoReadMap[userid]
         },
         // 初始化未读数量
         setMessageNoRead(data: Record<string, number>) {
