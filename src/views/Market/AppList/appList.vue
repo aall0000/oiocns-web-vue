@@ -1,9 +1,16 @@
 <template>
+  <MarketCard>
+    <template #right>
+      <el-button type="primary" @click="GoPage('/market/appShelvesApproval')"
+        >应用上架审批</el-button
+      >
+      <el-button type="primary">购物车</el-button>
+    </template>
+  </MarketCard>
   <div class="appListLayout">
     <div class="appListLayout-container">
       <div class="appListLayout-header">
         <p>应用列表</p>
-        <el-button type="primary">购物车</el-button>
       </div>
       <div class="appListLayout-content">
         <AppCard
@@ -11,7 +18,6 @@
           ref="appCard"
           :dataList="state.myAppList"
           @handleUpdate="handleCardUpdate"
-          @click="handleCardInfo"
         ></AppCard>
         <DiyTable
           v-else
@@ -41,27 +47,32 @@
   import AppCard from './components/appCard.vue'
   import DiyTable from '@/components/diyTable/index.vue'
   import TheTableButton from './components/theTableButton2.vue'
-
+  import MarketCard from '@/components/marketCard/index.vue'
+  import { useRouter } from 'vue-router'
+  const router = useRouter()
   const route = useRoute()
   const diyTable = ref(null)
   const value1 = ref(true)
   const appCard = ref(null)
 
   const state = reactive({
-    myAppList: [
-      {
-        name: '123',
-        remark: '32123'
-      }
-    ],
+    myAppList: [],
     tableHead: [
       {
-        prop: 'name',
+        prop: 'caption',
         label: '应用名称'
       },
       {
-        prop: 'remark',
-        label: '应用描述'
+        prop: 'sellAuth',
+        label: '应用权限'
+      },
+      {
+        prop: 'price',
+        label: '单价/天'
+      },
+      {
+        prop: 'days',
+        label: '使用期限'
       },
       {
         prop: 'createTime',
@@ -114,8 +125,9 @@
         }
       })
       .then((res: ResultType) => {
+        console.log(res)
         if (res.code == 200) {
-          // state.myAppList = res.data.result || []
+          state.myAppList = res.data.result || []
           diyTable.value.state.page.total = res.data.total || 0
         }
       })
@@ -133,10 +145,13 @@
       })
       .then((res: ResultType) => {
         if (res.code == 200) {
-          // state.myAppList = res.data.result || []
+          state.myAppList = res.data.result || []
           appCard.value.state.page.total = res.data.total || 0
         }
       })
+  }
+  const GoPage = (path: string) => {
+    router.push(path)
   }
 </script>
 

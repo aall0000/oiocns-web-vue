@@ -202,7 +202,15 @@ export default {
     marketQuit: appstore + '/quit',
     searchAll: appstore + '/search/all',
     applyJoin: appstore + '/apply/join',
-    staging: appstore + '/staging'
+    staging: appstore + '/staging',
+    searchJoinApplyManager: appstore + '/search/join/apply/manager',
+    searchJoinApply: appstore + '/search/join/apply',
+    approvalJoin: appstore + '/approval/join',
+    cancelJoin: appstore + '/cancel/join',
+    searchManagerPublishApply: appstore + '/search/manager/publish/apply',
+    approvalPublish: appstore + '/approval/publish',
+
+
   }
   //others
 }

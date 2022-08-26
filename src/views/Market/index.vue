@@ -1,9 +1,6 @@
 <template>
   <div class="market-layout">
     <MarketCard>
-      <template #left>
-        <span>总记录数:20条</span>
-      </template>
       <template #right>
         <el-button type="primary" @click="registerVisible = true">注册应用</el-button>
         <el-button type="primary" @click="GoPage('/market/markList')">去市场</el-button>
@@ -50,7 +47,12 @@
       <ul class="box-ul">
         <p class="box-ul-title">其他应用</p>
         <li class="app-card">
-          <ShopCard v-for="item in state.shareProductList" :info="item" :key="item.id" :over-id="item.id">
+          <ShopCard
+            v-for="item in state.shareProductList"
+            :info="item"
+            :key="item.id"
+            :over-id="item.id"
+          >
             <el-dropdown @command="(value) => handleCommand('other', value, item)" placement="top">
               <el-button class="btn" type="primary" link small> 设置 </el-button>
               <template #dropdown>
