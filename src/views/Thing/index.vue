@@ -262,7 +262,7 @@
   import { GridLayout, GridItem } from 'vue-grid-layout'
   import TheSearchInput from './components/theSearchInput.vue'
   import { ElMessage, ElMessageBox } from 'element-plus'
-  import 'element-plus/es/components/message-box/style/css'
+  // import 'element-plus/es/components/message-box/style/css'
 
   export default defineComponent({
     components: {

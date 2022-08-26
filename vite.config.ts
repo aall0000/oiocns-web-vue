@@ -45,7 +45,7 @@ export default defineConfig(({ command, mode }) => {
         imports: ['vue', 'vue-router']
       }),
       Components({
-        resolvers: [ElementPlusResolver(), IconsResolver({ enabledCollections: 'ep' })]
+        resolvers: [ElementPlusResolver({importStyle: "sass",}), IconsResolver({ enabledCollections: 'ep' })]
       }),
       Icons({
         autoInstall: true
@@ -69,7 +69,7 @@ export default defineConfig(({ command, mode }) => {
     css: {
       preprocessorOptions: {
         scss: {
-          additionalData: '@import "./src/assets/style/variable.scss";'
+          additionalData: '@use "@/assets/style/app.scss" as *;'
         }
       }
     },
