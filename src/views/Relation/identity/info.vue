@@ -82,13 +82,12 @@
   // 修改信息
   const handleUpdate = ()=> {
     if(!selectItem.value.id){
-      ElMessage.warning('请左侧选择角色')
+      ElMessage.warning('请左侧选择身份')
       return
     }
     formData.value = selectItem.value
-    console.log(formData,selectItem)
     dialogVisible.value = true
-    formData.parentIds = selectItem.authId
+    formData.value.parentIds = getParentIds({id: selectItem.value.authId}, [selectItem.value.authId])
   }
   const dialogHide = ()=>{
      dialogVisible.value = false
@@ -112,9 +111,9 @@
       }
     })
   }
-  
-  // 节点ID和对象映射关系
-  const parentIdMap: any = {}
+
+  // 节点ID和父对象映射关系
+  const idParentMap: any = {}
 
   let authorityTree = ref<any[]>([])
   let cascaderTree = ref<any[]>([])
@@ -131,23 +130,38 @@
     $services.company.getAuthorityTree({data: {id: belongId.value}}).then((res: any)=>{
       authorityTree.value = []
       authorityTree.value.push(res.data)
-      initIdMap(authorityTree.value)
+      initIdParentMap(res.data)
       cascaderTree.value = authorityTree.value
     })
   }
   // 初始化ID和对象映射关系
-  const initIdMap = (nodes: any[]) => {
-    for(const node of nodes){
-      parentIdMap[node.id] = node
-      if(node.nodes){
-        initIdMap(node.nodes)
+  const initIdParentMap = (node: any) => {
+    console.log(node)
+    if(node.nodes){
+      for(const n of node.nodes){
+        idParentMap[n.id] = node
+        initIdParentMap(n)
       }
     }
+
   }
+
+  // 获取父节点到根节点的ID列表
+  const getParentIds = (node: any, parentIds: any[]): any[] =>{
+    const parentNode = idParentMap[node.id]
+    if(parentNode){
+      parentIds.push(parentNode.id)
+      parentIds = getParentIds(parentNode, parentIds)
+    }
+    return parentIds;
+  }
+
   onMounted(() => {
     belongId.value = router.currentRoute.value.query?.belongId
     loadAuthorityTree();
   })
+
+  // 返回
   const goback = () => {
     router.go(-1)
   }
