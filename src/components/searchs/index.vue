@@ -223,7 +223,6 @@
       name: 'code'
     },
     {
-      type: 'slot',
       prop: 'remark',
       label: '单位简介',
       name: 'remark'
