@@ -4,6 +4,7 @@
       <div class="title">集团信息</div>
       <div class="box-btns">
         <el-button small link type="primary" @click="handleUpdate">编辑</el-button>
+        <el-button small link type="primary" @click="handleDelete">删除</el-button>
         <el-button small link type="primary" @click="toAuth">角色管理</el-button>
         <el-button small link type="primary" @click="toIdentity">身份管理</el-button>
       </div>
@@ -47,8 +48,10 @@
 <script lang="ts" setup>
   import $services from '@/services'
   import { ref, watch } from 'vue'
-  import { ElMessage } from 'element-plus'
+  import { ElMessage, ElMessageBox } from 'element-plus'
   import router from '@/router';
+
+  const emit = defineEmits(['refresh'])
 
   let selectItem = ref<any>({})
   let dialogVisible = ref<boolean>(false)
@@ -64,6 +67,47 @@
   watch(selectItem, () => {
   });
 
+  // 删除集团信息
+  const handleDelete = ()=>{
+    if(!selectItem.value.id){
+      ElMessage.warning('请左侧选择集团')
+      return
+    }
+    const data = selectItem.value.data
+    let url: string = null;
+    if(data.typeName == '集团'){
+      url = 'deleteGroup'
+    } else if(data.typeName == '子集团'){
+      url = 'deleteSubgroup'
+    }
+    ElMessageBox.confirm(
+      `确定删除 ${data.name} ${data.typeName}吗？`,
+      '警告',
+      {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }
+    ).then(() => {
+      $services.company[url]({
+        data: {
+          id: data.id,
+        }
+      }).then((res: ResultType) => {
+        selectItem.value = {}
+        if (res.success) {
+          ElMessage({
+            message: '操作成功',
+            type: 'success'
+          })
+          emit('refresh')
+        }
+      })
+    })
+    .catch(() => {
+      console.log('取消移除!')
+    })
+  }
 
   // 修改信息
   const handleUpdate = ()=> {

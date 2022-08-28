@@ -9,7 +9,7 @@
 
     <div class="search-wrap">
       <el-input class="search" v-model="filterText" placeholder="搜索集团">
-       
+
       </el-input>
       <li class="con tree-btns">
         <div class="title">集团管理</div>
@@ -94,6 +94,12 @@ let defaultExpandedKeys = ref([])
 
 const filterText = ref('')
 const treeRef = ref<any>()
+
+// 刷新
+const refresh = () => {
+  loadOrgTree()
+};
+defineExpose({ refresh });
 
 // 查询集团列表
 const getGroupList = () => {

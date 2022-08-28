@@ -6,7 +6,7 @@
     <div class="resize" title="收缩侧边栏"> ⋮ </div>
     <div class="content mid box">
       <div class="info" ref="infoWrap">
-        <Info ref="info"/>
+        <Info ref="info" @refresh="refresh"/>
       </div>
       <div class="body" ref="bodyWrap" :style="{height:tabHeight+'px'}">
         <Body ref="body" :tabHeight='tabHeight'/>
@@ -24,11 +24,16 @@
   const info = ref(null);
   const body = ref(null);
   const unitTree = ref(null)
-  
+
   const nodeClick = (selectItem: any)=>{
     info.value.selectItemChange(selectItem);
     body.value.selectItemChange(selectItem);
   }
+
+  const refresh = ()=>{
+    unitTree.value.refresh();
+  }
+
   const screenHeight = ref<number>(0)
   window.addEventListener('resize',function () {
     if(container.value && infoWrap.value){
@@ -83,12 +88,12 @@
           resize[i].style.left = moveLen // 设置左侧区域的宽度
           for (let j = 0; j < left.length; j++) {
             left[0].style.width = moveLen + 'px'
-            
+
               console.log('moveLenmoveLen',moveLen)
               unitTree.styleTree = {
                 width: moveLen - 45 + 'px'
               }
-            
+
             // mid[0].style.width = (box[i].clientWidth - moveLen - 10) + 'px';
           }
         }

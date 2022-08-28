@@ -278,7 +278,7 @@ const removeFrom = (row: any) =>{
     })
   })
   .catch(() => {
-    console.log('移除成功!')
+    console.log('取消移除!')
   })
 }
 
