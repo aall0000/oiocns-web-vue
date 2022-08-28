@@ -104,7 +104,7 @@
         </span>
       </template>
     </el-dialog>
-    <searchGroup v-if="friendDialog" @closeDialog="closeDialog"  @checksSearch='checksSearch'></searchGroup>
+    <searchGroup v-if="friendDialog" :serachType="4" @closeDialog="closeDialog"  @checksSearch='checksSearch'></searchGroup>
   </div>
 </template>
 <script lang="ts" setup>
@@ -114,7 +114,7 @@
   import { ref } from 'vue'
   import { useUserStore } from '@/store/user'
   import { ElMessage } from 'element-plus'
-  import searchGroup from '@/components/search/group.vue'
+  import searchGroup from '@/components/searchs/index.vue'
 
   const store = useUserStore()
   const state = reactive({ tableData: [] })
