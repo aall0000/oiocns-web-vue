@@ -203,11 +203,13 @@
     }
 
     .remark{
+      display: block;
+      max-height: 60px;
       display: -webkit-box;
       -webkit-line-clamp: 10;
       -webkit-box-orient: vertical;
       width: 100%;
-      overflow: hidden;
+      overflow-y: auto;
     }
   }
 </style>

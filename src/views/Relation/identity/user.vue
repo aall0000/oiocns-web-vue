@@ -10,7 +10,7 @@
         <div style="width: 100%; height: 100%">
           <DiyTable
             ref="diyTable"
-            :hasTableHead="true"
+            :hasTableHead="false"
             :tableData="users"
             @handleUpdate="handleUpdate"
             :tableHead="tableHead"
