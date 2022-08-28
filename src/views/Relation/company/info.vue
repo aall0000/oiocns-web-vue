@@ -9,22 +9,27 @@
       </div>
     </div>
     <div class="tab-list">
-      <ul class="next-dept">
-        <table class="table-mytable">
-          <tr>
-            <td class="left">{{title}}名称</td>
-            <td class="column">{{selectItem?.data?.name}}</td>
-            <td class="left">{{title}}编码</td>
-            <td class="column">{{selectItem?.data?.teamCode}}</td>
-          </tr>
-          <tr>
-            <td class="left">描述</td>
-            <td class="column" colspan="3">
-              <span class="remark">{{selectItem?.data?.teamRemark}}</span>
-            </td>
-          </tr>
-        </table>
-      </ul>
+      <el-descriptions :column="2" border>
+        <el-descriptions-item
+          :label="title+'名称'"
+          label-align="center"
+          align="center"
+           width="150px"
+          label-class-name="my-label"
+          class-name="my-content" >{{selectItem?.data?.name}}</el-descriptions-item >
+        <el-descriptions-item :label="title+'编码'"
+          label-align="center"
+          align="center"
+           width="150px"
+          label-class-name="my-label"
+          class-name="my-content">{{selectItem?.data?.teamCode}}</el-descriptions-item>
+        <el-descriptions-item label="描述"  width="150px" :span="2" label-align="center" align="center">
+          <div class="text-remark">
+            {{selectItem?.data?.teamRemark}}
+          </div>
+        </el-descriptions-item>
+      </el-descriptions>
+
     </div>
   </div>
 
@@ -151,32 +156,8 @@
     padding-top: 2px;
     box-sizing: border-box;
   }
-  .next-dept {
-    tr {
-      border: 1px solid #eff2f7;
-      color: #666;
-      height: 45px;
-      text-align: center;
-    }
-    .left {
-      background: #f5f6fc;
-      width: 10.4%;
-      min-width: 110px;
-    }
-    .column {
-      width: 39.6%;
-      text-align: left;
-      padding: 0 20px;
-      box-sizing: border-box;
-      background: #fff;
-    }
-
-    .remark{
-      display: -webkit-box;
-      -webkit-line-clamp: 10;
-      -webkit-box-orient: vertical;
-      width: 100%;
-      overflow: hidden;
-    }
+  .text-remark{
+    max-height: 60px;
+    overflow-y: auto;
   }
 </style>

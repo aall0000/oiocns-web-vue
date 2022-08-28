@@ -9,11 +9,7 @@
 
     <div class="search-wrap">
       <el-input class="search" v-model="filterText" placeholder="搜索集团">
-        <template #suffix>
-          <el-icon class="el-input__icon">
-            <search />
-          </el-icon>
-        </template>
+       
       </el-input>
       <li class="con tree-btns">
         <div class="title">集团管理</div>

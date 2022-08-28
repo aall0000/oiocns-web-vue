@@ -69,7 +69,7 @@
     background: #f0f2f5;
     overflow: hidden;
     .info{
-      padding: 3px;
+      padding: 3px 0;
       box-sizing: border-box;
     }
     .body{

@@ -24,16 +24,16 @@
         </el-table-column>
       </el-table>
     </div>
-    <searchFriend  v-if="friendDialog" @closeDialog="closeDialog"  @checkFriend='checkFriend'/>
+    <searchFriend  v-if="searchDialog" @closeDialog="closeDialog" :serachType="1" @checksSearch='checksSearch'/>
   </div>
 </template>
 <script lang="ts" setup>
 import $services from '@/services'
-import searchFriend from '@/components/search/friend.vue'
+import searchFriend from '@/components/searchs/index.vue'
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 
-const friendDialog = ref<boolean>(false)
+const searchDialog = ref<boolean>(false)
 
 type arrList = {
   id:string
@@ -53,7 +53,7 @@ const addFriends = (arr:Array<arrList>) => {
           message: '申请成功',
           type: 'warning'
         })
-        friendDialog.value = false
+        searchDialog.value = false
         getFriendList()
       }
     })
@@ -107,7 +107,7 @@ const deleteFriend = (id: string) => {
       }
     })
 }
-const checkFriend=(val:any)=>{
+const checksSearch=(val:any)=>{
   if(val.value.length>0){
     let arr:Array<arrList> =[]
     val.value.forEach((element:any) => {
@@ -115,14 +115,14 @@ const checkFriend=(val:any)=>{
     });
     addFriends(arr)
   }else{
-    friendDialog.value = false;
+    searchDialog.value = false;
   }
 }
 const closeDialog = ()=>{
-   friendDialog.value = false;
+   searchDialog.value = false;
 }
 const friendShow = ()=>{
-  friendDialog.value = true;
+  searchDialog.value = true;
 }
 </script>
 <style lang="scss" scoped>

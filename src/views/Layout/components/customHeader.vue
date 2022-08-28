@@ -112,7 +112,7 @@
       </el-dropdown>
     </el-col>
   </el-row>
-  <searchCompany v-if="friendDialog" @closeDialog="closeDialog"  @checkFriend='checkFriend'></searchCompany>
+  <searchCompany v-if="searchDialog" @closeDialog="closeDialog" :serachType="3"  @checksSearch='checksSearch'></searchCompany>
   <template v-for="item in dialogShow" :key="item.key">
     <CreateUnitDialog
       v-if="item.key == 'unit' && item.value"
@@ -140,7 +140,7 @@
   import $services from '@/services'
   import { ElMessage } from 'element-plus'
   import CreateUnitDialog from './createUnitDialog.vue'
-  import searchCompany from '@/components/search/company.vue'
+  import searchCompany from '@/components/searchs/index.vue'
   import JoinUnitDialog from './joinUnitDialog.vue'
   import SearchDialog from './searchDialog.vue'
   import headImg from '@/components/headImg.vue'
@@ -202,11 +202,11 @@
   // const mouseleave = () => {
   //   showSearch.value = false
   // }
-  const friendDialog = ref<boolean>(false)
+  const searchDialog = ref<boolean>(false)
   type arrList = {
     id:string
   }
-  const checkFriend=(val:any)=>{
+  const checksSearch=(val:any)=>{
     if(val.value.length>0){
       let arr:Array<arrList> =[]
       val.value.forEach((element:any) => {
@@ -214,11 +214,11 @@
       });
       joinSubmit(arr)
     }else{
-      friendDialog.value = false;
+      searchDialog.value = false;
     }
   }
   const friendShow = ()=>{
-    friendDialog.value = true;
+    searchDialog.value = true;
   }
   const joinSubmit = (arr: any) => {
     $services.company
@@ -229,7 +229,7 @@
       })
       .then((res: ResultType) => {
         if (res.code == 200) {
-          friendDialog.value = false;
+          searchDialog.value = false;
           ElMessage({
             message: '申请成功',
             type: 'success'
@@ -256,7 +256,7 @@
     })
   }
   const closeDialog = (key: string) => {
-    friendDialog.value = false;
+    searchDialog.value = false;
     dialogShow.map((el) => {
       if (el.key == key) {
         el.value = false
