@@ -237,7 +237,6 @@
       name: 'name'
     },
     {
-      type: 'slot',
       prop: 'remark',
       label: '集团简介',
       name: 'remark'

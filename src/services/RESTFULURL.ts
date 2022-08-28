@@ -109,6 +109,7 @@ export default {
     removeFromSubgroup: company + '/remove/from/subgroup', //移除子集团成员
     removeIdentity: company + '/remove/identity', //移除员工身份
     searchCompany: company + '/search/companys', //搜索单位
+    searchGroups: company + '/search/groups', //搜索单位
     update: company + '/update', //变更单位
     updateDepartment: company + '/update/department', //变更部门
     updateGroup: company + '/update/group', //变更集团
