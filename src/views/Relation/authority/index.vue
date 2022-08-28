@@ -1,41 +1,46 @@
 <template>
     <div class="container">
-      <el-card>
-        <el-descriptions
-          title="组织信息"
-          :column="2"
-          :border="true"
-        >
-          <template #extra>
-            <a small class="goback" link type="primary" @click="goback">返回</a>
-          </template>
-          <el-descriptions-item>
-            <template #label>
-              <div class="cell-item">
-                名称
-              </div>
+      <div ref="cardHeight">
+        <el-card >
+          <el-descriptions
+            title="组织信息"
+            :column="2"
+            :border="true"
+          >
+            <template #extra>
+              <a small class="goback" link type="primary" @click="goback">返回</a>
             </template>
-            {{org?.name}}
-          </el-descriptions-item>
-          <el-descriptions-item>
-            <template #label>
-              <div class="cell-item">
-                编码
+            <el-descriptions-item>
+              <template #label>
+                <div class="cell-item">
+                  名称
+                </div>
+              </template>
+              {{org?.name}}
+            </el-descriptions-item>
+            <el-descriptions-item>
+              <template #label>
+                <div class="cell-item">
+                  编码
+                </div>
+              </template>
+              {{org?.code}}
+            </el-descriptions-item>
+            <el-descriptions-item>
+              <template #label>
+                <div class="cell-item ">
+                  描述
+                </div>
+              </template>
+              <div class="text-remark">
+              {{org?.teamRemark}}
               </div>
-            </template>
-            {{org?.code}}
-          </el-descriptions-item>
-          <el-descriptions-item>
-            <template #label>
-              <div class="cell-item">
-                描述
-              </div>
-            </template>
-            {{org?.teamRemark}}
-          </el-descriptions-item>
-        </el-descriptions>
-      </el-card>
-      <el-card class="box-card">
+            </el-descriptions-item>
+          </el-descriptions>
+        </el-card>
+      </div>
+    
+      <el-card class="box-card" :style="{height:mainHeight+'px','margin-top':'3px'}">
         <template #header>
           <div class="card-header">
             <span>角色维护</span>
@@ -50,6 +55,7 @@
             row-key="id"
             :border="true"
             lazy
+            :height="tableHeight+'px'"
             :tree-props="{ children: 'nodes'}"
             default-expand-all
             class="table"
@@ -63,7 +69,7 @@
                 <el-tag v-if="belong.row.belong?.typeName">{{ belong.row.belong?.typeName }}</el-tag>
               </template>
             </el-table-column>
-            <el-table-column prop="remark" label="备注" />
+            <el-table-column prop="remark" label="备注" width="150"/>
             <el-table-column label="操作" width="150">
               <template #default="{ row }">
                 <div class="cell-box">
@@ -360,11 +366,15 @@
       }
     })
   }
-
+  const cardHeight = ref(null)
+  const tableHeight = ref(100)
+  const mainHeight= ref(100)
   // 获取树
   onMounted(() => {
     belongId.value = router.currentRoute.value.query?.belongId
     org.value = router.currentRoute.value.query
+    mainHeight.value = document.documentElement.clientHeight-70-cardHeight.value.clientHeight;
+    tableHeight.value=document.documentElement.clientHeight-160-cardHeight.value.clientHeight;
     loadAuthorityTree()
   })
 </script>
@@ -378,6 +388,8 @@
   width: 100%;
   background-color: #fff;
   padding: 5px;
+  display: flex;
+  flex-direction: column;
   .cell-box{
     display: flex;
     align-items: center;
@@ -398,5 +410,9 @@
 
 .box-card {
   width: 100%;
+}
+.text-remark{
+  max-height: 60px;
+  overflow-y: auto;
 }
 </style>

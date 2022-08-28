@@ -149,7 +149,7 @@
   }
   const props = withDefaults(defineProps<Props>(), {
     tableName: '',
-    hasTableHead: true,
+    hasTableHead: false,
     hasTitle: true,
     hasTabs: false,
     tableHead: () => [],

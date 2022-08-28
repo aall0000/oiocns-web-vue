@@ -104,7 +104,7 @@
         </span>
       </template>
     </el-dialog>
-    <searchGroup v-if="friendDialog" @closeDialog="closeDialog"  @checkFriend='checkFriend'></searchGroup>
+    <searchGroup v-if="friendDialog" @closeDialog="closeDialog"  @checksSearch='checksSearch'></searchGroup>
   </div>
 </template>
 <script lang="ts" setup>
@@ -311,7 +311,7 @@
   type arrList = {
     id:string
   }
-  const checkFriend=(val:any)=>{
+  const checksSearch=(val:any)=>{
   if(val.value.length>0){
     let arr:Array<arrList> =[]
     val.value.forEach((element:any) => {
