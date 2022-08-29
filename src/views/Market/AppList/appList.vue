@@ -4,7 +4,7 @@
       <el-button type="primary" @click="GoPage('/market/appShelvesApproval')"
         >应用上架审批</el-button
       >
-      <el-button type="primary" @click.stop="linkShopCar()">购物车</el-button>
+      <el-button type="primary" @click.stop="GoPage('/market/shopCar')">购物车</el-button>
     </template>
   </MarketCard>
   <div class="appListLayout">
@@ -99,9 +99,7 @@
       }
     })
   })
-  const linkShopCar = () => {
-    router.push({ path: '/market/shopCar' })
-  }
+
   onMounted(() => {
     getData()
   })
