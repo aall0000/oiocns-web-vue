@@ -14,7 +14,7 @@
           </template>
         </el-input>
         <li class="con tree-btns">
-          <el-icon color="#154ad8" :size="20" @click="createIdntity = true">
+          <el-icon color="#154ad8" :size="20" @click="createIdntityDialog = true">
             <CirclePlus />
           </el-icon>
         </li>
@@ -24,7 +24,7 @@
           default-active="2"
           class="el-menu-vertical-demo"
         >
-          <el-menu-item :index="index" v-for="(item, index) in  identityList.list" @click="checkItem(item)">
+          <el-menu-item class="menu-item" :index="index" v-for="(item, index) in  identityList.list" @click="checkItem(item)">
             <span>{{item.name}}</span>
           </el-menu-item>
         </el-menu>
@@ -32,7 +32,7 @@
     </div>
 
 
-    <el-dialog v-model="createIdntity" title="请录入身份信息" width="40%" center append-to-body @close="dialogHide">
+    <el-dialog v-model="createIdntityDialog" title="请录入身份信息" width="40%" center append-to-body @close="dialogHide">
       <div>
         <el-form-item label="身份名称" style="width: 100%">
           <el-input v-model="formData.name" placeholder="请输入" clearable style="width: 100%" />
@@ -70,11 +70,17 @@
 
   const router = useRouter()
   // 当前组织ID
-  const createIdntity = ref<boolean>(false)
-  const formData = reactive<any>({})
+  const createIdntityDialog = ref<boolean>(false)
+  let formData = reactive<any>({})
   const belongId = ref(null)
   // 身份列表
   const identityList = reactive({list:[]})
+
+  // 刷新
+  const refresh = () => {
+    loadIdentities()
+  };
+  defineExpose({ refresh });
 
   const checkItem = (val: any) => {
     emit('itemClick', val)
@@ -98,11 +104,11 @@
   const createIdentity = ()=>{
     $services.cohort.createIdentity({
       data: {
-        belongId:belongId.value,
-        name:formData.name,
-        code:formData.code,
-        remark:formData.remark,
-        authId:formData.parentIds[formData.parentIds.length-1]
+        belongId: belongId.value,
+        name: formData.name,
+        code: formData.code,
+        remark: formData.remark,
+        authId: formData.parentIds[formData.parentIds.length-1]
       }
     }).then((res: ResultType) => {
       if (res.success) {
@@ -148,7 +154,7 @@
   }
 
   const dialogHide = ()=>{
-    createIdntity.value = false
+    createIdntityDialog.value = false
   }
 
   onMounted(() => {
@@ -159,7 +165,11 @@
 
 
 </script>
-
+<style scoped>
+.el-menu{
+  border:0 !important
+}
+ </style>
 <style lang="scss" scoped>
 .container{
   height: 100%;
@@ -199,8 +209,8 @@
   cursor: pointer;
 }
 
-.item {
-  margin-bottom: 18px;
+.menu-item {
+  height: 36px;
 }
 
 </style>

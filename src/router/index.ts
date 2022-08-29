@@ -127,70 +127,6 @@ const mainRouter: RouteRecordRaw[] = [
     ]
   },
   {
-    path: '/organization',
-    component: () => import('@/views/Organization/components/layout.vue'),
-    children: [
-      {
-        path: '/organization/company',
-        name: 'company',
-        component: () => import('@/views/Organization/index.vue'),
-        meta: {
-          title: '单位维护'
-        }
-      },
-      {
-        path: '/organization/group',
-        name: 'group',
-        component: () => import('@/views/Organization/index.vue'),
-        meta: {
-          title: '集团维护'
-        }
-      },
-      {
-        path: '/organization/cohort',
-        name: 'cohort',
-        component: () => import('@/views/Organization/friend.vue'),
-        meta: {
-          title: '单位群组'
-        }
-      },
-      {
-        path: '/organization/friend',
-        name: 'friend',
-        component: () => import('@/views/Organization/friend.vue'),
-        meta: {
-          title: '我的好友'
-        }
-      },
-      {
-        path: '/organization/deptDeatil',
-        name: 'deptDeatil',
-        component: () => import('@/views/Organization/deptDetail.vue'),
-        meta: {
-          title: '部门维护'
-        }
-      },
-      {
-        path: '/organization/companyList',
-        name: 'companyList',
-        component: () => import('@/views/Organization/companyList.vue'),
-        meta: {
-          title: '单位维护'
-        }
-      }
-    ]
-  },
-  {
-    component: () => import('@/views/Organization/OrganizationTable/index.vue'),
-    name: 'organizationTable',
-    path: '/organizationTable',
-
-    meta: {
-      keepAlive: false,
-      title: '关系'
-    }
-  },
-  {
     component: () => import('@/views/Work/home.vue'),
     name: 'workHome',
     path: '/workHome',
@@ -332,6 +268,14 @@ const mainRouter: RouteRecordRaw[] = [
         path: '/market/order',
         name: 'marketOrder',
         component: () => import('@/views/Market/Order/index.vue'),
+        meta: {
+          title: '订单详情页面'
+        }
+      },
+      {
+        path: '/market/ordergroup',
+        name: 'marketOrdergroup',
+        component: () => import('@/views/Market/Order/group.vue'),
         meta: {
           title: '订单页面'
         }

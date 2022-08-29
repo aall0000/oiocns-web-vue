@@ -62,7 +62,7 @@ export default {
   },
   company: {
     applyJoin: company + '/apply/join', //申请加入单位
-    applyJoinGroup: company + 'apply/join/group', //申请加入集团
+    applyJoinGroup: company + '/apply/join/group', //申请加入集团
     assignDepartment: company + '/assign/department', //分配部门
     assignJob: company + '/assign/job', //分配岗位
     assignSubgroup: company + '/assign/subgroup', //分配子集团
@@ -79,6 +79,7 @@ export default {
     deleteJob: company + '/delete/job', //删除岗位
     deleteSubgroup: company + '/delete/subgroup', //删除子集团
     deleteAuthority: company + '/delete/authority', //删除职权
+    deleteIdentity: company + '/delete/identity', //删除身份
     getAuthorityIdentities: company + '/get/authority/identitys', //查询职权身份
     getAuthorities: company + '/get/authoritys', //查询职权
     getDepartmentPersons: company + '/get/department/persons', //查询部门员工
@@ -109,6 +110,7 @@ export default {
     removeFromSubgroup: company + '/remove/from/subgroup', //移除子集团成员
     removeIdentity: company + '/remove/identity', //移除员工身份
     searchCompany: company + '/search/companys', //搜索单位
+    searchGroups: company + '/search/groups', //搜索单位
     update: company + '/update', //变更单位
     updateDepartment: company + '/update/department', //变更部门
     updateGroup: company + '/update/group', //变更集团
@@ -125,18 +127,18 @@ export default {
   market: {
     merchandise: market + '​/approval​/merchandise', //商品上架审核
     create: market + '/create', //创建市场
-    createOrderByStaging: market + '​/create​/order​/by​/staging', //购物车发起订单
+    createOrderByStaging: market + '/create/order/by/staging', //购物车发起订单
     delete: market + '​/delete', //删除市场
     deleteStaging: market + '/delete/staging', //移除暂存区/购物车
-    joinStaging: market + '​/join/staging', //加入暂存区/购物车
+    joinStaging: market + '/staging', //加入暂存区/购物车
     publishMerchandise: market + '​/publish/merchandise', //上架商品
     searchAll: market +'/search/all', //查询所有市场
     searchManager: market + '​/search/manager', //查询自己管理的市场
     searchMerchandise: market + '​/search/merchandise', //查询市场中所有商品
     searchMerchandiseApply: market + '​/search/merchandise/apply', //查询产品上架申请
     searchStaging: market + '/search/staging', //查询购物车
-    unpublishMerchandise: market + '​/unpublish/merchandise', //下架商品
-    updateMarket: market + '​/update/market' //更新市场
+    unpublishMerchandise: market + '​/unpublish', //下架商品
+    updateMarket: market + '​/update' //更新市场
   },
   order: {
     orderConfirm: order + '/confirm', //确认订单详情(买方确认收货)

@@ -27,11 +27,7 @@
     </li>
     <div>
       <el-input class="search" v-model="filterText" placeholder="搜索部门">
-        <template #suffix>
-          <el-icon class="el-input__icon">
-            <search />
-          </el-icon>
-        </template>
+        
       </el-input>
     </div>
     <div class="tree">

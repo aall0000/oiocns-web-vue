@@ -1,10 +1,15 @@
 import router from './index'
+import NProgress from 'nprogress'
+import 'nprogress/nprogress.css'
 import { clearPending } from '@/services/pending'
 import { useUserStore } from '@/store/user'
 
-router.beforeEach((to, from, next) => {
-  const store = useUserStore()
+NProgress.configure({showSpinner:false})
 
+router.beforeEach((to, from, next) => {
+  // Start progress bar
+  NProgress.start()
+  const store = useUserStore()
   // console.log('路由守卫', 'token===>', !!store.userToken, 'to===>', to.path, 'from===>', from.path)
 
   if (store.userToken) {
@@ -17,4 +22,9 @@ router.beforeEach((to, from, next) => {
       next({ path: '/login' })
     }
   }
+  
+})
+router.afterEach((to) => {
+  // Finish progress bar
+  NProgress.done()
 })

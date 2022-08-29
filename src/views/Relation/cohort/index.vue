@@ -27,7 +27,7 @@
     <!-- <div class="page-pagination">
       <el-pagination small background layout="prev, pager, next" :total="50" class="mt-4" />
     </div> -->
-    <searchCohort  v-if="friendDialog" @closeDialog="closeDialog"  @checkFriend='checkFriend'/>
+    <searchCohort  v-if="friendDialog" :serachType="2" @closeDialog="closeDialog"  @checksSearch='checksSearch'/>
     <el-dialog v-model="addQun" title="创建群" width="30%">
       <el-form-item label="群名称">
         <el-input v-model="qunName" placeholder="请输入群名称" clearable />
@@ -51,7 +51,7 @@ import $services from '@/services'
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { useUserStore } from '@/store/user'
-import searchCohort from '@/components/search/cohort.vue'
+import searchCohort from '@/components/searchs/index.vue'
 
 const { queryInfo } = useUserStore()
 const myId = queryInfo.id
@@ -94,7 +94,7 @@ const friendShow = ()=>{
 type arrList = {
   id:string
 }
-const checkFriend=(val:any)=>{
+const checksSearch=(val:any)=>{
   if(val.value.length>0){
     let arr:Array<arrList> =[]
     val.value.forEach((element:any) => {

@@ -29,7 +29,7 @@
       </div>
     </div>
   </div>
-  <searchCompany  v-if="pullCompanysDialog" :selectLimit='0' @closeDialog="closeDialog"  @checkFriend='checkFriend'/>
+  <searchCompany  v-if="pullCompanysDialog" :selectLimit='0' :serachType="3" @closeDialog="closeDialog"  @checksSearch='checksSearch'/>
 
   <el-dialog v-model="assignDialog" @close="hideAssignDialog" :title="'分配单位 => ' + selectItem.label" width="50%">
     <el-input v-model="assignSearch" class="search" placeholder="搜索单位" @input="assignSearchChange">
@@ -68,7 +68,7 @@ import DiyTable from '@/components/diyTable/index.vue'
 import { onMounted, reactive, ref, watch ,nextTick} from 'vue';
 import { useRouter } from "vue-router";
 import { ElMessage, ElMessageBox } from 'element-plus';
-import searchCompany from '@/components/search/company.vue'
+import searchCompany from '@/components/searchs/index.vue'
 
 const props = defineProps<{
   selectItem: any,     // 节点数据
@@ -176,7 +176,7 @@ const closeDialog = ()=>{
 type arrList = {
   id:string
 }
-const checkFriend=(val:any)=>{
+const checksSearch=(val:any)=>{
   if(val.value.length>0){
     let arr:Array<arrList> =[]
     val.value.forEach((element:any) => {
