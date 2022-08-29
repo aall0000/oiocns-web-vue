@@ -42,10 +42,14 @@
   const emit = defineEmits(['checksSearch', 'closeDialog'])
   const props = defineProps({
     selectLimit: {},
+    id:{
+      type: String,
+      default: ''
+    },
     serachType:{
       type: Number,
       default: '1'
-    },//1 人 2群 3单位 4集团
+    },//1 人 2群 3单位 4集团 5分配人员 6分配单位
   })
   interface ListItem {
     code: string
@@ -62,7 +66,6 @@
   const url = ref<string>()
   const title = ref<string>()
   onMounted(() => {
-    remoteMethod()
     if (props.selectLimit === 0) {
       options.value.selectLimit = 0
     }
@@ -86,24 +89,44 @@
       tableHead.value = tableHead4.value
       url.value = 'searchGroups'
       title.value = '搜索集团'
+    } else if (props.serachType ==5) {
+      space.value = 'company'
+      tableHead.value = tableHead1.value
+      url.value = 'getPersons'
+      title.value = '分配人员'
+    } else if (props.serachType == 6) {
+      space.value = 'company'
+      tableHead.value = tableHead3.value
+      url.value = 'getGroupCompanies'
+      title.value = '分配单位'
     } else {
       space.value = 'person'
       tableHead.value = tableHead1.value
       url.value = 'searchPersons'
       title.value = '搜索人员'
     }
+    remoteMethod()
   })
   const remoteMethod = () => {
-    if (value.value) {
-      $services[space.value][url.value]({
-        data: {
+      let data 
+      if(props.serachType==5|| props.serachType ==6){
+       data= {
+          filter: value.value,
+          offset: (pageStore.currentPage - 1) * pageStore.pageSize,
+          limit: pageStore.pageSize,
+          id:props.id
+        }
+      }else{
+        data = {
           filter: value.value,
           offset: (pageStore.currentPage - 1) * pageStore.pageSize,
           limit: pageStore.pageSize
         }
+      }
+      $services[space.value][url.value]({
+        data: data
       }).then((res: ResultType) => {
         let arr: any = []
-
         if (res.code == 200) {
           if (res.data.result != undefined) {
             let states = res.data.result
@@ -133,13 +156,6 @@
         }
         // diyTable.value.state.loading = false
       })
-    } else {
-      list.value = []
-      nextTick(() => {
-        console.log(diyTable.value)
-        // diyTable.value.state.loading = false
-      })
-    }
   }
 
   const handleUpdate = (page: any) => {
