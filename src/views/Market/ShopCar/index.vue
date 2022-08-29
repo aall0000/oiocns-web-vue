@@ -1,13 +1,67 @@
 <template>
   <div class="common-layout">
     <el-container>
-      <el-header class="header">
-        <!-- <span class="top">  
-          <el-checkbox :v-model="allchecked.checked" @change="checkAll" size="large">全选</el-checkbox></span
-        >
+          <MarketCard>
+    <template #right>
+      <!-- <span class="top">
+          <el-switch v-model="cardActive" active-text="列表" inactive-text="卡片" style="
+              display: inline-block;
+              vertical-align: top;
+              height: 28px;
+              padding-top: 10px;
+              margin-right: 20px;
+            "/>
+        </span>  -->
+        <span class="top">
+          <el-checkbox
+            :v-model="allchecked.checked"
+            @change="checkAll"
+            v-if="cardActive"
+            style="
+              display: inline-block;
+              vertical-align: top;
+              height: 28px;
+              padding-top: 12px;
+              margin-right: 20px;
+            "
+            >全选</el-checkbox
+          >
+          <el-switch
+            v-model="cardActive"
+            @change="changeView"
+            active-text="卡片"
+            inactive-text="列表"
+            style="
+              display: inline-block;
+              vertical-align: top;
+              height: 28px;
+              padding: 10px;
+              margin-right: 200px;
+            "
+          />
+          <el-pagination
+            class="page-pagination"
+            style="float: right; padding: 7px"
+            @size-change="(e) => handlePaginationChange(e, 'limit')"
+            @current-change="(e) => handlePaginationChange(e, 'current')"
+            small
+            background
+            :page-sizes="pageSizes"
+            v-model:currentPage="pagination.current"
+            v-model:page-size="pagination.limit"
+            layout="total, sizes, prev, pager, next, jumper"
+            :total="pageStore.total"
+          ></el-pagination>
+        </span>
+        <div class="group-side-bar-search">
+          <el-input placeholder="搜索" v-model="searchValue" prefix-icon="Search" />
+        </div>
+    </template>
+  </MarketCard>
+      <!-- <el-header class="header">
         <span class="top">
           <el-switch v-model="cardActive" active-text="列表" inactive-text="卡片"/>
-        </span> -->
+        </span> 
         <span class="top">
           <el-checkbox
             :v-model="allchecked.checked"
@@ -52,7 +106,7 @@
         <div class="group-side-bar-search">
           <el-input placeholder="搜索" v-model="searchValue" prefix-icon="Search" />
         </div>
-      </el-header>
+      </el-header> -->
       <el-main class="main-content">
         <div v-if="isRouterAlive">
           <el-row :gutter="12" v-loading="loading" v-if="cardActive">
@@ -291,14 +345,17 @@ const deleteStagings = () => {
         data: {
           id: item.id
         }
-      })
+      }).then((res: ResultType) => {
+      if (res.code == 200) {
+        getTableList()
+        ElMessage({
+          message: '移除成功',
+          type: 'warning'
+        })
+      }
+    })
     }
   }
-  getTableList()
-  ElMessage({
-    message: '移除成功',
-    type: 'success'
-  })
 }
 //从购物车移除
 const deleteStaging = async (id: string) => {

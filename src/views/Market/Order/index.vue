@@ -1,15 +1,20 @@
 <template>
   <div class="container">
-    <el-button-group style="padding: 10px;">
-      <!-- <el-button type="primary" @click="getTableList('all')">全部</el-button> -->
+    <MarketCard>
+    <template #right>
       <el-button type="primary" @click="getTableList('buy')">已购入</el-button>
       <el-button type="primary" @click="getTableList('sell')">已卖出</el-button>
-      <el-button type="primary" @click="getTableList('pre-sell')">待审批</el-button>
-    </el-button-group>
-
-    <div class="group-side-bar-search">
+      <div class="group-side-bar-search">
       <el-input placeholder="搜索" v-model="searchValue" prefix-icon="Search" />
     </div>
+    </template>
+  </MarketCard>
+    <!-- <el-button-group style="padding: 10px;">
+      <el-button type="primary" @click="getTableList('buy')">已购入</el-button>
+      <el-button type="primary" @click="getTableList('sell')">已卖出</el-button>
+    </el-button-group> -->
+
+
     <div class="tab-list">
       <el-table :data="state.orderList" stripe @select="handleSelect">
         <el-table-column type="selection" width="50" />
@@ -681,10 +686,11 @@ const remoteMethod = (query: string) => {
   }
 
   .group-side-bar-search {
-    padding: 10px;
+    // padding: 10px;
     float: right;
     width: 300px;
     margin-right: 20px;
+    margin-left: 20px;
     position: relative;
   }
 }
