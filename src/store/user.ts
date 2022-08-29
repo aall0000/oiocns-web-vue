@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import $services from '@/services'
 import { ElMessage } from 'element-plus'
 import anyStore from '@/utils/hubConnection'
+import { type } from 'os'
 
 type QueryInfoType = {
   id: string
@@ -124,7 +125,8 @@ export const useUserStore = defineStore({
             }
             this.userCompanys = [{
               id: this.userInfo.workspaceId,
-              name: this.userInfo.workspaceName
+              name: this.userInfo.workspaceName,
+              type:1
             }, ...(res.data.result || [])]
             this.copyCompanys = JSON.parse(JSON.stringify(this.userCompanys))
             if (workspaceId) {
@@ -167,10 +169,22 @@ export const useUserStore = defineStore({
     async getWorkspaceData(id: string) {
       await this.copyCompanys.forEach((el: any, index: number) => {
         if (id == el.id) {
-          let obj = {
-            id: el.id,
-            name: el.team ? el.team.name : el.name
+          let obj={}
+          if(el.type === 1){
+            obj = {
+              id: el.id,
+              name: el.team ? el.team.name : el.name,
+              type:1
+            }
           }
+          else{
+            obj = {
+              id: el.id,
+              name: el.team ? el.team.name : el.name,
+              type:2
+            }
+          }
+
           this.workspaceData = obj
           sessionStorage.setItem('WORKSPACE', JSON.stringify(obj))
           this.userCompanys.splice(index, 1)

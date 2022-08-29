@@ -42,7 +42,7 @@
 
 <script setup lang="ts">
   import { reactive, onMounted, ref, watch, nextTick } from 'vue'
-  import { useRoute,useRouter } from 'vue-router'
+  import { useRoute, useRouter } from 'vue-router'
   import $services from '@/services'
   import AppCard from './components/appCard.vue'
   import DiyTable from '@/components/diyTable/index.vue'
