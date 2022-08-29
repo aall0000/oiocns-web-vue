@@ -127,70 +127,6 @@ const mainRouter: RouteRecordRaw[] = [
     ]
   },
   {
-    path: '/organization',
-    component: () => import('@/views/Organization/components/layout.vue'),
-    children: [
-      {
-        path: '/organization/company',
-        name: 'company',
-        component: () => import('@/views/Organization/index.vue'),
-        meta: {
-          title: '单位维护'
-        }
-      },
-      {
-        path: '/organization/group',
-        name: 'group',
-        component: () => import('@/views/Organization/index.vue'),
-        meta: {
-          title: '集团维护'
-        }
-      },
-      {
-        path: '/organization/cohort',
-        name: 'cohort',
-        component: () => import('@/views/Organization/friend.vue'),
-        meta: {
-          title: '单位群组'
-        }
-      },
-      {
-        path: '/organization/friend',
-        name: 'friend',
-        component: () => import('@/views/Organization/friend.vue'),
-        meta: {
-          title: '我的好友'
-        }
-      },
-      {
-        path: '/organization/deptDeatil',
-        name: 'deptDeatil',
-        component: () => import('@/views/Organization/deptDetail.vue'),
-        meta: {
-          title: '部门维护'
-        }
-      },
-      {
-        path: '/organization/companyList',
-        name: 'companyList',
-        component: () => import('@/views/Organization/companyList.vue'),
-        meta: {
-          title: '单位维护'
-        }
-      }
-    ]
-  },
-  {
-    component: () => import('@/views/Organization/OrganizationTable/index.vue'),
-    name: 'organizationTable',
-    path: '/organizationTable',
-
-    meta: {
-      keepAlive: false,
-      title: '关系'
-    }
-  },
-  {
     component: () => import('@/views/Work/home.vue'),
     name: 'workHome',
     path: '/workHome',
@@ -353,11 +289,25 @@ const mainRouter: RouteRecordRaw[] = [
         }
       },
       {
-        path: '/market/marketUser',
-        name: 'marketUser',
-        component: () => import('@/views/Market/MarketUser/index.vue'),
+        path: '/market/userApply',
+        name: 'userApply',
+        component: () => import('@/views/Market/JoinMarketApproval/starter.vue'),
         meta: {
-          title: '市场用户管理'
+          title: '加入市场申请列表'
+        }
+      },{
+        path: '/market/managerApproval',
+        name: 'managerApproval',
+        component: () => import('@/views/Market/JoinMarketApproval/manager.vue'),
+        meta: {
+          title: '管理者审批列表'
+        }
+      },{
+        path: '/market/appShelvesApproval',
+        name: 'appShelvesApproval',
+        component: () => import('@/views/Market/AppShelves/approval.vue'),
+        meta: {
+          title: '应用上架审批列表'
         }
       }
 
@@ -447,7 +397,7 @@ function setPath(routerArr: any[], pathStr = '') {
   })
 }
 
-//面包屑路由
+//市场面包屑路由
 function breadcrumbPath(mainRouter:any[]){
   for(let i = 0;i < mainRouter.length;i++){
     if(mainRouter[i].path == '/market'){
@@ -459,15 +409,10 @@ function breadcrumbPath(mainRouter:any[]){
         }
         return obj
       })
-
-
     }
   }
-
-
-
 }
-console.log('ly',breadcrumbPath(mainRouter));
+// console.log('ly',breadcrumbPath(mainRouter));
 
 // 根据业务路由导出菜单列表用于渲染导航
 export const menuList: any = setPath(mainRouter)

@@ -62,7 +62,7 @@ export default {
   },
   company: {
     applyJoin: company + '/apply/join', //申请加入单位
-    applyJoinGroup: company + 'apply/join/group', //申请加入集团
+    applyJoinGroup: company + '/apply/join/group', //申请加入集团
     assignDepartment: company + '/assign/department', //分配部门
     assignJob: company + '/assign/job', //分配岗位
     assignSubgroup: company + '/assign/subgroup', //分配子集团
@@ -79,6 +79,7 @@ export default {
     deleteJob: company + '/delete/job', //删除岗位
     deleteSubgroup: company + '/delete/subgroup', //删除子集团
     deleteAuthority: company + '/delete/authority', //删除职权
+    deleteIdentity: company + '/delete/identity', //删除身份
     getAuthorityIdentities: company + '/get/authority/identitys', //查询职权身份
     getAuthorities: company + '/get/authoritys', //查询职权
     getDepartmentPersons: company + '/get/department/persons', //查询部门员工
@@ -109,6 +110,7 @@ export default {
     removeFromSubgroup: company + '/remove/from/subgroup', //移除子集团成员
     removeIdentity: company + '/remove/identity', //移除员工身份
     searchCompany: company + '/search/companys', //搜索单位
+    searchGroups: company + '/search/groups', //搜索单位
     update: company + '/update', //变更单位
     updateDepartment: company + '/update/department', //变更部门
     updateGroup: company + '/update/group', //变更集团
@@ -202,7 +204,15 @@ export default {
     marketQuit: appstore + '/quit',
     searchAll: appstore + '/search/all',
     applyJoin: appstore + '/apply/join',
-    staging: appstore + '/staging'
+    staging: appstore + '/staging',
+    searchJoinApplyManager: appstore + '/search/join/apply/manager',
+    searchJoinApply: appstore + '/search/join/apply',
+    approvalJoin: appstore + '/approval/join',
+    cancelJoin: appstore + '/cancel/join',
+    searchManagerPublishApply: appstore + '/search/manager/publish/apply',
+    approvalPublish: appstore + '/approval/publish',
+
+
   }
   //others
 }

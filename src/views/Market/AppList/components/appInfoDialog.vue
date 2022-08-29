@@ -23,7 +23,7 @@
 
     <template #footer>
       <span class="dialog-footer">
-        <el-button type="primary" @click="submit">分配人员</el-button>
+        <el-button type="primary" >分配人员</el-button>
         <el-button @click="closeDialog">关闭</el-button>
       </span>
     </template>

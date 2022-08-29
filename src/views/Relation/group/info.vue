@@ -4,31 +4,30 @@
       <div class="title">集团信息</div>
       <div class="box-btns">
         <el-button small link type="primary" @click="handleUpdate">编辑</el-button>
+        <el-button small link type="primary" @click="handleDelete">删除</el-button>
         <el-button small link type="primary" @click="toAuth">角色管理</el-button>
         <el-button small link type="primary" @click="toIdentity">身份管理</el-button>
       </div>
     </div>
     <div class="tab-list">
-      <ul class="next-dept">
-        <table class="table-mytable">
-          <tr>
-            <td class="left">集团名称</td>
-            <td class="column">{{selectItem?.data?.name}}</td>
-            <td class="left">集团编码</td>
-            <td class="column">{{selectItem?.data?.teamCode}}</td>
-          </tr>
-          <tr>
-            <td class="left">描述</td>
-            <td class="column" colspan="3">
-              <span class="remark">{{selectItem?.data?.teamRemark}}</span>
-            </td>
-          </tr>
-        </table>
-      </ul>
+      <el-descriptions :column="2" border>
+        <el-descriptions-item  width="150px" :label="'集团名称'" label-align="center" align="center" label-class-name="my-label"
+          class-name="my-content" >{{selectItem?.data?.name}}</el-descriptions-item >
+        <el-descriptions-item  width="150px" :label="'集团编码'"
+          label-align="center"
+          align="center"
+          label-class-name="my-label"
+          class-name="my-content">{{selectItem?.data?.teamCode}}</el-descriptions-item>
+        <el-descriptions-item label="描述" :span="2" label-align="center" align="center">
+        <div class="text-remark">
+            {{selectItem?.data?.teamRemark}}
+          </div>
+        </el-descriptions-item>
+      </el-descriptions>
     </div>
   </div>
 
-  <el-dialog v-model="dialogVisible" :title="'请编辑集团信息'" width="30%">
+  <el-dialog v-model="dialogVisible" :title="'请编辑集团信息'" width="50%">
     <el-form-item :label="'集团名称'">
       <el-input v-model="formData.name" :placeholder="'请输入集团名称'" clearable />
     </el-form-item>
@@ -49,8 +48,10 @@
 <script lang="ts" setup>
   import $services from '@/services'
   import { ref, watch } from 'vue'
-  import { ElMessage } from 'element-plus'
+  import { ElMessage, ElMessageBox } from 'element-plus'
   import router from '@/router';
+
+  const emit = defineEmits(['refresh'])
 
   let selectItem = ref<any>({})
   let dialogVisible = ref<boolean>(false)
@@ -66,6 +67,47 @@
   watch(selectItem, () => {
   });
 
+  // 删除集团信息
+  const handleDelete = ()=>{
+    if(!selectItem.value.id){
+      ElMessage.warning('请左侧选择集团')
+      return
+    }
+    const data = selectItem.value.data
+    let url: string = null;
+    if(data.typeName == '集团'){
+      url = 'deleteGroup'
+    } else if(data.typeName == '子集团'){
+      url = 'deleteSubgroup'
+    }
+    ElMessageBox.confirm(
+      `确定删除 ${data.name} ${data.typeName}吗？`,
+      '警告',
+      {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }
+    ).then(() => {
+      $services.company[url]({
+        data: {
+          id: data.id,
+        }
+      }).then((res: ResultType) => {
+        selectItem.value = {}
+        if (res.success) {
+          ElMessage({
+            message: '操作成功',
+            type: 'success'
+          })
+          emit('refresh')
+        }
+      })
+    })
+    .catch(() => {
+      console.log('取消移除!')
+    })
+  }
 
   // 修改信息
   const handleUpdate = ()=> {
@@ -141,32 +183,8 @@
     padding-top: 2px;
     box-sizing: border-box;
   }
-  .next-dept {
-    tr {
-      border: 1px solid #eff2f7;
-      color: #666;
-      height: 45px;
-      text-align: center;
-    }
-    .left {
-      background: #f5f6fc;
-      width: 10.4%;
-      min-width: 110px;
-    }
-    .column {
-      width: 39.6%;
-      text-align: left;
-      padding: 0 20px;
-      box-sizing: border-box;
-      background: #fff;
-    }
-
-    .remark{
-      display: -webkit-box;
-      -webkit-line-clamp: 10;
-      -webkit-box-orient: vertical;
-      width: 100%;
-      overflow: hidden;
-    }
+  .text-remark{
+    max-height: 60px;
+    overflow-y: auto;
   }
 </style>

@@ -36,7 +36,7 @@ import { onMounted, reactive, ref, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/store/user'
 import { useAnyData } from '@/store/anydata'
-import UserOtherDataConnection from '@/utils/hubConnection'
+import anyStore from '@/utils/hubConnection'
 
 const router = useRouter()
 const store = useUserStore()
@@ -69,18 +69,16 @@ onMounted(() => {
   // 当前标签index
   const templateContentLen = userOtherData.homeComplist ? userOtherData.homeComplist.length :0
   editableTabsValue.value = templateContentLen > 0 ? templateContentLen-1:0
+  anyStore.setPrefix(store.queryInfo.id) // 设置订阅器前缀
   // 订阅工作空间数据变化
-  UserOtherDataConnection.subscribed(`${store.workspaceData.id}`, (data) => {
-    console.log('home===',data)
+  anyStore.subscribed(`${store.workspaceData.id}`, (data) => {
+    // console.log('home===',data)
     userOtherData.setWorkspace(data)
-    editableTabsValue.value = templateContentLen > 0 ? templateContentLen-1:0
+    editableTabsValue.value = data && data?.content && data?.content.length > 0 ? data?.content.length -1 :0
   })
-  
-  
 })
 onBeforeUnmount(() => {
- 
-  UserOtherDataConnection.unSubscribed(`${store.workspaceData.id}`)
+  anyStore.unSubscribed(`${store.workspaceData.id}`)
 })
 // 删除tab
 const removeTabs = async (targetName: TabPanelName) => {
@@ -90,14 +88,7 @@ const removeTabs = async (targetName: TabPanelName) => {
     workspaceId: store.workspaceData.id,
     content: tabs
   }
-  const success = await userOtherData.updateHomeSpace(params)
-  if (success) {
-    editableTabsValue.value = editableTabsValue.value > 0 ? editableTabsValue.value - 1 : 0
-    ElMessage({
-      message: '删除成功',
-      type: 'success'
-    })
-  }
+  userOtherData.updateHomeSpace(params)
 }
 // 点击tab右侧 + 按钮
 const handleTabsEdit = (targetName: TabPanelName, action: 'remove' | 'add') => {

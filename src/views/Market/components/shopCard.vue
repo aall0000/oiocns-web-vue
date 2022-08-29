@@ -11,12 +11,13 @@
           <slot name="rightIcon"></slot>
         </div>
         <HeadImg :name="info.name" :url="appImg" :imgWidth="48" :limit="1" :isSquare="false" />
-        <div class="app-con">
+        <div class="app-con" v-if="!cardContent">
           <p class="app-con-title">{{ info.name }}</p>
           <div class="app-card-item-con-desc">
             {{ info.remark }}
           </div>
         </div>
+        <slot v-else name="content"></slot>
       </div>
     </div>
     <!-- v-show="hoverItem === info.id" -->
@@ -35,6 +36,7 @@
     key?: string
     info: ProductType
     overId?: string //当前鼠标移入id
+    cardContent?: boolean // 卡片内容是否自定义
   }
   const props = defineProps<shopInfoType>()
   const { info } = props
@@ -85,6 +87,9 @@
       }
     }
     &-footer {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
       height: 48px;
       display: flex;
       justify-content: space-around;

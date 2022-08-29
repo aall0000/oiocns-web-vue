@@ -41,7 +41,7 @@
             :dialogShow="dialogShow"
             @switchCreateCompany="closeDialog"
           ></CreateUnitDialog>
-          <searchCompany v-if="friendDialog" @closeDialog="closeDialog"  @checkFriend='checkFriend'></searchCompany>
+          <searchCompany v-if="friendDialog" @closeDialog="closeDialog" :serachType="3" @checksSearch='checksSearch'></searchCompany>
         </div>
       </div>
     </div>
@@ -55,7 +55,7 @@
   import { useUserStore } from '@/store/user'
   import type { TabsPaneContext } from 'element-plus'
   import { ElMessage } from 'element-plus'
-  import searchCompany from '@/components/search/company.vue'
+  import searchCompany from '@/components/searchs/index.vue'
   import CreateUnitDialog from '@/views/Layout/components/createUnitDialog.vue'
   const store = useUserStore()
 
@@ -65,25 +65,41 @@
     console.log(tab, event)
   }
   const handleDelete = (id: string) => {
-    $services.company
-      .companyDelete({
-        data: {
-          id: id
-        }
-      })
-      .then((res: ResultType) => {
-        if (res.success) {
-          ElMessage({
-            message: '删除成功',
-            type: 'success'
-          })
-        } else {
-          ElMessage({
-            message: res.msg,
-            type: 'warning'
-          })
-        }
-      })
+    $services.person
+    .cancelJoin({
+      data: {
+        id: id
+      }
+    })
+    .then((res: ResultType) => {
+      if (res.code == 200) {
+        ElMessage({
+          message: '退出成功',
+          type: 'warning'
+        })
+        getList()
+        // getQunList()
+      }
+    })
+    // $services.company
+    //   .companyDelete({
+    //     data: {
+    //       id: id
+    //     }
+    //   })
+    //   .then((res: ResultType) => {
+    //     if (res.success) {
+    //       ElMessage({
+    //         message: '删除成功',
+    //         type: 'success'
+    //       })
+    //     } else {
+    //       ElMessage({
+    //         message: res.msg,
+    //         type: 'warning'
+    //       })
+    //     }
+    //   })
   }
   type listItem = {
     id: string
@@ -152,7 +168,7 @@
     id:string
   }
   const friendDialog = ref<boolean>(false)
-  const checkFriend=(val:any)=>{
+  const checksSearch=(val:any)=>{
     if(val.value.length>0){
       let arr:Array<arrList> =[]
       val.value.forEach((element:any) => {
