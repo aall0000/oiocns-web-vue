@@ -124,43 +124,15 @@
     </putaway-comp>
   </el-dialog>
   <el-dialog
-    v-if="groupVisible"
-    v-model="groupVisible"
-    custom-class="group-dialog"
-    title="选择集团"
-    width="600px"
-    draggable
-    :close-on-click-modal="false"
-  >
-    <el-select v-model="selectedValue" value-key="id" placeholder="请选择集团">
-      <el-option
-        v-for="item in state.options"
-        :key="item.value"
-        :label="item.label"
-        :value="item.value"
-      />
-    </el-select>
-    <template #footer>
-      <span class="dialog-footer">
-        <el-button @click="groupVisible = false">取消</el-button>
-        <el-button type="primary" @click="openShareDialog">确定</el-button>
-      </span>
-    </template>
-  </el-dialog>
-  <el-dialog
     v-if="shareVisible"
     v-model="shareVisible"
     custom-class="share-dialog"
     title="分享应用"
-    width="600px"
+    width="1000px"
     draggable
     :close-on-click-modal="false"
   >
-    <share-comp
-      :info="selectProductItem"
-      :selectedValue="selectedValue"
-      @closeDialog="closeDialog"
-    />
+    <share-comp :info="selectProductItem" @closeDialog="closeDialog" />
   </el-dialog>
 </template>
 
@@ -276,7 +248,7 @@
     selectProductItem.value = item
     switch (command) {
       case 'share':
-        openGroupDialog()
+        openShareDialog()
         break
       case 'putaway':
         publishVisible.value = true
@@ -290,40 +262,31 @@
 
   //打开分享弹窗
   const openShareDialog = () => {
-    if (!selectedValue.value) {
-      ElMessage({
-        type: 'warning',
-        message: '请选择集团'
-      })
-    } else {
-      groupVisible.value = false
-      shareVisible.value = true
-    }
+    shareVisible.value = true
   }
 
-  //  打开集团选择弹窗
-  const openGroupDialog = () => {
-    API.company
-      .companyGetGroups({
-        data: {
-          offset: 0,
-          limit: 1000
-        }
-      })
-      .then((res: ResultType) => {
-        if (res.data.result && res.data.result.length > 0) {
-          groups = res.data.result
-          state.options = groups.map((g) => {
-            return { value: g.id, label: g.name }
-          })
-          selectedValue.value = groups[0].value
-          groupVisible.value = true
-          // loadOrgTree(groups[0].id)
-        } else {
-          groups = []
-        }
-      })
-  }
+  // //  打开集团选择弹窗
+  // const openGroupDialog = () => {
+  //   API.company
+  //     .companyGetGroups({
+  //       data: {
+  //         offset: 0,
+  //         limit: 1000
+  //       }
+  //     })
+  //     .then((res: ResultType) => {
+  //       if (res.data.result && res.data.result.length > 0) {
+  //         groups = res.data.result
+  //         state.options = groups.map((g) => {
+  //           return { value: g.id, label: g.name }
+  //         })
+  //         selectedValue.value = groups[0].value
+  //         // loadOrgTree(groups[0].id)
+  //       } else {
+  //         groups = []
+  //       }
+  //     })
+  // }
 
   // 注册页面弹窗
   const registerVisible = ref<boolean>(false)
@@ -389,12 +352,8 @@
 
   // 当前用户的集团
   let groups = reactive([])
-  // 当前选中的集团
-  let selectedValue = ref<string>('')
   // 分享功能
   const shareVisible = ref<boolean>(false)
-  // 选择集团功能
-  const groupVisible = ref<boolean>(false)
   // 路由跳转
   const GoPage = (path: string) => {
     router.push(path)

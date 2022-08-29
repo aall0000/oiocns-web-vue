@@ -15,14 +15,13 @@
     <el-card class="share-box">
       <el-tabs v-model="activeName" class="demo-tabs" @tab-click="handleClick">
         <el-tab-pane label="按集团分享" name="first">
-          <el-tree
-            ref="tree"
-            :data="state.treeData"
-            node-key="id"
-            :props="treeOptions"
-            show-checkbox
-            @check-change="handleCheckChange"
-          />
+          <TheTreeBox
+            type="group"
+            :isLazy="true"
+            @getLeftData="getGroupTree"
+            @getLoadNode="getLoadNode"
+            @handleLeftNode="handleLeftNode"
+          ></TheTreeBox>
         </el-tab-pane>
         <!-- <el-tab-pane label="按职权分享" name="second"></el-tab-pane> -->
       </el-tabs>
@@ -36,13 +35,13 @@
 <script lang="ts" setup>
   import API from '@/services'
   import { ref, onMounted, reactive } from 'vue'
+  import TheTreeBox from './treeBox.vue'
   import { useUserStore } from '@/store/user'
   import { ElMessage } from 'element-plus'
   import type { TabsPaneContext } from 'element-plus'
   const store = useUserStore()
   type PropType = {
     info: ProductType
-    selectedValue: string
   }
   const treeOptions = {
     label: 'label',
@@ -59,30 +58,69 @@
   const tree = ref(null)
   const { info } = props
   const activeName = ref('first')
-  const state = reactive({
-    treeData: []
-  })
-
   onMounted(() => {
-    loadOrgTree()
     // getAuthorityData()
   })
 
-  // 加载集团树
-  const loadOrgTree = (id?: string) => {
+  const handleLeftNode = (data: any, callback: any) => {
     API.company
-      .getGroupTree({
-        data: { id: props.selectedValue }
+      .getSubgroups({
+        data: {
+          offset: 0,
+          limit: 1000
+        }
       })
-      .then((res: any) => {
-        if (res.success) {
-          res.data.data.label = res.data.data.name
-          let data = [res.data.data]
-          data[0].children = res.data.children
-          state.treeData = data
+      .then((res: ResultType) => {
+        if (res.data.result && res.data.result.length > 0) {
+          callback(res.data.result)
+        } else {
+          callback([])
         }
       })
   }
+
+  const getGroupTree = (callback: any) => {
+    API.company
+      .companyGetGroups({
+        data: {
+          offset: 0,
+          limit: 1000
+        }
+      })
+      .then((res: ResultType) => {
+        if (res.data.result && res.data.result.length > 0) {
+          callback(res.data.result)
+        } else {
+          callback([])
+        }
+      })
+  }
+  const getLoadNode = (id: string, callback: any) => {
+    API.company
+      .getSubgroups({
+        data: { id: id, offset: 0, limit: 1000 }
+      })
+      .then((res: any) => {
+        if (res.success) {
+          callback(res.data.result)
+        }
+      })
+  }
+  // // 加载集团树
+  // const loadOrgTree = (id?: string) => {
+  //   API.company
+  //     .getGroupTree({
+  //       data: { id: props.selectedValue }
+  //     })
+  //     .then((res: any) => {
+  //       if (res.success) {
+  //         res.data.data.label = res.data.data.name
+  //         let data = [res.data.data]
+  //         data[0].children = res.data.children
+  //         state.treeData = data
+  //       }
+  //     })
+  // }
   // const getAuthorityData = () => {
   //   $services.company.getAuthorityTree({ data: { id: belongId.value } }).then((res: any) => {})
   // }
@@ -114,6 +152,18 @@
 </script>
 
 <style lang="scss" scoped>
+  :deep(.el-tabs) {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+  :deep(.el-tabs__content) {
+    flex: 1;
+  }
+  :deep(.el-tab-pane) {
+    height: 100%;
+  }
   .footer {
     display: flex;
     margin-top: 10px;
