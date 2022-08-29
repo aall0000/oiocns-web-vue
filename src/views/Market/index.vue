@@ -1,4 +1,7 @@
 <template>
+  <!-- <div v-show="visible" class="menuRight" :style="{ left: left + 'px', top: top + 'px' }">
+    <div class="menuRight-fixed" @click="shareHistory">查询分享历史</div>
+  </div> -->
   <div class="market-layout">
     <MarketCard>
       <template #right>
@@ -164,7 +167,7 @@
 <script setup lang="ts">
   import API from '@/services'
   import { ElMessage, ElMessageBox } from 'element-plus'
-  import { onMounted, reactive, ref } from 'vue'
+  import { onMounted, reactive, ref, onUnmounted } from 'vue'
   import ShopCard from './components/shopCard.vue'
   import PutawayComp from './components/putawayComp.vue'
   import ShareComp from './components/shareDialog.vue'
@@ -185,6 +188,7 @@
     shareTotal: number
     marketOptions: any[] //所有市场列表
     options: any[] //集团列表
+    storeObj: object
   }
 
   const state: StateType = reactive({
@@ -193,10 +197,27 @@
     shareProductList: [],
     shareTotal: 0,
     marketOptions: [],
-    options: []
+    options: [],
+    storeObj: {}
   })
 
+  // const left = ref(0)
+  // const top = ref(0)
+  // const visible = ref(false)
+  // onUnmounted(() => {
+  //   window.removeEventListener('click', clickother)
+  // })
+  // const rightClick = (event: any, item: any) => {
+  //   state.storeObj = item
+  //   visible.value = true
+  //   top.value = event.pageY - 60
+  //   left.value = event.pageX - 50
+  // }
+  // const clickother = () => {
+  //   visible.value = false
+  // }
   onMounted(() => {
+    // window.addEventListener('click', clickother)
     // 获取列表
     getProductList('own')
     getProductList('share')
@@ -392,6 +413,36 @@
   }
 </style>
 <style lang="scss" scoped>
+  .menuRight {
+    width: 100px;
+    height: 60px;
+    position: absolute;
+    background-color: rgb(247, 247, 247);
+    font-size: 12px;
+    z-index: 999;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+
+    &-fixed {
+      padding: 5px 0;
+      width: 100%;
+      text-align: center;
+      &:hover {
+        background-color: #fff;
+      }
+    }
+    &-cancel {
+      padding: 10px 0;
+      width: 100%;
+      text-align: center;
+      &:hover {
+        background-color: #fff;
+      }
+    }
+  }
   .el-select {
     width: 100%;
   }
