@@ -2,9 +2,9 @@
   <div class="market-layout">
     <MarketCard>
       <template #right>
-        <el-button type="primary" @click.stop="linkOrder()">我的订单</el-button>
         <el-button type="primary" @click="GoPage('/market/userApply')">我的申请</el-button>
         <el-button type="primary" @click="GoPage('/market/managerApproval')">申请审批</el-button>
+        <el-button type="primary" @click.stop="linkOrder()">我的订单</el-button>
         <el-button type="primary" @click.stop="linkShopCar()">购物车</el-button>
       </template>
     </MarketCard>

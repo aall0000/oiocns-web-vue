@@ -4,14 +4,13 @@
       <el-button type="primary" @click="GoPage('/market/appShelvesApproval')"
         >应用上架审批</el-button
       >
-      <el-button type="primary">购物车</el-button>
+      <el-button type="primary" @click.stop="linkShopCar()">购物车</el-button>
     </template>
   </MarketCard>
   <div class="appListLayout">
     <div class="appListLayout-container">
       <div class="appListLayout-header">
         <p>应用列表</p>
-        <el-button type="primary" @click.stop="linkShopCar()">购物车</el-button>
       </div>
       <div class="appListLayout-content">
         <AppCard
@@ -43,7 +42,7 @@
 
 <script setup lang="ts">
   import { reactive, onMounted, ref, watch, nextTick } from 'vue'
-  import { useRoute,useRouter } from 'vue-router'
+  import { useRoute, useRouter } from 'vue-router'
   import $services from '@/services'
   import AppCard from './components/appCard.vue'
   import DiyTable from '@/components/diyTable/index.vue'

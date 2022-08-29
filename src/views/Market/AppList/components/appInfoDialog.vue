@@ -5,13 +5,31 @@
         <template #label>
           <div class="cell-item"> 应用名称 </div>
         </template>
-        {{ dialogShow.sendData.name }}
+        {{ dialogShow.sendData.caption }}
+      </el-descriptions-item>
+      <el-descriptions-item>
+        <template #label>
+          <div class="cell-item"> 售卖价格 </div>
+        </template>
+        {{ dialogShow.sendData.price }}
+      </el-descriptions-item>
+      <el-descriptions-item>
+        <template #label>
+          <div class="cell-item"> 售卖权属 </div>
+        </template>
+        {{ dialogShow.sendData.sellAuth }}
+      </el-descriptions-item>
+      <el-descriptions-item>
+        <template #label>
+          <div class="cell-item"> 售卖期限 </div>
+        </template>
+        {{ dialogShow.sendData.days }}
       </el-descriptions-item>
       <el-descriptions-item>
         <template #label>
           <div class="cell-item"> 应用描述 </div>
         </template>
-        {{ dialogShow.sendData.remark }}
+        {{ dialogShow.sendData.information }}
       </el-descriptions-item>
       <el-descriptions-item>
         <template #label>
@@ -23,7 +41,6 @@
 
     <template #footer>
       <span class="dialog-footer">
-        <el-button type="primary" >分配人员</el-button>
         <el-button @click="closeDialog">关闭</el-button>
       </span>
     </template>
