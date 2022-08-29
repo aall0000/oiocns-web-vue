@@ -10,7 +10,9 @@
         @node-click="handleNodeClick"
       />
     </div>
-    <div class="centerTreeBox"></div>
+    <div class="centerTreeBox">
+      <el-tree ref="centerTree" :data="state.centerTreeData" :props="prop" />
+    </div>
     <div class="rightTreeBox"></div>
   </div>
 </template>
@@ -29,8 +31,10 @@
     isLeaf: 'leaf'
   }
   const leftTree = ref(null)
+  const centerTree = ref(null)
   const state = reactive({
-    leftTreeData: []
+    leftTreeData: [],
+    centerTreeData: []
   })
   const isShow = ref<boolean>(false)
   const props = defineProps({
