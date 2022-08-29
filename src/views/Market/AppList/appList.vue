@@ -4,7 +4,7 @@
       <el-button type="primary" @click="GoPage('/market/appShelvesApproval')"
         >应用上架审批</el-button
       >
-      <el-button type="primary">购物车</el-button>
+      <el-button type="primary" @click.stop="linkShopCar()">购物车</el-button>
     </template>
   </MarketCard>
   <div class="appListLayout">
@@ -42,13 +42,12 @@
 
 <script setup lang="ts">
   import { reactive, onMounted, ref, watch, nextTick } from 'vue'
-  import { useRoute } from 'vue-router'
+  import { useRoute, useRouter } from 'vue-router'
   import $services from '@/services'
   import AppCard from './components/appCard.vue'
   import DiyTable from '@/components/diyTable/index.vue'
   import TheTableButton from './components/theTableButton2.vue'
   import MarketCard from '@/components/marketCard/index.vue'
-  import { useRouter } from 'vue-router'
   const router = useRouter()
   const route = useRoute()
   const diyTable = ref(null)
@@ -100,7 +99,9 @@
       }
     })
   })
-
+  const linkShopCar = () => {
+    router.push({ path: '/market/shopCar' })
+  }
   onMounted(() => {
     getData()
   })

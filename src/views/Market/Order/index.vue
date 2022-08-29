@@ -1,19 +1,25 @@
 <template>
   <div class="container">
-    <el-button-group>
+    <el-button-group style="padding: 10px;">
       <!-- <el-button type="primary" @click="getTableList('all')">全部</el-button> -->
       <el-button type="primary" @click="getTableList('buy')">已购入</el-button>
       <el-button type="primary" @click="getTableList('sell')">已卖出</el-button>
       <el-button type="primary" @click="getTableList('pre-sell')">待审批</el-button>
     </el-button-group>
+
+    <div class="group-side-bar-search">
+      <el-input placeholder="搜索" v-model="searchValue" prefix-icon="Search" />
+    </div>
     <div class="tab-list">
       <el-table :data="state.orderList" stripe @select="handleSelect">
         <el-table-column type="selection" width="50" />
         <el-table-column prop="code" label="订单号" />
         <el-table-column prop="name" label="名称" />
+        <el-table-column prop="number" label="数量" />
         <el-table-column prop="marketCode" label="市场编号" />
         <el-table-column prop="marketName" label="市场名称" />
-        <el-table-column prop="status" label="状态" />
+        <el-table-column prop="status" label="状态" 
+        :formatter="(row, column) => renderDict(row, column,'OrderStatus')"/>
         <el-table-column prop="name" label="操作" width="600">
           <template #default="scope">
             <el-button
@@ -23,44 +29,46 @@
               >开始交易</el-button
             >
             <el-button
-              v-show="scope.row.status == 200 && scope.row.ordertype == 'buy'"
-              @click="pay(scope.row.id, 500, 'alipay')"
+              v-show="scope.row.status == 100 && scope.row.ordertype == 'buy'"
+              @click="showPay(scope.row)"
               type="primary"
               >支付</el-button
             >
             <el-button
-              v-show="scope.row.status <= 200"
+              v-show="scope.row.status <= 100"
               @click="cancelOrder(scope.row.id)"
               type="primary"
               >取消订单</el-button
             >
             <el-button
-              v-show="scope.row.status == 201 && scope.row.ordertype == 'sell'"
+              v-show="scope.row.status == 101 && scope.row.ordertype == 'sell'"
               @click="delivery(scope.row.id)"
               type="primary"
               >确认发货</el-button
             >
             <el-button
-              v-show="scope.row.status == 202 && scope.row.ordertype == 'buy'"
+              v-show="scope.row.status == 102 && scope.row.ordertype == 'buy'"
               @click="accept(scope.row.id)"
               type="primary"
               >确认收货</el-button
             >
             <el-button
-              v-show="scope.row.status == 203 && scope.row.ordertype == 'buy'"
+              v-show="scope.row.status == 103 && scope.row.ordertype == 'buy'"
               @click="comment(scope.row.id)"
               type="primary"
               >评价</el-button
             >
             <el-button
-              v-show="scope.row.status == 204 && scope.row.ordertype == 'sell'"
+              v-show="scope.row.status == 104 && scope.row.ordertype == 'sell'"
               @click="viewComment(scope.row.id)"
               type="primary"
               >查看评价</el-button
             >
           </template>
         </el-table-column>
+        
       </el-table>
+      <payView v-if="payDialog.show" :order="payDialog.data" @close="closePay"></payView>
       <el-pagination
         class="page-pagination"
         @size-change="(e) => handlePaginationChange(e, 'limit')"
@@ -81,6 +89,8 @@ import $services from '@/services'
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { PAGE_SIZES, PAGE_NUM } from '@/constant'
+import renderDict from '@/services/dict' 
+import payView from '@/components/pay/pay.vue'
 
 // 表格分页数据
 const pagination: { current: number; limit: number } = reactive({ current: 1, limit: PAGE_NUM })
@@ -91,10 +101,13 @@ const pageStore = reactive({
 })
 const searchType = ref<string>('buy')
 const pageSizes = ref<Array<any>>(PAGE_SIZES)
+const payDialog = reactive({ show: false, data: {} })
 const remoteOperate = ref<boolean>(false)
 const handleSelect = (key: string, keyPath: string[]) => {
   console.log(key, keyPath)
 }
+// 会话列表搜索关键字
+const searchValue = ref<string>('')
 
 onMounted(() => {
   getTableList('buy')
@@ -136,26 +149,26 @@ const searchPreSellList = async () => {
       }
     })
     .then((res: ResultType) => {
-      //       const { result = [], total = 0 } = res.data
-      var result: any = [
-        {
-          id: '348129171096636636',
-          name: '邵一刀的待出售订单(海贼王-白胡子手办)2022-02-22 14:05:30',
-          code: 'syd_20200222_001',
-          status: 1,
-          createUser: '338792423297781760',
-          updateUser: '348098798750404608',
-          version: '3',
-          createTime: '2022-08-18 15:41:02.000',
-          updateTime: '2022-08-18 16:16:59.000',
-          market: {
-            id: '233',
-            name: '闲鱼',
-            code: 'market_xy_001',
-            remark: '闲鱼'
-          }
-        }
-      ]
+            const { result = [], total = 0 } = res.data
+      // var result: any = [
+      //   {
+      //     id: '348129171096636636',
+      //     name: '邵一刀的待出售订单(海贼王-白胡子手办)2022-02-22 14:05:30',
+      //     code: 'syd_20200222_001',
+      //     status: 1,
+      //     createUser: '338792423297781760',
+      //     updateUser: '348098798750404608',
+      //     version: '3',
+      //     createTime: '2022-08-18 15:41:02.000',
+      //     updateTime: '2022-08-18 16:16:59.000',
+      //     market: {
+      //       id: '233',
+      //       name: '闲鱼',
+      //       code: 'market_xy_001',
+      //       remark: '闲鱼'
+      //     }
+      //   }
+      // ]
       pageStore.total = result.length
       result.forEach((item: any) => {
         item.ordertype = 'sell'
@@ -184,135 +197,135 @@ const searchSellList = async () => {
     })
     .then((res: ResultType) => {
       var { result = [], total = 0 } = res.data
-      console.log(res.data)
-       result = result.length>0?result:[
-        {
-          id: '348129171096636636',
-          name: '邵一刀的待出售订单(海贼王-白胡子手办)2022-02-22 14:05:30',
-          code: 'syd_20200222_001',
-          status: 1,
-          createUser: '338792423297781760',
-          updateUser: '348098798750404608',
-          version: '3',
-          createTime: '2022-08-18 15:41:02.000',
-          updateTime: '2022-08-18 16:16:59.000',
-          market: {
-            id: '233',
-            name: '闲鱼',
-            code: 'market_xy_001',
-            remark: '闲鱼'
-          },
-          merchandise: {
-            caption: '海贼王-白胡子手办',
-            price: 500
-          }
-        },
-        {
-          id: '348129171098145636',
-          name: '邵一刀的出售订单(原神初始号)2022-02-22 14:05:30',
-          code: 'syd_20200222_001',
-          status: 200,
-          createUser: '338792423297781760',
-          updateUser: '348098798750404608',
-          version: '3',
-          createTime: '2022-08-18 15:41:02.000',
-          updateTime: '2022-08-18 16:16:59.000',
-          market: {
-            id: '222',
-            name: '游戏商城',
-            code: 'market_yx_001',
-            remark: '游戏商城'
-          },
-          merchandise: {
-            caption: '原神初始号',
-            price: 500
-          }
-        },
-        {
-          id: '348129171092213532',
-          name: '邵一刀的出售订单(原神-钟离雷神号)2022-03-21 12:36:30',
-          code: 'syd_20200321_001',
-          status: 201,
-          createUser: '338792423297781760',
-          updateUser: '348098798750404608',
-          version: '3',
-          createTime: '2022-08-18 15:41:02.000',
-          updateTime: '2022-08-18 16:16:59.000',
-          market: {
-            id: '222',
-            name: '游戏商城',
-            code: 'market_yx_001',
-            remark: '游戏商城'
-          },
-          merchandise: {
-            caption: '原神-钟离雷神号',
-            price: 500
-          }
-        },
-        {
-          id: '348129171265102421',
-          name: '邵一刀的出售订单(二手小台灯)2022-02-05 10:16:30',
-          code: 'syd_20200205_001',
-          status: 202,
-          createUser: '338792423297781760',
-          updateUser: '348098798750404608',
-          version: '3',
-          createTime: '2022-08-18 15:41:02.000',
-          updateTime: '2022-08-18 16:16:59.000',
-          market: {
-            id: '233',
-            name: '闲鱼',
-            code: 'market_xy_001',
-            remark: '闲鱼'
-          },
-          merchandise: {
-            caption: '二手小台灯',
-            price: 500
-          }
-        },
-        {
-          id: '348129171265102421',
-          name: '邵一刀的出售订单(书籍-茶花女)2022-02-05 10:16:30',
-          code: 'syd_20200205_003',
-          status: 203,
-          createUser: '338792423297781760',
-          updateUser: '348098798750404608',
-          version: '3',
-          createTime: '2022-08-18 15:41:02.000',
-          updateTime: '2022-08-18 16:16:59.000',
-          market: {
-            id: '255',
-            name: '当当网',
-            code: 'market_ddw_001',
-            remark: '当当网'
-          },
-          merchandise: {
-            caption: '书籍-茶花女',
-            price: 500
-          }
-        },
-        {
-          id: '348129171265102463',
-          name: '邵一刀的出售订单(潮鞋-椰子鞋2022新年特供)2022-02-05 10:16:30',
-          code: 'syd_20200205_005',
-          status: 204,
-          createUser: '338792423297781760',
-          updateUser: '348098798750404608',
-          version: '3',
-          createTime: '2022-08-18 15:41:02.000',
-          updateTime: '2022-08-18 16:16:59.000',
-          market: {
-            id: '301',
-            name: '抖音商城',
-            code: 'market_dy_001',
-            remark: '抖音商城'
-          },
-          merchandise: {
-            caption: '潮鞋-椰子鞋2022新年特供',
-            price: 500
-          }
-        }
-      ]
+      // console.log(res.data)
+      //  result = result.length>0?result:[
+      //   {
+      //     id: '348129171096636636',
+      //     name: '邵一刀的待出售订单(海贼王-白胡子手办)2022-02-22 14:05:30',
+      //     code: 'syd_20200222_001',
+      //     status: 1,
+      //     createUser: '338792423297781760',
+      //     updateUser: '348098798750404608',
+      //     version: '3',
+      //     createTime: '2022-08-18 15:41:02.000',
+      //     updateTime: '2022-08-18 16:16:59.000',
+      //     market: {
+      //       id: '233',
+      //       name: '闲鱼',
+      //       code: 'market_xy_001',
+      //       remark: '闲鱼'
+      //     },
+      //     merchandise: {
+      //       caption: '海贼王-白胡子手办',
+      //       price: 500
+      //     }
+      //   },
+      //   {
+      //     id: '348129171098145636',
+      //     name: '邵一刀的出售订单(原神初始号)2022-02-22 14:05:30',
+      //     code: 'syd_20200222_001',
+      //     status: 100,
+      //     createUser: '338792423297781760',
+      //     updateUser: '348098798750404608',
+      //     version: '3',
+      //     createTime: '2022-08-18 15:41:02.000',
+      //     updateTime: '2022-08-18 16:16:59.000',
+      //     market: {
+      //       id: '222',
+      //       name: '游戏商城',
+      //       code: 'market_yx_001',
+      //       remark: '游戏商城'
+      //     },
+      //     merchandise: {
+      //       caption: '原神初始号',
+      //       price: 500
+      //     }
+      //   },
+      //   {
+      //     id: '348129171092213532',
+      //     name: '邵一刀的出售订单(原神-钟离雷神号)2022-03-21 12:36:30',
+      //     code: 'syd_20200321_001',
+      //     status: 101,
+      //     createUser: '338792423297781760',
+      //     updateUser: '348098798750404608',
+      //     version: '3',
+      //     createTime: '2022-08-18 15:41:02.000',
+      //     updateTime: '2022-08-18 16:16:59.000',
+      //     market: {
+      //       id: '222',
+      //       name: '游戏商城',
+      //       code: 'market_yx_001',
+      //       remark: '游戏商城'
+      //     },
+      //     merchandise: {
+      //       caption: '原神-钟离雷神号',
+      //       price: 500
+      //     }
+      //   },
+      //   {
+      //     id: '348129171265102421',
+      //     name: '邵一刀的出售订单(二手小台灯)2022-02-05 10:16:30',
+      //     code: 'syd_20200205_001',
+      //     status: 102,
+      //     createUser: '338792423297781760',
+      //     updateUser: '348098798750404608',
+      //     version: '3',
+      //     createTime: '2022-08-18 15:41:02.000',
+      //     updateTime: '2022-08-18 16:16:59.000',
+      //     market: {
+      //       id: '233',
+      //       name: '闲鱼',
+      //       code: 'market_xy_001',
+      //       remark: '闲鱼'
+      //     },
+      //     merchandise: {
+      //       caption: '二手小台灯',
+      //       price: 500
+      //     }
+      //   },
+      //   {
+      //     id: '348129171265102421',
+      //     name: '邵一刀的出售订单(书籍-茶花女)2022-02-05 10:16:30',
+      //     code: 'syd_20200205_003',
+      //     status: 103,
+      //     createUser: '338792423297781760',
+      //     updateUser: '348098798750404608',
+      //     version: '3',
+      //     createTime: '2022-08-18 15:41:02.000',
+      //     updateTime: '2022-08-18 16:16:59.000',
+      //     market: {
+      //       id: '255',
+      //       name: '当当网',
+      //       code: 'market_ddw_001',
+      //       remark: '当当网'
+      //     },
+      //     merchandise: {
+      //       caption: '书籍-茶花女',
+      //       price: 500
+      //     }
+      //   },
+      //   {
+      //     id: '348129171265102463',
+      //     name: '邵一刀的出售订单(潮鞋-椰子鞋2022新年特供)2022-02-05 10:16:30',
+      //     code: 'syd_20200205_005',
+      //     status: 104,
+      //     createUser: '338792423297781760',
+      //     updateUser: '348098798750404608',
+      //     version: '3',
+      //     createTime: '2022-08-18 15:41:02.000',
+      //     updateTime: '2022-08-18 16:16:59.000',
+      //     market: {
+      //       id: '301',
+      //       name: '抖音商城',
+      //       code: 'market_dy_001',
+      //       remark: '抖音商城'
+      //     },
+      //     merchandise: {
+      //       caption: '潮鞋-椰子鞋2022新年特供',
+      //       price: 500
+      //     }
+      //   }
+      // ]
       pageStore.total = result.length
       result.forEach((item: any) => {
         item.ordertype = 'sell'
@@ -335,140 +348,140 @@ const searchBuyList = async () => {
       data: {
         offset: (pagination.current - 1) * pagination.limit,
         limit: pagination.limit,
-        status: 0, //后续改成-1
+        status: 1, //后续改成-1
         filter: ''
       }
     })
     .then((res: ResultType) => {
-      //       const { result = [], total = 0 } = res.data
-      var result = [
-        {
-          id: '348129171098177536',
-          name: '邵一刀的购买订单2022-08-22 14:05:30',
-          code: 'syd_20200822_001',
-          status: 1,
-          createUser: '338792423297781760',
-          updateUser: '348098798750404608',
-          version: '3',
-          createTime: '2022-08-18 15:41:02.000',
-          updateTime: '2022-08-18 16:16:59.000',
-          market: {
-            id: '5555',
-            name: '邵某某的市场',
-            code: 'market_sld_001',
-            remark: '邵某某的市场'
-          },
-          merchandise: {
-            caption: '商品1',
-            price: 500
-          }
-        },
-        {
-          id: '348129171098177532',
-          name: '邵一刀的购买订单2022-08-21 12:36:30',
-          code: 'syd_20200821_001',
-          status: 200,
-          createUser: '338792423297781760',
-          updateUser: '348098798750404608',
-          version: '3',
-          createTime: '2022-08-18 15:41:02.000',
-          updateTime: '2022-08-18 16:16:59.000',
-          market: {
-            id: '5555',
-            name: '邵某某的市场',
-            code: 'market_sld_001',
-            remark: '邵某某的市场'
-          },
-          merchandise: {
-            caption: '商品2',
-            price: 500
-          }
-        },
-        {
-          id: '348129171098176421',
-          name: '邵一刀的购买订单2022-07-05 10:16:30',
-          code: 'syd_20200705_001',
-          status: 201,
-          createUser: '338792423297781760',
-          updateUser: '348098798750404608',
-          version: '3',
-          createTime: '2022-08-18 15:41:02.000',
-          updateTime: '2022-08-18 16:16:59.000',
-          market: {
-            id: '5555',
-            name: '邵某某的市场',
-            code: 'market_sld_001',
-            remark: '邵某某的市场'
-          },
-          merchandise: {
-            caption: '商品3',
-            price: 500
-          }
-        },
-        {
-          id: '348129171098176636',
-          name: '邵一刀的购买订单(跳蚤)2022-02-22 14:05:30',
-          code: 'syd_20200222_001',
-          status: 202,
-          createUser: '338792423297781760',
-          updateUser: '348098798750404608',
-          version: '3',
-          createTime: '2022-08-18 15:41:02.000',
-          updateTime: '2022-08-18 16:16:59.000',
-          market: {
-            id: '111',
-            name: '跳蚤市场',
-            code: 'market_tz_001',
-            remark: '跳蚤市场'
-          },
-          merchandise: {
-            caption: '洗衣机',
-            price: 500
-          }
-        },
-        {
-          id: '348129171098133532',
-          name: '邵一刀的购买订单(跳蚤)2022-03-21 12:36:30',
-          code: 'syd_20200321_001',
-          status: 203,
-          createUser: '338792423297781760',
-          updateUser: '348098798750404608',
-          version: '3',
-          createTime: '2022-08-18 15:41:02.000',
-          updateTime: '2022-08-18 16:16:59.000',
-          market: {
-            id: '111',
-            name: '跳蚤市场',
-            code: 'market_tz_001',
-            remark: '跳蚤市场'
-          },
-          merchandise: {
-            caption: '高等数学(上)教材',
-            price: 500
-          }
-        },
-        {
-          id: '348129171098102421',
-          name: '邵一刀的购买订单(跳蚤)2022-02-05 10:16:30',
-          code: 'syd_20200205_001',
-          status: 200,
-          createUser: '338792423297781760',
-          updateUser: '348098798750404608',
-          version: '3',
-          createTime: '2022-08-18 15:41:02.000',
-          updateTime: '2022-08-18 16:16:59.000',
-          market: {
-            id: '111',
-            name: '跳蚤市场',
-            code: 'market_tz_001',
-            remark: '跳蚤市场'
-          },
-          merchandise: {
-            caption: '电风扇',
-            price: 500
-          }
-        }
-      ]
+            const { result = [], total = 0 } = res.data
+      // var result = [
+      //   {
+      //     id: '348129171098177536',
+      //     name: '邵一刀的购买订单2022-08-22 14:05:30',
+      //     code: 'syd_20200822_001',
+      //     status: 1,
+      //     createUser: '338792423297781760',
+      //     updateUser: '348098798750404608',
+      //     version: '3',
+      //     createTime: '2022-08-18 15:41:02.000',
+      //     updateTime: '2022-08-18 16:16:59.000',
+      //     market: {
+      //       id: '5555',
+      //       name: '邵某某的市场',
+      //       code: 'market_sld_001',
+      //       remark: '邵某某的市场'
+      //     },
+      //     merchandise: {
+      //       caption: '商品1',
+      //       price: 500
+      //     }
+      //   },
+      //   {
+      //     id: '348129171098177532',
+      //     name: '邵一刀的购买订单2022-08-21 12:36:30',
+      //     code: 'syd_20200821_001',
+      //     status: 100,
+      //     createUser: '338792423297781760',
+      //     updateUser: '348098798750404608',
+      //     version: '3',
+      //     createTime: '2022-08-18 15:41:02.000',
+      //     updateTime: '2022-08-18 16:16:59.000',
+      //     market: {
+      //       id: '5555',
+      //       name: '邵某某的市场',
+      //       code: 'market_sld_001',
+      //       remark: '邵某某的市场'
+      //     },
+      //     merchandise: {
+      //       caption: '商品2',
+      //       price: 500
+      //     }
+      //   },
+      //   {
+      //     id: '348129171098176421',
+      //     name: '邵一刀的购买订单2022-07-05 10:16:30',
+      //     code: 'syd_20200705_001',
+      //     status: 101,
+      //     createUser: '338792423297781760',
+      //     updateUser: '348098798750404608',
+      //     version: '3',
+      //     createTime: '2022-08-18 15:41:02.000',
+      //     updateTime: '2022-08-18 16:16:59.000',
+      //     market: {
+      //       id: '5555',
+      //       name: '邵某某的市场',
+      //       code: 'market_sld_001',
+      //       remark: '邵某某的市场'
+      //     },
+      //     merchandise: {
+      //       caption: '商品3',
+      //       price: 500
+      //     }
+      //   },
+      //   {
+      //     id: '348129171098176636',
+      //     name: '邵一刀的购买订单(跳蚤)2022-02-22 14:05:30',
+      //     code: 'syd_20200222_001',
+      //     status: 102,
+      //     createUser: '338792423297781760',
+      //     updateUser: '348098798750404608',
+      //     version: '3',
+      //     createTime: '2022-08-18 15:41:02.000',
+      //     updateTime: '2022-08-18 16:16:59.000',
+      //     market: {
+      //       id: '111',
+      //       name: '跳蚤市场',
+      //       code: 'market_tz_001',
+      //       remark: '跳蚤市场'
+      //     },
+      //     merchandise: {
+      //       caption: '洗衣机',
+      //       price: 500
+      //     }
+      //   },
+      //   {
+      //     id: '348129171098133532',
+      //     name: '邵一刀的购买订单(跳蚤)2022-03-21 12:36:30',
+      //     code: 'syd_20200321_001',
+      //     status: 103,
+      //     createUser: '338792423297781760',
+      //     updateUser: '348098798750404608',
+      //     version: '3',
+      //     createTime: '2022-08-18 15:41:02.000',
+      //     updateTime: '2022-08-18 16:16:59.000',
+      //     market: {
+      //       id: '111',
+      //       name: '跳蚤市场',
+      //       code: 'market_tz_001',
+      //       remark: '跳蚤市场'
+      //     },
+      //     merchandise: {
+      //       caption: '高等数学(上)教材',
+      //       price: 500
+      //     }
+      //   },
+      //   {
+      //     id: '348129171098102421',
+      //     name: '邵一刀的购买订单(跳蚤)2022-02-05 10:16:30',
+      //     code: 'syd_20200205_001',
+      //     status: 100,
+      //     createUser: '338792423297781760',
+      //     updateUser: '348098798750404608',
+      //     version: '3',
+      //     createTime: '2022-08-18 15:41:02.000',
+      //     updateTime: '2022-08-18 16:16:59.000',
+      //     market: {
+      //       id: '111',
+      //       name: '跳蚤市场',
+      //       code: 'market_tz_001',
+      //       remark: '跳蚤市场'
+      //     },
+      //     merchandise: {
+      //       caption: '电风扇',
+      //       price: 500
+      //     }
+      //   }
+      // ]
       pageStore.total = result.length
       result.forEach((item: any) => {
         item.ordertype = 'buy'
@@ -476,10 +489,7 @@ const searchBuyList = async () => {
       })
       state.orderList = result?.map((item: { market: { remark: any; code: any; name: any } }) => {
         return {
-          ...item,
-          remark: item.market.remark,
-          marketCode: item.market.code,
-          marketName: item.market.name
+          ...item
         }
       })
     })
@@ -492,30 +502,39 @@ const sureContent = (id: string) => {
   })
 }
 //支付
-const pay = async (id: string, price: number, paymentType: string) => {
-  await $services.order
-    .createPay({
-      data: {
-        orderId: parseInt(id),
-        price: price,
-        paymentType: paymentType
-      }
-    })
-    .then((res: ResultType) => {
-      if (res.code == 200) {
-        getTableList(searchType.value)
-        ElMessage({
-          message: '支付成功',
-          type: 'warning'
-        })
-      } else {
-        ElMessage({
-          message: res.msg,
-          type: 'warning'
-        })
-      }
-    })
+const showPay = async (data:any) => {
+  payDialog.data = data
+  payDialog.show = true
 }
+//关闭支付
+const closePay = async () => {
+  payDialog.show = false
+}
+
+// const pay = async (id: string, price: number, paymentType: string) => {
+//   await $services.order
+//     .createPay({
+//       data: {
+//         orderId: parseInt(id),
+//         price: price,
+//         paymentType: paymentType
+//       }
+//     })
+//     .then((res: ResultType) => {res.code == 200
+//       if (res.code == 200) {
+//         getTableList(searchType.value)
+//         ElMessage({
+//           message: '支付成功',
+//           type: 'warning'
+//         })
+//       } else {
+//         ElMessage({
+//           message: res.msg,
+//           type: 'warning'
+//         })
+//       }
+//     })
+// }
 //取消订单
 const cancelOrder = async (id: string) => {
   await $services.order
@@ -531,12 +550,7 @@ const cancelOrder = async (id: string) => {
           message: '取消订单成功',
           type: 'warning'
         })
-      } else {
-        ElMessage({
-          message: res.msg,
-          type: 'warning'
-        })
-      }
+      } 
     })
 }
 //确认发货
@@ -545,7 +559,7 @@ const delivery = async (id: string) => {
     .deliverMerchandise({
       data: {
         id: id,
-        status: 202
+        status: 102
       }
     })
     .then((res: ResultType) => {
@@ -555,12 +569,7 @@ const delivery = async (id: string) => {
           message: '确认发货成功',
           type: 'success'
         })
-      } else {
-        ElMessage({
-          message: res.msg,
-          type: 'warning'
-        })
-      }
+      } 
     })
 }
 //确认收货
@@ -569,7 +578,7 @@ const accept = async (id: string) => {
     .orderConfirm({
       data: {
         id: id,
-        status: 203
+        status: 103
       }
     })
     .then((res: ResultType) => {
@@ -579,12 +588,7 @@ const accept = async (id: string) => {
           message: '确认收货成功',
           type: 'success'
         })
-      } else {
-        ElMessage({
-          message: res.msg,
-          type: 'warning'
-        })
-      }
+      } 
     })
 }
 //评论
@@ -659,7 +663,7 @@ const remoteMethod = (query: string) => {
   width: 100%;
   height: 100%;
   background: #f0f2f5;
-  padding: 5px;
+  padding: 15px;
   .operate-btns {
     display: flex;
     justify-content: space-between;
@@ -674,6 +678,14 @@ const remoteMethod = (query: string) => {
     padding: 10px 0;
     display: flex;
     justify-content: end;
+  }
+
+  .group-side-bar-search {
+    padding: 10px;
+    float: right;
+    width: 300px;
+    margin-right: 20px;
+    position: relative;
   }
 }
 </style>

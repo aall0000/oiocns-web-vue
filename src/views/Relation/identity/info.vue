@@ -4,6 +4,7 @@
       <div class="title">身份信息</div>
       <div class="box-btns">
         <el-button small link type="primary" @click="handleUpdate">编辑</el-button>
+        <el-button small link type="primary" @click="handleDelete">删除</el-button>
         <el-button small link type="primary" @click="goback">返回</el-button>
       </div>
     </div>
@@ -58,9 +59,11 @@
 </template>
 <script lang="ts" setup>
   import $services from '@/services'
-  import { ref, reactive,watch,onMounted } from 'vue'
-  import { ElMessage } from 'element-plus'
+  import { ref, watch, onMounted } from 'vue'
+  import { ElMessage, ElMessageBox } from 'element-plus'
   import router from '@/router';
+
+  const emit = defineEmits(['refresh'])
 
   let selectItem = ref<any>({})
   let dialogVisible = ref<boolean>(false)
@@ -78,6 +81,40 @@
   watch(selectItem, () => {
   });
 
+  // 删除身份信息
+  const handleDelete = ()=>{
+    if(!selectItem.value.id){
+      ElMessage.warning('请左侧选择身份')
+      return
+    }
+    ElMessageBox.confirm(
+      `确定删除 ${selectItem.value.name} 身份吗？`,
+      '警告',
+      {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }
+    ).then(() => {
+      $services.company.deleteIdentity({
+        data: {
+          id: selectItem.value.id,
+        }
+      }).then((res: ResultType) => {
+        selectItem.value = {}
+        if (res.success) {
+          ElMessage({
+            message: '操作成功',
+            type: 'success'
+          })
+          emit('refresh')
+        }
+      })
+    })
+    .catch(() => {
+      console.log('取消移除!')
+    })
+  }
 
   // 修改信息
   const handleUpdate = ()=> {
@@ -136,7 +173,6 @@
   }
   // 初始化ID和对象映射关系
   const initIdParentMap = (node: any) => {
-    console.log(node)
     if(node.nodes){
       for(const n of node.nodes){
         idParentMap[n.id] = node
