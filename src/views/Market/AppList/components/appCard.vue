@@ -31,12 +31,18 @@
               >
             </template>
             <!-- <template #footer> -->
-            <el-button class="btn" type="primary" link small>订阅</el-button>
+
             <el-button-group>
-              <el-button style="color: aliceblue; font-weight: bold; background-color: orange" round @click="joinStaging(item)"
+              <el-button
+                style="color: aliceblue; font-weight: bold; background-color: orange; width: 100px"
+                round
+                @click="joinStaging(item)"
                 >加入购物车</el-button
               >
-              <el-button style="color: aliceblue; font-weight: bold; background-color: red" round @click="createOrder(item)"
+              <el-button
+                style="color: aliceblue; font-weight: bold; background-color: red; width: 100px"
+                round
+                @click="createOrder(item)"
                 >立即购买</el-button
               >
             </el-button-group>
@@ -118,12 +124,10 @@
     })
   }
 
-
-const handleCurrentChange = (val: number) => {
-  state.page.currentPage = val
-  emit('handleUpdate')
-}
-
+  const handleCurrentChange = (val: number) => {
+    state.page.currentPage = val
+    emit('handleUpdate')
+  }
 
   const addShopCar = (data: any) => {
     $services.appstore
@@ -142,43 +146,47 @@ const handleCurrentChange = (val: number) => {
       })
   }
 
-const joinStaging = async (item:any)=>{ 
-  console.log(item)
-    await $services.market.joinStaging({
-      data: {
-        id: item.id
-      }
-    }).then((res: ResultType) => {
-      if (res.code == 200) {
-        ElMessage({
-          message: '添加成功',
-          type: 'success'
-        })
-      }
-    })
-}
+  const joinStaging = async (item: any) => {
+    console.log(item)
+    await $services.market
+      .joinStaging({
+        data: {
+          id: item.id
+        }
+      })
+      .then((res: ResultType) => {
+        if (res.code == 200) {
+          ElMessage({
+            message: '添加成功',
+            type: 'success'
+          })
+        }
+      })
+  }
 
-const createOrder = async (item:any)=>{ 
-  console.log(item)
-    await $services.order.create({
-      data: {
-        name: item.name,
-        code: item.code,
-        merchandiseId: item.id
-      }
-    }).then((res: ResultType) => {
-      if (res.code == 200) {
-        ElMessage({
-          message: '添加成功',
-          type: 'success'
-        })
-      }
-    })
-}
+  const createOrder = async (item: any) => {
+    console.log(item)
+    await $services.order
+      .create({
+        data: {
+          name: item.name,
+          code: item.code,
+          merchandiseId: item.id
+        }
+      })
+      .then((res: ResultType) => {
+        if (res.code == 200) {
+          ElMessage({
+            message: '添加成功',
+            type: 'success'
+          })
+        }
+      })
+  }
 
-defineExpose({
-  state
-})
+  defineExpose({
+    state
+  })
 </script>
 
 <style lang="scss" scoped>
@@ -238,5 +246,4 @@ defineExpose({
       }
     }
   }
-
 </style>
