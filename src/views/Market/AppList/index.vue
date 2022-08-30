@@ -12,16 +12,17 @@
     <div class="market-content box">
       <ul class="box-ul">
         <p class="box-ul-title">我的市场</p>
-        <li class="app-card" v-if="state.myMarket?.length !== 0">
+
+        <li class="app-card">
           <MarketCreate :info="add" @click="dialogVisible1 = true" />
           <ShopCard
+            v-if="state.myMarket.length !== 0"
             v-for="item in state.myMarket"
             :info="item"
             :key="item.id"
             :overId="item.id"
             @click="gotoApp(item)"
           >
-            <!-- <template> -->
             <el-button class="btn" type="primary" link small @click.stop="hadleClick(item)"
               >删除市场</el-button
             >
@@ -29,10 +30,9 @@
             <el-button class="btn" link small @click.stop="hadleUserManage(item)"
               >用户管理</el-button
             >
-            <!-- </template> -->
           </ShopCard>
         </li>
-        <div v-else><MarketCreate :info="add" @click="dialogVisible1 = true" /></div>
+
         <el-pagination
           v-if="state.myMarket?.length !== 0"
           @current-change="handleCurrentChange"
@@ -43,25 +43,23 @@
       </ul>
       <ul class="box-ul">
         <p class="box-ul-title">我加入的市场</p>
-        <li class="app-card" v-if="state.joinMarket?.length !== 0">
+
+        <li class="app-card">
           <MarketCreate :info="add1" @click="state.dialogShow.value = true" />
           <ShopCard
+            v-if="state.joinMarket.length !== 0"
             v-for="item in state.joinMarket"
             :info="item"
             :key="item.id"
             :overId="item.id"
             @click="gotoApp(item)"
           >
-            <!-- <template #footer> -->
             <el-button class="btn" type="primary" link small @click.stop="marketQuit(item)"
               >退出市场</el-button
             >
-            <!-- <el-divider direction="vertical" />
-              <el-button class="btn" link small>用户管理</el-button> -->
-            <!-- </template> -->
           </ShopCard>
         </li>
-        <div v-else> <MarketCreate :info="add1" @click="state.dialogShow.value = true" /></div>
+
         <el-pagination
           v-if="state.joinMarket.length !== 0"
           @current-change="handleCurrentJoinChange"
@@ -192,7 +190,7 @@
       })
       .then((res: ResultType) => {
         if (res.code == 200) {
-          state.myMarket = res.data.result
+          state.myMarket = res.data.result ? res.data.result : []
           state.pageMy.total = res.data.total
         }
       })
@@ -208,7 +206,7 @@
       })
       .then((res: ResultType) => {
         if (res.code == 200) {
-          state.joinMarket = res.data.result
+          state.joinMarket = res.data.result ? res.data.result : []
           state.pageJoin.total = res.data.total
         }
       })
