@@ -18,6 +18,14 @@
       @selectionChange="selectionChange"
       :tableHead="tableHead"
     >
+      <template #remark="scope">
+        <el-tooltip :content="scope.row.remark" placement="bottom" effect="light">
+          <div class="remark-text">
+          {{scope.row.remark}}
+          </div>
+        </el-tooltip>
+        
+      </template>
     </diytab>
     <div class="foot">
       <el-button  @click="closeDialog">取消</el-button>
@@ -206,16 +214,18 @@
       name: 'teamCode'
     },
     {
+      type:'slot',
+      width: '200',
       prop: 'remark',
       label: '座右铭',
-      name: 'reamrk'
+      name: 'remark'
     }
   ])
   const tableHead2 = ref([
     {
       prop: 'trueName',
       label: '群名称',
-      width: '150',
+      width: '200',
       name: 'trueName'
     },
     {
@@ -225,9 +235,10 @@
       name: 'teamCode'
     },
     {
+      type:'slot',
       prop: 'remark',
       label: '群简介',
-      name: 'reamrk'
+      name: 'remark'
     }
   ])
   const tableHead3 = ref([
@@ -237,7 +248,6 @@
       width: '200',
       name: 'name'
     },
-
     {
       prop: 'code',
       label: '统一社会信用代码',
@@ -245,6 +255,7 @@
       name: 'code'
     },
     {
+      type:'slot',
       prop: 'remark',
       label: '单位简介',
       name: 'remark'
@@ -254,10 +265,11 @@
     {
       prop: 'name',
       label: '单位名称',
-      width: '200',
+      width: '300',
       name: 'name'
     },
     {
+      type:'slot',
       prop: 'remark',
       label: '集团简介',
       name: 'remark'
@@ -281,5 +293,10 @@
     width: 100%;
     margin-top: 30px;
     justify-content: flex-end;
+  }
+  .remark-text{
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 </style>
