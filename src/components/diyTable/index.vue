@@ -117,7 +117,7 @@
 
 <script setup lang="ts">
   import { stubFalse } from 'lodash'
-  import { ref, reactive, toRefs, computed,onMounted } from 'vue'
+  import { ref, reactive, toRefs, computed, onMounted } from 'vue'
   import { useUserStore } from '@/store/user'
 
   const store = useUserStore()
@@ -177,7 +177,7 @@
     tableHead,
     tableData,
     options,
-    batchOperate,
+    batchOperate
     // queryParams,
     // cell
   } = toRefs(props)
@@ -304,7 +304,7 @@
     emit('handleUpdate', page.value)
   }
   onMounted(() => {
-    console.log('props.options.selectLimit',props.options.selectLimit)
+    console.log('props.options.selectLimit', props.options.selectLimit)
   })
   /**
    * 鼠标进入表格是隐藏groupselect的drop
