@@ -107,7 +107,7 @@
       </el-space>
     </el-col>
   </el-row>
-  <searchCompany v-if="friendDialog" @closeDialog="closeDialog"  @checkFriend='checkFriend'></searchCompany>
+  <searchCompany v-if="searchDialog" @closeDialog="closeDialog"  @checkFriend='checksSearch'></searchCompany>
   <template v-for="item in dialogShow" :key="item.key">
     <CreateUnitDialog v-if="item.key == 'unit' && item.value" :dialogShow="item" @closeDialog="closeDialog"
       @switchCreateCompany="switchCreateCompany"></CreateUnitDialog>

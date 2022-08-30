@@ -290,6 +290,7 @@ const handleNewMsgShow = (data: any) => {
           val.msgType = data.msgType
           if (val.id != activeInfo.value.id || item.id != activeInfo.value.spaceId) {
             val.count = (val.count || 0) + 1
+            console.log({ groupid: data.spaceId, userid: sessionId, count: 1 })
             updateMessageNoread({ groupid: data.spaceId, userid: sessionId, count: 1 })
           }
           arr.unshift(val)

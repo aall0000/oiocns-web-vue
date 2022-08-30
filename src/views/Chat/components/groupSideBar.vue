@@ -136,7 +136,7 @@ const changeInfo = (item: ImMsgChildType, spaceId: string) => {
   openIdArr.value.push(spaceId)
   // 触发父组件值更新
   // item.count = 0
-  ohterData.clearMessageNodread(item.id)
+  ohterData.clearMessageNodread(spaceId, item.id)
   emit('update:active', { ...item, spaceId })
 }
 
