@@ -1,10 +1,7 @@
 <template>
   <el-config-provider :locale="locale">
-    <div class="pages" @contextmenu.prevent>
-      <transition name="fade-transform" mode="out-in">
+    <div class="pages" @contextmenu.prevent> 
         <router-view />
-      </transition>
-
     </div>
   </el-config-provider>
 </template>

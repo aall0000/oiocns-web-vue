@@ -31,7 +31,7 @@
           />
         </span>
         <el-button type="primary" @click="deleteStagings">删除</el-button>
-        <el-button type="primary" @click="createOrderByStaging">购买</el-button>
+        <!-- <el-button type="primary" @click="createOrderByStaging">购买</el-button> -->
       </template>
     </MarketCard>
     <div v-if="isRouterAlive">
@@ -252,7 +252,7 @@ function getUuid() {
 }
 
 //创建订单(批量)
-const createOrderByStaging = async (checkedId?: string) => {
+const createOrderByStaging = (checkedId?: string) => {
   var checkedStagIds = []
   if (checkedId) {
     checkedStagIds = [checkedId]
@@ -268,12 +268,13 @@ const createOrderByStaging = async (checkedId?: string) => {
     })
     return
   }
+  setTimeout(async(ids) => {
   await $services.market
     .createOrderByStaging({
       data: {
         name: moment().format('YYYY-MM-DD hh:mm:ss') + '的订单',
         code: getUuid(),
-        stagIds: checkedStagIds
+        stagIds: ids
       }
     })
     .then((res: ResultType) => {
@@ -285,6 +286,7 @@ const createOrderByStaging = async (checkedId?: string) => {
         })
       }
     })
+  }, 1, checkedStagIds);
 }
 
 //从购物车移除 (批量)

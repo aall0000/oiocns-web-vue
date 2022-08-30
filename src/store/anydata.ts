@@ -56,6 +56,12 @@ export const useAnyData = defineStore({
         noReadMap: (state) => state.messageNoReadMap // 未读数量
     },
     actions: {
+        getNoReadCount(groupid: string, userid: string) {
+            if(this.messageNoReadMap[groupid] && this.messageNoReadMap[groupid][userid]){
+                return this.messageNoReadMap[groupid][userid] || 0
+            }
+            return 0
+        },
         // 更新用户组件配置
         updateUserSpace(params: { workspaceId: string, content: UserSpace[] }) {
             console.log('更新用户组件', params.content)
@@ -79,7 +85,7 @@ export const useAnyData = defineStore({
         },
         // 设置个人空间全部数据
         setWorkspace(data: WorkSpaceType) {
-            this.workspace = data
+            this.workspace = data ||{}
         },
         // 更新已读未读消息数量
         updateMessageNoread({ groupid, userid, count }: { groupid: string, userid: string, count: number }) {

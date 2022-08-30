@@ -107,7 +107,7 @@
       </el-space>
     </el-col>
   </el-row>
-  <searchCompany v-if="searchDialog" @closeDialog="closeDialog"  @checkFriend='checksSearch'></searchCompany>
+  <searchCompany v-if="searchDialog" :serachType="3" @closeDialog="closeDialog"  @checksSearch='checksSearch'></searchCompany>
   <template v-for="item in dialogShow" :key="item.key">
     <CreateUnitDialog v-if="item.key == 'unit' && item.value" :dialogShow="item" @closeDialog="closeDialog"
       @switchCreateCompany="switchCreateCompany"></CreateUnitDialog>
@@ -153,7 +153,6 @@ const getDropMenuStyle = computed(() => {
   } else {
     let height = store.userCompanys.length < 6 ? store.userCompanys.length : 6
     return store.userCompanys.length ? 'height:' + (height * 45 + 60) + 'px;' : 'height:80px'
-    debugger
   }
 })
 
@@ -198,12 +197,13 @@ const getDropMenuStyle = computed(() => {
   type arrList = {
     id:string
   }
-  const checksSearch=(val:any)=>{
+  const checksSearch=(val:any)=>{ 
     if(val.value.length>0){
       let arr:Array<arrList> =[]
       val.value.forEach((element:any) => {
         arr.push(element.id)
       });
+      console.log('val',arr)
       joinSubmit(arr)
     }else{
       searchDialog.value = false;
