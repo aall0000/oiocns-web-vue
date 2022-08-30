@@ -144,14 +144,14 @@ const joinFriend = () => {
 </script>
 
 <style lang="scss" scoped>
-:deep(.el-row) {
-  margin-left: 0 !important;
-  margin-right: 0 !important;
-}
+// :deep(.el-row) {
+//   margin-left: 0 !important;
+//   margin-right: 0 !important;
+// }
 
 .homeLayout {
-  padding-top: 8px;
-  // overflow-x: hidden;
+  padding-top: 4px;
+  overflow-x: hidden;
   height: 100%;
 
 }

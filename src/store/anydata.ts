@@ -85,7 +85,7 @@ export const useAnyData = defineStore({
         },
         // 设置个人空间全部数据
         setWorkspace(data: WorkSpaceType) {
-            this.workspace = data
+            this.workspace = data ||{}
         },
         // 更新已读未读消息数量
         updateMessageNoread({ groupid, userid, count }: { groupid: string, userid: string, count: number }) {

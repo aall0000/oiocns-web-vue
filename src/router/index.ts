@@ -67,6 +67,10 @@ const mainRouter: RouteRecordRaw[] = [
   {
     path: '/relation',
     component: () => import('@/views/Relation/index.vue'),
+    meta: {
+      keepAlive: false,
+      title: '关系'
+    },
     children: [
       {
         path: '/relation/company',
