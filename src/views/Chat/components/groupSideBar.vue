@@ -45,7 +45,7 @@
               <p
                 class="group-con-show-msg"
                 v-if="child.msgType !== 'recall'"
-                v-html="child?.msgBody"
+                v-html="child?.msgBody.includes('<img') ? '[图片]': child?.msgBody"
               ></p>
               <p class="group-con-show-msg" v-else>{{ child?.showTxt }}</p>
             </div>
@@ -87,7 +87,7 @@
               <p
                 class="group-con-show-msg"
                 v-if="child.msgType !== 'recall'"
-                v-html="child?.msgBody"
+                v-html="child?.msgBody.includes('img') ? '[图片]': child?.msgBody"
               ></p>
               <p class="group-con-show-msg" v-else>{{ child?.showTxt }}</p>
             </div>

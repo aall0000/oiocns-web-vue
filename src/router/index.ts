@@ -218,6 +218,10 @@ const mainRouter: RouteRecordRaw[] = [
   },
   {
     path: '/market',
+    meta: {
+      keepAlive: false,
+      title: '我的应用'
+    },
     // component: () => import('@/views/Layout/msgLayout/layout.vue'),
     children: [
       {
