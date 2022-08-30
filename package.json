@@ -17,6 +17,7 @@
     "@yzfe/svgicon": "1.0.1",
     "@yzfe/vue3-svgicon": "1.0.1",
     "element-china-area-data": "^5.0.2",
+    "moment": "^2.29.4",
     "nprogress": "^0.2.0",
     "pinia-plugin-persist": "^1.0.0",
     "rollup-plugin-visualizer": "^5.7.1",
