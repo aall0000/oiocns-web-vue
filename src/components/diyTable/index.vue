@@ -29,7 +29,7 @@
       <div class="diy-table__body-box">
         <el-table
           ref="diyTable"
-          style="width: 100%; height: 100%"
+          :style="{ width: '100%', height: '100%' }"
           class="table-row-sty"
           tooltip-effect="dark"
           :header-cell-style="getRowClass"
@@ -250,9 +250,9 @@
   }
 
   const checkSelectable = (row: any) => {
-    if(props.checkList){
-      if(props.checkList.find((v) => v.id == row.id)){
-        console.log('row',row)
+    if (props.checkList) {
+      if (props.checkList.find((v) => v.id == row.id)) {
+        console.log('row', row)
         return false
       }
     }

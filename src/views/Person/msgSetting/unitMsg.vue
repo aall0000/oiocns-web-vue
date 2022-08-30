@@ -42,7 +42,11 @@
         <div class="button">
           <el-button> + 新增更多描述</el-button>
           <el-button>导出单位信息</el-button>
-          <el-button type="primary">更新信息</el-button>
+          <el-popconfirm title="确认更新" @confirm="upDateCompany()">
+            <template #reference>
+              <el-button type="primary">更新信息</el-button>
+            </template>
+          </el-popconfirm>
         </div>
       </div>
     </el-scrollbar>
@@ -55,6 +59,7 @@ import { ArrowLeft } from '@element-plus/icons-vue'
 import { onMounted, reactive, ref } from 'vue'
 import { onBeforeMount } from 'vue'
 import $services from '@/services'
+import { ElMessage } from 'element-plus';
 const labelPosition = ref<'top'>('top')
 const formModel = reactive({
   name: '',
@@ -63,7 +68,7 @@ const formModel = reactive({
   teamCode: '',
   teamRemark: '',
 })
-
+const companyInfo = ref<any>({})
 onBeforeMount(() => {
   fetchRequest()
 })
@@ -76,6 +81,7 @@ function fetchRequest() {
     })
     .then((res: ResultType) => {
       if (res.success) {
+        companyInfo.value = res.data
         formModel.name = res.data.name
         formModel.code = res.data.code
         formModel.teamName = res.data.team.name
@@ -84,7 +90,46 @@ function fetchRequest() {
       }
     })
 }
-
+type infoType = {
+  name: string
+  code: string,
+  teamName: string,
+  teamCode: string,
+  teamRemark: string,
+  id:string,
+  thingId:string
+}
+const upDate = reactive<infoType>({
+  name: '',
+  code: '',
+  teamName: '',
+  teamCode: '',
+  teamRemark: '',
+  id:'',
+  thingId:''
+})
+const upDateCompany = ()=>{
+  upDate.name =  formModel.name
+  upDate.code =  formModel.code
+  upDate.teamName =  formModel.teamName
+  upDate.teamCode =  formModel.teamCode
+  upDate.teamRemark =  formModel.teamRemark
+  upDate.id = companyInfo.value.id;
+  upDate.thingId = companyInfo.value.thingId;
+  console.log(upDate)
+  $services.company
+    .update({
+      data: upDate
+    })
+    .then((res: ResultType) => {
+      if (res.success) {
+        ElMessage({
+          message: '更新成功',
+          type: 'warning'
+        })
+      }
+    })
+}
   // const options = regionData
   // const selectedOptions: Array<number> = []
   // const handleChange = () => {
