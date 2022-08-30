@@ -20,7 +20,7 @@
             :isLazy="true"
             @getLeftData="getGroupTree"
             @getLoadNode="getLoadNode"
-            @handleLeftNode="handleLeftNode"
+            @handleLeftClick="handleLeftClick"
           ></TheTreeBox>
         </el-tab-pane>
         <!-- <el-tab-pane label="按职权分享" name="second"></el-tab-pane> -->
@@ -62,23 +62,7 @@
     // getAuthorityData()
   })
 
-  const handleLeftNode = (data: any, callback: any) => {
-    API.company
-      .getSubgroups({
-        data: {
-          offset: 0,
-          limit: 1000
-        }
-      })
-      .then((res: ResultType) => {
-        if (res.data.result && res.data.result.length > 0) {
-          callback(res.data.result)
-        } else {
-          callback([])
-        }
-      })
-  }
-
+  // 获取根集团列表树
   const getGroupTree = (callback: any) => {
     API.company
       .companyGetGroups({
@@ -95,53 +79,72 @@
         }
       })
   }
+  // 懒加载获取下级节点
   const getLoadNode = (id: string, callback: any) => {
     API.company
       .getSubgroups({
         data: { id: id, offset: 0, limit: 1000 }
       })
-      .then((res: any) => {
+      .then((res: ResultType) => {
         if (res.success) {
-          callback(res.data.result)
+          callback(res.data.result ? res.data.result : [])
         }
       })
   }
-  // // 加载集团树
-  // const loadOrgTree = (id?: string) => {
-  //   API.company
-  //     .getGroupTree({
-  //       data: { id: props.selectedValue }
-  //     })
-  //     .then((res: any) => {
-  //       if (res.success) {
-  //         res.data.data.label = res.data.data.name
-  //         let data = [res.data.data]
-  //         data[0].children = res.data.children
-  //         state.treeData = data
-  //       }
-  //     })
-  // }
-  // const getAuthorityData = () => {
-  //   $services.company.getAuthorityTree({ data: { id: belongId.value } }).then((res: any) => {})
-  // }
+  // 点击左侧树形方法
+  const handleLeftClick = (data: any, callback: any) => {
+    if (data.level == 0) {
+      API.company
+        .getGroupCompanies({
+          data: {
+            id: data.id,
+            offset: 0,
+            limit: 10000,
+            filter: ''
+          }
+        })
+        .then((res: ResultType) => {
+          if (res.success) {
+            callback(res.data.result ? res.data.result : [])
+          }
+        })
+    } else {
+      API.company
+        .getSubgroupCompanies({
+          data: {
+            id: data.id,
+            offset: 0,
+            limit: 10000,
+            filter: ''
+          }
+        })
+        .then((res: ResultType) => {
+          if (res.success) {
+            callback(res.data.result ? res.data.result : [])
+          }
+        })
+    }
+  }
   const submit = () => {
-    API.company
-      .getGroupTree({
-        data: {
-          productId: props.info.id,
-          teamId: tree.value.getCheckedKeys(),
-          targetId: store.workspaceData.id
-        }
-      })
-      .then((res: any) => {
-        if (res.success) {
-          ElMessage({
-            type: 'success',
-            message: '分享成功'
-          })
-          closeDialog()
-        }
-      })
+    console.log()
+
+    // API.company
+    //   .getGroupTree({
+    //     data: {
+    //       productId: props.info.id,
+    //       teamId: tree.value.getCheckedKeys(),
+    //       targetId: store.workspaceData.id
+    //     }
+    //   })
+    //   .then((res: any) => {
+    //     if (res.success) {
+    //       ElMessage({
+    //         type: 'success',
+    //         message: '分享成功'
+    //       })
+    //       closeDialog()
+    //     }
+    //   })
   }
   const closeDialog = () => {
     emit('closeDialog')

@@ -208,8 +208,7 @@ const mainRouter: RouteRecordRaw[] = [
         meta: {
           title: '安全设置'
         }
-      },
-
+      }
     ]
   },
   {
@@ -222,6 +221,22 @@ const mainRouter: RouteRecordRaw[] = [
         component: () => import('@/views/Market/index.vue'),
         meta: {
           title: '应用市场'
+        }
+      },
+      {
+        path: '/market/group',
+        name: 'marketGroup',
+        component: () => import('@/views/Market/AppShare/group.vue'),
+        meta: {
+          title: '分享集团'
+        }
+      },
+      {
+        path: '/market/unit',
+        name: 'marketUnit',
+        component: () => import('@/views/Market/AppShare/unit.vue'),
+        meta: {
+          title: '分享单位'
         }
       },
       {
@@ -295,14 +310,16 @@ const mainRouter: RouteRecordRaw[] = [
         meta: {
           title: '加入市场申请列表'
         }
-      },{
+      },
+      {
         path: '/market/managerApproval',
         name: 'managerApproval',
         component: () => import('@/views/Market/JoinMarketApproval/manager.vue'),
         meta: {
           title: '管理者审批列表'
         }
-      },{
+      },
+      {
         path: '/market/appShelvesApproval',
         name: 'appShelvesApproval',
         component: () => import('@/views/Market/AppShelves/approval.vue'),
@@ -310,7 +327,6 @@ const mainRouter: RouteRecordRaw[] = [
           title: '应用上架审批列表'
         }
       }
-
     ]
   },
   {
@@ -398,17 +414,22 @@ function setPath(routerArr: any[], pathStr = '') {
 }
 
 //市场面包屑路由
-function breadcrumbPath(mainRouter:any[]){
-  for(let i = 0;i < mainRouter.length;i++){
-    if(mainRouter[i].path == '/market'){
-      return mainRouter[i].children.map((item: { path: string; meta: { title: string };index:string })=>{
-        let obj: { path: string; name: string;index:string} = {
-          path: item.path,
-          name: item.meta.title,
-          index:item.path.split('/').filter((item) => item && item.trim()).at(-1)
+function breadcrumbPath(mainRouter: any[]) {
+  for (let i = 0; i < mainRouter.length; i++) {
+    if (mainRouter[i].path == '/market') {
+      return mainRouter[i].children.map(
+        (item: { path: string; meta: { title: string }; index: string }) => {
+          let obj: { path: string; name: string; index: string } = {
+            path: item.path,
+            name: item.meta.title,
+            index: item.path
+              .split('/')
+              .filter((item) => item && item.trim())
+              .at(-1)
+          }
+          return obj
         }
-        return obj
-      })
+      )
     }
   }
 }

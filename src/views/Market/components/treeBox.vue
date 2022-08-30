@@ -3,17 +3,30 @@
     <div class="leftTreeBox">
       <el-tree
         ref="leftTree"
-        :data="isLazy ? [] : state.leftTreeData"
+        node-key="id"
         :props="prop"
         :load="loadNode"
-        :lazy="isLazy ? true : false"
+        lazy
         @node-click="handleNodeClick"
       />
     </div>
     <div class="centerTreeBox">
-      <el-tree ref="centerTree" :data="state.centerTreeData" :props="prop" />
+      <el-tree
+        ref="centerTree"
+        :data="state.centerTreeData"
+        show-checkbox
+        node-key="id"
+        :props="prop"
+        @check-change="handleCheckChange"
+      />
     </div>
-    <div class="rightTreeBox"></div>
+    <div class="rightTreeBox">
+      <div class="rightTreeBox-row" v-for="item in state.rightTreeData" :key="item.id">
+        <div>{{ item.groupName }}</div>
+        <div>{{ item.name }}</div>
+        <el-icon @click="delRightTreeData(item)"><CircleClose /></el-icon>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -22,7 +35,10 @@
   import type Node from 'element-plus/es/components/tree/src/model/node'
   import { ref, reactive, onMounted, nextTick, watch } from 'vue'
   interface Tree {
+    id: string
+    level: number
     name: string
+    groupId?: string
     leaf?: boolean
   }
   const prop = {
@@ -34,7 +50,9 @@
   const centerTree = ref(null)
   const state = reactive({
     leftTreeData: [],
-    centerTreeData: []
+    centerTreeData: [],
+    rightTreeData: [],
+    groupId: ''
   })
   const isShow = ref<boolean>(false)
   const props = defineProps({
@@ -47,7 +65,7 @@
       default: false
     }
   })
-  const emit = defineEmits(['getLeftData', 'getLoadNode', 'handleLeftNode'])
+  const emit = defineEmits(['getLeftData', 'getLoadNode', 'handleLeftClick'])
 
   onMounted(() => {
     getLeftData()
@@ -62,6 +80,9 @@
 
   const loadNode = (node: Node, resolve: (data: Tree[]) => void) => {
     if (node.level === 0) {
+      state.leftTreeData.forEach((el) => {
+        el.level = node.level
+      })
       return resolve(state.leftTreeData)
     }
     if (node.level >= 1) {
@@ -75,10 +96,44 @@
     }
   }
 
-  const handleNodeClick = (data: Tree) => {
-    console.log('-------')
+  const handleCheckChange = (data: Tree, check: boolean) => {
+    console.log(data)
 
-    // emit('handleLeftNode', data, (res: any) => {})
+    if (state.groupId == data.groupId) {
+      if (check) {
+        state.rightTreeData.push(data)
+      } else {
+        state.rightTreeData.splice(state.rightTreeData.indexOf(data), 1)
+      }
+    }
+  }
+
+  const delRightTreeData = (data: any) => {
+    // state.rightTreeData.splice(state.rightTreeData.indexOf(data), 1)
+    centerTree.value.setChecked(data.id, false)
+  }
+
+  const handleNodeClick = (data: Tree) => {
+    state.groupId = data.id
+    emit('handleLeftClick', data, (res: any) => {
+      if (res.length > 0) {
+        res.forEach((el: any) => {
+          el.groupName = data.name
+          el.groupId = data.id
+        })
+      }
+      state.centerTreeData = res
+      if (state.rightTreeData.length > 0) {
+        let arr: any[] = []
+        state.rightTreeData.forEach((el) => {
+          if (el.groupId == data.id) {
+            arr.push(el.id)
+          }
+        })
+        centerTree.value.setCheckedKeys(arr)
+      }
+      console.log('=========', state.rightTreeData)
+    })
   }
 </script>
 
@@ -106,5 +161,13 @@
     border: 1px solid rgb(240, 242, 245);
     height: 100%;
     overflow: auto;
+    &-row {
+      justify-content: space-between;
+      display: flex;
+      margin: 5px;
+      .el-icon {
+        cursor: pointer;
+      }
+    }
   }
 </style>

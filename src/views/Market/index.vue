@@ -1,7 +1,4 @@
 <template>
-  <!-- <div v-show="visible" class="menuRight" :style="{ left: left + 'px', top: top + 'px' }">
-    <div class="menuRight-fixed" @click="shareHistory">查询分享历史</div>
-  </div> -->
   <div class="market-layout">
     <MarketCard>
       <template #right>
@@ -96,9 +93,6 @@
       <el-form-item label="备注" prop="remark">
         <el-input v-model="form.remark" :rows="3" type="textarea" placeholder="请输入描述/备注" />
       </el-form-item>
-      <!-- <el-form-item label="应用thingId" prop="thingId">
-        <el-input v-model="form.thingId" />
-      </el-form-item> -->
     </el-form>
     <template #footer>
       <span class="dialog-footer">
@@ -124,6 +118,30 @@
     </putaway-comp>
   </el-dialog>
   <el-dialog
+    v-if="groupVisible"
+    v-model="groupVisible"
+    custom-class="group-dialog"
+    title="选择集团"
+    width="600px"
+    draggable
+    :close-on-click-modal="false"
+  >
+    <el-select v-model="selectedValue" value-key="id" placeholder="请选择集团">
+      <el-option
+        v-for="item in state.options"
+        :key="item.value"
+        :label="item.label"
+        :value="item.value"
+      />
+    </el-select>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="shareGroup">按集团分享</el-button>
+        <el-button type="primary" @click="shareUnit">按单位分享</el-button>
+      </span>
+    </template>
+  </el-dialog>
+  <!-- <el-dialog
     v-if="shareVisible"
     v-model="shareVisible"
     custom-class="share-dialog"
@@ -133,13 +151,13 @@
     :close-on-click-modal="false"
   >
     <share-comp :info="selectProductItem" @closeDialog="closeDialog" />
-  </el-dialog>
+  </el-dialog> -->
 </template>
 
 <script setup lang="ts">
   import API from '@/services'
   import { ElMessage, ElMessageBox } from 'element-plus'
-  import { onMounted, reactive, ref, onUnmounted } from 'vue'
+  import { onMounted, reactive, ref } from 'vue'
   import ShopCard from './components/shopCard.vue'
   import PutawayComp from './components/putawayComp.vue'
   import ShareComp from './components/shareDialog.vue'
@@ -160,7 +178,6 @@
     shareTotal: number
     marketOptions: any[] //所有市场列表
     options: any[] //集团列表
-    storeObj: object
   }
 
   const state: StateType = reactive({
@@ -169,27 +186,10 @@
     shareProductList: [],
     shareTotal: 0,
     marketOptions: [],
-    options: [],
-    storeObj: {}
+    options: []
   })
 
-  // const left = ref(0)
-  // const top = ref(0)
-  // const visible = ref(false)
-  // onUnmounted(() => {
-  //   window.removeEventListener('click', clickother)
-  // })
-  // const rightClick = (event: any, item: any) => {
-  //   state.storeObj = item
-  //   visible.value = true
-  //   top.value = event.pageY - 60
-  //   left.value = event.pageX - 50
-  // }
-  // const clickother = () => {
-  //   visible.value = false
-  // }
   onMounted(() => {
-    // window.addEventListener('click', clickother)
     // 获取列表
     getProductList('own')
     getProductList('share')
@@ -248,7 +248,7 @@
     selectProductItem.value = item
     switch (command) {
       case 'share':
-        openShareDialog()
+        openGroupDialog()
         break
       case 'putaway':
         publishVisible.value = true
@@ -260,33 +260,51 @@
     }
   }
 
-  //打开分享弹窗
-  const openShareDialog = () => {
-    shareVisible.value = true
+  //  打开集团选择弹窗
+  const openGroupDialog = () => {
+    API.company
+      .companyGetGroups({
+        data: {
+          offset: 0,
+          limit: 1000
+        }
+      })
+      .then((res: ResultType) => {
+        if (res.data.result && res.data.result.length > 0) {
+          groups = res.data.result
+          state.options = groups.map((g) => {
+            return { value: g.id, label: g.name }
+          })
+          selectedValue.value = groups[0].value
+          groupVisible.value = true
+          // loadOrgTree(groups[0].id)
+        } else {
+          groups = []
+        }
+      })
   }
-
-  // //  打开集团选择弹窗
-  // const openGroupDialog = () => {
-  //   API.company
-  //     .companyGetGroups({
-  //       data: {
-  //         offset: 0,
-  //         limit: 1000
-  //       }
-  //     })
-  //     .then((res: ResultType) => {
-  //       if (res.data.result && res.data.result.length > 0) {
-  //         groups = res.data.result
-  //         state.options = groups.map((g) => {
-  //           return { value: g.id, label: g.name }
-  //         })
-  //         selectedValue.value = groups[0].value
-  //         // loadOrgTree(groups[0].id)
-  //       } else {
-  //         groups = []
-  //       }
-  //     })
-  // }
+  // 跳转到group分享界面
+  const shareGroup = () => {
+    if (selectedValue.value) {
+      router.push({ path: '/market/group', query: { id: selectedValue.value } })
+    } else {
+      ElMessage({
+        type: 'warning',
+        message: '请选择集团'
+      })
+    }
+  }
+  // 跳转到unit分享界面
+  const shareUnit = () => {
+    if (selectedValue.value) {
+      router.push({ path: '/market/unit', query: { id: selectedValue.value } })
+    } else {
+      ElMessage({
+        type: 'warning',
+        message: '请选择集团'
+      })
+    }
+  }
 
   // 注册页面弹窗
   const registerVisible = ref<boolean>(false)
@@ -352,6 +370,10 @@
 
   // 当前用户的集团
   let groups = reactive([])
+  // 当前选中的集团
+  let selectedValue = ref<string>('')
+  // 集团分享
+  const groupVisible = ref<boolean>(false)
   // 分享功能
   const shareVisible = ref<boolean>(false)
   // 路由跳转
