@@ -117,7 +117,7 @@
 
 <script setup lang="ts">
   import { stubFalse } from 'lodash'
-  import { ref, reactive, toRefs, computed,onMounted } from 'vue'
+  import { ref, reactive, toRefs, computed, onMounted } from 'vue'
   import { useUserStore } from '@/store/user'
 
   const store = useUserStore()
@@ -176,7 +176,7 @@
     tableHead,
     tableData,
     options,
-    batchOperate,
+    batchOperate
     // queryParams,
     // cell
   } = toRefs(props)
@@ -249,6 +249,10 @@
   }
 
   const checkSelectable = (row: any) => {
+    if (props.checkList.find((v) => v.id == row.id)) {
+      console.log('row', row)
+      return false
+    }
     if (props.options.selectLimit > 0) {
       if (props.options.selectLimit < multipleSelection.value.length) {
         var obj = multipleSelection.value[multipleSelection.value.length - 1]
@@ -297,7 +301,7 @@
     emit('handleUpdate', page.value)
   }
   onMounted(() => {
-    console.log('props.options.selectLimit',props.options.selectLimit)
+    console.log('props.options.selectLimit', props.options.selectLimit)
   })
   /**
    * 鼠标进入表格是隐藏groupselect的drop
