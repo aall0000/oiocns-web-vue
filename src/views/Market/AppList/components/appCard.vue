@@ -79,6 +79,7 @@
   import { ElMessage } from 'element-plus'
   import ShopCard from '../../components/shopCard.vue'
   import AppInfoDialog from './appInfoDialog.vue'
+  import moment from 'moment'
   const emit = defineEmits(['handleUpdate'])
   const props = defineProps({
     dataList: {
@@ -164,13 +165,21 @@
       })
   }
 
+function getUuid() {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+    var r = (Math.random() * 16) | 0,
+      v = c == 'x' ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+}
+
   const createOrder = async (item: any) => {
     console.log(item)
     await $services.order
       .create({
         data: {
-          name: item.name,
-          code: item.code,
+          name: moment().format('YYYY-MM-DD hh:mm:ss') + '的订单',
+          code: getUuid(),
           merchandiseId: item.id
         }
       })

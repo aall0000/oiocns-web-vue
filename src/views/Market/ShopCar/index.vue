@@ -1,17 +1,7 @@
 <template>
   <div class="common-layout">
-    <el-container>
-          <MarketCard>
-    <template #right>
-      <!-- <span class="top">
-          <el-switch v-model="cardActive" active-text="列表" inactive-text="卡片" style="
-              display: inline-block;
-              vertical-align: top;
-              height: 28px;
-              padding-top: 10px;
-              margin-right: 20px;
-            "/>
-        </span>  -->
+    <MarketCard>
+      <template #right>
         <span class="top">
           <el-checkbox
             :v-model="allchecked.checked"
@@ -39,153 +29,101 @@
               margin-right: 200px;
             "
           />
-          <el-pagination
-            class="page-pagination"
-            style="float: right; padding: 7px"
-            @size-change="(e) => handlePaginationChange(e, 'limit')"
-            @current-change="(e) => handlePaginationChange(e, 'current')"
-            small
-            background
-            :page-sizes="pageSizes"
-            v-model:currentPage="pagination.current"
-            v-model:page-size="pagination.limit"
-            layout="total, sizes, prev, pager, next, jumper"
-            :total="pageStore.total"
-          ></el-pagination>
         </span>
-        <div class="group-side-bar-search">
-          <el-input placeholder="搜索" v-model="searchValue" prefix-icon="Search" />
-        </div>
-    </template>
-  </MarketCard>
-      <!-- <el-header class="header">
-        <span class="top">
-          <el-switch v-model="cardActive" active-text="列表" inactive-text="卡片"/>
-        </span> 
-        <span class="top">
-          <el-checkbox
-            :v-model="allchecked.checked"
-            @change="checkAll"
-            v-if="cardActive"
-            style="
-              display: inline-block;
-              vertical-align: top;
-              height: 28px;
-              padding: 10px;
-              margin-right: 20px;
-            "
-            >全选</el-checkbox
-          >
-          <el-switch
-            v-model="cardActive"
-            @change="changeView"
-            active-text="卡片"
-            inactive-text="列表"
-            style="
-              display: inline-block;
-              vertical-align: top;
-              height: 28px;
-              padding: 10px;
-              margin-right: 200px;
-            "
-          />
-          <el-pagination
-            class="page-pagination"
-            style="float: right; padding: 7px"
-            @size-change="(e) => handlePaginationChange(e, 'limit')"
-            @current-change="(e) => handlePaginationChange(e, 'current')"
-            small
-            background
-            :page-sizes="pageSizes"
-            v-model:currentPage="pagination.current"
-            v-model:page-size="pagination.limit"
-            layout="total, sizes, prev, pager, next, jumper"
-            :total="pageStore.total"
-          ></el-pagination>
-        </span>
-        <div class="group-side-bar-search">
-          <el-input placeholder="搜索" v-model="searchValue" prefix-icon="Search" />
-        </div>
-      </el-header> -->
-      <el-main class="main-content">
-        <div v-if="isRouterAlive">
-          <el-row :gutter="12" v-loading="loading" v-if="cardActive">
-            <!-- date遍历循环的数据 -->
-            <el-col :span="4" v-for="item in pageStore.tableData" :key="item.id">
-              <el-card shadow="hover"
-                ><!--style="background-color: #5daf34"  灰 #e1e1e1 绿 #5daf34-->
-                <!-- 卡片的头部位 -->
-                <template #header>
-                  <div class="card-header">
-                    <!-- 
+        <el-button type="primary" @click="deleteStagings">删除</el-button>
+        <el-button type="primary" @click="createOrderByStaging">购买</el-button>
+      </template>
+    </MarketCard>
+    <div v-if="isRouterAlive">
+      <el-row :gutter="12" v-loading="loading" v-if="cardActive">
+        <!-- date遍历循环的数据 -->
+        <el-col :span="4" v-for="item in pageStore.tableData" :key="item.id">
+          <el-card shadow="hover"
+            ><!--style="background-color: #5daf34"  灰 #e1e1e1 绿 #5daf34-->
+            <!-- 卡片的头部位 -->
+            <template #header>
+              <div class="card-header">
+                <!-- 
               	这里声明一下,我在多选时,往数组中添加的是对象
               	label属性:是多选框的值,若该标签中无内容,则该属性也充当 checkbox 按钮后的介绍
               	@change:改变事件,多选框勾选和取消勾选都会触发事件,所以在取消勾选时要删除勾选状态下的值
               -->
-                    <el-checkbox
-                      v-model="item.checked"
-                      :label="item.id"
-                      @change="checkedChange(item)"
-                      >{{ item.merchandise.caption }}</el-checkbox
-                    >
+                <el-checkbox
+                  v-model="item.checked"
+                  :label="item.id"
+                  @change="checkedChange(item)"
+                  >{{ item.merchandise.caption }}</el-checkbox
+                >
 
-                    <div @click="gotoApp(item.market)"> >>{{ item.market.name }} </div>
-                    <!-- <el-button class="button" text>Operation button</el-button> -->
-                    <el-icon><Close @click="deleteStaging(item.id)" /></el-icon>
-                  </div>
-                </template>
-                <!-- 卡片显示的内容 -->
-                <div>
-                  <img
-                    src="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png"
-                    class="image"
-                  />
-                  <div style="padding: 14px">
-                    <span>{{ item.merchandise.information }}</span
-                    ><span style="color: red; padding: 60px; font-size: 18px"
-                      >¥{{ item.merchandise.price }}</span
-                    >
-                    <div class="bottom">
-                      <time class="time">{{ new Date() }}</time>
-                      <el-button text class="button"
-                        ><el-input-number
-                          v-loading="loading"
-                          v-model="item.number"
-                          :min="1"
-                          @change="numChange(item)"
-                      /></el-button>
-                    </div>
-                  </div>
+                <div @click="gotoApp(item.market)"> >>{{ item.market.name }} </div>
+                <!-- <el-button class="button" text>Operation button</el-button> -->
+                <el-icon><Close @click="deleteStaging(item.id)" /></el-icon>
+              </div>
+            </template>
+            <!-- 卡片显示的内容 -->
+            <div>
+              <img
+                src="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png"
+                class="image"
+              />
+              <div style="padding: 14px">
+                <span>{{ item.merchandise.information }}</span
+                ><span style="color: red; padding: 60px; font-size: 18px"
+                  >¥{{ item.merchandise.price }}</span
+                >
+                <div class="bottom">
+                  <time class="time">{{ new Date() }}</time>
+                  <el-button text class="button"
+                    ><el-input-number
+                      v-loading="loading"
+                      v-model="item.number"
+                      :min="1"
+                      @change="numChange(item)"
+                  /></el-button>
                 </div>
-              </el-card>
-            </el-col>
-          </el-row>
-          <el-table
-            :data="pageStore.tableData"
-            stripe
-            @select="handleSelect"
-            v-if="!cardActive"
-            @select-all="checkAll"
-          >
-            <el-table-column type="selection" width="50" />
-            <el-table-column prop="caption" label="商品名称" />
-            <el-table-column prop="information" label="商品信息" />
-            <el-table-column prop="sellAuth" label="出售权益" />
-            <el-table-column prop="days" label="期限" />
-            <el-table-column prop="price" label="价格" />
-            <el-table-column prop="number" label="数量" />
-            <el-table-column prop="marketName" label="市场名称" />
-            <el-table-column prop="marketCode" label="市场编号" />
-          </el-table>
-        </div>
-      </el-main>
-      <el-footer class="footer">
-        <div class="send-box">
-          <el-button type="warning" @click="deleteStagings">删除</el-button>
-          <el-button type="warning" @click="createOrderByStaging">购买</el-button>
-        </div>
-      </el-footer>
-    </el-container>
+              </div>
+            </div>
+          </el-card>
+        </el-col>
+      </el-row>
+      <el-table
+        ref="shopcarTableRef"
+        :data="pageStore.tableData"
+        stripe
+        @select="handleSelect"
+        @row-click="handleRowClick"
+        v-if="!cardActive"
+        @select-all="checkAll"
+      >
+        <el-table-column type="selection" width="50" />
+        <el-table-column prop="caption" label="商品名称" />
+        <el-table-column prop="information" label="商品信息" />
+        <el-table-column prop="sellAuth" label="出售权益" />
+        <el-table-column prop="days" label="期限" />
+        <el-table-column prop="price" label="价格" />
+        <el-table-column prop="number" label="数量" />
+        <el-table-column prop="marketName" label="市场名称" />
+        <el-table-column prop="marketCode" label="市场编号" />
+        <el-table-column prop="name" label="操作" width="200">
+          <template #default="scope">
+            <el-button type="primary" @click="deleteStaging(scope.row.id)">删除</el-button>
+            <el-button type="primary" @click="createOrderByStaging(scope.row.id)">购买</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <el-pagination
+        class="page-pagination"
+        @size-change="(e) => handlePaginationChange(e, 'limit')"
+        @current-change="(e) => handlePaginationChange(e, 'current')"
+        small
+        background
+        :page-sizes="pageSizes"
+        v-model:currentPage="pagination.current"
+        v-model:page-size="pagination.limit"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="pageStore.total"
+      ></el-pagination>
+    </div>
   </div>
 </template>
 
@@ -195,6 +133,8 @@ import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { PAGE_SIZES, PAGE_NUM } from '@/constant'
+import { ElTable } from 'element-plus'
+import moment from 'moment'
 const router = useRouter()
 // 表格分页数据
 const pagination: { current: number; limit: number } = reactive({ current: 1, limit: PAGE_NUM })
@@ -213,6 +153,11 @@ onMounted(() => {
 })
 // 会话列表搜索关键字
 const searchValue = ref<string>('')
+const shopcarTableRef = ref<InstanceType<typeof ElTable>>()
+//点击行触发，选中或不选中复选框
+const handleRowClick = (row: any) => {
+  shopcarTableRef.value!.toggleRowSelection(row, undefined)
+}
 
 //查询
 const getTableList = async () => {
@@ -251,6 +196,7 @@ const getTableList = async () => {
           }
         }
       )
+
       console.log('pageStore.tableData', pageStore.tableData)
       isRouterAlive.value = true
     })
@@ -297,9 +243,23 @@ const handlePaginationChange = (newVal: number, type: 'current' | 'limit') => {
   getTableList()
 }
 
+function getUuid() {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+    var r = (Math.random() * 16) | 0,
+      v = c == 'x' ? r : (r & 0x3) | 0x8
+    return v.toString(16)
+  })
+}
+
 //创建订单(批量)
-const createOrderByStaging = async () => {
-  var checkedStagIds = pageStore.tableData.filter((item) => item.checked).map((item) => item.id)
+const createOrderByStaging = async (checkedId?: string) => {
+  var checkedStagIds = []
+  if (checkedId) {
+    checkedStagIds = [checkedId]
+  } else {
+    checkedStagIds = pageStore.tableData.filter((item) => item.checked).map((item) => item.id)
+  }
+  // var checkedStagIds = pageStore.tableData.filter((item) => item.checked).map((item) => item.id)
   console.log(checkedStagIds)
   if (checkedStagIds.length <= 0) {
     ElMessage({
@@ -311,8 +271,8 @@ const createOrderByStaging = async () => {
   await $services.market
     .createOrderByStaging({
       data: {
-        name: '订单22',
-        code: 'order22',
+        name: moment().format('YYYY-MM-DD hh:mm:ss') + '的订单',
+        code: getUuid(),
         stagIds: checkedStagIds
       }
     })
@@ -341,19 +301,21 @@ const deleteStagings = () => {
   //要改为并发删除
   for (let item of pageStore.tableData) {
     if (item.checked) {
-      $services.market.deleteStaging({
-        data: {
-          id: item.id
-        }
-      }).then((res: ResultType) => {
-      if (res.code == 200) {
-        getTableList()
-        ElMessage({
-          message: '移除成功',
-          type: 'warning'
+      $services.market
+        .deleteStaging({
+          data: {
+            id: item.id
+          }
         })
-      }
-    })
+        .then((res: ResultType) => {
+          if (res.code == 200) {
+            getTableList()
+            ElMessage({
+              message: '移除成功',
+              type: 'warning'
+            })
+          }
+        })
     }
   }
 }
@@ -442,15 +404,15 @@ const checkedChange = (item: any) => {
   top: 60px;
   position: absolute;
 }
-.top_1 {
+/* .top_1 {
   display: inline-block;
   margin-right: 10px;
-}
-.top {
+} */
+/* .top {
   display: inline-block;
   height: 100%;
   margin-right: 10px;
-}
+} */
 
 .group-side-bar-search {
   padding: 6px;
@@ -480,5 +442,11 @@ const checkedChange = (item: any) => {
   justify-content: flex-end;
   text-align: center;
   margin-left: 30px;
+}
+
+.page-pagination {
+  padding: 10px 0;
+  display: flex;
+  justify-content: end;
 }
 </style>
