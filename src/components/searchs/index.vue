@@ -8,6 +8,7 @@
   >
     <el-input v-model="value" @input="remoteMethod" placeholder="请输入" />
     <diytab
+      :style="{height:300+'px'}"
       ref="diyTable"
       :hasTableHead="true"
       :tableData="list"

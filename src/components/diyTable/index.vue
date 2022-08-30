@@ -136,7 +136,7 @@
     hasTabs: boolean
     tableHead: any[]
     tableData: any[]
-    checkList: any[]
+    checkList?: any[]
     options: {
       expandAll?: boolean
       checkBox?: any
