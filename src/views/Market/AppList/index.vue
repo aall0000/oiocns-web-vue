@@ -2,7 +2,7 @@
   <div class="market-layout">
     <MarketCard>
       <template #right>
-        <el-button type="primary" @click="GoPage('/market/userApply')">我的申请</el-button>
+        <!-- <el-button type="primary" @click="GoPage('/market/userApply')">我的申请</el-button> -->
         <el-button type="primary" @click="GoPage('/market/managerApproval')">申请审批</el-button>
         <el-button type="primary" @click.stop="linkOrder()">我的订单</el-button>
         <el-button type="primary" @click.stop="linkShopCar()">购物车</el-button>
@@ -227,6 +227,7 @@
           .then((res: ResultType) => {
             if (res.code == 200) {
               getJoinMarketData()
+              getJoinMarketData()
               ElMessage({
                 message: '退出成功',
                 type: 'success'
@@ -274,11 +275,11 @@
   const options = [
     {
       value: true,
-      label: 'true'
+      label: '是'
     },
     {
       value: false,
-      label: 'false'
+      label: '否'
     }
   ]
   //创建市场
