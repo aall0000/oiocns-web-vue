@@ -15,8 +15,8 @@
             v-for="child in item.chats" :key="child.id" v-if="openIdArr.includes(item.id)"
             @contextmenu.prevent.stop="(e: MouseEvent) => handleContextClick(e, child)">
             <HeadImg :name="child.name" :label="child.label" />
-            <div class="group-con-dot" v-show="ohterData.messageNoReadMap[child.id]">
-              <span>{{ ohterData.messageNoReadMap[child.id] }}</span>
+            <div class="group-con-dot" v-if="ohterData.messageNoReadMap[item.id] && ohterData.messageNoReadMap[item.id][child.id]">
+              <span>{{ ohterData.messageNoReadMap[item.id][child.id]}}</span>
               <!-- <span>{{ child.count }}</span> -->
             </div>
             <div class="group-con-show" @click="changeInfo(child, item.id)">
@@ -34,11 +34,11 @@
             </div>
           </div>
           <div :class="['con-body', props.active.spaceId === item.id && props.active.id === child.id ? 'active' : '']"
-            v-for="child in item.chats.filter(v => ohterData.messageNoReadMap[v?.id] > 0)" :key="child.id + child.name" v-else
+            v-for="child in item.chats.filter(v => ohterData.messageNoReadMap[item.id] && ohterData.messageNoReadMap[item.id][v?.id] > 0)" :key="child.id + child.name" v-else
             @contextmenu.prevent.stop="(e: MouseEvent) => handleContextClick(e, child)">
             <HeadImg :name="child.name" :label="child.label" />
-            <div class="group-con-dot" v-show="ohterData.messageNoReadMap[child.id] > 0">
-              <span>{{ ohterData.messageNoReadMap[child.id] }}</span>
+            <div class="group-con-dot" v-if="ohterData.messageNoReadMap[item.id] && ohterData.messageNoReadMap[item.id][child.id] > 0">
+              <span>{{ ohterData.messageNoReadMap[item.id][child.id] }}</span>
             </div>
             <div class="group-con-show" @click="changeInfo(child, item.id)">
               <el-tooltip class="box-item" :disabled="child.name.length < 7" :content="child.name"

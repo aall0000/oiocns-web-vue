@@ -37,33 +37,7 @@
   import CustomHeadr from './components/customHeader.vue'
   import MainAsideVue from './components/mainAside.vue'
   import Breadcrumb from './components/breadcrumb.vue'
-  import Menu from './components/menu.vue'
-  import UserAside from './msgLayout/userAside.vue'
   import LoadingVue from './components/loading.vue'
-
-  import { useRouter } from 'vue-router'
-  import { ref, watch } from 'vue'
-
-  const router = useRouter()
-  const isShowPersonalMenu = ref<boolean>(false)
-
-  const showArr: string[] = [
-    '/user/userMsg',
-    '/user/userUnit',
-    '/user/userAccountBind',
-    '/user/userSaveSet',
-    '/user/test',
-    '/company/unitMsg',
-    '/company/affiliatedGroups'
-  ]
-  watch(
-    () => router.currentRoute.value.path,
-    (newValue, oldValue) => {
-      // console.log('watchrouter', newValue)
-      isShowPersonalMenu.value = showArr.includes(newValue)
-    },
-    { immediate: true }
-  )
 </script>
 
 <style lang="scss" scoped>

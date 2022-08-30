@@ -13,7 +13,10 @@
   // --el-color-primary: #3e5ed8;
 }
 
-
+html.dark {
+  --el-color-primary: #3e5ed8;
+  --el-bg-color: #141414;
+}
 .iconfont {
   position: relative;
   display: inline-block;

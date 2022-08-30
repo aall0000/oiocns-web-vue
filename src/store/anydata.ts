@@ -44,7 +44,7 @@ type WorkSpaceType = {
 
 export const useAnyData = defineStore({
     id: "userAnyData",
-    state: (): { workspace: WorkSpaceType, messageNoReadMap: Record<string, number> } => {
+    state: (): { workspace: WorkSpaceType, messageNoReadMap: Record<string, Record<string, number>> } => {
         return {
             workspace: null,
             messageNoReadMap: {}
@@ -82,9 +82,9 @@ export const useAnyData = defineStore({
             this.workspace = data
         },
         // 更新已读未读消息数量
-        updateMessageNoread(userid: string, count: number) {
+        updateMessageNoread({groupid,userid,count}: {groupid:string,userid: string, count: number}) {
             const newCount = (this.messageNoReadMap[userid] || 0) + count
-            anyStore.set(`message.noread.${userid}`,
+            anyStore.set(`message.noread.${groupid}.${userid}`,
             {
                 operation: 'replaceAll',
                 data: newCount
