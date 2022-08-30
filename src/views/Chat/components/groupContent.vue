@@ -6,7 +6,7 @@
       <div class="chats-space-Time"
         v-if="index == 0 || moment(item?.updateTime).diff(list[index - 1].updateTime, 'minute') > 3">
         <span>
-          {{ showChatTime(item?.updateTime) }}
+          {{  showChatTime(item?.updateTime)  }}
         </span>
       </div>
       <!-- 左侧聊天内容显示 -->
@@ -96,8 +96,8 @@ const handleReWrite = (txt: string) => {
 const showChatTime = (chatDate: moment.MomentInput) => {
   const formatTime = moment(chatDate).format('MM月DD日 a hh:mm')
   const formatTimeArr = formatTime.split(' ')
-  const showText = {am:'上午 ',pm:'下午 '}[formatTimeArr[1]]+ formatTimeArr[2]
-  if(!moment(chatDate).isBefore(moment(),'day')){ // 今天
+  const showText = { am: '上午 ', pm: '下午 ' }[formatTimeArr[1]] + formatTimeArr[2]
+  if (!moment(chatDate).isBefore(moment(), 'day')) { // 今天
     return showText
   }
   return formatTimeArr[0] + ' ' + showText // 今天之前
@@ -204,15 +204,15 @@ defineExpose({
   .chats-space-Time {
     margin: 0 auto;
     text-align: center;
+
     span {
-      background: var(--el-bg-color);
       border-radius: 4px;
       font-size: 12px;
       display: inline-block;
-      background: var(--el-bg-color);
-      border-radius: 4px; 
-     font-size: 12px;
-     padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      padding: 2px 8px;
+      color: var(--el-text-color-placeholder);
     }
   }
 
