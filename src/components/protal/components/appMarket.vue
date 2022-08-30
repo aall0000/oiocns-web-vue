@@ -29,7 +29,7 @@ export default defineComponent({
   position: relative;
   width: 100%;
   height: 100%;
-  background: #fff;
+  background: var(--el-bg-color-overlay);
   display: flex;
   align-items: center;
   min-height: 120px;

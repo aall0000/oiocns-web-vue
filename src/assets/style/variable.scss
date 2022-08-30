@@ -56,5 +56,29 @@ $mainColor: #3e5ed8;
       'base': $--color-primary
     ),
   ),
+  $bg-color:(
+    'page': #f1f1f8
+  )
 );
+// @forward 'element-plus/theme-chalk/src/dark/common-var.scss' with (
+//   $colors: (
+//     'primary': (
+//       'base': $--color-primary
+//     ),
+//   ),
+//   $bg-color:(
+//     'page': #141414
+//   )
+// );
+
+// @forward 'element-plus/theme-chalk/src/dark/var.scss' with (
+//   $colors: (
+//     'primary': (
+//       'base': $--color-primary
+//     ),
+//   ),
+//   // $bg-color:(
+//   //   'page': #f1f1f8
+//   // )
+// );
 // @use "element-plus/theme-chalk/src/index.scss" as *;

@@ -59,11 +59,9 @@ import {
   inject
 } from 'vue'
 import { debounce } from '@/utils/tools'
-import { formatTimeAgo } from '@/utils/index'
 import { useUserStore } from '@/store/user'
 import HeadImg from '@/components/headImg.vue'
 import moment from 'moment'
-import { format } from 'path'
 
 type Props = {
   list: any[] //消息列表
@@ -148,7 +146,7 @@ const mousePosition: {
   selectedItem: ImMsgChildType
 } = reactive({ left: 0, top: 0, isShowContext: false, selectedItem: {} as ImMsgChildType })
 const handleContextClick = (e: MouseEvent, item: ImMsgChildType) => {
-  console.log('otem', item, new Date(item.createTime));
+  // console.log('otem', item, new Date(item.createTime));
   // let bool= new Date(item.createTime) - new Date()
 
   if (!item) {
