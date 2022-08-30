@@ -1,25 +1,32 @@
 <template>
   <div class="container">
-    <el-button-group style="padding: 10px;">
-      <!-- <el-button type="primary" @click="getTableList('all')">全部</el-button> -->
+    <MarketCard>
+      <template #right>
+        <el-button type="primary" @click="getTableList('buy')">已购入</el-button>
+        <el-button type="primary" @click="getTableList('sell')">已卖出</el-button>
+        <!-- <div class="group-side-bar-search">
+      <el-input placeholder="搜索" v-model="searchValue" prefix-icon="Search" />
+    </div> -->
+      </template>
+    </MarketCard>
+    <!-- <el-button-group style="padding: 10px;">
       <el-button type="primary" @click="getTableList('buy')">已购入</el-button>
       <el-button type="primary" @click="getTableList('sell')">已卖出</el-button>
-      <el-button type="primary" @click="getTableList('pre-sell')">待审批</el-button>
-    </el-button-group>
+    </el-button-group> -->
 
-    <div class="group-side-bar-search">
-      <el-input placeholder="搜索" v-model="searchValue" prefix-icon="Search" />
-    </div>
     <div class="tab-list">
-      <el-table :data="state.orderList" stripe @select="handleSelect">
+      <el-table :data="state.orderList" stripe @select="handleSelect" ref="orderTableRef" @row-click="handleRowClick">
         <el-table-column type="selection" width="50" />
         <el-table-column prop="code" label="订单号" />
         <el-table-column prop="name" label="名称" />
         <el-table-column prop="number" label="数量" />
         <el-table-column prop="marketCode" label="市场编号" />
         <el-table-column prop="marketName" label="市场名称" />
-        <el-table-column prop="status" label="状态" 
-        :formatter="(row, column) => renderDict(row, column,'OrderStatus')"/>
+        <el-table-column
+          prop="status"
+          label="状态"
+          :formatter="(row, column) => renderDict(row, column, 'OrderStatus')"
+        />
         <el-table-column prop="name" label="操作" width="600">
           <template #default="scope">
             <el-button
@@ -66,7 +73,6 @@
             >
           </template>
         </el-table-column>
-        
       </el-table>
       <payView v-if="payDialog.show" :order="payDialog.data" @close="closePay"></payView>
       <el-pagination
@@ -89,9 +95,10 @@ import $services from '@/services'
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { PAGE_SIZES, PAGE_NUM } from '@/constant'
-import renderDict from '@/services/dict' 
+import renderDict from '@/services/dict'
 import payView from '@/components/pay/pay.vue'
-
+import { ElTable } from 'element-plus'
+import moment from 'moment'
 // 表格分页数据
 const pagination: { current: number; limit: number } = reactive({ current: 1, limit: PAGE_NUM })
 // 表格展示数据
@@ -105,6 +112,11 @@ const payDialog = reactive({ show: false, data: {} })
 const remoteOperate = ref<boolean>(false)
 const handleSelect = (key: string, keyPath: string[]) => {
   console.log(key, keyPath)
+}
+const orderTableRef = ref<InstanceType<typeof ElTable>>()
+//点击行触发，选中或不选中复选框
+const handleRowClick = (row: any) => {
+  orderTableRef.value!.toggleRowSelection(row, undefined)
 }
 // 会话列表搜索关键字
 const searchValue = ref<string>('')
@@ -149,7 +161,7 @@ const searchPreSellList = async () => {
       }
     })
     .then((res: ResultType) => {
-            const { result = [], total = 0 } = res.data
+      const { result = [], total = 0 } = res.data
       // var result: any = [
       //   {
       //     id: '348129171096636636',
@@ -353,7 +365,7 @@ const searchBuyList = async () => {
       }
     })
     .then((res: ResultType) => {
-            const { result = [], total = 0 } = res.data
+      const { result = [], total = 0 } = res.data
       // var result = [
       //   {
       //     id: '348129171098177536',
@@ -502,7 +514,7 @@ const sureContent = (id: string) => {
   })
 }
 //支付
-const showPay = async (data:any) => {
+const showPay = async (data: any) => {
   payDialog.data = data
   payDialog.show = true
 }
@@ -550,7 +562,7 @@ const cancelOrder = async (id: string) => {
           message: '取消订单成功',
           type: 'warning'
         })
-      } 
+      }
     })
 }
 //确认发货
@@ -569,7 +581,7 @@ const delivery = async (id: string) => {
           message: '确认发货成功',
           type: 'success'
         })
-      } 
+      }
     })
 }
 //确认收货
@@ -588,7 +600,7 @@ const accept = async (id: string) => {
           message: '确认收货成功',
           type: 'success'
         })
-      } 
+      }
     })
 }
 //评论
@@ -681,10 +693,11 @@ const remoteMethod = (query: string) => {
   }
 
   .group-side-bar-search {
-    padding: 10px;
+    // padding: 10px;
     float: right;
     width: 300px;
     margin-right: 20px;
+    margin-left: 20px;
     position: relative;
   }
 }

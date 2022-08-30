@@ -59,8 +59,6 @@ declare module '@vue/runtime-core' {
     ElTag: typeof import('element-plus/es')['ElTag']
     ElTooltip: typeof import('element-plus/es')['ElTooltip']
     ElTree: typeof import('element-plus/es')['ElTree']
-    Friend: typeof import('./src/components/search/friend.vue')['default']
-    Group: typeof import('./src/components/search/group.vue')['default']
     Head: typeof import('./src/components/protal/components/head.vue')['default']
     HeadImg: typeof import('./src/components/headImg.vue')['default']
     Invitate: typeof import('./src/components/protal/components/invitate.vue')['default']
