@@ -107,6 +107,7 @@ const handleTabsEdit = (targetName: TabPanelName, action: 'remove' | 'add') => {
 
 <style lang="scss" scoped>
 :deep(.el-tabs) {
+  padding: 2px;
   height: 100%;
 }
 
@@ -119,7 +120,7 @@ const handleTabsEdit = (targetName: TabPanelName, action: 'remove' | 'add') => {
 }
 
 :deep(.el-tabs__nav .el-tabs__item:nth-child(1) .el-icon) {
-  display: none;
+  // display: none;
 }
 
 .addImg {
@@ -139,14 +140,14 @@ const handleTabsEdit = (targetName: TabPanelName, action: 'remove' | 'add') => {
 }
 
 :deep(.el-tabs--card > .el-tabs__header) {
-  // border: unset;
-  border-bottom: 0;
+  border: unset;
+  // border-bottom: 0;
 }
 
 :deep(.el-tabs__content) {
   overflow: auto;
   // height: calc(100vh - 102px);
-  background-color: rgb(241, 241, 248);
+  background-color: var(--el-bg-color-page);//  rgb(241, 241, 248);
   clear: both;
 }
 
@@ -155,7 +156,7 @@ const handleTabsEdit = (targetName: TabPanelName, action: 'remove' | 'add') => {
 }
 
 :deep(.el-tabs) {
-  background: #fff;
+  background: var(--el-bg-color-overlay);
 }
 
 :deep(.el-tabs__header) {
@@ -170,7 +171,7 @@ const handleTabsEdit = (targetName: TabPanelName, action: 'remove' | 'add') => {
   width: 100%;
   height: calc(100vh - 102px);
   // height: 100%;
-  background-color: rgb(241, 241, 248);
+  background-color: #f1f1f8;
 }
 
 .demo-tabs>.el-tabs__content {

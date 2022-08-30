@@ -8,7 +8,7 @@
         <Info ref="info" @refresh="refresh"/>
       </div>
       <div class="body" ref="bodyWrap" :style="{height:tabHeight+'px'}">
-        <User ref="body" :selectItem="{}" :tabHeight='tabHeight'/>
+        <User ref="body" :selectItem="selectItem" :tabHeight='tabHeight'/>
       </div>
     </div>
   </div>
@@ -22,8 +22,10 @@
   const identity = ref(null);
   const info = ref(null);
   const body = ref(null);
+  const selectItem = ref({})
   // 左侧点击
   const itemClick = (selectItem: any)=>{
+    selectItem.value = selectItem;
     info.value.selectItemChange(selectItem);
     body.value.selectItemChange(selectItem);
   }

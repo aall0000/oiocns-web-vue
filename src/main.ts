@@ -7,7 +7,9 @@ import setupGlobalComponent from '@/components/global'
 import setupSvgIcon from '@/icons'
 import { createPinia } from 'pinia'
 import anyStore from '@/utils/hubConnection'
-// import '@/assets/style/app.scss'
+// 夜间模式 
+import '@/assets/style/element.dark.scss'
+import 'element-plus/theme-chalk/dark/css-vars.css'
 
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import InfiniteScroll from 'element-plus'

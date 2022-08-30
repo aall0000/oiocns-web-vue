@@ -16,7 +16,7 @@
         <div style="width: 100%; height: 100%">
           <DiyTable
             ref="diyTable"
-            :hasTableHead="true"
+            :hasTableHead="false"
             :tableData="users"
             :checkList="[]"
             @handleUpdate="handleUpdate"
@@ -309,14 +309,17 @@ const cardHeight = ref(null)
 const tableHeight = ref<number>(100)
 onMounted(() => {
   getUsers()
-  nextTick(()=>{
-    let headerHeight = cardHeight.value?.clientHeight
-    tableHeight.value = headerHeight
-  })
+  
+
 })
 
 watch(props, () => {
   getUsers()
+  setTimeout(() => {
+    let headerHeight = cardHeight.value?.clientHeight
+    console.log('aaaa',headerHeight)
+    tableHeight.value = headerHeight 
+  }, 100);
 });
 
 </script>

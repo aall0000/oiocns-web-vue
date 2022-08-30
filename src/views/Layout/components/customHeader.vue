@@ -5,36 +5,32 @@
       <div style="display: flex; align-items: center" @mouseleave="handleClose()">
         <!-- <img class="logo" src="@/assets/img/avatar.jpg" alt="logo" /> -->
         <div class="select-item__imgSelect" style="margin-right: 10px;">
-          {{ workspaceData?.name.slice(0, 1)}}
+          {{  workspaceData?.name.slice(0, 1) }}
         </div>
         <div class="col-box" @click="onClickUnit">
-          <div class="col-text">{{ workspaceData?.name || '' }}</div>
-          <div class="col-icon"
-            ><el-icon
-              ><CaretBottom
-                :style="
-                  btnType
-                    ? 'transform: rotate(180deg);transition: all 0.5s;'
-                    : 'transform: rotate(0);transition: all 0.5s;'
-                " /></el-icon
-          ></div>
+          <div class="col-text">{{  workspaceData?.name || ''  }}</div>
+          <div class="col-icon">
+            <el-icon>
+              <CaretBottom :style="
+                btnType
+                  ? 'transform: rotate(180deg);transition: all 0.5s;'
+                  : 'transform: rotate(0);transition: all 0.5s;'
+              " />
+            </el-icon>
+          </div>
         </div>
         <div>
           <div class="select-drop" :style="getDropMenuStyle">
             <div class="select-box" v-infinite-scroll="load" infinite-scroll-immediate>
-              <div
-                class="seletc-drop__box"
-                v-for="item in store.userCompanys"
-                :key="item.id"
-                @click="switchCompany(item)"
-              >
+              <div class="seletc-drop__box" v-for="item in store.userCompanys" :key="item.id"
+                @click="switchCompany(item)">
                 <div class="select-drop__flex">
                   <div class="select-item__imgSelect">
-                    {{ item.team ? item.team.name.slice(0, 1) : item.name.slice(0, 1) }}
+                    {{  item.team ? item.team.name.slice(0, 1) : item.name.slice(0, 1)  }}
                   </div>
                   <div class="select-item__titleSelect">{{
-                    item.team ? item.team.name : item.name
-                  }}</div>
+                     item.team ? item.team.name : item.name 
+                    }}</div>
                 </div>
               </div>
             </div>
@@ -73,59 +69,50 @@
       </el-dropdown> -->
     </el-col>
     <!-- 右侧 -->
-    <el-col :span="12" class="col-center"
-      ><el-popover trigger="click" :visible="visible" placement="bottom" :width="950">
+    <el-col :span="12" class="col-center">
+      <el-popover trigger="click" :visible="visible" placement="bottom" :width="950">
         <template #reference>
-          <el-input
-            ref="searchRef"
-            class="right-con"
-            v-model="SearchInfo"
-            :style="{ width: '100%', height: '40px' }"
-            placeholder="请输⼊想搜索的功能"
-          >
+          <el-input ref="searchRef" class="right-con" v-model="SearchInfo" :style="{ width: '100%', height: '40px' }"
+            placeholder="请输⼊想搜索的功能">
             <template #prepend>
               <el-button :icon="Search" @click="showSearchInfo" />
             </template>
           </el-input>
         </template>
-        <SearchDialog></SearchDialog> </el-popover
-    ></el-col>
+        <SearchDialog></SearchDialog>
+      </el-popover>
+    </el-col>
     <el-col :span="8" class="flex col-right">
-      <el-dropdown trigger="click">
-        <span class="el-dropdown-link">
-          <headImg :name="queryInfo.name" :limit="1" :imgWidth="40" :isSquare="false"></headImg>
-          <span>{{ queryInfo.name }}</span>
-          <el-icon style="margin-left: 15px">
-            <CaretBottom />
-          </el-icon>
-        </span>
-        <template #dropdown>
-          <el-dropdown-menu>
-            <el-dropdown-item @click="toWork">首页配置</el-dropdown-item>
-            <el-dropdown-item @click="toSetting">信息设置</el-dropdown-item>
-            <el-dropdown-item >帮助中心 </el-dropdown-item>
-            <el-dropdown-item >切换语言 </el-dropdown-item>
-            <el-dropdown-item >切换主题 </el-dropdown-item>
-            <el-dropdown-item @click="exitLogin">退出登录</el-dropdown-item>
-          </el-dropdown-menu>
-        </template>
-      </el-dropdown>
+      <el-space>
+        <!-- <el-switch v-model="isDark" active-icon="Moon" inactive-icon="Sunny" inline-prompt></el-switch> -->
+        <el-dropdown trigger="click">
+          <span class="el-dropdown-link">
+            <headImg :name="queryInfo.name" :limit="1" :imgWidth="40" :isSquare="false"></headImg>
+            <span>{{  queryInfo.name  }}</span>
+            <el-icon style="margin-left: 15px">
+              <CaretBottom />
+            </el-icon>
+          </span>
+          <template #dropdown>
+            <el-dropdown-menu>
+              <el-dropdown-item @click="toWork">首页配置</el-dropdown-item>
+              <el-dropdown-item @click="toSetting">信息设置</el-dropdown-item>
+              <el-dropdown-item>帮助中心 </el-dropdown-item>
+              <el-dropdown-item>切换语言 </el-dropdown-item>
+              <el-dropdown-item >切换主题 </el-dropdown-item>
+              <el-dropdown-item @click="exitLogin">退出登录</el-dropdown-item>
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
+      </el-space>
     </el-col>
   </el-row>
-  <searchCompany v-if="searchDialog" @closeDialog="closeDialog" :serachType="3"  @checksSearch='checksSearch'></searchCompany>
+  <searchCompany v-if="searchDialog" @closeDialog="closeDialog"  @checkFriend='checksSearch'></searchCompany>
   <template v-for="item in dialogShow" :key="item.key">
-    <CreateUnitDialog
-      v-if="item.key == 'unit' && item.value"
-      :dialogShow="item"
-      @closeDialog="closeDialog"
-      @switchCreateCompany="switchCreateCompany"
-    ></CreateUnitDialog>
-    <SearchDialog
-      v-if="item.key == 'search' && item.value"
-      :dialogShow="item"
-      :search="SearchInfo"
-      @closeDialog="closeDialog"
-    ></SearchDialog>
+    <CreateUnitDialog v-if="item.key == 'unit' && item.value" :dialogShow="item" @closeDialog="closeDialog"
+      @switchCreateCompany="switchCreateCompany"></CreateUnitDialog>
+    <SearchDialog v-if="item.key == 'search' && item.value" :dialogShow="item" :search="SearchInfo"
+      @closeDialog="closeDialog"></SearchDialog>
   </template>
 </template>
 
@@ -144,6 +131,11 @@
   import JoinUnitDialog from './joinUnitDialog.vue'
   import SearchDialog from './searchDialog.vue'
   import headImg from '@/components/headImg.vue'
+  import { useDark, useToggle } from '@vueuse/core'
+
+  const isDark = useDark()
+  const toggleDark = useToggle(isDark)
+
   const store = useUserStore()
   const SearchInfo = ref('')
   const router = useRouter()
@@ -155,15 +147,15 @@
   const workspaceData = store.workspaceData
   const dropdown = ref()
 
-  const getDropMenuStyle = computed(() => {
-    if (!btnType.value) {
-      return 'height:0px'
-    } else {
-      let height = store.userCompanys.length < 6 ? store.userCompanys.length : 6
-      return store.userCompanys.length ? 'height:' + (height * 45 + 70) + 'px;' : 'height:80px'
-      debugger
-    }
-  })
+const getDropMenuStyle = computed(() => {
+  if (!btnType.value) {
+    return 'height:0px'
+  } else {
+    let height = store.userCompanys.length < 6 ? store.userCompanys.length : 6
+    return store.userCompanys.length ? 'height:' + (height * 45 + 60) + 'px;' : 'height:80px'
+    debugger
+  }
+})
 
   const load = () => {
     let currentPage = 0
@@ -304,149 +296,167 @@
         if (res.code == 200) {
           sessionStorage.setItem('TOKEN', res.data.accessToken)
 
-          store.getQueryInfo(res.data.accessToken)
-          store.getWorkspaceData(res.data.workspaceId).then(() => {
-            location.reload()
-          })
-        } else {
-          ElMessage({
-            message: res.msg,
-            type: 'warning'
-          })
-        }
-      })
+        store.getQueryInfo(res.data.accessToken)
+        store.getWorkspaceData(res.data.workspaceId).then(() => {
+          location.reload()
+        })
+      } else {
+        ElMessage({
+          message: res.msg,
+          type: 'warning'
+        })
+      }
+    })
+}
+const toWork = () => {
+  router.push('/workHome')
+}
+const toSetting = () => {
+  if (store.workspaceData.name === '个人空间') {
+    router.push('/user')
+  } else {
+    router.push('/company')
   }
-  const toWork = ()=>{
-      router.push('/workHome')
-  }
-  const toSetting = () => {
-    if (store.workspaceData.name === '个人空间') {
-      router.push('/user')
-    } else {
-      router.push('/company')
-    }
-  }
-  const exitLogin = () => {
-    sessionStorage.clear()
-    store.resetState()
-    router.push('/login')
-    //  取消该账号的未读消息订阅
-    UserOtherDataConnection.unSubscribed(`message.noread`)
-  }
+}
+const exitLogin = () => {
+  sessionStorage.clear()
+  store.resetState()
+  router.push('/login')
+  //  取消该账号的未读消息订阅
+  UserOtherDataConnection.unSubscribed(`message.noread`)
+}
 </script>
 
 <style lang="scss" scoped>
-  .select-box {
-    overflow: auto;
-  }
-  .col-text {
-    white-space: nowrap;
-    font-size: 16px;
-  }
-  .seletc-drop__box {
-    cursor: pointer;
-    height: 40px;
-    padding-left: 10px;
-    &:hover {
-      background: rgb(248, 247, 249);
-    }
-  }
-  .select-drop__flex {
-    display: flex;
-    margin: 10px;
-  }
-  .select-item__imgSelect {
-    height: 25px;
-    width: 25px;
-    border-radius: 50%;
-    background: #154ad8;
-    font-size: 15px;
-    color: #ffffff;
-    line-height: 25px;
-    text-align: center;
-  }
-  .select-item__titleSelect {
-    height: 25px;
-    line-height: 25px;
-    font-size: 16px;
-    font-weight: 400;
-    margin-right: 12px;
-    margin-left: 15px;
-  }
+.select-box {
+  overflow: auto;
+  padding-left: 8px;
+}
 
-  .select-drop {
-    position: absolute;
-    top: 60px;
-    left: -20px;
-    overflow: hidden;
-    background: #ffffff;
-    display: flex;
-    flex-direction: column;
-    transition: all 0.5s;
-    box-shadow: 0px 6px 9px rgba(0, 0, 0, 0.161);
-    border-radius: 0 0 4px 4px;
-    z-index: 2;
-    min-width: 250px;
+.col-text {
+  white-space: nowrap;
+  font-size: 16px;
+}
+
+.seletc-drop__box {
+  cursor: pointer;
+  // height: 40px;
+
+  &:hover {
+    background: rgb(248, 247, 249);
   }
-  .col-box {
-    cursor: pointer;
-    display: flex;
-    .el-icon {
-      margin-left: 10px;
-    }
+}
+
+.select-drop__flex {
+  display: flex;
+  padding:  10px;
+  align-items: center;
+  // margin: 10px;
+}
+
+.select-item__imgSelect {
+  height: 25px;
+  width: 25px;
+  border-radius: 50%;
+  background: #154ad8;
+  font-size: 15px;
+  color: #ffffff;
+  line-height: 25px;
+  text-align: center;
+}
+
+.select-item__titleSelect {
+  height: 25px;
+  line-height: 25px;
+  font-size: 16px;
+  font-weight: 400;
+  margin-right: 12px;
+  margin-left: 15px;
+}
+
+.select-drop {
+  position: absolute;
+  top: 60px;
+  left: -20px;
+  overflow: hidden;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.5s;
+  box-shadow: 0px 6px 9px rgba(0, 0, 0, 0.161);
+  border-radius: 0 0 4px 4px;
+  z-index: 2;
+  min-width: 250px;
+}
+
+.col-box {
+  cursor: pointer;
+  display: flex;
+
+  .el-icon {
+    margin-left: 10px;
   }
-  :deep(.el-popover.el-popper) {
-    width: 100%;
+}
+
+:deep(.el-popover.el-popper) {
+  width: 100%;
+}
+
+.joinBox {
+  display: flex;
+  border-top: 1px solid #e0e0e0;
+}
+
+.joinBtn {
+  margin: 10px;
+  display: flex;
+  height: 35px;
+  background: #ffffff;
+  text-align: center;
+  align-items: center;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 10px 20px;
+  color: rgba(0, 0, 0, 0.65);
+
+  // &:hover {
+  //   color: #154ad8;
+  // }
+}
+
+.el-dropdown-link {
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  .smallIcon {
+    font-size: 18px;
+    border-radius: 50px;
+    width: 20px;
+    transform: scale(0.7, 0.7);
   }
-  .joinBox {
+}
+
+.page-custom-header {
+  height: 60px;
+  line-height: 60px;
+
+  .el-col {
     display: flex;
-    border-top: 1px solid #e0e0e0;
-  }
-  .joinBtn {
-    margin: 10px;
-    display: flex;
-    height: 35px;
-    background: #ffffff;
-    text-align: center;
     align-items: center;
-    cursor: pointer;
-    font-size: 16px;
-    padding: 10px 20px;
-    color: rgba(0, 0, 0, 0.65);
-    &:hover {
-      color: #154ad8;
+  }
+
+  .logo {
+    margin-right: 10px;
+  }
+
+  .col-right {
+    justify-content: flex-end;
+
+    .right-con {
+      margin-right: 18px;
     }
   }
-  .el-dropdown-link {
-    cursor: pointer;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    .smallIcon {
-      font-size: 18px;
-      border-radius: 50px;
-      width: 20px;
-      transform: scale(0.7, 0.7);
-    }
-  }
-  .page-custom-header {
-    height: 60px;
-    line-height: 60px;
-
-    .el-col {
-      display: flex;
-      align-items: center;
-    }
-
-    .logo {
-      margin-right: 10px;
-    }
-    .col-right {
-      justify-content: flex-end;
-
-      .right-con {
-        margin-right: 18px;
-      }
-    }
-  }
+}
 </style>

@@ -15,7 +15,8 @@
             {{approvalNum}}
         </el-link>
       </div>
-      <div class="divide"></div>
+      <el-divider direction="vertical" style="height:40px;"/>
+      
       <div class="header-right-box">
         <div class="header-right-top">申请</div>
         <el-link class="header-right-btm" @click="jumpApproval('2')" :underline="false" >
@@ -121,16 +122,12 @@ const jumpApproval = (type:string)=>{
 </script>
 
 <style lang='scss' scoped>
-.divide {
-  width: 1px;
-  height: 40px;
-  background: rgb(233, 233, 233);
-}
+
 .header {
   width: 100%;
   height: 100%;
   // min-height: 90px;
-  background-color: #fff;
+  background-color: var(--el-bg-color-overlay);
   display: flex;
   justify-content: space-between;
   padding-right: 24px;
