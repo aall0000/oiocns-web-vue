@@ -444,7 +444,7 @@
       height: 100px; //避免el-table无限变高
       display: flex;
       flex: 1;
-      margin-top: 10px;
+      // margin-top: 10px;
 
       &-box {
         width: 1vw;

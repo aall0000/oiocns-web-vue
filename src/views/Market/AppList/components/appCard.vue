@@ -26,9 +26,9 @@
                 <div class="app-con-info">售卖权属：{{ item.sellAuth }}</div>
                 <!-- <div class="app-con-info">上架时间：{{ item.createTime.substring(0, 11) }}</div> -->
               </div>
-              <div class="app-card-item-con-desc"
-                ><p>{{ item.information }}</p></div
-              >
+              <div class="app-card-item-con-desc">
+                <p>{{ item.information }}</p>
+              </div>
             </template>
             <!-- <template #footer> -->
 
@@ -165,13 +165,13 @@
       })
   }
 
-function getUuid() {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-    var r = (Math.random() * 16) | 0,
-      v = c == 'x' ? r : (r & 0x3) | 0x8;
-    return v.toString(16);
-  });
-}
+  function getUuid() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+      var r = (Math.random() * 16) | 0,
+        v = c == 'x' ? r : (r & 0x3) | 0x8
+      return v.toString(16)
+    })
+  }
 
   const createOrder = async (item: any) => {
     console.log(item)
