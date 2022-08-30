@@ -252,22 +252,8 @@ const mainRouter: RouteRecordRaw[] = [
           title: '用户管理'
         }
       },
-      {
-        path: '/market/approval',
-        name: 'marketApproval',
-        component: () => import('@/views/Market/Approval/index.vue'),
-        meta: {
-          title: '审批页'
-        }
-      },
-      {
-        path: '/market/appShelves',
-        name: 'marketAppShelves',
-        component: () => import('@/views/Market/AppShelves/index.vue'),
-        meta: {
-          title: '应用上架'
-        }
-      },
+
+     
       {
         path: '/market/order',
         name: 'marketOrder',
@@ -302,9 +288,9 @@ const mainRouter: RouteRecordRaw[] = [
       },{
         path: '/market/managerApproval',
         name: 'managerApproval',
-        component: () => import('@/views/Market/JoinMarketApproval/manager.vue'),
+        component: () => import('@/views/Market/JoinMarketApproval/index.vue'),
         meta: {
-          title: '管理者审批列表'
+          title: '申请审批'
         }
       },{
         path: '/market/appShelvesApproval',
