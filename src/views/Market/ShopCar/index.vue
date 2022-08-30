@@ -11,7 +11,7 @@
               display: inline-block;
               vertical-align: top;
               height: 28px;
-              padding-top: 12px;
+              padding-top: 11px;
               margin-right: 20px;
             "
             >全选</el-checkbox
@@ -26,66 +26,69 @@
               vertical-align: top;
               height: 28px;
               padding: 10px;
-              margin-right: 200px;
             "
           />
         </span>
         <el-button type="primary" @click="deleteStagings">删除</el-button>
-        <el-button type="primary" @click="createOrderByStaging">购买</el-button>
+        <el-button type="primary" @click="createOrderByStaging(null)">购买</el-button>
       </template>
     </MarketCard>
     <div v-if="isRouterAlive">
-      <el-row :gutter="12" v-loading="loading" v-if="cardActive">
-        <!-- date遍历循环的数据 -->
+      <!-- <el-row :gutter="12" v-loading="loading" v-if="cardActive">
         <el-col :span="4" v-for="item in pageStore.tableData" :key="item.id">
-          <el-card shadow="hover"
-            ><!--style="background-color: #5daf34"  灰 #e1e1e1 绿 #5daf34-->
-            <!-- 卡片的头部位 -->
+           <el-card shadow="hover">
             <template #header>
               <div class="card-header">
-                <!-- 
-              	这里声明一下,我在多选时,往数组中添加的是对象
-              	label属性:是多选框的值,若该标签中无内容,则该属性也充当 checkbox 按钮后的介绍
-              	@change:改变事件,多选框勾选和取消勾选都会触发事件,所以在取消勾选时要删除勾选状态下的值
-              -->
                 <el-checkbox
                   v-model="item.checked"
                   :label="item.id"
                   @change="checkedChange(item)"
-                  >{{ item.merchandise.caption }}</el-checkbox
+                  ><h4>{{ item.merchandise.caption }}</h4></el-checkbox
                 >
-
-                <div @click="gotoApp(item.market)"> >>{{ item.market.name }} </div>
-                <!-- <el-button class="button" text>Operation button</el-button> -->
                 <el-icon><Close @click="deleteStaging(item.id)" /></el-icon>
               </div>
+              <div @click="gotoApp(item.market)"> ➮{{ item.market.name }} </div>
             </template>
-            <!-- 卡片显示的内容 -->
-            <div>
+            <div @click="detail(item)">
               <img
                 src="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png"
                 class="image"
               />
               <div style="padding: 14px">
-                <span>{{ item.merchandise.information }}</span
-                ><span style="color: red; padding: 60px; font-size: 18px"
-                  >¥{{ item.merchandise.price }}</span
-                >
-                <div class="bottom">
-                  <time class="time">{{ new Date() }}</time>
-                  <el-button text class="button"
-                    ><el-input-number
-                      v-loading="loading"
-                      v-model="item.number"
-                      :min="1"
-                      @change="numChange(item)"
-                  /></el-button>
-                </div>
+               <span style="padding: 10px;">{{ item.merchandise.sellAuth }} {{item.merchandise.sellAuth=='使用权'?item.merchandise.days:''}}{{item.merchandise.sellAuth=='使用权'?'天':''}}<span style="color:red;margin-left:50px;font-size:18px;bold">¥{{ item.merchandise.price }}</span></span>
               </div>
             </div>
-          </el-card>
+          </el-card> 
         </el-col>
-      </el-row>
+      </el-row> -->
+      <ul class="box-ul" v-if="cardActive">
+        <li class="app-card" >
+          <ShopCard
+            v-for="item in pageStore.tableData"
+            :class="item.checked?'bule-shadow':'dark-shadow'"
+            :info="item.id"
+            :key="item.id"
+            :cardContent="true"
+            @click="checkedChange(item)"
+          >
+            <template #rightIcon>
+            </template>
+            <template #content>
+              <div class="shopCar-box">
+                <div class="app-con-title">{{ item.merchandise.caption }}</div>
+                <div class="app-con-info" v-if="item.merchandise.sellAuth !== '所属权'"
+                  >使用天数：{{ item.merchandise.days }}</div
+                >
+                <div class="app-con-info">价格：{{ item.merchandise.price }}</div>
+                <div class="app-con-info">售卖权属：{{ item.merchandise.sellAuth }}</div>
+              </div>
+              <div class="app-card-item-con-desc"
+                ><p>{{ item.merchandise.information }}</p></div
+              >
+            </template>
+          </ShopCard>
+        </li>
+      </ul>
       <el-table
         ref="shopcarTableRef"
         :data="pageStore.tableData"
@@ -134,6 +137,7 @@ import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { PAGE_SIZES, PAGE_NUM } from '@/constant'
 import { ElTable } from 'element-plus'
+import ShopCard from '../components/shopCard.vue'
 import moment from 'moment'
 const router = useRouter()
 // 表格分页数据
@@ -206,7 +210,6 @@ const gotoApp = (item: { id: string }) => {
 }
 
 const handleSelect = (e: any[], row: any) => {
-  // debugger
   var ids = e.map((item) => item.id)
   for (let item of pageStore.tableData) {
     item.checked = false
@@ -253,6 +256,7 @@ function getUuid() {
 
 //创建订单(批量)
 const createOrderByStaging = async (checkedId?: string) => {
+  
   var checkedStagIds = []
   if (checkedId) {
     checkedStagIds = [checkedId]
@@ -271,8 +275,8 @@ const createOrderByStaging = async (checkedId?: string) => {
   await $services.market
     .createOrderByStaging({
       data: {
-        name: moment().format('YYYY-MM-DD hh:mm:ss') + '的订单',
-        code: getUuid(),
+        name: (new Date()).toString().substring(0,8) ,
+        code: (new Date()).toString().substring(0,8) ,
         stagIds: checkedStagIds
       }
     })
@@ -364,11 +368,12 @@ const numChange = async (item: any) => {
 //选中/取消选中
 const checkedChange = (item: any) => {
   console.log(item.checked)
+  item.checked = !item.checked
 }
 </script>
 
 
-<style scoped>
+<style scoped lang="scss">
 .card-header {
   display: flex;
   justify-content: space-between;
@@ -445,8 +450,75 @@ const checkedChange = (item: any) => {
 }
 
 .page-pagination {
-  padding: 10px 0;
-  display: flex;
-  justify-content: end;
+  bottom: 20px;
+  position: fixed;
+  right:20px;
+  /* display: flex;
+  justify-content: end; */
 }
+
+.app-con-title {
+    color: #000000d9;
+    font-size: 16px;
+    font-weight: 600;
+  }
+  .app-con-info {
+    font-size: 12px;
+    font-weight: 400;
+  }
+  .app-card-item-con-desc {
+    font-size: 12px;
+    font-weight: 400;
+    color: rgba(0, 0, 0, 0.45);
+
+    position: absolute;
+    bottom: 50px;
+    width: 100%;
+    left: 0;
+    height: 30px;
+    padding: 0px 24px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    word-break: break-all;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+  :deep(.el-card__body) {
+    padding: 0;
+  }
+  .shopCar {
+    padding: 4px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    height: 60px;
+    padding: 0 20px;
+  }
+
+.box {
+    .box-ul + .box-ul {
+      margin-top: 10px;
+    }
+    &-ul {
+      position: relative;
+      background-color: #fff;
+      height: 100%;
+      &-title {
+        font-weight: bold;
+        padding-bottom: 10px;
+      }
+      .app-card {
+        display: flex;
+        flex-wrap: wrap;
+        .bule-shadow {
+          box-shadow:0px 0px 4px rgb(0, 89, 255,0.7);
+        }
+        .dark-shadow {
+          box-shadow:4px 4px 4px rgb(174, 177, 184);
+        }
+      }
+    }
+  }
+
 </style>

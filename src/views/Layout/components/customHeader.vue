@@ -161,7 +161,7 @@
     } else {
       let height = store.userCompanys.length < 6 ? store.userCompanys.length : 6
       return store.userCompanys.length ? 'height:' + (height * 45 + 70) + 'px;' : 'height:80px'
-      debugger
+      
     }
   })
 

@@ -126,7 +126,7 @@
       .then((res: ResultType) => {
         console.log(res)
         if (res.code == 200) {
-          debugger
+          
           state.myAppList = res.data.result || []
           diyTable.value.state.page.total = res.data.total || 0
         }
@@ -145,7 +145,7 @@
       })
       .then((res: ResultType) => {
         if (res.code == 200) {
-          debugger
+          
           state.myAppList = res.data.result || []
           appCard.value.state.page.total = res.data.total || 0
         }

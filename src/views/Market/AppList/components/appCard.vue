@@ -178,8 +178,8 @@ function getUuid() {
     await $services.order
       .create({
         data: {
-          name: moment().format('YYYY-MM-DD hh:mm:ss') + '的订单',
-          code: getUuid(),
+          name: (new Date()).toString().substring(0,8) ,
+          code: (new Date()).toString().substring(0,8) ,
           merchandiseId: item.id
         }
       })
