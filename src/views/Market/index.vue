@@ -3,14 +3,9 @@
     <MarketCard>
       <template #right>
         <el-button type="primary" @click="registerVisible = true">注册应用</el-button>
-        <el-button type="primary" @click="GoPage('/market/markList')">去市场</el-button>
+        <el-button type="primary" @click="GoPage('/market/markList')">管理市场</el-button>
       </template>
     </MarketCard>
-    <!-- <el-card shadow="always" class="market-head flex">
-      <el-button type="primary" @click="registerVisible = true">注册应用</el-button>
-
-      <el-button type="primary" @click="GoPage('/market/markList')">去市场</el-button>
-    </el-card> -->
     <div class="market-content box">
       <ul class="box-ul">
         <p class="box-ul-title">我的应用</p>

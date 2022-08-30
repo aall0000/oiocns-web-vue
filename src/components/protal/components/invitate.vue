@@ -1,5 +1,6 @@
 <template>
-  <div class="invitateLayout">
+  <!-- <el-card body-style="padding:0" style="min-height: 120px;"> -->
+    <div class="invitateLayout">
     <img class="invitateLayout-img" src="@/assets/img/rw.png" alt="" />
     <div class="invitateLayout-box">
       <div class="invitateLayout-box__topText">邀请更多成员</div>
@@ -7,6 +8,7 @@
     </div>
     <el-icon :size="20" color="#909399"><ArrowRight /></el-icon>
   </div>
+  <!-- </el-card> -->
 </template>
 
 <script lang="ts">
@@ -29,7 +31,7 @@ export default defineComponent({
   position: relative;
   width: 100%;
   height: 100%;
-  background: #fff;
+  background: var(--el-bg-color-overlay);
   display: flex;
   align-items: center;
   min-height: 120px;

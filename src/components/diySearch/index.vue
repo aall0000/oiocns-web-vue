@@ -50,7 +50,13 @@
   const value = ref('')
   // const options = ref<ListItem[]>([])
   const loading = ref(false)
-  const emit = defineEmits(['closeDialog', 'switchCreateCompany', 'remoteMethod', 'joinSubmit'])
+  const emit = defineEmits([
+    'closeDialog',
+    'switchCreateCompany',
+    'remoteMethod',
+    'joinSubmit',
+    'submit'
+  ])
 
   const remoteMethod = (query: string) => {
     if (query) {
@@ -69,7 +75,7 @@
   }
 
   const submit = () => {
-    // emit('submit', value.value)
+    emit('submit', value.value)
   }
   const closeDialog = () => {
     emit('closeDialog', props.dialogShow)

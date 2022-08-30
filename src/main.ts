@@ -7,15 +7,19 @@ import setupGlobalComponent from '@/components/global'
 import setupSvgIcon from '@/icons'
 import { createPinia } from 'pinia'
 import anyStore from '@/utils/hubConnection'
-// import '@/assets/style/app.scss'
+// 夜间模式 
+import '@/assets/style/element.dark.scss'
+import 'element-plus/theme-chalk/dark/css-vars.css'
 
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import InfiniteScroll from 'element-plus'
 import VueGridLayout from 'vue-grid-layout'
+
 import "element-plus/theme-chalk/el-loading.css";
 import "element-plus/theme-chalk/el-message.css";
 import "element-plus/theme-chalk/el-notification.css";
 import "element-plus/theme-chalk/el-message-box.css";
+
 // 下面是我们安装的固化插件。
 import piniaPersist from 'pinia-plugin-persist'
 

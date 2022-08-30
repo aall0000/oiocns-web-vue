@@ -29,7 +29,7 @@
       <div class="diy-table__body-box">
         <el-table
           ref="diyTable"
-          style="width: 100%; height: 100%"
+          :style="{ width: '100%', height: '100%' }"
           class="table-row-sty"
           tooltip-effect="dark"
           :header-cell-style="getRowClass"
@@ -117,7 +117,7 @@
 
 <script setup lang="ts">
   import { stubFalse } from 'lodash'
-  import { ref, reactive, toRefs, computed,onMounted } from 'vue'
+  import { ref, reactive, toRefs, computed, onMounted } from 'vue'
   import { useUserStore } from '@/store/user'
 
   const store = useUserStore()
@@ -136,6 +136,7 @@
     hasTabs: boolean
     tableHead: any[]
     tableData: any[]
+    checkList?: any[]
     options: {
       expandAll?: boolean
       checkBox?: any
@@ -176,7 +177,7 @@
     tableHead,
     tableData,
     options,
-    batchOperate,
+    batchOperate
     // queryParams,
     // cell
   } = toRefs(props)
@@ -249,6 +250,12 @@
   }
 
   const checkSelectable = (row: any) => {
+    if (props.checkList) {
+      if (props.checkList.find((v) => v.id == row.id)) {
+        console.log('row', row)
+        return false
+      }
+    }
     if (props.options.selectLimit > 0) {
       if (props.options.selectLimit < multipleSelection.value.length) {
         var obj = multipleSelection.value[multipleSelection.value.length - 1]
@@ -297,7 +304,7 @@
     emit('handleUpdate', page.value)
   }
   onMounted(() => {
-    console.log('props.options.selectLimit',props.options.selectLimit)
+    console.log('props.options.selectLimit', props.options.selectLimit)
   })
   /**
    * 鼠标进入表格是隐藏groupselect的drop

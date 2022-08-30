@@ -8,14 +8,26 @@
   >
     <el-input v-model="value" @input="remoteMethod" placeholder="请输入" />
     <diytab
+      :style="{height:300+'px'}"
       ref="diyTable"
       :hasTableHead="true"
       :tableData="list"
+      :checkList="props.checkList"
       :options="options"
       @handleUpdate="handleUpdate"
       @selectionChange="selectionChange"
       :tableHead="tableHead"
     >
+      <template #remark="scope">
+        <el-tooltip :content="scope.row.remark" placement="bottom" effect="light">
+          <template #content> 
+            <div class="tooltip-text" style="width:300px">{{scope.row.remark}}</div>
+          </template>
+          <div class="remark-text">
+          {{scope.row.remark}}
+          </div>
+        </el-tooltip>
+      </template>
     </diytab>
     <div class="foot">
       <el-button  @click="closeDialog">取消</el-button>
@@ -42,10 +54,18 @@
   const emit = defineEmits(['checksSearch', 'closeDialog'])
   const props = defineProps({
     selectLimit: {},
+    id:{
+      type: String,
+      default: ''
+    },
+    checkList:{
+      type:Array,
+      default:[]
+    },//选中的值
     serachType:{
       type: Number,
       default: '1'
-    },//1 人 2群 3单位 4集团
+    },//1 人 2群 3单位 4集团 5分配人员 6分配单位
   })
   interface ListItem {
     code: string
@@ -62,7 +82,6 @@
   const url = ref<string>()
   const title = ref<string>()
   onMounted(() => {
-    remoteMethod()
     if (props.selectLimit === 0) {
       options.value.selectLimit = 0
     }
@@ -86,24 +105,44 @@
       tableHead.value = tableHead4.value
       url.value = 'searchGroups'
       title.value = '搜索集团'
+    } else if (props.serachType ==5) {
+      space.value = 'company'
+      tableHead.value = tableHead1.value
+      url.value = 'getPersons'
+      title.value = '分配人员'
+    } else if (props.serachType == 6) {
+      space.value = 'company'
+      tableHead.value = tableHead3.value
+      url.value = 'getGroupCompanies'
+      title.value = '分配单位'
     } else {
       space.value = 'person'
       tableHead.value = tableHead1.value
       url.value = 'searchPersons'
       title.value = '搜索人员'
     }
+    remoteMethod()
   })
   const remoteMethod = () => {
-    if (value.value) {
-      $services[space.value][url.value]({
-        data: {
+      let data 
+      if(props.serachType==5|| props.serachType ==6){
+       data= {
+          filter: value.value,
+          offset: (pageStore.currentPage - 1) * pageStore.pageSize,
+          limit: pageStore.pageSize,
+          id:props.id
+        }
+      }else{
+        data = {
           filter: value.value,
           offset: (pageStore.currentPage - 1) * pageStore.pageSize,
           limit: pageStore.pageSize
         }
+      }
+      $services[space.value][url.value]({
+        data: data
       }).then((res: ResultType) => {
         let arr: any = []
-
         if (res.code == 200) {
           if (res.data.result != undefined) {
             let states = res.data.result
@@ -133,13 +172,6 @@
         }
         // diyTable.value.state.loading = false
       })
-    } else {
-      list.value = []
-      nextTick(() => {
-        console.log(diyTable.value)
-        // diyTable.value.state.loading = false
-      })
-    }
   }
 
   const handleUpdate = (page: any) => {
@@ -184,16 +216,18 @@
       name: 'teamCode'
     },
     {
+      type:'slot',
+      width: '200',
       prop: 'remark',
       label: '座右铭',
-      name: 'reamrk'
+      name: 'remark'
     }
   ])
   const tableHead2 = ref([
     {
       prop: 'trueName',
       label: '群名称',
-      width: '150',
+      width: '200',
       name: 'trueName'
     },
     {
@@ -203,9 +237,10 @@
       name: 'teamCode'
     },
     {
+      type:'slot',
       prop: 'remark',
       label: '群简介',
-      name: 'reamrk'
+      name: 'remark'
     }
   ])
   const tableHead3 = ref([
@@ -215,7 +250,6 @@
       width: '200',
       name: 'name'
     },
-
     {
       prop: 'code',
       label: '统一社会信用代码',
@@ -223,6 +257,7 @@
       name: 'code'
     },
     {
+      type:'slot',
       prop: 'remark',
       label: '单位简介',
       name: 'remark'
@@ -232,10 +267,11 @@
     {
       prop: 'name',
       label: '单位名称',
-      width: '200',
+      width: '300',
       name: 'name'
     },
     {
+      type:'slot',
       prop: 'remark',
       label: '集团简介',
       name: 'remark'
@@ -259,5 +295,16 @@
     width: 100%;
     margin-top: 30px;
     justify-content: flex-end;
+  }
+  .remark-text{
+    white-space: nowrap;
+    cursor: pointer;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .tooltip-text{
+    width: 400px;
+    max-height: 300px;
+    overflow-y: auto;
   }
 </style>

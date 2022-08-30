@@ -352,7 +352,7 @@ const openDialogDel = () => {
     &-in {
       width: 6px;
       height: 6px;
-      background: #fff;
+      background: var(--el-bg-color-overlay);
       border-radius: 50%;
     }
   }

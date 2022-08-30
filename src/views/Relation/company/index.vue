@@ -19,8 +19,7 @@
   import Tree from './tree.vue'
   import Info from './info.vue'
   import Body from './body.vue'
-  import { ref, onMounted, watch} from 'vue';
-
+  import { ref, onMounted} from 'vue';
 
   const info = ref(null);
   const body = ref(null);
@@ -29,20 +28,24 @@
   const nodeClick = (selectItem: any)=>{
     info.value.selectItemChange(selectItem);
     body.value.selectItemChange(selectItem);
+    setTimeout(() => {
+      if(container.value && infoWrap.value){
+        tabHeight.value=containerHeight.value - 6 - infoWrap.value.clientHeight
+      }
+    }, 100);
+      
+    
   }
   const container = ref(null)
   const infoWrap = ref(null)
   const tabHeight = ref<number>(10)
+  const containerHeight = ref<number>(300)
   onMounted(() => {
     if(container.value && infoWrap.value){
+      containerHeight.value = container.value.clientHeight
       tabHeight.value=container.value.clientHeight - 6 - infoWrap.value.clientHeight
     }
     dragControllerDiv()
-  })
-  window.addEventListener('resize',function () {
-    if(container.value && infoWrap.value){
-      tabHeight.value=container.value.clientHeight - 6 - infoWrap.value.clientHeight
-    }
   })
   // 拖拽移动实现
   const dragControllerDiv = () => {

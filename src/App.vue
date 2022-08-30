@@ -1,7 +1,7 @@
 <template>
   <el-config-provider :locale="locale">
-    <div class="pages" @contextmenu.prevent>
-      <router-view />
+    <div class="pages" @contextmenu.prevent> 
+        <router-view />
     </div>
   </el-config-provider>
 </template>
