@@ -249,6 +249,14 @@ const mainRouter: RouteRecordRaw[] = [
         }
       },
       {
+        path: '/market/getApp',
+        name: 'marketGetApp',
+        component: () => import('@/views/Market/AppList/getAppfromMarket.vue'),
+        meta: {
+          title: '获取应用'
+        }
+      },
+      {
         path: '/market/userManage',
         name: 'marketUserManage',
         component: () => import('@/views/Market/AppList/userManage.vue'),
