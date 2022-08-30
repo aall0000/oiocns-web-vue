@@ -250,9 +250,11 @@
   }
 
   const checkSelectable = (row: any) => {
-    if(props.checkList.find((v) => v.id == row.id)){
-      console.log('row',row)
-      return false
+    if(props.checkList){
+      if(props.checkList.find((v) => v.id == row.id)){
+        console.log('row',row)
+        return false
+      }
     }
     if (props.options.selectLimit > 0) {
       if (props.options.selectLimit < multipleSelection.value.length) {

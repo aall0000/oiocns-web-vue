@@ -28,6 +28,11 @@
   const nodeClick = (selectItem: any)=>{
     info.value.selectItemChange(selectItem);
     body.value.selectItemChange(selectItem);
+    setTimeout(() => {
+      if(container.value && infoWrap.value){
+        tabHeight.value=container.value.clientHeight - 6 - infoWrap.value.clientHeight
+      }
+    }, 100);
   }
 
   const refresh = ()=>{
@@ -35,16 +40,14 @@
   }
 
   const screenHeight = ref<number>(0)
-  window.addEventListener('resize',function () {
-    if(container.value && infoWrap.value){
-      tabHeight.value=container.value.clientHeight - 6 - infoWrap.value.clientHeight
-    }
-  })
   const container = ref(null)
   const infoWrap = ref(null)
   const tabHeight = ref<number>(100)
+  const containerHeight = ref<number>(300)
+
   onMounted(() => {
     if(container.value && infoWrap.value){
+      containerHeight.value = container.value.clientHeight
       tabHeight.value=container.value.clientHeight - 6 - infoWrap.value.clientHeight
     }
     dragControllerDiv()
