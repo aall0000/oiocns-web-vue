@@ -12,10 +12,11 @@
     <div class="market-content box">
       <ul class="box-ul">
         <p class="box-ul-title">我的市场</p>
-        <MarketCreate :info="add" @click="dialogVisible1 = true" />
 
-        <li class="app-card" v-if="state.myMarket.length !== 0">
+        <li class="app-card">
+          <MarketCreate :info="add" @click="dialogVisible1 = true" />
           <ShopCard
+            v-if="state.myMarket.length !== 0"
             v-for="item in state.myMarket"
             :info="item"
             :key="item.id"
@@ -42,9 +43,11 @@
       </ul>
       <ul class="box-ul">
         <p class="box-ul-title">我加入的市场</p>
-        <MarketCreate :info="add1" @click="state.dialogShow.value = true" />
-        <li class="app-card" v-if="state.joinMarket.length !== 0">
+
+        <li class="app-card">
+          <MarketCreate :info="add1" @click="state.dialogShow.value = true" />
           <ShopCard
+            v-if="state.joinMarket.length !== 0"
             v-for="item in state.joinMarket"
             :info="item"
             :key="item.id"
