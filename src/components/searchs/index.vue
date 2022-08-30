@@ -11,6 +11,7 @@
       ref="diyTable"
       :hasTableHead="true"
       :tableData="list"
+      :checkList="props.checkList"
       :options="options"
       @handleUpdate="handleUpdate"
       @selectionChange="selectionChange"
@@ -46,6 +47,10 @@
       type: String,
       default: ''
     },
+    checkList:{
+      type:Array,
+      default:[]
+    },//选中的值
     serachType:{
       type: Number,
       default: '1'

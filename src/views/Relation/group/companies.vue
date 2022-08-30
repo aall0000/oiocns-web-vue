@@ -29,8 +29,8 @@
       </div>
     </div>
   </div>
-  <searchCompany  v-if="pullCompanysDialog" :selectLimit='0' :serachType="3" @closeDialog="closeDialog"  @checksSearch='checksSearch'/>
-  <searchCompany  v-if="assignDialog" :id="rootGroup.id" :selectLimit='0' :serachType="6" @closeDialog="hideAssignDialog"  @checksSearch='checksCompanySearch'/>
+  <searchCompany  v-if="pullCompanysDialog"  :checkList='companies' :selectLimit='0' :serachType="3" @closeDialog="closeDialog"  @checksSearch='checksSearch'/>
+  <searchCompany  v-if="assignDialog"  :checkList='companies' :id="rootGroup.id" :selectLimit='0' :serachType="6" @closeDialog="hideAssignDialog"  @checksSearch='checksCompanySearch'/>
 
 </template>
 <script lang='ts' setup>
