@@ -62,7 +62,6 @@ import { ElMessage, ElMessageBox } from 'element-plus';
 import { Search } from '@element-plus/icons-vue'
 
 const props = defineProps<{
-  selectItem: any,     // 节点数据
   tabHeight: number,
 }>()
 
@@ -155,7 +154,6 @@ const getUsers = ()=>{
       if (res.code == 200 && res.success) {
         users.value = res.data.result;
         pageStore.total = res.data.total;
-        diyTable.value.state.loading = false
         diyTable.value.state.page.total = pageStore.total;
       }
     })
@@ -225,7 +223,6 @@ const getCompanyUsers = (filter?: string)=>{
         const set: Set<string> = new Set(userIds)
         companyUsers.value = us.filter((u: any) => !set.has(u.id))
         pageStore.total = res.data.total - userIds.length
-        giveTable.value.state.loading = false
         giveTable.value.state.page.total = pageStore.total;
       }
     })
@@ -239,6 +236,13 @@ const hideGiveDialog = ()=>{
 }
 
 const showGiveDialog = ()=>{
+  if(!selectItem.value.id){
+    ElMessage({
+      type: 'warning',
+      message: '请选择身份'
+    })
+    return false
+  }
   giveDialog.value = true
   getCompanyUsers()
 }

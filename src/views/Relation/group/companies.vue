@@ -17,7 +17,7 @@
       <div style="width: 100%; height: 100%">
         <DiyTable
           ref="diyTable"
-          :hasTableHead="true"
+          :hasTableHead="false"
           :tableData="companies"
           @handleUpdate="handleUpdate"
           :tableHead="tableHead"
@@ -248,7 +248,6 @@ onMounted(() => {
   getCompanies()
   nextTick(()=>{
     let headerHeight = cardHeight.value?.clientHeight
-    console.log('let headerHeight = cardHeight.value?.clientHeight',headerHeight)
     tabHeight.value = headerHeight
   })
 })
@@ -256,6 +255,10 @@ onMounted(() => {
 
 watch(props, () => {
   getCompanies()
+  nextTick(()=>{
+    let headerHeight = cardHeight.value?.clientHeight
+    tabHeight.value = headerHeight
+  })
 });
 
 </script>
