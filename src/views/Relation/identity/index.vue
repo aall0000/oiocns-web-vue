@@ -1,11 +1,11 @@
 <template>
   <div class="container" ref="container">
     <div class="tree">
-      <Identity @itemClick="itemClick"/>
+      <Identity ref="identity" @itemClick="itemClick"/>
     </div>
     <div class="content">
       <div class="info" ref="infoWrap">
-        <Info ref="info"/>
+        <Info ref="info" @refresh="refresh"/>
       </div>
       <div class="body" ref="bodyWrap" :style="{height:tabHeight+'px'}">
         <User ref="body" :selectItem="{}" :tabHeight='tabHeight'/>
@@ -19,13 +19,19 @@
   import User from './user.vue'
   import { ref, onMounted, watch} from 'vue';
 
+  const identity = ref(null);
   const info = ref(null);
   const body = ref(null);
-
+  // 左侧点击
   const itemClick = (selectItem: any)=>{
     info.value.selectItemChange(selectItem);
     body.value.selectItemChange(selectItem);
   }
+  // 列表刷新
+  const refresh = ()=>{
+    identity.value.refresh();
+  }
+
   const screenHeight = ref<number>(0)
   window.addEventListener('resize',function () {
     if(container.value && infoWrap.value){
@@ -69,7 +75,7 @@
     background: #f0f2f5;
     overflow: hidden;
     .info{
-      padding: 3px;
+      padding: 3px 0;
       box-sizing: border-box;
     }
     .body{

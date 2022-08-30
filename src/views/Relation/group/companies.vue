@@ -29,37 +29,8 @@
       </div>
     </div>
   </div>
-  <searchCompany  v-if="pullCompanysDialog" :selectLimit='0' @closeDialog="closeDialog"  @checkFriend='checkFriend'/>
-
-  <el-dialog v-model="assignDialog" @close="hideAssignDialog" :title="'分配单位 => ' + selectItem.label" width="50%">
-    <el-input v-model="assignSearch" class="search" placeholder="搜索单位" @input="assignSearchChange">
-      <template #prefix>
-        <el-icon class="el-input__icon"><Search /></el-icon>
-      </template>
-    </el-input>
-    <DiyTable
-      ref="assignTable"
-      :hasTableHead="true"
-      :tableData="groupCompanies"
-      :options="{
-        expandAll: false,
-        checkBox: true,
-        order: true,
-        noPage: false,
-        selectLimit: 20
-      }"
-      @handleUpdate="assignTableChange"
-      :tableHead="columns"
-      :style="{height: '350px'}"
-    >
-    </DiyTable>
-    <template #footer>
-      <span class="dialog-footer">
-        <el-button @click="hideAssignDialog">取消</el-button>
-        <el-button type="primary" @click="assign">确认</el-button>
-      </span>
-    </template>
-  </el-dialog>
+  <searchCompany  v-if="pullCompanysDialog"  :checkList='companies' :selectLimit='0' :serachType="3" @closeDialog="closeDialog"  @checksSearch='checksSearch'/>
+  <searchCompany  v-if="assignDialog"  :checkList='companies' :id="rootGroup.id" :selectLimit='0' :serachType="6" @closeDialog="hideAssignDialog"  @checksSearch='checksCompanySearch'/>
 
 </template>
 <script lang='ts' setup>
@@ -68,7 +39,7 @@ import DiyTable from '@/components/diyTable/index.vue'
 import { onMounted, reactive, ref, watch ,nextTick} from 'vue';
 import { useRouter } from "vue-router";
 import { ElMessage, ElMessageBox } from 'element-plus';
-import searchCompany from '@/components/search/company.vue'
+import searchCompany from '@/components/searchs/index.vue'
 
 const props = defineProps<{
   selectItem: any,     // 节点数据
@@ -89,7 +60,6 @@ const pageStore = reactive({
 })
 
 const diyTable = ref(null)
-const assignTable = ref(null)
 
 const tableHead = ref([
   {
@@ -114,27 +84,6 @@ const tableHead = ref([
     name: 'operate'
   }
 ])
-
-const columns = ref([
-    {
-    prop: 'name',
-    label: '名称',
-    width: '240',
-    name:'name',
-  },
-  {
-    prop: 'code',
-    label: '编码',
-    width: '180',
-  },
-  {
-    prop: 'team.code',
-    label: '简介',
-    width: '330',
-    name:'teamCode',
-  }
-])
-let groupCompanies = ref<any>([])
 
 const handleUpdate = (page: any)=>{
   pageStore.currentPage = page.currentPage
@@ -176,7 +125,7 @@ const closeDialog = ()=>{
 type arrList = {
   id:string
 }
-const checkFriend=(val:any)=>{
+const checksSearch=(val:any)=>{
   if(val.value.length>0){
     let arr:Array<arrList> =[]
     val.value.forEach((element:any) => {
@@ -187,9 +136,16 @@ const checkFriend=(val:any)=>{
     pullCompanysDialog.value = false;
   }
 }
-interface ListItem {
-  value: string
-  label: string
+const checksCompanySearch = (val:any)=>{
+  if(val.value.length>0){
+    let arr:Array<arrList> =[]
+    val.value.forEach((element:any) => {
+      arr.push(element.id)
+    });
+    assign(arr)
+  }else{
+    assignDialog.value = false;
+  }
 }
 
 //拉单位进集团
@@ -258,67 +214,19 @@ const removeFrom = (row: any) =>{
   })
 }
 
-// 加载根集团所有单位
-const getGroupCompanies = (filter?: string)=>{
-  let data = {
-    id: rootGroup.value.id,
-    offset: (pageStore.currentPage-1)*pageStore.pageSize,
-    limit: pageStore.pageSize
-  }
-  if(filter && filter.trim() != ''){
-    data = {...data, ...{filter}}
-  }
-  if(rootGroup.value){
-    $services.company.getGroupCompanies({
-      data,
-    }).then((res: ResultType) => {
-      if (res.code == 200 && res.success) {
-        // 去除已分配到当前部门或者工作组的用户
-        let us = res.data.result || []
-        let companyIds =  []
-        console.log('companies.value', companies.value)
-        if(companies.value){
-          companyIds = companies.value.map((c: any) => c.id);
-        }
-        const set: Set<string> = new Set(companyIds)
-        groupCompanies.value = us.filter((u: any) => !set.has(u.id))
-        pageStore.total = res.data.total - companyIds.length
-        assignTable.value.state.loading = false
-        assignTable.value.state.page.total = pageStore.total;
-      }
-    })
-  }
-}
-
 const assignDialog = ref<boolean>(false)
 const hideAssignDialog = ()=>{
   assignDialog.value = false
-  getGroupCompanies()
 }
 
 const showAssignDialog = ()=>{
   assignDialog.value = true
-  getGroupCompanies()
-}
-
-// 过滤数据
-const assignSearch = ref('')
-const assignTableChange = (page: any)=>{
-  pageStore.currentPage = page.currentPage
-  pageStore.pageSize = page.pageSize
-  getGroupCompanies()
-}
-
-// 分配页面搜索用户变化
-const assignSearchChange = (e: string)=>{
-  console.log('eeeeeeeeeeeee', e)
-  getGroupCompanies(e)
 }
 
 
 // 分配单位到子集团
-const assign = () => {
-  const companyIds = assignTable?.value?.state?.multipleSelection.map((u: any) => u.id);
+const assign = (arr:any) => {
+  const companyIds = arr
   const data = { id: props.selectItem.id, targetIds: companyIds }
   $services.company
     .assignSubgroup({ data })

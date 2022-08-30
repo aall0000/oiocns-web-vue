@@ -107,7 +107,7 @@
       </el-space>
     </el-col>
   </el-row>
-  <searchCompany v-if="friendDialog" @closeDialog="closeDialog" @checkFriend='checkFriend'></searchCompany>
+  <searchCompany v-if="friendDialog" @closeDialog="closeDialog"  @checkFriend='checkFriend'></searchCompany>
   <template v-for="item in dialogShow" :key="item.key">
     <CreateUnitDialog v-if="item.key == 'unit' && item.value" :dialogShow="item" @closeDialog="closeDialog"
       @switchCreateCompany="switchCreateCompany"></CreateUnitDialog>
@@ -117,34 +117,35 @@
 </template>
 
 <script lang="ts" setup>
-import InfiniteScroll from 'element-plus'
-import { ref, watch, onMounted, reactive, computed } from 'vue'
-import { Search } from '@element-plus/icons-vue'
-import UserOtherDataConnection from '@/utils/hubConnection'
-import { storeToRefs } from 'pinia'
-import { useRouter } from 'vue-router'
-import { useUserStore } from '@/store/user'
-import $services from '@/services'
-import { ElMessage } from 'element-plus'
-import CreateUnitDialog from './createUnitDialog.vue'
-import searchCompany from '@/components/search/company.vue'
-import JoinUnitDialog from './joinUnitDialog.vue'
-import SearchDialog from './searchDialog.vue'
-import headImg from '@/components/headImg.vue'
-import { useDark, useToggle } from '@vueuse/core'
+  import InfiniteScroll from 'element-plus'
+  import { ref, watch, onMounted, reactive, computed } from 'vue'
+  import { Search } from '@element-plus/icons-vue'
+  import UserOtherDataConnection from '@/utils/hubConnection'
+  import { storeToRefs } from 'pinia'
+  import { useRouter } from 'vue-router'
+  import { useUserStore } from '@/store/user'
+  import $services from '@/services'
+  import { ElMessage } from 'element-plus'
+  import CreateUnitDialog from './createUnitDialog.vue'
+  import searchCompany from '@/components/searchs/index.vue'
+  import JoinUnitDialog from './joinUnitDialog.vue'
+  import SearchDialog from './searchDialog.vue'
+  import headImg from '@/components/headImg.vue'
+  import { useDark, useToggle } from '@vueuse/core'
 
-const isDark = useDark()
-const toggleDark = useToggle(isDark)
-const store = useUserStore()
-const SearchInfo = ref('')
-const router = useRouter()
-let current = ref(1)
-const visible = ref(false)
-const showSearch = ref(false)
-const btnType = ref(false)
-const { queryInfo } = storeToRefs(store)
-const workspaceData = store.workspaceData
-const dropdown = ref()
+  const isDark = useDark()
+  const toggleDark = useToggle(isDark)
+
+  const store = useUserStore()
+  const SearchInfo = ref('')
+  const router = useRouter()
+  let current = ref(1)
+  const visible = ref(false)
+  const showSearch = ref(false)
+  const btnType = ref(false)
+  const { queryInfo } = storeToRefs(store)
+  const workspaceData = store.workspaceData
+  const dropdown = ref()
 
 const getDropMenuStyle = computed(() => {
   if (!btnType.value) {
@@ -156,148 +157,144 @@ const getDropMenuStyle = computed(() => {
   }
 })
 
-const load = () => {
-  let currentPage = 0
-  current.value = current.value + 1
-  currentPage = (current.value - 1) * 10 + 1
-  store.getCompanyList(currentPage, workspaceData.id, true)
-}
-const dialogShow = reactive([
-  {
-    key: 'unit',
-    value: false
-  },
-  {
-    key: 'join',
-    value: false
-  },
-  {
-    key: 'search',
-    value: false
+  const load = () => {
+    let currentPage = 0
+    current.value = current.value + 1
+    currentPage = (current.value - 1) * 10 + 1
+    store.getCompanyList(currentPage, workspaceData.id, true)
   }
-])
-const showSearchInfo = () => {
-  visible.value = !visible.value
-}
-// 切换主题
-const toggleTheme = () => {
-
-}
-// const getFocus = () => {
-//   visible.value = true
-// }
-// const getBlur = () => {
-//   if (!showSearch.value) {
-//     visible.value = false
-//   }
-// }
-// const mouseenter = () => {
-//   showSearch.value = true
-// }
-// const mouseleave = () => {
-//   showSearch.value = false
-// }
-const friendDialog = ref<boolean>(false)
-type arrList = {
-  id: string
-}
-const checkFriend = (val: any) => {
-  if (val.value.length > 0) {
-    let arr: Array<arrList> = []
-    val.value.forEach((element: any) => {
-      arr.push(element.id)
-    });
-    joinSubmit(arr)
-  } else {
-    friendDialog.value = false;
-  }
-}
-const friendShow = () => {
-  friendDialog.value = true;
-}
-const joinSubmit = (arr: any) => {
-  $services.company
-    .applyJoin({
-      data: {
-        id: arr.join('')
-      }
-    })
-    .then((res: ResultType) => {
-      if (res.code == 200) {
-        friendDialog.value = false;
-        ElMessage({
-          message: '申请成功',
-          type: 'success'
-        })
-      }
-    })
-}
-
-const onClickUnit = () => {
-  btnType.value = !btnType.value
-  if (!store.userCompanys || store.userCompanys.length == 0) {
-    store.getCompanyList(0, workspaceData.id, false)
-  }
-}
-const handleClose = () => {
-  btnType.value = false
-}
-const createCompany = () => {
-  dialogShow.map((el) => {
-    if (el.key == 'unit') {
-      el.value = true
-      btnType.value = false
+  const dialogShow = reactive([
+    {
+      key: 'unit',
+      value: false
+    },
+    {
+      key: 'join',
+      value: false
+    },
+    {
+      key: 'search',
+      value: false
     }
-  })
-}
-const closeDialog = (key: string) => {
-  friendDialog.value = false;
-  dialogShow.map((el) => {
-    if (el.key == key) {
-      el.value = false
-    }
-  })
-}
-const onClickDrop = () => {
-  if (store.userCompanys.length == 0) {
-    current.value = 0
-    store.getCompanyList(current.value, workspaceData.id, false)
+  ])
+  const showSearchInfo = () => {
+    visible.value = !visible.value
   }
-}
+  // const getFocus = () => {
+  //   visible.value = true
+  // }
+  // const getBlur = () => {
+  //   if (!showSearch.value) {
+  //     visible.value = false
+  //   }
+  // }
+  // const mouseenter = () => {
+  //   showSearch.value = true
+  // }
+  // const mouseleave = () => {
+  //   showSearch.value = false
+  // }
+  const searchDialog = ref<boolean>(false)
+  type arrList = {
+    id:string
+  }
+  const checksSearch=(val:any)=>{
+    if(val.value.length>0){
+      let arr:Array<arrList> =[]
+      val.value.forEach((element:any) => {
+        arr.push(element.id)
+      });
+      joinSubmit(arr)
+    }else{
+      searchDialog.value = false;
+    }
+  }
+  const friendShow = ()=>{
+    searchDialog.value = true;
+  }
+  const joinSubmit = (arr: any) => {
+    $services.company
+      .applyJoin({
+        data: {
+          id: arr.join('')
+        }
+      })
+      .then((res: ResultType) => {
+        if (res.code == 200) {
+          searchDialog.value = false;
+          ElMessage({
+            message: '申请成功',
+            type: 'success'
+          })
+        }
+      })
+  }
 
-const switchCreateCompany = (data: { id: string }) => {
-  $services.person
-    .changeWorkspace({
-      data: {
-        id: data.id
+  const onClickUnit = () => {
+    btnType.value = !btnType.value
+    if (!store.userCompanys || store.userCompanys.length == 0) {
+      store.getCompanyList(0, workspaceData.id, false)
+    }
+  }
+  const handleClose = () => {
+    btnType.value = false
+  }
+  const createCompany = () => {
+    dialogShow.map((el) => {
+      if (el.key == 'unit') {
+        el.value = true
+        btnType.value = false
       }
     })
-    .then((res: ResultType) => {
-      if (res.code == 200) {
-        sessionStorage.setItem('TOKEN', res.data.accessToken)
-        store.getQueryInfo(res.data.accessToken)
-        current.value = 0
-        store.createUnit(res.data).then(() => {
-          location.reload()
-        })
-      } else {
-        ElMessage({
-          message: res.msg,
-          type: 'warning'
-        })
+  }
+  const closeDialog = (key: string) => {
+    searchDialog.value = false;
+    dialogShow.map((el) => {
+      if (el.key == key) {
+        el.value = false
       }
     })
-}
-const switchCompany = (data: { id: string }) => {
-  $services.person
-    .changeWorkspace({
-      data: {
-        id: data.id
-      }
-    })
-    .then((res: ResultType) => {
-      if (res.code == 200) {
-        sessionStorage.setItem('TOKEN', res.data.accessToken)
+  }
+  const onClickDrop = () => {
+    if (store.userCompanys.length == 0) {
+      current.value = 0
+      store.getCompanyList(current.value, workspaceData.id, false)
+    }
+  }
+
+  const switchCreateCompany = (data: { id: string }) => {
+    $services.person
+      .changeWorkspace({
+        data: {
+          id: data.id
+        }
+      })
+      .then((res: ResultType) => {
+        if (res.code == 200) {
+          sessionStorage.setItem('TOKEN', res.data.accessToken)
+          store.getQueryInfo(res.data.accessToken)
+          current.value = 0
+          store.createUnit(res.data).then(() => {
+            location.reload()
+          })
+        } else {
+          ElMessage({
+            message: res.msg,
+            type: 'warning'
+          })
+        }
+      })
+  }
+  const switchCompany = (data: { id: string }) => {
+    $services.person
+      .changeWorkspace({
+        data: {
+          id: data.id
+        }
+      })
+      .then((res: ResultType) => {
+        if (res.code == 200) {
+          sessionStorage.setItem('TOKEN', res.data.accessToken)
 
         store.getQueryInfo(res.data.accessToken)
         store.getWorkspaceData(res.data.workspaceId).then(() => {

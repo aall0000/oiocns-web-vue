@@ -11,9 +11,9 @@
             @click="handleCardInfo(item)"
           >
             <template #rightIcon>
-              <div class="shopCar" @click.stop="addShopCar(item)">
+              <!-- <div class="shopCar" @click.stop="addShopCar(item)">
                 <el-icon><ShoppingCart /></el-icon>
-              </div>
+              </div> -->
             </template>
             <template #content>
               <div class="shopCar-box">
@@ -31,7 +31,21 @@
               >
             </template>
             <!-- <template #footer> -->
-            <el-button class="btn" type="primary" link small>订阅</el-button>
+
+            <el-button-group>
+              <el-button
+                style="color: aliceblue; font-weight: bold; background-color: orange; width: 100px"
+                round
+                @click="joinStaging(item)"
+                >加入购物车</el-button
+              >
+              <el-button
+                style="color: aliceblue; font-weight: bold; background-color: red; width: 100px"
+                round
+                @click="createOrder(item)"
+                >立即购买</el-button
+              >
+            </el-button-group>
             <!-- <el-divider direction="vertical" />
             <el-button class="btn" link small>用户管理</el-button> -->
             <!-- </template> -->
@@ -132,6 +146,44 @@
       })
   }
 
+  const joinStaging = async (item: any) => {
+    console.log(item)
+    await $services.market
+      .joinStaging({
+        data: {
+          id: item.id
+        }
+      })
+      .then((res: ResultType) => {
+        if (res.code == 200) {
+          ElMessage({
+            message: '添加成功',
+            type: 'success'
+          })
+        }
+      })
+  }
+
+  const createOrder = async (item: any) => {
+    console.log(item)
+    await $services.order
+      .create({
+        data: {
+          name: item.name,
+          code: item.code,
+          merchandiseId: item.id
+        }
+      })
+      .then((res: ResultType) => {
+        if (res.code == 200) {
+          ElMessage({
+            message: '添加成功',
+            type: 'success'
+          })
+        }
+      })
+  }
+
   defineExpose({
     state
   })
@@ -171,45 +223,26 @@
   .shopCar {
     padding: 4px;
     display: flex;
+    justify-content: flex-end;
     align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    cursor: pointer;
-    background-color: rgb(62, 96, 217);
-    color: #fff;
+    height: 60px;
+    padding: 0 20px;
   }
-  .pagination {
-    position: absolute;
-    bottom: 0;
-    right: 10px;
-  }
-  .market-layout {
-    width: 100%;
-    height: 100%;
-    min-width: 1000px;
-    .market-head {
-      display: flex;
-      justify-content: flex-end;
-      align-items: center;
-      height: 60px;
-      padding: 0 20px;
+  .box {
+    .box-ul + .box-ul {
+      margin-top: 10px;
     }
-    .box {
-      .box-ul + .box-ul {
-        margin-top: 10px;
+    &-ul {
+      position: relative;
+      background-color: #fff;
+      height: 100%;
+      &-title {
+        font-weight: bold;
+        padding-bottom: 10px;
       }
-      &-ul {
-        position: relative;
-        background-color: #fff;
-        height: 100%;
-        &-title {
-          font-weight: bold;
-          padding-bottom: 10px;
-        }
-        .app-card {
-          display: flex;
-          flex-wrap: wrap;
-        }
+      .app-card {
+        display: flex;
+        flex-wrap: wrap;
       }
     }
   }

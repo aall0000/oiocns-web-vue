@@ -4,6 +4,7 @@
       <div class="title">身份信息</div>
       <div class="box-btns">
         <el-button small link type="primary" @click="handleUpdate">编辑</el-button>
+        <el-button small link type="primary" @click="handleDelete">删除</el-button>
         <el-button small link type="primary" @click="goback">返回</el-button>
       </div>
     </div>
@@ -58,9 +59,11 @@
 </template>
 <script lang="ts" setup>
   import $services from '@/services'
-  import { ref, reactive,watch,onMounted } from 'vue'
-  import { ElMessage } from 'element-plus'
+  import { ref, watch, onMounted } from 'vue'
+  import { ElMessage, ElMessageBox } from 'element-plus'
   import router from '@/router';
+
+  const emit = defineEmits(['refresh'])
 
   let selectItem = ref<any>({})
   let dialogVisible = ref<boolean>(false)
@@ -78,17 +81,50 @@
   watch(selectItem, () => {
   });
 
+  // 删除身份信息
+  const handleDelete = ()=>{
+    if(!selectItem.value.id){
+      ElMessage.warning('请左侧选择身份')
+      return
+    }
+    ElMessageBox.confirm(
+      `确定删除 ${selectItem.value.name} 身份吗？`,
+      '警告',
+      {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }
+    ).then(() => {
+      $services.company.deleteIdentity({
+        data: {
+          id: selectItem.value.id,
+        }
+      }).then((res: ResultType) => {
+        selectItem.value = {}
+        if (res.success) {
+          ElMessage({
+            message: '操作成功',
+            type: 'success'
+          })
+          emit('refresh')
+        }
+      })
+    })
+    .catch(() => {
+      console.log('取消移除!')
+    })
+  }
 
   // 修改信息
   const handleUpdate = ()=> {
     if(!selectItem.value.id){
-      ElMessage.warning('请左侧选择角色')
+      ElMessage.warning('请左侧选择身份')
       return
     }
     formData.value = selectItem.value
-    console.log(formData,selectItem)
     dialogVisible.value = true
-    formData.parentIds = selectItem.authId
+    formData.value.parentIds = getParentIds({id: selectItem.value.authId}, [selectItem.value.authId])
   }
   const dialogHide = ()=>{
      dialogVisible.value = false
@@ -112,9 +148,9 @@
       }
     })
   }
-  
-  // 节点ID和对象映射关系
-  const parentIdMap: any = {}
+
+  // 节点ID和父对象映射关系
+  const idParentMap: any = {}
 
   let authorityTree = ref<any[]>([])
   let cascaderTree = ref<any[]>([])
@@ -131,23 +167,37 @@
     $services.company.getAuthorityTree({data: {id: belongId.value}}).then((res: any)=>{
       authorityTree.value = []
       authorityTree.value.push(res.data)
-      initIdMap(authorityTree.value)
+      initIdParentMap(res.data)
       cascaderTree.value = authorityTree.value
     })
   }
   // 初始化ID和对象映射关系
-  const initIdMap = (nodes: any[]) => {
-    for(const node of nodes){
-      parentIdMap[node.id] = node
-      if(node.nodes){
-        initIdMap(node.nodes)
+  const initIdParentMap = (node: any) => {
+    if(node.nodes){
+      for(const n of node.nodes){
+        idParentMap[n.id] = node
+        initIdParentMap(n)
       }
     }
+
   }
+
+  // 获取父节点到根节点的ID列表
+  const getParentIds = (node: any, parentIds: any[]): any[] =>{
+    const parentNode = idParentMap[node.id]
+    if(parentNode){
+      parentIds.push(parentNode.id)
+      parentIds = getParentIds(parentNode, parentIds)
+    }
+    return parentIds;
+  }
+
   onMounted(() => {
     belongId.value = router.currentRoute.value.query?.belongId
     loadAuthorityTree();
   })
+
+  // 返回
   const goback = () => {
     router.go(-1)
   }
@@ -203,11 +253,13 @@
     }
 
     .remark{
+      display: block;
+      max-height: 60px;
       display: -webkit-box;
       -webkit-line-clamp: 10;
       -webkit-box-orient: vertical;
       width: 100%;
-      overflow: hidden;
+      overflow-y: auto;
     }
   }
 </style>
