@@ -136,6 +136,7 @@
     hasTabs: boolean
     tableHead: any[]
     tableData: any[]
+    checkList?: any[]
     options: {
       expandAll?: boolean
       checkBox?: any
@@ -249,6 +250,10 @@
   }
 
   const checkSelectable = (row: any) => {
+    if(props.checkList.find((v) => v.id == row.id)){
+      console.log('row',row)
+      return false
+    }
     if (props.options.selectLimit > 0) {
       if (props.options.selectLimit < multipleSelection.value.length) {
         var obj = multipleSelection.value[multipleSelection.value.length - 1]

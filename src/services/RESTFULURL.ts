@@ -211,6 +211,7 @@ export default {
     cancelJoin: appstore + '/cancel/join',
     searchManagerPublishApply: appstore + '/search/manager/publish/apply',
     approvalPublish: appstore + '/approval/publish',
+    pullTarget: appstore + '/pull/target',
 
 
   }

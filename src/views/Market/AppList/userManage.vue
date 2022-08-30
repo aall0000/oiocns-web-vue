@@ -1,4 +1,9 @@
 <template>
+  <MarketCard>
+    <template #right>
+      <el-button type="primary" @click="friendShow">邀请加入市场</el-button>
+    </template>
+  </MarketCard>
   <div class="userLayout">
     <DiyTable
       ref="diyTable"
@@ -18,6 +23,12 @@
       </template>
     </DiyTable>
   </div>
+  <searchFriend
+    v-if="searchDialog"
+    @closeDialog="closeDialog"
+    :serachType="searchType"
+    @checksSearch="checksSearch"
+  />
 </template>
 
 <script setup lang="ts">
@@ -26,8 +37,63 @@
   import { useRoute } from 'vue-router'
   import $services from '@/services'
   import { ElMessage } from 'element-plus'
+  import searchFriend from '@/components/searchs/index.vue'
   import TheTableButton from './components/theTableButton.vue'
-
+  import { useUserStore } from '@/store/user'
+  const store = useUserStore()
+  const searchDialog = ref<boolean>(false)
+  const friendShow = () => {
+    searchDialog.value = true
+  }
+  const closeDialog = () => {
+    searchDialog.value = false
+  }
+  type arrList = {
+    id: string
+  }
+  const searchType = ref<number>()
+  const judgeWorkSpace = () => {
+    if (store.workspaceData.type === 1) {
+      searchType.value = 1
+    }
+    if (store.workspaceData.type === 2) {
+      searchType.value = 3
+    }
+  }
+  onMounted(() => {
+    judgeWorkSpace()
+  })
+  const checksSearch = (val: any) => {
+    if (val.value.length > 0) {
+      let arr: Array<arrList> = []
+      val.value.forEach((element: any) => {
+        arr.push(element.id)
+      })
+      addFriends(arr)
+    } else {
+      searchDialog.value = false
+    }
+  }
+  const addFriends = (arr: Array<arrList>) => {
+    console.log('arrr', arr)
+    $services.appstore
+      .pullTarget({
+        data: {
+          targetIds: arr,
+          marketId: route.query.data
+        }
+      })
+      .then((res: ResultType) => {
+        if (res.code == 200) {
+          ElMessage({
+            message: '申请成功',
+            type: 'warning'
+          })
+          getData()
+          searchDialog.value = false
+        }
+      })
+  }
   const route = useRoute()
   const diyTable = ref(null)
   const tableName = ref('成员列表')
@@ -100,7 +166,7 @@
   .userLayout {
     padding: 10px;
     width: 100%;
-    height: 100%;
+    height: calc(100vh - 60px);
     background-color: #fff;
   }
 </style>

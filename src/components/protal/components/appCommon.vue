@@ -72,7 +72,7 @@ const joinFriends = (item: any) => {
 .appCommon {
   width: 100%;
   height: 100%;
-  background: #fff;
+  background: var(--el-bg-color-overlay);
   // display: flex;
   // flex-direction: column;
   overflow: hidden;
