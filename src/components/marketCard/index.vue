@@ -32,10 +32,8 @@
       marketPathList.forEach((el: { path: string; name: string }) => {
         if (el.path === newValue) {
           activeRouterName.value = el.name
-          console.log(true)
         }
       })
-      console.log(router.currentRoute.value.meta.title)
     },
     { immediate: true }
   )

@@ -1,7 +1,7 @@
 <template>
   <MarketCard>
     <template #right>
-       
+
       <el-button type="primary" @click.stop="GoPage('/market/shopCar')">购物车</el-button>
     </template>
   </MarketCard>
@@ -124,7 +124,6 @@
       .then((res: ResultType) => {
         console.log(res)
         if (res.code == 200) {
-          debugger
           state.myAppList = res.data.result || []
           diyTable.value.state.page.total = res.data.total || 0
         }
@@ -143,7 +142,6 @@
       })
       .then((res: ResultType) => {
         if (res.code == 200) {
-          debugger
           state.myAppList = res.data.result || []
           appCard.value.state.page.total = res.data.total || 0
         }
@@ -169,7 +167,7 @@
     &-container {
       position: relative;
       width: 100%;
-      height: 100%;
+      height: calc(100% - 60px);
       background-color: #fff;
       overflow: auto;
       display: flex;
