@@ -138,7 +138,6 @@ import { ElMessage } from 'element-plus'
 import { PAGE_SIZES, PAGE_NUM } from '@/constant'
 import { ElTable } from 'element-plus'
 import ShopCard from '../components/shopCard.vue'
-import moment from 'moment'
 const router = useRouter()
 // 表格分页数据
 const pagination: { current: number; limit: number } = reactive({ current: 1, limit: PAGE_NUM })
@@ -256,8 +255,7 @@ function getUuid() {
 
 //创建订单(批量)
 const createOrderByStaging = async (checkedId?: string) => {
-  
-  var checkedStagIds = []
+  var checkedStagIds:any[] = []
   if (checkedId) {
     checkedStagIds = [checkedId]
   } else {
@@ -272,6 +270,7 @@ const createOrderByStaging = async (checkedId?: string) => {
     })
     return
   }
+  setTimeout(async(ids) => {
   await $services.market
     .createOrderByStaging({
       data: {
@@ -289,6 +288,7 @@ const createOrderByStaging = async (checkedId?: string) => {
         })
       }
     })
+  }, 1, checkedStagIds);
 }
 
 //从购物车移除 (批量)

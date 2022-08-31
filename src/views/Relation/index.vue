@@ -2,7 +2,7 @@
   <!-- 主体 -->
   <div class="organization-layout-wrap" style="display: flex; height: 100%;">
     <!-- 侧边栏-->
-    <teleport v-if="isShowMenu" to="#menu-teleport-target">
+    <!-- <teleport v-if="isShowMenu" to="#menu-teleport-target"> -->
       <div class="menu-tab">
         <el-menu router :default-active="currentRouter" class="el-menu-vertical-demo" mode="vertical">
           <el-menu-item v-if="!isMySpace" index="/relation/company">单位维护</el-menu-item>
@@ -11,7 +11,7 @@
           <el-menu-item index="/relation/friend">好友维护</el-menu-item>
         </el-menu>
       </div>
-    </teleport>
+    <!-- </teleport> -->
     <!-- 内容区域home -->
     <router-view />
   </div>
@@ -63,7 +63,7 @@
   }
   .menu-tab {
     width: 140px;
-    height: calc(100% - 15px);
+    // height: calc(100% - 15px);
     background: #fff;
     border-right: solid 1px var(--el-menu-border-color);
 

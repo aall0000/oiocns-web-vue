@@ -146,9 +146,10 @@ const handleTabsEdit = (targetName: TabPanelName, action: 'remove' | 'add') => {
 
 :deep(.el-tabs__content) {
   overflow: auto;
-  // height: calc(100vh - 102px);
+  height: calc(100vh - 102px);
   background-color: var(--el-bg-color-page);//  rgb(241, 241, 248);
   clear: both;
+  
 }
 
 :deep(.el-tabs__new-tab) {
@@ -169,13 +170,14 @@ const handleTabsEdit = (targetName: TabPanelName, action: 'remove' | 'add') => {
 
 .baseLayout {
   width: 100%;
-  height: calc(100vh - 102px);
+  height: calc(100vh - 60px);
   // height: 100%;
-  background-color: #f1f1f8;
+  background-color: var(--el-bg-color-overlay);
+  overflow: hidden;
 }
 
-.demo-tabs>.el-tabs__content {
-  padding: 32px;
+.demo-tabs  >  .el-tabs__content {
+  // padding: 32px; 
   color: #6b778c;
   font-size: 32px;
   font-weight: 600;

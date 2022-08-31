@@ -212,6 +212,7 @@ export default {
     searchManagerPublishApply: appstore + '/search/manager/publish/apply',
     approvalPublish: appstore + '/approval/publish',
     pullTarget: appstore + '/pull/target',
+    searchPublishApply: appstore + '/search/publish/apply',
 
 
   }

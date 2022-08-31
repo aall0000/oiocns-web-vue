@@ -10,7 +10,7 @@
       <ul class="box-ul">
         <p class="box-ul-title">我的应用</p>
         <li class="app-card">
-          <MarketCreate :info="add" @myclick="GoPage('/market/markList')" />
+          <MarketCreate :info="add" @myclick="GoPage('/market/getApp')" />
           <ShopCard
             v-for="item in state.ownProductList"
             :info="item"
