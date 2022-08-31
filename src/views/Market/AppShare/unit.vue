@@ -1,7 +1,7 @@
 <template>
   <div class="unitLayout">
     <div class="tableBtn">
-      <div class="tableBtn-title">123</div>
+      <div class="tableBtn-title">{{ route.query.name }}</div>
       <el-button small link type="primary" @click="pullCompanysDialog = true">添加单位</el-button>
     </div>
     <DiyTable class="diytable" ref="diyTable" :tableData="tableData" :tableHead="tableHead">
@@ -15,8 +15,9 @@
   <searchCompany
     v-if="pullCompanysDialog"
     :checkList="tableData"
+    :id="route.query.id"
     :selectLimit="0"
-    :serachType="3"
+    :serachType="6"
     @closeDialog="closeDialog"
     @checksSearch="checksSearch"
   />
@@ -105,6 +106,7 @@
     width: 100%;
     display: flex;
     justify-content: space-between;
+    margin-bottom: 10px;
     &-title {
       font-weight: 600;
     }

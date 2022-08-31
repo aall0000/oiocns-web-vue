@@ -121,7 +121,12 @@
     draggable
     :close-on-click-modal="false"
   >
-    <el-select v-model="selectedValue" value-key="id" placeholder="请选择集团">
+    <el-select
+      v-model="selectedValue"
+      value-key="id"
+      placeholder="请选择集团"
+      @change="selectchange"
+    >
       <el-option
         v-for="item in state.options"
         :key="item.value"
@@ -173,6 +178,7 @@
     shareTotal: number
     marketOptions: any[] //所有市场列表
     options: any[] //集团列表
+    selectLabel: object // 选中的集团名称
   }
 
   const state: StateType = reactive({
@@ -181,7 +187,8 @@
     shareProductList: [],
     shareTotal: 0,
     marketOptions: [],
-    options: []
+    options: [],
+    selectLabel: {}
   })
 
   onMounted(() => {
@@ -189,6 +196,12 @@
     getProductList('own')
     getProductList('share')
   })
+
+  const selectchange = (val: string) => {
+    state.selectLabel = state.options.find((el) => {
+      return el.value == val
+    })
+  }
 
   // 关闭分享弹窗
   const closeDialog = () => {
@@ -283,7 +296,7 @@
     if (selectedValue.value) {
       router.push({
         path: '/market/group',
-        query: { id: selectedValue.value }
+        query: { id: selectedValue.value, name: state.selectLabel.label }
       })
     } else {
       ElMessage({
@@ -297,7 +310,7 @@
     if (selectedValue.value) {
       router.push({
         path: '/market/unit',
-        query: { id: selectedValue.value }
+        query: { id: selectedValue.value, name: state.selectLabel.label }
       })
     } else {
       ElMessage({
