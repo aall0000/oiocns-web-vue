@@ -1,18 +1,20 @@
 <template>
   <MarketCard>
     <template #right>
-
       <el-button type="primary" @click.stop="GoPage('/market/shopCar')">购物车</el-button>
     </template>
   </MarketCard>
-  <div class="appListLayout">
-    <div class="appListLayout-container">
-      <div class="appListLayout-header">
-        <p>应用列表</p>
+  <div class="getApp">
+    <div class="getApp-container">
+      <el-tabs class="marketTag" v-model="activeMarket" @tabChange="handleTabChange">
+        <el-tab-pane v-for="item in marketTabs" :label="item.name" :name="item.id"></el-tab-pane>
+      </el-tabs>
+      <div class="getApp-header">
+        <p>应用{{isCard? '图':'列'}}表</p>
       </div>
-      <div class="appListLayout-content">
+      <div class="getApp-content">
         <AppCard
-          v-if="value1"
+          v-if="isCard"
           ref="appCard"
           :dataList="state.myAppList"
           @handleUpdate="handleCardUpdate"
@@ -30,9 +32,9 @@
           </template>
         </DiyTable>
       </div>
-      <div class="appListLayout-radio" v-if="state.myAppList.length > 0">
+      <div class="getApp-radio">
         <p style="margin-right: 20px">切换视图</p>
-        <el-switch v-model="value1" />
+        <el-switch v-model="isCard" />
       </div>
     </div>
   </div>
@@ -40,16 +42,15 @@
 
 <script setup lang="ts">
   import { reactive, onMounted, ref, watch, nextTick } from 'vue'
-  import { useRoute, useRouter } from 'vue-router'
+  import { useRouter } from 'vue-router'
   import $services from '@/services'
   import AppCard from './components/appCard.vue'
   import DiyTable from '@/components/diyTable/index.vue'
   import TheTableButton from './components/theTableButton2.vue'
   import MarketCard from '@/components/marketCard/index.vue'
   const router = useRouter()
-  const route = useRoute()
   const diyTable = ref(null)
-  const value1 = ref(true)
+  const isCard = ref(true)
   const appCard = ref(null)
 
   const state = reactive({
@@ -86,20 +87,11 @@
     ]
   })
 
-  watch(value1, (val) => {
-    nextTick(() => {
-      if (val) {
-        appCard.value.state.page.currentPage = 1
-        getData()
-      } else {
-        diyTable.value.state.page.currentPage = 1
-        getTableData()
-      }
-    })
-  })
+
+
 
   onMounted(() => {
-    getData()
+    getJoinMarketData()
   })
 
   // 卡片切换页数
@@ -115,7 +107,7 @@
     $services.appstore
       .merchandise({
         data: {
-          id: route.query.data,
+          id: activeMarket.value,
           offset: diyTable.value.state.page.current,
           limit: diyTable.value.state.page.pageSize,
           filter: ''
@@ -129,12 +121,12 @@
         }
       })
   }
-
+  // 获取应用列表
   const getData = () => {
     $services.appstore
       .merchandise({
         data: {
-          id: route.query.data,
+          id: activeMarket.value,
           offset: appCard.value.state.page.current,
           limit: 12,
           filter: ''
@@ -147,13 +139,68 @@
         }
       })
   }
+  // 页面顶部 tab页列表
+  const marketTabs = ref([])
+  const activeMarket = ref<string>('')
+
+  const handleTabChange = (name: string) => {
+    console.log('切换',name)
+  }
+  // 获取已加入市场列表
+  const getJoinMarketData = () => {
+    $services.appstore
+      .searchOwn({
+        data: {
+          offset: 0,
+          limit: 100,
+          filter: ''
+        }
+      })
+      .then((res: ResultType) => {
+        if (res.code == 200) {
+          const { result = [] } = res.data
+          marketTabs.value = result
+          activeMarket.value = result.length > 0 ? result[0].id : ''
+        }
+      })
+  }
   const GoPage = (path: string) => {
     router.push(path)
   }
+  watch([isCard,activeMarket], ([val,activeMVal],[valOld,activeMValOld]) => {
+    // 监听 展示方式变化
+      nextTick(() => {
+      if (val) {
+        appCard.value.state.page.currentPage = 1
+        getData()
+      } else {
+        diyTable.value.state.page.currentPage = 1
+        getTableData()
+      }
+    })
+    // 监听所选市场变化
+    // if (activeMVal!==activeMValOld) {
+    //   getData()
+    // }
+  })
 </script>
-
+<style lang="scss">
+  .getApp-container {
+    .marketTag {
+      .el-tabs--top .el-tabs__item.is-top:nth-child(2){
+        padding-left: 20px;
+      }
+      .el-tabs__nav-next, .el-tabs__nav-prev{
+        padding: 0 5px;
+      }
+      .el-tabs__nav {
+        padding: 0 4px;
+      }
+    }
+  }
+</style>
 <style lang="scss" scoped>
-  .appListLayout {
+  .getApp {
     width: 100%;
     height: calc(100vh - 60px);
     padding: 16px;
@@ -179,7 +226,7 @@
       padding: 0 24px;
     }
     &-header {
-      padding: 16px 24px 16px 24px;
+      padding: 0 24px 16px 24px;
       display: flex;
       width: 100%;
       align-items: center;

@@ -1,8 +1,11 @@
 <template>
   <DiyButton>
     <template v-slot:opt>
-      <div class="diy-button" @click="requireItem"> 订阅 </div>
-      <div class="diy-button" @click="joinShopCar"> 加入购物车 </div>
+      <!-- <div class="diy-button" @click="requireItem"> 订阅 </div>
+      <div class="diy-button" @click="joinShopCar"> 加入购物车 </div> -->
+      <div class="diy-button" @click="requireItem"> 下架 </div>
+      <div class="diy-button" @click="requireItem"> 分配 </div>
+      <div class="diy-button" @click="requireItem"> 分发 </div>
     </template>
   </DiyButton>
 </template>

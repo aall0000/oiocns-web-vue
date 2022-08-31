@@ -41,6 +41,7 @@
           :load="loadNode"
           v-bind="options"
           v-loading="loading"
+          :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
           border
           stripe
           :default-expand-all="options.expandAll ? options.expandAll : false"
@@ -444,7 +445,7 @@
       height: 100px; //避免el-table无限变高
       display: flex;
       flex: 1;
-      margin-top: 10px;
+      // margin-top: 10px;
 
       &-box {
         width: 1vw;

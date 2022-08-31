@@ -18,7 +18,7 @@
         <el-table-column prop="remark" label="群简介" />
         <el-table-column prop="name" label="操作">
           <template #default="scope">
-            <el-button @click="exitCohort(scope.row.id)" type="primary">退出群</el-button>
+            <el-button v-if="myId != scope.row.belongId" @click="exitCohort(scope.row.id)" type="primary">退出群</el-button>
             <el-button v-if="myId == scope.row.belongId" @click="deleteCohort(scope.row.id)" type="primary">解散群</el-button>
           </template>
         </el-table-column>
@@ -27,7 +27,7 @@
     <!-- <div class="page-pagination">
       <el-pagination small background layout="prev, pager, next" :total="50" class="mt-4" />
     </div> -->
-    <searchCohort  v-if="friendDialog" :serachType="2" @closeDialog="closeDialog"  @checksSearch='checksSearch'/>
+    <searchCohort  v-if="searchDialog" :serachType="2" @closeDialog="closeDialog"  @checksSearch='checksSearch'/>
     <el-dialog v-model="addQun" title="创建群" width="30%">
       <el-form-item label="群名称">
         <el-input v-model="qunName" placeholder="请输入群名称" clearable />
@@ -84,12 +84,12 @@ const getQunList = async () => {
     )
   }
 }
-const friendDialog = ref<boolean>(false)
+const searchDialog = ref<boolean>(false)
 const closeDialog = ()=>{
-   friendDialog.value = false;
+  searchDialog.value = false;
 }
 const friendShow = ()=>{
-  friendDialog.value = true;
+  searchDialog.value = true;
 }
 type arrList = {
   id:string
@@ -102,7 +102,7 @@ const checksSearch=(val:any)=>{
     });
     applyJoinCohort(arr)
   }else{
-    friendDialog.value = false;
+    searchDialog.value = false;
   }
 }
 const applyJoinCohort = (arr:Array<arrList>) => {
@@ -118,15 +118,15 @@ const applyJoinCohort = (arr:Array<arrList>) => {
           message: '申请成功',
           type: 'warning'
         })
-        friendDialog.value = false
+        searchDialog.value = false
         getQunList()
       }
     })
 }
 //退出群
 const exitCohort = (id: string) =>{
-  $services.person
-    .cancelJoin({
+  $services.cohort
+    .exit({
       data: {
         id: id
       }

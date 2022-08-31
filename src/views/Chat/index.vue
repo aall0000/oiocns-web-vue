@@ -1,12 +1,13 @@
 <template>
   <div class="cohort-wrap">
     <!-- 导航传送门 -->
-    <teleport v-if="isShowMenu" to="#menu-teleport-target">
-      <el-aside class="custom-group-silder-menu" width="260px">
-        <GroupSideBarVue v-model:active="activeInfo" :myId="myId" :sessionList="sessionList"
-          :clearHistoryMsg="clearHistoryMsg" />
-      </el-aside>
-    </teleport>
+      <!-- <teleport v-if="isShowMenu" to="#menu-teleport-target"> -->
+        <el-aside class="custom-group-silder-menu" width="260px">
+          <GroupSideBarVue v-model:active="activeInfo" :myId="myId" :sessionList="sessionList"
+            :clearHistoryMsg="clearHistoryMsg" />
+        </el-aside>
+      <!-- </teleport> -->
+    
     <!-- 右侧展示主体 -->
     <div class="chart-page">
       <!-- 头部 -->
@@ -218,6 +219,7 @@ onBeforeUnmount(() => {
 watch(
   () => activeInfo.value,
   async (val) => {
+    
     const { typeName, id, spaceId } = val
     selectInfo.typeName = typeName
     current.value = 0
@@ -252,9 +254,10 @@ const getQunPerson = async (id: string, offset: number) => {
   })
   if (success === true) {
     selectInfo.total = data.total
-    // 存储用户id=>名称
+    // 存储用户id=>名称 item.team.name 真实姓名
+     
     data.result.forEach((item: userType) => {
-      setUserNameMap(item.id, item.name)
+      setUserNameMap(item.id, item.team.name)
     })
     if (offset === 0) {
       selectInfo.userList = data.result

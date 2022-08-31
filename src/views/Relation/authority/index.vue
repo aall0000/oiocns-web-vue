@@ -39,7 +39,7 @@
           </el-descriptions>
         </el-card>
       </div>
-    
+
       <el-card class="box-card" :style="{height:mainHeight+'px','margin-top':'3px'}">
         <template #header>
           <div class="card-header">
@@ -69,7 +69,13 @@
                 <el-tag v-if="belong.row.belong?.typeName">{{ belong.row.belong?.typeName }}</el-tag>
               </template>
             </el-table-column>
-            <el-table-column prop="remark" label="备注" width="150"/>
+            <el-table-column prop="public" label="是否公开" width="120">
+              <template #default="pub">
+                <el-tag v-if="pub.row.public" type="success">是</el-tag>
+                <el-tag v-if="!pub.row.public" type="warning">否</el-tag>
+              </template>
+            </el-table-column>>
+            <el-table-column prop="remark" label="备注" :min-width="100"/>
             <el-table-column label="操作" width="150">
               <template #default="{ row }">
                 <div class="cell-box">
@@ -98,6 +104,12 @@
       </el-form-item>
       <el-form-item label="角色编号" style="width: 100%">
         <el-input v-model="formData.code" placeholder="请输入" clearable  style="width: 100%"/>
+      </el-form-item>
+      <el-form-item label="是否公开" style="width: 100%">
+        <el-radio-group v-model="formData.public" class="ml-4">
+          <el-radio :label="true">是</el-radio>
+          <el-radio :label="false">否</el-radio>
+        </el-radio-group>
       </el-form-item>
       <el-form-item label="上级节点" style="width: 100%">
         <el-cascader
@@ -140,6 +152,12 @@
       </el-form-item>
       <el-form-item label="角色编号" style="width: 100%">
         <el-input v-model="formData.code" placeholder="请输入" clearable  style="width: 100%"/>
+      </el-form-item>
+      <el-form-item label="是否公开" style="width: 100%">
+        <el-radio-group v-model="formData.public" class="ml-4">
+          <el-radio :label="true">是</el-radio>
+          <el-radio :label="false">否</el-radio>
+        </el-radio-group>
       </el-form-item>
       <el-form-item label="上级节点" style="width: 100%">
         <el-cascader
@@ -238,6 +256,7 @@
   // 新增
   const create = (row: any) =>{
     createDialogVisible.value = true;
+    formData.value.public = true;
     let parentIds: any[] = [row.id]
     parentIds = getParentIds(row, parentIds).reverse();
     formData.value.parentIds = parentIds
@@ -319,7 +338,7 @@
         code: formData.value.code,
         name: formData.value.name,
         parentId: parentId,
-        public: true,
+        public: formData.value.public,
         remark: formData.value.remark,
         belongId: belongId.value,
       }

@@ -35,7 +35,7 @@
       </div>
     </div>
   <searchFriend  v-if="friendDialog" :checkList='users' :selectLimit='0' @closeDialog="closeDialog"  @checksSearch='checksSearch'/>
-  <searchFriend  v-if="assignDialog" :checkList='users' :id="company.id" :serachType='5' @closeDialog="hideAssignDialog"  @checksSearch='checksCompanySearch'/>
+  <AssignedPerson  v-if="assignDialog" :checkList='users' :id="company.id" :serachType='5' @closeDialog="hideAssignDialog"  @checksSearch='checksCompanySearch'/>
 
 </template>
 <script lang='ts' setup>
@@ -46,6 +46,7 @@ import { useRouter } from "vue-router";
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { Search } from '@element-plus/icons-vue'
 import searchFriend from '@/components/searchs/index.vue'
+import AssignedPerson from '@/components/searchs/index.vue'
 const props = defineProps<{
   selectItem: any,     // 节点数据
 }>()
