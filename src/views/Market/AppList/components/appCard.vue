@@ -93,9 +93,6 @@
     type:'manage'|'shop'
   }
   const props =withDefaults(defineProps<Props>(),{ dataList:[],type:'manage'})
-    console.log('上厕所',props.type);
-
-
   const handleCurrent: any = computed(() => {
     return (state.page.currentPage - 1) * state.page.pageSize
   })
