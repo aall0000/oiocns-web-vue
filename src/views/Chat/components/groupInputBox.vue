@@ -54,6 +54,7 @@
   const emit = defineEmits(['submitInfo'])
 
   const submit = () => {
+    
     const value = document.getElementById('insterHtml').innerHTML
     emit('submitInfo', value)
     // textarea.value = ""

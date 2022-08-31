@@ -6,50 +6,54 @@
     <div class="group-side-bar-wrap" @contextmenu.prevent="mousePosition.isShowContext = false">
       <ul class="group-con" v-for="item in showList" :key="item.id">
         <li class="group-con-item">
+          <!-- 分组标题 -->
           <div
             class="con-title flex justify-between"
             :class="[openIdArr.includes(item.id) ? 'active' : '']"
             @click="handleOpenSpace(item.id)"
-            ><span>{{ item.name }}({{ item?.chats?.length ?? 0 }}) </span></div
-          >
-          <div
-            :class="[
-              'con-body',
-              props.active.spaceId === item.id && props.active.id === child.id ? 'active' : ''
-            ]"
-            v-for="child in item.chats"
-            :key="child.id"
-            v-if="openIdArr.includes(item.id)"
-            @contextmenu.prevent.stop="(e: MouseEvent) => handleContextClick(e, child)"
-          >
-            <HeadImg :name="child.name" :label="child.label" />
-            <div class="group-con-dot" v-if="ohterData.getNoReadCount(item.id, child.id) > 0">
-              <span>{{ ohterData.getNoReadCount(item.id, child.id) }}</span>
-            </div>
-            <div class="group-con-show" @click="changeInfo(child, item.id)">
-              <el-tooltip
-                class="box-item"
-                :disabled="child.name.length < 7"
-                :content="child.name"
-                placement="right-start"
-              >
-                <p class="group-con-show-name">
-                  <span class="group-con-show-name-label">{{
-                    props.myId === child.id ? `我 (${child.name})` : child.name
-                  }}</span>
-                  <span class="group-con-show-name-time"
-                    >{{ handleFormatDate(child.msgTime) }}
-                  </span>
-                </p>
-              </el-tooltip>
-              <p
-                class="group-con-show-msg"
-                v-if="child.msgType !== 'recall'"
-                v-html="child?.msgBody?.includes('<img') ? '[图片]': child?.msgBody"
-              ></p>
-              <p class="group-con-show-msg" v-else>{{ child?.showTxt }}</p>
+            >
+            <span>{{ item.name }}({{ item?.chats?.length ?? 0 }}) </span></div>
+          <!-- 展开的分组下的人员 -->
+          <div v-show="openIdArr?.includes(item.id)">
+            <div
+              :class="[
+                'con-body',
+                props.active.spaceId === item.id && props.active.id === child.id ? 'active' : ''
+              ]"
+              v-for="child in item.chats"
+              :key="child.id"
+              @contextmenu.prevent.stop="(e: MouseEvent) => handleContextClick(e, child)"
+            >
+              <HeadImg :name="child.name" :label="child.label" />
+              <div class="group-con-dot" v-if="ohterData.getNoReadCount(item.id, child.id) > 0">
+                <span>{{ ohterData.getNoReadCount(item.id, child.id) }}</span>
+              </div>
+              <div class="group-con-show" @click="changeInfo(child, item.id)">
+                <el-tooltip
+                  class="box-item"
+                  :disabled="child.name.length < 7"
+                  :content="child.name"
+                  placement="right-start"
+                >
+                  <p class="group-con-show-name">
+                    <span class="group-con-show-name-label">{{
+                      props.myId === child.id ? `我 (${child.name})` : child.name
+                    }}</span>
+                    <span class="group-con-show-name-time"
+                      >{{ handleFormatDate(child.msgTime) }}
+                    </span>
+                  </p>
+                </el-tooltip>
+                <p
+                  class="group-con-show-msg"
+                  v-if="child.msgType !== 'recall'"
+                  v-html="child?.msgBody?.includes('<img') ? '[图片]': child?.msgBody"
+                ></p>
+                <p class="group-con-show-msg" v-else>{{ child?.showTxt }}</p>
+              </div>
             </div>
           </div>
+          <!-- 如果该分组没有被打开 但是有未读消息 则把未读消息会话显示出来 -->
           <div
             :class="[
               'con-body',
@@ -61,7 +65,7 @@
                 ohterData.messageNoReadMap[item.id][v?.id] > 0
             )"
             :key="child.id + child.name"
-            v-else
+            v-show="!openIdArr?.includes(item.id)"
             @contextmenu.prevent.stop="(e: MouseEvent) => handleContextClick(e, child)"
           >
             <HeadImg :name="child.name" :label="child.label" />
@@ -270,6 +274,7 @@ const handleContextChange = (item: MenuItemType) => {
   flex-direction: column;
   justify-content: space-between;
   border-right: 1px solid #d8d8d8;
+  background-color: var(--el-bg-color);
 }
 
 .group-side-bar-search {
@@ -334,10 +339,10 @@ const handleContextChange = (item: MenuItemType) => {
         font-size: 16px;
         font-weight: bold;
         padding: 10px 0;
-        color: #111;
+        color: var(--el-text-color);
 
         &.active {
-          color: $colorBlueLight;
+          color: var(--el-color-primary);
           border-bottom: none;
         }
       }
@@ -347,15 +352,15 @@ const handleContextChange = (item: MenuItemType) => {
         display: flex;
         justify-content: space-between;
         padding: 5px;
-        border-radius: 6px;
-
+        // background-color: var(--el-menu-bg-color);
         &:hover,
         &.active {
+          // border-radius: 6px;
           color: var(--el-menu-active-color);
-          background-color: #f4f4f4;
+          background-color: var(--el-menu-hover-bg-color);
         }
 
-        border-bottom: 1px solid #e8e8e8;
+        border-bottom: 1px solid var(--el-border-color);
       }
 
       .con-body + .con-body {

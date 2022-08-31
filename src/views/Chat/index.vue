@@ -190,6 +190,7 @@ const handleReaciveMsg = (data: any) => {
 
 // 提交信息
 const submit = async (value: string) => {
+  
   let text = value.indexOf('span') > -1 ? value : value.replaceAll('&nbsp;', '')
   const params = {
     toId: activeInfo.value.id,

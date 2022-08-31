@@ -28,8 +28,8 @@
         <div class="group-content-right con" v-else>
           <div class="con-content" @contextmenu.prevent.stop="(e: MouseEvent) => handleContextClick(e, item)">
             <!-- <span v-if="showName" class="con-content-name">{{ getUserName(item.fromId) }}</span> -->
-            <div class="con-content-link"></div>
-            <div class="con-content-txt" v-html="item.msgBody"> </div>
+            
+            <div class="con-content-txt" v-html="item.msgBody"></div>
             <!-- {{ item.msgBody }} -->
           </div>
           <!-- <img class="con-img" src="@/assets/img/userIcon/ic_06.png" alt=""> -->
@@ -194,8 +194,15 @@ defineExpose({
   keepScrollPos
 })
 </script>
+<style>
+ .con-content-txt img {
+    max-width: 400px;
+    max-height: 400px;
+  }
 
+</style>
 <style lang="scss" scoped>
+ 
 .group-content-wrap {
   padding: 20px;
   background-color: #f0f2f5;
