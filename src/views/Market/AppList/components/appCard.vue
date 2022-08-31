@@ -90,7 +90,7 @@
   const emit = defineEmits(['handleUpdate'])
   type Props={
     dataList: any
-    type:'manage'|'shop'
+    type?:'manage'|'shop'
   }
   const props =withDefaults(defineProps<Props>(),{ dataList:[],type:'manage'})
   const handleCurrent: any = computed(() => {

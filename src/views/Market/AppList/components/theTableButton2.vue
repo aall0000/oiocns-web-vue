@@ -22,7 +22,7 @@
   const props = withDefaults(
     defineProps<{
       data: any
-      type: 'manage' | 'shop'
+      type?: 'manage' | 'shop'
     }>(),
     { type: 'manage' }
   )
