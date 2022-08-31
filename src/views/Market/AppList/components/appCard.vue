@@ -32,7 +32,7 @@
             </template>
             <!-- <template #footer> -->
 
-            <el-button-group v-if="cardType=='manage'">
+            <el-button-group v-if="type=='manage'">
               <el-button
                 style="color: aliceblue; font-weight: bold; background-color: orange; width: 100px"
                 round
@@ -90,10 +90,10 @@
   const emit = defineEmits(['handleUpdate'])
   type Props={
     dataList: any
-    cardType:'manage'|'shop'
+    type:'manage'|'shop'
   }
-  const props =withDefaults(defineProps<Props>(),{ dataList:[],cardType:'manage'})
-    console.log('上厕所',props);
+  const props =withDefaults(defineProps<Props>(),{ dataList:[],type:'manage'})
+    console.log('上厕所',props.type);
 
 
   const handleCurrent: any = computed(() => {

@@ -1,11 +1,15 @@
 <template>
   <DiyButton>
     <template v-slot:opt>
-      <!-- <div class="diy-button" @click="requireItem"> 订阅 </div>
-      <div class="diy-button" @click="joinShopCar"> 加入购物车 </div> -->
-      <div class="diy-button" @click="requireItem"> 下架 </div>
-      <div class="diy-button" @click="requireItem"> 分配 </div>
-      <div class="diy-button" @click="requireItem"> 分发 </div>
+      <template v-if="props.type === 'manage'">
+        <div class="diy-button" @click="requireItem"> 下架 </div>
+        <div class="diy-button" @click="requireItem"> 分配 </div>
+        <div class="diy-button" @click="requireItem"> 分发 </div>
+      </template>
+      <template v-else>
+        <div class="diy-button" @click="requireItem"> 订阅 </div>
+        <div class="diy-button" @click="joinShopCar"> 加入购物车 </div>
+      </template>
     </template>
   </DiyButton>
 </template>
@@ -15,12 +19,13 @@
   import $services from '@/services'
   import { ElMessage } from 'element-plus'
   const emit = defineEmits(['update'])
-  const props = defineProps({
-    data: {
-      type: Object,
-      default: () => {}
-    }
-  })
+  const props = withDefaults(
+    defineProps<{
+      data: any
+      type: 'manage' | 'shop'
+    }>(),
+    { type: 'manage' }
+  )
   const joinShopCar = () => {
     $services.appstore
       .staging({
