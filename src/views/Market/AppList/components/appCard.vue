@@ -32,7 +32,7 @@
             </template>
             <!-- <template #footer> -->
 
-            <el-button-group>
+            <el-button-group v-if="cardType=='manage'">
               <el-button
                 style="color: aliceblue; font-weight: bold; background-color: orange; width: 100px"
                 round
@@ -46,6 +46,13 @@
                 >立即购买</el-button
               >
             </el-button-group>
+            <el-button-group v-else>
+              <el-button
+                style="color: aliceblue; font-weight: bold; background-color: orange; width: 100px"
+                round
+                >下架</el-button
+              >
+            </el-button-group>
             <!-- <el-divider direction="vertical" />
             <el-button class="btn" link small>用户管理</el-button> -->
             <!-- </template> -->
@@ -54,7 +61,7 @@
         <div v-else>暂无数据</div>
         <div class="pagination">
           <el-pagination
-            v-if="dataList.length !== 0"
+            v-if="dataList?.length !== 0"
             @current-change="handleCurrentChange"
             v-bind="state.page"
             :pager-count="5"
@@ -74,18 +81,20 @@
 </template>
 
 <script setup lang="ts">
-  import { reactive, computed } from 'vue'
+  import { reactive, computed,withDefaults } from 'vue'
   import $services from '@/services'
   import { ElMessage } from 'element-plus'
   import ShopCard from '../../components/shopCard.vue'
   import AppInfoDialog from './appInfoDialog.vue'
   import moment from 'moment'
   const emit = defineEmits(['handleUpdate'])
-  const props = defineProps({
-    dataList: {
-      type: Object
-    }
-  })
+  type Props={
+    dataList: any
+    cardType:'manage'|'shop'
+  }
+  const props =withDefaults(defineProps<Props>(),{ dataList:[],cardType:'manage'})
+    console.log('上厕所',props);
+
 
   const handleCurrent: any = computed(() => {
     return (state.page.currentPage - 1) * state.page.pageSize
