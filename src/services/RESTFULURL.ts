@@ -39,6 +39,7 @@ export default {
   },
   cohort: {
     applyJoin: cohort + '/apply/join', //申请加群组
+    exit: cohort + '/exit', //退出群组
     create: cohort + '/create', //创建群组
     join: cohort + '/join', // 加群
     createAuthority: cohort + '/create/authority', //创建群组职权
@@ -61,6 +62,8 @@ export default {
     update: cohort + '/update' //变更群组
   },
   company: {
+    exit: company + '/exit', //退出单位
+    exitGroup: company + '/exit/group', //退出集团
     applyJoin: company + '/apply/join', //申请加入单位
     applyJoinGroup: company + '/apply/join/group', //申请加入集团
     assignDepartment: company + '/assign/department', //分配部门
