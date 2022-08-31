@@ -8,7 +8,7 @@ import setupSvgIcon from '@/icons'
 import { createPinia } from 'pinia'
 import anyStore from '@/utils/hubConnection'
 // 夜间模式 
-import '@/assets/style/element.dark.scss'
+// import '@/assets/style/element.dark.scss'
 import 'element-plus/theme-chalk/dark/css-vars.css'
 
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'

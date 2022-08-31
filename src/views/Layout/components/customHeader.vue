@@ -84,7 +84,7 @@
     </el-col>
     <el-col :span="8" class="flex col-right">
       <el-space>
-        <!-- <el-switch v-model="isDark" active-icon="Moon" inactive-icon="Sunny" inline-prompt></el-switch> -->
+        <el-switch v-model="isDark" active-icon="Moon" inactive-icon="Sunny" inline-prompt></el-switch>
         <el-dropdown trigger="click">
           <span class="el-dropdown-link">
             <headImg :name="queryInfo.name" :limit="1" :imgWidth="40" :isSquare="false"></headImg>
@@ -99,7 +99,7 @@
               <el-dropdown-item @click="toSetting">信息设置</el-dropdown-item>
               <el-dropdown-item>帮助中心 </el-dropdown-item>
               <el-dropdown-item>切换语言 </el-dropdown-item>
-              <el-dropdown-item >切换主题 </el-dropdown-item>
+              <el-dropdown-item>切换主题 </el-dropdown-item>
               <el-dropdown-item @click="exitLogin">退出登录</el-dropdown-item>
             </el-dropdown-menu>
           </template>
