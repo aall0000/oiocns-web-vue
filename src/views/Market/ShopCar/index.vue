@@ -74,7 +74,7 @@
             <template #rightIcon>
             </template>
             <template #content>
-              <div class="shopCar-box">
+              <div class="shopCar-box" @click="handleCardInfo(item)">
                 <div class="app-con-title">{{ item.merchandise.caption }}</div>
                 <div class="app-con-info" v-if="item.merchandise.sellAuth !== '所属权'"
                   >使用天数：{{ item.merchandise.days }}</div
@@ -90,6 +90,7 @@
         </li>
       </ul>
       <el-table
+        class="table-row-sty"
         ref="shopcarTableRef"
         :data="pageStore.tableData"
         stripe
@@ -114,6 +115,13 @@
           </template>
         </el-table-column>
       </el-table>
+      <template v-for="item in state.dialogShow" :key="item.key">
+        <AppInfoDialog
+          v-if="item.key == 'info' && item.value"
+          :dialogShow="item"
+          @closeDialog="closeDialog"
+        ></AppInfoDialog>
+      </template>
       <el-pagination
         class="page-pagination"
         @size-change="(e) => handlePaginationChange(e, 'limit')"
@@ -138,6 +146,8 @@ import { ElMessage } from 'element-plus'
 import { PAGE_SIZES, PAGE_NUM } from '@/constant'
 import { ElTable } from 'element-plus'
 import ShopCard from '../components/shopCard.vue'
+import AppInfoDialog from '../AppList/components/appInfoDialog.vue'
+import moment from 'moment'
 const router = useRouter()
 // 表格分页数据
 const pagination: { current: number; limit: number } = reactive({ current: 1, limit: PAGE_NUM })
@@ -161,6 +171,42 @@ const shopcarTableRef = ref<InstanceType<typeof ElTable>>()
 const handleRowClick = (row: any) => {
   shopcarTableRef.value!.toggleRowSelection(row, undefined)
 }
+
+const viewform = (item:any)=>{
+  alert('55')
+}
+
+const state = reactive({
+    page: {
+      total: 0, // 总条数
+      currentPage: 1, // 当前页
+      pageSize: 20, // 每页条数
+      pageSizes: [20, 30, 50], // 分页数量列表
+      layout: 'total, prev, pager, next'
+    },
+    dialogShow: [
+      {
+        key: 'info',
+        value: false
+      }
+    ]
+  })
+  // 查看卡片详情
+  const handleCardInfo = (item: any) => {
+    state.dialogShow.map((el: { value: boolean; key: string; sendData?: any }) => {
+      if (el.key == 'info') {
+        el.value = true
+        el.sendData = item
+      }
+    })
+  }
+  const closeDialog = (val: string) => {
+    state.dialogShow.map((el: { value: boolean; key: string }) => {
+      if (el.key == val) {
+        el.value = false
+      }
+    })
+  }
 
 //查询
 const getTableList = async () => {
@@ -274,8 +320,8 @@ const createOrderByStaging = async (checkedId?: string) => {
   await $services.market
     .createOrderByStaging({
       data: {
-        name: (new Date()).toString().substring(0,8) ,
-        code: (new Date()).toString().substring(0,8) ,
+        name: (new Date().getTime()).toString().substring(0,13) ,
+        code: (new Date().getTime()).toString().substring(0,13) ,
         stagIds: checkedStagIds
       }
     })
@@ -455,6 +501,10 @@ const checkedChange = (item: any) => {
   right:20px;
   /* display: flex;
   justify-content: end; */
+}
+
+.table-row-sty {
+  height: calc(100vh - 12rem);
 }
 
 .app-con-title {

@@ -115,7 +115,7 @@ const searchPreSellList = async () => {
     })
     .then((res: ResultType) => {
       const { result = [], total = 0 } = res.data
-      pageStore.total = result.length
+      pageStore.total = total
       result.forEach((item: any) => {
         item.ordertype = 'sell'
         return item
@@ -143,7 +143,7 @@ const searchSellList = async () => {
     })
     .then((res: ResultType) => {
       var { result = [], total = 0 } = res.data
-      pageStore.total = result.length
+      pageStore.total = total
       result.forEach((item: any) => {
         item.ordertype = 'sell'
         return item
@@ -175,7 +175,7 @@ const searchBuyList = async () => {
     })
     .then((res: ResultType) => {
       const { result = [], total = 0 } = res.data
-      pageStore.total = result.length
+      pageStore.total = total
       result.forEach((item: any) => {
         item.ordertype = 'buy'
         return item
@@ -204,7 +204,7 @@ const closePay = async () => {
   payDialog.show = false
 }
 
-//取消订单
+//取消
 const cancelOrder = async (id: string) => {
   await $services.order
     .delete({
@@ -216,7 +216,7 @@ const cancelOrder = async (id: string) => {
       if (res.code == 100) {
         getTableList(searchType.value)
         ElMessage({
-          message: '取消订单成功',
+          message: '取消成功',
           type: 'warning'
         })
       }

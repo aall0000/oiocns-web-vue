@@ -6,15 +6,89 @@
         <el-button type="primary" @click="getTableList('sell')">已卖出</el-button>
       </template>
     </MarketCard>
-
-    <div class="tab-list">
+    <div class="limit_table_height">
       <el-table
+        class="table-row-sty"
         :data="state.orderList"
         stripe
         @select="handleSelect"
         ref="orderTableRef"
         v-if="searchType == 'buy'"
       >
+        <el-table-column type="expand">
+          <template #default="props">
+            <div style="margin-left: 100px">
+              <el-table :data="props.row.details">
+                <el-table-column prop="code" label="订单号" />
+                <el-table-column prop="name" label="名称" />
+                <el-table-column prop="sellAuth" label="出售权益" />
+                <el-table-column prop="days" label="期限" />
+                <el-table-column prop="price" label="价格" />
+                <el-table-column
+                  prop="status"
+                  label="状态"
+                  :formatter="(row, column) => renderDict(row, column, 'OrderStatus')"
+                />
+                <el-table-column prop="name" label="支付记录">
+                  <template #default="scope">
+                    <el-link type="primary" @click="showPayList(scope.row)">点击查看</el-link>
+                  </template>
+                </el-table-column>
+                <el-table-column prop="name" label="操作" width="600">
+                  <template #default="scope">
+                    <el-button
+                      v-show="scope.row.status == 1 && scope.row.ordertype == 'sell'"
+                      @click="sureContent(scope.row.id)"
+                      type="primary"
+                      >开始交易</el-button
+                    >
+                    <el-button
+                      v-show="scope.row.status == 100 && scope.row.ordertype == 'buy'"
+                      @click="showPay(scope.row)"
+                      type="primary"
+                      >支付</el-button
+                    >
+                    <el-button
+                      v-show="scope.row.status <= 100"
+                      @click="cancelOrder(scope.row.id)"
+                      type="primary"
+                      >取消</el-button
+                    >
+                    <el-button
+                      v-show="scope.row.status == 101 && scope.row.ordertype == 'sell'"
+                      @click="delivery(scope.row.id)"
+                      type="primary"
+                      >确认发货</el-button
+                    >
+                    <el-button
+                      v-show="scope.row.status == 102 && scope.row.ordertype == 'buy'"
+                      @click="accept(scope.row.id)"
+                      type="primary"
+                      >确认收货</el-button
+                    >
+                    <el-button
+                      v-show="scope.row.status == 103 && scope.row.ordertype == 'buy'"
+                      @click="comment(scope.row.id)"
+                      type="primary"
+                      >评价</el-button
+                    >
+                    <el-button
+                      v-show="scope.row.status == 104 && scope.row.ordertype == 'sell'"
+                      @click="viewComment(scope.row.id)"
+                      type="primary"
+                      >查看评价</el-button
+                    >
+                  </template>
+                </el-table-column>
+              </el-table>
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column label="序号" type="index" width="50" align="center">
+          <template #default="scope">
+            <span>{{ (pagination.current - 1) * pagination.limit + scope.$index + 1 }}</span>
+          </template>
+        </el-table-column>
         <el-table-column prop="code" label="订单号" />
         <el-table-column prop="name" label="名称" />
         <el-table-column
@@ -24,52 +98,12 @@
         />
         <el-table-column prop="name" label="操作" width="600">
           <template #default="scope">
-            <el-button
-              v-show="scope.row.status == 1 && scope.row.ordertype == 'sell'"
-              @click="sureContent(scope.row.id)"
-              type="primary"
-              >开始交易</el-button
-            >
-            <el-button
-              v-show="scope.row.status == 100 && scope.row.ordertype == 'buy'"
-              @click="showPay(scope.row)"
-              type="primary"
-              >支付</el-button
-            >
-            <el-button
-              v-show="scope.row.status <= 100"
-              @click="cancelOrder(scope.row.id)"
-              type="primary"
-              >取消订单</el-button
-            >
-            <el-button
-              v-show="scope.row.status == 101 && scope.row.ordertype == 'sell'"
-              @click="delivery(scope.row.id)"
-              type="primary"
-              >确认发货</el-button
-            >
-            <el-button
-              v-show="scope.row.status == 102 && scope.row.ordertype == 'buy'"
-              @click="accept(scope.row.id)"
-              type="primary"
-              >确认收货</el-button
-            >
-            <el-button
-              v-show="scope.row.status == 103 && scope.row.ordertype == 'buy'"
-              @click="comment(scope.row.id)"
-              type="primary"
-              >评价</el-button
-            >
-            <el-button
-              v-show="scope.row.status == 104 && scope.row.ordertype == 'sell'"
-              @click="viewComment(scope.row.id)"
-              type="primary"
-              >查看评价</el-button
-            >
+            <el-button @click="cancelOrder(scope.row.id)" type="primary">取消</el-button>
           </template>
         </el-table-column>
       </el-table>
       <el-table
+        class="table-row-sty"
         :data="state.orderList"
         stripe
         @select="handleSelect"
@@ -78,12 +112,19 @@
       >
         <el-table-column prop="code" label="订单号" />
         <el-table-column prop="name" label="名称" />
+        <el-table-column prop="sellAuth" label="出售权益" />
+        <el-table-column prop="days" label="期限" />
         <el-table-column prop="price" label="价格" />
         <el-table-column
           prop="status"
           label="状态"
           :formatter="(row, column) => renderDict(row, column, 'OrderStatus')"
         />
+        <el-table-column prop="name" label="支付记录">
+          <template #default="scope">
+            <el-link type="primary" @click="showPayList(scope.row)">点击查看</el-link>
+          </template>
+        </el-table-column>
         <el-table-column prop="name" label="操作" width="600">
           <template #default="scope">
             <el-button
@@ -102,7 +143,7 @@
               v-show="scope.row.status <= 100"
               @click="cancelOrder(scope.row.id)"
               type="primary"
-              >取消订单</el-button
+              >取消</el-button
             >
             <el-button
               v-show="scope.row.status == 101 && scope.row.ordertype == 'sell'"
@@ -132,19 +173,19 @@
         </el-table-column>
       </el-table>
       <payView v-if="payDialog.show" :order="payDialog.data" @close="closePay"></payView>
-      <el-pagination
-        class="page-pagination"
-        @size-change="(e) => handlePaginationChange(e, 'limit')"
-        @current-change="(e) => handlePaginationChange(e, 'current')"
-        small
-        background
-        :page-sizes="pageSizes"
-        v-model:currentPage="pagination.current"
-        v-model:page-size="pagination.limit"
-        layout="total, sizes, prev, pager, next, jumper"
-        :total="pageStore.total"
-      />
     </div>
+    <el-pagination
+      class="page-pagination"
+      @size-change="(e) => handlePaginationChange(e, 'limit')"
+      @current-change="(e) => handlePaginationChange(e, 'current')"
+      small
+      background
+      :page-sizes="pageSizes"
+      v-model:currentPage="pagination.current"
+      v-model:page-size="pagination.limit"
+      layout="total, sizes, prev, pager, next, jumper"
+      :total="pageStore.total"
+    />
   </div>
 </template>
 <script lang="ts" setup>
@@ -154,6 +195,7 @@ import { ElMessage } from 'element-plus'
 import { PAGE_SIZES, PAGE_NUM } from '@/constant'
 import renderDict from '@/services/dict'
 import payView from '@/components/pay/pay.vue'
+// import payList from '@/components/pay/list.vue'
 import { ElTable } from 'element-plus'
 import moment from 'moment'
 // 表格分页数据
@@ -166,6 +208,7 @@ const pageStore = reactive({
 const searchType = ref<string>('buy')
 const pageSizes = ref<Array<any>>(PAGE_SIZES)
 const payDialog = reactive({ show: false, data: {} })
+const payListDialog = reactive({ show: false, data: {} })
 const remoteOperate = ref<boolean>(false)
 const handleSelect = (key: string, keyPath: string[]) => {
   console.log(key, keyPath)
@@ -179,8 +222,13 @@ const handleRowClick = (row: any) => {
 const searchValue = ref<string>('')
 
 onMounted(() => {
+  // window.addEventListener('resize', () => {
+  //     this.tableHeight = calcHeightx(120);
+  //   });
+  //   this.tableHeight = calcHeightx(120);
   getTableList('buy')
 })
+
 const options = ref<ListItem[]>([])
 const value = ref('')
 const loading = ref(false)
@@ -219,7 +267,7 @@ const searchPreSellList = async () => {
     })
     .then((res: ResultType) => {
       const { result = [], total = 0 } = res.data
-      pageStore.total = result.length
+      pageStore.total = total
       result.forEach((item: any) => {
         item.ordertype = 'sell'
         return item
@@ -247,7 +295,7 @@ const searchSellList = async () => {
     })
     .then((res: ResultType) => {
       var { result = [], total = 0 } = res.data
-      pageStore.total = result.length
+      pageStore.total = total
       result.forEach((item: any) => {
         item.ordertype = 'sell'
         return item
@@ -260,7 +308,9 @@ const searchSellList = async () => {
           return {
             ...item,
             code: item.order.code,
-            name: item.merchandise.caption
+            name: item.merchandise.caption,
+            sellAuth: item.merchandise.sellAuth,
+            days: item.merchandise.days
             // remark: item.market.remark,
             // marketCode: item.market.code,
             // marketName: item.market.name
@@ -282,11 +332,32 @@ const searchBuyList = async () => {
     })
     .then((res: ResultType) => {
       const { result = [], total = 0 } = res.data
-      pageStore.total = result.length
+      pageStore.total = total
       result.forEach((item: any) => {
         item.ordertype = 'buy'
+        if (item.details) {
+          item.details = item.details.map((e) => {
+            if (!e.merchandise) {
+              return e
+            }
+            return {
+              ...e,
+              name: e.merchandise.caption,
+              code: e.merchandise.caption,
+              sellAuth: e.merchandise.sellAuth,
+              price: e.merchandise.price
+            }
+          })
+        }
+
+        item.hasChildren = false
+        if (item.details) {
+          item.children = item.details
+          item.hasChildren = item.details.length > 0
+        }
         return item
       })
+
       state.orderList = result?.map((item: { market: { remark: any; code: any; name: any } }) => {
         return {
           ...item
@@ -313,6 +384,11 @@ const sureContent = async (id: string) => {
       }
     })
 }
+//查询支付列表
+const showPayList = async (data: any) => {
+  payListDialog.data = data
+  payListDialog.show = true
+}
 //支付
 const showPay = async (data: any) => {
   payDialog.data = data
@@ -321,6 +397,10 @@ const showPay = async (data: any) => {
 //关闭支付
 const closePay = async () => {
   payDialog.show = false
+}
+//关闭支付记录列表
+const closePayList = async () => {
+  payListDialog.show = false
 }
 
 // const pay = async (id: string, price: number, paymentType: string) => {
@@ -347,7 +427,7 @@ const closePay = async () => {
 //       }
 //     })
 // }
-//取消订单
+//取消
 const cancelOrder = async (id: string) => {
   await $services.order
     .delete({
@@ -359,7 +439,7 @@ const cancelOrder = async (id: string) => {
       if (res.code == 200) {
         getTableList(searchType.value)
         ElMessage({
-          message: '取消订单成功',
+          message: '取消成功',
           type: 'warning'
         })
       }
@@ -475,7 +555,16 @@ const remoteMethod = (query: string) => {
   width: 100%;
   height: 100%;
   background: #f0f2f5;
-  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 10px;
+
+  .limit_table_height{
+
+  }
+  .tables {
+    height: 50%;
+  }
   .operate-btns {
     display: flex;
     justify-content: space-between;
@@ -501,5 +590,148 @@ const remoteMethod = (query: string) => {
     margin-left: 20px;
     position: relative;
   }
+}
+
+.diy-table {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 10px;
+
+  &__header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding-top: 10px;
+
+    .header-title {
+      font-size: 16px;
+      font-weight: bold;
+      color: rgba(48, 49, 51, 1);
+      padding: 0 0 10px;
+
+      i {
+        font-size: 20px;
+        color: rgba(21, 74, 216, 1);
+      }
+    }
+
+    .header-tabs {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: -5px;
+    }
+
+    .header-buttons {
+      display: flex;
+    }
+  }
+
+  &__btn {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  &__body {
+    width: 100%;
+    height: 100px; //避免el-table无限变高
+    display: flex;
+    flex: 1;
+    margin-top: 10px;
+
+    &-box {
+      width: 1vw;
+      flex: auto;
+    }
+  }
+
+  &__footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .footer-operate {
+      width: 110px;
+      height: 40px;
+      border: 1px solid rgba(209, 223, 245, 1);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+
+      .el-dropdown {
+        width: 100%;
+        height: 100%;
+      }
+      .el-dropdown-link {
+        width: 100%;
+        height: 100%;
+        display: block;
+        text-align: center;
+        height: 38px;
+        line-height: 38px;
+        font-size: 14px;
+        font-weight: 400;
+        color: rgba(51, 51, 51, 1);
+      }
+    }
+
+    .footer-buttons {
+      width: 350px;
+      display: flex;
+      justify-content: space-between;
+
+      .select-options {
+        width: 150px;
+      }
+    }
+
+    .footer-pagination {
+      & :deep(.btn-prev) {
+        border-radius: 16px;
+      }
+      & :deep(.el-pager > .number) {
+        border-radius: 4px;
+      }
+      & :deep(.btn-next) {
+        border-radius: 16px;
+      }
+      & :deep(.el-pagination__sizes .el-input__inner) {
+        border-radius: 16px;
+        // background: rgba(231, 239, 252, 1);
+        border-color: transparent;
+      }
+    }
+  }
+}
+.el-dropdown-menu {
+  width: 110px;
+}
+.table-row-sty {
+  height: calc(100vh - 12rem);
+}
+.table-row-sty tr:hover,
+.table-row-sty tbody tr.el-table__row.not-read:hover {
+  cursor: pointer;
+  color: #2da1f8;
+}
+.el-icon-question {
+}
+.tableClass {
+  background-color: #edf2fc;
+  cursor: no-drop;
+}
+@media screen and (max-width: 1280px) {
+  .diy-table__header {
+    display: flex;
+    display: none;
+    flex-wrap: wrap;
+  }
+}
+:deep(.el-table__header-wrapper .el-checkbox) {
+  display: none;
 }
 </style>

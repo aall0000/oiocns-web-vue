@@ -178,8 +178,8 @@
     await $services.order
       .create({
         data: {
-          name: moment().format('YYYY-MM-DD hh:mm:ss') + '的订单',
-          code: getUuid(),
+          name: (new Date().getTime()).toString().substring(0,13) ,
+          code: (new Date().getTime()).toString().substring(0,13) ,
           merchandiseId: item.id
         }
       })
