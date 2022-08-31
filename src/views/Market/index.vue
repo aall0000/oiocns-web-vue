@@ -281,7 +281,10 @@
   // 跳转到group分享界面
   const shareGroup = () => {
     if (selectedValue.value) {
-      router.push({ path: '/market/group', query: { id: selectedValue.value } })
+      router.push({
+        path: '/market/group',
+        query: { id: selectedValue.value }
+      })
     } else {
       ElMessage({
         type: 'warning',
@@ -292,7 +295,10 @@
   // 跳转到unit分享界面
   const shareUnit = () => {
     if (selectedValue.value) {
-      router.push({ path: '/market/unit', query: { id: selectedValue.value } })
+      router.push({
+        path: '/market/unit',
+        query: { id: selectedValue.value }
+      })
     } else {
       ElMessage({
         type: 'warning',
