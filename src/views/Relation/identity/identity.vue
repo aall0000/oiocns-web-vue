@@ -25,7 +25,7 @@
           class="el-menu-vertical-demo"
         >
           <el-menu-item class="menu-item" :index="index" v-for="(item, index) in  identityList.list" @click="checkItem(item)">
-            <span>{{item.name}}</span>
+              <div class="menu-nav">{{item.name}}</div>
           </el-menu-item>
         </el-menu>
       </div>
@@ -211,6 +211,12 @@
 
 .menu-item {
   height: 36px;
+  .menu-nav{
+    width:100%;
+    white-space: nowrap; 
+    overflow: hidden;
+    text-overflow: ellipsis; 
+  }
 }
 
 </style>

@@ -25,7 +25,19 @@
               <el-tag>{{ scope.row.data.typeName }}</el-tag>
             </template>
           </el-table-column>
-          <el-table-column prop="data.teamRemark" label="描述" />
+          <el-table-column prop="data.teamRemark" label="描述">
+            <template #default="scope">
+              <el-tooltip :content="scope.row.remark" placement="bottom" effect="light">
+                <template #content> 
+                  <div class="tooltip-text" style="width: 400px; max-height: 300px; overflow-y: auto;">{{scope.row.data.teamRemark}}</div>
+                </template>
+                <div class="remark-text">
+                {{scope.row.data.teamRemark}}
+                </div>
+              </el-tooltip>
+            </template>
+            
+          </el-table-column>
           <el-table-column label="操作" width="150">
             <template #default="{ row }">
                 <div class="cell-box">
@@ -552,6 +564,12 @@
   .table {
     width: 100%;
     height: calc(100vh - 150px);
+  }
+  .remark-text{
+    white-space: nowrap;
+    cursor: pointer;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }
 </style>

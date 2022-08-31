@@ -1,40 +1,40 @@
 <template>
   <div class="group-content-wrap" ref="nodeRef" @scroll="scrollEvent">
     <!-- <li class="history-more" @click="getMoreHistory">查看更多</li> -->
-    <template v-for="(item, index) in list">
-      <!-- 聊天间隔时间3分钟则 显示时间 -->
-      <div class="chats-space-Time"
-        v-if="index == 0 || moment(item?.updateTime).diff(list[index - 1].updateTime, 'minute') > 3">
-        <span>
-          {{  showChatTime(item?.updateTime)  }}
-        </span>
-      </div>
-      <!-- 左侧聊天内容显示 -->
-      <div class="group-content-left con recall" v-if="item.msgType === 'recall'">
-        {{  item.showTxt  }}
-        <!-- <span class="reWrite" @click="handleReWrite(item.msgBody)">重新编辑</span> -->
-      </div>
+    <template  v-for="(item, index) in list" :key="item.fromId">
+        <!-- 聊天间隔时间3分钟则 显示时间 -->
+        <div class="chats-space-Time"
+          v-if="index == 0 || moment(item?.updateTime).diff(list[index - 1].updateTime, 'minute') > 3">
+          <span>
+            {{  showChatTime(item?.updateTime)  }}
+          </span>
+        </div>
+        <!-- 左侧聊天内容显示 -->
+        <div class="group-content-left con recall" v-if="item.msgType === 'recall'">
+          {{  item.showTxt  }}
+          <!-- <span class="reWrite" @click="handleReWrite(item.msgBody)">重新编辑</span> -->
+        </div>
 
-      <div class="group-content-left con" v-else-if="item.fromId !== myId">
-        <!-- <img class="con-img" src="@/assets/img/userIcon/ic_03.png" alt=""> -->
-        <HeadImg :name="getUserName(item.fromId)" :label="''" />
-        <div class="con-content">
-          <span v-if="showName" class="con-content-name">{{  getUserName(item.fromId)  }}</span>
-          <div class="con-content-link"></div>
-          <div class="con-content-txt" v-html="item.msgBody"></div>
+        <div class="group-content-left con" v-else-if="item.fromId !== myId" >
+          <!-- <img class="con-img" src="@/assets/img/userIcon/ic_03.png" alt=""> -->
+          <HeadImg :name="getUserName(item.fromId)" :label="''" />
+          <div class="con-content">
+            <span v-if="showName" class="con-content-name">{{  getUserName(item.fromId)  }}</span>
+            <div class="con-content-link"></div>
+            <div class="con-content-txt" v-html="item.msgBody"></div>
+          </div>
         </div>
-      </div>
-      <!-- 右侧内容显示 -->
-      <div class="group-content-right con" v-else>
-        <div class="con-content" @contextmenu.prevent.stop="(e: MouseEvent) => handleContextClick(e, item)">
-          <!-- <span v-if="showName" class="con-content-name">{{ getUserName(item.fromId) }}</span> -->
-          <div class="con-content-link"></div>
-          <div class="con-content-txt" v-html="item.msgBody"> </div>
-          <!-- {{ item.msgBody }} -->
+        <!-- 右侧内容显示 -->
+        <div class="group-content-right con" v-else>
+          <div class="con-content" @contextmenu.prevent.stop="(e: MouseEvent) => handleContextClick(e, item)">
+            <!-- <span v-if="showName" class="con-content-name">{{ getUserName(item.fromId) }}</span> -->
+            <div class="con-content-link"></div>
+            <div class="con-content-txt" v-html="item.msgBody"> </div>
+            <!-- {{ item.msgBody }} -->
+          </div>
+          <!-- <img class="con-img" src="@/assets/img/userIcon/ic_06.png" alt=""> -->
+          <HeadImg :name="getUserName(myId)" />
         </div>
-        <!-- <img class="con-img" src="@/assets/img/userIcon/ic_06.png" alt=""> -->
-        <HeadImg :name="getUserName(myId)" />
-      </div>
     </template>
     <!-- 鼠标右键 -->
     <ul class="context-text-wrap" v-show="mousePosition.isShowContext"

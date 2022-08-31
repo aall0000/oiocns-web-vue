@@ -67,6 +67,10 @@ const mainRouter: RouteRecordRaw[] = [
   {
     path: '/relation',
     component: () => import('@/views/Relation/index.vue'),
+    meta: {
+      keepAlive: false,
+      title: '关系'
+    },
     children: [
       {
         path: '/relation/company',
@@ -214,6 +218,10 @@ const mainRouter: RouteRecordRaw[] = [
   },
   {
     path: '/market',
+    meta: {
+      keepAlive: false,
+      title: '我的应用'
+    },
     // component: () => import('@/views/Layout/msgLayout/layout.vue'),
     children: [
       {
@@ -241,6 +249,14 @@ const mainRouter: RouteRecordRaw[] = [
         }
       },
       {
+        path: '/market/getApp',
+        name: 'marketGetApp',
+        component: () => import('@/views/Market/AppList/getAppfromMarket.vue'),
+        meta: {
+          title: '获取应用'
+        }
+      },
+      {
         path: '/market/userManage',
         name: 'marketUserManage',
         component: () => import('@/views/Market/AppList/userManage.vue'),
@@ -248,22 +264,8 @@ const mainRouter: RouteRecordRaw[] = [
           title: '用户管理'
         }
       },
-      {
-        path: '/market/approval',
-        name: 'marketApproval',
-        component: () => import('@/views/Market/Approval/index.vue'),
-        meta: {
-          title: '审批页'
-        }
-      },
-      {
-        path: '/market/appShelves',
-        name: 'marketAppShelves',
-        component: () => import('@/views/Market/AppShelves/index.vue'),
-        meta: {
-          title: '应用上架'
-        }
-      },
+
+     
       {
         path: '/market/order',
         name: 'marketOrder',
@@ -298,9 +300,9 @@ const mainRouter: RouteRecordRaw[] = [
       },{
         path: '/market/managerApproval',
         name: 'managerApproval',
-        component: () => import('@/views/Market/JoinMarketApproval/manager.vue'),
+        component: () => import('@/views/Market/JoinMarketApproval/index.vue'),
         meta: {
-          title: '管理者审批列表'
+          title: '申请审批'
         }
       },{
         path: '/market/appShelvesApproval',
