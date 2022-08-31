@@ -178,7 +178,7 @@
     shareTotal: number
     marketOptions: any[] //所有市场列表
     options: any[] //集团列表
-    selectLabel: object // 选中的集团名称
+    selectLabel: selectType // 选中的集团名称
   }
 
   const state: StateType = reactive({
@@ -188,7 +188,10 @@
     shareTotal: 0,
     marketOptions: [],
     options: [],
-    selectLabel: {}
+    selectLabel: {
+      label: '',
+      id: ''
+    }
   })
 
   onMounted(() => {
@@ -296,7 +299,11 @@
     if (selectedValue.value) {
       router.push({
         path: '/market/group',
-        query: { id: selectedValue.value, name: state.selectLabel.label }
+        query: {
+          id: selectedValue.value,
+          name: state.selectLabel.label,
+          appInfo: selectProductItem.value.id
+        }
       })
     } else {
       ElMessage({
@@ -310,7 +317,11 @@
     if (selectedValue.value) {
       router.push({
         path: '/market/unit',
-        query: { id: selectedValue.value, name: state.selectLabel.label }
+        query: {
+          id: selectedValue.value,
+          name: state.selectLabel.label,
+          appInfo: selectProductItem.value.id
+        }
       })
     } else {
       ElMessage({
