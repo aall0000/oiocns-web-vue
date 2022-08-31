@@ -126,7 +126,7 @@
           // getPageList()
           ElMessage({
             type: 'success',
-            message: '应用上架成功'
+            message: '已提交上架申请'
           })
           resetForm()
         }
