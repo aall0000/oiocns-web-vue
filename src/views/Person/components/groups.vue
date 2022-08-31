@@ -25,6 +25,11 @@
                 <el-button type="danger">删除</el-button>
               </template>
             </el-popconfirm>
+            <el-popconfirm title="确认退出吗?" @confirm="handleExit(scope.row.id)">
+              <template #reference>
+                <el-button type="danger">退出</el-button>
+              </template>
+            </el-popconfirm>
           </template>
         </el-table-column>
       </el-table>
@@ -45,6 +50,11 @@
                 <el-button type="danger">删除</el-button>
               </template>
             </el-popconfirm>
+            <el-popconfirm title="确认退出吗?" @confirm="handleExit(scope.row.id)">
+              <template #reference>
+                <el-button type="danger">退出</el-button>
+              </template>
+            </el-popconfirm>
           </template>
         </el-table-column>
       </el-table>
@@ -60,9 +70,14 @@
         <el-table-column prop="createTime" label="加入时间" />
         <el-table-column prop="option" label="操作">
           <template #default="scope">
-            <el-popconfirm title="确认删除?" @confirm="handleDelete(scope.row.id)">
+            <el-popconfirm title="确认删除吗?" @confirm="handleDelete(scope.row.id)">
               <template #reference>
                 <el-button type="danger">删除</el-button>
+              </template>
+            </el-popconfirm>
+            <el-popconfirm title="确认退出吗?" @confirm="handleExit(scope.row.id)">
+              <template #reference>
+                <el-button type="danger">退出</el-button>
               </template>
             </el-popconfirm>
           </template>
@@ -147,6 +162,23 @@
     teamCode: '',
     teamRemark: ''
   })
+  const handleExit = (id: string) => {
+    $services.company
+    .exitGroup({
+      data: {
+        id: id
+      }
+    })
+    .then((res: ResultType) => {
+      if (res.code == 200) {
+        ElMessage({
+          message: '退出成功',
+          type: 'warning'
+        })
+      fetchRequest(offset.value, pageSize.value)
+      }
+    })
+  }
   const handleDelete = (id: any) => {
     let token = sessionStorage.getItem('TOKEN')
     $services.company
