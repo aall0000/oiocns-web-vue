@@ -28,7 +28,7 @@
               <el-table-column prop="state" label="申请状态" />
               <el-table-column prop="option" label="操作">
                 <template #default="scope">
-                  <el-popconfirm title="确认删除?" @confirm="handleDelete(scope.row.id)">
+                  <el-popconfirm title="确认退出吗?" @confirm="handleExit(scope.row.id)">
                     <template #reference>
                       <el-button type="danger">退出单位</el-button>
                     </template>
@@ -64,9 +64,9 @@
   const handleClick = (tab: TabsPaneContext, event: Event) => {
     console.log(tab, event)
   }
-  const handleDelete = (id: string) => {
-    $services.person
-    .cancelJoin({
+  const handleExit = (id: string) => {
+    $services.company
+    .exit({
       data: {
         id: id
       }
@@ -78,28 +78,8 @@
           type: 'warning'
         })
         getList()
-        // getQunList()
       }
     })
-    // $services.company
-    //   .companyDelete({
-    //     data: {
-    //       id: id
-    //     }
-    //   })
-    //   .then((res: ResultType) => {
-    //     if (res.success) {
-    //       ElMessage({
-    //         message: '删除成功',
-    //         type: 'success'
-    //       })
-    //     } else {
-    //       ElMessage({
-    //         message: res.msg,
-    //         type: 'warning'
-    //       })
-    //     }
-    //   })
   }
   type listItem = {
     id: string

@@ -18,7 +18,7 @@
         <el-table-column prop="remark" label="群简介" />
         <el-table-column prop="name" label="操作">
           <template #default="scope">
-            <el-button @click="exitCohort(scope.row.id)" type="primary">退出群</el-button>
+            <el-button v-if="myId != scope.row.belongId" @click="exitCohort(scope.row.id)" type="primary">退出群</el-button>
             <el-button v-if="myId == scope.row.belongId" @click="deleteCohort(scope.row.id)" type="primary">解散群</el-button>
           </template>
         </el-table-column>
@@ -125,8 +125,8 @@ const applyJoinCohort = (arr:Array<arrList>) => {
 }
 //退出群
 const exitCohort = (id: string) =>{
-  $services.person
-    .cancelJoin({
+  $services.cohort
+    .exit({
       data: {
         id: id
       }
