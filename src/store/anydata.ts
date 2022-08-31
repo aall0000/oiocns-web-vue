@@ -53,15 +53,22 @@ export const useAnyData = defineStore({
     getters: {
         homeComplist: (state) => state.workspace?.content || [], // 首页配置组件
         userComplist: (state) => state.workspace?.user?.content || [], // 用户组件
-        noReadMap: (state) => state.messageNoReadMap // 未读数量
+        noReadMap: (state) => state.messageNoReadMap, // 未读数量
+        getNoReadCount: (state)=>
+            (groupid: string, userid: string) => {
+                if(state.messageNoReadMap[groupid] && state.messageNoReadMap[groupid][userid]){
+                    return state.messageNoReadMap[groupid][userid] || 0
+                }
+                return 0
+            }
     },
     actions: {
-        getNoReadCount(groupid: string, userid: string) {
-            if(this.messageNoReadMap[groupid] && this.messageNoReadMap[groupid][userid]){
-                return this.messageNoReadMap[groupid][userid] || 0
-            }
-            return 0
-        },
+        // getNoReadCount(groupid: string, userid: string) {
+        //     if(this.messageNoReadMap[groupid] && this.messageNoReadMap[groupid][userid]){
+        //         return this.messageNoReadMap[groupid][userid] || 0
+        //     }
+        //     return 0
+        // },
         // 更新用户组件配置
         updateUserSpace(params: { workspaceId: string, content: UserSpace[] }) {
             console.log('更新用户组件', params.content)

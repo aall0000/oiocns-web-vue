@@ -219,6 +219,7 @@ onBeforeUnmount(() => {
 watch(
   () => activeInfo.value,
   async (val) => {
+    
     const { typeName, id, spaceId } = val
     selectInfo.typeName = typeName
     current.value = 0
@@ -253,9 +254,10 @@ const getQunPerson = async (id: string, offset: number) => {
   })
   if (success === true) {
     selectInfo.total = data.total
-    // 存储用户id=>名称
+    // 存储用户id=>名称 item.team.name 真实姓名
+     
     data.result.forEach((item: userType) => {
-      setUserNameMap(item.id, item.name)
+      setUserNameMap(item.id, item.team.name)
     })
     if (offset === 0) {
       selectInfo.userList = data.result

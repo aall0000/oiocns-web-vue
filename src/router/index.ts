@@ -217,6 +217,10 @@ const mainRouter: RouteRecordRaw[] = [
   },
   {
     path: '/market',
+    meta: {
+      keepAlive: false,
+      title: '我的应用'
+    },
     // component: () => import('@/views/Layout/msgLayout/layout.vue'),
     children: [
       {
@@ -257,6 +261,14 @@ const mainRouter: RouteRecordRaw[] = [
         component: () => import('@/views/Market/AppList/appList.vue'),
         meta: {
           title: '应用列表'
+        }
+      },
+      {
+        path: '/market/getApp',
+        name: 'marketGetApp',
+        component: () => import('@/views/Market/AppList/getAppfromMarket.vue'),
+        meta: {
+          title: '获取应用'
         }
       },
       {
