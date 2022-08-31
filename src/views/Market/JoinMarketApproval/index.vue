@@ -102,11 +102,6 @@
             type: 'success'
           })
           searchApprovalList()
-        } else {
-          ElMessage({
-            message: res.msg,
-            type: 'warning'
-          })
         }
       })
   }
@@ -122,7 +117,6 @@
         }
       })
       .then((res: ResultType) => {
-        console.log(res)
         if (res.success) {
           const { result = [], total = 0 } = res.data
           state.approvalList = []
@@ -184,11 +178,6 @@
             type: 'success'
           })
           searchApplyList()
-        } else {
-          ElMessage({
-            message: res.msg,
-            type: 'warning'
-          })
         }
       })
   }
@@ -199,12 +188,10 @@
         data: {
           offset: 0,
           limit: 10,
-
           filter: ''
         }
       })
       .then((res: ResultType) => {
-        console.log(res)
         if (res.success) {
           const { result = [], total = 0 } = res.data
           state.approvalList = []
@@ -259,11 +246,6 @@
             type: 'success'
           })
           searchApprovalList()
-        } else {
-          ElMessage({
-            message: res.msg,
-            type: 'warning'
-          })
         }
       })
   }
@@ -279,7 +261,6 @@
         }
       })
       .then((res: ResultType) => {
-        console.log(res)
         if (res.success) {
           const { result = [], total = 0 } = res.data
           state.approvalList = []
@@ -354,7 +335,6 @@
         }
       })
       .then((res: ResultType) => {
-        console.log(res)
         if (res.success) {
           const { result = [], total = 0 } = res.data
           state.approvalList = []

@@ -41,6 +41,7 @@
           :load="loadNode"
           v-bind="options"
           v-loading="loading"
+          :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
           border
           stripe
           :default-expand-all="options.expandAll ? options.expandAll : false"

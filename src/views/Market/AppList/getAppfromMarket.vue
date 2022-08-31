@@ -1,9 +1,6 @@
 <template>
   <MarketCard>
     <template #right>
-      <el-button type="primary" @click="GoPage('/market/appShelvesApproval')"
-        >应用上架审批</el-button
-      >
       <el-button type="primary" @click.stop="GoPage('/market/shopCar')">购物车</el-button>
     </template>
   </MarketCard>
@@ -20,6 +17,7 @@
           v-if="isCard"
           ref="appCard"
           :dataList="state.myAppList"
+          type="shop"
           @handleUpdate="handleCardUpdate"
         ></AppCard>
         <DiyTable
@@ -31,7 +29,7 @@
           @handleUpdate="handleUpdate"
         >
           <template #operate="scope">
-            <TheTableButton :data="scope.row" @update="getData"></TheTableButton>
+            <TheTableButton :data="scope.row" type="shop" @update="getData"></TheTableButton>
           </template>
         </DiyTable>
       </div>

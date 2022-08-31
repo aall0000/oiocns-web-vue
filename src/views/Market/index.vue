@@ -88,9 +88,6 @@
       <el-form-item label="备注" prop="remark">
         <el-input v-model="form.remark" :rows="3" type="textarea" placeholder="请输入描述/备注" />
       </el-form-item>
-      <!-- <el-form-item label="应用thingId" prop="thingId">
-        <el-input v-model="form.thingId" />
-      </el-form-item> -->
     </el-form>
     <template #footer>
       <span class="dialog-footer">
@@ -124,7 +121,12 @@
     draggable
     :close-on-click-modal="false"
   >
-    <el-select v-model="selectedValue" value-key="id" placeholder="请选择集团">
+    <el-select
+      v-model="selectedValue"
+      value-key="id"
+      placeholder="请选择集团"
+      @change="selectchange"
+    >
       <el-option
         v-for="item in state.options"
         :key="item.value"
@@ -134,26 +136,22 @@
     </el-select>
     <template #footer>
       <span class="dialog-footer">
-        <el-button @click="groupVisible = false">取消</el-button>
-        <el-button type="primary" @click="openShareDialog">确定</el-button>
+        <el-button @click="shareGroup">按集团分享</el-button>
+        <el-button type="primary" @click="shareUnit">按单位分享</el-button>
       </span>
     </template>
   </el-dialog>
-  <el-dialog
+  <!-- <el-dialog
     v-if="shareVisible"
     v-model="shareVisible"
     custom-class="share-dialog"
     title="分享应用"
-    width="600px"
+    width="1000px"
     draggable
     :close-on-click-modal="false"
   >
-    <share-comp
-      :info="selectProductItem"
-      :selectedValue="selectedValue"
-      @closeDialog="closeDialog"
-    />
-  </el-dialog>
+    <share-comp :info="selectProductItem" @closeDialog="closeDialog" />
+  </el-dialog> -->
 </template>
 
 <script setup lang="ts">
@@ -180,6 +178,7 @@
     shareTotal: number
     marketOptions: any[] //所有市场列表
     options: any[] //集团列表
+    selectLabel: object // 选中的集团名称
   }
 
   const state: StateType = reactive({
@@ -188,7 +187,8 @@
     shareProductList: [],
     shareTotal: 0,
     marketOptions: [],
-    options: []
+    options: [],
+    selectLabel: {}
   })
 
   onMounted(() => {
@@ -196,6 +196,12 @@
     getProductList('own')
     getProductList('share')
   })
+
+  const selectchange = (val: string) => {
+    state.selectLabel = state.options.find((el) => {
+      return el.value == val
+    })
+  }
 
   // 关闭分享弹窗
   const closeDialog = () => {
@@ -262,19 +268,6 @@
     }
   }
 
-  //打开分享弹窗
-  const openShareDialog = () => {
-    if (!selectedValue.value) {
-      ElMessage({
-        type: 'warning',
-        message: '请选择集团'
-      })
-    } else {
-      groupVisible.value = false
-      shareVisible.value = true
-    }
-  }
-
   //  打开集团选择弹窗
   const openGroupDialog = () => {
     API.company
@@ -297,6 +290,34 @@
           groups = []
         }
       })
+  }
+  // 跳转到group分享界面
+  const shareGroup = () => {
+    if (selectedValue.value) {
+      router.push({
+        path: '/market/group',
+        query: { id: selectedValue.value, name: state.selectLabel.label }
+      })
+    } else {
+      ElMessage({
+        type: 'warning',
+        message: '请选择集团'
+      })
+    }
+  }
+  // 跳转到unit分享界面
+  const shareUnit = () => {
+    if (selectedValue.value) {
+      router.push({
+        path: '/market/unit',
+        query: { id: selectedValue.value, name: state.selectLabel.label }
+      })
+    } else {
+      ElMessage({
+        type: 'warning',
+        message: '请选择集团'
+      })
+    }
   }
 
   // 注册页面弹窗
@@ -365,10 +386,10 @@
   let groups = reactive([])
   // 当前选中的集团
   let selectedValue = ref<string>('')
+  // 集团分享
+  const groupVisible = ref<boolean>(false)
   // 分享功能
   const shareVisible = ref<boolean>(false)
-  // 选择集团功能
-  const groupVisible = ref<boolean>(false)
   // 路由跳转
   const GoPage = (path: string) => {
     router.push(path)
@@ -387,6 +408,36 @@
   }
 </style>
 <style lang="scss" scoped>
+  .menuRight {
+    width: 100px;
+    height: 60px;
+    position: absolute;
+    background-color: rgb(247, 247, 247);
+    font-size: 12px;
+    z-index: 999;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+
+    &-fixed {
+      padding: 5px 0;
+      width: 100%;
+      text-align: center;
+      &:hover {
+        background-color: #fff;
+      }
+    }
+    &-cancel {
+      padding: 10px 0;
+      width: 100%;
+      text-align: center;
+      &:hover {
+        background-color: #fff;
+      }
+    }
+  }
   .el-select {
     width: 100%;
   }
