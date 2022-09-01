@@ -134,7 +134,7 @@
   import { useDark, useToggle } from '@vueuse/core'
 
   const isDark = useDark()
-  const toggleDark = useToggle(isDark)
+  // const toggleDark = useToggle(isDark)
 
   const store = useUserStore()
   const SearchInfo = ref('')
