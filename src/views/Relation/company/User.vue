@@ -35,7 +35,7 @@
       </div>
     </div>
   <searchFriend  v-if="friendDialog" :checkList='users' :selectLimit='0' @closeDialog="closeDialog"  @checksSearch='checksSearch'/>
-  <AssignedPerson  v-if="assignDialog" :checkList='users' :id="company.id" :serachType='5' @closeDialog="hideAssignDialog"  @checksSearch='checksCompanySearch'/>
+  <AssignedPerson  v-if="assignDialog" :checkList='users' :id="company.id" :selectLimit='0' :serachType='5' @closeDialog="hideAssignDialog"  @checksSearch='checksCompanySearch'/>
 
 </template>
 <script lang='ts' setup>
