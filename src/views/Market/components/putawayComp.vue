@@ -71,7 +71,6 @@
   }
   const props = defineProps<PropType>()
   const formRef = ref<FormInstance>()
-  console.log('props', props)
   const formLabelAlign = reactive({
     caption: '',
     productid: props.info.id,
@@ -113,12 +112,9 @@
   }
 // 提交上架
   const onPutawaySubmit = () => {
-    console.log('putawayFormRef', formRef.value)
-
     if (!formRef.value) return
     formRef.value.validate(async (valid, fields) => {
       if (valid) {
-        console.log('上架submit!', formLabelAlign)
         const { success } = await API.product.publish({
           data: formLabelAlign
         })
