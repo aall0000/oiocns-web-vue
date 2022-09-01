@@ -173,6 +173,7 @@
         </el-table-column>
       </el-table>
       <payView v-if="payDialog.show" :order="payDialog.data" @close="closePay"></payView>
+      <payList  v-if="payListDialog.show"  :checkList='companies'  :selectLimit='0' :serachType="6" @closeDialog="closePay" />
     </div>
     <el-pagination
       class="page-pagination"
@@ -195,7 +196,7 @@ import { ElMessage } from 'element-plus'
 import { PAGE_SIZES, PAGE_NUM } from '@/constant'
 import renderDict from '@/services/dict'
 import payView from '@/components/pay/pay.vue'
-// import payList from '@/components/pay/list.vue'
+import payList from '@/components/pay/list.vue'
 import { ElTable } from 'element-plus'
 import moment from 'moment'
 // 表格分页数据

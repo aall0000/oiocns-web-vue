@@ -21,12 +21,7 @@
             @change="changeView"
             active-text="卡片"
             inactive-text="列表"
-            style="
-              display: inline-block;
-              vertical-align: top;
-              height: 28px;
-              padding: 10px;
-            "
+            style="display: inline-block; vertical-align: top; height: 28px; padding: 10px"
           />
         </span>
         <el-button type="primary" @click="deleteStagings">删除</el-button>
@@ -62,17 +57,16 @@
         </el-col>
       </el-row> -->
       <ul class="box-ul" v-if="cardActive">
-        <li class="app-card" >
+        <li class="app-card">
           <ShopCard
             v-for="item in pageStore.tableData"
-            :class="item.checked?'bule-shadow':'dark-shadow'"
+            :class="item.checked ? 'bule-shadow' : 'dark-shadow'"
             :info="item.id"
             :key="item.id"
             :cardContent="true"
             @click="checkedChange(item)"
           >
-            <template #rightIcon>
-            </template>
+            <template #rightIcon> </template>
             <template #content>
               <div class="shopCar-box" @click="handleCardInfo(item)">
                 <div class="app-con-title">{{ item.merchandise.caption }}</div>
@@ -142,7 +136,7 @@
 import $services from '@/services'
 import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElMessageBox } from 'element-plus'
 import { PAGE_SIZES, PAGE_NUM } from '@/constant'
 import { ElTable } from 'element-plus'
 import ShopCard from '../components/shopCard.vue'
@@ -172,41 +166,41 @@ const handleRowClick = (row: any) => {
   shopcarTableRef.value!.toggleRowSelection(row, undefined)
 }
 
-const viewform = (item:any)=>{
+const viewform = (item: any) => {
   alert('55')
 }
 
 const state = reactive({
-    page: {
-      total: 0, // 总条数
-      currentPage: 1, // 当前页
-      pageSize: 20, // 每页条数
-      pageSizes: [20, 30, 50], // 分页数量列表
-      layout: 'total, prev, pager, next'
-    },
-    dialogShow: [
-      {
-        key: 'info',
-        value: false
-      }
-    ]
+  page: {
+    total: 0, // 总条数
+    currentPage: 1, // 当前页
+    pageSize: 20, // 每页条数
+    pageSizes: [20, 30, 50], // 分页数量列表
+    layout: 'total, prev, pager, next'
+  },
+  dialogShow: [
+    {
+      key: 'info',
+      value: false
+    }
+  ]
+})
+// 查看卡片详情
+const handleCardInfo = (item: any) => {
+  state.dialogShow.map((el: { value: boolean; key: string; sendData?: any }) => {
+    if (el.key == 'info') {
+      el.value = true
+      el.sendData = item
+    }
   })
-  // 查看卡片详情
-  const handleCardInfo = (item: any) => {
-    state.dialogShow.map((el: { value: boolean; key: string; sendData?: any }) => {
-      if (el.key == 'info') {
-        el.value = true
-        el.sendData = item
-      }
-    })
-  }
-  const closeDialog = (val: string) => {
-    state.dialogShow.map((el: { value: boolean; key: string }) => {
-      if (el.key == val) {
-        el.value = false
-      }
-    })
-  }
+}
+const closeDialog = (val: string) => {
+  state.dialogShow.map((el: { value: boolean; key: string }) => {
+    if (el.key == val) {
+      el.value = false
+    }
+  })
+}
 
 //查询
 const getTableList = async () => {
@@ -262,8 +256,6 @@ const handleSelect = (e: any[], row: any) => {
       item.checked = true
     }
   }
-
-  // row.checked = e.value;
   console.log(pageStore.tableData)
 }
 
@@ -301,13 +293,12 @@ function getUuid() {
 
 //创建订单(批量)
 const createOrderByStaging = async (checkedId?: string) => {
-  var checkedStagIds:any[] = []
+  var checkedStagIds: any[] = []
   if (checkedId) {
     checkedStagIds = [checkedId]
   } else {
     checkedStagIds = pageStore.tableData.filter((item) => item.checked).map((item) => item.id)
   }
-  // var checkedStagIds = pageStore.tableData.filter((item) => item.checked).map((item) => item.id)
   console.log(checkedStagIds)
   if (checkedStagIds.length <= 0) {
     ElMessage({
@@ -316,25 +307,35 @@ const createOrderByStaging = async (checkedId?: string) => {
     })
     return
   }
-  setTimeout(async(ids) => {
-  await $services.market
-    .createOrderByStaging({
-      data: {
-        name: (new Date().getTime()).toString().substring(0,13) ,
-        code: (new Date().getTime()).toString().substring(0,13) ,
-        stagIds: checkedStagIds
-      }
-    })
-    .then((res: ResultType) => {
-      if (res.code == 200) {
-        getTableList()
-        ElMessage({
-          message: '创建订单成功',
-          type: 'warning'
-        })
-      }
-    })
-  }, 1, checkedStagIds);
+  ElMessageBox.confirm('此操作将生成交易订单。是否确认?', '确认订单', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'success'
+  }).then(() => {
+    setTimeout(
+      async (ids) => {
+        await $services.market
+          .createOrderByStaging({
+            data: {
+              name: new Date().getTime().toString().substring(0, 13),
+              code: new Date().getTime().toString().substring(0, 13),
+              stagIds: checkedStagIds
+            }
+          })
+          .then((res: ResultType) => {
+            if (res.code == 200) {
+              getTableList()
+              ElMessage({
+                message: '创建订单成功',
+                type: 'warning'
+              })
+            }
+          })
+      },
+      1,
+      checkedStagIds
+    )
+  })
 }
 
 //从购物车移除 (批量)
@@ -498,9 +499,7 @@ const checkedChange = (item: any) => {
 .page-pagination {
   bottom: 20px;
   position: fixed;
-  right:20px;
-  /* display: flex;
-  justify-content: end; */
+  right: 20px;
 }
 
 .table-row-sty {
@@ -508,67 +507,66 @@ const checkedChange = (item: any) => {
 }
 
 .app-con-title {
-    color: #000000d9;
-    font-size: 16px;
-    font-weight: 600;
-  }
-  .app-con-info {
-    font-size: 12px;
-    font-weight: 400;
-  }
-  .app-card-item-con-desc {
-    font-size: 12px;
-    font-weight: 400;
-    color: rgba(0, 0, 0, 0.45);
+  color: #000000d9;
+  font-size: 16px;
+  font-weight: 600;
+}
+.app-con-info {
+  font-size: 12px;
+  font-weight: 400;
+}
+.app-card-item-con-desc {
+  font-size: 12px;
+  font-weight: 400;
+  color: rgba(0, 0, 0, 0.45);
 
-    position: absolute;
-    bottom: 50px;
-    width: 100%;
-    left: 0;
-    height: 30px;
-    padding: 0px 24px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: -webkit-box;
-    word-break: break-all;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-  }
-  :deep(.el-card__body) {
-    padding: 0;
-  }
-  .shopCar {
-    padding: 4px;
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    height: 60px;
-    padding: 0 20px;
-  }
+  position: absolute;
+  bottom: 50px;
+  width: 100%;
+  left: 0;
+  height: 30px;
+  padding: 0px 24px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  word-break: break-all;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+:deep(.el-card__body) {
+  padding: 0;
+}
+.shopCar {
+  padding: 4px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  height: 60px;
+  padding: 0 20px;
+}
 
 .box {
-    .box-ul + .box-ul {
-      margin-top: 10px;
+  .box-ul + .box-ul {
+    margin-top: 10px;
+  }
+  &-ul {
+    position: relative;
+    background-color: #fff;
+    height: 100%;
+    &-title {
+      font-weight: bold;
+      padding-bottom: 10px;
     }
-    &-ul {
-      position: relative;
-      background-color: #fff;
-      height: 100%;
-      &-title {
-        font-weight: bold;
-        padding-bottom: 10px;
+    .app-card {
+      display: flex;
+      flex-wrap: wrap;
+      .bule-shadow {
+        box-shadow: 0px 0px 4px rgb(0, 89, 255, 0.7);
       }
-      .app-card {
-        display: flex;
-        flex-wrap: wrap;
-        .bule-shadow {
-          box-shadow:0px 0px 4px rgb(0, 89, 255,0.7);
-        }
-        .dark-shadow {
-          box-shadow:4px 4px 4px rgb(174, 177, 184);
-        }
+      .dark-shadow {
+        box-shadow: 4px 4px 4px rgb(174, 177, 184);
       }
     }
   }
-
+}
 </style>

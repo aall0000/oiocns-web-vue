@@ -13,6 +13,7 @@ declare module '@vue/runtime-core' {
     DiySearch: typeof import('./src/components/diySearch/index.vue')['default']
     DiyTable: typeof import('./src/components/diyTable/index.vue')['default']
     ElAside: typeof import('element-plus/es')['ElAside']
+    ElBadge: typeof import('element-plus/es')['ElBadge']
     ElBreadcrumb: typeof import('element-plus/es')['ElBreadcrumb']
     ElBreadcrumbItem: typeof import('element-plus/es')['ElBreadcrumbItem']
     ElButton: typeof import('element-plus/es')['ElButton']
