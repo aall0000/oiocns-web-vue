@@ -327,7 +327,7 @@ const createOrderByStaging = async (checkedId?: string) => {
               getTableList()
               ElMessage({
                 message: '创建订单成功',
-                type: 'warning'
+                type: 'success'
               })
             }
           })

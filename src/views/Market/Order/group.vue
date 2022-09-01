@@ -217,7 +217,7 @@ const cancelOrder = async (id: string) => {
         getTableList(searchType.value)
         ElMessage({
           message: '取消成功',
-          type: 'warning'
+          type: 'success'
         })
       }
     })

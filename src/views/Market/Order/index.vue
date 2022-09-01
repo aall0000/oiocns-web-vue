@@ -19,7 +19,7 @@
           <template #default="props">
             <div style="margin-left: 100px">
               <el-table :data="props.row.details">
-                <el-table-column prop="code" label="订单号" />
+                <!-- <el-table-column prop="code" label="订单号" /> -->
                 <el-table-column prop="name" label="名称" />
                 <el-table-column prop="sellAuth" label="出售权益" />
                 <el-table-column prop="days" label="期限" />
@@ -50,7 +50,7 @@
                     >
                     <el-button
                       v-show="scope.row.status <= 100"
-                      @click="cancelOrder(scope.row.id)"
+                      @click="cancelOrderDetail(scope.row.id)"
                       type="primary"
                       >取消</el-button
                     >
@@ -141,7 +141,7 @@
             >
             <el-button
               v-show="scope.row.status <= 100"
-              @click="cancelOrder(scope.row.id)"
+              @click="cancelOrderDetail(scope.row.id)"
               type="primary"
               >取消</el-button
             >
@@ -344,9 +344,9 @@ const searchBuyList = async () => {
             return {
               ...e,
               name: e.merchandise.caption,
-              code: e.merchandise.caption,
               sellAuth: e.merchandise.sellAuth,
-              price: e.merchandise.price
+              price: e.merchandise.price,
+              days: e.merchandise.days,
             }
           })
         }
@@ -380,7 +380,7 @@ const sureContent = async (id: string) => {
         getTableList(searchType.value)
         ElMessage({
           message: '确认开始交易',
-          type: 'warning'
+          type: 'success'
         })
       }
     })
@@ -441,7 +441,25 @@ const cancelOrder = async (id: string) => {
         getTableList(searchType.value)
         ElMessage({
           message: '取消成功',
-          type: 'warning'
+          type: 'success'
+        })
+      }
+    })
+}
+//取消订单详情
+const cancelOrderDetail = async (id: string) => {
+  await $services.order
+    .deleteDetail({
+      data: {
+        id: id
+      }
+    })
+    .then((res: ResultType) => {
+      if (res.code == 200) {
+        getTableList(searchType.value)
+        ElMessage({
+          message: '取消成功',
+          type: 'success'
         })
       }
     })
