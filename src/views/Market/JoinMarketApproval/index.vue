@@ -249,7 +249,7 @@
         }
       })
   }
-  //查询应用上架申请
+  //查询应用上架审批
   const searchAppApprovalList = async () => {
     await $services.appstore
       .searchManagerPublishApply({
@@ -309,7 +309,8 @@
             },
             {
               prop: 'createTime',
-              label: '创建时间'
+              label: '创建时间',
+              width: '200'
             },
             {
               type: 'slot',
@@ -330,7 +331,6 @@
         data: {
           offset: 0,
           limit: 10,
-
           filter: ''
         }
       })
@@ -383,15 +383,8 @@
             },
             {
               prop: 'createTime',
-              label: '创建时间'
-            },
-            {
-              type: 'slot',
-              label: '操作',
-              fixed: 'right',
-              align: 'center',
-              width: '400',
-              name: 'operate'
+              label: '创建时间',
+              width: '200'
             }
           ]
         }

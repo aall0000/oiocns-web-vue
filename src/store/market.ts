@@ -44,6 +44,7 @@ export const useMarketStore = defineStore({
               this.market.set(item.id,item.name)
 
             })
+            console.log(this.marketMap)
 
           } else {
             ElMessage({
