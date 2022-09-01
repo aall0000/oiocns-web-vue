@@ -69,7 +69,6 @@
   // }
 
   const handleLazyTree = async (tree: any, callback: any) => {
-    console.log(tree)
     $services.company
       .getSubgroups({
         data: { id: tree.id, offset: 0, limit: 10000, filter: '' }

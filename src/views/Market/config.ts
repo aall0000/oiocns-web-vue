@@ -82,6 +82,10 @@ export const actionOptionsOfOwn: Array<OptionType> = [
   {
     label: '分享',
     value: 'share'
+  },
+  {
+    label: '分发',
+    value: 'distribution'
   }
 ]
 // 其他应用操作列表
@@ -93,5 +97,9 @@ export const actionOptionsOfOther = [
   {
     label: '分享',
     value: 'share'
+  },
+  {
+    label: '分发',
+    value: 'distribution'
   }
 ]

@@ -3,7 +3,7 @@
     <MarketCard>
       <template #right>
         <el-button type="primary" @click="registerVisible = true">注册应用</el-button>
-        <el-button type="primary" @click="GoPage('/market/markList')">管理市场</el-button>
+        <el-button type="primary" @click="GoPage('/market/markList')">管理商店</el-button>
       </template>
     </MarketCard>
     <div class="market-content box">
@@ -19,7 +19,7 @@
           >
             <!-- <template> -->
             <el-dropdown @command="(value) => handleCommand('own', value, item)" placement="top">
-              <el-button class="btn" type="primary" link small> 设置 </el-button>
+              <el-button class="btn" type="primary" link small> 操作 </el-button>
               <template #dropdown>
                 <el-dropdown-menu>
                   <el-dropdown-item v-for="action in actionOptionsOfOwn" :command="action.value">
@@ -116,7 +116,7 @@
     v-if="groupVisible"
     v-model="groupVisible"
     custom-class="group-dialog"
-    title="选择集团"
+    :title="title"
     width="600px"
     draggable
     :close-on-click-modal="false"
@@ -124,7 +124,7 @@
     <el-select
       v-model="selectedValue"
       value-key="id"
-      placeholder="请选择集团"
+      :placeholder="'请' + title"
       @change="selectchange"
     >
       <el-option
@@ -135,23 +135,37 @@
       />
     </el-select>
     <template #footer>
-      <span class="dialog-footer">
+      <span class="dialog-footer" v-if="store.workspaceData.type == 2">
         <el-button @click="shareGroup">按集团分享</el-button>
         <el-button type="primary" @click="shareUnit">按单位分享</el-button>
       </span>
+      <span class="dialog-footer" v-else>
+        <el-button type="primary" @click="shareCohort">按群组分享</el-button>
+      </span>
     </template>
   </el-dialog>
-  <!-- <el-dialog
-    v-if="shareVisible"
-    v-model="shareVisible"
+  <el-dialog
+    v-if="cohortVisible"
+    v-model="cohortVisible"
     custom-class="share-dialog"
-    title="分享应用"
+    title="按部门分发"
     width="1000px"
     draggable
     :close-on-click-modal="false"
   >
-    <share-comp :info="selectProductItem" @closeDialog="closeDialog" />
-  </el-dialog> -->
+    <div class="cohortLayout">
+      <el-tree ref="cohort" :data="cascaderTree" :props="props" node-key="id" show-checkbox />
+    </div>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="cohortVisible = false">取消</el-button>
+        <el-button type="primary" @click="departCohort">分发</el-button>
+        <el-button type="primary" @click="shareCohort">按职权分发</el-button>
+        <el-button type="primary" @click="shareCohort">按人员分发</el-button>
+        <el-button type="primary" @click="shareCohort">按身份分发</el-button>
+      </span>
+    </template>
+  </el-dialog>
 </template>
 
 <script setup lang="ts">
@@ -160,7 +174,6 @@
   import { onMounted, reactive, ref } from 'vue'
   import ShopCard from './components/shopCard.vue'
   import PutawayComp from './components/putawayComp.vue'
-  import ShareComp from './components/shareDialog.vue'
   import { baseData, actionOptionsOfOther, actionOptionsOfOwn } from './config'
   import { useRouter } from 'vue-router'
   import type { FormInstance, FormRules } from 'element-plus'
@@ -173,6 +186,7 @@
   const registerFormRef = ref<FormInstance>()
   const router = useRouter()
   const store = useUserStore()
+  const cohort = ref(null)
   type StateType = {
     ownProductList: ProductType[] //我的应用
     ownTotal: number
@@ -195,7 +209,11 @@
       id: ''
     }
   })
-
+  const title = ref<string>('')
+  const props = {
+    label: 'label',
+    children: 'children'
+  }
   onMounted(() => {
     // 获取列表
     getProductList('own')
@@ -210,7 +228,12 @@
 
   // 关闭分享弹窗
   const closeDialog = () => {
-    shareVisible.value = false
+    cohortVisible.value = false
+  }
+
+  // 按部门分发
+  const departCohort = () => {
+    console.log(cohort.value.getCheckedKeys())
   }
 
   // 获取我的应用列表
@@ -257,7 +280,6 @@
     command: string | number | object,
     item: ProductType
   ) => {
-    console.log('菜单选择事件', type, command, item)
     selectProductItem.value = item
     switch (command) {
       case 'share':
@@ -268,14 +290,74 @@
         break
       case 'unsubscribe':
         break
+      case 'distribution':
+        openCohortDialog()
+        // cohortVisible.value = true
+        break
       default:
         break
     }
   }
+  // 节点ID和对象映射关系
+  const parentIdMap: any = {}
+  let cascaderTree = ref<OrgTreeModel[]>([])
+  const openCohortDialog = () => {
+    API.company.getCompanyTree({}).then((res: ResultType) => {
+      let orgTree = []
+      orgTree.push(res.data)
+      initIdMap(orgTree)
+      cascaderTree.value = filter(JSON.parse(JSON.stringify(orgTree)))
+      cohortVisible.value = true
+      console.log(cascaderTree.value, orgTree)
+    })
+  }
+  // 初始化ID和对象映射关系
+  const initIdMap = (nodes: any[]) => {
+    for (const node of nodes) {
+      parentIdMap[node.id] = node
+      if (node.children) {
+        initIdMap(node.children)
+      }
+    }
+  }
+  // 过滤掉工作组作为表单级联数据
+  const filter = (nodes: OrgTreeModel[]): OrgTreeModel[] => {
+    nodes = nodes.filter((node) => node.data?.typeName !== '工作组')
+    for (const node of nodes) {
+      node.children = filter(node.children)
+    }
+    return nodes
+  }
+  // 按群组分享
+  const shareCohort = () => {}
 
   //  打开集团选择弹窗
   const openShareDialog = () => {
     if (store.workspaceData.type == 1) {
+      API.cohort
+        .getJoinedCohorts({
+          data: {
+            offset: 0,
+            limit: 10000,
+            filter: ''
+          }
+        })
+        .then((res: ResultType) => {
+          console.log(res)
+          if (res.data.result && res.data.result.length > 0) {
+            let cor = res.data.result
+            state.options = cor.map((g: any) => {
+              return { value: g.id, label: g.name }
+            })
+            title.value = '选择群组'
+            groupVisible.value = true
+          } else {
+            ElMessage({
+              type: 'warning',
+              message: '您暂未加入群组'
+            })
+          }
+        })
     } else {
       API.company
         .companyGetGroups({
@@ -290,7 +372,7 @@
             state.options = groups.map((g) => {
               return { value: g.id, label: g.name }
             })
-            selectedValue.value = groups[0].value
+            title.value = '选择集团'
             groupVisible.value = true
             // loadOrgTree(groups[0].id)
           } else {
@@ -405,7 +487,7 @@
   // 集团分享
   const groupVisible = ref<boolean>(false)
   // 分享功能
-  const shareVisible = ref<boolean>(false)
+  const cohortVisible = ref<boolean>(false)
   // 路由跳转
   const GoPage = (path: string) => {
     router.push(path)
@@ -424,6 +506,11 @@
   }
 </style>
 <style lang="scss" scoped>
+  .cohortLayout {
+    width: 100%;
+    height: 500px;
+    overflow: auto;
+  }
   .menuRight {
     width: 100px;
     height: 60px;
