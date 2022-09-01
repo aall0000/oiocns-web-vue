@@ -1,7 +1,7 @@
 <template>
   <div class="group-input-wrap" @keyup.enter="submit">
     <div class="icons-box">
-      <div ref="faceBtnRef">
+      <div ref="faceBtnRef" style="margin-top:4px;">
         <el-popover placement="top" :width="400" trigger="click">
           <template #reference>
             <el-icon :size="20">
@@ -12,14 +12,17 @@
             <!-- <li v-for="(key, value ) in qqfaceMap" @click="handleFaceChoosed(key, value)" :key="value"
               :class="['qqface', `qqface${value}`, 'small']">
             </li> -->
-            <img
-              class="emoji"
-              v-for="index in 36"
-              :key="index"
-              :src="`/src/assets/emo/${index}.png`"
-              alt=""
-              @click="handleImgChoosed(`/src/assets/emo/${index}.png`)"
-            />
+            <li>
+              <img
+                class="emoji"
+                v-for="index in 36"
+                :key="index"
+                :src="`/src/assets/emo/${index}.png`"
+                alt=""
+                @click="handleImgChoosed(`/src/assets/emo/${index}.png`)"
+              />
+
+            </li>
           </ul>
         </el-popover>
       </div>
@@ -167,13 +170,13 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    padding: 0 14px 14px 14px;
-
+    
+    background-color: var(--el-bg-color-overlay);
     .icons-box {
       height: 34px;
       display: flex;
       align-items: center;
-
+      padding: 0 12px;
       .el-icon {
         margin-right: 12px;
         cursor: pointer;
@@ -188,7 +191,8 @@
       display: flex;
       height: 100%;
       justify-content: space-between;
-
+      background-color: var(--el-bg-color-overlay);
+      padding: 12px;
       .textarea {
         flex: 1;
         height: 120px;

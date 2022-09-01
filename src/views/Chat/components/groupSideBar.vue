@@ -273,7 +273,7 @@ const handleContextChange = (item: MenuItemType) => {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  border-right: 1px solid #d8d8d8;
+  border-right: 1px solid var(--el-border-color);// #d8d8d8;
   background-color: var(--el-bg-color);
 }
 

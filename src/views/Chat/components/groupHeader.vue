@@ -61,7 +61,7 @@ const handleAddFun = () => {
   min-height: 70px;
   box-shadow: 0 1px 2px 1px #e5e5e5;
   // z-index: 2;
-
+  background-color: var(--el-bg-color);
   .btn-box {
     .btn {
       margin-right: 10px;
