@@ -166,11 +166,13 @@
   import type { FormInstance, FormRules } from 'element-plus'
   import MarketCreate from './components/marketCreate.vue'
   import MarketCard from '@/components/marketCard/index.vue'
+  import { useUserStore } from '@/store/user'
   import { appendFile } from 'fs'
   const add: string = '从应用市场中添加'
   // 注册页面实例
   const registerFormRef = ref<FormInstance>()
   const router = useRouter()
+  const store = useUserStore()
   type StateType = {
     ownProductList: ProductType[] //我的应用
     ownTotal: number
@@ -259,7 +261,7 @@
     selectProductItem.value = item
     switch (command) {
       case 'share':
-        openGroupDialog()
+        openShareDialog()
         break
       case 'putaway':
         publishVisible.value = true
@@ -272,27 +274,30 @@
   }
 
   //  打开集团选择弹窗
-  const openGroupDialog = () => {
-    API.company
-      .companyGetGroups({
-        data: {
-          offset: 0,
-          limit: 1000
-        }
-      })
-      .then((res: ResultType) => {
-        if (res.data.result && res.data.result.length > 0) {
-          groups = res.data.result
-          state.options = groups.map((g) => {
-            return { value: g.id, label: g.name }
-          })
-          selectedValue.value = groups[0].value
-          groupVisible.value = true
-          // loadOrgTree(groups[0].id)
-        } else {
-          groups = []
-        }
-      })
+  const openShareDialog = () => {
+    if (store.workspaceData.type == 1) {
+    } else {
+      API.company
+        .companyGetGroups({
+          data: {
+            offset: 0,
+            limit: 1000
+          }
+        })
+        .then((res: ResultType) => {
+          if (res.data.result && res.data.result.length > 0) {
+            groups = res.data.result
+            state.options = groups.map((g) => {
+              return { value: g.id, label: g.name }
+            })
+            selectedValue.value = groups[0].value
+            groupVisible.value = true
+            // loadOrgTree(groups[0].id)
+          } else {
+            groups = []
+          }
+        })
+    }
   }
   // 跳转到group分享界面
   const shareGroup = () => {

@@ -14,7 +14,6 @@
       :tableData="list"
       :checkList="props.checkList"
       :options="options"
-      @select="select"
       @handleUpdate="handleUpdate"
       @selectionChange="selectionChange"
       :tableHead="tableHead"
@@ -32,7 +31,7 @@
     </diytab>
     <div class="foot">
       <el-button @click="closeDialog">取消</el-button>
-      <!-- <el-button type="primary" @click="checksSearch">确定</el-button> -->
+      <el-button type="primary" @click="checksSearch">确定</el-button>
     </div>
   </el-dialog>
 </template>
@@ -185,7 +184,6 @@
   }
   const checkList = reactive<any>([])
   const select = (selection: any, row: any) => {
-    console.log('========', selection, row)
     selection.forEach((el: any) => {
       for (let i = 0; i < props.tableData.length; i++) {
         if (el.id == props.tableData[i].id) {

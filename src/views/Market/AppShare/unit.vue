@@ -70,7 +70,7 @@
     id: string
   }
   const checksSearch = (val: any) => {
-    console.log('321', val)
+    console.log('应用id', route.query.appInfo, '集团id', route.query.id, '所选列表', val)
   }
   //分享单位
   const pullCompanys = (arr: any) => {

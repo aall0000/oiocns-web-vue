@@ -2,7 +2,7 @@
   <div class="unitLayout">
     <div class="tableBtn">
       <div class="tableBtn-title">{{ route.query.name }}</div>
-      <el-button small link type="primary" @click="pullCompanysDialog = true">分享集团</el-button>
+      <el-button small link type="primary" @click="shareGroup">分享集团</el-button>
     </div>
     <DiyTable
       class="diytable"
@@ -59,6 +59,14 @@
   onMounted(() => {
     getData()
   })
+
+  const shareGroup = () => {
+    console.log(diyTable.value.state.multipleSelection)
+  }
+
+  // const selectionChange = (data: any) => {
+  //   console.log(data)
+  // }
 
   const handleLazyTree = async (tree: any, callback: any) => {
     console.log(tree)
