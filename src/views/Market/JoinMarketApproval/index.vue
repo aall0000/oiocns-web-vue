@@ -58,6 +58,7 @@
   import type { TabsPaneContext } from 'element-plus'
   import { ElMessage } from 'element-plus'
   import DiyTable from '@/components/diyTable/index.vue'
+  import { useMarketStore } from '@/store/market'
   const diyTable = ref(null)
   const activeName = ref('first')
   const handleClick = (tab: TabsPaneContext, event: any) => {
@@ -245,7 +246,7 @@
             message: '审批完成',
             type: 'success'
           })
-          searchApprovalList()
+          searchAppApprovalList()
         }
       })
   }
