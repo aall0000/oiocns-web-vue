@@ -1,11 +1,15 @@
 <template>
   <DiyButton>
     <template v-slot:opt>
-      <!-- <div class="diy-button" @click="requireItem"> 订阅 </div>
-      <div class="diy-button" @click="joinShopCar"> 加入购物车 </div> -->
-      <div class="diy-button" @click="requireItem"> 下架 </div>
-      <div class="diy-button" @click="requireItem"> 分配 </div>
-      <div class="diy-button" @click="requireItem"> 分发 </div>
+      <template v-if="props.type === 'manage'">
+        <div class="diy-button" @click="unpublishFun"> 下架 </div>
+        <div class="diy-button" @click="requireItem"> 分配 </div>
+        <div class="diy-button" @click="requireItem"> 分发 </div>
+      </template>
+      <template v-else>
+        <div class="diy-button" @click="requireItem"> 订阅 </div>
+        <div class="diy-button" @click="joinShopCar"> 加入购物车 </div>
+      </template>
     </template>
   </DiyButton>
 </template>
@@ -13,14 +17,15 @@
 <script setup lang="ts">
   import DiyButton from '@/components/diyButton/index.vue'
   import $services from '@/services'
-  import { ElMessage } from 'element-plus'
+  import { ElMessage, ElMessageBox } from 'element-plus'
   const emit = defineEmits(['update'])
-  const props = defineProps({
-    data: {
-      type: Object,
-      default: () => {}
-    }
-  })
+  const props = withDefaults(
+    defineProps<{
+      data: any
+      type?: 'manage' | 'shop'
+    }>(),
+    { type: 'manage' }
+  )
   const joinShopCar = () => {
     $services.appstore
       .staging({
@@ -32,6 +37,39 @@
         if (res.code == 200) {
           ElMessage({
             message: '添加成功',
+            type: 'success'
+          })
+        }
+      })
+  }
+
+  const unpublishFun = () => {
+    let title: string
+    console.log('是是是',props.data);
+
+    title = `确定把 ${props.data.caption} 下架吗？`
+    ElMessageBox.confirm(title, '警告', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
+    })
+      .then(() => {
+        unpublishApp()
+      })
+      .catch(() => {})
+  }
+  //下架应用
+  const unpublishApp = () => {
+    $services.market
+      .unpublishMerchandise({
+        data: {
+          id: props.data.id
+        }
+      })
+      .then((res: ResultType) => {
+        if (res.code == 200) {
+          ElMessage({
+            message: '下架成功',
             type: 'success'
           })
         }

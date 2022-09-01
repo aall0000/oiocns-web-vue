@@ -20,6 +20,7 @@
           v-if="isCard"
           ref="appCard"
           :dataList="state.myAppList"
+          type="shop"
           @handleUpdate="handleCardUpdate"
           @shopcarNumChange="getShopcarNum"
         ></AppCard>
@@ -32,7 +33,7 @@
           @handleUpdate="handleUpdate"
         >
           <template #operate="scope">
-            <TheTableButton :data="scope.row" @update="getData"></TheTableButton>
+            <TheTableButton :data="scope.row" type="shop" @update="getData"></TheTableButton>
           </template>
         </DiyTable>
       </div>

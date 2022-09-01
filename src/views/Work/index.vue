@@ -93,7 +93,7 @@
         </div>
       </div>
       <div style="height: 45px; border-top: 1px solid #ebeef5; margin-bottom: 8px" class="flex-center">
-        <el-button type="text" style="width: 100%; font-size: 16px; padding-top: 30px" @click="()=>router.push('/workHome')">返回</el-button>
+        <el-button type="text" style="width: 100%; font-size: 16px; padding-top: 30px" @click="back">返回</el-button>
         <div style="width: 1px; height: 100%; border: 1px solid #eeeeee; margin-top: 20px"></div>
         <el-button type="text" style="width: 100%; font-size: 16px; padding-top: 30px" @click="handleSave">保存
         </el-button>

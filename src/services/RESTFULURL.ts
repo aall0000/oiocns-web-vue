@@ -140,7 +140,7 @@ export default {
     searchMerchandise: market + '​/search/merchandise', //查询市场中所有商品
     searchMerchandiseApply: market + '​/search/merchandise/apply', //查询产品上架申请
     searchStaging: market + '/search/staging', //查询购物车
-    unpublishMerchandise: market + '​/unpublish', //下架商品
+    unpublishMerchandise: market + '/unpublish', //下架商品
     updateMarket: market + '​/update' //更新市场
   },
   order: {
