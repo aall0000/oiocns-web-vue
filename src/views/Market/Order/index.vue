@@ -173,7 +173,7 @@
         </el-table-column>
       </el-table>
       <payView v-if="payDialog.show" :order="payDialog.data" @close="closePay"></payView>
-      <payList  v-if="payListDialog.show"  :checkList='companies'  :selectLimit='0' :serachType="6" @closeDialog="closePay" />
+      <payList  v-if="payListDialog.show"  :selectLimit='0'  @closeDialog="closePayList" />
     </div>
     <el-pagination
       class="page-pagination"

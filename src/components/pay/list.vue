@@ -4,11 +4,9 @@
       append-to-body
       :before-close="closeDialog"
       :title="title"
-      width="60%"
     >
-      <el-input v-model="value" @input="remoteMethod" placeholder="请输入" />
       <diytab
-        :style="{height:300+'px'}"
+        :style="{height:300+'px',width:'100%'}"
         ref="diyTable"
         :hasTableHead="true"
         :tableData="tableData"
@@ -28,10 +26,6 @@
           </el-tooltip>
         </template>
       </diytab>
-      <!-- <div class="foot">
-        <el-button  @click="closeDialog">取消</el-button>
-        <el-button type="primary" @click="checksSearch">确定</el-button>
-      </div> -->
     </el-dialog>
   </template>
   
@@ -61,10 +55,6 @@
         type:Array,
         default:[]
       },//选中的值
-      serachType:{
-        type: Number,
-        default: '1'
-      },//1 人 2群 3单位 4集团 5分配人员 6分配单位
     })
     interface ListItem {
       code: string
@@ -85,54 +75,6 @@
       remoteMethod()
     })
     const remoteMethod = () => {
-        let data 
-        if(props.serachType==5|| props.serachType ==6){
-         data= {
-            filter: value.value,
-            offset: (pageStore.currentPage - 1) * pageStore.pageSize,
-            limit: pageStore.pageSize,
-            id:props.id
-          }
-        }else{
-          data = {
-            filter: value.value,
-            offset: (pageStore.currentPage - 1) * pageStore.pageSize,
-            limit: pageStore.pageSize
-          }
-        }
-        $services[space.value][url.value]({
-          data: data
-        }).then((res: ResultType) => {
-          let arr: any = []
-          if (res.code == 200) {
-            if (res.data.result != undefined) {
-              let states = res.data.result
-              if (states) {
-                states.forEach((el: any) => {
-                  let obj = {
-                    id: el.id,
-                    code: el.code,
-                    name: el.name,
-                    trueName: el.team.name,
-                    teamCode: el.team.code,
-                    remark: el.team.remark
-                  }
-                  arr.push(obj)
-                })
-                pageStore.total = res.data.total
-                diyTable.value.state.page.total = pageStore.total
-              } else {
-              }
-            }
-            list.value = arr
-          } else {
-            ElMessage({
-              message: res.msg,
-              type: 'warning'
-            })
-          }
-          // diyTable.value.state.loading = false
-        })
     }
   
     const handleUpdate = (page: any) => {
@@ -154,24 +96,20 @@
     const tableHead = ref([{
         prop: 'paymentType',
         label: '付款方式',
-        width: '100'
       },
       {
         prop: 'price',
         label: '价格',
-        width: '100',
         name: 'price'
       },
       {
         prop: 'status',
         label: '状态',
-        width: '150',
         name: 'status'
       },
       {
         prop: 'createTime',
         label: '创建时间',
-        width: '150',
         name: 'createTime'
       }
     ])
