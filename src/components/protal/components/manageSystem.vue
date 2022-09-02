@@ -65,7 +65,7 @@ const gotoRouter = (data: any) => {
 
 <style lang="scss" scoped>
 .item-icon {
-  color: $colorBlueMain
+  color: var(--el-color-primary);
 }
 
 .content {

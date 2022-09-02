@@ -321,7 +321,7 @@ const handleContextChange = (item: MenuItemType) => {
   }
 
   &::-webkit-scrollbar-thumb:vertical:active {
-    background-color: $colorBlueLight;
+    background-color: var(--el-primary-color-light-5);
   }
 
   .group-con {

@@ -269,8 +269,8 @@ watch(props, () => {
 .card {
   height: 100%;
   width: 100%;
-  background-color: #fff;
-  padding: 10px;
+  // background-color: #fff;
+  padding: 10px 0;
 
   .header {
     display: flex;

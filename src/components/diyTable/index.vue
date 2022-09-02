@@ -235,7 +235,7 @@
   }) => {
     if (row.saleStatus === 3) {
       return {
-        backgroundColor: 'rgb(245, 246, 252)',
+        backgroundColor: 'var(--el-color-primary-light-9)',//  'rgb(245, 246, 252)',
         cursor: 'no-drop',
         color: 'gainsboro'
       }
@@ -360,8 +360,8 @@
   }) => {
     if (rowIndex === 0) {
       return {
-        background: '#F5F6FC',
-        color: '#333333',
+        background: 'var(--el-color-primary-light-9)',// '#F5F6FC',
+        color: 'var(--el-text-color-primary)',// '#333333',
         height: '36px',
         padding: '2px 0'
       }

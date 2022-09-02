@@ -4,7 +4,7 @@
     <!-- 侧边栏-->
     <!-- <teleport v-if="isShowMenu" to="#menu-teleport-target"> -->
       <div class="menu-tab">
-        <el-menu router :default-active="currentRouter" class="el-menu-vertical-demo" mode="vertical">
+        <el-menu router :default-active="currentRouter" class="orgnization-navbar" mode="vertical">
           <el-menu-item v-if="!isMySpace" index="/relation/company">单位维护</el-menu-item>
           <el-menu-item v-if="!isMySpace" index="/relation/group">集团维护</el-menu-item>
           <el-menu-item index="/relation/cohort">群组维护</el-menu-item>
@@ -43,37 +43,39 @@
 
 <style lang="scss" scoped>
   .organization-wrap {
-    .el-menu--horizontal > .el-menu-item {
-      font-size: 18px;
-      &:hover,
-      &.is-active {
-        background-color: none !important;
-        color: $mainColor !important;
-      }
-      &.is-active {
-        border-bottom: 2px solid $mainColor;
-      }
-    }
-    .el-menu--horizontal .el-menu-item:not(.is-disabled):focus,
-    .el-menu--horizontal .el-menu-item:not(.is-disabled):hover {
-      background: none !important;
-    }
+    // .el-menu--horizontal > .el-menu-item {
+    //   font-size: 18px;
+    //   &:hover,
+    //   &.is-active {
+    //     background-color: none !important;
+    //     color: $mainColor !important;
+    //   }
+    //   &.is-active {
+    //     border-bottom: 2px solid $mainColor;
+    //   }
+    // }
+    // .el-menu--horizontal .el-menu-item:not(.is-disabled):focus,
+    // .el-menu--horizontal .el-menu-item:not(.is-disabled):hover {
+    //   background: none !important;
+    // }
     display: flex;
     flex-direction: column;
   }
   .menu-tab {
     width: 140px;
     // height: calc(100% - 15px);
-    background: #fff;
-    border-right: solid 1px var(--el-menu-border-color);
-
-    .is-active{
-      background-color: #f4f4f4;
+    // background: #fff;
+    // border-right: solid 1px var(--el-menu-border-color);
+    .orgnization-navbar  {
+      height: 100%;
     }
+    // .is-active{
+      // background-color: #f4f4f4;
+    // }
 
-    .el-menu {
-      border: none;
-    }
+    // .el-menu {
+    //   border: none;
+    // }
   }
   .resize {
     cursor: col-resize;
