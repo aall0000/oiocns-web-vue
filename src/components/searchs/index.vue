@@ -195,24 +195,24 @@
     {
       prop: 'code',
       label: '账号',
-      width: '100'
+      // width: '100'
     },
     {
       prop: 'name',
       label: '昵称',
-      width: '100',
+      // width: '100',
       name: 'name'
     },
     {
       prop: 'trueName',
       label: '姓名',
-      width: '150',
+      // width: '150',
       name: 'trueName'
     },
     {
       prop: 'teamCode',
       label: '手机号',
-      width: '150',
+      // width: '150',
       name: 'teamCode'
     },
     {
@@ -227,13 +227,13 @@
     {
       prop: 'trueName',
       label: '群名称',
-      width: '200',
+      // width: '200',
       name: 'trueName'
     },
     {
       prop: 'teamCode',
       label: '群编号',
-      width: '150',
+      // width: '150',
       name: 'teamCode'
     },
     {

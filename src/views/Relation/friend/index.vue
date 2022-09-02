@@ -1,16 +1,15 @@
 <template>
-  <div class="container">
+
+  <el-card style="border:0;" shadow="never" class="container">
     <!-- 组内成员信息 -->
-    <div class="operate">
-      <div class="operate-btns">
-        <div class="edit">
-          <el-button type="primary" @click="friendShow">添加好友</el-button>
-        </div>
+   
+      <div class="card-header">
+        <span>我的好友</span>
+        <el-button type="primary" @click="friendShow">添加好友</el-button>
       </div>
-    </div>
+    
     <div class="tab-list">
-      <el-table :data="state.friendList" stripe
-        @select="handleSelect">
+      <el-table :data="state.friendList" stripe @select="handleSelect" :header-cell-style="{'background':'var(--el-color-primary-light-9)'}" >
         <el-table-column type="selection" width="50" />
         <el-table-column prop="code" label="账号" />
         <el-table-column prop="name" label="昵称" />
@@ -19,13 +18,18 @@
         <el-table-column prop="remark" label="座右铭" width="280" />
         <el-table-column prop="name" label="操作">
           <template #default="scope">
-            <el-button @click="deleteFriend(scope.row.id)" type="primary">删除好友</el-button>
+            <el-popconfirm title="您确认删除该好友吗?" @confirm="deleteFriend(scope.row.id)">
+              <template #reference>
+                <el-button type="danger" link>删除</el-button>
+              </template>
+            </el-popconfirm>
+
           </template>
         </el-table-column>
       </el-table>
     </div>
-    <searchFriend  v-if="searchDialog" @closeDialog="closeDialog" :serachType="1" @checksSearch='checksSearch'/>
-  </div>
+    <searchFriend v-if="searchDialog" @closeDialog="closeDialog" :serachType="1" @checksSearch='checksSearch' />
+  </el-card>
 </template>
 <script lang="ts" setup>
 import $services from '@/services'
@@ -36,11 +40,11 @@ import { ElMessage } from 'element-plus'
 const searchDialog = ref<boolean>(false)
 
 type arrList = {
-  id:string
+  id: string
 }
 
-const addFriends = (arr:Array<arrList>) => {
-  console.log('arrr',arr)
+const addFriends = (arr: Array<arrList>) => {
+  console.log('arrr', arr)
   $services.person
     .applyJoin({
       data: {
@@ -59,7 +63,7 @@ const addFriends = (arr:Array<arrList>) => {
     })
 }
 const handleSelect = (key: string, keyPath: string[]) => {
-  console.log(key, keyPath)
+  // console.log(key, keyPath)
 }
 onMounted(() => {
   getFriendList()
@@ -72,15 +76,15 @@ const getFriendList = async () => {
     .then((res: ResultType) => {
       const { result = [] } = res.data
       state.friendList = result?.map(
-          (item: { team: { remark: any; code: any; name: any } }) => {
-            return {
-              ...item,
-              remark: item.team.remark,
-              teamCode: item.team.code,
-              trueName: item.team.name
-            }
+        (item: { team: { remark: any; code: any; name: any } }) => {
+          return {
+            ...item,
+            remark: item.team.remark,
+            teamCode: item.team.code,
+            trueName: item.team.name
           }
-        )
+        }
+      )
     })
 }
 //删除好友
@@ -107,35 +111,39 @@ const deleteFriend = (id: string) => {
       }
     })
 }
-const checksSearch=(val:any)=>{
-  if(val.value.length>0){
-    let arr:Array<arrList> =[]
-    val.value.forEach((element:any) => {
+const checksSearch = (val: any) => {
+  if (val.value.length > 0) {
+    let arr: Array<arrList> = []
+    val.value.forEach((element: any) => {
       arr.push(element.id)
     });
     addFriends(arr)
-  }else{
+  } else {
     searchDialog.value = false;
   }
 }
-const closeDialog = ()=>{
-   searchDialog.value = false;
+const closeDialog = () => {
+  searchDialog.value = false;
 }
-const friendShow = ()=>{
+const friendShow = () => {
   searchDialog.value = true;
 }
 </script>
 <style lang="scss" scoped>
 .container {
   width: 100%;
-  height: 100%;
-  background: #f0f2f5;
-  padding: 5px;
-  .operate-btns {
+  // height: 100%;
+  margin: 10px;
+  // background: #f0f2f5;
+  // padding: 5px;
+
+  .card-header {
     display: flex;
     justify-content: space-between;
-    padding: 10px;
-    background: #fff;
+    align-items: center;
+    padding-bottom: 12px;
+    // padding: 10px;
+    // background: #fff;
     .edit {
       font-size: 14px;
       font-weight: bold;

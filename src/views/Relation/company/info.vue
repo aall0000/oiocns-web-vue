@@ -131,11 +131,12 @@
   .info {
     height: 100%;
     width: 100%;
-    background-color: #fff;
+    background-color: var(--el-bg-color-overlay);
+   
   }
   .header {
     display: flex;
-    padding: 10px;
+    padding: 10px 20px;
     padding-top: 16px;
     box-sizing: border-box;
     .title {
@@ -152,7 +153,7 @@
     }
   }
   .tab-list {
-    padding: 10px;
+    padding: 10px 20px;
     padding-top: 2px;
     box-sizing: border-box;
   }
