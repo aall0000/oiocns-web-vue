@@ -4,8 +4,11 @@
       <template #right>
         <!-- <el-button type="primary" @click="GoPage('/market/userApply')">我的申请</el-button> -->
         <el-button type="primary" @click="GoPage('/market/userApply')">我的加入申请</el-button>
-        <el-button type="primary" @click.stop="linkOrder()">我的订单</el-button>
-        <el-button type="primary" @click.stop="linkShopCar()">购物车</el-button>
+        <el-button type="primary" @click.stop="GoPage('/market/order')">我的订单</el-button>
+        <el-badge :value="shopcarNum" style="padding-left:10px">
+          <el-button type="primary" @click.stop="GoPage('/market/shopCar')">购物车</el-button>
+        </el-badge>
+
       </template>
     </MarketCard>
 
@@ -123,6 +126,7 @@
   const handleCurrentJoin: any = computed(() => {
     return (state.pageJoin.currentPage - 1) * state.pageJoin.pageSize
   })
+
   const add: string = '创建市场'
   const add1: string = '加入市场'
   const state = reactive({
@@ -147,9 +151,12 @@
     }
   })
 
+  const dialogVisible1 = ref(false)
+
   onMounted(() => {
     getMyMarketData()
     getJoinMarketData()
+    getShopcarNum()
   })
 
   const handleCurrentChange = (val: number) => {
@@ -164,13 +171,6 @@
   const GoPage = (path: string) => {
     router.push(path)
   }
-  const linkOrder = () => {
-    router.push({ path: '/market/order' })
-  }
-
-  const linkShopCar = () => {
-    router.push({ path: '/market/shopCar' })
-  }
 
   const hadleUserManage = (item: { id: number }) => {
     router.push({ path: '/market/userManage', query: { data: item.id } })
@@ -178,6 +178,22 @@
 
   const gotoApp = (item: { id: string }) => {
     router.push({ path: '/market/appList', query: { data: item.id } })
+  }
+
+  const getShopcarNum = async () => {
+    await $services.market
+      .searchStaging({
+        data: {
+          id: 0, //市场id （需删除）
+          offset: 0,
+          limit: 20,
+          filter: ''
+        }
+      })
+      .then((res: ResultType) => {
+        var { result = [], total = 0 } = res.data
+        shopcarNum.value = total
+      })
   }
 
   const getMyMarketData = () => {
@@ -263,7 +279,7 @@
       })
       .catch(() => {})
   }
-  const dialogVisible1 = ref(false)
+  const shopcarNum = ref(0)
 
   const form = reactive({
     name: '',

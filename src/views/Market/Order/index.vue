@@ -3,36 +3,133 @@
     <template #right>
       <el-button type="primary" @click="getTableList('buy')">已购入</el-button>
       <el-button type="primary" @click="getTableList('sell')">已卖出</el-button>
-      <!-- <div class="group-side-bar-search">
-      <el-input placeholder="搜索" v-model="searchValue" prefix-icon="Search" />
-    </div> -->
     </template>
   </MarketCard>
   <div class="container">
-    <!-- <el-button-group style="padding: 10px;">
-      <el-button type="primary" @click="getTableList('buy')">已购入</el-button>
-      <el-button type="primary" @click="getTableList('sell')">已卖出</el-button>
-    </el-button-group> -->
-
-    <div class="tab-list">
+    <div class="limit_table_height">
       <el-table
+        class="table-row-sty"
         :data="state.orderList"
         stripe
         @select="handleSelect"
         ref="orderTableRef"
-        @row-click="handleRowClick"
+        v-if="searchType == 'buy'"
       >
-        <el-table-column type="selection" width="50" />
+        <el-table-column type="expand">
+          <template #default="props">
+            <div style="margin-left: 100px">
+              <el-table :data="props.row.details">
+                <!-- <el-table-column prop="code" label="订单号" /> -->
+                <el-table-column prop="name" label="名称" />
+                <el-table-column prop="sellAuth" label="出售权益" />
+                <el-table-column prop="days" label="期限" />
+                <el-table-column prop="price" label="价格" />
+                <el-table-column
+                  prop="status"
+                  label="状态"
+                  :formatter="(row, column) => renderDict(row, column, 'OrderStatus')"
+                />
+                <el-table-column prop="name" label="支付记录">
+                  <template #default="scope">
+                    <el-link type="primary" @click="showPayList(scope.row)">点击查看</el-link>
+                  </template>
+                </el-table-column>
+                <el-table-column prop="name" label="操作" width="600">
+                  <template #default="scope">
+                    <el-button
+                      v-show="scope.row.status == 1 && scope.row.ordertype == 'sell'"
+                      @click="sureContent(scope.row.id)"
+                      type="primary"
+                      >开始交易</el-button
+                    >
+                    <el-button
+                      v-show="scope.row.status == 100 && scope.row.ordertype == 'buy'"
+                      @click="showPay(scope.row)"
+                      type="primary"
+                      >支付</el-button
+                    >
+                    <el-button
+                      v-show="scope.row.status <= 100"
+                      @click="cancelOrderDetail(scope.row.id)"
+                      type="primary"
+                      >取消</el-button
+                    >
+                    <el-button
+                      v-show="scope.row.status == 101 && scope.row.ordertype == 'sell'"
+                      @click="delivery(scope.row.id)"
+                      type="primary"
+                      >确认发货</el-button
+                    >
+                    <el-button
+                      v-show="scope.row.status == 102 && scope.row.ordertype == 'buy'"
+                      @click="accept(scope.row.id)"
+                      type="primary"
+                      >确认收货</el-button
+                    >
+                    <el-button
+                      v-show="scope.row.status == 103 && scope.row.ordertype == 'buy'"
+                      @click="comment(scope.row.id)"
+                      type="primary"
+                      >评价</el-button
+                    >
+                    <el-button
+                      v-show="scope.row.status == 104 && scope.row.ordertype == 'sell'"
+                      @click="viewComment(scope.row.id)"
+                      type="primary"
+                      >查看评价</el-button
+                    >
+                  </template>
+                </el-table-column>
+              </el-table>
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column label="序号" type="index" width="50" align="center">
+          <template #default="scope">
+            <span>{{ (pagination.current - 1) * pagination.limit + scope.$index + 1 }}</span>
+          </template>
+        </el-table-column>
         <el-table-column prop="code" label="订单号" />
         <el-table-column prop="name" label="名称" />
-        <el-table-column prop="number" label="数量" />
-        <el-table-column prop="marketCode" label="市场编号" />
-        <el-table-column prop="marketName" label="市场名称" />
         <el-table-column
           prop="status"
           label="状态"
           :formatter="(row, column) => renderDict(row, column, 'OrderStatus')"
         />
+        <el-table-column prop="name" label="支付记录">
+          <template #default="scope">
+            <el-link type="primary" @click="showPayList(scope.row)">点击查看</el-link>
+          </template>
+        </el-table-column>
+        <el-table-column prop="name" label="操作" width="600">
+          <template #default="scope">
+            <el-button @click="cancelOrder(scope.row.id)" type="primary">取消</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <el-table
+        class="table-row-sty"
+        :data="state.orderList"
+        stripe
+        @select="handleSelect"
+        ref="orderTableRef"
+        v-if="searchType == 'sell'"
+      >
+        <el-table-column prop="code" label="订单号" />
+        <el-table-column prop="name" label="名称" />
+        <el-table-column prop="sellAuth" label="出售权益" />
+        <el-table-column prop="days" label="期限" />
+        <el-table-column prop="price" label="价格" />
+        <el-table-column
+          prop="status"
+          label="状态"
+          :formatter="(row, column) => renderDict(row, column, 'OrderStatus')"
+        />
+        <el-table-column prop="name" label="支付记录">
+          <template #default="scope">
+            <el-link type="primary" @click="showPayList(scope.row)">点击查看</el-link>
+          </template>
+        </el-table-column>
         <el-table-column prop="name" label="操作" width="600">
           <template #default="scope">
             <el-button
@@ -49,9 +146,9 @@
             >
             <el-button
               v-show="scope.row.status <= 100"
-              @click="cancelOrder(scope.row.id)"
+              @click="cancelOrderDetail(scope.row.id)"
               type="primary"
-              >取消订单</el-button
+              >取消</el-button
             >
             <el-button
               v-show="scope.row.status == 101 && scope.row.ordertype == 'sell'"
@@ -81,19 +178,20 @@
         </el-table-column>
       </el-table>
       <payView v-if="payDialog.show" :order="payDialog.data" @close="closePay"></payView>
-      <el-pagination
-        class="page-pagination"
-        @size-change="(e) => handlePaginationChange(e, 'limit')"
-        @current-change="(e) => handlePaginationChange(e, 'current')"
-        small
-        background
-        :page-sizes="pageSizes"
-        v-model:currentPage="pagination.current"
-        v-model:page-size="pagination.limit"
-        layout="total, sizes, prev, pager, next, jumper"
-        :total="pageStore.total"
-      />
+      <payList v-if="payListDialog.show" :selectLimit="0" @closeDialog="closePayList" />
     </div>
+    <el-pagination
+      class="page-pagination"
+      @size-change="(e) => handlePaginationChange(e, 'limit')"
+      @current-change="(e) => handlePaginationChange(e, 'current')"
+      small
+      background
+      :page-sizes="pageSizes"
+      v-model:currentPage="pagination.current"
+      v-model:page-size="pagination.limit"
+      layout="total, sizes, prev, pager, next, jumper"
+      :total="pageStore.total"
+    />
   </div>
 </template>
 <script lang="ts" setup>
@@ -103,6 +201,7 @@
   import { PAGE_SIZES, PAGE_NUM } from '@/constant'
   import renderDict from '@/services/dict'
   import payView from '@/components/pay/pay.vue'
+  import payList from '@/components/pay/list.vue'
   import { ElTable } from 'element-plus'
   import moment from 'moment'
   // 表格分页数据
@@ -115,6 +214,7 @@
   const searchType = ref<string>('buy')
   const pageSizes = ref<Array<any>>(PAGE_SIZES)
   const payDialog = reactive({ show: false, data: {} })
+  const payListDialog = reactive({ show: false, data: {} })
   const remoteOperate = ref<boolean>(false)
   const handleSelect = (key: string, keyPath: string[]) => {
     console.log(key, keyPath)
@@ -128,8 +228,13 @@
   const searchValue = ref<string>('')
 
   onMounted(() => {
+    // window.addEventListener('resize', () => {
+    //     this.tableHeight = calcHeightx(120);
+    //   });
+    //   this.tableHeight = calcHeightx(120);
     getTableList('buy')
   })
+
   const options = ref<ListItem[]>([])
   const value = ref('')
   const loading = ref(false)
@@ -168,36 +273,17 @@
       })
       .then((res: ResultType) => {
         const { result = [], total = 0 } = res.data
-        // var result: any = [
-        //   {
-        //     id: '348129171096636636',
-        //     name: '邵一刀的待出售订单(海贼王-白胡子手办)2022-02-22 14:05:30',
-        //     code: 'syd_20200222_001',
-        //     status: 1,
-        //     createUser: '338792423297781760',
-        //     updateUser: '348098798750404608',
-        //     version: '3',
-        //     createTime: '2022-08-18 15:41:02.000',
-        //     updateTime: '2022-08-18 16:16:59.000',
-        //     market: {
-        //       id: '233',
-        //       name: '闲鱼',
-        //       code: 'market_xy_001',
-        //       remark: '闲鱼'
-        //     }
-        //   }
-        // ]
-        pageStore.total = result.length
+        pageStore.total = total
         result.forEach((item: any) => {
           item.ordertype = 'sell'
           return item
         })
         state.orderList = result?.map((item: { market: { remark: any; code: any; name: any } }) => {
           return {
-            ...item,
-            remark: item.market.remark,
-            marketCode: item.market.code,
-            marketName: item.market.name
+            ...item
+            // remark: item.market.remark,
+            // marketCode: item.market.code,
+            // marketName: item.market.name
           }
         })
       })
@@ -215,148 +301,28 @@
       })
       .then((res: ResultType) => {
         var { result = [], total = 0 } = res.data
-        // console.log(res.data)
-        //  result = result.length>0?result:[
-        //   {
-        //     id: '348129171096636636',
-        //     name: '邵一刀的待出售订单(海贼王-白胡子手办)2022-02-22 14:05:30',
-        //     code: 'syd_20200222_001',
-        //     status: 1,
-        //     createUser: '338792423297781760',
-        //     updateUser: '348098798750404608',
-        //     version: '3',
-        //     createTime: '2022-08-18 15:41:02.000',
-        //     updateTime: '2022-08-18 16:16:59.000',
-        //     market: {
-        //       id: '233',
-        //       name: '闲鱼',
-        //       code: 'market_xy_001',
-        //       remark: '闲鱼'
-        //     },
-        //     merchandise: {
-        //       caption: '海贼王-白胡子手办',
-        //       price: 500
-        //     }
-        //   },
-        //   {
-        //     id: '348129171098145636',
-        //     name: '邵一刀的出售订单(原神初始号)2022-02-22 14:05:30',
-        //     code: 'syd_20200222_001',
-        //     status: 100,
-        //     createUser: '338792423297781760',
-        //     updateUser: '348098798750404608',
-        //     version: '3',
-        //     createTime: '2022-08-18 15:41:02.000',
-        //     updateTime: '2022-08-18 16:16:59.000',
-        //     market: {
-        //       id: '222',
-        //       name: '游戏商城',
-        //       code: 'market_yx_001',
-        //       remark: '游戏商城'
-        //     },
-        //     merchandise: {
-        //       caption: '原神初始号',
-        //       price: 500
-        //     }
-        //   },
-        //   {
-        //     id: '348129171092213532',
-        //     name: '邵一刀的出售订单(原神-钟离雷神号)2022-03-21 12:36:30',
-        //     code: 'syd_20200321_001',
-        //     status: 101,
-        //     createUser: '338792423297781760',
-        //     updateUser: '348098798750404608',
-        //     version: '3',
-        //     createTime: '2022-08-18 15:41:02.000',
-        //     updateTime: '2022-08-18 16:16:59.000',
-        //     market: {
-        //       id: '222',
-        //       name: '游戏商城',
-        //       code: 'market_yx_001',
-        //       remark: '游戏商城'
-        //     },
-        //     merchandise: {
-        //       caption: '原神-钟离雷神号',
-        //       price: 500
-        //     }
-        //   },
-        //   {
-        //     id: '348129171265102421',
-        //     name: '邵一刀的出售订单(二手小台灯)2022-02-05 10:16:30',
-        //     code: 'syd_20200205_001',
-        //     status: 102,
-        //     createUser: '338792423297781760',
-        //     updateUser: '348098798750404608',
-        //     version: '3',
-        //     createTime: '2022-08-18 15:41:02.000',
-        //     updateTime: '2022-08-18 16:16:59.000',
-        //     market: {
-        //       id: '233',
-        //       name: '闲鱼',
-        //       code: 'market_xy_001',
-        //       remark: '闲鱼'
-        //     },
-        //     merchandise: {
-        //       caption: '二手小台灯',
-        //       price: 500
-        //     }
-        //   },
-        //   {
-        //     id: '348129171265102421',
-        //     name: '邵一刀的出售订单(书籍-茶花女)2022-02-05 10:16:30',
-        //     code: 'syd_20200205_003',
-        //     status: 103,
-        //     createUser: '338792423297781760',
-        //     updateUser: '348098798750404608',
-        //     version: '3',
-        //     createTime: '2022-08-18 15:41:02.000',
-        //     updateTime: '2022-08-18 16:16:59.000',
-        //     market: {
-        //       id: '255',
-        //       name: '当当网',
-        //       code: 'market_ddw_001',
-        //       remark: '当当网'
-        //     },
-        //     merchandise: {
-        //       caption: '书籍-茶花女',
-        //       price: 500
-        //     }
-        //   },
-        //   {
-        //     id: '348129171265102463',
-        //     name: '邵一刀的出售订单(潮鞋-椰子鞋2022新年特供)2022-02-05 10:16:30',
-        //     code: 'syd_20200205_005',
-        //     status: 104,
-        //     createUser: '338792423297781760',
-        //     updateUser: '348098798750404608',
-        //     version: '3',
-        //     createTime: '2022-08-18 15:41:02.000',
-        //     updateTime: '2022-08-18 16:16:59.000',
-        //     market: {
-        //       id: '301',
-        //       name: '抖音商城',
-        //       code: 'market_dy_001',
-        //       remark: '抖音商城'
-        //     },
-        //     merchandise: {
-        //       caption: '潮鞋-椰子鞋2022新年特供',
-        //       price: 500
-        //     }
-        //   }
-        // ]
-        pageStore.total = result.length
+        pageStore.total = total
         result.forEach((item: any) => {
           item.ordertype = 'sell'
           return item
         })
-        state.orderList = result?.map((item: { market: { remark: any; code: any; name: any } }) => {
-          return {
-            ...item,
-            remark: item.market.remark,
-            marketCode: item.market.code,
-            marketName: item.market.name
+        state.orderList = result?.map(
+          (item: {
+            merchandise: { caption: any; days: any; sellAuth: any; price: any; information: any }
+            order: { code: any; name: any; status: any }
+          }) => {
+            return {
+              ...item,
+              code: item.order.code,
+              name: item.merchandise.caption,
+              sellAuth: item.merchandise.sellAuth,
+              days: item.merchandise.days
+              // remark: item.market.remark,
+              // marketCode: item.market.code,
+              // marketName: item.market.name
+            }
           }
-        })
+        )
       })
   }
   //查询已购入订单
@@ -372,139 +338,32 @@
       })
       .then((res: ResultType) => {
         const { result = [], total = 0 } = res.data
-        // var result = [
-        //   {
-        //     id: '348129171098177536',
-        //     name: '邵一刀的购买订单2022-08-22 14:05:30',
-        //     code: 'syd_20200822_001',
-        //     status: 1,
-        //     createUser: '338792423297781760',
-        //     updateUser: '348098798750404608',
-        //     version: '3',
-        //     createTime: '2022-08-18 15:41:02.000',
-        //     updateTime: '2022-08-18 16:16:59.000',
-        //     market: {
-        //       id: '5555',
-        //       name: '邵某某的市场',
-        //       code: 'market_sld_001',
-        //       remark: '邵某某的市场'
-        //     },
-        //     merchandise: {
-        //       caption: '商品1',
-        //       price: 500
-        //     }
-        //   },
-        //   {
-        //     id: '348129171098177532',
-        //     name: '邵一刀的购买订单2022-08-21 12:36:30',
-        //     code: 'syd_20200821_001',
-        //     status: 100,
-        //     createUser: '338792423297781760',
-        //     updateUser: '348098798750404608',
-        //     version: '3',
-        //     createTime: '2022-08-18 15:41:02.000',
-        //     updateTime: '2022-08-18 16:16:59.000',
-        //     market: {
-        //       id: '5555',
-        //       name: '邵某某的市场',
-        //       code: 'market_sld_001',
-        //       remark: '邵某某的市场'
-        //     },
-        //     merchandise: {
-        //       caption: '商品2',
-        //       price: 500
-        //     }
-        //   },
-        //   {
-        //     id: '348129171098176421',
-        //     name: '邵一刀的购买订单2022-07-05 10:16:30',
-        //     code: 'syd_20200705_001',
-        //     status: 101,
-        //     createUser: '338792423297781760',
-        //     updateUser: '348098798750404608',
-        //     version: '3',
-        //     createTime: '2022-08-18 15:41:02.000',
-        //     updateTime: '2022-08-18 16:16:59.000',
-        //     market: {
-        //       id: '5555',
-        //       name: '邵某某的市场',
-        //       code: 'market_sld_001',
-        //       remark: '邵某某的市场'
-        //     },
-        //     merchandise: {
-        //       caption: '商品3',
-        //       price: 500
-        //     }
-        //   },
-        //   {
-        //     id: '348129171098176636',
-        //     name: '邵一刀的购买订单(跳蚤)2022-02-22 14:05:30',
-        //     code: 'syd_20200222_001',
-        //     status: 102,
-        //     createUser: '338792423297781760',
-        //     updateUser: '348098798750404608',
-        //     version: '3',
-        //     createTime: '2022-08-18 15:41:02.000',
-        //     updateTime: '2022-08-18 16:16:59.000',
-        //     market: {
-        //       id: '111',
-        //       name: '跳蚤市场',
-        //       code: 'market_tz_001',
-        //       remark: '跳蚤市场'
-        //     },
-        //     merchandise: {
-        //       caption: '洗衣机',
-        //       price: 500
-        //     }
-        //   },
-        //   {
-        //     id: '348129171098133532',
-        //     name: '邵一刀的购买订单(跳蚤)2022-03-21 12:36:30',
-        //     code: 'syd_20200321_001',
-        //     status: 103,
-        //     createUser: '338792423297781760',
-        //     updateUser: '348098798750404608',
-        //     version: '3',
-        //     createTime: '2022-08-18 15:41:02.000',
-        //     updateTime: '2022-08-18 16:16:59.000',
-        //     market: {
-        //       id: '111',
-        //       name: '跳蚤市场',
-        //       code: 'market_tz_001',
-        //       remark: '跳蚤市场'
-        //     },
-        //     merchandise: {
-        //       caption: '高等数学(上)教材',
-        //       price: 500
-        //     }
-        //   },
-        //   {
-        //     id: '348129171098102421',
-        //     name: '邵一刀的购买订单(跳蚤)2022-02-05 10:16:30',
-        //     code: 'syd_20200205_001',
-        //     status: 100,
-        //     createUser: '338792423297781760',
-        //     updateUser: '348098798750404608',
-        //     version: '3',
-        //     createTime: '2022-08-18 15:41:02.000',
-        //     updateTime: '2022-08-18 16:16:59.000',
-        //     market: {
-        //       id: '111',
-        //       name: '跳蚤市场',
-        //       code: 'market_tz_001',
-        //       remark: '跳蚤市场'
-        //     },
-        //     merchandise: {
-        //       caption: '电风扇',
-        //       price: 500
-        //     }
-        //   }
-        // ]
-        pageStore.total = result.length
+        pageStore.total = total
         result.forEach((item: any) => {
           item.ordertype = 'buy'
+          if (item.details) {
+            item.details = item.details.map((e) => {
+              if (!e.merchandise) {
+                return e
+              }
+              return {
+                ...e,
+                name: e.merchandise.caption,
+                sellAuth: e.merchandise.sellAuth,
+                price: e.merchandise.price,
+                days: e.merchandise.days
+              }
+            })
+          }
+
+          item.hasChildren = false
+          if (item.details) {
+            item.children = item.details
+            item.hasChildren = item.details.length > 0
+          }
           return item
         })
+
         state.orderList = result?.map((item: { market: { remark: any; code: any; name: any } }) => {
           return {
             ...item
@@ -513,11 +372,28 @@
       })
   }
   //确认开始交易
-  const sureContent = (id: string) => {
-    ElMessage({
-      message: '确认开始交易',
-      type: 'success'
-    })
+  const sureContent = async (id: string) => {
+    await $services.order
+      .orderConfirm({
+        data: {
+          id: id,
+          status: 100
+        }
+      })
+      .then((res: ResultType) => {
+        if (res.code == 200) {
+          getTableList(searchType.value)
+          ElMessage({
+            message: '确认开始交易',
+            type: 'success'
+          })
+        }
+      })
+  }
+  //查询支付列表
+  const showPayList = async (data: any) => {
+    payListDialog.data = data
+    payListDialog.show = true
   }
   //支付
   const showPay = async (data: any) => {
@@ -527,6 +403,10 @@
   //关闭支付
   const closePay = async () => {
     payDialog.show = false
+  }
+  //关闭支付记录列表
+  const closePayList = async () => {
+    payListDialog.show = false
   }
 
   // const pay = async (id: string, price: number, paymentType: string) => {
@@ -553,7 +433,7 @@
   //       }
   //     })
   // }
-  //取消订单
+  //取消
   const cancelOrder = async (id: string) => {
     await $services.order
       .delete({
@@ -565,8 +445,26 @@
         if (res.code == 200) {
           getTableList(searchType.value)
           ElMessage({
-            message: '取消订单成功',
-            type: 'warning'
+            message: '取消成功',
+            type: 'success'
+          })
+        }
+      })
+  }
+  //取消订单详情
+  const cancelOrderDetail = async (id: string) => {
+    await $services.order
+      .deleteDetail({
+        data: {
+          id: id
+        }
+      })
+      .then((res: ResultType) => {
+        if (res.code == 200) {
+          getTableList(searchType.value)
+          ElMessage({
+            message: '取消成功',
+            type: 'success'
           })
         }
       })
@@ -681,7 +579,15 @@
     width: 100%;
     height: 100%;
     background: #f0f2f5;
-    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 10px;
+
+    .limit_table_height {
+    }
+    .tables {
+      height: 50%;
+    }
     .operate-btns {
       display: flex;
       justify-content: space-between;
@@ -692,10 +598,11 @@
         font-weight: bold;
       }
     }
+
     .page-pagination {
-      padding: 10px 0;
-      display: flex;
-      justify-content: end;
+      bottom: 20px;
+      position: fixed;
+      right: 20px;
     }
 
     .group-side-bar-search {
@@ -706,5 +613,148 @@
       margin-left: 20px;
       position: relative;
     }
+  }
+
+  .diy-table {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 10px;
+
+    &__header {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: flex-end;
+      padding-top: 10px;
+
+      .header-title {
+        font-size: 16px;
+        font-weight: bold;
+        color: rgba(48, 49, 51, 1);
+        padding: 0 0 10px;
+
+        i {
+          font-size: 20px;
+          color: rgba(21, 74, 216, 1);
+        }
+      }
+
+      .header-tabs {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: -5px;
+      }
+
+      .header-buttons {
+        display: flex;
+      }
+    }
+
+    &__btn {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    &__body {
+      width: 100%;
+      height: 100px; //避免el-table无限变高
+      display: flex;
+      flex: 1;
+      margin-top: 10px;
+
+      &-box {
+        width: 1vw;
+        flex: auto;
+      }
+    }
+
+    &__footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      .footer-operate {
+        width: 110px;
+        height: 40px;
+        border: 1px solid rgba(209, 223, 245, 1);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+
+        .el-dropdown {
+          width: 100%;
+          height: 100%;
+        }
+        .el-dropdown-link {
+          width: 100%;
+          height: 100%;
+          display: block;
+          text-align: center;
+          height: 38px;
+          line-height: 38px;
+          font-size: 14px;
+          font-weight: 400;
+          color: rgba(51, 51, 51, 1);
+        }
+      }
+
+      .footer-buttons {
+        width: 350px;
+        display: flex;
+        justify-content: space-between;
+
+        .select-options {
+          width: 150px;
+        }
+      }
+
+      .footer-pagination {
+        & :deep(.btn-prev) {
+          border-radius: 16px;
+        }
+        & :deep(.el-pager > .number) {
+          border-radius: 4px;
+        }
+        & :deep(.btn-next) {
+          border-radius: 16px;
+        }
+        & :deep(.el-pagination__sizes .el-input__inner) {
+          border-radius: 16px;
+          // background: rgba(231, 239, 252, 1);
+          border-color: transparent;
+        }
+      }
+    }
+  }
+  .el-dropdown-menu {
+    width: 110px;
+  }
+  .table-row-sty {
+    height: calc(100vh - 12rem);
+  }
+  .table-row-sty tr:hover,
+  .table-row-sty tbody tr.el-table__row.not-read:hover {
+    cursor: pointer;
+    color: #2da1f8;
+  }
+  .el-icon-question {
+  }
+  .tableClass {
+    background-color: #edf2fc;
+    cursor: no-drop;
+  }
+  @media screen and (max-width: 1280px) {
+    .diy-table__header {
+      display: flex;
+      display: none;
+      flex-wrap: wrap;
+    }
+  }
+  :deep(.el-table__header-wrapper .el-checkbox) {
+    display: none;
   }
 </style>

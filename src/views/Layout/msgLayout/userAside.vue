@@ -4,7 +4,7 @@
       router
       style="width: 200px; height: calc(100vh - 60px)"
       default-active="userMsg"
-      class="el-menu-vertical-demo"
+      
       @open="handleOpen"
       @close="handleClose"
     >

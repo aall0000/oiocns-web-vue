@@ -1,14 +1,15 @@
 <template>
     <div class="card">
       <div class="header">
-        <div class="title">单位维护</div>
+        <div class="title">部门维护</div>
         <div class="box-btns">
-          <el-button small link type="primary" @click="goback">返回</el-button>
+          <el-button  type="default" @click="goback">返回</el-button>
         </div>
       </div>
       <div>
         <el-table
           :data="orgTree"
+          :header-cell-style="{ 'background': 'var(--el-color-primary-light-9)' }"
           stripe
           row-key="id"
           :border="true"
@@ -536,10 +537,11 @@
 <style lang="scss" scoped>
 
 .card {
-  height: 100%;
+  // height: 100%;
   width: 100%;
-  background-color: #fff;
-  padding: 10px;
+  background-color: var(--el-bg-color-overlay);
+  margin: 10px;
+  padding: 20px;
   .cell-box{
     display: flex;
     align-items: center;

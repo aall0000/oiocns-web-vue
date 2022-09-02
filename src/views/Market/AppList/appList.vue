@@ -4,7 +4,11 @@
       <el-button type="primary" @click="GoPage('/market/appShelvesApproval')"
         >应用上架审批</el-button
       >
-      <el-button type="primary" @click.stop="GoPage('/market/shopCar')">购物车</el-button>
+      <el-button type="primary" @click.stop="GoPage('/market/order')">我的订单</el-button>
+      <el-badge :value="shopcarNum" style="padding-left:10px">
+           <el-button type="primary" @click.stop="GoPage('/market/shopCar')">购物车</el-button>
+      </el-badge>
+
     </template>
   </MarketCard>
   <div class="appListLayout">
@@ -18,6 +22,7 @@
           ref="appCard"
           :dataList="state.myAppList"
           @handleUpdate="handleCardUpdate"
+          @shopcarNumChange="getShopcarNum"
         ></AppCard>
         <DiyTable
           v-else
@@ -53,7 +58,7 @@
   const diyTable = ref(null)
   const value1 = ref(true)
   const appCard = ref(null)
-
+  const shopcarNum = ref(0)
   const state = reactive({
     myAppList: [],
     tableHead: [
@@ -102,7 +107,24 @@
 
   onMounted(() => {
     getData()
+    getShopcarNum()
   })
+
+  const getShopcarNum = async () => {
+    await $services.market
+      .searchStaging({
+        data: {
+          id: 0, //市场id （需删除）
+          offset: 0,
+          limit: 20,
+          filter: ''
+        }
+      })
+      .then((res: ResultType) => {
+        var { result = [], total = 0 } = res.data
+        shopcarNum.value = total
+      })
+  }
 
   // 卡片切换页数
   const handleCardUpdate = () => {

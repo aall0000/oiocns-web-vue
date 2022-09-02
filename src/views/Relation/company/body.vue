@@ -34,14 +34,14 @@ defineExpose({ selectItemChange });
 .container{
   height: 100%;
   width: 100%;
-  background-color: #fff;
+  background-color: var(--el-bg-color-overlay);
   padding: 3px;
 }
 .tabs {
   width: 100%;
   height: 100%;
   overflow: hidden;
-  background-color: #fff;
+  // background-color: #fff;
   padding: 18px;
   :deep(.el-tabs__content){
     height: calc(100% - 55px);

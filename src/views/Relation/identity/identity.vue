@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <div class="wrap">
+    <el-card class="wrap">
       <div>
         <div class="title">当前组织：{{router.currentRoute.value.query?.name}}</div>
       </div>
@@ -29,7 +29,7 @@
           </el-menu-item>
         </el-menu>
       </div>
-    </div>
+    </el-card>
 
 
     <el-dialog v-model="createIdntityDialog" title="请录入身份信息" width="40%" center append-to-body @close="dialogHide">
@@ -174,12 +174,14 @@
 .container{
   height: 100%;
   width: 100%;
+  
 }
 .wrap{
   width: 100%;
-  box-sizing: border-box;
-  padding: 10px;
-  background: #fff;
+  border: 0;
+  // box-sizing: border-box;
+  // padding: 10px;
+  // background: #fff;
 }
 .title{
   margin-bottom: 10px;
