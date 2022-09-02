@@ -28,7 +28,7 @@
         <el-button type="primary" @click="createOrderByStaging(null)">购买</el-button>
       </template>
     </MarketCard>
-    <div v-if="isRouterAlive">
+    <div v-if="isRouterAlive" style="height:100vh;background-color: #fff;">
       <!-- <el-row :gutter="12" v-loading="loading" v-if="cardActive">
         <el-col :span="4" v-for="item in pageStore.tableData" :key="item.id">
            <el-card shadow="hover">
@@ -102,10 +102,14 @@
         <el-table-column prop="number" label="数量" />
         <el-table-column prop="marketName" label="市场名称" />
         <el-table-column prop="marketCode" label="市场编号" />
-        <el-table-column prop="name" label="操作" width="200">
+        <el-table-column prop="name" label="操作" width="200" align="center">
           <template #default="scope">
-            <el-button type="text" @click="deleteStaging(scope.row.id)">删除</el-button>
-            <el-button type="text" @click="createOrderByStaging(scope.row.id)">购买</el-button>
+            <DiyButton>
+              <template v-slot:opt>
+                <div class="diy-button" @click="deleteStaging(scope.row.id)"> 删除 </div>
+                <div class="diy-button" @click="createOrderByStaging(scope.row.id)"> 购买 </div>
+              </template>
+            </DiyButton>
           </template>
         </el-table-column>
       </el-table>
@@ -141,6 +145,7 @@ import { PAGE_SIZES, PAGE_NUM } from '@/constant'
 import { ElTable } from 'element-plus'
 import ShopCard from '../components/shopCard.vue'
 import AppInfoDialog from '../AppList/components/appInfoDialog.vue'
+import DiyButton from '@/components/diyButton/index.vue'
 import moment from 'moment'
 const router = useRouter()
 // 表格分页数据
@@ -543,6 +548,22 @@ const checkedChange = (item: any) => {
   align-items: center;
   height: 60px;
   padding: 0 20px;
+}
+
+// :deep(.diy-button-pos) {
+//   display: flex;
+//   justify-content: left;
+// }
+.diy-button {
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  &:hover {
+    background: rgba(235, 238, 245, 1);
+    border-radius: 4px;
+  }
 }
 
 .box {

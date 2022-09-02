@@ -34,9 +34,9 @@
                     <el-link type="primary" @click="showPayList(scope.row)">点击查看</el-link>
                   </template>
                 </el-table-column>
-                <el-table-column prop="name" label="操作" width="600">
+                <el-table-column prop="name" label="操作" width="150" align="center">
                   <template #default="scope">
-                    <DiyButton>
+                    <DiyButton >
                       <template v-slot:opt>
                         <div
                           class="diy-button"
@@ -103,7 +103,7 @@
           label="状态"
           :formatter="(row, column) => renderDict(row, column, 'OrderStatus')"
         />
-        <el-table-column prop="name" label="操作" width="600">
+        <el-table-column prop="name" label="操作" width="150" align="center">
           <template #default="scope">
             <DiyButton>
               <template v-slot:opt>
@@ -141,7 +141,7 @@
             <el-link type="primary" @click="showPayList(scope.row)">点击查看</el-link>
           </template>
         </el-table-column>
-        <el-table-column prop="name" label="操作" width="600">
+        <el-table-column prop="name" label="操作" width="150" align="center">
           <template #default="scope">
             <DiyButton>
               <template v-slot:opt>
@@ -764,13 +764,17 @@ const remoteMethod = (query: string) => {
   background-color: #edf2fc;
   cursor: no-drop;
 }
+
+//  :deep(.diy-button-pos) {
+//   display: flex; 
+//     justify-content: left;
+// }
 .diy-button {
   height: 30px;
   display: flex;
   justify-content: center;
   align-items: center;
   cursor: pointer;
-
   &:hover {
     background: rgba(235, 238, 245, 1);
     border-radius: 4px;
