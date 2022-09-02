@@ -142,7 +142,7 @@ const upDateCompany = ()=>{
 </script>
 <style lang="scss" scoped>
 .UnitMsg {
-  height: calc(100vh - 235px);
+  height: calc(100% - 120px);
   background-color: #eff0f4;
 
   .pageHeader {

@@ -2,97 +2,35 @@
   <div class="created">
     <div class="createdTop">
       <div class="topLeft">
-        <el-input class="search" placeholder="搜索单位名" :suffix-icon="Search" />
-      </div>
+        <!-- <el-input class="search" placeholder="搜索单位名" :suffix-icon="Search" />-->
+      </div> 
       <div class="topRight">
         <el-button type="primary" @click="create"> 创建集团</el-button>
         <el-button type="primary" @click="friendShow"> 申请加入集团</el-button>
       </div>
     </div>
-    <div class="createdBody" v-if="types === '全部'">
-      <el-table :data="state.tableData" stripe style="width: 98%">
-        <el-table-column type="selection" width="55" />
-        <el-table-column prop="id" label="序号" />
-        <el-table-column prop="code" label="集团编码" />
-        <el-table-column prop="name" label="集团名称" />
-        <el-table-column prop="remark" label="集团描述" />
-        <el-table-column prop="belongId" label="管理单位" />
-        <el-table-column prop="createTime" label="加入时间" />
-        <el-table-column prop="option" label="操作">
-          <template #default="scope">
-            <el-popconfirm title="确认删除?" @confirm="handleDelete(scope.row.id)">
-              <template #reference>
-                <el-button type="danger">删除</el-button>
-              </template>
-            </el-popconfirm>
-            <el-popconfirm title="确认退出吗?" @confirm="handleExit(scope.row.id)">
-              <template #reference>
-                <el-button type="danger">退出</el-button>
-              </template>
-            </el-popconfirm>
+    <div class="createdBody">
+      <DiyTable
+      class="diytable"
+      ref="diyTable"
+      :hasTableHead="false"
+      @handleUpdate="handleUpdate"
+      :tableData="tableData"
+      :tableHead="tableHead"
+      >
+      <template #option="scope">
+        <el-popconfirm title="确认删除?" @confirm="handleDelete(scope.row.id)">
+          <template #reference>
+            <el-button link type="danger">删除</el-button>
           </template>
-        </el-table-column>
-      </el-table>
-    </div>
-    <div class="createdBody" v-if="types === '创建的'">
-      <el-table :data="state1.tableData" stripe style="width: 98%">
-        <el-table-column type="selection" width="55" />
-        <el-table-column prop="id" label="序号" />
-        <el-table-column prop="code" label="集团编码" />
-        <el-table-column prop="name" label="集团名称" />
-        <el-table-column prop="remark" label="集团描述" />
-        <el-table-column prop="belongId" label="管理单位" />
-        <el-table-column prop="createTime" label="加入时间" />
-        <el-table-column prop="option" label="操作">
-          <template #default="scope">
-            <el-popconfirm title="确认删除?" @confirm="handleDelete(scope.row.id)">
-              <template #reference>
-                <el-button type="danger">删除</el-button>
-              </template>
-            </el-popconfirm>
-            <el-popconfirm title="确认退出吗?" @confirm="handleExit(scope.row.id)">
-              <template #reference>
-                <el-button type="danger">退出</el-button>
-              </template>
-            </el-popconfirm>
+        </el-popconfirm>
+        <el-popconfirm title="确认退出吗?" @confirm="handleExit(scope.row.id)">
+          <template #reference>
+            <el-button link type="danger">退出</el-button>
           </template>
-        </el-table-column>
-      </el-table>
-    </div>
-    <div class="createdBody" v-if="types === '已加入'">
-      <el-table :data="state2.tableData" stripe style="width: 98%">
-        <el-table-column type="selection" width="55" />
-        <el-table-column prop="id" label="序号" />
-        <el-table-column prop="code" label="集团编码" />
-        <el-table-column prop="name" label="集团名称" />
-        <el-table-column prop="remark" label="集团描述" />
-        <el-table-column prop="belongId" label="管理单位" />
-        <el-table-column prop="createTime" label="加入时间" />
-        <el-table-column prop="option" label="操作">
-          <template #default="scope">
-            <el-popconfirm title="确认删除吗?" @confirm="handleDelete(scope.row.id)">
-              <template #reference>
-                <el-button type="danger">删除</el-button>
-              </template>
-            </el-popconfirm>
-            <el-popconfirm title="确认退出吗?" @confirm="handleExit(scope.row.id)">
-              <template #reference>
-                <el-button type="danger">退出</el-button>
-              </template>
-            </el-popconfirm>
-          </template>
-        </el-table-column>
-      </el-table>
-    </div>
-    <div class="createdBottom">
-      <el-pagination
-        :page-size="pageSize"
-        :pager-count="5"
-        layout="total, prev, pager, next, jumper"
-        :total="totals"
-        :current-page="currentPage"
-        @current-change="handleCurrentChange"
-      />
+        </el-popconfirm>
+      </template>
+      </DiyTable>
     </div>
     <el-dialog v-model="dialogVisible" title="提示" width="30%">
       <el-form :model="form" label-width="120px">
@@ -123,36 +61,65 @@
   </div>
 </template>
 <script lang="ts" setup>
-  import { Search } from '@element-plus/icons-vue'
   import $services from '@/services'
-  import { onMounted, reactive } from 'vue'
-  import { ref } from 'vue'
+  import { onMounted, ref,reactive } from 'vue'
   import { useUserStore } from '@/store/user'
   import { ElMessage } from 'element-plus'
   import searchGroup from '@/components/searchs/index.vue'
+  import DiyTable from '@/components/diyTable/index.vue'
 
   const store = useUserStore()
-  const state = reactive({ tableData: [] })
-  const state1 = reactive({ tableData: [] })
-  const state2 = reactive({ tableData: [] })
-  // const states = ref([])
-  let currentPage = ref<number>(1)
-  let pageSize = ref<number>(5)
-  let offset = ref<number>(0)
-  let totals = ref<any>(5)
+  const tableData = ref([])
+  const diyTable = ref(null)
+  const tableHead = ref([
+    {
+      prop: 'id',
+      label: '集团ID',
+      name: 'id'
+    },
+    {
+      prop: 'code',
+      label: '集团编码',
+      name: 'code'
+    },
+    {
+      prop: 'name',
+      label: '集团名称',
+      name: 'name'
+    },
+    {
+      prop: 'remark',
+      label: '集团描述',
+      name: 'remark'
+    },
+    {
+      prop: 'belongId',
+      label: '管理单位',
+      name: 'belongId'
+    },
+    {
+      prop: 'createTime',
+      label: '加入时间',
+      name: 'createTime'
+    },
+    {
+      type:'slot',
+      prop: 'option',
+      label: '操作',
+      name: 'option'
+    }
+  ])
   let dialogVisible = ref(false)
-  const props = defineProps({
-    types: String
+  // 表格展示数据
+  const pageStore = reactive({
+    currentPage: 1,
+    pageSize: 20,
+    total: 0
   })
-
-  const handleCurrentChange = (val: number) => {
-    // console.log(val)
-    // console.log(pageSize.value)
-
-    offset.value = (val - 1) * pageSize.value
-    // console.log(offset.value)
-    fetchRequest(offset.value, pageSize.value)
-    // currentPage.value = val
+  const handleUpdate = (page: any)=>{
+    pageStore.currentPage = page.currentPage
+    pageStore.pageSize = page.pageSize
+    fetchRequest()
   }
 
   const form = reactive({
@@ -175,7 +142,7 @@
           message: '退出成功',
           type: 'warning'
         })
-      fetchRequest(offset.value, pageSize.value)
+      fetchRequest()
       }
     })
   }
@@ -231,7 +198,7 @@
             type: 'success'
           })
           dialogVisible.value = false
-          fetchRequest(offset.value, pageSize.value)
+          fetchRequest()
         } else {
           ElMessage({
             message: res.msg,
@@ -242,77 +209,23 @@
   }
 
   onMounted(() => {
-    fetchRequest(offset.value, pageSize.value)
-    // console.log(offset.value, pageSize.value)
+    fetchRequest()
   })
 
-  async function fetchRequest(offset: number, pageSize: number) {
-    let token = sessionStorage.getItem('TOKEN')
-    // console.log(offset, pageSize)
-
+  async function fetchRequest() {
     const { data, success } = await $services.company.companyGetGroups({
       data: {
-        offset: offset,
-        limit: pageSize
+        offset: (pageStore.currentPage-1)*pageStore.pageSize,
+        limit: pageStore.pageSize
       },
-      headers: { Authorization: token }
     })
     if (success) {
-      const { result = [], total = 0 } = data
-      state.tableData = result?.map((item: { team: { remark: any } }) => {
-        return { ...item, remark: item.team.remark }
-      })
-      totals.value = total
-      for (let i = 0; i < state.tableData.length; i++) {
-        if (state.tableData[i].belongId === store.workspaceData.id) {
-          state1.tableData.push(state.tableData[i])
-        } else {
-          state2.tableData.push(state.tableData[i])
-        }
-      }
-    }
-  }
-  interface ListItem {
-    value: string
-    label: string
-    remark: string
-    name: string
-  }
-  const addGroup = ref<boolean>(false)
-  const options = ref<ListItem[]>([])
-  const value = ref('')
-  const loading = ref(false)
-  const remoteMethod = (query: string) => {
-    if (query) {
-      $services.company.searchGroups({
-          data: {
-            filter: query,
-            offset: 0,
-            limit: 10
-          }
-        })
-        .then((res: ResultType) => {
-          if (res.success) {
-            let states = res.data.result
-            let arr: { value: any; label: any; remark: any; name: any }[] = []
-            states.forEach((el: any) => {
-              let obj = {
-                value: el.id,
-                label: el.name,
-                remark: el.team.remark,
-                name: el.team.name
-              }
-              arr.push(obj)
-            })
-            options.value = arr
-            loading.value = false
-          } else {
-            options.value = []
-            loading.value = false
-          }
-        })
-    } else {
-      options.value = []
+      tableData.value = data.result
+      pageStore.total = data.total
+      diyTable.value.state.page.total = data.total;
+    }else{
+      pageStore.total = 0
+      diyTable.value.state.page.total = 0;
     }
   }
   const addGroupFun = (arr:any) => {
@@ -358,16 +271,19 @@
 <style lang="scss">
   .created {
     width: 100%;
-    height: 100vh;
-
+    box-sizing: border-box;
+    background: #fff;
+    height: 100%;
     .createdTop {
-      width: 95%;
-      margin: 30px;
+      width: 100%;
+      padding: 20px;
       display: flex;
       justify-content: space-between;
     }
     .createdBody {
-      margin: 30px;
+      height: calc(100vh - 220px);
+      max-height: 1000px;
+      padding: 16px;
     }
     .createdBottom {
       position: absolute;

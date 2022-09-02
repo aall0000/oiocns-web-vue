@@ -170,7 +170,7 @@
     draggable
     :close-on-click-modal="false"
   >
-    <Cohort :info="selectProductItem"></Cohort>
+    <Cohort @closeDialog="cohortVisible = false" :info="selectProductItem"></Cohort>
   </el-dialog>
 </template>
 <script setup lang="ts">
