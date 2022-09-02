@@ -44,15 +44,23 @@
       </div>
       <div class="cohortLayout-content-center" style="width: 33%" v-if="radio !== '1'">
         <el-tree
+          v-if="radio == '2'"
           ref="centerTree"
-          :data="state.centerTree"
+          node-key="id"
           :check-strictly="true"
-          show-checkbox
+          :data="state.centerTree"
           :props="authorityProps"
+          show-checkbox
+          @check-change="centerAuthorClick"
         />
       </div>
       <div class="cohortLayout-content-right" :style="'width:' + (radio == '1' ? '49%' : '33%')">
         <Group v-if="radio == '1'" @delContent="delContent" :orgData="state.orgData"></Group>
+        <Author
+          v-if="radio == '2'"
+          @delContent="delContentAuth"
+          :orgData="state.authorData"
+        ></Author>
       </div>
     </div>
     <div class="footer">
@@ -67,6 +75,7 @@
   import { ElMessage, ElMessageBox } from 'element-plus'
   import API from '@/services'
   import Group from './components/group.vue'
+  import Author from './components/author.vue'
   import type { TabsPaneContext } from 'element-plus'
   interface Tree {
     id: string
@@ -80,6 +89,7 @@
   const tabs = ref([])
   const radio = ref('1')
   const leftTree = ref(null)
+  const centerTree = ref(null)
   const resource = ref<string>('')
   const state = reactive({
     way: [
@@ -102,7 +112,9 @@
     ],
     orgData: [], // 集团分发右侧数据
     rightData: [], // 集团分发历史数据
-    centerTree: [] // 职权分发中间树形
+    centerTree: [], // 职权分发中间树形
+    authorHisData: [], // 职权历史数据
+    authorData: [] // 职权右侧数据
   })
   const authorityProps = {
     label: 'name',
@@ -121,9 +133,37 @@
   const closeDialog = () => {
     emit('closeDialog')
   }
+  // 中间树形点击事件
+  const centerAuthorClick = (data: any, checked: boolean, indeterminate: any) => {
+    console.log('点击中间', data, checked, indeterminate)
+    if (checked) {
+      if (radio.value == '2') {
+        handleBoxClick(state.authorHisData, state.authorData, data)
+      }
+    }
+  }
+  const handleBoxClick = (hisData: any, dataList: any, data: any) => {
+    let result = hisData.some((item: any) => {
+      return item.id == data.id
+    })
+    for (let i = 0; i < dataList.length; i++) {
+      if (dataList[i].id == data.id) {
+        if (data.type == 'add') {
+          return
+        }
+      }
+    }
+    if (result) {
+      data.type = 'has'
+      dataList.push(data)
+    } else {
+      data.type = 'add'
+      dataList.push(data)
+    }
+  }
   // 左侧树点击事件
   const handleCheckChange = (data: any, checked: boolean, indeterminate: any) => {
-    console.log('-----------', data, checked, indeterminate)
+    console.log('点击左侧', data, checked, indeterminate)
     if (checked) {
       if (radio.value == '1') {
         let result = state.rightData.some((item: any) => {
@@ -170,11 +210,42 @@
         }
       })
       .then((res: ResultType) => {
-        state.centerTree = res.data
+        let arr = []
+        arr.push(res.data)
+        handleTreeData(arr)
+        state.centerTree = arr
+        console.log(state.centerTree)
       })
+  }
+  const handleTreeData = (item: any) => {
+    for (let i = 0; i < item.length; i++) {
+      if (item[i].nodes) {
+        handleTreeData(item[i].nodes)
+      } else {
+        item[i].nodes = []
+      }
+    }
   }
   const handleTabClick = (id: string) => {
     resource.value = id
+  }
+  const delContentAuth = (item: any) => {
+    if (item.type == 'del') {
+      return
+    } else if (item.type == 'add') {
+      state.authorData.forEach((el, index) => {
+        if (el.id == item.id) {
+          state.authorData.splice(index, 1)
+          centerTree.value.setChecked(item.id, false)
+        }
+      })
+    } else {
+      state.authorData.forEach((el, index) => {
+        if (el.id == item.id) {
+          el.type == 'del'
+        }
+      })
+    }
   }
   const delContent = (item: any) => {
     if (item.type == 'del') {
