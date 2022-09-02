@@ -22,8 +22,20 @@
             :key="item.id"
             :over-id="item.id"
           >
-            <!-- <template> -->
-            <el-dropdown @command="(value) => handleCommand('own', value, item)" placement="top">
+          <template #rightIcon>
+              <el-dropdown trigger="click" @command="(value) => handleCommand('own', value, item)" placement="left-start">
+                <el-icon :size="18" ><Operation /></el-icon>
+                <template #dropdown>
+                  <el-dropdown-menu>
+                    <el-dropdown-item v-for="action in actionOptionsOfOwn" :command="action.value" :key="action.value">
+                    {{ action.label }}
+                  </el-dropdown-item>
+                  <el-dropdown-item  @click="deleteApp(item)">移除应用</el-dropdown-item>
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
+            </template>
+            <!-- <el-dropdown @command="(value) => handleCommand('own', value, item)" placement="top">
               <el-button class="btn" type="primary" link small> 设置 </el-button>
               <template #dropdown>
                 <el-dropdown-menu>
@@ -34,7 +46,7 @@
               </template>
             </el-dropdown>
             <el-divider direction="vertical" />
-            <el-button class="btn" link small @click="deleteApp(item)">移除应用</el-button>
+            <el-button class="btn" link small @click="deleteApp(item)">移除应用</el-button> -->
           </ShopCard>
         </li>
         <el-pagination
@@ -53,11 +65,21 @@
             :key="item.id"
             :over-id="item.id"
           >
-            <el-dropdown @command="(value) => handleCommand('other', value, item)" placement="top">
+          <template #rightIcon>
+              <el-dropdown trigger="click">
+                <el-icon :size="18" ><Operation /></el-icon>
+                <template #dropdown>
+                  <el-dropdown-menu>
+                    <el-dropdown-item >Action 1</el-dropdown-item>
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
+            </template>
+            <el-dropdown @command="(value) => handleCommand('other', value, item)" placement="left-start">
               <el-button class="btn" type="primary" link small> 设置 </el-button>
               <template #dropdown>
                 <el-dropdown-menu>
-                  <el-dropdown-item v-for="action in actionOptionsOfOther" :command="action.value">
+                  <el-dropdown-item v-for="action in actionOptionsOfOther" :command="action.value" :key="action.value">
                     {{ action.label }}
                   </el-dropdown-item>
                 </el-dropdown-menu>

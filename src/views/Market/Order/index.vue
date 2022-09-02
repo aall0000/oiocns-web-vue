@@ -9,8 +9,10 @@
     <div class="limit_table_height">
       <el-table
         class="table-row-sty"
+        :header-cell-style="getRowClass"
         :data="state.orderList"
         stripe
+        border
         @select="handleSelect"
         ref="orderTableRef"
         v-if="searchType == 'buy'"
@@ -18,12 +20,12 @@
         <el-table-column type="expand">
           <template #default="props">
             <div style="margin-left: 100px">
-              <el-table :data="props.row.details">
+              <el-table :data="props.row.details" border :header-cell-style="getRowClass">
                 <!-- <el-table-column prop="code" label="订单号" /> -->
                 <el-table-column prop="name" label="名称" />
-                <el-table-column prop="sellAuth" label="出售权益" />
-                <el-table-column prop="days" label="期限" />
-                <el-table-column prop="price" label="价格" />
+                <el-table-column prop="sellAuth" label="售卖权属" />
+                <el-table-column prop="days" label="售卖期限" />
+                <el-table-column prop="price" label="售卖价格" />
                 <el-table-column
                   prop="status"
                   label="状态"
@@ -115,8 +117,10 @@
       </el-table>
       <el-table
         class="table-row-sty"
+        :header-cell-style="getRowClass"
         :data="state.orderList"
         stripe
+        border
         @select="handleSelect"
         ref="orderTableRef"
         v-if="searchType == 'sell'"
@@ -128,9 +132,9 @@
         </el-table-column>
         <el-table-column prop="code" label="订单号" />
         <el-table-column prop="name" label="名称" />
-        <el-table-column prop="sellAuth" label="出售权益" />
-        <el-table-column prop="days" label="期限" />
-        <el-table-column prop="price" label="价格" />
+        <el-table-column prop="sellAuth" label="售卖权属" />
+        <el-table-column prop="days" label="售卖期限" />
+        <el-table-column prop="price" label="售卖价格" />
         <el-table-column
           prop="status"
           label="状态"
@@ -549,6 +553,7 @@ interface ListItem {
   label: string
 }
 
+
 const remoteMethod = (query: string) => {
   if (query) {
     loading.value = true
@@ -590,6 +595,30 @@ const remoteMethod = (query: string) => {
     options.value = []
   }
 }
+
+  //配置表头背景
+  const getRowClass = ({
+    row,
+    column,
+    rowIndex,
+    columnIndex
+  }: {
+    row: any
+    column: any
+    rowIndex: number
+    columnIndex: number
+  }) => {
+    if (rowIndex === 0) {
+      return {
+        background: '#F5F6FC',
+        color: '#333333',
+        height: '36px',
+        padding: '2px 0'
+      }
+    } else {
+      return {}
+    }
+  }
 </script>
 <style lang="scss" scoped>
 .container {

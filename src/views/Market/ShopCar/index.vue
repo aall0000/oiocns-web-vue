@@ -85,20 +85,27 @@
       </ul>
       <el-table
         class="table-row-sty"
+        :header-cell-style="getRowClass"
         ref="shopcarTableRef"
         :data="pageStore.tableData"
         stripe
+        border
         @select="handleSelect"
         @row-click="handleRowClick"
         v-if="!cardActive"
         @select-all="checkAll"
       >
         <el-table-column type="selection" width="50" />
+        <el-table-column label="序号" type="index" width="80" align="center">
+          <template #default="scope">
+            <span>{{ (pagination.current - 1) * pagination.limit + scope.$index + 1 }}</span>
+          </template>
+        </el-table-column>
         <el-table-column prop="caption" label="商品名称" />
         <el-table-column prop="information" label="商品信息" />
-        <el-table-column prop="sellAuth" label="出售权益" />
-        <el-table-column prop="days" label="期限" />
-        <el-table-column prop="price" label="价格" />
+        <el-table-column prop="sellAuth" label="售卖权属" />
+        <el-table-column prop="days" label="售卖期限" />
+        <el-table-column prop="price" label="售卖价格" />
         <el-table-column prop="number" label="数量" />
         <el-table-column prop="marketName" label="市场名称" />
         <el-table-column prop="marketCode" label="市场编号" />
@@ -394,6 +401,29 @@ const deleteStaging = async (id: string) => {
       }
     })
 }
+  //配置表头背景
+  const getRowClass = ({
+    row,
+    column,
+    rowIndex,
+    columnIndex
+  }: {
+    row: any
+    column: any
+    rowIndex: number
+    columnIndex: number
+  }) => {
+    if (rowIndex === 0) {
+      return {
+        background: '#F5F6FC',
+        color: '#333333',
+        height: '36px',
+        padding: '2px 0'
+      }
+    } else {
+      return {}
+    }
+  }
 //改变购物车商品数量
 const numChange = async (item: any) => {
   console.log(item)
