@@ -223,7 +223,7 @@ const getMyMarketData = () => {
 }
 const getJoinMarketData = () => {
   $services.appstore
-    .searchOwn({
+    .searchJoined({
       data: {
         offset: state.pageJoin.current,
         limit: state.pageJoin.pageSize,
@@ -251,7 +251,6 @@ const marketQuit = (item: any) => {
         })
         .then((res: ResultType) => {
           if (res.code == 200) {
-            getJoinMarketData()
             getJoinMarketData()
             ElMessage({
               message: '退出成功',

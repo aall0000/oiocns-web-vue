@@ -788,6 +788,18 @@ const searchValue = ref<string>('')
     background-color: #edf2fc;
     cursor: no-drop;
   }
+  .diy-button {
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+
+    &:hover {
+      background: rgba(235, 238, 245, 1);
+      border-radius: 4px;
+    }
+  }
   @media screen and (max-width: 1280px) {
     .diy-table__header {
       display: flex;

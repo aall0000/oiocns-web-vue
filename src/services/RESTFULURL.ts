@@ -136,6 +136,8 @@ export default {
     joinStaging: market + '/staging', //加入暂存区/购物车
     publishMerchandise: market + '​/publish/merchandise', //上架商品
     searchAll: market + '/search/all', //查询所有市场
+    searchOwn: market + '/search/own',//查询管理/已加入的市场
+    searchJoined: market + '/search/joined',//查询已加入的市场
     searchManager: market + '​/search/manager', //查询自己管理的市场
     searchMerchandise: market + '​/search/merchandise', //查询市场中所有商品
     searchMerchandiseApply: market + '​/search/merchandise/apply', //查询产品上架申请
@@ -199,6 +201,7 @@ export default {
   },
   appstore: {
     searchOwn: appstore + '/search/own',
+    searchJoined: appstore + '/search/joined',
     searchManager: appstore + '/search/manager',
     marketDel: appstore + '/delete',
     merchandise: appstore + '/search/merchandise',

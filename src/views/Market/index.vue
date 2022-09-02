@@ -56,6 +56,19 @@
             :over-id="item.id"
           >
           <template #rightIcon>
+              <el-dropdown trigger="click" @command="(value) => handleCommand('own', value, item)" placement="left-start">
+                <el-icon :size="18" ><Operation /></el-icon>
+                <template #dropdown>
+                  <el-dropdown-menu>
+                    <el-dropdown-item v-for="action in actionOptionsOfOwn" :command="action.value" :key="action.value">
+                    {{ action.label }}
+                  </el-dropdown-item>
+                  <el-dropdown-item  @click="deleteApp(item)">移除应用</el-dropdown-item>
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
+            </template>
+          <!-- <template #rightIcon>
               <el-dropdown trigger="click">
                 <el-icon :size="18" ><Operation /></el-icon>
                 <template #dropdown>
@@ -76,7 +89,7 @@
               </template>
             </el-dropdown>
             <el-divider direction="vertical" />
-            <el-button class="btn" link small @click="deleteApp(item)">移除应用</el-button>
+            <el-button class="btn" link small @click="deleteApp(item)">移除应用</el-button> -->
           </ShopCard>
         </li>
         <el-pagination
