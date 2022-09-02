@@ -139,7 +139,7 @@
         width: 4px;
         height: 60%;
         margin-right: 6px;
-        background-color: $mainColor;
+        background-color: #3e5ed8;
       }
     }
   }

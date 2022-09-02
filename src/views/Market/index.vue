@@ -243,11 +243,26 @@
       return el.value == val
     })
   }
-
-  // 关闭分享弹窗
-  const closeDialog = () => {
-    shareVisible.value = false
+  const shopcarNum = ref(0)
+  const getShopcarNum = async () => {
+    await $services.market
+      .searchStaging({
+        data: {
+          id: 0, //市场id （需删除）
+          offset: 0,
+          limit: 20,
+          filter: ''
+        }
+      })
+      .then((res: ResultType) => {
+        var { result = [], total = 0 } = res.data
+        shopcarNum.value = total
+      })
   }
+  // 关闭分享弹窗
+  // const closeDialog = () => {
+  //   shareVisible.value = false
+  // }
 
   // 获取我的应用列表
   const getProductList = async (type: 'own' | 'share') => {
