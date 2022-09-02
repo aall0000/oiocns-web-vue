@@ -233,6 +233,7 @@ watch(filterText, (val) => {
 <style lang="scss" scoped>
 .card {
   height: 100%;
+  border: 0;
 }
 .tree-btns {
   padding: 10px 0;

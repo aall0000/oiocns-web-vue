@@ -53,5 +53,4 @@ onMounted(() => {
   justify-content: space-between;
   align-items: center;
 }
-
 </style>

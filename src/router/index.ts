@@ -280,7 +280,7 @@ const mainRouter: RouteRecordRaw[] = [
         }
       },
 
-     
+
       {
         path: '/market/order',
         name: 'marketOrder',
@@ -311,6 +311,22 @@ const mainRouter: RouteRecordRaw[] = [
         component: () => import('@/views/Market/JoinMarketApproval/starter.vue'),
         meta: {
           title: '加入市场申请列表'
+        }
+      },
+      {
+        path: '/market/appApply',
+        name: 'appApply',
+        component: () => import('@/views/Market/AppShelves/apply.vue'),
+        meta: {
+          title: '应用上架申请列表'
+        }
+      },
+      {
+        path: '/market/managerApply',
+        name: 'managerApply',
+        component: () => import('@/views/Market/JoinMarketApproval/manager.vue'),
+        meta: {
+          title: '加入市场审批列表'
         }
       },
       {

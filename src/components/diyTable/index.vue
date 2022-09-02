@@ -45,6 +45,7 @@
           border
           stripe
           :default-expand-all="options.expandAll ? options.expandAll : false"
+          @select="select"
           @select-all="selectAll"
           @selection-change="handleSelectionChange"
           @cell-mouse-enter="handleMouseEnter"
@@ -217,6 +218,7 @@
     'handleSortChange',
     'handleRowClick',
     'handleUpdate',
+    'select',
     'selectionChange'
   ])
 
@@ -233,7 +235,7 @@
   }) => {
     if (row.saleStatus === 3) {
       return {
-        backgroundColor: 'rgb(245, 246, 252)',
+        backgroundColor: 'var(--el-primary-color-light-9)',//  'rgb(245, 246, 252)',
         cursor: 'no-drop',
         color: 'gainsboro'
       }
@@ -284,6 +286,10 @@
   const handleSelectionChange = (val: any) => {
     multipleSelection.value = val
     emit('selectionChange', multipleSelection.value)
+  }
+
+  const select = (selection: any, row: any) => {
+    emit('select', selection, row)
   }
 
   /**
@@ -354,8 +360,8 @@
   }) => {
     if (rowIndex === 0) {
       return {
-        background: '#F5F6FC',
-        color: '#333333',
+        background: 'var(--el-color-primary-light-9)',// '#F5F6FC',
+        color: 'var(--el-text-color-primary)',// '#333333',
         height: '36px',
         padding: '2px 0'
       }
