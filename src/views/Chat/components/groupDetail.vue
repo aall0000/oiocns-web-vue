@@ -476,7 +476,7 @@ const openDialogDel = () => {
     &-more-btn {
       width: 100%;
       text-align: center;
-      color: $mainColor;
+      color: var(--el-color-primary);
       cursor: pointer;
     }
   }

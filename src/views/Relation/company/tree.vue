@@ -340,7 +340,7 @@
     line-height: 30px;
     left:0;
     &-txt {
-      color: $mainColor;
+      color: var(--el-color-primary);
       font-size: 16px;
     }
   }

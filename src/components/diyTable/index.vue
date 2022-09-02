@@ -235,7 +235,7 @@
   }) => {
     if (row.saleStatus === 3) {
       return {
-        backgroundColor: 'var(--el-primary-color-light-9)',//  'rgb(245, 246, 252)',
+        backgroundColor: 'var(--el-color-primary-light-9)',//  'rgb(245, 246, 252)',
         cursor: 'no-drop',
         color: 'gainsboro'
       }
