@@ -286,14 +286,6 @@ const mainRouter: RouteRecordRaw[] = [
         name: 'marketOrder',
         component: () => import('@/views/Market/Order/index.vue'),
         meta: {
-          title: '订单详情页面'
-        }
-      },
-      {
-        path: '/market/ordergroup',
-        name: 'marketOrdergroup',
-        component: () => import('@/views/Market/Order/group.vue'),
-        meta: {
           title: '订单页面'
         }
       },

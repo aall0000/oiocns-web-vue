@@ -19,7 +19,7 @@
       >
         <el-table-column type="expand">
           <template #default="props">
-            <div style="margin-left: 100px">
+            <div style="margin-left: 50px">
               <el-table :data="props.row.details" border :header-cell-style="getRowClass">
                 <!-- <el-table-column prop="code" label="订单号" /> -->
                 <el-table-column prop="name" label="名称" />
@@ -618,7 +618,7 @@ const searchValue = ref<string>('')
 <style lang="scss" scoped>
   .container {
     width: 100%;
-    height: 100%;
+    height: 100vh;
     background: #f0f2f5;
     display: flex;
     flex-direction: column;
