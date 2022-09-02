@@ -9,21 +9,23 @@
     <div class="limit_table_height">
       <el-table
         class="table-row-sty"
+        :header-cell-style="getRowClass"
         :data="state.orderList"
         stripe
+        border
         @select="handleSelect"
         ref="orderTableRef"
         v-if="searchType == 'buy'"
       >
         <el-table-column type="expand">
           <template #default="props">
-            <div style="margin-left: 100px">
-              <el-table :data="props.row.details">
+            <div style="margin-left: 50px">
+              <el-table :data="props.row.details" border :header-cell-style="getRowClass">
                 <!-- <el-table-column prop="code" label="订单号" /> -->
                 <el-table-column prop="name" label="名称" />
-                <el-table-column prop="sellAuth" label="出售权益" />
-                <el-table-column prop="days" label="期限" />
-                <el-table-column prop="price" label="价格" />
+                <el-table-column prop="sellAuth" label="售卖权属" />
+                <el-table-column prop="days" label="售卖期限" />
+                <el-table-column prop="price" label="售卖价格" />
                 <el-table-column
                   prop="status"
                   label="状态"
@@ -34,57 +36,64 @@
                     <el-link type="primary" @click="showPayList(scope.row)">点击查看</el-link>
                   </template>
                 </el-table-column>
-                <el-table-column prop="name" label="操作" width="600">
+                <el-table-column prop="name" label="操作" width="150" align="center">
                   <template #default="scope">
-                    <el-button
-                      v-show="scope.row.status == 1 && scope.row.ordertype == 'sell'"
-                      @click="sureContent(scope.row.id)"
-                      type="primary"
-                      >开始交易</el-button
-                    >
-                    <el-button
-                      v-show="scope.row.status == 100 && scope.row.ordertype == 'buy'"
-                      @click="showPay(scope.row)"
-                      type="primary"
-                      >支付</el-button
-                    >
-                    <el-button
-                      v-show="scope.row.status <= 100"
-                      @click="cancelOrderDetail(scope.row.id)"
-                      type="primary"
-                      >取消</el-button
-                    >
-                    <el-button
-                      v-show="scope.row.status == 101 && scope.row.ordertype == 'sell'"
-                      @click="delivery(scope.row.id)"
-                      type="primary"
-                      >确认发货</el-button
-                    >
-                    <el-button
-                      v-show="scope.row.status == 102 && scope.row.ordertype == 'buy'"
-                      @click="accept(scope.row.id)"
-                      type="primary"
-                      >确认收货</el-button
-                    >
-                    <el-button
-                      v-show="scope.row.status == 103 && scope.row.ordertype == 'buy'"
-                      @click="comment(scope.row.id)"
-                      type="primary"
-                      >评价</el-button
-                    >
-                    <el-button
-                      v-show="scope.row.status == 104 && scope.row.ordertype == 'sell'"
-                      @click="viewComment(scope.row.id)"
-                      type="primary"
-                      >查看评价</el-button
-                    >
+                    <DiyButton >
+                      <template v-slot:opt>
+                        <div
+                          class="diy-button"
+                          v-show="scope.row.status == 1 && scope.row.ordertype == 'sell'"
+                          @click="sureContent(scope.row.id)"
+                        >
+                          开始交易
+                        </div>
+                        <div
+                          class="diy-button"
+                          v-show="scope.row.status == 100 && scope.row.ordertype == 'buy'"
+                          @click="showPay(scope.row)"
+                        >
+                          支付
+                        </div>
+                        <div class="diy-button" @click="cancelOrderDetail(scope.row.id)">
+                          取消
+                        </div>
+                        <div
+                          class="diy-button"
+                          v-show="scope.row.status == 101 && scope.row.ordertype == 'sell'"
+                          @click="delivery(scope.row.id)"
+                        >
+                          确认发货
+                        </div>
+                        <div
+                          class="diy-button"
+                          v-show="scope.row.status == 102 && scope.row.ordertype == 'buy'"
+                          @click="accept(scope.row.id)"
+                        >
+                          确认收货
+                        </div>
+                        <div
+                          class="diy-button"
+                          v-show="scope.row.status == 103 && scope.row.ordertype == 'buy'"
+                          @click="comment(scope.row.id)"
+                        >
+                          评价
+                        </div>
+                        <div
+                          class="diy-button"
+                          v-show="scope.row.status == 104 && scope.row.ordertype == 'sell'"
+                          @click="viewComment(scope.row.id)"
+                        >
+                          查看评价
+                        </div>
+                      </template>
+                    </DiyButton>
                   </template>
                 </el-table-column>
               </el-table>
             </div>
           </template>
         </el-table-column>
-        <el-table-column label="序号" type="index" width="50" align="center">
+        <el-table-column label="序号" type="index" width="80" align="center">
           <template #default="scope">
             <span>{{ (pagination.current - 1) * pagination.limit + scope.$index + 1 }}</span>
           </template>
@@ -96,30 +105,36 @@
           label="状态"
           :formatter="(row, column) => renderDict(row, column, 'OrderStatus')"
         />
-        <el-table-column prop="name" label="支付记录">
+        <el-table-column prop="name" label="操作" width="150" align="center">
           <template #default="scope">
-            <el-link type="primary" @click="showPayList(scope.row)">点击查看</el-link>
-          </template>
-        </el-table-column>
-        <el-table-column prop="name" label="操作" width="600">
-          <template #default="scope">
-            <el-button @click="cancelOrder(scope.row.id)" type="primary">取消</el-button>
+            <DiyButton>
+              <template v-slot:opt>
+                <div class="diy-button" @click="cancelOrder(scope.row.id)"> 取消 </div>
+              </template>
+            </DiyButton>
           </template>
         </el-table-column>
       </el-table>
       <el-table
         class="table-row-sty"
+        :header-cell-style="getRowClass"
         :data="state.orderList"
         stripe
+        border
         @select="handleSelect"
         ref="orderTableRef"
         v-if="searchType == 'sell'"
       >
+        <el-table-column label="序号" type="index" width="80" align="center">
+          <template #default="scope">
+            <span>{{ (pagination.current - 1) * pagination.limit + scope.$index + 1 }}</span>
+          </template>
+        </el-table-column>
         <el-table-column prop="code" label="订单号" />
         <el-table-column prop="name" label="名称" />
-        <el-table-column prop="sellAuth" label="出售权益" />
-        <el-table-column prop="days" label="期限" />
-        <el-table-column prop="price" label="价格" />
+        <el-table-column prop="sellAuth" label="售卖权属" />
+        <el-table-column prop="days" label="售卖期限" />
+        <el-table-column prop="price" label="售卖价格" />
         <el-table-column
           prop="status"
           label="状态"
@@ -130,50 +145,55 @@
             <el-link type="primary" @click="showPayList(scope.row)">点击查看</el-link>
           </template>
         </el-table-column>
-        <el-table-column prop="name" label="操作" width="600">
+        <el-table-column prop="name" label="操作" width="150" align="center">
           <template #default="scope">
-            <el-button
-              v-show="scope.row.status == 1 && scope.row.ordertype == 'sell'"
-              @click="sureContent(scope.row.id)"
-              type="primary"
-              >开始交易</el-button
-            >
-            <el-button
-              v-show="scope.row.status == 100 && scope.row.ordertype == 'buy'"
-              @click="showPay(scope.row)"
-              type="primary"
-              >支付</el-button
-            >
-            <el-button
-              v-show="scope.row.status <= 100"
-              @click="cancelOrderDetail(scope.row.id)"
-              type="primary"
-              >取消</el-button
-            >
-            <el-button
-              v-show="scope.row.status == 101 && scope.row.ordertype == 'sell'"
-              @click="delivery(scope.row.id)"
-              type="primary"
-              >确认发货</el-button
-            >
-            <el-button
-              v-show="scope.row.status == 102 && scope.row.ordertype == 'buy'"
-              @click="accept(scope.row.id)"
-              type="primary"
-              >确认收货</el-button
-            >
-            <el-button
-              v-show="scope.row.status == 103 && scope.row.ordertype == 'buy'"
-              @click="comment(scope.row.id)"
-              type="primary"
-              >评价</el-button
-            >
-            <el-button
-              v-show="scope.row.status == 104 && scope.row.ordertype == 'sell'"
-              @click="viewComment(scope.row.id)"
-              type="primary"
-              >查看评价</el-button
-            >
+            <DiyButton>
+              <template v-slot:opt>
+                <div
+                  class="diy-button"
+                  v-show="scope.row.status == 1 && scope.row.ordertype == 'sell'"
+                  @click="sureContent(scope.row.id)"
+                >
+                  开始交易
+                </div>
+                <div
+                  class="diy-button"
+                  v-show="scope.row.status == 100 && scope.row.ordertype == 'buy'"
+                  @click="showPay(scope.row)"
+                >
+                  支付
+                </div>
+                <div class="diy-button" @click="cancelOrderDetail(scope.row.id)"> 取消 </div>
+                <div
+                  class="diy-button"
+                  v-show="scope.row.status == 101 && scope.row.ordertype == 'sell'"
+                  @click="delivery(scope.row.id)"
+                >
+                  确认发货
+                </div>
+                <div
+                  class="diy-button"
+                  v-show="scope.row.status == 102 && scope.row.ordertype == 'buy'"
+                  @click="accept(scope.row.id)"
+                >
+                  确认收货
+                </div>
+                <div
+                  class="diy-button"
+                  v-show="scope.row.status == 103 && scope.row.ordertype == 'buy'"
+                  @click="comment(scope.row.id)"
+                >
+                  评价
+                </div>
+                <div
+                  class="diy-button"
+                  v-show="scope.row.status == 104 && scope.row.ordertype == 'sell'"
+                  @click="viewComment(scope.row.id)"
+                >
+                  查看评价
+                </div>
+              </template>
+            </DiyButton>
           </template>
         </el-table-column>
       </el-table>
@@ -195,37 +215,38 @@
   </div>
 </template>
 <script lang="ts" setup>
-  import $services from '@/services'
-  import { ref, reactive, onMounted } from 'vue'
-  import { ElMessage } from 'element-plus'
-  import { PAGE_SIZES, PAGE_NUM } from '@/constant'
-  import renderDict from '@/services/dict'
-  import payView from '@/components/pay/pay.vue'
-  import payList from '@/components/pay/list.vue'
-  import { ElTable } from 'element-plus'
-  import moment from 'moment'
-  // 表格分页数据
-  const pagination: { current: number; limit: number } = reactive({ current: 1, limit: PAGE_NUM })
-  // 表格展示数据
-  const pageStore = reactive({
-    tableData: [],
-    total: 0
-  })
-  const searchType = ref<string>('buy')
-  const pageSizes = ref<Array<any>>(PAGE_SIZES)
-  const payDialog = reactive({ show: false, data: {} })
-  const payListDialog = reactive({ show: false, data: {} })
-  const remoteOperate = ref<boolean>(false)
-  const handleSelect = (key: string, keyPath: string[]) => {
-    console.log(key, keyPath)
-  }
-  const orderTableRef = ref<InstanceType<typeof ElTable>>()
-  //点击行触发，选中或不选中复选框
-  const handleRowClick = (row: any) => {
-    orderTableRef.value!.toggleRowSelection(row, undefined)
-  }
-  // 会话列表搜索关键字
-  const searchValue = ref<string>('')
+import $services from '@/services'
+import { ref, reactive, onMounted } from 'vue'
+import { ElMessage } from 'element-plus'
+import { PAGE_SIZES, PAGE_NUM } from '@/constant'
+import renderDict from '@/services/dict'
+import payView from '@/components/pay/pay.vue'
+import payList from '@/components/pay/list.vue'
+import DiyButton from '@/components/diyButton/index.vue'
+import { ElTable } from 'element-plus'
+import moment from 'moment'
+// 表格分页数据
+const pagination: { current: number; limit: number } = reactive({ current: 1, limit: PAGE_NUM })
+// 表格展示数据
+const pageStore = reactive({
+  tableData: [],
+  total: 0
+})
+const searchType = ref<string>('buy')
+const pageSizes = ref<Array<any>>(PAGE_SIZES)
+const payDialog = reactive({ show: false, data: {} })
+const payListDialog = reactive({ show: false, data: {} })
+const remoteOperate = ref<boolean>(false)
+const handleSelect = (key: string, keyPath: string[]) => {
+  console.log(key, keyPath)
+}
+const orderTableRef = ref<InstanceType<typeof ElTable>>()
+//点击行触发，选中或不选中复选框
+const handleRowClick = (row: any) => {
+  orderTableRef.value!.toggleRowSelection(row, undefined)
+}
+// 会话列表搜索关键字
+const searchValue = ref<string>('')
 
   onMounted(() => {
     // window.addEventListener('resize', () => {
@@ -317,9 +338,6 @@
               name: item.merchandise.caption,
               sellAuth: item.merchandise.sellAuth,
               days: item.merchandise.days
-              // remark: item.market.remark,
-              // marketCode: item.market.code,
-              // marketName: item.market.name
             }
           }
         )
@@ -526,6 +544,29 @@
     pagination[type] = newVal
     getTableList(searchType.value)
   }
+    //配置表头背景
+    const getRowClass = ({
+    row,
+    column,
+    rowIndex,
+    columnIndex
+  }: {
+    row: any
+    column: any
+    rowIndex: number
+    columnIndex: number
+  }) => {
+    if (rowIndex === 0) {
+      return {
+        background: 'var(--el-color-primary-light-9)',// '#F5F6FC',
+        color: 'var(--el-text-color-primary)',// '#333333',
+        height: '36px',
+        padding: '2px 0'
+      }
+    } else {
+      return {}
+    }
+  }
 
   interface ListItem {
     value: string
@@ -577,7 +618,7 @@
 <style lang="scss" scoped>
   .container {
     width: 100%;
-    height: 100%;
+    height: 100vh;
     background: #f0f2f5;
     display: flex;
     flex-direction: column;
@@ -746,6 +787,18 @@
   .tableClass {
     background-color: #edf2fc;
     cursor: no-drop;
+  }
+  .diy-button {
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+
+    &:hover {
+      background: rgba(235, 238, 245, 1);
+      border-radius: 4px;
+    }
   }
   @media screen and (max-width: 1280px) {
     .diy-table__header {

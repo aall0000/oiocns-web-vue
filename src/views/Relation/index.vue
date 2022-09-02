@@ -43,21 +43,21 @@
 
 <style lang="scss" scoped>
   .organization-wrap {
-    .el-menu--horizontal > .el-menu-item {
-      font-size: 18px;
-      &:hover,
-      &.is-active {
-        background-color: none !important;
-        color: $mainColor !important;
-      }
-      &.is-active {
-        border-bottom: 2px solid $mainColor;
-      }
-    }
-    .el-menu--horizontal .el-menu-item:not(.is-disabled):focus,
-    .el-menu--horizontal .el-menu-item:not(.is-disabled):hover {
-      background: none !important;
-    }
+    // .el-menu--horizontal > .el-menu-item {
+    //   font-size: 18px;
+    //   &:hover,
+    //   &.is-active {
+    //     background-color: none !important;
+    //     color: $mainColor !important;
+    //   }
+    //   &.is-active {
+    //     border-bottom: 2px solid $mainColor;
+    //   }
+    // }
+    // .el-menu--horizontal .el-menu-item:not(.is-disabled):focus,
+    // .el-menu--horizontal .el-menu-item:not(.is-disabled):hover {
+    //   background: none !important;
+    // }
     display: flex;
     flex-direction: column;
   }

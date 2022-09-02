@@ -61,8 +61,8 @@
             ]"
             v-for="child in item.chats.filter(
               (v) =>
-                ohterData.messageNoReadMap[item.id] &&
-                ohterData.messageNoReadMap[item.id][v?.id] > 0
+                ohterData.message.noReadMap[item.id] &&
+                ohterData.message.noReadMap[item.id][v?.id] > 0
             )"
             :key="child.id + child.name"
             v-show="!openIdArr?.includes(item.id)"
@@ -321,7 +321,7 @@ const handleContextChange = (item: MenuItemType) => {
   }
 
   &::-webkit-scrollbar-thumb:vertical:active {
-    background-color: $colorBlueLight;
+    background-color: var(--el-primary-color-light-5);
   }
 
   .group-con {

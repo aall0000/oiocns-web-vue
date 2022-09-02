@@ -346,7 +346,7 @@
 
       &.active {
         background-color: var(--el-menu-hover-bg-color);
-        color: $mainColor;
+        color: var(--el-color-primary);
         border-radius: 10%;
       }
     }
@@ -380,7 +380,7 @@
 
         &.active {
           background-color: var(--el-menu-hover-bg-color);
-          color: $mainColor;
+          color: var(--el-color-primary);
           border-radius: 10%;
         }
       }
@@ -412,14 +412,14 @@
 
         &.active {
           background-color: var(--el-menu-hover-bg-color);
-          color: $mainColor;
+          color: var(--el-color-primary);
           border-radius: 10%;
         }
       }
 
       &.active {
         background-color: var(--el-menu-hover-bg-color);
-        color: $mainColor;
+        color: var(--el-color-primary);
         border-radius: 10%;
       }
     }
