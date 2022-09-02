@@ -2,7 +2,7 @@
   <div class="market-layout">
     <MarketCard>
       <template #right>
-        <el-button type="primary" @click="registerVisible = true">注册应用</el-button>
+        <el-button type="primary" @click="GoPage('/market/register')">注册应用</el-button>
         <el-button type="primary" @click="GoPage('/market/markList')">管理市场</el-button>
       </template>
     </MarketCard>

@@ -264,6 +264,14 @@ const mainRouter: RouteRecordRaw[] = [
         }
       },
       {
+        path: '/market/register',
+        name: 'marketAppRegister',
+        component: () => import('@/views/Market/AppRegister/index.vue'),
+        meta: {
+          title: '应用注册'
+        }
+      },
+      {
         path: '/market/getApp',
         name: 'marketGetApp',
         component: () => import('@/views/Market/AppList/getAppfromMarket.vue'),
@@ -280,7 +288,7 @@ const mainRouter: RouteRecordRaw[] = [
         }
       },
 
-     
+
       {
         path: '/market/order',
         name: 'marketOrder',
