@@ -3,12 +3,17 @@
     <div class="market-top-card">
       <!-- 左侧 -->
       <div class="left">
-        <el-breadcrumb separator="/">
-          <el-breadcrumb-item :to="{ path: '/market' }">应用市场</el-breadcrumb-item>
-          <el-breadcrumb-item v-if="activeRouter !== '/market'">{{
-            activeRouterName
-          }}</el-breadcrumb-item>
-        </el-breadcrumb>
+        <el-page-header @back="$router.go(-1)" class="pageHeader">
+          <template #icon>
+            <span style="padding-top: 3px">
+              <el-icon><ArrowLeft /></el-icon>
+            </span>
+          </template>
+          <template #title> <span style="margin-top: 5px">返回</span></template>
+          <template #content>
+            <span style="color: #3e5ed8; font-size: 17px">{{ activeRouterName }} </span>
+          </template>
+        </el-page-header>
       </div>
       <div class="right">
         <!-- 右侧 -->
@@ -20,6 +25,7 @@
 <script lang="ts" setup>
   import { ref, watch, reactive } from 'vue'
   import { useRouter } from 'vue-router'
+  import { ArrowLeft } from '@element-plus/icons-vue'
   import { marketPathList } from '@/router/index'
   const router = useRouter()
 
@@ -49,9 +55,19 @@
     align-items: center;
     height: 60px;
     padding: 0 20px;
+
     .left {
+      height: 60px;
+      line-height: 60px;
       display: flex;
       justify-content: flex-start;
+
+      .pageHeader {
+        display: flex;
+
+        height: 100%;
+        line-height: 60px;
+      }
     }
     .right {
       display: flex;

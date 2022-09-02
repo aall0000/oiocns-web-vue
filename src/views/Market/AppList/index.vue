@@ -3,7 +3,7 @@
     <MarketCard>
       <template #right>
         <!-- <el-button type="primary" @click="GoPage('/market/userApply')">我的申请</el-button> -->
-        <el-button type="primary" @click="GoPage('/market/managerApproval')">申请审批</el-button>
+        <el-button type="primary" @click="GoPage('/market/userApply')">我的加入申请</el-button>
         <el-button type="primary" @click.stop="linkOrder()">我的订单</el-button>
         <el-button type="primary" @click.stop="linkShopCar()">购物车</el-button>
       </template>
@@ -109,11 +109,12 @@
   import { reactive, onMounted, computed, ref } from 'vue'
   import diySearch from '@/components/diySearch/index.vue'
   import ShopCard from '../components/shopCard.vue'
-  import { useRouter } from 'vue-router'
+
   import $services from '@/services'
   import { ElMessage, ElMessageBox } from 'element-plus'
   import MarketCreate from '../components/marketCreate.vue'
   import { useUserStore } from '@/store/user'
+  import { useRouter } from 'vue-router'
   const router = useRouter()
   const store = useUserStore()
   const handleCurrentMy: any = computed(() => {
@@ -284,27 +285,52 @@
   ]
   //创建市场
   const create = () => {
-    $services.appstore
-      .create({
-        data: {
-          name: form.name,
-          code: form.code,
-          samrId: store.queryInfo.id,
-          remark: form.remark,
-          authId: store.queryInfo.team.authId,
-          public: form.public
-        }
-      })
-      .then((res: ResultType) => {
-        if (res.success) {
-          ElMessage({
-            message: '创建成功',
-            type: 'success'
-          })
-        }
-        dialogVisible1.value = false
-        getMyMarketData()
-      })
+    if (store.workspaceData.type === 1) {
+      $services.appstore
+        .create({
+          data: {
+            name: form.name,
+            code: form.code,
+            samrId: store.queryInfo.id,
+            authId: store.queryInfo.team.authId,
+            remark: form.remark,
+            public: form.public
+          }
+        })
+        .then((res: ResultType) => {
+          if (res.success) {
+            ElMessage({
+              message: '创建成功',
+              type: 'success'
+            })
+          }
+          dialogVisible1.value = false
+          getMyMarketData()
+        })
+    }
+    if (store.workspaceData.type === 2) {
+      $services.appstore
+        .create({
+          data: {
+            name: form.name,
+            code: form.code,
+            samrId: store.queryInfo.id,
+            remark: form.remark,
+            authId: store.workspaceData.authId,
+            public: form.public
+          }
+        })
+        .then((res: ResultType) => {
+          if (res.success) {
+            ElMessage({
+              message: '创建成功',
+              type: 'success'
+            })
+          }
+          dialogVisible1.value = false
+          getMyMarketData()
+        })
+    }
   }
   const remoteMethod = (query: string, callback: any) => {
     $services.appstore

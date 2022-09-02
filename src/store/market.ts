@@ -6,6 +6,7 @@ import { type } from 'os'
 import { Search } from '@element-plus/icons-vue'
 import { forEach } from 'lodash'
 import { el } from 'element-plus/es/locale'
+const MAXLIMIT = 9999999999999
 type MarketInfoType = {
   market: object
   name:string
@@ -33,7 +34,7 @@ export const useMarketStore = defineStore({
         .searchAll({
           data: {
             offset: 0,
-            limit: 10,
+            limit: MAXLIMIT,
             filter: ""
           }
         })
@@ -41,7 +42,7 @@ export const useMarketStore = defineStore({
           if (res.success) {
             const {result = [],total = 0} = res.data
             result.forEach((item: { id: any; name: any })=>{
-              this.market.set(item.id,item.name)
+              this.marketMap.set(item.id,item.name)
 
             })
             console.log(this.marketMap)

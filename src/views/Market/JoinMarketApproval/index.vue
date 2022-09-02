@@ -59,6 +59,7 @@
   import { ElMessage } from 'element-plus'
   import DiyTable from '@/components/diyTable/index.vue'
   import { useMarketStore } from '@/store/market'
+  const store = useMarketStore()
   const diyTable = ref(null)
   const activeName = ref('first')
   const handleClick = (tab: TabsPaneContext, event: any) => {
@@ -85,6 +86,7 @@
   })
 
   onMounted(() => {
+    store.SearchAllMarket()
     searchApplyList()
   })
   //审批加入市场
@@ -231,7 +233,7 @@
         }
       })
   }
-  //上架申请成功
+  //上架审批成功
   const LastSuccess = async (index: number, status: number) => {
     await $services.appstore
       .approvalPublish({
@@ -267,10 +269,13 @@
           state.approvalList = []
           state.approvalList = result?.map(
             (item: {
+              marketId: any
               product: { name: any; code: any; source: any; authority: any; typeName: any }
             }) => {
+              console.log(store.marketMap.get(item.marketId))
               return {
                 ...item,
+                marketName: store.marketMap.get(item.marketId),
                 productCode: item.product.code,
                 productName: item.product.name,
                 productSource: item.product.source,
@@ -280,6 +285,10 @@
             }
           )
           state.tableHead = [
+            {
+              prop: 'marketName',
+              label: '市场名称'
+            },
             {
               prop: 'productCode',
               label: '应用编号'
