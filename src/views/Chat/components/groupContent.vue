@@ -229,7 +229,7 @@ defineExpose({
 
   .history-more {
     text-align: center;
-    color: $mainColor;
+    color: var(--el-color-primary);
   }
 
   .con {
@@ -286,7 +286,7 @@ defineExpose({
     .reWrite {
       margin-left: 4px;
       cursor: pointer;
-      color: $mainColor;
+      color: var(--el-color-primary);
     }
   }
 

@@ -4,7 +4,11 @@ interface OptionType {
   label?: string
   id?: string | number
 }
-
+// select数据类型
+interface selectType {
+  label: string
+  id: string | number
+}
 // 应用商品数据类型
 interface ProductType {
   authority?: string
@@ -15,7 +19,7 @@ interface ProductType {
   endTime: string
   id: string
   name: string
-  remark:string
+  remark: string
   source: string
   status: number
   thingId: string

@@ -34,10 +34,10 @@
   import $services from '@/services'
   import { reactive, ref, onMounted } from 'vue'
   import { useUserStore } from '@/store/user'
+  import { useAnyData } from '@/store/anydata'
   import { useRouter } from 'vue-router'
   import { ElMessage } from 'element-plus'
-  import UserOtherDataConnection from '@/utils/hubConnection'
-  import { useAnyData } from '@/store/anydata'
+  import anyStore from '@/utils/hubConnection'
 
   const carousel = ref<any>()
   const store = useUserStore()
@@ -63,13 +63,21 @@
   }
   const userLogin = (data: { password: string; username: string; remind: boolean }) => {
     btnLoading.value = true
-    store.updateUserInfo(data).then(() => {
+    store.updateUserInfo(data).then((res) => {
+      
       btnLoading.value = false
       if (data.remind) {
         setCookie(data.username, data.password, 7)
       } else {
         setCookie('', '', -1)
       }
+      anyStore.setPrefix(res.id)  // 设置订阅器前缀
+      // 订阅未读消息
+      anyStore.subscribed(`message.noread`, (data) => {
+        // console.log('noread===', data)
+        useAnyData().setMessageNoRead(data)
+      })
+
       router.push({ path: 'workHome' })
     })
   }

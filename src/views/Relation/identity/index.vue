@@ -61,7 +61,6 @@
 .container {
   width: 100%;
   height: 100%;
-  background: #f0f2f5;
   padding: 3px;
   box-sizing: border-box;
   display: flex;
@@ -72,12 +71,12 @@
   .content{
     width: 80%;
     height: 100%;
-    padding:0 3px;
+    // padding:0 3px;
     box-sizing: border-box;
-    background: #f0f2f5;
+    // background: var(--el-bg-color-overlay);
     overflow: hidden;
     .info{
-      padding: 3px 0;
+      padding :  0  0 3px;
       box-sizing: border-box;
     }
     .body{

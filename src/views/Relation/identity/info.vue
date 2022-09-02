@@ -9,22 +9,21 @@
       </div>
     </div>
     <div class="tab-list">
-      <ul class="next-dept">
-        <table class="table-mytable">
-          <tr>
-            <td class="left">名称</td>
-            <td class="column">{{selectItem?.name}}</td>
-            <td class="left">编码</td>
-            <td class="column">{{selectItem?.code}}</td>
-          </tr>
-          <tr>
-            <td class="left">描述</td>
-            <td class="column" colspan="3">
-              <span class="remark">{{selectItem?.remark}}</span>
-            </td>
-          </tr>
-        </table>
-      </ul>
+      <el-descriptions :column="2" border>
+        <el-descriptions-item  width="150px" :label="'名称'" label-align="center" align="center" label-class-name="my-label"
+          class-name="my-content" >{{selectItem?.name}}</el-descriptions-item >
+        <el-descriptions-item  width="150px" :label="'编码'"
+          label-align="center"
+          align="center"
+          label-class-name="my-label"
+          class-name="my-content">{{selectItem?.code}}</el-descriptions-item>
+        <el-descriptions-item label="描述" :span="2" label-align="center" align="center">
+        <div class="text-remark">
+            {{selectItem?.remark}}
+          </div>
+        </el-descriptions-item>
+      </el-descriptions>
+      
     </div>
   </div>
 
@@ -207,11 +206,11 @@
   .info {
     height: 100%;
     width: 100%;
-    background-color: #fff;
+    background-color: var(--el-bg-color-overlay);
   }
   .header {
     display: flex;
-    padding: 10px;
+    padding: 10px  20px;
     padding-top: 16px;
     box-sizing: border-box;
     .title {
@@ -228,7 +227,7 @@
     }
   }
   .tab-list {
-    padding: 10px;
+    padding: 0px 20px 20px;
     padding-top: 2px;
     box-sizing: border-box;
   }

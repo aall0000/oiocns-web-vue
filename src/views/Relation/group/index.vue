@@ -136,7 +136,7 @@
 .container {
   width: 100%;
   height: 100%;
-  background: #f0f2f5;
+  // background: #f0f2f5;
   padding: 3px;
   box-sizing: border-box;
   display: flex;
@@ -146,13 +146,14 @@
   }
   .content{
     width: 77%;
+    // flex: 1;
     height: 100%;
-    padding:0 3px;
+    // padding:0 3px;
     box-sizing: border-box;
-    background: #f0f2f5;
+    // background: #f0f2f5;
     overflow: hidden;
     .info{
-      padding: 3px;
+      padding :  0  0 3px;
       box-sizing: border-box;
     }
     .body{

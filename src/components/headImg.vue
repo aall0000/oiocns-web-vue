@@ -50,7 +50,7 @@
     margin-right: 10px;
 
     &.txt-img {
-      background-color: $colorBlueMain;
+      background-color: var(--el-color-primary);
       display: flex;
       justify-content: center;
       align-items: center;

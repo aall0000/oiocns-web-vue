@@ -1,33 +1,45 @@
 <template>
-  <div class="container">
+  <el-card style="border:0;" shadow="never" class="container">
     <!-- 组内成员信息 -->
-    <div class="operate">
-      <div class="operate-btns">
-        <div class="edit">
-          <el-button type="primary" @click="friendShow">添加群</el-button>
-          <el-button type="primary" @click="addQun = true">创建群</el-button>
-        </div>
+    <div class="card-header">
+      <span>我的群组</span>
+      <div class="edit">
+        <el-button type="primary" @click="addQun = true">创建群组</el-button>
+        <el-button type="default" @click="friendShow">加入群组</el-button>
       </div>
+
     </div>
     <div class="tab-list">
-      <el-table :data="state.qunList" stripe style="width: 100%; height: 100%"
-        @select="handleSelect">
+      <el-table :data="state.qunList" stripe @select="handleSelect"
+        :header-cell-style="{ 'background': 'var(--el-color-primary-light-9)' }">
         <el-table-column type="selection" width="50" />
         <el-table-column prop="name" label="群名称" />
         <el-table-column prop="code" label="群编号" />
         <el-table-column prop="remark" label="群简介" />
         <el-table-column prop="name" label="操作">
           <template #default="scope">
-            <el-button v-if="myId != scope.row.belongId" @click="exitCohort(scope.row.id)" type="primary">退出群</el-button>
-            <el-button v-if="myId == scope.row.belongId" @click="deleteCohort(scope.row.id)" type="primary">解散群</el-button>
+            <el-popconfirm title="您确认退出该群吗?" @confirm="exitCohort(scope.row.id)">
+              <template #reference>
+                <el-button v-if="myId != scope.row.belongId" type="primary" link>退出群
+                </el-button>
+              </template>
+            </el-popconfirm>
+            <el-popconfirm title="您确认解散该群吗?" @confirm="deleteCohort(scope.row.id)">
+              <template #reference>
+                <el-button v-if="myId == scope.row.belongId" type="primary" link>解散群
+                </el-button>
+              </template>
+            </el-popconfirm>
+
           </template>
         </el-table-column>
       </el-table>
     </div>
+
     <!-- <div class="page-pagination">
       <el-pagination small background layout="prev, pager, next" :total="50" class="mt-4" />
     </div> -->
-    <searchCohort  v-if="searchDialog" :serachType="2" @closeDialog="closeDialog"  @checksSearch='checksSearch'/>
+    <searchCohort v-if="searchDialog" :serachType="2" @closeDialog="closeDialog" @checksSearch='checksSearch' />
     <el-dialog v-model="addQun" title="创建群" width="30%">
       <el-form-item label="群名称">
         <el-input v-model="qunName" placeholder="请输入群名称" clearable />
@@ -44,7 +56,7 @@
         </span>
       </template>
     </el-dialog>
-  </div>
+  </el-card>
 </template>
 <script lang="ts" setup>
 import $services from '@/services'
@@ -66,7 +78,7 @@ onMounted(() => {
   getQunList()
 })
 
-const state = reactive({ qunList: []})
+const state = reactive({ qunList: [] })
 
 // 获取我加入的群列表
 const getQunList = async () => {
@@ -85,27 +97,27 @@ const getQunList = async () => {
   }
 }
 const searchDialog = ref<boolean>(false)
-const closeDialog = ()=>{
+const closeDialog = () => {
   searchDialog.value = false;
 }
-const friendShow = ()=>{
+const friendShow = () => {
   searchDialog.value = true;
 }
 type arrList = {
-  id:string
+  id: string
 }
-const checksSearch=(val:any)=>{
-  if(val.value.length>0){
-    let arr:Array<arrList> =[]
-    val.value.forEach((element:any) => {
+const checksSearch = (val: any) => {
+  if (val.value.length > 0) {
+    let arr: Array<arrList> = []
+    val.value.forEach((element: any) => {
       arr.push(element.id)
     });
     applyJoinCohort(arr)
-  }else{
+  } else {
     searchDialog.value = false;
   }
 }
-const applyJoinCohort = (arr:Array<arrList>) => {
+const applyJoinCohort = (arr: Array<arrList>) => {
   $services.cohort
     .applyJoin({
       data: {
@@ -124,7 +136,7 @@ const applyJoinCohort = (arr:Array<arrList>) => {
     })
 }
 //退出群
-const exitCohort = (id: string) =>{
+const exitCohort = (id: string) => {
   $services.cohort
     .exit({
       data: {
@@ -188,21 +200,21 @@ const createCohort = () => {
 }
 </script>
 <style lang="scss" scoped>
-.container{
-  background: #f0f2f5;
-  padding: 5px;
+.container {
+  // background: #f0f2f5;
+  // padding: 5px;
   width: 100%;
-  height: 100%;
-  .operate-btns {
+  // height: 100%;
+  margin: 10px;
+
+  .card-header {
     display: flex;
     justify-content: space-between;
-    padding: 10px;
-    background: #fff;
-    .edit {
-      font-size: 14px;
-      font-weight: bold;
-    }
+    align-items: center;
+    padding-bottom: 12px;
+    // background: #fff;
+
+
   }
 }
-
 </style>

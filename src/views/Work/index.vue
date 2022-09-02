@@ -22,8 +22,8 @@
         </grid-item>
       </grid-layout>
     </div>
-
-    <div class="layout-menu box" :style="MenuStyle" style="background: white" @mousedown="move">
+<!-- @mousedown="move" -->
+    <div class="layout-menu box" :style="MenuStyle" style="background: white" >
       <el-button type="primary" icon="el-icon-s-check" @click="clearTemplate">清空</el-button>
       <div class="layout-menu-body__tree" v-show="listShow">
         <TheSearchInput placeholder="输入组件名" :filterText.sync="filterText" @filterText="changeFilterText">
@@ -801,7 +801,7 @@ export default defineComponent({
     flex-direction: column;
     z-index: 99;
     // transition: all 0.5s ease;
-    cursor: move;
+    // cursor: move;
 
     &__head {
       cursor: auto;

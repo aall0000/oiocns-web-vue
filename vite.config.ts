@@ -69,7 +69,7 @@ export default defineConfig(({ command, mode }) => {
     css: {
       preprocessorOptions: {
         scss: {
-          additionalData: '@use "@/assets/style/app.scss" as *;'
+          additionalData: '@use  "@/assets/style/element/index.scss" as *;'
         }
       }
     },

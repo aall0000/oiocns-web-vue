@@ -58,30 +58,30 @@ export const useUserStore = defineStore({
   actions: {
     async updateUserInfo(data: { username: string; password: string }) {
       // 获取用户登录信息
-      await $services.person
-        .login({
+      const res:ResultType = await $services.person.login({
           data: {
             account: data.username,
             password: data.password
           }
         })
-        .then(async (res: ResultType) => {
-          if (res.code == 200) {
-            this.userInfo = res.data
-            this.userToken = res.data.accessToken
-            this.workspaceData = {
-              id: res.data.workspaceId,
-              name: res.data.workspaceName
-            }
-            this.userCompanys = [this.workspaceData]
-            this.getQueryInfo()
-          } else {
-            ElMessage({
-              message: res.msg,
-              type: 'warning'
-            })
+
+        if (res.code == 200) {
+          this.userInfo = res.data
+          this.userToken = res.data.accessToken
+          this.workspaceData = {
+            id: res.data.workspaceId,
+            name: res.data.workspaceName
           }
-        })
+          this.userCompanys = [this.workspaceData]
+          this.getQueryInfo()
+          return this.workspaceData
+        } else {
+          ElMessage({
+            message: res.msg,
+            type: 'warning'
+          })
+          return null
+        }
     },
     getQueryInfo(token: string) {
       if (token) {
@@ -181,7 +181,8 @@ export const useUserStore = defineStore({
             obj = {
               id: el.id,
               name: el.team ? el.team.name : el.name,
-              type:2
+              type:2,
+              authId:el.team.authId
             }
           }
 
