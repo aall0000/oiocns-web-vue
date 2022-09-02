@@ -264,6 +264,14 @@ const mainRouter: RouteRecordRaw[] = [
         }
       },
       {
+        path: '/market/register',
+        name: 'marketAppRegister',
+        component: () => import('@/views/Market/AppRegister/index.vue'),
+        meta: {
+          title: '应用注册'
+        }
+      },
+      {
         path: '/market/getApp',
         name: 'marketGetApp',
         component: () => import('@/views/Market/AppList/getAppfromMarket.vue'),
@@ -285,14 +293,6 @@ const mainRouter: RouteRecordRaw[] = [
         path: '/market/order',
         name: 'marketOrder',
         component: () => import('@/views/Market/Order/index.vue'),
-        meta: {
-          title: '订单详情页面'
-        }
-      },
-      {
-        path: '/market/ordergroup',
-        name: 'marketOrdergroup',
-        component: () => import('@/views/Market/Order/group.vue'),
         meta: {
           title: '订单页面'
         }

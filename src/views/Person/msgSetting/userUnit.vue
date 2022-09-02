@@ -3,45 +3,53 @@
     <div class="title">
       <div class="body">
         <div class="created">
-          <el-tabs v-model="activeName" @tab-click="handleClick">
-            <el-tab-pane label="全部" name="1"> </el-tab-pane>
-            <!-- <el-tab-pane label="已加入" name="2"></el-tab-pane>
-              <el-tab-pane label="拒绝" name="3"> </el-tab-pane> -->
-          </el-tabs>
-          <div class="createdTop">
-            <div class="topLeft">
-              <el-input class="search" placeholder="搜索单位名" :suffix-icon="Search" />
-            </div>
-            <div class="topRight">
-              <el-button type="primary" @click="showdialogShow">创建单位</el-button>
-              <el-button type="primary" @click="friendShow">申请加入单位</el-button>
-              <!-- <el-button>查看申请记录</el-button> -->
-            </div>
+          <div class="body-head">
+            <el-tabs v-model="activeName" @tab-click="handleClick">
+              <el-tab-pane label="全部" name="1"> </el-tab-pane>
+              <!-- <el-tab-pane label="已加入" name="2"></el-tab-pane>
+                <el-tab-pane label="拒绝" name="3"> </el-tab-pane> -->
+            </el-tabs>
           </div>
-          <div class="createdBody">
-            <el-table :data="dataList.list" stripe style="width: 98%">
-              <el-table-column prop="name" label="单位名称" />
-              <el-table-column prop="code" label="统一社会信用代码" />
-              <el-table-column prop="isMain" label="是否主单位" />
-              <el-table-column prop="belongId" label="管理员" />
-              <el-table-column prop="createTime" label="创建时间" />
-              <el-table-column prop="state" label="申请状态" />
-              <el-table-column prop="option" label="操作">
-                <template #default="scope">
+          <div class="contet">
+            <div class="createdTop">
+              <div class="topLeft">
+                <!-- <el-input class="search" placeholder="搜索单位名" :suffix-icon="Search" /> -->
+              </div>
+              <div class="topRight">
+                <el-button type="primary" @click="showdialogShow">创建单位</el-button>
+                <el-button type="primary" @click="friendShow">申请加入单位</el-button>
+                <!-- <el-button>查看申请记录</el-button> -->
+              </div>
+            </div>
+            <div class="createdBody">
+              <DiyTable
+                class="diytable"
+                ref="diyTable"
+                :hasTableHead="false"
+                @handleUpdate="handleUpdate"
+                :tableData="dataList.list"
+                :tableHead="tableHead"
+              >
+                <template #option="scope">
                   <el-popconfirm title="确认退出吗?" @confirm="handleExit(scope.row.id)">
                     <template #reference>
-                      <el-button type="danger">退出单位</el-button>
+                      <el-button link type="danger">退出</el-button>
                     </template>
                   </el-popconfirm>
                 </template>
-              </el-table-column>
-            </el-table>
+              </DiyTable>
+            </div>
           </div>
           <CreateUnitDialog
             :dialogShow="dialogShow"
             @switchCreateCompany="closeDialog"
           ></CreateUnitDialog>
-          <searchCompany v-if="friendDialog" @closeDialog="closeDialog" :serachType="3" @checksSearch='checksSearch'></searchCompany>
+          <searchCompany
+            v-if="friendDialog"
+            @closeDialog="closeDialog"
+            :serachType="3"
+            @checksSearch="checksSearch"
+          ></searchCompany>
         </div>
       </div>
     </div>
@@ -57,29 +65,86 @@
   import { ElMessage } from 'element-plus'
   import searchCompany from '@/components/searchs/index.vue'
   import CreateUnitDialog from '@/views/Layout/components/createUnitDialog.vue'
+  import DiyTable from '@/components/diyTable/index.vue'
+
   const store = useUserStore()
 
   const activeName = ref('1')
+  const diyTable = ref(null)
+  // 表格展示数据
+  const pageStore = reactive({
+    currentPage: 1,
+    pageSize: 20,
+    total: 0
+  })
+  const handleUpdate = (page: any) => {
+    pageStore.currentPage = page.currentPage
+    pageStore.pageSize = page.pageSize
+    getList()
+  }
+  const tableHead = ref([
+    {
+      prop: 'id',
+      label: '单位ID',
+      name: 'id'
+    },
+    {
+      prop: 'name',
+      label: '单位名称',
+      name: 'name'
+    },
+    {
+      prop: 'code',
+      label: '统一社会信用代码',
+      name: 'code'
+    },
+    {
+      prop: 'isMain',
+      label: '是否主单位',
+      name: 'isMain'
+    },
+    {
+      prop: 'belongId',
+      label: '管理员',
+      name: 'belongId'
+    },
+    {
+      prop: 'createTime',
+      label: '创建时间',
+      name: 'createTime'
+    },
+    {
+      prop: 'state',
+      label: '申请状态',
+      name: 'state'
+    },
+    {
+      type: 'slot',
+      prop: 'option',
+      label: '操作',
+      name: 'option'
+    }
+  ])
   //tab切换
   const handleClick = (tab: TabsPaneContext, event: Event) => {
     console.log(tab, event)
   }
   const handleExit = (id: string) => {
     $services.company
-    .exit({
-      data: {
-        id: id
-      }
-    })
-    .then((res: ResultType) => {
-      if (res.code == 200) {
-        ElMessage({
-          message: '退出成功',
-          type: 'warning'
-        })
-        getList()
-      }
-    })
+      .exit({
+        data: {
+          id: id
+        }
+      })
+      .then((res: ResultType) => {
+        if (res.code == 200) {
+          ElMessage({
+            message: '退出成功',
+            type: 'warning'
+          })
+          getList()
+        }
+      })
   }
   type listItem = {
     id: string
@@ -104,6 +169,7 @@
       .then((res: ResultType) => {
         if (res.success) {
           dataList.list = res.data.result
+          diyTable.value.state.page.total = res.data.total
         }
       })
   }
@@ -113,7 +179,7 @@
     remark: string
     name: string
   }
-  const addCompanyFun = (arr:Array<arrList>) => {
+  const addCompanyFun = (arr: Array<arrList>) => {
     $services.company
       .applyJoin({
         data: {
@@ -131,93 +197,88 @@
       })
   }
   type dialogType = {
-    key:string,
-    value:boolean
+    key: string
+    value: boolean
   }
   const dialogShow = ref<dialogType>({
-    key:'unit',
-    value:false
+    key: 'unit',
+    value: false
   })
-  const showdialogShow = ()=>{
-    dialogShow.value.value = true;
+  const showdialogShow = () => {
+    dialogShow.value.value = true
   }
-  const closeDialog = ()=>{
+  const closeDialog = () => {
     location.reload()
   }
   type arrList = {
-    id:string
+    id: string
   }
   const friendDialog = ref<boolean>(false)
-  const checksSearch=(val:any)=>{
-    if(val.value.length>0){
-      let arr:Array<arrList> =[]
-      val.value.forEach((element:any) => {
+  const checksSearch = (val: any) => {
+    if (val.value.length > 0) {
+      let arr: Array<arrList> = []
+      val.value.forEach((element: any) => {
         arr.push(element.id)
-      });
+      })
       addCompanyFun(arr)
-    }else{
-      friendDialog.value = false;
+    } else {
+      friendDialog.value = false
     }
   }
-  const friendShow = ()=>{
-    friendDialog.value = true;
+  const friendShow = () => {
+    friendDialog.value = true
   }
 </script>
 <style lang="scss" scoped>
   .userUnit {
-    height: calc(100vh - 230px);
-    background-color: #fff;
-    .pageHeader {
-      width: 100%;
-      height: 35px;
-      background-color: #fff;
-    }
+    height: 100%;
     .title {
-      :deep(.el-tabs__item) {
-        font-size: 20px !important;
-        font-weight: 600;
-        margin-left: 30px;
-        border-color: #1a5773;
+      .body-head {
+        background: #fff;
+
+        :deep(.el-tabs__item) {
+          font-size: 20px !important;
+          font-weight: 600;
+          margin-left: 30px;
+          border-color: #1a5773;
+        }
+        :deep(.el-tabs__header) {
+          padding-top: 20px;
+          margin: 0;
+        }
       }
-      :deep(.el-tabs__header) {
-        margin: 0;
-      }
+
       .body {
-        height: 600px;
+        height: calc(100% - 100px);
         width: 100%;
-        border-left: 10px solid #eff0f4;
-        border-top: 16px solid #eff0f4;
-        border-right: 16px solid #eff0f4;
+        overflow: hidden;
         display: flex;
-      }
-    }
-    .bottom {
-      height: calc(100vh - 770px);
-      background-color: #eff0f4;
-      display: flex;
-      .content {
-        margin: auto;
-        color: #aaa;
       }
     }
   }
   .created {
     width: 100%;
-    height: 100vh;
-    background: #fff;
+    box-sizing: border-box;
+    height: 100%;
+    box-sizing: border-box;
+    .contet{
+      padding: 20px;
+      box-sizing: border-box;
+      height: calc(100vh - 140px);
+
+    }
     .createdTop {
-      width: 95%;
-      margin: 30px;
+      width: 100%;
+      padding: 20px;
       display: flex;
       justify-content: space-between;
+      background: #fff
     }
     .createdBody {
-      margin: 30px;
-      .createdBottom {
-        position: absolute;
-        right: 30px;
-        bottom: 30px;
-      }
+      height: calc(100vh - 220px);
+      box-sizing: border-box;
+      background: #fff;
+      padding: 16px;
     }
   }
 </style>

@@ -28,3 +28,11 @@ interface ProductType {
   updateUser: string
   version?: string
 }
+
+interface AppMenuType {
+  caption: string
+  menuType: string
+  link: string
+  resource: any
+  menus?: AppMenuType[]
+}

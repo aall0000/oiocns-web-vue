@@ -1,24 +1,13 @@
 <template>
   <div class="userUnit">
-    <div class="pageHeader"> </div>
     <div class="title">
       <el-tabs v-model="activeName" @tab-click="handleClick">
         <el-tab-pane label="全部" name="first">
-          <div class="body">
-            <GroupsAdd types="全部" />
-          </div>
         </el-tab-pane>
-        <!-- <el-tab-pane label="创建的" name="second">
-          <div class="body">
-            <GroupsAdd types="创建的" />
-          </div>
-        </el-tab-pane>
-        <el-tab-pane label="已加入" name="third">
-          <div class="body">
-            <GroupsAdd types="已加入" />
-          </div>
-        </el-tab-pane> -->
       </el-tabs>
+      <div class="table-wrap">
+        <GroupsAdd types="全部" />
+      </div>
     </div>
   </div>
 </template>
@@ -36,19 +25,9 @@
 </script>
 <style lang="scss" scoped>
   .userUnit {
-    height: calc(100vh - 235px);
-    background-color: #fff;
-
-    .pageHeader {
-      width: 100%;
-      height: 40px;
-      background-color: #fff;
-      .header {
-        margin-top: 20px;
-        margin-left: 30px;
-      }
-    }
+    height: 100%;
     .title {
+      height: 100%;
       :deep(.el-tabs__item) {
         font-size: 20px !important;
         font-weight: 600;
@@ -58,23 +37,14 @@
       }
       :deep(.el-tabs__header) {
         margin: 0;
+        padding-top: 20px;
+        background-color: #fff;
+
       }
-      .body {
-        height: 600px;
-        width: 100%;
-        border-left: 10px solid #eff0f4;
-        border-top: 16px solid #eff0f4;
-        border-right: 16px solid #eff0f4;
-        display: flex;
-      }
-    }
-    .bottom {
-      height: calc(100vh - 770px);
-      background-color: #eff0f4;
-      display: flex;
-      .content {
-        margin: auto;
-        color: #aaa;
+      .table-wrap{
+        height: calc(100% - 60px);
+        box-sizing: border-box;
+        padding: 16px;
       }
     }
   }
