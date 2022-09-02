@@ -1,6 +1,7 @@
 <template>
   <MarketCard>
     <template #right>
+      <el-button type="primary" @click="GoPage('/market/managerApply')">加入市场审批</el-button>
       <el-button type="primary" @click="friendShow">邀请加入市场</el-button>
     </template>
   </MarketCard>
@@ -40,6 +41,8 @@
   import searchFriend from '@/components/searchs/index.vue'
   import TheTableButton from './components/theTableButton.vue'
   import { useUserStore } from '@/store/user'
+  import { useRouter } from 'vue-router'
+  const router = useRouter()
   const store = useUserStore()
   const searchDialog = ref<boolean>(false)
   const friendShow = () => {
@@ -63,6 +66,9 @@
   onMounted(() => {
     judgeWorkSpace()
   })
+  const GoPage = (path: string) => {
+    router.push({ path: path, query: { marketName: route.query.data } })
+  }
   const checksSearch = (val: any) => {
     if (val.value.length > 0) {
       let arr: Array<arrList> = []

@@ -181,7 +181,8 @@ export const useUserStore = defineStore({
             obj = {
               id: el.id,
               name: el.team ? el.team.name : el.name,
-              type:2
+              type:2,
+              authId:el.team.authId
             }
           }
 
