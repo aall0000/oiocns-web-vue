@@ -291,8 +291,8 @@ watch(selectItem, () => {
 .card {
   height: 100%;
   width: 100%;
-  background-color: #fff;
-  padding: 10px;
+  background-color: var(--el-bg-color-overlay);
+  padding: 20px;
 
   .header {
     display: flex;

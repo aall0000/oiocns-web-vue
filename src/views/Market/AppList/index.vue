@@ -242,8 +242,7 @@ const marketQuit = (item: any) => {
     confirmButtonText: '确认',
     cancelButtonText: '取消',
     type: 'warning'
-  })
-    .then(() => {
+  }).then(() => {
       $services.appstore
         .marketQuit({
           data: {
@@ -310,28 +309,53 @@ const options = [
 ]
 //创建市场
 const create = () => {
-  $services.appstore
-    .create({
-      data: {
-        name: form.name,
-        code: form.code,
-        samrId: store.queryInfo.id,
-        remark: form.remark,
-        authId: store.queryInfo.team.authId,
-        public: form.public
-      }
-    })
-    .then((res: ResultType) => {
-      if (res.success) {
-        ElMessage({
-          message: '创建成功',
-          type: 'success'
+    if (store.workspaceData.type === 1) {
+      $services.appstore
+        .create({
+          data: {
+            name: form.name,
+            code: form.code,
+            samrId: store.queryInfo.id,
+            authId: store.queryInfo.team.authId,
+            remark: form.remark,
+            public: form.public
+          }
         })
-      }
-      dialogVisible1.value = false
-      getMyMarketData()
-    })
-}
+        .then((res: ResultType) => {
+          if (res.success) {
+            ElMessage({
+              message: '创建成功',
+              type: 'success'
+            })
+          }
+          dialogVisible1.value = false
+          getMyMarketData()
+        })
+    }
+    if (store.workspaceData.type === 2) {
+      $services.appstore
+        .create({
+          data: {
+            name: form.name,
+            code: form.code,
+            samrId: store.queryInfo.id,
+            remark: form.remark,
+            authId: store.workspaceData.authId,
+            public: form.public
+          }
+        })
+        .then((res: ResultType) => {
+          if (res.success) {
+            ElMessage({
+              message: '创建成功',
+              type: 'success'
+            })
+          }
+          dialogVisible1.value = false
+          getMyMarketData()
+        })
+    }
+  }
 const remoteMethod = (query: string, callback: any) => {
   $services.appstore
     .searchAll({

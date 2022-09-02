@@ -288,6 +288,7 @@
 .card {
   height: 100%;
   position: relative;
+  border: 0;
 }
 
 .tree-btns {
@@ -329,8 +330,8 @@
   }
   .weihu-wrap {
     text-align: center;
-    background-color: #fff;
-    border-top: 1px solid #ccc;
+    // background-color: #fff;
+    border-top: 1px solid var(--el-border-color);
     cursor: pointer;
     position: absolute;
     bottom: 10px;
@@ -339,7 +340,7 @@
     line-height: 30px;
     left:0;
     &-txt {
-      color: $mainColor;
+      color: var(--el-color-primary);
       font-size: 16px;
     }
   }

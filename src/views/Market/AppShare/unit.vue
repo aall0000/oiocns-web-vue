@@ -15,7 +15,8 @@
   <searchCompany
     v-if="pullCompanysDialog"
     :checkList="tableData"
-    :id="route.query.id"
+    :tableData="tableData"
+    :id="groupId"
     :selectLimit="0"
     :serachType="6"
     @closeDialog="closeDialog"
@@ -28,9 +29,10 @@
   import { useRoute } from 'vue-router'
   import { ElMessage } from 'element-plus'
   import $services from '@/services'
-  import searchCompany from '@/components/searchs/index.vue'
+  import searchCompany from './components/index.vue'
   const route = useRoute()
   const diyTable = ref(null)
+  const groupId = ref<string>('')
   const tableHead = ref([
     {
       prop: 'name',
@@ -58,7 +60,7 @@
   let tableData = ref<any>([])
   const pullCompanysDialog = ref<boolean>(false)
   onMounted(() => {
-    console.log(route.query.id)
+    groupId.value = route.query.id.toString()
     getShareHistory()
   })
   const closeDialog = () => {
@@ -68,15 +70,7 @@
     id: string
   }
   const checksSearch = (val: any) => {
-    if (val.value.length > 0) {
-      let arr: Array<arrList> = []
-      val.value.forEach((element: any) => {
-        arr.push(element.id)
-      })
-      pullCompanys(arr)
-    } else {
-      pullCompanysDialog.value = false
-    }
+    console.log('应用id', route.query.appInfo, '集团id', route.query.id, '所选列表', val)
   }
   //分享单位
   const pullCompanys = (arr: any) => {
@@ -98,7 +92,27 @@
         pullCompanysDialog.value = false
       })
   }
-  const getShareHistory = () => {}
+  const getShareHistory = () => {
+    $services.product
+      .searchShare({
+        data: {
+          id: route.query.appInfo,
+          teamId: route.query.id,
+          offset: 0,
+          limit: 10000,
+          filter: ''
+        }
+      })
+      .then((res: ResultType) => {
+        if (res.success) {
+          ElMessage({
+            message: '添加成功',
+            type: 'success'
+          })
+          tableData.value = res.data.result ? res.data.result : []
+        }
+      })
+  }
 </script>
 
 <style lang="scss" scoped>

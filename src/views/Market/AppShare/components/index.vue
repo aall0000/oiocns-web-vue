@@ -8,7 +8,7 @@
   >
     <el-input v-model="value" @input="remoteMethod" placeholder="请输入" />
     <diytab
-      :style="{height:300+'px'}"
+      :style="{ height: 300 + 'px' }"
       ref="diyTable"
       :hasTableHead="true"
       :tableData="list"
@@ -20,17 +20,17 @@
     >
       <template #remark="scope">
         <el-tooltip :content="scope.row.remark" placement="bottom" effect="light">
-          <template #content> 
-            <div class="tooltip-text" style="width:300px">{{scope.row.remark}}</div>
+          <template #content>
+            <div class="tooltip-text" style="width: 300px">{{ scope.row.remark }}</div>
           </template>
           <div class="remark-text">
-          {{scope.row.remark}}
+            {{ scope.row.remark }}
           </div>
         </el-tooltip>
       </template>
     </diytab>
     <div class="foot">
-      <el-button  @click="closeDialog">取消</el-button>
+      <el-button @click="closeDialog">取消</el-button>
       <el-button type="primary" @click="checksSearch">确定</el-button>
     </div>
   </el-dialog>
@@ -54,18 +54,19 @@
   const emit = defineEmits(['checksSearch', 'closeDialog'])
   const props = defineProps({
     selectLimit: {},
-    id:{
+    tableData: [],
+    id: {
       type: String,
       default: ''
     },
-    checkList:{
-      type:Array,
-      default:[]
-    },//选中的值
-    serachType:{
+    checkList: {
+      type: Array,
+      default: []
+    }, //选中的值
+    serachType: {
       type: Number,
       default: '1'
-    },//1 人 2群 3单位 4集团 5分配人员 6分配单位
+    } //1 人 2群 3单位 4集团 5分配人员 6分配单位
   })
   interface ListItem {
     code: string
@@ -105,7 +106,7 @@
       tableHead.value = tableHead4.value
       url.value = 'searchGroups'
       title.value = '搜索集团'
-    } else if (props.serachType ==5) {
+    } else if (props.serachType == 5) {
       space.value = 'company'
       tableHead.value = tableHead1.value
       url.value = 'getPersons'
@@ -124,24 +125,26 @@
     remoteMethod()
   })
   const remoteMethod = () => {
-      let data 
-      if(props.serachType==5|| props.serachType ==6){
-       data= {
-          filter: value.value,
-          offset: (pageStore.currentPage - 1) * pageStore.pageSize,
-          limit: pageStore.pageSize,
-          id:props.id
-        }
-      }else{
-        data = {
-          filter: value.value,
-          offset: (pageStore.currentPage - 1) * pageStore.pageSize,
-          limit: pageStore.pageSize
-        }
+    let data
+    if (props.serachType == 5 || props.serachType == 6) {
+      data = {
+        filter: value.value,
+        offset: (pageStore.currentPage - 1) * pageStore.pageSize,
+        limit: pageStore.pageSize,
+        id: props.id
       }
-      $services[space.value][url.value]({
+    } else {
+      data = {
+        filter: value.value,
+        offset: (pageStore.currentPage - 1) * pageStore.pageSize,
+        limit: pageStore.pageSize
+      }
+    }
+    $services[space.value]
+      [url.value]({
         data: data
-      }).then((res: ResultType) => {
+      })
+      .then((res: ResultType) => {
         let arr: any = []
         if (res.code == 200) {
           if (res.data.result != undefined) {
@@ -180,6 +183,16 @@
     remoteMethod()
   }
   const checkList = reactive<any>([])
+  const select = (selection: any, row: any) => {
+    selection.forEach((el: any) => {
+      for (let i = 0; i < props.tableData.length; i++) {
+        if (el.id == props.tableData[i].id) {
+        }
+      }
+    })
+    shareEmit()
+  }
+  const shareEmit = () => {}
   const selectionChange = (val: any) => {
     checkList.value = val
   }
@@ -195,28 +208,28 @@
     {
       prop: 'code',
       label: '账号',
-      // width: '100'
+      width: '100'
     },
     {
       prop: 'name',
       label: '昵称',
-      // width: '100',
+      width: '100',
       name: 'name'
     },
     {
       prop: 'trueName',
       label: '姓名',
-      // width: '150',
+      width: '150',
       name: 'trueName'
     },
     {
       prop: 'teamCode',
       label: '手机号',
-      // width: '150',
+      width: '150',
       name: 'teamCode'
     },
     {
-      type:'slot',
+      type: 'slot',
       width: '200',
       prop: 'remark',
       label: '座右铭',
@@ -227,17 +240,17 @@
     {
       prop: 'trueName',
       label: '群名称',
-      // width: '200',
+      width: '200',
       name: 'trueName'
     },
     {
       prop: 'teamCode',
       label: '群编号',
-      // width: '150',
+      width: '150',
       name: 'teamCode'
     },
     {
-      type:'slot',
+      type: 'slot',
       prop: 'remark',
       label: '群简介',
       name: 'remark'
@@ -257,11 +270,11 @@
       name: 'code'
     },
     {
-      type:'slot',
+      type: 'slot',
       prop: 'remark',
       label: '单位简介',
       name: 'remark'
-    },
+    }
   ])
   const tableHead4 = ref([
     {
@@ -271,11 +284,11 @@
       name: 'name'
     },
     {
-      type:'slot',
+      type: 'slot',
       prop: 'remark',
       label: '集团简介',
       name: 'remark'
-    },
+    }
   ])
   const options = ref<any>({
     checkBox: true,
@@ -296,13 +309,13 @@
     margin-top: 30px;
     justify-content: flex-end;
   }
-  .remark-text{
+  .remark-text {
     white-space: nowrap;
     cursor: pointer;
     overflow: hidden;
     text-overflow: ellipsis;
   }
-  .tooltip-text{
+  .tooltip-text {
     width: 400px;
     max-height: 300px;
     overflow-y: auto;

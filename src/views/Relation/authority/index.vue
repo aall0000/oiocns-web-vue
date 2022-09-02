@@ -405,7 +405,7 @@
 .container {
   height: 100%;
   width: 100%;
-  background-color: #fff;
+  background-color: var(--el-bg-color-overlay);
   padding: 5px;
   display: flex;
   flex-direction: column;
