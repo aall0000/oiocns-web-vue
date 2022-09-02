@@ -182,7 +182,7 @@
         cursor: pointer;
 
         &:hover {
-          color: $colorRed;
+          color: var(--el-color-danger);
         }
       }
     }

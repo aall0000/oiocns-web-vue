@@ -11,17 +11,22 @@
             @click="handleCardInfo(item)"
           >
             <template #rightIcon>
-              <!-- <div class="shopCar" @click.stop="addShopCar(item)">
-                <el-icon><ShoppingCart /></el-icon>
-              </div> -->
+              <el-dropdown trigger="click" placement="left-start">
+                <el-icon :size="18" ><Operation /></el-icon>
+                <template #dropdown>
+                  <el-dropdown-menu>
+                    <el-dropdown-item >Action 1</el-dropdown-item>
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
             </template>
             <template #content>
               <div class="shopCar-box">
                 <div class="app-con-title">{{ item.caption }}</div>
                 <div class="app-con-info" v-if="item.sellAuth !== '所属权'"
-                  >使用天数：{{ item.days }}</div
+                  >售卖期限(天)：{{ item.days }}</div
                 >
-                <div class="app-con-info">价格：{{ item.price }}</div>
+                <div class="app-con-info">售卖价格：{{ item.price }}</div>
 
                 <div class="app-con-info">售卖权属：{{ item.sellAuth }}</div>
                 <!-- <div class="app-con-info">上架时间：{{ item.createTime.substring(0, 11) }}</div> -->
@@ -106,6 +111,13 @@
       }
     ]
   })
+
+  const moreOperations = ()=>{
+    ElMessage({
+            message: '更多操作',
+            type: 'success'
+    })
+  }
 
   // 查看卡片详情
   const handleCardInfo = (item: any) => {
