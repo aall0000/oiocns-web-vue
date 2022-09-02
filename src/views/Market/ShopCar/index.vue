@@ -104,8 +104,8 @@
         <el-table-column prop="marketCode" label="市场编号" />
         <el-table-column prop="name" label="操作" width="200">
           <template #default="scope">
-            <el-button type="primary" @click="deleteStaging(scope.row.id)">删除</el-button>
-            <el-button type="primary" @click="createOrderByStaging(scope.row.id)">购买</el-button>
+            <el-button type="text" @click="deleteStaging(scope.row.id)">删除</el-button>
+            <el-button type="text" @click="createOrderByStaging(scope.row.id)">购买</el-button>
           </template>
         </el-table-column>
       </el-table>

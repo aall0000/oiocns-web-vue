@@ -4,6 +4,11 @@
       <template #right>
         <el-button type="primary" @click="registerVisible = true">注册应用</el-button>
         <el-button type="primary" @click="GoPage('/market/markList')">管理市场</el-button>
+        <el-button type="primary" @click="GoPage('/market/managerApproval')">申请审批</el-button>
+        <el-button type="primary" @click.stop="GoPage('/market/order')">我的订单</el-button>
+        <el-badge :value="shopcarNum" style="padding-left: 10px">
+          <el-button type="primary" @click.stop="GoPage('/market/shopCar')">购物车</el-button>
+        </el-badge>
       </template>
     </MarketCard>
     <div class="market-content box">
@@ -155,326 +160,346 @@
 </template>
 
 <script setup lang="ts">
-  import API from '@/services'
-  import { ElMessage, ElMessageBox } from 'element-plus'
-  import { onMounted, reactive, ref } from 'vue'
-  import ShopCard from './components/shopCard.vue'
-  import PutawayComp from './components/putawayComp.vue'
-  import ShareComp from './components/shareDialog.vue'
-  import { baseData, actionOptionsOfOther, actionOptionsOfOwn } from './config'
-  import { useRouter } from 'vue-router'
-  import type { FormInstance, FormRules } from 'element-plus'
-  import MarketCreate from './components/marketCreate.vue'
-  import MarketCard from '@/components/marketCard/index.vue'
-  import { appendFile } from 'fs'
-  const add: string = '从应用市场中添加'
-  // 注册页面实例
-  const registerFormRef = ref<FormInstance>()
-  const router = useRouter()
-  type StateType = {
-    ownProductList: ProductType[] //我的应用
-    ownTotal: number
-    shareProductList: ProductType[] //其他应用
-    shareTotal: number
-    marketOptions: any[] //所有市场列表
-    options: any[] //集团列表
-    selectLabel: object // 选中的集团名称
-  }
+import API from '@/services'
+import { ElMessage, ElMessageBox } from 'element-plus'
+import { onMounted, reactive, ref } from 'vue'
+import ShopCard from './components/shopCard.vue'
+import PutawayComp from './components/putawayComp.vue'
+import ShareComp from './components/shareDialog.vue'
+import { baseData, actionOptionsOfOther, actionOptionsOfOwn } from './config'
+import { useRouter } from 'vue-router'
+import type { FormInstance, FormRules } from 'element-plus'
+import MarketCreate from './components/marketCreate.vue'
+import MarketCard from '@/components/marketCard/index.vue'
+import { appendFile } from 'fs'
+import $services from '@/services'
+const add: string = '从应用市场中添加'
+// 注册页面实例
+const registerFormRef = ref<FormInstance>()
+const router = useRouter()
+type StateType = {
+  ownProductList: ProductType[] //我的应用
+  ownTotal: number
+  shareProductList: ProductType[] //其他应用
+  shareTotal: number
+  marketOptions: any[] //所有市场列表
+  options: any[] //集团列表
+  selectLabel: object // 选中的集团名称
+}
 
-  const state: StateType = reactive({
-    ownProductList: [],
-    ownTotal: 0,
-    shareProductList: [],
-    shareTotal: 0,
-    marketOptions: [],
-    options: [],
-    selectLabel: {}
+const state: StateType = reactive({
+  ownProductList: [],
+  ownTotal: 0,
+  shareProductList: [],
+  shareTotal: 0,
+  marketOptions: [],
+  options: [],
+  selectLabel: {}
+})
+
+onMounted(() => {
+  // 获取列表
+  getProductList('own')
+  getProductList('share')
+  getShopcarNum()
+})
+
+const shopcarNum = ref(0)
+
+const getShopcarNum = async () => {
+  await $services.market
+    .searchStaging({
+      data: {
+        id: 0, //市场id （需删除）
+        offset: 0,
+        limit: 20,
+        filter: ''
+      }
+    })
+    .then((res: ResultType) => {
+      var { result = [], total = 0 } = res.data
+      shopcarNum.value = total
+    })
+}
+
+const selectchange = (val: string) => {
+  state.selectLabel = state.options.find((el) => {
+    return el.value == val
   })
+}
 
-  onMounted(() => {
-    // 获取列表
-    getProductList('own')
-    getProductList('share')
+// 关闭分享弹窗
+const closeDialog = () => {
+  shareVisible.value = false
+}
+
+// 获取我的应用列表
+const getProductList = async (type: 'own' | 'share') => {
+  const { data, success } = await API.product[
+    type === 'own' ? 'searchOwnProduct' : 'searchShareProduct'
+  ]({
+    data: { offset: 0, limit: 10, filter: '' }
   })
-
-  const selectchange = (val: string) => {
-    state.selectLabel = state.options.find((el) => {
-      return el.value == val
-    })
+  if (success) {
+    const { result = [], total = 0 } = data
+    state[`${type}ProductList`] = [...result]
+    state[`${type}Total`] = total
   }
+}
 
-  // 关闭分享弹窗
-  const closeDialog = () => {
-    shareVisible.value = false
-  }
-
-  // 获取我的应用列表
-  const getProductList = async (type: 'own' | 'share') => {
-    const { data, success } = await API.product[
-      type === 'own' ? 'searchOwnProduct' : 'searchShareProduct'
-    ]({
-      data: { offset: 0, limit: 10, filter: '' }
-    })
-    if (success) {
-      const { result = [], total = 0 } = data
-      state[`${type}ProductList`] = [...result]
-      state[`${type}Total`] = total
-    }
-  }
-
-  // 移除app
-  const deleteApp = (item: any) => {
-    ElMessageBox.confirm(`确认删除  ${item.name}?`, '警告', {
-      confirmButtonText: '确认',
-      cancelButtonText: '取消',
-      type: 'warning'
-    })
-      .then(async () => {
-        const { success } = await API.product.delete({
-          data: { id: item.id }
+// 移除app
+const deleteApp = (item: any) => {
+  ElMessageBox.confirm(`确认删除  ${item.name}?`, '警告', {
+    confirmButtonText: '确认',
+    cancelButtonText: '取消',
+    type: 'warning'
+  })
+    .then(async () => {
+      const { success } = await API.product.delete({
+        data: { id: item.id }
+      })
+      if (success) {
+        getProductList('own')
+        ElMessage({
+          type: 'success',
+          message: '操作成功'
         })
-        if (success) {
-          getProductList('own')
-          ElMessage({
-            type: 'success',
-            message: '操作成功'
-          })
-        }
-      })
-      .catch(() => {})
-  }
+      }
+    })
+    .catch(() => {})
+}
 
-  // 记录当前操作的 应用信息
-  const selectProductItem = ref<ProductType>()
-  // 处理 设置 菜单选择事件
-  const handleCommand = (
-    type: 'own' | 'other',
-    command: string | number | object,
-    item: ProductType
-  ) => {
-    console.log('菜单选择事件', type, command, item)
-    selectProductItem.value = item
-    switch (command) {
-      case 'share':
-        openGroupDialog()
-        break
-      case 'putaway':
-        publishVisible.value = true
-        break
-      case 'unsubscribe':
-        break
-      default:
-        break
-    }
+// 记录当前操作的 应用信息
+const selectProductItem = ref<ProductType>()
+// 处理 设置 菜单选择事件
+const handleCommand = (
+  type: 'own' | 'other',
+  command: string | number | object,
+  item: ProductType
+) => {
+  console.log('菜单选择事件', type, command, item)
+  selectProductItem.value = item
+  switch (command) {
+    case 'share':
+      openGroupDialog()
+      break
+    case 'putaway':
+      publishVisible.value = true
+      break
+    case 'unsubscribe':
+      break
+    default:
+      break
   }
+}
 
-  //  打开集团选择弹窗
-  const openGroupDialog = () => {
-    API.company
-      .companyGetGroups({
-        data: {
-          offset: 0,
-          limit: 1000
-        }
-      })
-      .then((res: ResultType) => {
-        if (res.data.result && res.data.result.length > 0) {
-          groups = res.data.result
-          state.options = groups.map((g) => {
-            return { value: g.id, label: g.name }
-          })
-          selectedValue.value = groups[0].value
-          groupVisible.value = true
-          // loadOrgTree(groups[0].id)
-        } else {
-          groups = []
-        }
-      })
-  }
-  // 跳转到group分享界面
-  const shareGroup = () => {
-    if (selectedValue.value) {
-      router.push({
-        path: '/market/group',
-        query: { id: selectedValue.value, name: state.selectLabel.label }
-      })
-    } else {
-      ElMessage({
-        type: 'warning',
-        message: '请选择集团'
-      })
-    }
-  }
-  // 跳转到unit分享界面
-  const shareUnit = () => {
-    if (selectedValue.value) {
-      router.push({
-        path: '/market/unit',
-        query: { id: selectedValue.value, name: state.selectLabel.label }
-      })
-    } else {
-      ElMessage({
-        type: 'warning',
-        message: '请选择集团'
-      })
-    }
-  }
-
-  // 注册页面弹窗
-  const registerVisible = ref<boolean>(false)
-
-  // 注册信息
-  const form = reactive({
-    name: '',
-    code: '',
-    remark: ''
-  })
-
-  // 提交注册
-  const onRegisterSubmit = (formEl: FormInstance | undefined) => {
-    if (!formEl) return
-    formEl.validate(async (valid, fields) => {
-      if (valid) {
-        console.log('submit!', form)
-        const { success } = await API.product.register({
-          data: form
+//  打开集团选择弹窗
+const openGroupDialog = () => {
+  API.company
+    .companyGetGroups({
+      data: {
+        offset: 0,
+        limit: 1000
+      }
+    })
+    .then((res: ResultType) => {
+      if (res.data.result && res.data.result.length > 0) {
+        groups = res.data.result
+        state.options = groups.map((g) => {
+          return { value: g.id, label: g.name }
         })
-        if (success) {
-          getProductList('own')
-          ElMessage({
-            type: 'success',
-            message: '应用注册成功'
-          })
-          resetForm(formEl)
-        }
+        selectedValue.value = groups[0].value
+        groupVisible.value = true
+        // loadOrgTree(groups[0].id)
       } else {
-        console.log('error submit!', fields)
+        groups = []
       }
     })
+}
+// 跳转到group分享界面
+const shareGroup = () => {
+  if (selectedValue.value) {
+    router.push({
+      path: '/market/group',
+      query: { id: selectedValue.value, name: state.selectLabel.label }
+    })
+  } else {
+    ElMessage({
+      type: 'warning',
+      message: '请选择集团'
+    })
   }
-  // 注册验证规则
-  const rules = reactive<FormRules>({
-    name: [
-      { required: true, message: '请输入应用名称', trigger: 'blur' },
-      { min: 2, max: 8, message: '长度限制2-8', trigger: 'blur' }
-    ],
-    code: [
-      {
-        required: true,
-        message: '请输入应用编码',
-        trigger: 'blur'
+}
+// 跳转到unit分享界面
+const shareUnit = () => {
+  if (selectedValue.value) {
+    router.push({
+      path: '/market/unit',
+      query: { id: selectedValue.value, name: state.selectLabel.label }
+    })
+  } else {
+    ElMessage({
+      type: 'warning',
+      message: '请选择集团'
+    })
+  }
+}
+
+// 注册页面弹窗
+const registerVisible = ref<boolean>(false)
+
+// 注册信息
+const form = reactive({
+  name: '',
+  code: '',
+  remark: ''
+})
+
+// 提交注册
+const onRegisterSubmit = (formEl: FormInstance | undefined) => {
+  if (!formEl) return
+  formEl.validate(async (valid, fields) => {
+    if (valid) {
+      console.log('submit!', form)
+      const { success } = await API.product.register({
+        data: form
+      })
+      if (success) {
+        getProductList('own')
+        ElMessage({
+          type: 'success',
+          message: '应用注册成功'
+        })
+        resetForm(formEl)
       }
-    ]
+    } else {
+      console.log('error submit!', fields)
+    }
   })
+}
+// 注册验证规则
+const rules = reactive<FormRules>({
+  name: [
+    { required: true, message: '请输入应用名称', trigger: 'blur' },
+    { min: 2, max: 8, message: '长度限制2-8', trigger: 'blur' }
+  ],
+  code: [
+    {
+      required: true,
+      message: '请输入应用编码',
+      trigger: 'blur'
+    }
+  ]
+})
 
-  // 重置注册表单
-  const resetForm = (formEl: FormInstance) => {
-    registerVisible.value = false
-    if (!formEl) return
-    formEl.resetFields()
-  }
+// 重置注册表单
+const resetForm = (formEl: FormInstance) => {
+  registerVisible.value = false
+  if (!formEl) return
+  formEl.resetFields()
+}
 
-  // 上架应用功能
-  const publishVisible = ref<boolean>(false)
-  const putawayRef = ref<any>()
-  // 提交上架
-  const putawaySubmit = () => {
-    putawayRef.value.onPutawaySubmit()
-  }
+// 上架应用功能
+const publishVisible = ref<boolean>(false)
+const putawayRef = ref<any>()
+// 提交上架
+const putawaySubmit = () => {
+  putawayRef.value.onPutawaySubmit()
+}
 
-  // 当前用户的集团
-  let groups = reactive([])
-  // 当前选中的集团
-  let selectedValue = ref<string>('')
-  // 集团分享
-  const groupVisible = ref<boolean>(false)
-  // 分享功能
-  const shareVisible = ref<boolean>(false)
-  // 路由跳转
-  const GoPage = (path: string) => {
-    router.push(path)
-  }
+// 当前用户的集团
+let groups = reactive([])
+// 当前选中的集团
+let selectedValue = ref<string>('')
+// 集团分享
+const groupVisible = ref<boolean>(false)
+// 分享功能
+const shareVisible = ref<boolean>(false)
+// 路由跳转
+const GoPage = (path: string) => {
+  router.push(path)
+}
 </script>
 
 <style>
-  .group-dialog > .el-dialog__body {
-    padding: 10px 20px;
-    height: 100px;
-    display: flex;
-    align-items: center;
-  }
-  .share-dialog > .el-dialog__body {
-    padding: 10px 20px;
-  }
+.group-dialog > .el-dialog__body {
+  padding: 10px 20px;
+  height: 100px;
+  display: flex;
+  align-items: center;
+}
+.share-dialog > .el-dialog__body {
+  padding: 10px 20px;
+}
 </style>
 <style lang="scss" scoped>
-  .menuRight {
-    width: 100px;
-    height: 60px;
-    position: absolute;
-    background-color: rgb(247, 247, 247);
-    font-size: 12px;
-    z-index: 999;
+.menuRight {
+  width: 100px;
+  height: 60px;
+  position: absolute;
+  background-color: rgb(247, 247, 247);
+  font-size: 12px;
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+
+  &-fixed {
+    padding: 5px 0;
+    width: 100%;
+    text-align: center;
+    &:hover {
+      background-color: #fff;
+    }
+  }
+  &-cancel {
+    padding: 10px 0;
+    width: 100%;
+    text-align: center;
+    &:hover {
+      background-color: #fff;
+    }
+  }
+}
+.el-select {
+  width: 100%;
+}
+.market-layout {
+  width: 100%;
+  height: 100%;
+  min-width: 1000px;
+  .market-head {
     display: flex;
-    flex-direction: column;
-    justify-content: center;
+    justify-content: flex-end;
     align-items: center;
-    cursor: pointer;
+    height: 60px;
+    padding: 0 20px;
+  }
+  .market-content {
+    padding: 16px 16px 0;
+    // margin-top: 4px;
+    height: calc(100vh - 124px);
+    overflow-y: auto;
+  }
+  .box {
+    .box-ul + .box-ul {
+      margin-top: 10px;
+    }
+    &-ul {
+      background-color: #fff;
+      padding: 10px 24px;
 
-    &-fixed {
-      padding: 5px 0;
-      width: 100%;
-      text-align: center;
-      &:hover {
-        background-color: #fff;
+      &-title {
+        font-weight: bold;
+        padding: 8px 0;
       }
-    }
-    &-cancel {
-      padding: 10px 0;
-      width: 100%;
-      text-align: center;
-      &:hover {
-        background-color: #fff;
+      .app-card {
+        display: flex;
+        flex-wrap: wrap;
       }
     }
   }
-  .el-select {
-    width: 100%;
-  }
-  .market-layout {
-    width: 100%;
-    height: 100%;
-    min-width: 1000px;
-    .market-head {
-      display: flex;
-      justify-content: flex-end;
-      align-items: center;
-      height: 60px;
-      padding: 0 20px;
-    }
-    .market-content {
-      padding: 16px 16px 0;
-      // margin-top: 4px;
-      height: calc(100vh - 124px);
-      overflow-y: auto;
-    }
-    .box {
-      .box-ul + .box-ul {
-        margin-top: 10px;
-      }
-      &-ul {
-        background-color: #fff;
-        padding: 10px 24px;
-
-        &-title {
-          font-weight: bold;
-          padding: 8px 0;
-        }
-        .app-card {
-          display: flex;
-          flex-wrap: wrap;
-        }
-      }
-    }
-  }
+}
 </style>

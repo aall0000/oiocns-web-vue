@@ -36,55 +36,62 @@
                 </el-table-column>
                 <el-table-column prop="name" label="操作" width="600">
                   <template #default="scope">
-                    <el-button
-                      v-show="scope.row.status == 1 && scope.row.ordertype == 'sell'"
-                      @click="sureContent(scope.row.id)"
-                      type="primary"
-                      >开始交易</el-button
-                    >
-                    <el-button
-                      v-show="scope.row.status == 100 && scope.row.ordertype == 'buy'"
-                      @click="showPay(scope.row)"
-                      type="primary"
-                      >支付</el-button
-                    >
-                    <el-button
-                      v-show="scope.row.status <= 100"
-                      @click="cancelOrderDetail(scope.row.id)"
-                      type="primary"
-                      >取消</el-button
-                    >
-                    <el-button
-                      v-show="scope.row.status == 101 && scope.row.ordertype == 'sell'"
-                      @click="delivery(scope.row.id)"
-                      type="primary"
-                      >确认发货</el-button
-                    >
-                    <el-button
-                      v-show="scope.row.status == 102 && scope.row.ordertype == 'buy'"
-                      @click="accept(scope.row.id)"
-                      type="primary"
-                      >确认收货</el-button
-                    >
-                    <el-button
-                      v-show="scope.row.status == 103 && scope.row.ordertype == 'buy'"
-                      @click="comment(scope.row.id)"
-                      type="primary"
-                      >评价</el-button
-                    >
-                    <el-button
-                      v-show="scope.row.status == 104 && scope.row.ordertype == 'sell'"
-                      @click="viewComment(scope.row.id)"
-                      type="primary"
-                      >查看评价</el-button
-                    >
+                    <DiyButton>
+                      <template v-slot:opt>
+                        <div
+                          class="diy-button"
+                          v-show="scope.row.status == 1 && scope.row.ordertype == 'sell'"
+                          @click="sureContent(scope.row.id)"
+                        >
+                          开始交易
+                        </div>
+                        <div
+                          class="diy-button"
+                          v-show="scope.row.status == 100 && scope.row.ordertype == 'buy'"
+                          @click="showPay(scope.row)"
+                        >
+                          支付
+                        </div>
+                        <div class="diy-button" @click="cancelOrderDetail(scope.row.id)">
+                          取消
+                        </div>
+                        <div
+                          class="diy-button"
+                          v-show="scope.row.status == 101 && scope.row.ordertype == 'sell'"
+                          @click="delivery(scope.row.id)"
+                        >
+                          确认发货
+                        </div>
+                        <div
+                          class="diy-button"
+                          v-show="scope.row.status == 102 && scope.row.ordertype == 'buy'"
+                          @click="accept(scope.row.id)"
+                        >
+                          确认收货
+                        </div>
+                        <div
+                          class="diy-button"
+                          v-show="scope.row.status == 103 && scope.row.ordertype == 'buy'"
+                          @click="comment(scope.row.id)"
+                        >
+                          评价
+                        </div>
+                        <div
+                          class="diy-button"
+                          v-show="scope.row.status == 104 && scope.row.ordertype == 'sell'"
+                          @click="viewComment(scope.row.id)"
+                        >
+                          查看评价
+                        </div>
+                      </template>
+                    </DiyButton>
                   </template>
                 </el-table-column>
               </el-table>
             </div>
           </template>
         </el-table-column>
-        <el-table-column label="序号" type="index" width="50" align="center">
+        <el-table-column label="序号" type="index" width="80" align="center">
           <template #default="scope">
             <span>{{ (pagination.current - 1) * pagination.limit + scope.$index + 1 }}</span>
           </template>
@@ -98,7 +105,11 @@
         />
         <el-table-column prop="name" label="操作" width="600">
           <template #default="scope">
-            <el-button @click="cancelOrder(scope.row.id)" type="primary">取消</el-button>
+            <DiyButton>
+              <template v-slot:opt>
+                <div class="diy-button" @click="cancelOrder(scope.row.id)"> 取消 </div>
+              </template>
+            </DiyButton>
           </template>
         </el-table-column>
       </el-table>
@@ -110,6 +121,11 @@
         ref="orderTableRef"
         v-if="searchType == 'sell'"
       >
+        <el-table-column label="序号" type="index" width="80" align="center">
+          <template #default="scope">
+            <span>{{ (pagination.current - 1) * pagination.limit + scope.$index + 1 }}</span>
+          </template>
+        </el-table-column>
         <el-table-column prop="code" label="订单号" />
         <el-table-column prop="name" label="名称" />
         <el-table-column prop="sellAuth" label="出售权益" />
@@ -127,53 +143,58 @@
         </el-table-column>
         <el-table-column prop="name" label="操作" width="600">
           <template #default="scope">
-            <el-button
-              v-show="scope.row.status == 1 && scope.row.ordertype == 'sell'"
-              @click="sureContent(scope.row.id)"
-              type="primary"
-              >开始交易</el-button
-            >
-            <el-button
-              v-show="scope.row.status == 100 && scope.row.ordertype == 'buy'"
-              @click="showPay(scope.row)"
-              type="primary"
-              >支付</el-button
-            >
-            <el-button
-              v-show="scope.row.status <= 100"
-              @click="cancelOrderDetail(scope.row.id)"
-              type="primary"
-              >取消</el-button
-            >
-            <el-button
-              v-show="scope.row.status == 101 && scope.row.ordertype == 'sell'"
-              @click="delivery(scope.row.id)"
-              type="primary"
-              >确认发货</el-button
-            >
-            <el-button
-              v-show="scope.row.status == 102 && scope.row.ordertype == 'buy'"
-              @click="accept(scope.row.id)"
-              type="primary"
-              >确认收货</el-button
-            >
-            <el-button
-              v-show="scope.row.status == 103 && scope.row.ordertype == 'buy'"
-              @click="comment(scope.row.id)"
-              type="primary"
-              >评价</el-button
-            >
-            <el-button
-              v-show="scope.row.status == 104 && scope.row.ordertype == 'sell'"
-              @click="viewComment(scope.row.id)"
-              type="primary"
-              >查看评价</el-button
-            >
+            <DiyButton>
+              <template v-slot:opt>
+                <div
+                  class="diy-button"
+                  v-show="scope.row.status == 1 && scope.row.ordertype == 'sell'"
+                  @click="sureContent(scope.row.id)"
+                >
+                  开始交易
+                </div>
+                <div
+                  class="diy-button"
+                  v-show="scope.row.status == 100 && scope.row.ordertype == 'buy'"
+                  @click="showPay(scope.row)"
+                >
+                  支付
+                </div>
+                <div class="diy-button" @click="cancelOrderDetail(scope.row.id)"> 取消 </div>
+                <div
+                  class="diy-button"
+                  v-show="scope.row.status == 101 && scope.row.ordertype == 'sell'"
+                  @click="delivery(scope.row.id)"
+                >
+                  确认发货
+                </div>
+                <div
+                  class="diy-button"
+                  v-show="scope.row.status == 102 && scope.row.ordertype == 'buy'"
+                  @click="accept(scope.row.id)"
+                >
+                  确认收货
+                </div>
+                <div
+                  class="diy-button"
+                  v-show="scope.row.status == 103 && scope.row.ordertype == 'buy'"
+                  @click="comment(scope.row.id)"
+                >
+                  评价
+                </div>
+                <div
+                  class="diy-button"
+                  v-show="scope.row.status == 104 && scope.row.ordertype == 'sell'"
+                  @click="viewComment(scope.row.id)"
+                >
+                  查看评价
+                </div>
+              </template>
+            </DiyButton>
           </template>
         </el-table-column>
       </el-table>
       <payView v-if="payDialog.show" :order="payDialog.data" @close="closePay"></payView>
-      <payList  v-if="payListDialog.show"  :selectLimit='0'  @closeDialog="closePayList" />
+      <payList v-if="payListDialog.show" :selectLimit="0" @closeDialog="closePayList" />
     </div>
     <el-pagination
       class="page-pagination"
@@ -197,6 +218,7 @@ import { PAGE_SIZES, PAGE_NUM } from '@/constant'
 import renderDict from '@/services/dict'
 import payView from '@/components/pay/pay.vue'
 import payList from '@/components/pay/list.vue'
+import DiyButton from '@/components/diyButton/index.vue'
 import { ElTable } from 'element-plus'
 import moment from 'moment'
 // 表格分页数据
@@ -346,7 +368,7 @@ const searchBuyList = async () => {
               name: e.merchandise.caption,
               sellAuth: e.merchandise.sellAuth,
               price: e.merchandise.price,
-              days: e.merchandise.days,
+              days: e.merchandise.days
             }
           })
         }
@@ -578,8 +600,7 @@ const remoteMethod = (query: string) => {
   flex-direction: column;
   padding-bottom: 10px;
 
-  .limit_table_height{
-
+  .limit_table_height {
   }
   .tables {
     height: 50%;
@@ -742,6 +763,18 @@ const remoteMethod = (query: string) => {
 .tableClass {
   background-color: #edf2fc;
   cursor: no-drop;
+}
+.diy-button {
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+
+  &:hover {
+    background: rgba(235, 238, 245, 1);
+    border-radius: 4px;
+  }
 }
 @media screen and (max-width: 1280px) {
   .diy-table__header {

@@ -2,13 +2,11 @@
   <div class="market-layout">
     <MarketCard>
       <template #right>
-        <!-- <el-button type="primary" @click="GoPage('/market/userApply')">我的申请</el-button> -->
-        <el-button type="primary" @click="GoPage('/market/managerApproval')">申请审批</el-button>
+        <!-- <el-button type="primary" @click="GoPage('/market/managerApproval')">申请审批</el-button>
         <el-button type="primary" @click.stop="GoPage('/market/order')">我的订单</el-button>
         <el-badge :value="shopcarNum" style="padding-left:10px">
           <el-button type="primary" @click.stop="GoPage('/market/shopCar')">购物车</el-button>
-        </el-badge>
-        
+        </el-badge> -->
       </template>
     </MarketCard>
 
