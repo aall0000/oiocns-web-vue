@@ -45,7 +45,7 @@ export default defineConfig(({ command, mode }) => {
         imports: ['vue', 'vue-router']
       }),
       Components({
-        resolvers: [ElementPlusResolver({importStyle: "sass",}), IconsResolver({ enabledCollections: 'ep' })]
+        resolvers: [ElementPlusResolver({importStyle: "sass"}), IconsResolver({ enabledCollections: 'ep' })]
       }),
       Icons({
         autoInstall: true

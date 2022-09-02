@@ -69,19 +69,21 @@ import LoadingVue from './components/loading.vue'
 .home-wrap {
   .page-header {
     // height: 60px;
-    box-shadow: 0px 2px 3px 1px #e0e0e0;
+    box-shadow: 0px 2px 3px 1px var(--el-fill-color);
+    background-color: var(--el-bg-color);
     // border-bottom: 1px solid #d7d7d7;
     z-index: 2;
   }
 
   .main-menu-content {
     width: max-content;
-    box-shadow: 0px 2px 1px 2px #efefef;
+    box-shadow: 0px 2px 1px 2px var(--el-fill-color);
+    background-color: var(--el-bg-color);
     z-index: 1;
   }
 
   .main-wrap {
-    background: rgb(240, 242, 245);
+    background:  var(--el-bg-color-page);
     // width: 100%;
     // height: 100%;
     position: relative;

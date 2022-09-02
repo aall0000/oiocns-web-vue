@@ -10,6 +10,7 @@
         v-for="item in state.mainMenus.filter((a) => !a?.bottom)"
         @click="handleRouterChage(item)"
         @contextmenu.prevent="rightClick($event, item)"
+        :key="item.id"
       >
         <el-icon v-if="!item.type" class="aside-li-icon" :size="20">
           <component :is="item.icon" />
@@ -23,6 +24,7 @@
         :class="['aside', activeRouter.includes(item.path) ? 'active' : '']"
         v-for="item in state.mainMenus.filter((a) => a?.bottom === true)"
         @click="handleRouterChage(item)"
+        :key="item.id"
       >
         <div class="me" v-if="item.name === '我的'">
           <el-icon class="icon1" :size="20">
@@ -343,7 +345,7 @@
       }
 
       &.active {
-        background-color: #d1d3d5;
+        background-color: var(--el-menu-hover-bg-color);
         color: $mainColor;
         border-radius: 10%;
       }
@@ -377,7 +379,7 @@
         }
 
         &.active {
-          background-color: #d1d3d5;
+          background-color: var(--el-menu-hover-bg-color);
           color: $mainColor;
           border-radius: 10%;
         }
@@ -409,14 +411,14 @@
         }
 
         &.active {
-          background-color: #d1d3d5;
+          background-color: var(--el-menu-hover-bg-color);
           color: $mainColor;
           border-radius: 10%;
         }
       }
 
       &.active {
-        background-color: #d1d3d5;
+        background-color: var(--el-menu-hover-bg-color);
         color: $mainColor;
         border-radius: 10%;
       }

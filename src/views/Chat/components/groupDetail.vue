@@ -1,19 +1,26 @@
 <template>
   <div class="group-detail-wrap">
-    <h1 class="title">{{ detail.name }}</h1>
-    <ul class="base flex border-b">
+    <el-row align="middle" style="padding-bottom:12px;">
+      <el-col :span="4"><HeadImg :name="detail.name" :label="''"/></el-col>
+      <el-col :span="20">
+        <h4 class="title">{{ detail.name }}</h4>
+        <div class="base-info-desc">{{ detail.remark }}</div>
+        </el-col>
+    </el-row>
+    <!-- <h1 class="title">{{ detail.name }}</h1>
+    <ul class="base flex ">
       <HeadImg :name="detail.name" :label="''"/>
       <li class="base-info">
-        <div class="base-info-top flex">
+        <div class="base-info-top flex"> -->
           <!-- <p class="base-info-top-name">{{ detail.name }}</p>
           <el-tag size="small">标签</el-tag> -->
-        </div>
+        <!-- </div>
         <div class="base-info-desc">{{ detail.remark }}</div>
       </li>
-    </ul>
+    </ul> -->
     <!-- 组成员 -->
-    <ul class="user-list border-b" v-if="typeName !== '人员'">
-      <li class="li-search con">
+    <ul class="user-list" >
+      <li class="li-search con" v-if="typeName !== '人员'">
         <p class="li-search-con">组成员<span class="li-search-con-num">{{ total }}</span>人</p>
         <el-input class="li-search-inp" placeholder="搜索成员">
           <template #suffix>
@@ -36,7 +43,7 @@
         </li>
         <span v-show="total > 10" class="img-list-more-btn" @click="handleViewMoreUser">查看更多</span>
       </ul>
-    </ul>
+    
     <li class="con setting-con border-b" v-if="typeName === '群组'">
       <span class="con-label">我在本群昵称</span>
       <span class="con-value">测试昵称</span>
@@ -51,6 +58,7 @@
     <li class="con check-con">
       <el-checkbox v-model="state.isStick" :label="typeName !== '人员' ? '置顶该群' : '置顶会话'" />
     </li>
+  </ul>
     <div class="footer">
       <template v-if="typeName==='群组'">
         <el-button type="danger" plain>退出该群</el-button>
@@ -281,10 +289,10 @@ const openDialogDel = () => {
   cursor: pointer;
   width: 50px;
   height: 50px;
-  background: #ffffff;
+  background: var(--el-bg-color-overlay);
   border-radius: 2px;
   color: rgba(0, 0, 0, 0.45);
-  border: 1px dashed #bfbfbf;
+  border: 1px dashed var(--el-border-color);
   font-size: 40px;
   display: flex;
   justify-content: center;
@@ -298,13 +306,13 @@ const openDialogDel = () => {
   width: 50px;
   height: 50px;
   // background: #ffffff;
-  // border-radius: 2px;
-  border: 1px solid #ea4c43;
+  border-radius: 2px;
+  border: 1px dashed var(--el-color-danger);
   font-size: 25px;
   display: flex;
   justify-content: center;
   align-items: center;
-  color: #ea4c43;
+  color: var(--el-color-danger);
   // margin-right: 16px;
   margin-bottom: 20px !important;
 }
@@ -363,13 +371,15 @@ const openDialogDel = () => {
   display: flex;
   flex-direction: column;
   width: 340px;
-  border-left: 1px solid #ccc;
+  border-left: 1px solid var(--el-border-color);
   padding: 15px;
+  background-color: var(--el-bg-color-overlay);
 
   .title {
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 600;
-    margin-bottom: 10px;
+    margin-bottom: 4px;
+    margin-top: 0;
   }
 
   // 群基本信息
@@ -402,6 +412,7 @@ const openDialogDel = () => {
 
       &-desc {
         font-size: 13px;
+        color: var(--el-color-info-dark-2);
       }
     }
   }
@@ -420,7 +431,7 @@ const openDialogDel = () => {
       &-con {
         font-size: 15px;
         font-weight: 500;
-        color: #333;
+        // color: #333;
 
         &-num {
           margin-left: 10px;
@@ -445,7 +456,7 @@ const openDialogDel = () => {
       margin-right: 10px;
       // margin-bottom: 10px;
       cursor: pointer;
-
+      border-radius: 2px;
       &-img {
         width: 50px;
         height: 50px;
@@ -478,7 +489,7 @@ const openDialogDel = () => {
       font-weight: bold;
       width: 100px;
       min-width: 100px;
-      color: #333;
+      // color: #333;
     }
   }
 
@@ -499,7 +510,7 @@ const openDialogDel = () => {
   }
 
   .border-b {
-    border-bottom: 1px solid #d6d6d6;
+    border-bottom: 1px solid var(--el-border-color);// #d6d6d6;
     padding-bottom: 10px;
   }
 }
