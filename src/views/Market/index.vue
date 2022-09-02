@@ -148,26 +148,14 @@
     v-if="cohortVisible"
     v-model="cohortVisible"
     custom-class="share-dialog"
-    title="按部门分发"
+    title="应用分发"
     width="1000px"
     draggable
     :close-on-click-modal="false"
   >
-    <div class="cohortLayout">
-      <el-tree ref="cohort" :data="cascaderTree" :props="props" node-key="id" show-checkbox />
-    </div>
-    <template #footer>
-      <span class="dialog-footer">
-        <el-button @click="cohortVisible = false">取消</el-button>
-        <el-button type="primary" @click="departCohort">分发</el-button>
-        <el-button type="primary" @click="shareCohort">按职权分发</el-button>
-        <el-button type="primary" @click="shareCohort">按人员分发</el-button>
-        <el-button type="primary" @click="shareCohort">按身份分发</el-button>
-      </span>
-    </template>
+    <Cohort :info="selectProductItem"></Cohort>
   </el-dialog>
 </template>
-
 <script setup lang="ts">
   import API from '@/services'
   import { ElMessage, ElMessageBox } from 'element-plus'
@@ -175,10 +163,12 @@
   import ShopCard from './components/shopCard.vue'
   import PutawayComp from './components/putawayComp.vue'
   import { baseData, actionOptionsOfOther, actionOptionsOfOwn } from './config'
+  import Cohort from './components/cohortBox.vue'
   import { useRouter } from 'vue-router'
   import type { FormInstance, FormRules } from 'element-plus'
   import MarketCreate from './components/marketCreate.vue'
   import MarketCard from '@/components/marketCard/index.vue'
+  import type { TabsPaneContext } from 'element-plus'
   import { useUserStore } from '@/store/user'
   import { appendFile } from 'fs'
   const add: string = '从应用市场中添加'
@@ -210,10 +200,6 @@
     }
   })
   const title = ref<string>('')
-  const props = {
-    label: 'label',
-    children: 'children'
-  }
   onMounted(() => {
     // 获取列表
     getProductList('own')
@@ -225,17 +211,6 @@
       return el.value == val
     })
   }
-
-  // 关闭分享弹窗
-  const closeDialog = () => {
-    cohortVisible.value = false
-  }
-
-  // 按部门分发
-  const departCohort = () => {
-    console.log(cohort.value.getCheckedKeys())
-  }
-
   // 获取我的应用列表
   const getProductList = async (type: 'own' | 'share') => {
     const { data, success } = await API.product[
@@ -291,42 +266,11 @@
       case 'unsubscribe':
         break
       case 'distribution':
-        openCohortDialog()
-        // cohortVisible.value = true
+        cohortVisible.value = true
         break
       default:
         break
     }
-  }
-  // 节点ID和对象映射关系
-  const parentIdMap: any = {}
-  let cascaderTree = ref<OrgTreeModel[]>([])
-  const openCohortDialog = () => {
-    API.company.getCompanyTree({}).then((res: ResultType) => {
-      let orgTree = []
-      orgTree.push(res.data)
-      initIdMap(orgTree)
-      cascaderTree.value = filter(JSON.parse(JSON.stringify(orgTree)))
-      cohortVisible.value = true
-      console.log(cascaderTree.value, orgTree)
-    })
-  }
-  // 初始化ID和对象映射关系
-  const initIdMap = (nodes: any[]) => {
-    for (const node of nodes) {
-      parentIdMap[node.id] = node
-      if (node.children) {
-        initIdMap(node.children)
-      }
-    }
-  }
-  // 过滤掉工作组作为表单级联数据
-  const filter = (nodes: OrgTreeModel[]): OrgTreeModel[] => {
-    nodes = nodes.filter((node) => node.data?.typeName !== '工作组')
-    for (const node of nodes) {
-      node.children = filter(node.children)
-    }
-    return nodes
   }
   // 按群组分享
   const shareCohort = () => {}
@@ -501,11 +445,18 @@
     display: flex;
     align-items: center;
   }
+  .share-dialog > .el-dialog__header {
+    text-align: center;
+    font-weight: bold;
+  }
   .share-dialog > .el-dialog__body {
     padding: 10px 20px;
   }
 </style>
 <style lang="scss" scoped>
+  .header-box {
+    display: flex;
+  }
   .cohortLayout {
     width: 100%;
     height: 500px;
