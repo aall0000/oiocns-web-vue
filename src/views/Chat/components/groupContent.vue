@@ -29,7 +29,7 @@
           <div class="con-content" @contextmenu.prevent.stop="(e: MouseEvent) => handleContextClick(e, item)">
             <!-- <span v-if="showName" class="con-content-name">{{ getUserName(item.fromId) }}</span> -->
             <div class="con-content-link"></div>
-            <div class="con-content-txt" v-html="item.msgBody"> </div>
+            <div class="con-content-txt" v-html="item.msgBody"></div>
             <!-- {{ item.msgBody }} -->
           </div>
           <!-- <img class="con-img" src="@/assets/img/userIcon/ic_06.png" alt=""> -->
@@ -194,11 +194,18 @@ defineExpose({
   keepScrollPos
 })
 </script>
+<style>
+ .con-content-txt img {
+    max-width: 400px;
+    max-height: 400px;
+  }
 
+</style>
 <style lang="scss" scoped>
+ 
 .group-content-wrap {
   padding: 20px;
-  background-color: #f0f2f5;
+  background-color: var(--el-bg-color-page);
   transition: all 0.7s;
 
   .chats-space-Time {
@@ -291,12 +298,14 @@ defineExpose({
 
       &-link {
         margin-left: 7px;
-        background-color: white;
-        box-shadow: -1px 1px 6px 2px rgb(229 229 229);
+        background-color: var(--el-bg-color-overlay);// white;
+        box-shadow: var(--el-box-shadow-lighter);// -1px 1px 6px 2px rgb(229 229 229);
       }
 
       &-txt {
-        box-shadow: 0 0 5px 5px #e5e5e580;
+        color: var(--el-text-color);
+        background-color: var(--el-bg-color-overlay) ;
+        box-shadow: var(--el-box-shadow-lighter);// 0 0 5px 5px #e5e5e580;
       }
     }
   }
@@ -314,12 +323,13 @@ defineExpose({
       &-link {
         margin-right: 7px;
         background-color: #a2ddff;
+        box-shadow: var(--el-box-shadow-lighter);
       }
 
       &-txt {
         text-align: left;
         background-color: #a2ddff;
-        box-shadow: 0 0 3px 3px #e5e5e580;
+        box-shadow: var(--el-box-shadow-lighter);// 0 0 3px 3px #e5e5e580;
       }
     }
   }

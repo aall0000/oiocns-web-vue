@@ -79,8 +79,9 @@
   import ShopCard from '../../components/shopCard.vue'
   import AppInfoDialog from './appInfoDialog.vue'
   import moment from 'moment'
-  const emit = defineEmits(['handleUpdate'])
-  type Props = {
+  import { ElNotification } from 'element-plus'
+  const emit = defineEmits(['handleUpdate','shopcarNumChange'])
+  type Props={
     dataList: any
     type?: 'manage' | 'shop'
   }
@@ -155,9 +156,16 @@
       })
       .then((res: ResultType) => {
         if (res.code == 200) {
-          ElMessage({
-            message: '添加成功',
-            type: 'success'
+          emit('shopcarNumChange')
+
+          // ElMessage({
+          //   message: '添加成功',
+          //   type: 'success'
+          // })
+          ElNotification.success({
+            title: '已加入购物车',
+            offset: 100,
+            showClose: false
           })
         }
       })
@@ -172,12 +180,21 @@
   }
 
   const createOrder = async (item: any) => {
-    console.log(item)
-    await $services.order
+    ElMessageBox.confirm(
+    '此操作将生成交易订单。是否确认?',
+    '确认订单',
+    {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'success',
+    }
+  )
+    .then(() => {
+       $services.order
       .create({
         data: {
-          name: moment().format('YYYY-MM-DD hh:mm:ss') + '的订单',
-          code: getUuid(),
+          name: (new Date().getTime()).toString().substring(0,13) ,
+          code: (new Date().getTime()).toString().substring(0,13) ,
           merchandiseId: item.id
         }
       })
@@ -189,6 +206,8 @@
           })
         }
       })
+    })
+
   }
 
   const unpublishFun = (item: any) => {

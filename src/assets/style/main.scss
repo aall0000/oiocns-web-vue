@@ -4,9 +4,9 @@
   // line-height: 24px;
   // font-weight: 400;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: white;
+  color-scheme: light;
+  color: var(--el-text-color-primary);
+  // background-color: white;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -15,7 +15,7 @@
 
 html.dark {
   --el-color-primary: #3e5ed8;
-  --el-bg-color: #141414;
+  // --el-bg-color: #141414;
 }
 .iconfont {
   position: relative;
