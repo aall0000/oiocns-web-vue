@@ -32,7 +32,7 @@
       <el-input placeholder="请设置" v-model="menuItem.link"></el-input>
     </li>
     <li class="menu-item flex">
-      <div class="menu-label">menuType:</div>
+      <div class="menu-label">菜单类型:</div>
       <el-input placeholder="请设置" v-model="menuItem.menuType"></el-input>
     </li>
     <li class="menu-item flex">

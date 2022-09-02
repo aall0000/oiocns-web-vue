@@ -52,6 +52,10 @@
 
       <SetAppMenu :menus="appMenu.menus" />
     </div>
+    <div class="app-base-info register-content">
+      <el-button type="primary">取消</el-button>
+      <el-button type="primary">确定</el-button>
+    </div>
   </div>
 </template>
 <script lang="ts" setup>
@@ -68,7 +72,7 @@
   const appMenu = reactive({
     menus: [
       {
-        caption: form.name??'系统名称',
+        caption: form.name ?? '系统名称',
         menuType: 'string',
         link: 'www.baidu.com',
         resource: 'sdhja',
