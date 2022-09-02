@@ -32,27 +32,19 @@
             </template>
             <!-- <template #footer> -->
 
-            <el-button-group v-if="type=='manage'">
+            <div v-if="type == 'shop'">
+              <el-button link @click="joinStaging(item)">加入购物车</el-button>
+              <el-divider direction="vertical" />
+              <el-button link @click="createOrder(item)">立即购买</el-button>
+            </div>
+            <div v-else>
               <el-button
                 style="color: aliceblue; font-weight: bold; background-color: orange; width: 100px"
                 round
-                @click="joinStaging(item)"
-                >加入购物车</el-button
-              >
-              <el-button
-                style="color: aliceblue; font-weight: bold; background-color: red; width: 100px"
-                round
-                @click="createOrder(item)"
-                >立即购买</el-button
-              >
-            </el-button-group>
-            <el-button-group v-else>
-              <el-button
-                style="color: aliceblue; font-weight: bold; background-color: orange; width: 100px"
-                round @click="unpublishFun(item)"
+                @click="unpublishFun(item)"
                 >下架</el-button
               >
-            </el-button-group>
+            </div>
             <!-- <el-divider direction="vertical" />
             <el-button class="btn" link small>用户管理</el-button> -->
             <!-- </template> -->
@@ -81,18 +73,18 @@
 </template>
 
 <script setup lang="ts">
-  import { reactive, computed,withDefaults } from 'vue'
+  import { reactive, computed, withDefaults } from 'vue'
   import $services from '@/services'
   import { ElMessage, ElMessageBox } from 'element-plus'
   import ShopCard from '../../components/shopCard.vue'
   import AppInfoDialog from './appInfoDialog.vue'
   import moment from 'moment'
   const emit = defineEmits(['handleUpdate'])
-  type Props={
+  type Props = {
     dataList: any
-    type?:'manage'|'shop'
+    type?: 'manage' | 'shop'
   }
-  const props =withDefaults(defineProps<Props>(),{ dataList:[],type:'manage'})
+  const props = withDefaults(defineProps<Props>(), { dataList: [], type: 'manage' })
   const handleCurrent: any = computed(() => {
     return (state.page.currentPage - 1) * state.page.pageSize
   })
@@ -199,7 +191,7 @@
       })
   }
 
-  const unpublishFun = (item:any) => {
+  const unpublishFun = (item: any) => {
     let title: string
     title = `确定把 ${item.caption} 下架吗？`
     ElMessageBox.confirm(title, '警告', {
@@ -213,7 +205,7 @@
       .catch(() => {})
   }
   //下架应用
-  const unpublishApp = (item:any) => {
+  const unpublishApp = (item: any) => {
     $services.market
       .unpublishMerchandise({
         data: {

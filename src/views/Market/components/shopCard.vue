@@ -94,7 +94,7 @@
       display: flex;
       justify-content: space-around;
       align-items: center;
-      padding: 0 30px;
+      // padding: 0 30px;
       background-color: #f7f7f7;
       .btn {
         padding: 6px 10px;
