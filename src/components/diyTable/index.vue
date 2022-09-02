@@ -45,6 +45,7 @@
           border
           stripe
           :default-expand-all="options.expandAll ? options.expandAll : false"
+          @select="select"
           @select-all="selectAll"
           @selection-change="handleSelectionChange"
           @cell-mouse-enter="handleMouseEnter"
@@ -217,6 +218,7 @@
     'handleSortChange',
     'handleRowClick',
     'handleUpdate',
+    'select',
     'selectionChange'
   ])
 
@@ -284,6 +286,10 @@
   const handleSelectionChange = (val: any) => {
     multipleSelection.value = val
     emit('selectionChange', multipleSelection.value)
+  }
+
+  const select = (selection: any, row: any) => {
+    emit('select', selection, row)
   }
 
   /**

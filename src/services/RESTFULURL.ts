@@ -135,7 +135,7 @@ export default {
     deleteStaging: market + '/delete/staging', //移除暂存区/购物车
     joinStaging: market + '/staging', //加入暂存区/购物车
     publishMerchandise: market + '​/publish/merchandise', //上架商品
-    searchAll: market +'/search/all', //查询所有市场
+    searchAll: market + '/search/all', //查询所有市场
     searchManager: market + '​/search/manager', //查询自己管理的市场
     searchMerchandise: market + '​/search/merchandise', //查询市场中所有商品
     searchMerchandiseApply: market + '​/search/merchandise/apply', //查询产品上架申请
@@ -216,9 +216,7 @@ export default {
     searchManagerPublishApply: appstore + '/search/manager/publish/apply',
     approvalPublish: appstore + '/approval/publish',
     pullTarget: appstore + '/pull/target',
-    searchPublishApply: appstore + '/search/publish/apply',
-
-
+    searchPublishApply: appstore + '/search/publish/apply'
   }
   //others
 }
