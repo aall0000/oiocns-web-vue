@@ -24,6 +24,11 @@
     </div>
     <div class="cohortLayout-content">
       <div class="cohortLayout-content-left" :style="'width:' + (radio == '1' ? '49%' : '33%')">
+        <el-input v-model="searchLeftValue" class="w-50 m-2" placeholder="搜索">
+          <template #prefix>
+            <el-icon class="el-input__icon"><search /></el-icon>
+          </template>
+        </el-input>
         <el-tree
           v-if="radio == '1'"
           ref="leftTree"
@@ -34,6 +39,7 @@
           :default-expand-all="true"
           show-checkbox
           @check-change="handleCheckChange"
+          :filter-node-method="filterNode"
         />
         <el-tree
           v-else
@@ -42,6 +48,7 @@
           :props="unitProps"
           :default-expand-all="true"
           @node-click="handleNodeClick"
+          :filter-node-method="filterNode"
         />
       </div>
       <div
@@ -105,12 +112,14 @@
   interface Tree {
     id: string
     label: string
+    data?: any
     children?: Tree[]
   }
   type createInfo = {
     info: ProductType
   }
   const searchValue = ref('')
+  const searchLeftValue = ref('')
   const activeName = ref(0)
   const tabs = ref([])
   const radio = ref('1')
@@ -190,6 +199,12 @@
       handleNodeClick(state.loadID, false, newValue)
     }
   )
+  watch(
+    () => searchLeftValue.value,
+    (newValue, oldValue) => {
+      leftTree.value!.filter(newValue)
+    }
+  )
   const props = defineProps<createInfo>()
   onMounted(() => {
     searchResource()
@@ -198,6 +213,12 @@
   const emit = defineEmits(['closeDialog'])
   const closeDialog = () => {
     emit('closeDialog')
+  }
+
+  // 树节点过滤
+  const filterNode = (value: string, data: any) => {
+    if (!value) return true
+    return data.label.includes(value)
   }
 
   // 提交表单
@@ -398,32 +419,62 @@
         break
       case '3':
         state.loadID = data
-        API.company
-          .getDepartmentPersons({
-            data: {
-              id: data.id,
-              limit: page.pageSize,
-              offset: handleCurrent.value,
-              filter: typeof search == 'string' ? search : ''
-            }
-          })
-          .then((res: ResultType) => {
-            if (load == true) {
-              state.centerTree.concat(res.data.result)
-            } else {
-              state.centerTree = res.data.result ? res.data.result : []
-            }
+        if (data.data.parentId == '0') {
+          API.company
+            .getPersons({
+              data: {
+                id: data.id,
+                limit: page.pageSize,
+                offset: handleCurrent.value,
+                filter: typeof search == 'string' ? search : ''
+              }
+            })
+            .then((res: ResultType) => {
+              if (load == true) {
+                state.centerTree.concat(res.data.result)
+              } else {
+                state.centerTree = res.data.result ? res.data.result : []
+              }
 
-            if (state.personsData.length > 0) {
-              let arr: any[] = []
-              state.personsData.forEach((el) => {
-                if (el.type == 'add' || el.type == 'has') {
-                  arr.push(el.id)
-                }
-              })
-              centerTree.value.setCheckedKeys(arr, true)
-            }
-          })
+              if (state.personsData.length > 0) {
+                let arr: any[] = []
+                state.personsData.forEach((el) => {
+                  if (el.type == 'add' || el.type == 'has') {
+                    arr.push(el.id)
+                  }
+                })
+                centerTree.value.setCheckedKeys(arr, true)
+              }
+            })
+        } else {
+          API.company
+            .getDepartmentPersons({
+              data: {
+                id: data.id,
+                limit: page.pageSize,
+                offset: handleCurrent.value,
+                filter: typeof search == 'string' ? search : ''
+              }
+            })
+            .then((res: ResultType) => {
+              if (load == true) {
+                state.centerTree.concat(res.data.result)
+              } else {
+                state.centerTree = res.data.result ? res.data.result : []
+              }
+
+              if (state.personsData.length > 0) {
+                let arr: any[] = []
+                state.personsData.forEach((el) => {
+                  if (el.type == 'add' || el.type == 'has') {
+                    arr.push(el.id)
+                  }
+                })
+                centerTree.value.setCheckedKeys(arr, true)
+              }
+            })
+        }
+
         break
       case '4':
         state.loadID = data
