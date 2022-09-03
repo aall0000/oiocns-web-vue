@@ -73,7 +73,7 @@
       }
       anyStore.setPrefix(res.id)  // 设置订阅器前缀
       // 订阅未读消息
-      anyStore.subscribed(`message.noread`, (data) => {
+      anyStore.subscribed(`message`, (data) => {
         // console.log('noread===', data)
         useAnyData().setMessageNoRead(data)
       })

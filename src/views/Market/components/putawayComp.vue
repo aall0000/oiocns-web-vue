@@ -91,7 +91,7 @@
   })
   // 获取市场列表
   const getMarketOptions = async (queryStr?: string) => {
-    const { data, success } = await API.market.searchAll({
+    const { data, success } = await API.market.searchOwn({
       data: { offset: 0, limit: 10000, filter: queryStr ?? '' }
     })
 

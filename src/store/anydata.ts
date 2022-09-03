@@ -41,31 +41,40 @@ type WorkSpaceType = {
         content: UserSpace[]
     }
 }
+type messageType = {
+    noReadMap: Record<string, Record<string, number>>,
+    noReadCount: number
+}
 
 export const useAnyData = defineStore({
     id: "userAnyData",
-    state: (): { workspace: WorkSpaceType, messageNoReadMap: Record<string, Record<string, number>> } => {
+    state: (): { workspace: WorkSpaceType, message: messageType } => {
         return {
             workspace: null,
-            messageNoReadMap: {}
+            message: {
+
+                noReadMap: {},
+                noReadCount: 0
+            },
         }
     },
     getters: {
         homeComplist: (state) => state.workspace?.content || [], // 首页配置组件
         userComplist: (state) => state.workspace?.user?.content || [], // 用户组件
-        noReadMap: (state) => state.messageNoReadMap, // 未读数量
-        getNoReadCount: (state)=>
+        noReadMap: (state) => state.message.noReadMap, // 未读数量
+        getNoReadCount: (state) =>
             (groupid: string, userid: string) => {
-                if(state.messageNoReadMap[groupid] && state.messageNoReadMap[groupid][userid]){
-                    return state.messageNoReadMap[groupid][userid] || 0
+                if (state.message.noReadMap[groupid] && state.message.noReadMap[groupid][userid]) {
+                    return state.message.noReadMap[groupid][userid] || 0
                 }
                 return 0
-            }
+            },
+       
     },
     actions: {
         // getNoReadCount(groupid: string, userid: string) {
-        //     if(this.messageNoReadMap[groupid] && this.messageNoReadMap[groupid][userid]){
-        //         return this.messageNoReadMap[groupid][userid] || 0
+        //     if(this.noRead[groupid] && this.noRead[groupid][userid]){
+        //         return this.noRead[groupid][userid] || 0
         //     }
         //     return 0
         // },
@@ -92,34 +101,53 @@ export const useAnyData = defineStore({
         },
         // 设置个人空间全部数据
         setWorkspace(data: WorkSpaceType) {
-            this.workspace = data ||{}
+            this.workspace = data || {}
         },
         // 更新已读未读消息数量
         updateMessageNoread({ groupid, userid, count }: { groupid: string, userid: string, count: number }) {
-
-            const newCount = (this.messageNoReadMap[groupid] && this.messageNoReadMap[groupid][userid] || 0) + count
-            anyStore.set(`message.noread.${groupid}.${userid}`,
+            
+            const { noReadMap } = this.message
+            const newCount = (noReadMap[groupid] && noReadMap[groupid][userid] || 0) + count
+            const  noReadCount = this.message.noReadCount + count
+            anyStore.set(`message.noRead.${groupid}.${userid}`,
                 {
                     operation: 'replaceAll',
                     data: newCount
                 })
-
-            if (!this.messageNoReadMap[groupid]) {
-                this.messageNoReadMap[groupid] = {}
+            anyStore.set(`message.noReadCount`,
+                {
+                    operation: 'replaceAll',
+                    data: noReadCount
+                })
+            if (!noReadMap[groupid]) {
+                this.message.noReadMap[groupid] = {}
             }
-
-            this.messageNoReadMap[groupid][userid] = newCount
+            
+            this.message.noReadCount =noReadCount
+            this.message.noReadMap[groupid][userid] = newCount
         },
         clearMessageNodread(groupid: string, userid: string) {
-            anyStore.delete(`message.noread.${groupid}.${userid}`)
-            if (this.messageNoReadMap[groupid] && this.messageNoReadMap[groupid][userid]) {
-
-                delete this.messageNoReadMap[groupid][userid]
+            const { noReadMap, noReadCount  } = this.message
+            const newnoReadCount = noReadCount - noReadMap[groupid][userid]
+            anyStore.delete(`message.noRead.${groupid}.${userid}`)
+            anyStore.set(`message.noReadCount`,
+                {
+                    operation: 'replaceAll',
+                    data: newnoReadCount
+            })
+            if (noReadMap[groupid] && noReadMap[groupid][userid]) {
+                this.message.noReadCount = newnoReadCount
+                delete this.message.noReadMap[groupid][userid]
             }
         },
         // 初始化未读数量
         setMessageNoRead(data: Record<string, number>) {
-            this.messageNoReadMap = data
+            if(data.noread){
+                this.message.noReadMap = data.noread
+                this.message.noReadCount = data.noReadCount
+            }else{
+                this.message.noReadMap = data
+            }
             console.log("newnoread", data)
         }
     }

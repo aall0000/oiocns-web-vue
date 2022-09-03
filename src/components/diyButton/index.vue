@@ -3,7 +3,7 @@
     <el-popover width="150" trigger="hover" placement="bottom">
       <slot name="opt"></slot>
       <template #reference>
-        <div style="display: flex; justify-content: center">
+        <div class="diy-button-pos">
           <div class="diy-button-bg">
             <slot name="icon"> <img src="@/assets/img/btn-operation.svg" alt="" /></slot>
           </div>
@@ -16,6 +16,10 @@
 <script setup lang="ts"></script>
 
 <style lang="scss" scoped>
+  .diy-button-pos {
+    display: flex; 
+    justify-content: center;
+  }
   .diy-button-bg {
     width: 38px;
     height: 20px;
