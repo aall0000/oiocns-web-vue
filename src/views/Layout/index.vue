@@ -43,6 +43,9 @@ import LoadingVue from './components/loading.vue'
 </script>
 
 <style lang="scss" scoped>
+.el-header {
+    --el-header-padding: 0 0 0 16px;
+}
 .el-footer {
   background: rgb(240, 242, 245);
   justify-content: center;

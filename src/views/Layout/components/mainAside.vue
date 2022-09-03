@@ -123,17 +123,17 @@
   const state: StateType = reactive({
     mainMenus: [
       { name: '工作台', icon: 'DataAnalysis', path: '/workHome' },
-      { name: '消息', icon: 'ChatDotSquare', path: '/chat' },
+      // { name: '消息', icon: 'ChatDotSquare', path: '/chat' },
       { name: '关系', icon: 'SetUp', path: '/relation' },
       { name: '应用', icon: 'Suitcase', path: '/market' },
       { name: '开始', icon: 'Menu', path: '/appStpre', bottom: true },
       { name: '数据', icon: 'SetUp', path: '/thing' },
-      {
-        name: '我的',
-        icon: 'User',
-        path: IsSelfSpace ? '/user' : '/company',
-        bottom: true
-      }
+      // {
+      //   name: '我的',
+      //   icon: 'User',
+      //   path: IsSelfSpace ? '/user' : '/company',
+      //   bottom: true
+      // }
     ],
     clickMenu: [],
     storeObj: {
@@ -315,14 +315,13 @@
     }
   }
   .mainAside-wrap {
-    min-width: 60px;
+    min-width: 50px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    height: calc(100vh - 60px);
-    padding-bottom: 20px;
+    height: calc(100vh - 50px);
+    padding-bottom: 10px;
     box-sizing: border-box;
-    // overflow: hidden;
 
     .aside-li {
       display: flex;
