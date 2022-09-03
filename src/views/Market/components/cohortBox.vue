@@ -326,38 +326,11 @@
     console.log('点击左侧', data, checked, indeterminate)
     if (checked) {
       if (radio.value == '1') {
-        let result = state.rightData.some((item: any) => {
-          return item.id == data.id
-        })
-        for (let i = 0; i < state.orgData.length; i++) {
-          if (state.orgData[i].id == data.id) {
-            if (data.type == 'add') {
-              return
-            }
-          }
-        }
-        if (result) {
-          data.type = 'has'
-          state.orgData.push(data)
-        } else {
-          data.type = 'add'
-          state.orgData.push(data)
-        }
+        handleBoxClick(state.rightData, state.orgData, data)
       }
     } else {
       if (radio.value == '1') {
-        let result = state.rightData.some((item: any) => {
-          return item.id == data.id
-        })
-        state.orgData.forEach((el, index) => {
-          if (el.id == data.id) {
-            if (result) {
-              el.type = 'del'
-            } else {
-              state.orgData.splice(index, 1)
-            }
-          }
-        })
+        handleBoxCancelClick(state.rightData, state.orgData, data)
       }
     }
   }
