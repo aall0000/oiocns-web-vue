@@ -31,6 +31,7 @@
           :data="cascaderTree"
           :props="unitProps"
           :check-strictly="true"
+          :default-expand-all="true"
           show-checkbox
           @check-change="handleCheckChange"
         />
@@ -39,17 +40,30 @@
           ref="leftTree"
           :data="cascaderTree"
           :props="unitProps"
+          :default-expand-all="true"
           @node-click="handleNodeClick"
         />
       </div>
-      <div class="cohortLayout-content-center" style="width: 33%" v-if="radio !== '1'">
+      <div
+        class="cohortLayout-content-center"
+        style="width: 33%"
+        v-if="radio !== '1'"
+        v-infinite-scroll="load"
+        infinite-scroll-immediate="false"
+      >
+        <el-input v-model="searchValue" class="w-50 m-2" placeholder="搜索">
+          <template #prefix>
+            <el-icon class="el-input__icon"><search /></el-icon>
+          </template>
+        </el-input>
         <el-tree
-          v-if="radio == '2'"
+          v-if="radio == '2' || radio == '3' || radio == '4'"
           ref="centerTree"
           node-key="id"
           :check-strictly="true"
           :data="state.centerTree"
           :props="authorityProps"
+          :default-expand-all="true"
           show-checkbox
           @check-change="centerAuthorClick"
         />
@@ -61,17 +75,28 @@
           @delContent="delContentAuth"
           :orgData="state.authorData"
         ></Author>
+        <Author
+          v-if="radio == '3'"
+          @delContent="delContentAuth"
+          :orgData="state.personsData"
+        ></Author>
+        <Author
+          v-if="radio == '4'"
+          @delContent="delContentAuth"
+          :orgData="state.identitysData"
+        ></Author>
       </div>
     </div>
     <div class="footer">
-      <el-button type="primary" @click="">确认</el-button>
+      <el-button type="primary" @click="submitAll">确认</el-button>
       <el-button class="footer-btn" @click="closeDialog">取消</el-button>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-  import { onMounted, ref, reactive, toRefs } from 'vue'
+  import InfiniteScroll from 'element-plus'
+  import { onMounted, ref, reactive, toRefs, watch, nextTick, computed } from 'vue'
   import { ElMessage, ElMessageBox } from 'element-plus'
   import API from '@/services'
   import Group from './components/group.vue'
@@ -85,6 +110,7 @@
   type createInfo = {
     info: ProductType
   }
+  const searchValue = ref('')
   const activeName = ref(0)
   const tabs = ref([])
   const radio = ref('1')
@@ -92,10 +118,14 @@
   const centerTree = ref(null)
   const resource = ref<string>('')
   const state = reactive({
+    loadID: {
+      id: '',
+      label: ''
+    },
     way: [
       {
         id: '1',
-        label: '按集团分发'
+        label: '按部门分发'
       },
       {
         id: '2',
@@ -114,7 +144,11 @@
     rightData: [], // 集团分发历史数据
     centerTree: [], // 职权分发中间树形
     authorHisData: [], // 职权历史数据
-    authorData: [] // 职权右侧数据
+    authorData: [], // 职权右侧数据
+    personsHisData: [], // 人员历史数据
+    personsData: [], // 人员右侧数据
+    identitysData: [], //身份右侧数据
+    identitysHisData: [] // 身份历史数据
   })
   const authorityProps = {
     label: 'name',
@@ -124,6 +158,38 @@
     label: 'label',
     children: 'children'
   }
+  const page = reactive({
+    currentPage: 1,
+    pageSize: 20
+  })
+  const handleCurrent: any = computed(() => {
+    return (page.currentPage - 1) * page.pageSize
+  })
+  watch(
+    () => radio.value,
+    (newValue, oldValue) => {
+      state.centerTree = []
+      nextTick(() => {
+        if (newValue == '1' && state.orgData.length > 0) {
+          let arr: any[] = []
+          state.orgData.forEach((el) => {
+            if (el.type == 'add' || el.type == 'has') {
+              arr.push(el.id)
+            }
+          })
+          leftTree.value.setCheckedKeys(arr, true)
+        }
+      })
+    },
+    { immediate: true }
+  )
+  watch(
+    () => searchValue.value,
+    (newValue, oldValue) => {
+      console.log(newValue)
+      handleNodeClick(state.loadID, false, newValue)
+    }
+  )
   const props = defineProps<createInfo>()
   onMounted(() => {
     searchResource()
@@ -133,14 +199,108 @@
   const closeDialog = () => {
     emit('closeDialog')
   }
+
+  // 提交表单
+  const submitAll = () => {
+    let departAdd = []
+    let departDel = []
+    let authorAdd = []
+    let authorDel = []
+    let personsAdd = []
+    let personsDel = []
+    let identityAdd = []
+    let identityDel = []
+
+    state.orgData.forEach((el) => {
+      if (el.type == 'add') {
+        departAdd.push(el)
+      } else if (el.type == 'del') {
+        departDel.push(el)
+      }
+    })
+
+    state.authorData.forEach((el) => {
+      if (el.type == 'add') {
+        personsAdd.push(el)
+      } else if (el.type == 'del') {
+        personsDel.push(el)
+      }
+    })
+
+    state.personsData.forEach((el) => {
+      if (el.type == 'add') {
+        authorAdd.push(el)
+      } else if (el.type == 'del') {
+        authorDel.push(el)
+      }
+    })
+
+    state.identitysData.forEach((el) => {
+      if (el.type == 'add') {
+        identityAdd.push(el)
+      } else if (el.type == 'del') {
+        identityDel.push(el)
+      }
+    })
+
+    if (departAdd.length > 0) {
+    }
+    if (departDel.length > 0) {
+    }
+    if (authorAdd.length > 0) {
+    }
+    if (authorDel.length > 0) {
+    }
+    if (personsAdd.length > 0) {
+    }
+    if (personsDel.length > 0) {
+    }
+    if (identityAdd.length > 0) {
+    }
+    if (identityDel.length > 0) {
+    }
+  }
+  // 中间树形滚动加载事件
+  const load = () => {
+    if (radio.value == '3') {
+      page.currentPage++
+      handleNodeClick(state.loadID, true)
+    }
+  }
   // 中间树形点击事件
   const centerAuthorClick = (data: any, checked: boolean, indeterminate: any) => {
     console.log('点击中间', data, checked, indeterminate)
     if (checked) {
       if (radio.value == '2') {
         handleBoxClick(state.authorHisData, state.authorData, data)
+      } else if (radio.value == '3') {
+        handleBoxClick(state.personsHisData, state.personsData, data)
+      } else {
+        handleBoxClick(state.identitysHisData, state.identitysData, data)
+      }
+    } else {
+      if (radio.value == '2') {
+        handleBoxCancelClick(state.authorHisData, state.authorData, data)
+      } else if (radio.value == '3') {
+        handleBoxCancelClick(state.personsHisData, state.personsData, data)
+      } else {
+        handleBoxCancelClick(state.identitysHisData, state.identitysData, data)
       }
     }
+  }
+  const handleBoxCancelClick = (hisData: any, dataList: any, data: any) => {
+    let result = hisData.some((item: any) => {
+      return item.id == data.id
+    })
+    dataList.forEach((el: any, index: number) => {
+      if (el.id == data.id) {
+        if (result) {
+          el.type = 'del'
+        } else {
+          dataList.splice(index, 1)
+        }
+      }
+    })
   }
   const handleBoxClick = (hisData: any, dataList: any, data: any) => {
     let result = hisData.some((item: any) => {
@@ -166,56 +326,110 @@
     console.log('点击左侧', data, checked, indeterminate)
     if (checked) {
       if (radio.value == '1') {
-        let result = state.rightData.some((item: any) => {
-          return item.id == data.id
-        })
-        for (let i = 0; i < state.orgData.length; i++) {
-          if (state.orgData[i].id == data.id) {
-            if (data.type == 'add') {
-              return
-            }
-          }
-        }
-        if (result) {
-          data.type = 'has'
-          state.orgData.push(data)
-        } else {
-          data.type = 'add'
-          state.orgData.push(data)
-        }
+        handleBoxClick(state.rightData, state.orgData, data)
       }
     } else {
       if (radio.value == '1') {
-        let result = state.rightData.some((item: any) => {
-          return item.id == data.id
-        })
-        state.orgData.forEach((el, index) => {
-          if (el.id == data.id) {
-            if (result) {
-              el.type = 'del'
-            } else {
-              state.orgData.splice(index, 1)
-            }
-          }
-        })
+        handleBoxCancelClick(state.rightData, state.orgData, data)
       }
     }
   }
-  const handleNodeClick = (data: Tree) => {
-    console.log(data)
-    API.company
-      .getAuthorityTree({
-        data: {
-          id: data.id
-        }
-      })
-      .then((res: ResultType) => {
-        let arr = []
-        arr.push(res.data)
-        handleTreeData(arr)
-        state.centerTree = arr
-        console.log(state.centerTree)
-      })
+  const handleNodeClick = (data: Tree, load: boolean, search?: string) => {
+    if (typeof load == 'object' && typeof search == 'object') {
+      searchValue.value = ''
+    }
+    if (typeof load !== 'boolean') {
+      page.currentPage = 1
+    } else if (typeof search == 'string') {
+      page.currentPage = 1
+    }
+    switch (radio.value) {
+      case '2':
+        state.loadID = data
+        API.company
+          .getAuthorityTree({
+            data: {
+              id: data.id,
+              filter: typeof search == 'string' ? search : ''
+            }
+          })
+          .then((res: ResultType) => {
+            let arr = []
+            arr.push(res.data)
+            handleTreeData(arr)
+            state.centerTree = arr
+            if (state.authorData.length > 0) {
+              let arr: any[] = []
+              state.authorData.forEach((el) => {
+                if (el.type == 'add' || el.type == 'has') {
+                  arr.push(el.id)
+                }
+              })
+              centerTree.value.setCheckedKeys(arr, true)
+            }
+          })
+        break
+      case '3':
+        state.loadID = data
+        API.company
+          .getDepartmentPersons({
+            data: {
+              id: data.id,
+              limit: page.pageSize,
+              offset: handleCurrent.value,
+              filter: typeof search == 'string' ? search : ''
+            }
+          })
+          .then((res: ResultType) => {
+            if (load == true) {
+              state.centerTree.concat(res.data.result)
+            } else {
+              state.centerTree = res.data.result ? res.data.result : []
+            }
+
+            if (state.personsData.length > 0) {
+              let arr: any[] = []
+              state.personsData.forEach((el) => {
+                if (el.type == 'add' || el.type == 'has') {
+                  arr.push(el.id)
+                }
+              })
+              centerTree.value.setCheckedKeys(arr, true)
+            }
+          })
+        break
+      case '4':
+        state.loadID = data
+        API.company
+          .getIdentities({
+            data: {
+              id: data.id,
+              limit: page.pageSize,
+              offset: handleCurrent.value,
+              filter: typeof search == 'string' ? search : ''
+            }
+          })
+          .then((res: ResultType) => {
+            if (load == true) {
+              state.centerTree.concat(res.data.result)
+            } else {
+              state.centerTree = res.data.result ? res.data.result : []
+            }
+
+            if (state.identitysData.length > 0) {
+              let arr: any[] = []
+              state.identitysData.forEach((el) => {
+                if (el.type == 'add' || el.type == 'has') {
+                  arr.push(el.id)
+                }
+              })
+              centerTree.value.setCheckedKeys(arr, true)
+            }
+          })
+        break
+      default:
+        break
+    }
   }
   const handleTreeData = (item: any) => {
     for (let i = 0; i < item.length; i++) {
@@ -230,21 +444,57 @@
     resource.value = id
   }
   const delContentAuth = (item: any) => {
-    if (item.type == 'del') {
-      return
-    } else if (item.type == 'add') {
-      state.authorData.forEach((el, index) => {
-        if (el.id == item.id) {
-          state.authorData.splice(index, 1)
-          centerTree.value.setChecked(item.id, false)
-        }
-      })
+    if (radio.value == '2') {
+      if (item.type == 'del') {
+        return
+      } else if (item.type == 'add') {
+        state.authorData.forEach((el, index) => {
+          if (el.id == item.id) {
+            state.authorData.splice(index, 1)
+            centerTree.value.setChecked(item.id, false)
+          }
+        })
+      } else {
+        state.authorData.forEach((el, index) => {
+          if (el.id == item.id) {
+            el.type == 'del'
+          }
+        })
+      }
+    } else if (radio.value == '3') {
+      if (item.type == 'del') {
+        return
+      } else if (item.type == 'add') {
+        state.personsData.forEach((el, index) => {
+          if (el.id == item.id) {
+            state.personsData.splice(index, 1)
+            centerTree.value.setChecked(item.id, false)
+          }
+        })
+      } else {
+        state.personsData.forEach((el, index) => {
+          if (el.id == item.id) {
+            el.type == 'del'
+          }
+        })
+      }
     } else {
-      state.authorData.forEach((el, index) => {
-        if (el.id == item.id) {
-          el.type == 'del'
-        }
-      })
+      if (item.type == 'del') {
+        return
+      } else if (item.type == 'add') {
+        state.identitysData.forEach((el, index) => {
+          if (el.id == item.id) {
+            state.identitysData.splice(index, 1)
+            centerTree.value.setChecked(item.id, false)
+          }
+        })
+      } else {
+        state.identitysData.forEach((el, index) => {
+          if (el.id == item.id) {
+            el.type == 'del'
+          }
+        })
+      }
     }
   }
   const delContent = (item: any) => {
@@ -330,12 +580,13 @@
     height: 100%;
     display: flex;
     flex-direction: column;
+    overflow: hidden !important;
     &-header {
       display: flex;
       align-items: center;
     }
     &-content {
-      flex: 1;
+      height: 360px;
       width: 100%;
       display: flex;
       justify-content: space-between;
