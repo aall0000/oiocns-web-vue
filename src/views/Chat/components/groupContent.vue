@@ -259,6 +259,7 @@ defineExpose({
         border-radius: 5px;
         z-index: 1;
         margin-top: -10px;
+        font-size: small;
       }
 
       &-link {

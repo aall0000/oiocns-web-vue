@@ -572,7 +572,7 @@ const putawaySubmit = () => {
       margin-top: 10px;
     }
     &-ul {
-      background-color: #fff;
+      background-color: var(--el-bg-color);
       padding: 10px 24px;
 
       &-title {
