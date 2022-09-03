@@ -1,21 +1,12 @@
 <template>
   <div class="container">
-    <!-- 组内成员信息 -->
-    <div class="operate">
-      <div class="operate-btns">
-        <div class="edit">
-          <el-button type="primary" @click="friendShow">加入群聊</el-button>
-          <el-button type="primary" @click="addQun = true">发起群聊</el-button>
-        </div>
-      </div>
-    </div>
     <div class="tab-list">
       <el-table :data="state.qunList" stripe style="width: 100%; height: 100%"
         @select="handleSelect">
         <el-table-column type="selection" width="50" />
-        <el-table-column prop="name" label="群名称" />
-        <el-table-column prop="code" label="群编号" />
-        <el-table-column prop="remark" label="群简介" />
+        <el-table-column prop="name" label="群组名称" />
+        <el-table-column prop="code" label="群组编号" />
+        <el-table-column prop="remark" label="群组简介" />
         <el-table-column prop="name" label="操作">
           <template #default="scope">
             <el-button v-if="myId != scope.row.belongId" @click="exitCohort(scope.row.id)" type="primary">退出群聊</el-button>
@@ -25,26 +16,6 @@
         </el-table-column>
       </el-table>
     </div>
-    <!-- <div class="page-pagination">
-      <el-pagination small background layout="prev, pager, next" :total="50" class="mt-4" />
-    </div> -->
-    <searchCohort  v-if="searchDialog" :serachType="2" @closeDialog="closeDialog"  @checksSearch='checksSearch'/>
-    <el-dialog v-model="addQun" title="创建群" width="30%">
-      <el-form-item label="群名称">
-        <el-input v-model="qunName" placeholder="请输入群名称" clearable />
-      </el-form-item>
-      <el-form-item label="群编号">
-        <el-input v-model="qunCode" placeholder="请输入群编号" clearable />
-      </el-form-item>
-      <el-form-item label="群简介">
-        <el-input v-model="qunTeamRemark" placeholder="请输入群简介" type="textarea" clearable :rows="4" />
-      </el-form-item>
-      <template #footer>
-        <span class="dialog-footer">
-          <el-button type="primary" @click="createCohort">确认</el-button>
-        </span>
-      </template>
-    </el-dialog>
   </div>
 </template>
 <script lang="ts" setup>
@@ -52,7 +23,12 @@ import $services from '@/services'
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { useUserStore } from '@/store/user'
-import searchCohort from '@/components/searchs/index.vue'
+
+const props = defineProps({
+  type: {
+    type: String
+  }
+})
 
 const { queryInfo } = useUserStore()
 const myId = queryInfo.id
