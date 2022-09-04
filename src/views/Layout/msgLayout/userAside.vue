@@ -44,10 +44,10 @@
           value: '我的单位',
           label: '/user/userUnit'
         },
-        {
-          value: '账号绑定',
-          label: '/user/userAccountBind'
-        },
+        // {
+        //   value: '账号绑定',
+        //   label: '/user/userAccountBind'
+        // },
         {
           value: '安全设置',
           label: '/user/userSaveSet'

@@ -152,6 +152,7 @@ const update = ()=>{
           message: '修改成功',
           type: 'success'
         })
+        editCohortDialog.value = false
         getCohorts()
       }
     })
