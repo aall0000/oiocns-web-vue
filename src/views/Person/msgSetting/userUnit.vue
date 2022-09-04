@@ -84,39 +84,34 @@
   }
   const tableHead = ref([
     {
-      prop: 'id',
-      label: '单位ID',
-      name: 'id'
-    },
-    {
       prop: 'name',
       label: '单位名称',
-      name: 'name'
+      name: 'name',
+      width:'300'
     },
     {
       prop: 'code',
       label: '统一社会信用代码',
-      name: 'code'
-    },
-    {
-      prop: 'isMain',
-      label: '是否主单位',
-      name: 'isMain'
+      name: 'code',
+      width:'190'
     },
     {
       prop: 'belongId',
       label: '管理员',
-      name: 'belongId'
+      name: 'belongId',
+      width:'200'
     },
     {
       prop: 'createTime',
       label: '创建时间',
-      name: 'createTime'
+      name: 'createTime',
+      width:'200'
     },
     {
       prop: 'state',
       label: '申请状态',
-      name: 'state'
+      name: 'state',
+      width:'100'
     },
     {
       type: 'slot',

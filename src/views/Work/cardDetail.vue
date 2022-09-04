@@ -1,15 +1,9 @@
 <template>
   <div class="thing">
-    <div class="thing-head">
-      <div class="thing-type">事 / 任务卡片 / 查看详情</div>
-      <div class="thing-mian">
-        <div class="thing-setting">工作台</div>
-      </div>
-    </div>
     <el-menu
       :default-active="activeIndex"
       class="el-menu-demo"
-      style="height: 45px; padding-left: 20px"
+      style="height: 60px; padding-left: 20px"
       mode="horizontal"
       @select="handleSelect"
     >
@@ -22,103 +16,129 @@
       <el-menu-item index="5">已逾期</el-menu-item> -->
     </el-menu>
     <div class="content">
-      <div class="search">
-        <!-- <el-input class="input" v-model="input" placeholder="Please input" /> -->
+      <!-- <div class="search">
+        <el-input class="input" v-model="input" placeholder="Please input" />
         <div class="edit">
-          <!-- <el-button type="primary" color="#153ec9">新建代办</el-button>
+          <el-button type="primary" color="#153ec9">新建代办</el-button>
           <el-button>拒绝代办</el-button>
-          <el-button>完成代办</el-button> -->
+          <el-button>完成代办</el-button>
         </div>
-      </div>
+      </div> -->
       <div class="tab-list">
-        <el-table :data="tableData" stripe style="width: 100%" @select="select" :locale="zhCn">
-          <el-table-column prop="date" label="序号" type="selection" width="180" />
-          <el-table-column
-            prop="target.name"
-            label="全部"
-            width="180"
-            column-key="date"
-            :filters="[
-              { text: '全部', value: '全部' },
-              { text: '审批', value: '审批' },
-              { text: '群公告', value: '群公告' }
-            ]"
-            :filter-method="changeSelect"
-          />
-          <el-table-column prop="target.typeName" label="内容" >
-             <template #default="scope">
-              <div v-if="scope.row">
-                 {{scope.row.target.name}}申请加入{{scope.row.team.name}}
-              </div>
+        <DiyTable
+            class="diytable"
+            ref="diyTable"
+            :hasTableHead="false"
+            @handleUpdate="handleUpdate"
+            :tableData="tableData"
+            :tableHead="tableHead"
+          >
+            <template #content="scope">
+                {{ scope.row.target.name }}申请加入{{ scope.row.team.name }}
             </template>
-          </el-table-column>
-          <!-- <el-table-column prop="date" label="链接" /> -->
-          <el-table-column prop="status" label="状态">
-            <template #default="scope">
-              <div v-if="scope.row.status === 200">待批</div>
-              <div v-else>待批</div>
+            <template #status="scope">
+              <div v-if="scope.row.status>= 0 && scope.row.status<=100">待批</div>
+              <div v-else-if="scope.row.status> 100 &&scope.row.status <=200">已通过</div>
+              <div v-else>已拒绝</div>
             </template>
-          </el-table-column>
-          <el-table-column prop="target.updateTime" sortable label="发送时间" width="220" />
-          <el-table-column prop="date" label="操作" width="180">
-            <template #default="scope">
-              <!-- <div v-if="scope.row.status === 200"></div> -->
-              <div v-if="activeIndex=='1'">
-                <span style="margin-right: 10px" @click="joinSuccess(scope.row)">通过</span>
-                <span @click="joinRefse(scope.row)">拒绝</span>
+            <template #option="scope">
+              <div v-if="activeIndex == '1'">
+                <el-button link type="primary" style="margin-right: 10px" @click="joinSuccess(scope.row)">通过</el-button>
+                <el-button link type="primary"  @click="joinRefse(scope.row)">拒绝</el-button>
               </div>
               <div v-else>
-                <span @click="cancelJoin(scope.row)">取消申请</span>
+                <el-button link type="primary"  @click="cancelJoin(scope.row)">取消申请</el-button>
               </div>
             </template>
-          </el-table-column>
-        </el-table>
-      </div>
-      <div class="page">
-        <el-pagination small background layout="prev, pager, next" :total="50" class="mt-4" />
+          </DiyTable>
       </div>
     </div>
   </div>
 </template>
 <script lang="ts" setup>
   import $services from '@/services'
-  import { ref, onMounted } from 'vue'
-  import zhCn from 'element-plus/lib/locale/lang/zh-cn'
+  import { ref, onMounted,reactive } from 'vue'
   import { ElMessage } from 'element-plus'
   import { storeToRefs } from 'pinia'
   import { useUserStore } from '@/store/user'
-  import {useRouter} from "vue-router"
+  import { useRouter } from 'vue-router'
+  import DiyTable from '@/components/diyTable/index.vue'
+
   const store = useUserStore()
   const { workspaceData } = storeToRefs(store)
   var tableData = ref<any>([])
+  const diyTable = ref(null)
+    // 表格展示数据
+  const pageStore = reactive({
+    tableData: [],
+    currentPage: 1,
+    pageSize: 20,
+    total: 0
+  })
+
   const activeIndex = ref<string>('1')
   var getList = () => {
     $services.person
       .approval({
         data: {
-          offset: 0,
-          limit: 10
+          offset: (pageStore.currentPage-1)*pageStore.pageSize,
+          limit: pageStore.pageSize
         }
       })
       .then((res: ResultType) => {
         tableData.value = res.data.result
+        diyTable.value.state.page.total = res.data.total;
       })
   }
   var getApplyList = () => {
     $services.person
       .getAllApply({
         data: {
-          offset: 0,
-          limit: 10
+          offset: (pageStore.currentPage-1)*pageStore.pageSize,
+          limit: pageStore.pageSize
         }
       })
       .then((res: ResultType) => {
         tableData.value = res.data.result
+        diyTable.value.state.page.total = res.data.total;
       })
   }
-  var select = () => {
-    console.log('select')
+  const tableHead = ref([
+    {
+      prop: 'target.name',
+      label: '申请人',
+      name: 'target.name'
+    },
+    {
+      type:'slot',
+      prop: 'content',
+      label: '内容',
+      name: 'content'
+    },
+    {
+      type:'slot',
+      prop: 'status',
+      label: '状态',
+      name: 'status'
+    },
+    {
+      prop: 'target.updateTime',
+      label: '发送时间',
+      name: 'target.updateTime'
+    },
+    {
+      type: 'slot',
+      prop: 'option',
+      label: '操作',
+      name: 'option'
+    }
+  ])
+  const handleUpdate = (page: any) => {
+    pageStore.currentPage = page.currentPage
+    pageStore.pageSize = page.pageSize
+    getList()
   }
+  
   var joinRefse = (item: { id: '' }) => {
     $services.person
       .joinRefuse({
@@ -131,9 +151,9 @@
           message: '拒绝成功',
           type: 'success'
         })
-        if(activeIndex.value === '1'){
+        if (activeIndex.value === '1') {
           getList()
-        }else{
+        } else {
           getApplyList()
         }
       })
@@ -150,9 +170,9 @@
           message: '取消成功',
           type: 'success'
         })
-        if(activeIndex.value === '1'){
+        if (activeIndex.value === '1') {
           getList()
-        }else{
+        } else {
           getApplyList()
         }
       })
@@ -169,32 +189,29 @@
           message: '添加成功',
           type: 'success'
         })
-        if(activeIndex.value === '1'){
+        if (activeIndex.value === '1') {
           getList()
-        }else{
+        } else {
           getApplyList()
         }
       })
   }
-  var changeSelect = () => {
-    console.log()
-  }
   const handleSelect = (key: any, keyPath: string[]) => {
     activeIndex.value = key
-    if(key === '1'){
+    if (key === '1') {
       getList()
-    }else{
+    } else {
       getApplyList()
     }
   }
   onMounted(() => {
     const route = useRouter()
-    const selectType = route.currentRoute.value.query.type;
-    if(selectType == '1'){
-      activeIndex.value='1'
+    const selectType = route.currentRoute.value.query.type
+    if (selectType == '1') {
+      activeIndex.value = '1'
       getList()
-    }else{
-      activeIndex.value='2'
+    } else {
+      activeIndex.value = '2'
       getApplyList()
     }
   })
@@ -230,7 +247,7 @@
     }
   }
   .content {
-    background: #f0f2f5;
+    height: calc(100% - 60px);
     padding: 20px;
     .search {
       background: #fff;
@@ -246,6 +263,11 @@
       }
     }
     .tab-list {
+      height: 100%;
+      overflow: hidden;
+      box-sizing: border-box;
+      padding: 20px 30px 0 30px;
+      background: #fff;
       span {
         cursor: pointer;
       }
