@@ -141,16 +141,27 @@
 
   // 跳转至角色管理页面
   const toAuth = ()=>{
-    router.push({ path: '/relation/authority', query: {
-      belongId: selectItem.value.id,
-      name: selectItem.value.label,
-      code: selectItem.value.data.code,
-      teamRemark: selectItem.value.data.teamRemark
-    }})
+    router.push({
+      path: '/relation/authority',
+      query: {
+        title: '集团',
+        belongId: selectItem.value.id,
+        name: selectItem.value.label,
+        code: selectItem.value.data.code,
+        teamRemark: selectItem.value.data.teamRemark
+      }
+    })
   }
   // 跳转至身份管理页面
   const toIdentity = ()=>{
-    router.push({ path: '/relation/identity', query: { belongId:  selectItem.value.id }})
+    router.push({
+      path: '/relation/identity',
+      query: {
+        title: '群组',
+        belongId: selectItem.value.id,
+        name: selectItem.value.label,
+      }
+    })
   }
 </script>
 

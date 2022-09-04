@@ -34,7 +34,7 @@
   }
 
   const workspace = () => {
-    if (store.workspaceData.name === '个人空间') {
+    if (router.currentRoute.value.path.startsWith("/user")) {
       menu.value = [
         {
           value: '个人信息',
@@ -51,11 +51,7 @@
         {
           value: '安全设置',
           label: '/user/userSaveSet'
-        },
-        // {
-        //   value: '测试',
-        //   label: 'test'
-        // }
+        }
       ]
     } else {
       menu.value = [

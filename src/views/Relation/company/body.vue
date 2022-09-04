@@ -11,10 +11,9 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { ref,onMounted } from 'vue'
+import { ref } from 'vue'
 import type { TabsPaneContext } from 'element-plus'
 import User from './User.vue'
-import Identity from './Identity.vue'
 
 const activeName = ref('user')
 let selectItem = ref<any>({})

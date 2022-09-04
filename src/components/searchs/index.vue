@@ -20,7 +20,7 @@
     >
       <template #remark="scope">
         <el-tooltip :content="scope.row.remark" placement="bottom" effect="light">
-          <template #content> 
+          <template #content>
             <div class="tooltip-text" style="width:300px">{{scope.row.remark}}</div>
           </template>
           <div class="remark-text">
@@ -124,7 +124,7 @@
     remoteMethod()
   })
   const remoteMethod = () => {
-      let data 
+      let data
       if(props.serachType==5|| props.serachType ==6){
        data= {
           filter: value.value,

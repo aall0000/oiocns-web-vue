@@ -310,7 +310,7 @@ const cardHeight = ref(null)
 const tableHeight = ref<number>(100)
 onMounted(() => {
   getUsers()
-  
+
 
 })
 
@@ -318,8 +318,7 @@ watch(props, () => {
   getUsers()
   setTimeout(() => {
     let headerHeight = cardHeight.value?.clientHeight
-    console.log('aaaa',headerHeight)
-    tableHeight.value = headerHeight 
+    tableHeight.value = headerHeight
   }, 100);
 });
 

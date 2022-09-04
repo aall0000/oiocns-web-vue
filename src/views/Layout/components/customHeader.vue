@@ -1,11 +1,11 @@
 <template>
   <el-row class="page-custom-header">
     <!-- 左侧 -->
-    <el-col class="" :span="4">
+    <el-col class="head-title" :span="4">
       <div style="display: flex; align-items: center" @mouseleave="handleClose()">
         <!-- <img class="logo" src="@/assets/img/avatar.jpg" alt="logo" /> -->
-        <div class="select-item__imgSelect" style="margin-right: 10px;">
-          {{  workspaceData?.name.slice(0, 1) }}
+        <div class="select-item__imgSelect" style="margin-right: 5px;">
+          {{  workHead() }}
         </div>
         <div class="col-box" @click="onClickUnit">
           <div class="col-text">{{  workspaceData?.name || ''  }}</div>
@@ -68,9 +68,9 @@
         </template>
       </el-dropdown> -->
     </el-col>
-    <!-- 右侧 -->
-    <el-col :span="12" class="col-center">
-      <el-popover trigger="click" :visible="visible" placement="bottom" :width="950">
+    <!-- 中间搜索 -->
+    <el-col :span="6" class="col-center">
+      <el-popover trigger="click" :visible="visible" placement="bottom" :width="500">
         <template #reference>
           <el-input ref="searchRef" class="right-con" v-model="SearchInfo" :style="{ width: '100%', height: '40px' }"
             placeholder="请输⼊想搜索的功能">
@@ -82,25 +82,33 @@
         <SearchDialog></SearchDialog>
       </el-popover>
     </el-col>
-    <el-col :span="8" class="flex col-right">
-      <el-space>
+     <!-- 右侧 -->
+    <el-col :span="14" class="flex col-right">
+      <el-space class="right-navbar">
+        <el-link  :underline="false" class="header-message-icon" @click="()=>router.push('/chat')">
+          <el-badge :value="anydata?.message?.noReadCount>10 ?`10+` : anydata?.message?.noReadCount" v-if="anydata?.message?.noReadCount &&anydata?.message?.noReadCount >0" >
+            <el-icon class="header-message-icon" :size="18"><ChatDotSquare /></el-icon>
+          </el-badge>
+          <el-icon class="header-message-icon" :size="18" v-else><ChatDotSquare /></el-icon>
+        </el-link>
         <el-switch v-model="isDark" active-icon="Moon" inactive-icon="Sunny" inline-prompt></el-switch>
-        <el-dropdown trigger="click">
+        <el-dropdown trigger="hover" size="large" class="dropdown-menu">
           <span class="el-dropdown-link">
-            <headImg :name="queryInfo.name" :limit="1" :imgWidth="40" :isSquare="false"></headImg>
-            <span>{{  queryInfo.name  }}</span>
-            <el-icon style="margin-left: 15px">
+            <headImg :name="queryInfo.name" :limit="1" :imgWidth="24" :isSquare="false"></headImg>
+            <!-- <span>{{  queryInfo.name  }}</span> -->
+            <!-- <el-icon style="margin-left: 15px">
               <CaretBottom />
-            </el-icon>
+            </el-icon> -->
           </span>
           <template #dropdown>
-            <el-dropdown-menu>
-              <el-dropdown-item @click="toWork">首页配置</el-dropdown-item>
-              <el-dropdown-item @click="toSetting">信息设置</el-dropdown-item>
-              <el-dropdown-item>帮助中心 </el-dropdown-item>
-              <el-dropdown-item>切换语言 </el-dropdown-item>
-              <el-dropdown-item>切换主题 </el-dropdown-item>
-              <el-dropdown-item @click="exitLogin">退出登录</el-dropdown-item>
+            <el-dropdown-menu >
+              <el-dropdown-item @click="toWork" icon="Setting">首页配置</el-dropdown-item>
+              <el-dropdown-item @click="toUserSetting" icon="Postcard">个人中心</el-dropdown-item>
+              <el-dropdown-item v-if="isUnitWork" @click="toCompanySetting" icon="Postcard">单位中心</el-dropdown-item>
+              <el-dropdown-item icon="Help">帮助中心 </el-dropdown-item>
+              <el-dropdown-item icon="Switch">切换语言 </el-dropdown-item>
+              <el-dropdown-item  icon="Brush">切换主题 </el-dropdown-item>
+              <el-dropdown-item @click="exitLogin" icon="SwitchButton" divided>退出登录</el-dropdown-item>
             </el-dropdown-menu>
           </template>
         </el-dropdown>
@@ -117,13 +125,14 @@
 </template>
 
 <script lang="ts" setup>
-  import InfiniteScroll from 'element-plus'
+  
   import { ref, watch, onMounted, reactive, computed } from 'vue'
   import { Search } from '@element-plus/icons-vue'
-  import UserOtherDataConnection from '@/utils/hubConnection'
+  import anyStore from '@/utils/hubConnection'
   import { storeToRefs } from 'pinia'
   import { useRouter } from 'vue-router'
   import { useUserStore } from '@/store/user'
+  import { useAnyData } from '@/store/anydata'
   import $services from '@/services'
   import { ElMessage } from 'element-plus'
   import CreateUnitDialog from './createUnitDialog.vue'
@@ -137,6 +146,7 @@
   // const toggleDark = useToggle(isDark)
 
   const store = useUserStore()
+  const anydata = useAnyData()
   const SearchInfo = ref('')
   const router = useRouter()
   let current = ref(1)
@@ -146,13 +156,20 @@
   const { queryInfo } = storeToRefs(store)
   const workspaceData = store.workspaceData
   const dropdown = ref()
+  const workHead = ()=>{
+    if(workspaceData?.name == "个人空间"){
+      return '我'
+    }
+    return workspaceData?.name[0] || ''
+  }
+  const isUnitWork = ref<boolean>(workspaceData.id != queryInfo.value.id)
 
 const getDropMenuStyle = computed(() => {
   if (!btnType.value) {
     return 'height:0px'
   } else {
     let height = store.userCompanys.length < 6 ? store.userCompanys.length : 6
-    return store.userCompanys.length ? 'height:' + (height * 45 + 60) + 'px;' : 'height:80px'
+    return store.userCompanys.length ? 'height:' + (height * 45 + 56) + 'px;' : 'height:56px'
   }
 })
 
@@ -311,19 +328,18 @@ const getDropMenuStyle = computed(() => {
 const toWork = () => {
   router.push('/workHome')
 }
-const toSetting = () => {
-  if (store.workspaceData.name === '个人空间') {
-    router.push('/user')
-  } else {
-    router.push('/company')
-  }
+const toUserSetting = ()=>{
+  router.push('/user')
+}
+const toCompanySetting = ()=>{
+  router.push('/company')
 }
 const exitLogin = () => {
   sessionStorage.clear()
   store.resetState()
   router.push('/login')
   //  取消该账号的未读消息订阅
-  UserOtherDataConnection.unSubscribed(`message.noread`)
+  anyStore.unSubscribed(`message.noread`)
 }
 </script>
 
@@ -376,10 +392,10 @@ const exitLogin = () => {
 
 .select-drop {
   position: absolute;
-  top: 60px;
+  top: 40px;
   left: -20px;
   overflow: hidden;
-  background: #ffffff;
+  background: var(--el-bg-color);
   display: flex;
   flex-direction: column;
   transition: all 0.5s;
@@ -439,8 +455,8 @@ const exitLogin = () => {
 }
 
 .page-custom-header {
-  height: 60px;
-  line-height: 60px;
+  // height: 60px;
+  // line-height: 60px;
 
   .el-col {
     display: flex;
@@ -456,6 +472,30 @@ const exitLogin = () => {
 
     .right-con {
       margin-right: 18px;
+    }
+    .right-navbar {
+      height: 100%;
+    }
+    :deep(.right-navbar .el-space__item ) {
+      
+      padding: 0 12px;
+     }
+    :deep(.right-navbar .el-space__item .el-switch) {
+      
+      height: var(--el-header-height);
+     }
+    :deep(.right-navbar .el-space__item:hover) {
+      background: rgba(0, 0, 0, 0.03);
+      height: 100%;
+    }
+    // .dropdown-menu {
+    //   padding:  0 12px;
+    // }
+    .header-message-icon {
+      cursor: pointer;
+      &:hover {
+        color: var(--el-color-primary);
+      }
     }
   }
 }

@@ -292,7 +292,7 @@ const handleNewMsgShow = (data: any) => {
           val.msgBody = data.msgBody
           val.msgTime = data.createTime
           val.msgType = data.msgType
-          if (val.id != activeInfo.value.id || item.id != activeInfo.value.spaceId) {
+          if (data.fromId!==data.toId && (val.id != activeInfo.value.id || item.id != activeInfo.value.spaceId)) {
             val.count = (val.count || 0) + 1
             console.log({ groupid: data.spaceId, userid: sessionId, count: 1 })
             updateMessageNoread({ groupid: data.spaceId, userid: sessionId, count: 1 })
