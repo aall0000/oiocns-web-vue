@@ -1,512 +1,788 @@
 <template>
-  <el-row class="page-custom-header">
-    <!-- 左侧 -->
-    <el-col class="head-title" :span="4">
-      <div style="display: flex; align-items: center">
-        <div class="select-item__imgSelect" style="margin-right: 5px">
-          {{ workHead() }}
-        </div>
-        <div class="col-box" @click="onClickUnit">
-          <div class="col-text">{{ workspaceData?.name || '' }}</div>
-          <div class="col-icon">
-            <el-icon>
-              <CaretBottom
-                :style="
-                  btnType
-                    ? 'transform: rotate(180deg);transition: all 0.5s;'
-                    : 'transform: rotate(0);transition: all 0.5s;'
-                "
-              />
-            </el-icon>
-          </div>
-        </div>
-        <div>
-          <div @mouseleave="handleClose()" class="select-drop" :style="getDropMenuStyle">
-            <div class="select-box" v-infinite-scroll="load" infinite-scroll-immediate>
-              <div
-                class="seletc-drop__box"
-                v-for="item in store.userCompanys"
-                :key="item.id"
-                @click="switchCompany(item)"
-              >
-                <div class="select-drop__flex">
-                  <div class="select-item__imgSelect">
-                    {{ item.team ? item.team.name.slice(0, 1) : item.name.slice(0, 1) }}
-                  </div>
-                  <div class="select-item__titleSelect">{{
-                    item.team ? item.team.name : item.name
-                  }}</div>
-                </div>
-              </div>
-            </div>
-
-            <div class="joinBox">
-              <div class="joinBtn" @click="createCompany">创建单位</div>
-              <div class="joinBtn" @click="friendShow">加入单位</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </el-col>
-    <!-- 中间搜索 -->
-    <el-col :span="6" class="col-center">
-      <el-popover trigger="click" :visible="visible" placement="bottom" :width="500">
-        <template #reference>
-          <el-input
-            ref="searchRef"
-            class="right-con"
-            v-model="SearchInfo"
-            :style="{ width: '100%', height: '40px' }"
-            placeholder="请输⼊想搜索的功能"
-          >
-            <template #prepend>
-              <el-button :icon="Search" @click="showSearchInfo" />
+  <div class="cohortLayout">
+    <div class="cohortLayout-header">
+      <div class="cohortLayout-header-text">请选择资源：</div>
+      <div class="cohortLayout-header-tabs">
+        <el-tabs v-model="activeName" class="demo-tabs">
+          <el-tab-pane v-for="(item, index) in tabs" :key="item.id" :name="index">
+            <template #label>
+              <div slot="label" @click="handleTabClick(item.id)">{{ item.name }}</div>
             </template>
-          </el-input>
-        </template>
-        <SearchDialog></SearchDialog>
-      </el-popover>
-    </el-col>
-    <!-- 右侧 -->
-    <el-col :span="14" class="flex col-right">
-      <el-space class="right-navbar">
-        <el-link :underline="false" class="header-message-icon" @click="() => router.push('/chat')">
-          <el-badge
-            :value="anydata?.message?.noReadCount > 10 ? `10+` : anydata?.message?.noReadCount"
-            v-if="anydata?.message?.noReadCount && anydata?.message?.noReadCount > 0"
-          >
-            <el-icon class="header-message-icon" :size="18"><ChatDotSquare /></el-icon>
-          </el-badge>
-          <el-icon class="header-message-icon" :size="18" v-else><ChatDotSquare /></el-icon>
-        </el-link>
-        <el-switch
-          v-model="isDark"
-          active-icon="Moon"
-          inactive-icon="Sunny"
-          inline-prompt
-        ></el-switch>
-        <el-dropdown trigger="hover" size="large" class="dropdown-menu">
-          <span class="el-dropdown-link">
-            <headImg :name="queryInfo.name" :limit="1" :imgWidth="24" :isSquare="false"></headImg>
-            <!-- <span>{{  queryInfo.name  }}</span> -->
-            <!-- <el-icon style="margin-left: 15px">
-              <CaretBottom />
-            </el-icon> -->
-          </span>
-          <template #dropdown>
-            <el-dropdown-menu>
-              <el-dropdown-item @click="toWork" icon="Setting">首页配置</el-dropdown-item>
-              <el-dropdown-item @click="toUserSetting" icon="Postcard">个人中心</el-dropdown-item>
-              <el-dropdown-item v-if="isUnitWork" @click="toCompanySetting" icon="Postcard"
-                >单位中心</el-dropdown-item
-              >
-              <el-dropdown-item icon="Help">帮助中心 </el-dropdown-item>
-              <el-dropdown-item icon="Switch">切换语言 </el-dropdown-item>
-              <el-dropdown-item icon="Brush">切换主题 </el-dropdown-item>
-              <el-dropdown-item @click="exitLogin" icon="SwitchButton" divided
-                >退出登录</el-dropdown-item
-              >
-            </el-dropdown-menu>
+          </el-tab-pane>
+        </el-tabs>
+      </div>
+    </div>
+    <div class="cohortLayout-header" style="margin-top: 10px">
+      <div class="cohortLayout-header-text">请选择分发方式：</div>
+      <div class="cohortLayout-header-tabs">
+        <el-radio-group v-model="radio">
+          <el-radio v-for="item in state.way" :key="item.id" :label="item.id">{{
+            item.label
+          }}</el-radio>
+        </el-radio-group>
+      </div>
+    </div>
+    <div class="cohortLayout-content">
+      <div class="cohortLayout-content-left" :style="'width:' + (radio == '1' ? '49%' : '33%')">
+        <el-input v-model="searchLeftValue" class="w-50 m-2" placeholder="搜索">
+          <template #prefix>
+            <el-icon class="el-input__icon"><search /></el-icon>
           </template>
-        </el-dropdown>
-      </el-space>
-    </el-col>
-  </el-row>
-  <searchCompany
-    v-if="searchDialog"
-    :serachType="3"
-    @closeDialog="closeDialog"
-    @checksSearch="checksSearch"
-  ></searchCompany>
-  <template v-for="item in dialogShow" :key="item.key">
-    <CreateUnitDialog
-      v-if="item.key == 'unit' && item.value"
-      :dialogShow="item"
-      @closeDialog="closeDialog"
-      @switchCreateCompany="switchCreateCompany"
-    ></CreateUnitDialog>
-    <SearchDialog
-      v-if="item.key == 'search' && item.value"
-      :dialogShow="item"
-      :search="SearchInfo"
-      @closeDialog="closeDialog"
-    ></SearchDialog>
-  </template>
+        </el-input>
+        <el-tree
+          v-if="radio == '1'"
+          ref="leftTree"
+          node-key="id"
+          :data="cascaderTree"
+          :props="unitProps"
+          :check-strictly="true"
+          :default-expand-all="true"
+          show-checkbox
+          @check-change="handleCheckChange"
+          :filter-node-method="filterNode"
+        />
+        <el-tree
+          v-else
+          ref="leftTree"
+          :data="cascaderTree"
+          :props="unitProps"
+          :default-expand-all="true"
+          @node-click="handleNodeClick"
+          :filter-node-method="filterNode"
+        />
+      </div>
+      <div
+        class="cohortLayout-content-center"
+        style="width: 33%"
+        v-if="radio !== '1'"
+        v-infinite-scroll="load"
+        infinite-scroll-immediate="false"
+      >
+        <el-input v-model="searchValue" class="w-50 m-2" placeholder="搜索">
+          <template #prefix>
+            <el-icon class="el-input__icon"><search /></el-icon>
+          </template>
+        </el-input>
+        <el-tree
+          v-if="radio == '2' || radio == '3' || radio == '4'"
+          ref="centerTree"
+          node-key="id"
+          :check-strictly="true"
+          :data="state.centerTree"
+          :props="authorityProps"
+          :default-expand-all="true"
+          show-checkbox
+          @check-change="centerAuthorClick"
+        />
+      </div>
+      <div class="cohortLayout-content-right" :style="'width:' + (radio == '1' ? '49%' : '33%')">
+        <Author
+          v-if="radio == '1'"
+          @delContent="delContent"
+          :resource="resource"
+          :orgData="state.orgData"
+        ></Author>
+        <Author
+          v-if="radio == '2'"
+          @delContent="delContentAuth"
+          :resource="resource"
+          :orgData="state.authorData"
+        ></Author>
+        <Author
+          v-if="radio == '3'"
+          @delContent="delContentAuth"
+          :resource="resource"
+          :orgData="state.personsData"
+        ></Author>
+        <Author
+          v-if="radio == '4'"
+          @delContent="delContentAuth"
+          :resource="resource"
+          :orgData="state.identitysData"
+        ></Author>
+      </div>
+    </div>
+    <div class="footer">
+      <el-button type="primary" @click="submitAll">确认</el-button>
+      <el-button class="footer-btn" @click="closeDialog">取消</el-button>
+    </div>
+  </div>
 </template>
 
-<script lang="ts" setup>
-  import { ref, watch, onMounted, reactive, computed } from 'vue'
-  import { Search } from '@element-plus/icons-vue'
-  import anyStore from '@/utils/hubConnection'
-  import { storeToRefs } from 'pinia'
-  import { useRouter } from 'vue-router'
-  import { useUserStore } from '@/store/user'
-  import { useAnyData } from '@/store/anydata'
-  import $services from '@/services'
-  import { ElMessage } from 'element-plus'
-  import CreateUnitDialog from './createUnitDialog.vue'
-  import searchCompany from '@/components/searchs/index.vue'
-  import JoinUnitDialog from './joinUnitDialog.vue'
-  import SearchDialog from './searchDialog.vue'
-  import headImg from '@/components/headImg.vue'
-  import { useDark, useToggle } from '@vueuse/core'
-
-  const isDark = useDark()
-  // const toggleDark = useToggle(isDark)
-
-  const store = useUserStore()
-  const anydata = useAnyData()
-  const SearchInfo = ref('')
-  const router = useRouter()
-  let current = ref(1)
-  const visible = ref(false)
-  const showSearch = ref(false)
-  const btnType = ref(false)
-  const { queryInfo } = storeToRefs(store)
-  const workspaceData = store.workspaceData
-  const dropdown = ref()
-  const workHead = () => {
-    if (workspaceData?.name == '个人空间') {
-      return '我'
-    }
-    return workspaceData?.name[0] || ''
-  }
-  const isUnitWork = ref<boolean>(workspaceData.id != queryInfo.value.id)
-
-  const getDropMenuStyle = computed(() => {
-    if (!btnType.value) {
-      return 'height:0px'
-    } else {
-      let height = store.userCompanys.length < 6 ? store.userCompanys.length : 6
-      return store.userCompanys.length ? 'height:' + (height * 45 + 56) + 'px;' : 'height:56px'
-    }
-  })
-
-  const load = () => {
-    let currentPage = 0
-    current.value = current.value + 1
-    currentPage = (current.value - 1) * 10 + 1
-    store.getCompanyList(currentPage, workspaceData.id, true)
-  }
-  const dialogShow = reactive([
-    {
-      key: 'unit',
-      value: false
-    },
-    {
-      key: 'join',
-      value: false
-    },
-    {
-      key: 'search',
-      value: false
-    }
-  ])
-  const showSearchInfo = () => {
-    visible.value = !visible.value
-  }
-  // const getFocus = () => {
-  //   visible.value = true
-  // }
-  // const getBlur = () => {
-  //   if (!showSearch.value) {
-  //     visible.value = false
-  //   }
-  // }
-  // const mouseenter = () => {
-  //   showSearch.value = true
-  // }
-  // const mouseleave = () => {
-  //   showSearch.value = false
-  // }
-  const searchDialog = ref<boolean>(false)
-  type arrList = {
+<script setup lang="ts">
+  import InfiniteScroll from 'element-plus'
+  import { onMounted, ref, reactive, toRefs, watch, nextTick, computed } from 'vue'
+  import { ElMessage, ElMessageBox } from 'element-plus'
+  import API from '@/services'
+  import Author from './components/author.vue'
+  import type { TabsPaneContext } from 'element-plus'
+  interface Tree {
     id: string
+    label: string
+    data?: any
+    children?: Tree[]
   }
-  const checksSearch = (val: any) => {
-    if (val.value.length > 0) {
-      let arr: Array<arrList> = []
-      val.value.forEach((element: any) => {
-        arr.push(element.id)
+  type createInfo = {
+    info: ProductType
+  }
+  const searchValue = ref('')
+  const searchLeftValue = ref('')
+  const activeName = ref(0)
+  const tabs = ref([])
+  const radio = ref('1')
+  const leftTree = ref(null)
+  const centerTree = ref(null)
+  const resource = ref<string>('')
+  const state = reactive({
+    loadID: {
+      id: '',
+      label: ''
+    },
+    way: [
+      {
+        id: '1',
+        label: '按部门分发'
+      },
+      {
+        id: '2',
+        label: '按职权分发'
+      },
+      {
+        id: '3',
+        label: '按人员分发'
+      },
+      {
+        id: '4',
+        label: '按身份分发'
+      }
+    ],
+    orgData: [], // 集团分发右侧数据
+    rightData: [], // 集团分发历史数据
+    centerTree: [], // 职权分发中间树形
+    authorHisData: [], // 职权历史数据
+    authorData: [], // 职权右侧数据
+    personsHisData: [], // 人员历史数据
+    personsData: [], // 人员右侧数据
+    identitysData: [], //身份右侧数据
+    identitysHisData: [] // 身份历史数据
+  })
+  const authorityProps = {
+    label: 'name',
+    children: 'nodes'
+  }
+  const unitProps = {
+    label: 'label',
+    children: 'children'
+  }
+  const page = reactive({
+    currentPage: 1,
+    pageSize: 20
+  })
+  const handleCurrent: any = computed(() => {
+    return (page.currentPage - 1) * page.pageSize
+  })
+  watch(
+    () => radio.value,
+    (newValue, oldValue) => {
+      state.centerTree = []
+      nextTick(() => {
+        if (newValue == '1') {
+          state.orgData.forEach((el: any) => {
+            if (el.data.length > 0) {
+              let arr: any[] = []
+              el.data.forEach((al: any) => {
+                if (al.type == 'add' || al.type == 'has') {
+                  arr.push(al.id)
+                }
+              })
+              leftTree.value.setCheckedKeys(arr, true)
+            }
+          })
+        }
       })
-      console.log('val', arr)
-      joinSubmit(arr)
+    },
+    { immediate: true }
+  )
+  watch(
+    () => resource.value,
+    (newValue, oldValue) => {
+      console.log(newValue)
+      getAllHistory()
+    }
+  )
+  watch(
+    () => searchValue.value,
+    (newValue, oldValue) => {
+      console.log(newValue)
+      handleNodeClick(state.loadID, false, newValue)
+    }
+  )
+  watch(
+    () => searchLeftValue.value,
+    (newValue, oldValue) => {
+      leftTree.value!.filter(newValue)
+    }
+  )
+  const props = defineProps<createInfo>()
+  onMounted(() => {
+    searchResource()
+    getCompanyTree()
+  })
+  const emit = defineEmits(['closeDialog'])
+  const closeDialog = () => {
+    emit('closeDialog')
+  }
+
+  //获取当前资源下的所有
+  const getAllHistory = () => {}
+
+  // 树节点过滤
+  const filterNode = (value: string, data: any) => {
+    if (!value) return true
+    return data.label.includes(value)
+  }
+
+  // 提交表单
+  const submitAll = () => {
+    let departAdd = []
+    let departDel = []
+    let authorAdd = []
+    let authorDel = []
+    let personsAdd = []
+    let personsDel = []
+    let identityAdd = []
+    let identityDel = []
+
+    state.orgData.forEach((el) => {
+      if (el.type == 'add') {
+        departAdd.push(el)
+      } else if (el.type == 'del') {
+        departDel.push(el)
+      }
+    })
+
+    state.authorData.forEach((el) => {
+      if (el.type == 'add') {
+        personsAdd.push(el)
+      } else if (el.type == 'del') {
+        personsDel.push(el)
+      }
+    })
+
+    state.personsData.forEach((el) => {
+      if (el.type == 'add') {
+        authorAdd.push(el)
+      } else if (el.type == 'del') {
+        authorDel.push(el)
+      }
+    })
+
+    state.identitysData.forEach((el) => {
+      if (el.type == 'add') {
+        identityAdd.push(el)
+      } else if (el.type == 'del') {
+        identityDel.push(el)
+      }
+    })
+
+    if (departAdd.length > 0) {
+    }
+    if (departDel.length > 0) {
+    }
+    if (authorAdd.length > 0) {
+    }
+    if (authorDel.length > 0) {
+    }
+    if (personsAdd.length > 0) {
+    }
+    if (personsDel.length > 0) {
+    }
+    if (identityAdd.length > 0) {
+    }
+    if (identityDel.length > 0) {
+    }
+  }
+  // 中间树形滚动加载事件
+  const load = () => {
+    if (radio.value == '3') {
+      page.currentPage++
+      handleNodeClick(state.loadID, true)
+    }
+  }
+  // 中间树形点击事件
+  const centerAuthorClick = (data: any, checked: boolean, indeterminate: any) => {
+    console.log('点击中间', data, checked, indeterminate)
+    if (checked) {
+      if (radio.value == '2') {
+        state.authorData.forEach((el) => {
+          if (el.resource == resource.value) {
+            handleBoxClick(state.authorHisData, el.data, data)
+          }
+        })
+      } else if (radio.value == '3') {
+        state.personsData.forEach((el) => {
+          if (el.resource == resource.value) {
+            handleBoxClick(state.personsHisData, el.data, data)
+          }
+        })
+      } else {
+        state.identitysData.forEach((el) => {
+          if (el.resource == resource.value) {
+            handleBoxClick(state.identitysHisData, el.data, data)
+          }
+        })
+      }
     } else {
-      searchDialog.value = false
+      if (radio.value == '2') {
+        state.authorData.forEach((el) => {
+          if (el.resource == resource.value) {
+            handleBoxCancelClick(state.authorHisData, el.data, data)
+          }
+        })
+      } else if (radio.value == '3') {
+        state.personsData.forEach((el) => {
+          if (el.resource == resource.value) {
+            handleBoxCancelClick(state.personsHisData, el.data, data)
+          }
+        })
+      } else {
+        state.identitysData.forEach((el) => {
+          if (el.resource == resource.value) {
+            handleBoxCancelClick(state.identitysHisData, el.data, data)
+          }
+        })
+      }
     }
   }
-  const friendShow = () => {
-    searchDialog.value = true
-  }
-  const joinSubmit = (arr: any) => {
-    $services.company
-      .applyJoin({
-        data: {
-          id: arr.join('')
+  const handleBoxCancelClick = (hisData: any, dataList: any, data: any) => {
+    let result = hisData.some((item: any) => {
+      return item.id == data.id
+    })
+    dataList.forEach((el: any, index: number) => {
+      if (el.id == data.id) {
+        if (result) {
+          el.type = 'del'
+        } else {
+          dataList.splice(index, 1)
         }
-      })
-      .then((res: ResultType) => {
-        if (res.code == 200) {
-          searchDialog.value = false
-          ElMessage({
-            message: '申请成功',
-            type: 'success'
-          })
-        }
-      })
-  }
-
-  const onClickUnit = () => {
-    btnType.value = !btnType.value
-    if (!store.userCompanys || store.userCompanys.length == 0) {
-      store.getCompanyList(0, workspaceData.id, false)
-    }
-  }
-  const handleClose = () => {
-    btnType.value = false
-  }
-  const handleOpen = () => {
-    btnType.value = true
-  }
-  const createCompany = () => {
-    dialogShow.map((el) => {
-      if (el.key == 'unit') {
-        el.value = true
-        btnType.value = false
       }
     })
   }
-  const closeDialog = (key: string) => {
-    searchDialog.value = false
-    dialogShow.map((el) => {
-      if (el.key == key) {
-        el.value = false
-      }
+  const handleBoxClick = (hisData: any, dataList: any, data: any) => {
+    let result = hisData.some((item: any) => {
+      return item.id == data.id
     })
-  }
-  const onClickDrop = () => {
-    if (store.userCompanys.length == 0) {
-      current.value = 0
-      store.getCompanyList(current.value, workspaceData.id, false)
+    for (let i = 0; i < dataList.length; i++) {
+      if (dataList[i].id == data.id) {
+        if (data.type == 'add') {
+          return
+        }
+      }
+    }
+    if (result) {
+      data.type = 'has'
+      dataList.push(data)
+    } else {
+      data.type = 'add'
+      dataList.push(data)
     }
   }
+  // 左侧树点击事件
+  const handleCheckChange = (data: any, checked: boolean, indeterminate: any) => {
+    console.log('点击左侧', data, checked, indeterminate)
+    if (checked) {
+      if (radio.value == '1') {
+        state.orgData.forEach((el) => {
+          if (el.resource == resource.value) {
+            handleBoxClick(state.rightData, el.data, data)
+          }
+        })
+      }
+    } else {
+      if (radio.value == '1') {
+        state.orgData.forEach((el) => {
+          if (el.resource == resource.value) {
+            handleBoxCancelClick(state.rightData, el.data, data)
+          }
+        })
+      }
+    }
+  }
+  const handleNodeClick = (data: Tree, load: boolean, search?: string) => {
+    if (typeof load == 'object' && typeof search == 'object') {
+      searchValue.value = ''
+    }
+    if (typeof load !== 'boolean') {
+      page.currentPage = 1
+    } else if (typeof search == 'string') {
+      page.currentPage = 1
+    }
+    switch (radio.value) {
+      case '2':
+        state.loadID = data
+        API.company
+          .getAuthorityTree({
+            data: {
+              id: data.id,
+              filter: typeof search == 'string' ? search : ''
+            }
+          })
+          .then((res: ResultType) => {
+            let arr = []
+            arr.push(res.data)
+            handleTreeData(arr)
+            state.centerTree = arr
+            if (state.authorData.length > 0) {
+              let arr: any[] = []
+              state.authorData.forEach((el: any) => {
+                if (el.resource == resource.value) {
+                  el.data.forEach((al: any) => {
+                    if (al.type == 'add' || al.type == 'has') {
+                      arr.push(al.id)
+                    }
+                  })
+                }
+              })
+              centerTree.value.setCheckedKeys(arr, true)
+            }
+          })
+        break
+      case '3':
+        state.loadID = data
+        if (data.data.parentId == '0') {
+          API.company
+            .getPersons({
+              data: {
+                id: data.id,
+                limit: page.pageSize,
+                offset: handleCurrent.value,
+                filter: typeof search == 'string' ? search : ''
+              }
+            })
+            .then((res: ResultType) => {
+              if (load == true) {
+                state.centerTree.concat(res.data.result)
+              } else {
+                state.centerTree = res.data.result ? res.data.result : []
+              }
 
-  const switchCreateCompany = (data: { id: string }) => {
-    $services.person
-      .changeWorkspace({
+              if (state.personsData.length > 0) {
+                let arr: any[] = []
+                state.personsData.forEach((el: any) => {
+                  if (el.resource == resource.value) {
+                    el.data.forEach((al: any) => {
+                      if (al.type == 'add' || al.type == 'has') {
+                        arr.push(al.id)
+                      }
+                    })
+                  }
+                })
+                centerTree.value.setCheckedKeys(arr, true)
+              }
+            })
+        } else {
+          API.company
+            .getDepartmentPersons({
+              data: {
+                id: data.id,
+                limit: page.pageSize,
+                offset: handleCurrent.value,
+                filter: typeof search == 'string' ? search : ''
+              }
+            })
+            .then((res: ResultType) => {
+              if (load == true) {
+                state.centerTree.concat(res.data.result)
+              } else {
+                state.centerTree = res.data.result ? res.data.result : []
+              }
+
+              if (state.personsData.length > 0) {
+                let arr: any[] = []
+                state.personsData.forEach((el) => {
+                  if (el.resource == resource.value) {
+                    el.data.forEach((al: any) => {
+                      if (al.type == 'add' || al.type == 'has') {
+                        arr.push(al.id)
+                      }
+                    })
+                  }
+                })
+                centerTree.value.setCheckedKeys(arr, true)
+              }
+            })
+        }
+
+        break
+      case '4':
+        state.loadID = data
+        API.company
+          .getIdentities({
+            data: {
+              id: data.id,
+              limit: page.pageSize,
+              offset: handleCurrent.value,
+              filter: typeof search == 'string' ? search : ''
+            }
+          })
+          .then((res: ResultType) => {
+            if (load == true) {
+              state.centerTree.concat(res.data.result)
+            } else {
+              state.centerTree = res.data.result ? res.data.result : []
+            }
+
+            if (state.identitysData.length > 0) {
+              let arr: any[] = []
+              state.identitysData.forEach((el) => {
+                if (el.resource == resource.value) {
+                  el.data.forEach((al: any) => {
+                    if (al.type == 'add' || al.type == 'has') {
+                      arr.push(al.id)
+                    }
+                  })
+                }
+              })
+              centerTree.value.setCheckedKeys(arr, true)
+            }
+          })
+        break
+      default:
+        break
+    }
+  }
+  const handleTreeData = (item: any) => {
+    for (let i = 0; i < item.length; i++) {
+      if (item[i].nodes) {
+        handleTreeData(item[i].nodes)
+      } else {
+        item[i].nodes = []
+      }
+    }
+  }
+  const handleTabClick = (id: string) => {
+    resource.value = id
+  }
+  const delContentAuth = (item: any) => {
+    if (radio.value == '2') {
+      if (item.type == 'del') {
+        return
+      } else if (item.type == 'add') {
+        state.authorData.forEach((el) => {
+          if (el.resource == resource.value) {
+            el.data.forEach((al: any, index: number) => {
+              if (al.id == item.id) {
+                el.data.splice(index, 1)
+                centerTree.value.setChecked(item.id, false)
+              }
+            })
+          }
+        })
+      } else {
+        state.authorData.forEach((el, index) => {
+          if (el.resource == resource.value) {
+            el.data.forEach((al: any) => {
+              if (al.id == item.id) {
+                al.type == 'del'
+              }
+            })
+          }
+        })
+      }
+    } else if (radio.value == '3') {
+      if (item.type == 'del') {
+        return
+      } else if (item.type == 'add') {
+        state.personsData.forEach((el) => {
+          if (el.resource == resource.value) {
+            el.data.forEach((al: any, index: number) => {
+              if (al.id == item.id) {
+                el.data.splice(index, 1)
+                centerTree.value.setChecked(item.id, false)
+              }
+            })
+          }
+        })
+      } else {
+        state.personsData.forEach((el, index) => {
+          if (el.resource == resource.value) {
+            el.data.forEach((al: any) => {
+              if (al.id == item.id) {
+                al.type == 'del'
+              }
+            })
+          }
+        })
+      }
+    } else {
+      if (item.type == 'del') {
+        return
+      } else if (item.type == 'add') {
+        state.identitysData.forEach((el) => {
+          if (el.resource == resource.value) {
+            el.data.forEach((al: any, index: number) => {
+              if (al.id == item.id) {
+                el.data.splice(index, 1)
+                centerTree.value.setChecked(item.id, false)
+              }
+            })
+          }
+        })
+      } else {
+        state.identitysData.forEach((el, index) => {
+          if (el.resource == resource.value) {
+            el.data.forEach((al: any) => {
+              if (al.id == item.id) {
+                al.type == 'del'
+              }
+            })
+          }
+        })
+      }
+    }
+  }
+  const delContent = (item: any) => {
+    if (item.type == 'del') {
+      return
+    } else if (item.type == 'add') {
+      state.orgData.forEach((el, index) => {
+        if (el.resource == resource.value) {
+          el.data.forEach((al: any, index: number) => {
+            if (al.id == item.id) {
+              el.data.splice(index, 1)
+              leftTree.value.setChecked(item.id, false)
+            }
+          })
+        }
+      })
+    } else {
+      state.orgData.forEach((el, index) => {
+        if (el.resource == resource.value) {
+          el.data.forEach((al: any) => {
+            if (al.id == item.id) {
+              al.type == 'del'
+            }
+          })
+        }
+      })
+    }
+  }
+  const searchResource = () => {
+    API.product
+      .searchResource({
         data: {
-          id: data.id
+          id: props.info.id,
+          offset: 0,
+          limit: 1000,
+          filter: ''
         }
       })
       .then((res: ResultType) => {
-        if (res.code == 200) {
-          sessionStorage.setItem('TOKEN', res.data.accessToken)
-          store.getQueryInfo(res.data.accessToken)
-          current.value = 0
-          store.createUnit(res.data).then(() => {
-            location.reload()
+        if (res.success) {
+          tabs.value = res.data.result
+          resource.value = res.data.result[0].id
+          res.data.result.forEach((el: any) => {
+            let obj: any = {
+              resource: el.id,
+              data: []
+            }
+            state.orgData.push(obj)
+            state.authorData.push(obj)
+            state.identitysData.push(obj)
+            state.personsData.push(obj)
           })
-        } else {
-          ElMessage({
-            message: res.msg,
-            type: 'warning'
-          })
+          console.log(state.orgData)
         }
       })
   }
-  const switchCompany = (data: { id: string }) => {
-    $services.person
-      .changeWorkspace({
-        data: {
-          id: data.id
-        }
-      })
-      .then((res: ResultType) => {
-        if (res.code == 200) {
-          sessionStorage.setItem('TOKEN', res.data.accessToken)
 
-          store.getQueryInfo(res.data.accessToken)
-          store.getWorkspaceData(res.data.workspaceId).then(() => {
-            location.reload()
-          })
-        } else {
-          ElMessage({
-            message: res.msg,
-            type: 'warning'
-          })
-        }
-      })
+  // 节点ID和对象映射关系
+  const parentIdMap: any = {}
+  let cascaderTree = ref<OrgTreeModel[]>([])
+  const getCompanyTree = () => {
+    API.company.getCompanyTree({}).then((res: ResultType) => {
+      let orgTree = []
+      orgTree.push(res.data)
+      initIdMap(orgTree)
+      cascaderTree.value = filter(JSON.parse(JSON.stringify(orgTree)))
+    })
   }
-  const toWork = () => {
-    router.push('/workHome')
+  // 初始化ID和对象映射关系
+  const initIdMap = (nodes: any[]) => {
+    for (const node of nodes) {
+      parentIdMap[node.id] = node
+      if (node.children) {
+        initIdMap(node.children)
+      }
+    }
   }
-  const toUserSetting = () => {
-    router.push('/user')
-  }
-  const toCompanySetting = () => {
-    router.push('/company')
-  }
-  const exitLogin = () => {
-    sessionStorage.clear()
-    store.resetState()
-    router.push('/login')
-    //  取消该账号的未读消息订阅
-    anyStore.unSubscribed(`message.noread`)
+  // 过滤掉工作组作为表单级联数据
+  const filter = (nodes: OrgTreeModel[]): OrgTreeModel[] => {
+    nodes = nodes.filter((node) => node.data?.typeName !== '工作组')
+    for (const node of nodes) {
+      node.children = filter(node.children)
+    }
+    return nodes
   }
 </script>
 
 <style lang="scss" scoped>
-  .select-box {
-    overflow: auto;
-    padding-left: 8px;
+  .footer-btn {
+    margin-right: 10px;
   }
-
-  .col-text {
-    white-space: nowrap;
-    font-size: 16px;
-  }
-
-  .seletc-drop__box {
-    cursor: pointer;
-    // height: 40px;
-
-    &:hover {
-      background: rgb(248, 247, 249);
-    }
-  }
-
-  .select-drop__flex {
+  .footer {
+    margin-top: 20px;
     display: flex;
-    padding: 10px;
-    align-items: center;
-    // margin: 10px;
+    flex-direction: row-reverse;
   }
-
-  .select-item__imgSelect {
-    height: 25px;
-    width: 25px;
-    border-radius: 50%;
-    background: #154ad8;
-    font-size: 15px;
-    color: #ffffff;
-    line-height: 25px;
-    text-align: center;
+  .demo-tabs {
+    margin-left: 20px;
   }
-
-  .select-item__titleSelect {
-    height: 25px;
-    line-height: 25px;
-    font-size: 16px;
-    font-weight: 400;
-    margin-right: 12px;
-    margin-left: 15px;
-  }
-
-  .select-drop {
-    position: absolute;
-    top: 40px;
-    left: -20px;
-    overflow: hidden;
-    background: var(--el-bg-color);
+  .cohortLayout {
+    width: 100%;
+    height: 100%;
     display: flex;
     flex-direction: column;
-    transition: all 0.5s;
-    box-shadow: 0px 6px 9px rgba(0, 0, 0, 0.161);
-    border-radius: 0 0 4px 4px;
-    z-index: 2;
-    min-width: 250px;
-  }
-
-  .col-box {
-    cursor: pointer;
-    display: flex;
-
-    .el-icon {
-      margin-left: 10px;
-    }
-  }
-
-  :deep(.el-popover.el-popper) {
-    width: 100%;
-  }
-
-  .joinBox {
-    display: flex;
-    border-top: 1px solid #e0e0e0;
-  }
-
-  .joinBtn {
-    margin: 10px;
-    display: flex;
-    height: 35px;
-    background: #ffffff;
-    text-align: center;
-    align-items: center;
-    cursor: pointer;
-    font-size: 16px;
-    padding: 10px 20px;
-    color: rgba(0, 0, 0, 0.65);
-
-    // &:hover {
-    //   color: #154ad8;
-    // }
-  }
-
-  .el-dropdown-link {
-    cursor: pointer;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-
-    .smallIcon {
-      font-size: 18px;
-      border-radius: 50px;
-      width: 20px;
-      transform: scale(0.7, 0.7);
-    }
-  }
-
-  .page-custom-header {
-    // height: 60px;
-    // line-height: 60px;
-
-    .el-col {
+    overflow: hidden !important;
+    &-header {
       display: flex;
       align-items: center;
     }
-
-    .logo {
-      margin-right: 10px;
-    }
-
-    .col-right {
-      justify-content: flex-end;
-
-      .right-con {
-        margin-right: 18px;
-      }
-      .right-navbar {
+    &-content {
+      height: 360px;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      &-left {
+        border: 1px solid rgb(241, 241, 248);
         height: 100%;
+        overflow: auto;
       }
-      :deep(.right-navbar .el-space__item) {
-        padding: 0 12px;
-      }
-      :deep(.right-navbar .el-space__item .el-switch) {
-        height: var(--el-header-height);
-      }
-      :deep(.right-navbar .el-space__item:hover) {
-        background: rgba(0, 0, 0, 0.03);
+      &-center {
+        border: 1px solid rgb(241, 241, 248);
         height: 100%;
+        overflow: auto;
       }
-      // .dropdown-menu {
-      //   padding:  0 12px;
-      // }
-      .header-message-icon {
-        cursor: pointer;
-        &:hover {
-          color: var(--el-color-primary);
-        }
+      &-right {
+        border: 1px solid rgb(241, 241, 248);
+        height: 100%;
+        overflow: auto;
       }
     }
+  }
+  :deep(.el-tabs__header) {
+    margin: unset;
+  }
+  :deep(.el-tabs__nav-wrap::after) {
+    background-color: unset;
+  }
+  .cohortLayout-header-tabs {
+    flex: 1;
+  }
+  .demo-tabs > .el-tabs__content {
+    padding: 32px;
+    color: #6b778c;
+    font-size: 32px;
+    font-weight: 600;
   }
 </style>
