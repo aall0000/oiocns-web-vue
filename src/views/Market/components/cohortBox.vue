@@ -187,6 +187,7 @@
           })
           leftTree.value.setCheckedKeys(arr, true)
         }
+        getHistoryData()
       })
     },
     { immediate: true }
@@ -199,6 +200,7 @@
       state.personsData = []
       state.identitysData = []
       leftTree.value.setCheckedKeys([])
+      getHistoryData()
     }
   )
   watch(
@@ -224,6 +226,82 @@
     emit('closeDialog')
   }
 
+  // 获取历史数据
+  const getHistoryData = () => {
+    switch (radio.value) {
+      case '1':
+        API.product
+          .toDepartment({
+            data: {
+              id: 0,
+              offset: 0,
+              limit: 1000,
+              filter: ''
+            }
+          })
+          .then((res) => {
+            state.rightData = res.data.result
+            if (state.orgData.length == 0) {
+              state.orgData = state.rightData
+            }
+          })
+        break
+      case '2':
+        API.product
+          .toIdentity({
+            data: {
+              id: 0,
+              offset: 0,
+              limit: 1000,
+              filter: ''
+            }
+          })
+          .then((res) => {
+            state.identitysHisData = res.data.result
+            if (state.identitysData.length == 0) {
+              state.identitysData = state.identitysHisData
+            }
+          })
+        break
+      case '3':
+        API.product
+          .toPerson({
+            data: {
+              id: 0,
+              offset: 0,
+              limit: 1000,
+              filter: ''
+            }
+          })
+          .then((res) => {
+            state.personsHisData = res.data.result
+            if (state.personsData.length == 0) {
+              state.personsData = state.personsHisData
+            }
+          })
+        break
+      case '4':
+        API.product
+          .toAuthority({
+            data: {
+              id: 0,
+              offset: 0,
+              limit: 1000,
+              filter: ''
+            }
+          })
+          .then((res) => {
+            state.authorHisData = res.data.result
+            if (state.authorData.length == 0) {
+              state.authorData = state.authorHisData
+            }
+          })
+        break
+      default:
+        break
+    }
+  }
+
   // 树节点过滤
   const filterNode = (value: string, data: any) => {
     if (!value) return true
@@ -232,44 +310,44 @@
 
   // 提交表单
   const submitAll = () => {
-    let departAdd = []
-    let departDel = []
-    let authorAdd = []
-    let authorDel = []
-    let personsAdd = []
-    let personsDel = []
-    let identityAdd = []
-    let identityDel = []
+    let departAdd: any[] = []
+    let departDel: any[] = []
+    let authorAdd: any[] = []
+    let authorDel: any[] = []
+    let personsAdd: any[] = []
+    let personsDel: any[] = []
+    let identityAdd: any[] = []
+    let identityDel: any[] = []
 
     state.orgData.forEach((el) => {
       if (el.type == 'add') {
-        departAdd.push(el)
+        departAdd.push(el.id)
       } else if (el.type == 'del') {
-        departDel.push(el)
+        departDel.push(el.id)
       }
     })
 
     state.authorData.forEach((el) => {
       if (el.type == 'add') {
-        personsAdd.push(el)
+        personsAdd.push(el.id)
       } else if (el.type == 'del') {
-        personsDel.push(el)
+        personsDel.push(el.id)
       }
     })
 
     state.personsData.forEach((el) => {
       if (el.type == 'add') {
-        authorAdd.push(el)
+        authorAdd.push(el.id)
       } else if (el.type == 'del') {
-        authorDel.push(el)
+        authorDel.push(el.id)
       }
     })
 
     state.identitysData.forEach((el) => {
       if (el.type == 'add') {
-        identityAdd.push(el)
+        identityAdd.push(el.id)
       } else if (el.type == 'del') {
-        identityDel.push(el)
+        identityDel.push(el.id)
       }
     })
 
@@ -286,28 +364,28 @@
       promise1 = API.product.department({
         data: {
           resId: resource.value,
-          targetIds: state.orgData
+          targetIds: departAdd
         }
       })
     }
     if (departDel.length > 0) {
-      promise1 = API.product.department({
+      promise5 = API.product.department({
         data: {
           resId: resource.value,
-          targetIds: state.orgData
+          targetIds: departDel
         }
       })
     }
     if (authorAdd.length > 0) {
-      promise1 = API.product.department({
+      promise2 = API.product.authority({
         data: {
           resId: resource.value,
-          targetIds: state.orgData
+          targetIds: authorAdd
         }
       })
     }
     if (authorDel.length > 0) {
-      promise1 = API.product.department({
+      promise6 = API.product.department({
         data: {
           resId: resource.value,
           targetIds: state.orgData
@@ -315,15 +393,15 @@
       })
     }
     if (personsAdd.length > 0) {
-      promise1 = API.product.department({
+      promise3 = API.product.person({
         data: {
           resId: resource.value,
-          targetIds: state.orgData
+          targetIds: personsAdd
         }
       })
     }
     if (personsDel.length > 0) {
-      promise1 = API.product.department({
+      promise7 = API.product.department({
         data: {
           resId: resource.value,
           targetIds: state.orgData
@@ -331,21 +409,36 @@
       })
     }
     if (identityAdd.length > 0) {
-      promise1 = API.product.department({
+      promise4 = API.product.identity({
         data: {
           resId: resource.value,
-          targetIds: state.orgData
+          targetIds: identityAdd
         }
       })
     }
     if (identityDel.length > 0) {
-      promise1 = API.product.department({
+      promise8 = API.product.department({
         data: {
           resId: resource.value,
           targetIds: state.orgData
         }
       })
     }
+    Promise.all([promise1, promise2, promise3, promise4]).then((res) => {
+      if (res.success) {
+        ElMessageBox.confirm('是否继续分发？', {
+          confirmButtonText: '继续',
+          cancelButtonText: '取消',
+          type: 'warning'
+        })
+          .then(() => {
+            return
+          })
+          .catch(() => {
+            closeDialog()
+          })
+      }
+    })
   }
   // 中间树形滚动加载事件
   const load = () => {

@@ -195,7 +195,14 @@ export default {
     productGroupShare: product + '/group/share',
     searchGroupShare: product + '/search/group/share',
     deleteGroupShare: product + '/delete/group/share',
-    department: product + '/distribution/to/deptment'
+    department: product + '/distribution/to/deptment',
+    identity: product + '/distribution/to/identity',
+    person: product + '/distribution/to/person',
+    authority: product + '/distribution/to/authority',
+    toDepartment: product + '/search/distribution/to/deptment',
+    toIdentity: product + '/search/distribution/to/identity',
+    toPerson: product + '/search/distribution/to/person',
+    toAuthority: product + '/search/distribution/to/authority',
   },
   // 历史记录
   history: {
