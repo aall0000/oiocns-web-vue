@@ -294,7 +294,7 @@
 .tree-btns {
   display: flex;
   justify-content: space-between;
-  padding: 0 24px;
+  // padding: 0 24px;
 
   .el-button--small {
     padding: 12px 6px;
@@ -303,7 +303,7 @@
 
 .search {
   font-size: 12px;
-  padding: 12px;
+  padding: 12px 0;
 
   .el-input__inner {
     font-size: 12px;
