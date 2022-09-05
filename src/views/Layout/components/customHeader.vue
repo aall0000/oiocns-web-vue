@@ -3,34 +3,39 @@
     <!-- 左侧 -->
     <el-col class="head-title" :span="4">
       <div style="display: flex; align-items: center" @mouseleave="handleClose()">
-        <!-- <img class="logo" src="@/assets/img/avatar.jpg" alt="logo" /> -->
-        <div class="select-item__imgSelect" style="margin-right: 5px;">
-          {{  workHead() }}
+        <div class="select-item__imgSelect" style="margin-right: 5px">
+          {{ workHead() }}
         </div>
         <div class="col-box" @click="onClickUnit">
-          <div class="col-text">{{  workspaceData?.name || ''  }}</div>
+          <div class="col-text">{{ workspaceData?.name || '' }}</div>
           <div class="col-icon">
             <el-icon>
-              <CaretBottom :style="
-                btnType
-                  ? 'transform: rotate(180deg);transition: all 0.5s;'
-                  : 'transform: rotate(0);transition: all 0.5s;'
-              " />
+              <CaretBottom
+                :style="
+                  btnType
+                    ? 'transform: rotate(180deg);transition: all 0.5s;'
+                    : 'transform: rotate(0);transition: all 0.5s;'
+                "
+              />
             </el-icon>
           </div>
         </div>
         <div>
-          <div class="select-drop" :style="getDropMenuStyle">
+          <div @mouseover="handleOpen()" class="select-drop" :style="getDropMenuStyle">
             <div class="select-box" v-infinite-scroll="load" infinite-scroll-immediate>
-              <div class="seletc-drop__box" v-for="item in store.userCompanys" :key="item.id"
-                @click="switchCompany(item)">
+              <div
+                class="seletc-drop__box"
+                v-for="item in store.userCompanys"
+                :key="item.id"
+                @click="switchCompany(item)"
+              >
                 <div class="select-drop__flex">
                   <div class="select-item__imgSelect">
-                    {{  item.team ? item.team.name.slice(0, 1) : item.name.slice(0, 1)  }}
+                    {{ item.team ? item.team.name.slice(0, 1) : item.name.slice(0, 1) }}
                   </div>
                   <div class="select-item__titleSelect">{{
-                     item.team ? item.team.name : item.name 
-                    }}</div>
+                    item.team ? item.team.name : item.name
+                  }}</div>
                 </div>
               </div>
             </div>
@@ -42,38 +47,18 @@
           </div>
         </div>
       </div>
-
-      <!-- <el-dropdown trigger="click" placement="bottom-start" ref="dropdown">
-        <span class="el-dropdown-link" @click="onClickDrop">
-          {{ workspaceData?.name || '' }}
-          <el-icon>
-            <CaretBottom />
-          </el-icon>
-        </span>
-        <template #dropdown>
-          <el-dropdown-menu
-            v-infinite-scroll="load"
-            infinite-scroll-immediate="false"
-            infinite-scroll-distance="1"
-            style="max-height: 300px; overflow: auto"
-          >
-            <el-dropdown-item
-              v-for="item in store.userCompanys"
-              :key="item.id"
-              @click="switchCompany(item)"
-              >{{ item.team ? item.team.name : item.name }}</el-dropdown-item
-            >
-          </el-dropdown-menu>
-          <div class="joinBtn" @click="createCompany">+ 创建企业/单位/组织</div>
-        </template>
-      </el-dropdown> -->
     </el-col>
     <!-- 中间搜索 -->
     <el-col :span="6" class="col-center">
       <el-popover trigger="click" :visible="visible" placement="bottom" :width="500">
         <template #reference>
-          <el-input ref="searchRef" class="right-con" v-model="SearchInfo" :style="{ width: '100%', height: '40px' }"
-            placeholder="请输⼊想搜索的功能">
+          <el-input
+            ref="searchRef"
+            class="right-con"
+            v-model="SearchInfo"
+            :style="{ width: '100%', height: '40px' }"
+            placeholder="请输⼊想搜索的功能"
+          >
             <template #prepend>
               <el-button :icon="Search" @click="showSearchInfo" />
             </template>
@@ -82,16 +67,24 @@
         <SearchDialog></SearchDialog>
       </el-popover>
     </el-col>
-     <!-- 右侧 -->
+    <!-- 右侧 -->
     <el-col :span="14" class="flex col-right">
       <el-space class="right-navbar">
-        <el-link  :underline="false" class="header-message-icon" @click="()=>router.push('/chat')">
-          <el-badge :value="anydata?.message?.noReadCount>10 ?`10+` : anydata?.message?.noReadCount" v-if="anydata?.message?.noReadCount &&anydata?.message?.noReadCount >0" >
+        <el-link :underline="false" class="header-message-icon" @click="() => router.push('/chat')">
+          <el-badge
+            :value="anydata?.message?.noReadCount > 10 ? `10+` : anydata?.message?.noReadCount"
+            v-if="anydata?.message?.noReadCount && anydata?.message?.noReadCount > 0"
+          >
             <el-icon class="header-message-icon" :size="18"><ChatDotSquare /></el-icon>
           </el-badge>
           <el-icon class="header-message-icon" :size="18" v-else><ChatDotSquare /></el-icon>
         </el-link>
-        <el-switch v-model="isDark" active-icon="Moon" inactive-icon="Sunny" inline-prompt></el-switch>
+        <el-switch
+          v-model="isDark"
+          active-icon="Moon"
+          inactive-icon="Sunny"
+          inline-prompt
+        ></el-switch>
         <el-dropdown trigger="hover" size="large" class="dropdown-menu">
           <span class="el-dropdown-link">
             <headImg :name="queryInfo.name" :limit="1" :imgWidth="24" :isSquare="false"></headImg>
@@ -101,31 +94,47 @@
             </el-icon> -->
           </span>
           <template #dropdown>
-            <el-dropdown-menu >
+            <el-dropdown-menu>
               <el-dropdown-item @click="toWork" icon="Setting">首页配置</el-dropdown-item>
               <el-dropdown-item @click="toUserSetting" icon="Postcard">个人中心</el-dropdown-item>
-              <el-dropdown-item v-if="isUnitWork" @click="toCompanySetting" icon="Postcard">单位中心</el-dropdown-item>
+              <el-dropdown-item v-if="isUnitWork" @click="toCompanySetting" icon="Postcard"
+                >单位中心</el-dropdown-item
+              >
               <el-dropdown-item icon="Help">帮助中心 </el-dropdown-item>
               <el-dropdown-item icon="Switch">切换语言 </el-dropdown-item>
-              <el-dropdown-item  icon="Brush">切换主题 </el-dropdown-item>
-              <el-dropdown-item @click="exitLogin" icon="SwitchButton" divided>退出登录</el-dropdown-item>
+              <el-dropdown-item icon="Brush">切换主题 </el-dropdown-item>
+              <el-dropdown-item @click="exitLogin" icon="SwitchButton" divided
+                >退出登录</el-dropdown-item
+              >
             </el-dropdown-menu>
           </template>
         </el-dropdown>
       </el-space>
     </el-col>
   </el-row>
-  <searchCompany v-if="searchDialog" :serachType="3" @closeDialog="closeDialog"  @checksSearch='checksSearch'></searchCompany>
+  <searchCompany
+    v-if="searchDialog"
+    :serachType="3"
+    @closeDialog="closeDialog"
+    @checksSearch="checksSearch"
+  ></searchCompany>
   <template v-for="item in dialogShow" :key="item.key">
-    <CreateUnitDialog v-if="item.key == 'unit' && item.value" :dialogShow="item" @closeDialog="closeDialog"
-      @switchCreateCompany="switchCreateCompany"></CreateUnitDialog>
-    <SearchDialog v-if="item.key == 'search' && item.value" :dialogShow="item" :search="SearchInfo"
-      @closeDialog="closeDialog"></SearchDialog>
+    <CreateUnitDialog
+      v-if="item.key == 'unit' && item.value"
+      :dialogShow="item"
+      @closeDialog="closeDialog"
+      @switchCreateCompany="switchCreateCompany"
+    ></CreateUnitDialog>
+    <SearchDialog
+      v-if="item.key == 'search' && item.value"
+      :dialogShow="item"
+      :search="SearchInfo"
+      @closeDialog="closeDialog"
+    ></SearchDialog>
   </template>
 </template>
 
 <script lang="ts" setup>
-  
   import { ref, watch, onMounted, reactive, computed } from 'vue'
   import { Search } from '@element-plus/icons-vue'
   import anyStore from '@/utils/hubConnection'
@@ -156,22 +165,22 @@
   const { queryInfo } = storeToRefs(store)
   const workspaceData = store.workspaceData
   const dropdown = ref()
-  const workHead = ()=>{
-    if(workspaceData?.name == "个人空间"){
+  const workHead = () => {
+    if (workspaceData?.name == '个人空间') {
       return '我'
     }
     return workspaceData?.name[0] || ''
   }
   const isUnitWork = ref<boolean>(workspaceData.id != queryInfo.value.id)
 
-const getDropMenuStyle = computed(() => {
-  if (!btnType.value) {
-    return 'height:0px'
-  } else {
-    let height = store.userCompanys.length < 6 ? store.userCompanys.length : 6
-    return store.userCompanys.length ? 'height:' + (height * 45 + 56) + 'px;' : 'height:56px'
-  }
-})
+  const getDropMenuStyle = computed(() => {
+    if (!btnType.value) {
+      return 'height:0px'
+    } else {
+      let height = store.userCompanys.length < 6 ? store.userCompanys.length : 6
+      return store.userCompanys.length ? 'height:' + (height * 45 + 56) + 'px;' : 'height:56px'
+    }
+  })
 
   const load = () => {
     let currentPage = 0
@@ -212,22 +221,22 @@ const getDropMenuStyle = computed(() => {
   // }
   const searchDialog = ref<boolean>(false)
   type arrList = {
-    id:string
+    id: string
   }
-  const checksSearch=(val:any)=>{ 
-    if(val.value.length>0){
-      let arr:Array<arrList> =[]
-      val.value.forEach((element:any) => {
+  const checksSearch = (val: any) => {
+    if (val.value.length > 0) {
+      let arr: Array<arrList> = []
+      val.value.forEach((element: any) => {
         arr.push(element.id)
-      });
-      console.log('val',arr)
+      })
+      console.log('val', arr)
       joinSubmit(arr)
-    }else{
-      searchDialog.value = false;
+    } else {
+      searchDialog.value = false
     }
   }
-  const friendShow = ()=>{
-    searchDialog.value = true;
+  const friendShow = () => {
+    searchDialog.value = true
   }
   const joinSubmit = (arr: any) => {
     $services.company
@@ -238,7 +247,7 @@ const getDropMenuStyle = computed(() => {
       })
       .then((res: ResultType) => {
         if (res.code == 200) {
-          searchDialog.value = false;
+          searchDialog.value = false
           ElMessage({
             message: '申请成功',
             type: 'success'
@@ -256,6 +265,9 @@ const getDropMenuStyle = computed(() => {
   const handleClose = () => {
     btnType.value = false
   }
+  const handleOpen = () => {
+    btnType.value = true
+  }
   const createCompany = () => {
     dialogShow.map((el) => {
       if (el.key == 'unit') {
@@ -265,7 +277,7 @@ const getDropMenuStyle = computed(() => {
     })
   }
   const closeDialog = (key: string) => {
-    searchDialog.value = false;
+    searchDialog.value = false
     dialogShow.map((el) => {
       if (el.key == key) {
         el.value = false
@@ -313,190 +325,188 @@ const getDropMenuStyle = computed(() => {
         if (res.code == 200) {
           sessionStorage.setItem('TOKEN', res.data.accessToken)
 
-        store.getQueryInfo(res.data.accessToken)
-        store.getWorkspaceData(res.data.workspaceId).then(() => {
-          location.reload()
-        })
-      } else {
-        ElMessage({
-          message: res.msg,
-          type: 'warning'
-        })
-      }
-    })
-}
-const toWork = () => {
-  router.push('/workHome')
-}
-const toUserSetting = ()=>{
-  router.push('/user')
-}
-const toCompanySetting = ()=>{
-  router.push('/company')
-}
-const exitLogin = () => {
-  sessionStorage.clear()
-  store.resetState()
-  router.push('/login')
-  //  取消该账号的未读消息订阅
-  anyStore.unSubscribed(`message.noread`)
-}
+          store.getQueryInfo(res.data.accessToken)
+          store.getWorkspaceData(res.data.workspaceId).then(() => {
+            location.reload()
+          })
+        } else {
+          ElMessage({
+            message: res.msg,
+            type: 'warning'
+          })
+        }
+      })
+  }
+  const toWork = () => {
+    router.push('/workHome')
+  }
+  const toUserSetting = () => {
+    router.push('/user')
+  }
+  const toCompanySetting = () => {
+    router.push('/company')
+  }
+  const exitLogin = () => {
+    sessionStorage.clear()
+    store.resetState()
+    router.push('/login')
+    //  取消该账号的未读消息订阅
+    anyStore.unSubscribed(`message.noread`)
+  }
 </script>
 
 <style lang="scss" scoped>
-.select-box {
-  overflow: auto;
-  padding-left: 8px;
-}
-
-.col-text {
-  white-space: nowrap;
-  font-size: 16px;
-}
-
-.seletc-drop__box {
-  cursor: pointer;
-  // height: 40px;
-
-  &:hover {
-    background: rgb(248, 247, 249);
+  .select-box {
+    overflow: auto;
+    padding-left: 8px;
   }
-}
 
-.select-drop__flex {
-  display: flex;
-  padding:  10px;
-  align-items: center;
-  // margin: 10px;
-}
-
-.select-item__imgSelect {
-  height: 25px;
-  width: 25px;
-  border-radius: 50%;
-  background: #154ad8;
-  font-size: 15px;
-  color: #ffffff;
-  line-height: 25px;
-  text-align: center;
-}
-
-.select-item__titleSelect {
-  height: 25px;
-  line-height: 25px;
-  font-size: 16px;
-  font-weight: 400;
-  margin-right: 12px;
-  margin-left: 15px;
-}
-
-.select-drop {
-  position: absolute;
-  top: 40px;
-  left: -20px;
-  overflow: hidden;
-  background: var(--el-bg-color);
-  display: flex;
-  flex-direction: column;
-  transition: all 0.5s;
-  box-shadow: 0px 6px 9px rgba(0, 0, 0, 0.161);
-  border-radius: 0 0 4px 4px;
-  z-index: 2;
-  min-width: 250px;
-}
-
-.col-box {
-  cursor: pointer;
-  display: flex;
-
-  .el-icon {
-    margin-left: 10px;
+  .col-text {
+    white-space: nowrap;
+    font-size: 16px;
   }
-}
 
-:deep(.el-popover.el-popper) {
-  width: 100%;
-}
+  .seletc-drop__box {
+    cursor: pointer;
+    // height: 40px;
 
-.joinBox {
-  display: flex;
-  border-top: 1px solid #e0e0e0;
-}
-
-.joinBtn {
-  margin: 10px;
-  display: flex;
-  height: 35px;
-  background: #ffffff;
-  text-align: center;
-  align-items: center;
-  cursor: pointer;
-  font-size: 16px;
-  padding: 10px 20px;
-  color: rgba(0, 0, 0, 0.65);
-
-  // &:hover {
-  //   color: #154ad8;
-  // }
-}
-
-.el-dropdown-link {
-  cursor: pointer;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-
-  .smallIcon {
-    font-size: 18px;
-    border-radius: 50px;
-    width: 20px;
-    transform: scale(0.7, 0.7);
+    &:hover {
+      background: rgb(248, 247, 249);
+    }
   }
-}
 
-.page-custom-header {
-  // height: 60px;
-  // line-height: 60px;
-
-  .el-col {
+  .select-drop__flex {
     display: flex;
+    padding: 10px;
     align-items: center;
+    // margin: 10px;
   }
 
-  .logo {
-    margin-right: 10px;
+  .select-item__imgSelect {
+    height: 25px;
+    width: 25px;
+    border-radius: 50%;
+    background: #154ad8;
+    font-size: 15px;
+    color: #ffffff;
+    line-height: 25px;
+    text-align: center;
   }
 
-  .col-right {
-    justify-content: flex-end;
+  .select-item__titleSelect {
+    height: 25px;
+    line-height: 25px;
+    font-size: 16px;
+    font-weight: 400;
+    margin-right: 12px;
+    margin-left: 15px;
+  }
 
-    .right-con {
-      margin-right: 18px;
+  .select-drop {
+    position: absolute;
+    top: 40px;
+    left: -20px;
+    overflow: hidden;
+    background: var(--el-bg-color);
+    display: flex;
+    flex-direction: column;
+    transition: all 0.5s;
+    box-shadow: 0px 6px 9px rgba(0, 0, 0, 0.161);
+    border-radius: 0 0 4px 4px;
+    z-index: 2;
+    min-width: 250px;
+  }
+
+  .col-box {
+    cursor: pointer;
+    display: flex;
+
+    .el-icon {
+      margin-left: 10px;
     }
-    .right-navbar {
-      height: 100%;
-    }
-    :deep(.right-navbar .el-space__item ) {
-      
-      padding: 0 12px;
-     }
-    :deep(.right-navbar .el-space__item .el-switch) {
-      
-      height: var(--el-header-height);
-     }
-    :deep(.right-navbar .el-space__item:hover) {
-      background: rgba(0, 0, 0, 0.03);
-      height: 100%;
-    }
-    // .dropdown-menu {
-    //   padding:  0 12px;
+  }
+
+  :deep(.el-popover.el-popper) {
+    width: 100%;
+  }
+
+  .joinBox {
+    display: flex;
+    border-top: 1px solid #e0e0e0;
+  }
+
+  .joinBtn {
+    margin: 10px;
+    display: flex;
+    height: 35px;
+    background: #ffffff;
+    text-align: center;
+    align-items: center;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 10px 20px;
+    color: rgba(0, 0, 0, 0.65);
+
+    // &:hover {
+    //   color: #154ad8;
     // }
-    .header-message-icon {
-      cursor: pointer;
-      &:hover {
-        color: var(--el-color-primary);
+  }
+
+  .el-dropdown-link {
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .smallIcon {
+      font-size: 18px;
+      border-radius: 50px;
+      width: 20px;
+      transform: scale(0.7, 0.7);
+    }
+  }
+
+  .page-custom-header {
+    // height: 60px;
+    // line-height: 60px;
+
+    .el-col {
+      display: flex;
+      align-items: center;
+    }
+
+    .logo {
+      margin-right: 10px;
+    }
+
+    .col-right {
+      justify-content: flex-end;
+
+      .right-con {
+        margin-right: 18px;
+      }
+      .right-navbar {
+        height: 100%;
+      }
+      :deep(.right-navbar .el-space__item) {
+        padding: 0 12px;
+      }
+      :deep(.right-navbar .el-space__item .el-switch) {
+        height: var(--el-header-height);
+      }
+      :deep(.right-navbar .el-space__item:hover) {
+        background: rgba(0, 0, 0, 0.03);
+        height: 100%;
+      }
+      // .dropdown-menu {
+      //   padding:  0 12px;
+      // }
+      .header-message-icon {
+        cursor: pointer;
+        &:hover {
+          color: var(--el-color-primary);
+        }
       }
     }
   }
-}
 </style>

@@ -78,7 +78,7 @@
         //颜色改变提醒
         resize[i].style.background = '#818181'
         let startX = e.clientX
-        resize[i].left = resize[i].offsetLeft
+        resize[i].left = resize[i].offsetLeft -left[i].offsetLeft
         // 鼠标拖动事件
         document.onmousemove = function (e) {
 

@@ -39,12 +39,7 @@
           </el-form-item>
         </el-form>
         <div class="button">
-          <el-button> + 新增更多描述</el-button>
-          <el-popconfirm title="确认更新" @confirm="update()">
-            <template #reference>
-              <el-button type="primary">更新信息</el-button>
-            </template>
-          </el-popconfirm>
+          <el-button type="primary" @click="update()">更新信息</el-button>
         </div>
       </div>
       <div class="bodyRight">
@@ -62,14 +57,12 @@
 </template>
 
 <script lang="ts" setup>
-  // @ts-nocheck
-  import { ArrowLeft } from '@element-plus/icons-vue'
   // import { regionData, CodeToText } from 'element-china-area-data'
   import { onMounted, reactive, ref } from 'vue'
   import { onBeforeMount } from 'vue'
   import $services from '@/services'
-  import console from 'console'
   import { useUserStore } from '@/store/user'
+  import { ElMessage, ElMessageBox } from 'element-plus'
   const store = useUserStore()
   const labelPosition = ref<'top'>('top')
 
@@ -101,7 +94,16 @@
       })
   }
   const update = () => {
-    $services.person
+    ElMessageBox.confirm(
+    '确定修改信息吗？',
+    '提示',
+    {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
+    }
+  ).then(() => {
+      $services.person
       .update({
         data: {
           id: store.queryInfo.id,
@@ -127,6 +129,8 @@
           })
         }
       })
+  })
+    
   }
 
   // const options = regionData
@@ -170,6 +174,8 @@
       border-top: 16px solid #eff0f4;
       border-right: 16px solid #eff0f4;
       display: flex;
+      box-sizing: border-box;
+      padding-bottom: 20px;
       .bodyLeft {
         height: 100%;
         width: 60%;
@@ -194,7 +200,7 @@
         .button {
           margin-top: 30px;
           margin-left: 80px;
-          margin-bottom: 30px;
+          padding-bottom: 20px;
         }
       }
       .bodyRight {

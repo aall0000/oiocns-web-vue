@@ -39,25 +39,18 @@
         </el-form-item>
       </el-form>
       <div class="button">
-        <el-button> + 新增更多描述</el-button>
-        <el-button>导出单位信息</el-button>
-        <el-popconfirm title="确认更新" @confirm="upDateCompany()">
-          <template #reference>
-            <el-button type="primary">更新信息</el-button>
-          </template>
-        </el-popconfirm>
+        <el-button type="primary" @click="upDateCompany()">更新信息</el-button>
       </div>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { ArrowLeft } from '@element-plus/icons-vue'
-//import { provinceAndCityData, regionData, provinceAndCityDataPlus, regionDataPlus, CodeToText, TextToCode } from 'element-china-area-data'
-import { onMounted, reactive, ref } from 'vue'
+import { reactive, ref } from 'vue'
 import { onBeforeMount } from 'vue'
 import $services from '@/services'
-import { ElMessage } from 'element-plus';
+import { ElMessage, ElMessageBox } from 'element-plus'
+
 const labelPosition = ref<'top'>('top')
 const formModel = reactive({
   name: '',
@@ -107,26 +100,42 @@ const upDate = reactive<infoType>({
   thingId:''
 })
 const upDateCompany = ()=>{
-  upDate.name =  formModel.name
-  upDate.code =  formModel.code
-  upDate.teamName =  formModel.teamName
-  upDate.teamCode =  formModel.teamCode
-  upDate.teamRemark =  formModel.teamRemark
-  upDate.id = companyInfo.value.id;
-  upDate.thingId = companyInfo.value.thingId;
-  console.log(upDate)
-  $services.company
-    .update({
-      data: upDate
-    })
-    .then((res: ResultType) => {
-      if (res.success) {
-        ElMessage({
-          message: '更新成功',
-          type: 'warning'
+  ElMessageBox.confirm(
+    '确定修改信息吗？',
+    '提示',
+    {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
+    }
+  ).then(() => {
+      upDate.name =  formModel.name
+      upDate.code =  formModel.code
+      upDate.teamName =  formModel.teamName
+      upDate.teamCode =  formModel.teamCode
+      upDate.teamRemark =  formModel.teamRemark
+      upDate.id = companyInfo.value.id;
+      upDate.thingId = companyInfo.value.thingId;
+      console.log(upDate)
+      $services.company
+        .update({
+          data: upDate
         })
-      }
-    })
+        .then((res: ResultType) => {
+          if (res.success) {
+            ElMessage({
+              message: '更新成功',
+              type: 'success'
+            })
+          }else{
+            ElMessage({
+              message: res.msg,
+              type: 'warning'
+            })
+          }
+        })
+      
+  })
 }
   // const options = regionData
   // const selectedOptions: Array<number> = []
