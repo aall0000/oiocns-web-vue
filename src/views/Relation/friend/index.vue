@@ -2,28 +2,23 @@
 
   <el-card style="border:0;" shadow="never" class="container">
     <!-- 组内成员信息 -->
-   
+
       <div class="card-header">
         <span>我的好友</span>
         <el-button type="primary" @click="friendShow">添加好友</el-button>
       </div>
-    
+
     <div class="tab-list">
       <el-table :data="state.friendList" stripe @select="handleSelect" :header-cell-style="{'background':'var(--el-color-primary-light-9)'}" >
         <el-table-column type="selection" width="50" />
-        <el-table-column prop="code" label="账号" />
-        <el-table-column prop="name" label="昵称" />
-        <el-table-column prop="trueName" label="姓名" />
-        <el-table-column prop="teamCode" label="手机号" />
-        <el-table-column prop="remark" label="座右铭" width="280" />
-        <el-table-column prop="name" label="操作">
+        <el-table-column prop="code" label="账号" width="180" />
+        <el-table-column prop="name" label="昵称" width="180"  />
+        <el-table-column prop="trueName" label="姓名" width="180"  />
+        <el-table-column prop="teamCode" label="手机号" width="180"  />
+        <el-table-column prop="remark" label="座右铭"  min-width="150" />
+        <el-table-column prop="name" label="操作" width="150" >
           <template #default="scope">
-            <el-popconfirm title="您确认删除该好友吗?" @confirm="deleteFriend(scope.row.id)">
-              <template #reference>
-                <el-button type="danger" link>删除</el-button>
-              </template>
-            </el-popconfirm>
-
+            <el-button type="danger" link @click="deleteFriend(scope.row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -35,7 +30,7 @@
 import $services from '@/services'
 import searchFriend from '@/components/searchs/index.vue'
 import { ref, reactive, onMounted } from 'vue'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElMessageBox } from 'element-plus'
 
 const searchDialog = ref<boolean>(false)
 
@@ -43,8 +38,8 @@ type arrList = {
   id: string
 }
 
+// 添加好友
 const addFriends = (arr: Array<arrList>) => {
-  console.log('arrr', arr)
   $services.person
     .applyJoin({
       data: {
@@ -52,13 +47,18 @@ const addFriends = (arr: Array<arrList>) => {
       }
     })
     .then((res: ResultType) => {
-      if (res.code == 200) {
+      if (res.success) {
         ElMessage({
           message: '申请成功',
-          type: 'warning'
+          type: 'success'
         })
         searchDialog.value = false
         getFriendList()
+      } else {
+        ElMessage({
+          message: res.msg,
+          type: 'error'
+        })
       }
     })
 }
@@ -88,29 +88,40 @@ const getFriendList = async () => {
     })
 }
 //删除好友
-const deleteFriend = (id: string) => {
-  $services.person
+const deleteFriend = (user: any) => {
+  ElMessageBox.confirm(
+    `确定删除好友 ${user.name} 吗？`,
+    '警告',
+    {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
+    }
+  ).then(() => {
+    $services.person
     .remove({
       data: {
-        id: id,
-        targetIds: [id]
+        id: user.id,
+        targetIds: [user.id]
       }
     })
     .then((res: ResultType) => {
-      if (res.code == 200) {
+      if (res.success) {
         ElMessage({
           message: '删除成功',
-          type: 'warning'
+          type: 'success'
         })
         getFriendList()
       } else {
         ElMessage({
           message: res.msg,
-          type: 'warning'
+          type: 'error'
         })
       }
     })
+  })
 }
+
 const checksSearch = (val: any) => {
   if (val.value.length > 0) {
     let arr: Array<arrList> = []
