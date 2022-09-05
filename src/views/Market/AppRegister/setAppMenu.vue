@@ -33,9 +33,8 @@
     <!-- 一级导航 -->
     <template v-else>
       <li class="menu-item flex">
-        <!-- <div class="menu-label">名称1:</div> -->
         <el-input placeholder="应用名称" readonly v-model="menuItem.caption"></el-input>
-        <el-icon class="add-btn" :size="20" @click.stop="handleEvent('add', menuItem.customId)">
+        <el-icon class="add-btn" :size="20" @click.stop="handleEvent('Add', menuItem.customId)">
           <CirclePlus />
         </el-icon>
       </li>
