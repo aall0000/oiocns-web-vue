@@ -1,114 +1,96 @@
 <template>
-  <el-card style="border:0;" shadow="never" class="container">
-    <!-- 组内成员信息 -->
-    <div class="card-header">
-      <span>我的群组</span>
-      <div class="edit">
-        <el-button type="primary" @click="addQun = true">创建群组</el-button>
-        <el-button type="default" @click="friendShow">加入群组</el-button>
-      </div>
-
-    </div>
-    <div class="tab-list">
-      <el-table :data="state.qunList" stripe @select="handleSelect"
-        :header-cell-style="{ 'background': 'var(--el-color-primary-light-9)' }">
-        <el-table-column type="selection" width="50" />
-        <el-table-column prop="name" label="群名称" />
-        <el-table-column prop="code" label="群编号" />
-        <el-table-column prop="remark" label="群简介" />
-        <el-table-column prop="name" label="操作">
-          <template #default="scope">
-            <el-popconfirm title="您确认退出该群吗?" @confirm="exitCohort(scope.row.id)">
-              <template #reference>
-                <el-button v-if="myId != scope.row.belongId" type="primary" link>退出群
-                </el-button>
-              </template>
-            </el-popconfirm>
-            <el-popconfirm title="您确认解散该群吗?" @confirm="deleteCohort(scope.row.id)">
-              <template #reference>
-                <el-button v-if="myId == scope.row.belongId" type="primary" link>解散群
-                </el-button>
-              </template>
-            </el-popconfirm>
-
-          </template>
-        </el-table-column>
-      </el-table>
-    </div>
-
-    <!-- <div class="page-pagination">
-      <el-pagination small background layout="prev, pager, next" :total="50" class="mt-4" />
-    </div> -->
-    <searchCohort v-if="searchDialog" :serachType="2" @closeDialog="closeDialog" @checksSearch='checksSearch' />
-    <el-dialog v-model="addQun" title="创建群" width="30%">
-      <el-form-item label="群名称">
-        <el-input v-model="qunName" placeholder="请输入群名称" clearable />
-      </el-form-item>
-      <el-form-item label="群编号">
-        <el-input v-model="qunCode" placeholder="请输入群编号" clearable />
-      </el-form-item>
-      <el-form-item label="群简介">
-        <el-input v-model="qunTeamRemark" placeholder="请输入群简介" type="textarea" clearable :rows="4" />
-      </el-form-item>
-      <template #footer>
-        <span class="dialog-footer">
-          <el-button type="primary" @click="createCohort">确认</el-button>
-        </span>
+  <div class="container">
+    <el-card class="box-card">
+      <template #header>
+        <div class="card-header">
+          <span class="title">群组</span>
+          <el-radio-group v-model="mode" size="small" class="button">
+            <el-radio-button label="list"><el-icon :size="18"><Tickets /></el-icon></el-radio-button>
+            <el-radio-button label="card"><el-icon :size="18"><Menu /></el-icon></el-radio-button>
+          </el-radio-group>
+        </div>
       </template>
-    </el-dialog>
-  </el-card>
+
+      <div class="tab-container">
+        <el-tabs v-model="activeName" @tab-click="handleClick">
+          <el-tab-pane label="我创建" name="我创建">
+          </el-tab-pane>
+          <el-tab-pane label="我加入" name="我加入">
+          </el-tab-pane>
+          <div v-show="mode==='list'">
+            <List :type="activeName"/>
+          </div>
+          <div v-show="mode==='card'">
+            <Card :type="activeName"/>
+          </div>
+        </el-tabs>
+        <div class="button">
+          <el-button :icon="CirclePlus" type="primary" @click="createCohortDialog = true">创建</el-button>
+          <el-button :icon="Plus" type="primary" @click="searchDialog = true">加入</el-button>
+        </div>
+      </div>
+    </el-card>
+  </div>
+
+  <el-dialog v-model="createCohortDialog" title="创建群组" width="35%">
+    <el-form-item label="群组名称">
+      <el-input v-model="formData.name" placeholder="请输入群组名称" clearable />
+    </el-form-item>
+    <el-form-item label="群组编号">
+      <el-input v-model="formData.code" placeholder="请输入群组编号" clearable />
+    </el-form-item>
+    <el-form-item label="群组简介">
+      <el-input v-model="formData.teamRemark" placeholder="请输入群组简介" type="textarea" clearable :rows="4" />
+    </el-form-item>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button  @click="createCohortDialog = false">取消</el-button>
+        <el-button type="primary" @click="createCohort">确认</el-button>
+      </span>
+    </template>
+  </el-dialog>
+
+  <SearchCohort v-if="searchDialog" :serachType="2" @closeDialog="searchDialog = false"  @checksSearch='checksSearch'/>
+
 </template>
+
 <script lang="ts" setup>
+import { ref, onMounted } from 'vue'
+import List  from './list.vue'
+import Card  from './card.vue'
 import $services from '@/services'
-import { ref, reactive, onMounted } from 'vue'
-import { ElMessage } from 'element-plus'
-import { useUserStore } from '@/store/user'
-import searchCohort from '@/components/searchs/index.vue'
+import { ElMessage, TabsPaneContext } from 'element-plus';
+import { Plus, CirclePlus} from '@element-plus/icons-vue'
+import SearchCohort from '@/components/searchs/index.vue'
 
-const { queryInfo } = useUserStore()
-const myId = queryInfo.id
+const mode = ref('card')
+const activeName = ref('我创建')
 
-let selectId = ref<string>()
-const cohortDialog = ref<boolean>(false)
+const createCohortDialog = ref(false)
+const formData = ref<any>({})
 
-const handleSelect = (key: string, keyPath: string[]) => {
-  console.log(key, keyPath)
-}
-onMounted(() => {
-  getQunList()
-})
-
-const state = reactive({ qunList: [] })
-
-// 获取我加入的群列表
-const getQunList = async () => {
-  const res = await $services.cohort.getJoinedCohorts({ data: { offset: 0, limit: 10000 } })
-  const { data, err } = res
-  if (!err) {
-    const { result = [] } = data
-    state.qunList = result?.map(
-      (item: { team: { remark: any; code: any; name: any } }) => {
-        return {
-          ...item,
-          remark: item.team.remark
-        }
-      }
-    )
-  }
-}
 const searchDialog = ref<boolean>(false)
-const closeDialog = () => {
-  searchDialog.value = false;
+
+const handleClick = (tab: TabsPaneContext, event: Event) => {}
+
+// 创建群组
+const createCohort = ()=>{
+  $services.cohort
+    .create({ data: formData.value })
+    .then((res: ResultType) => {
+      if (res.code == 200) {
+        ElMessage({
+          message: '创建成功',
+          type: 'success'
+        })
+        createCohortDialog.value = false
+      }
+    })
 }
-const friendShow = () => {
-  searchDialog.value = true;
-}
-type arrList = {
-  id: string
-}
-const checksSearch = (val: any) => {
-  if (val.value.length > 0) {
-    let arr: Array<arrList> = []
+
+const checksSearch = (val: any)=>{
+  if(val.value.length > 0){
+    let arr: Array<any> = []
     val.value.forEach((element: any) => {
       arr.push(element.id)
     });
@@ -117,7 +99,8 @@ const checksSearch = (val: any) => {
     searchDialog.value = false;
   }
 }
-const applyJoinCohort = (arr: Array<arrList>) => {
+// 申请加入群组
+const applyJoinCohort = (arr: Array<any>) => {
   $services.cohort
     .applyJoin({
       data: {
@@ -125,96 +108,51 @@ const applyJoinCohort = (arr: Array<arrList>) => {
       }
     })
     .then((res: ResultType) => {
-      if (res.code == 200) {
+      if (res.success) {
         ElMessage({
-          message: '申请成功',
-          type: 'warning'
-        })
-        searchDialog.value = false
-        getQunList()
-      }
-    })
-}
-//退出群
-const exitCohort = (id: string) => {
-  $services.cohort
-    .exit({
-      data: {
-        id: id
-      }
-    })
-    .then((res: ResultType) => {
-      if (res.code == 200) {
-        ElMessage({
-          message: '退出成功',
-          type: 'warning'
-        })
-        getQunList()
-      }
-    })
-}
-
-//删除群
-const deleteCohort = (id: string) => {
-  $services.cohort
-    .delete({
-      data: {
-        id: id
-      }
-    })
-    .then((res: ResultType) => {
-      if (res.code == 200) {
-        ElMessage({
-          message: '解散成功',
-          type: 'warning'
-        })
-        getQunList()
-      }
-    })
-}
-const addQun = ref<boolean>(false)
-let qunName = ref<string>('')
-let qunCode = ref<string>('')
-let qunTeamRemark = ref<string>('')
-
-const createCohort = () => {
-  $services.cohort
-    .create({
-      data: {
-        id: selectId.value,
-        name: qunName.value,
-        code: qunCode.value,
-        teamRemark: qunTeamRemark.value
-      }
-    })
-    .then((res: ResultType) => {
-      if (res.code == 200) {
-        ElMessage({
-          message: '创建成功',
+          message: '申请成功，请等待审核通过!',
           type: 'success'
         })
-        addQun.value = false
-        getQunList()
+        searchDialog.value = false
       }
     })
 }
+
+onMounted(() => {
+
+})
+
+
 </script>
 <style lang="scss" scoped>
-.container {
-  // background: #f0f2f5;
-  // padding: 5px;
+.container{
+  height: 100%;
   width: 100%;
-  // height: 100%;
-  margin: 10px;
+}
 
-  .card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-bottom: 12px;
-    // background: #fff;
+.title {
+  text-align: left;
+  font-size: 16px;
+  width: 30%;
+  font-weight: bold;
+}
+.box-card {
+  height: 100%;
+}
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 
-
+.tab-container{
+  position: relative;
+  .button {
+    position: absolute;
+    font-size: 14px;
+    right: 10px;
+    top: 4px;
   }
 }
+
 </style>

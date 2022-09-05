@@ -2,7 +2,7 @@
   <div class="container">
     <el-card class="wrap">
       <div>
-        <div class="title">当前组织：{{router.currentRoute.value.query?.name}}</div>
+        <div class="title">当前{{title + '：' + router.currentRoute.value.query?.name}}</div>
       </div>
 
       <div class="search-wrap">
@@ -73,6 +73,7 @@
   const createIdntityDialog = ref<boolean>(false)
   let formData = reactive<any>({})
   const belongId = ref(null)
+  const title = ref('')
   // 身份列表
   const identityList = reactive({list:[]})
 
@@ -159,6 +160,8 @@
 
   onMounted(() => {
     belongId.value = router.currentRoute.value.query?.belongId
+    title.value = router.currentRoute.value.query?.title
+    console.log(title.value)
     loadIdentities()
     loadAuthorityTree()
   })
@@ -174,7 +177,7 @@
 .container{
   height: 100%;
   width: 100%;
-  
+
 }
 .wrap{
   width: 100%;
@@ -215,9 +218,9 @@
   height: 36px;
   .menu-nav{
     width:100%;
-    white-space: nowrap; 
+    white-space: nowrap;
     overflow: hidden;
-    text-overflow: ellipsis; 
+    text-overflow: ellipsis;
   }
 }
 

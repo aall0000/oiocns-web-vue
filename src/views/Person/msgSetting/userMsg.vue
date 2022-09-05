@@ -3,63 +3,61 @@
     <div class="pageHeader">
       <div class="title">个人信息</div>
     </div>
-    <el-scrollbar class="scrollbar">
-      <div class="body">
-        <div class="bodyLeft">
-          <el-form
-            class="form1"
-            :inline="true"
-            :label-position="labelPosition"
-            label-width="100px"
-            :model="formModel"
-            style="max-width: 800px"
-          >
-            <el-form-item label="昵称">
-              <el-input v-model="formModel.nickName" />
-            </el-form-item>
-            <el-form-item label="账号">
-              <el-input v-model="formModel.account" />
-            </el-form-item>
-            <el-form-item label="真实姓名">
-              <el-input v-model="formModel.realName" />
-            </el-form-item>
+    <div class="body">
+      <div class="bodyLeft">
+        <el-form
+          class="form1"
+          :inline="true"
+          :label-position="labelPosition"
+          label-width="100px"
+          :model="formModel"
+          style="max-width: 800px"
+        >
+          <el-form-item label="昵称">
+            <el-input v-model="formModel.nickName" />
+          </el-form-item>
+          <el-form-item label="账号">
+            <el-input v-model="formModel.account" :disabled='true'/>
+          </el-form-item>
+          <el-form-item label="真实姓名">
+            <el-input v-model="formModel.realName" />
+          </el-form-item>
 
-            <el-form-item label="手机号">
-              <el-input v-model="formModel.phone" />
-            </el-form-item>
-          </el-form>
-          <el-form
-            class="form2"
-            :label-position="labelPosition"
-            label-width="100px"
-            :model="formModel"
-            style="max-width: 800px"
-          >
-            <el-form-item label="座右铭">
-              <el-input v-model="formModel.motto" :rows="6" type="textarea" placeholder="座右铭" />
-            </el-form-item>
-          </el-form>
-          <div class="button">
-            <el-button> + 新增更多描述</el-button>
-            <el-popconfirm title="确认更新" @confirm="update()">
-              <template #reference>
-                <el-button type="primary">更新信息</el-button>
-              </template>
-            </el-popconfirm>
-          </div>
-        </div>
-        <div class="bodyRight">
-          <div class="touX">
-            <span>头像</span>
-            <img class="image" src="@/assets/img/toux.jpg" alt="" />
-          </div>
-          <div class="up">
-            <el-icon><Upload /></el-icon>
-            <span>上传文件</span>
-          </div>
+          <el-form-item label="手机号">
+            <el-input v-model="formModel.phone" />
+          </el-form-item>
+        </el-form>
+        <el-form
+          class="form2"
+          :label-position="labelPosition"
+          label-width="100px"
+          :model="formModel"
+          style="max-width: 800px"
+        >
+          <el-form-item label="座右铭">
+            <el-input v-model="formModel.motto" :rows="6" type="textarea" placeholder="座右铭" />
+          </el-form-item>
+        </el-form>
+        <div class="button">
+          <el-button> + 新增更多描述</el-button>
+          <el-popconfirm title="确认更新" @confirm="update()">
+            <template #reference>
+              <el-button type="primary">更新信息</el-button>
+            </template>
+          </el-popconfirm>
         </div>
       </div>
-    </el-scrollbar>
+      <div class="bodyRight">
+        <div class="touX">
+          <span>头像</span>
+          <img class="image" src="@/assets/img/toux.jpg" alt="" />
+        </div>
+        <div class="up">
+          <el-icon><Upload /></el-icon>
+          <span>上传文件</span>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -146,9 +144,10 @@
     width: 100%;
     height: 100%;
     background-color: #eff0f4;
+    position: relative;
     .pageHeader {
       width: 100%;
-      height: 10%;
+      height: 60px;
       background-color: #fff;
       .header {
         margin-top: 20px;
@@ -161,66 +160,64 @@
         font-weight: 600;
       }
     }
-    .scrollbar {
-      height: 90%;
+    .body {
+      height: calc(100% - 76px);
+      overflow-y: auto;
       width: 100%;
-      .body {
-        height: 95%;
-        width: 100%;
-        background-color: #fff;
-        border-left: 10px solid #eff0f4;
-        border-top: 16px solid #eff0f4;
-        border-right: 16px solid #eff0f4;
-        display: flex;
-        .bodyLeft {
-          height: 100%;
-          width: 60%;
+      position: absolute;
+      background-color: #fff;
+      border-left: 16px solid #eff0f4;
+      border-top: 16px solid #eff0f4;
+      border-right: 16px solid #eff0f4;
+      display: flex;
+      .bodyLeft {
+        height: 100%;
+        width: 60%;
 
-          .form1 {
-            width: 80%;
-            margin-left: 80px;
-            margin-top: 20px;
-            font-weight: 600;
-            .el-input {
-              width: 300px;
-            }
-          }
-          .form2 {
-            width: 80%;
-            margin-left: 80px;
-            font-weight: 600;
-            .el-input {
-              width: 400px;
-            }
-          }
-          .button {
-            margin-top: 30px;
-            margin-left: 80px;
-            margin-bottom: 30px;
+        .form1 {
+          width: 80%;
+          margin-left: 80px;
+          margin-top: 20px;
+          font-weight: 600;
+          .el-input {
+            width: 300px;
           }
         }
-        .bodyRight {
-          height: 100%;
-          width: 40%;
+        .form2 {
+          width: 80%;
+          margin-left: 80px;
+          font-weight: 600;
+          .el-input {
+            width: 400px;
+          }
+        }
+        .button {
+          margin-top: 30px;
+          margin-left: 80px;
+          margin-bottom: 30px;
+        }
+      }
+      .bodyRight {
+        height: 100%;
+        width: 40%;
 
-          .touX {
-            width: 220px;
-            display: flex;
-            margin-top: 50px;
-            .image {
-              width: 180px;
-            }
+        .touX {
+          width: 220px;
+          display: flex;
+          margin-top: 50px;
+          .image {
+            width: 180px;
           }
-          .up {
-            display: flex;
-            align-items: center;
-            width: 110px;
-            height: 30px;
-            padding-left: 12px;
-            border: 1px solid #aaa;
-            line-height: 30px;
-            margin-left: 75px;
-          }
+        }
+        .up {
+          display: flex;
+          align-items: center;
+          width: 110px;
+          height: 30px;
+          padding-left: 12px;
+          border: 1px solid #aaa;
+          line-height: 30px;
+          margin-left: 75px;
         }
       }
     }

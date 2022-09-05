@@ -136,8 +136,8 @@ export default {
     joinStaging: market + '/staging', //加入暂存区/购物车
     publishMerchandise: market + '​/publish/merchandise', //上架商品
     searchAll: market + '/search/all', //查询所有市场
-    searchOwn: market + '/search/own',//查询管理/已加入的市场
-    searchJoined: market + '/search/joined',//查询已加入的市场
+    searchOwn: market + '/search/own', //查询管理/已加入的市场
+    searchJoined: market + '/search/joined', //查询已加入的市场
     searchManager: market + '​/search/manager', //查询自己管理的市场
     searchMerchandise: market + '​/search/merchandise', //查询市场中所有商品
     searchMerchandiseApply: market + '​/search/merchandise/apply', //查询产品上架申请
@@ -150,7 +150,7 @@ export default {
     create: order + '/create', //创建订单
     createPay: order + '/create/pay', //创建支付
     delete: order + '/delete', //删除订单
-    deleteDetail: order +'/delete/detail',//删除订单详情
+    deleteDetail: order + '/delete/detail', //删除订单详情
     deliverMerchandise: order + '/deliver', //交付订单详情中的商品
     searchBuyList: order + '/search/buy/list', //买方查询购买订单列表
     searchDetailList: order + '/search/detail/list', //查询订单详情信息
@@ -161,6 +161,7 @@ export default {
   },
   product: {
     createResource: product + '/create/resource', //创建产品资源
+    createResources: product + '/create/resources', //批量创建产品资源
     createShare: product + '/create/share', //分享产品
     createWebappmenu: product + '/create/webappmenu', //创建产品资源菜单
     delete: product + '/delete', //删除产品
@@ -178,6 +179,7 @@ export default {
     queryOwnResource: product + '/query/own/resource', //查询组织/个人拥有的资源列表
     register: product + '/register', //产品登记
     publish: product + '/publish', //产品登记
+    searchUsefulProduct: product + 'search/useful/product',//查询组织/个人可用产品
     searchMerchandiseList: product + '​/search​/merchandise​/List', //根据产品查询产品上架信息
     searchMerchandiseApply: product + '​/search​/merchandise​/apply', //查询产品上架申请
     searchResource: product + '/search/resource', //查询产品资源列表

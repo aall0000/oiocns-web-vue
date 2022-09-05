@@ -34,5 +34,8 @@ interface AppMenuType {
   menuType: string
   link: string
   resource: any
+  customId: string
   menus?: AppMenuType[]
 }
+
+type ProductMenuEventType = 'Add' | 'Delete' | 'Up' | 'Down'
