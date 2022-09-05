@@ -30,12 +30,11 @@ interface ProductType {
 }
 
 interface AppMenuType {
-  caption: string
-  menuType: string
+  name: string
   link: string
-  resource: any
   customId: string
-  menus?: AppMenuType[]
+  code:string
+  privateKey:string
 }
 
 type ProductMenuEventType = 'Add' | 'Delete' | 'Up' | 'Down'

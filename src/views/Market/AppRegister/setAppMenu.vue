@@ -7,57 +7,50 @@
     @click.stop
   >
     <!-- 子集导航样式 -->
-    <template v-if="isChildren">
-      <li class="menu-item flex">
-        <el-input placeholder="请设置目录名称" v-model="menuItem.caption"></el-input>
-        <!-- <el-button type="primary" text>
-          <el-icon @click.stop="addChild(menuItem.customId)"><CirclePlusFilled />新增</el-icon>
-        </el-button> -->
-        <!-- <el-button type="primary" text>
-          <el-icon><CirclePlusFilled />删除</el-icon>
-        </el-button>
-        <el-button type="primary" text>
-          <el-icon><CirclePlusFilled />排序上</el-icon>
-        </el-button>
-        <el-button type="primary" text>
-          <el-icon><CirclePlusFilled />排序下</el-icon>
-        </el-button> -->
-        <el-icon class="child-btn" @click.stop="handleEvent('Add', menuItem.customId)">
-          <CirclePlus />
-        </el-icon>
-        <el-icon class="child-btn" @click.stop="handleEvent('Delete', menuItem.customId)"><Delete /></el-icon>
-        <el-icon class="child-btn" @click.stop="handleEvent('Up', menuItem.customId)"><SortUp /></el-icon>
-        <el-icon class="child-btn" @click.stop="handleEvent('Down', menuItem.customId)"><SortDown /></el-icon>
-      </li>
-    </template>
+    <li class="menu-item flex">
+      <el-input placeholder="请设置资源名称" v-model="menuItem.name"></el-input>
+      <!-- <el-icon class="child-btn" @click.stop="handleEvent('Add', menuItem.customId)">
+        <CirclePlus />
+      </el-icon> -->
+      <el-icon class="child-btn" @click.stop="handleEvent('Delete', menuItem.customId)"
+        ><Delete
+      /></el-icon>
+      <el-icon class="child-btn" @click.stop="handleEvent('Up', menuItem.customId)"
+        ><SortUp
+      /></el-icon>
+      <el-icon class="child-btn" @click.stop="handleEvent('Down', menuItem.customId)"
+        ><SortDown
+      /></el-icon>
+    </li>
     <!-- 一级导航 -->
-    <template v-else>
+    <!-- <template v-else>
       <li class="menu-item flex">
-        <el-input placeholder="应用名称" readonly v-model="menuItem.caption"></el-input>
+        <el-input placeholder="应用名称" readonly v-model="menuItem.name"></el-input>
         <el-icon class="add-btn" :size="20" @click.stop="handleEvent('Add', menuItem.customId)">
           <CirclePlus />
         </el-icon>
       </li>
-    </template>
+    </template> -->
     <!-- 共有部分 -->
     <li class="menu-item flex">
-      <div class="menu-label required">URL地址:</div>
-      <el-input placeholder="请设置" v-model="menuItem.link"></el-input>
+      <div class="menu-label required">资源地址:</div>
+      <el-input placeholder="例如:http://anyinone.com:800/" v-model="menuItem.link"></el-input>
+    </li>
+
+    <li class="menu-item flex">
+      <div class="menu-label">资源编码:</div>
+      <el-input placeholder="请设置" v-model="menuItem.code"></el-input>
     </li>
     <li class="menu-item flex">
-      <div class="menu-label">菜单类型:</div>
-      <el-input placeholder="请设置" v-model="menuItem.menuType"></el-input>
-    </li>
-    <li class="menu-item flex">
-      <div class="menu-label">资源信息:</div>
-      <el-input placeholder="请设置" v-model="menuItem.resource"></el-input>
+      <div class="menu-label">密钥:</div>
+      <el-input placeholder="请设置" v-model="menuItem.privateKey"></el-input>
     </li>
     <!-- <li class="more-btn">
       更多 <el-icon class="more"><DArrowLeft /> </el-icon>
     </li> -->
 
-    <el-divider />
-    <template v-if="menuItem?.menus">
+    <el-divider v-if="index !== menus.length - 1" />
+    <!-- <template v-if="menuItem?.menus">
       <SetAppMenu
         className="child-comp"
         :isChildren="true"
@@ -65,11 +58,11 @@
         @handleMemuEvent="handleEvent"
         :key="menuItem.menus.length"
       />
-    </template>
+    </template> -->
   </ul>
 </template>
 <script lang="ts" setup>
-  import SetAppMenu from './setAppMenu.vue'
+  // import SetAppMenu from './setAppMenu.vue'
   type Props = {
     menus?: AppMenuType[]
     className?: string

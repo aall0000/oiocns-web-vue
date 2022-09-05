@@ -83,7 +83,6 @@
     menus: [
       {
         caption: '',
-        menuType: '',
         link: '',
         resource: '',
         customId: '1',
@@ -121,7 +120,6 @@
       ...oldList,
       {
         caption: '',
-        menuType: '',
         link: '',
         resource: '',
         customId: `${selectId}-${oldList.length + 1}`
