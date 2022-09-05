@@ -16,8 +16,7 @@
 </template>
 
 <script lang="ts" setup>
-  import { Document, Menu as IconMenu, Location, Setting } from '@element-plus/icons-vue'
-  import { onBeforeMount, onMounted, ref } from 'vue'
+  import { onBeforeMount, ref,watch } from 'vue'
   import { useUserStore } from '@/store/user'
   import { useRouter } from 'vue-router'
   const menu = ref([])
@@ -66,6 +65,14 @@
       ]
     }
   }
+
+  watch(
+    () => router.currentRoute.value.path,
+    (newValue, oldValue) => {
+      workspace()
+    },
+    { immediate: true }
+  )
 </script>
 <style scoped>
   /* .tac {
