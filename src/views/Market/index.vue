@@ -175,6 +175,28 @@
   >
     <Cohort @closeDialog="cohortVisible = false" :info="selectProductItem"></Cohort>
   </el-dialog>
+  <el-dialog
+    v-if="unitShareVisible"
+    v-model="unitShareVisible"
+    custom-class="share-dialog"
+    title="应用分享"
+    width="1000px"
+    draggable
+    :close-on-click-modal="false"
+  >
+    <Unit :groupId="groupId" :appInfo="appInfo" :groupName="groupName" />
+  </el-dialog>
+  <el-dialog
+    v-if="groupShareVisible"
+    v-model="groupShareVisible"
+    custom-class="share-dialog"
+    title="应用分享"
+    width="1000px"
+    draggable
+    :close-on-click-modal="false"
+  >
+    <Group :groupId="groupId" :appInfo="appInfo" :groupName="groupName" />
+  </el-dialog>
 </template>
 <script setup lang="ts">
   import API from '@/services'
@@ -189,13 +211,31 @@
   import MarketCreate from './components/marketCreate.vue'
   import MarketCard from '@/components/marketCard/index.vue'
   import { useUserStore } from '@/store/user'
+  import { appendFile } from 'fs'
   import $services from '@/services'
+  import Unit from '../Market/AppShare/unit.vue'
+  import Group from '../Market/AppShare/group.vue'
   const add: string = '从应用市场中添加'
+  const groupShareVisible = ref<boolean>(false)
+  const unitShareVisible = ref<boolean>(false)
+
   // 注册页面实例
   const registerFormRef = ref<FormInstance>()
   const router = useRouter()
   const store = useUserStore()
   const cohort = ref(null)
+  // 当前用户的集团
+  let groups = reactive([])
+  // 当前选中的集团
+  let selectedValue = ref<string>('')
+  // 集团分享
+  const groupVisible = ref<boolean>(false)
+  // 分享功能
+  const cohortVisible = ref<boolean>(false)
+  // 路由跳转
+  const GoPage = (path: string) => {
+    router.push(path)
+  }
   type StateType = {
     ownProductList: ProductType[] //我的应用
     ownTotal: number
@@ -366,17 +406,18 @@
         })
     }
   }
+
+  const groupId = ref('')
+  const groupName = ref('')
+  const appInfo = ref('')
   // 跳转到group分享界面
   const shareGroup = () => {
     if (selectedValue.value) {
-      router.push({
-        path: '/market/group',
-        query: {
-          id: selectedValue.value,
-          name: state.selectLabel.label,
-          appInfo: selectProductItem.value.id
-        }
-      })
+      groupId.value = selectedValue.value
+      groupName.value = state.selectLabel.label
+      appInfo.value = selectProductItem.value.id
+      groupVisible.value = false
+      groupShareVisible.value = true
     } else {
       ElMessage({
         type: 'warning',
@@ -387,14 +428,12 @@
   // 跳转到unit分享界面
   const shareUnit = () => {
     if (selectedValue.value) {
-      router.push({
-        path: '/market/unit',
-        query: {
-          id: selectedValue.value,
-          name: state.selectLabel.label,
-          appInfo: selectProductItem.value.id
-        }
-      })
+      groupId.value = selectedValue.value
+      groupName.value = state.selectLabel.label
+      appInfo.value = selectProductItem.value.id
+
+      groupVisible.value = false
+      unitShareVisible.value = true
     } else {
       ElMessage({
         type: 'warning',
@@ -409,19 +448,6 @@
   // 提交上架
   const putawaySubmit = () => {
     putawayRef.value.onPutawaySubmit()
-  }
-
-  // 当前用户的集团
-  let groups = reactive([])
-  // 当前选中的集团
-  let selectedValue = ref<string>('')
-  // 集团分享
-  const groupVisible = ref<boolean>(false)
-  // 分享功能
-  const cohortVisible = ref<boolean>(false)
-  // 路由跳转
-  const GoPage = (path: string) => {
-    router.push(path)
   }
 </script>
 

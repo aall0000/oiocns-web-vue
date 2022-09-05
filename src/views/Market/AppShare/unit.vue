@@ -6,9 +6,9 @@
     </div>
     <DiyTable class="diytable" ref="diyTable" :tableData="tableData" :tableHead="tableHead">
       <template #operate="scope">
-        <!-- <el-button link type="danger" size="small" @click="removeFrom(scope.row)"
-          >移除单位</el-button
-        > -->
+        <el-button link type="danger" size="small" @click="cancelShare(scope.row.id)"
+          >取消分享</el-button
+        >
       </template>
     </DiyTable>
   </div>
@@ -33,6 +33,11 @@
   const route = useRoute()
   const diyTable = ref(null)
   const groupId = ref<string>('')
+  const props = defineProps({
+    groupId: String,
+    appInfo: String,
+    groupName: String
+  })
   const tableHead = ref([
     {
       prop: 'name',
@@ -60,7 +65,7 @@
   let tableData = ref<any>([])
   const pullCompanysDialog = ref<boolean>(false)
   onMounted(() => {
-    groupId.value = route.query.id.toString()
+    groupId.value = props.groupId
     getShareHistory()
   })
   const closeDialog = () => {
@@ -69,15 +74,53 @@
   type arrList = {
     id: string
   }
+  //确定分享
   const checksSearch = (val: any) => {
-    console.log('应用id', route.query.appInfo, '集团id', route.query.id, '所选列表', val)
+    console.log('应用id', props.appInfo, '集团id', props.groupId, '所选列表', val.value[0].id)
+    $services.product
+      .productGroupShare({
+        data: {
+          productId: props.appInfo,
+          targetIds: [val.value[0].id]
+        }
+      })
+      .then((res: ResultType) => {
+        if (res.success) {
+          ElMessage({
+            message: '分享成功',
+            type: 'success'
+          })
+          getShareHistory()
+        }
+        pullCompanysDialog.value = false
+      })
+  }
+  //取消分享
+  const cancelShare = (id: string) => {
+    $services.product
+      .deleteGroupShare({
+        data: {
+          productId: props.appInfo,
+          targetIds: [id]
+        }
+      })
+      .then((res: ResultType) => {
+        if (res.success) {
+          ElMessage({
+            message: '取消分享成功',
+            type: 'success'
+          })
+          getShareHistory()
+        }
+        pullCompanysDialog.value = false
+      })
   }
   //分享单位
   const pullCompanys = (arr: any) => {
     $services.company
       .pullCompanys({
         data: {
-          id: route.query.id,
+          id: props.groupId,
           targetIds: arr
         }
       })
@@ -94,10 +137,10 @@
   }
   const getShareHistory = () => {
     $services.product
-      .searchShare({
+      .searchGroupShare({
         data: {
-          id: route.query.appInfo,
-          teamId: route.query.id,
+          id: props.appInfo,
+          teamId: props.groupId,
           offset: 0,
           limit: 10000,
           filter: ''
@@ -105,10 +148,6 @@
       })
       .then((res: ResultType) => {
         if (res.success) {
-          ElMessage({
-            message: '添加成功',
-            type: 'success'
-          })
           tableData.value = res.data.result ? res.data.result : []
         }
       })
@@ -130,7 +169,7 @@
   }
   .unitLayout {
     width: 100%;
-    height: 100%;
+    height: 500px;
     background: #fff;
     padding: 10px;
     display: flex;
