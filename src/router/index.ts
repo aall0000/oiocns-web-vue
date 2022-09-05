@@ -47,7 +47,7 @@ const mainRouter: RouteRecordRaw[] = [
     }
   },
   {
-    component: () => import('@/views/Layout/components/loading.vue'),
+    component: () => import('@/views/Thing/index.vue'),
     name: 'Thing',
     path: '/Thing',
     meta: {
