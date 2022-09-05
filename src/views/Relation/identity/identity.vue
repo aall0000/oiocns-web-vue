@@ -63,9 +63,10 @@
   </div>
 </template>
 <script lang="ts" setup>
-  // @ts-nocheck
+  import { useRouter } from 'vue-router'
   import { ref, onMounted,reactive } from 'vue'
   import $services from '@/services'
+  import { ElMessage, ElMessageBox } from 'element-plus'
   const emit = defineEmits(['itemClick'])
 
   const router = useRouter()
@@ -73,7 +74,7 @@
   const createIdntityDialog = ref<boolean>(false)
   let formData = reactive<any>({})
   const belongId = ref(null)
-  const title = ref('')
+  const title = ref<any>('')
   // 身份列表
   const identityList = reactive({list:[]})
 
