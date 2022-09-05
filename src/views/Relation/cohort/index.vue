@@ -1,6 +1,6 @@
 <template>
-  <div class="container">
-    <el-card class="box-card">
+  <el-card class="container" shadow="never">
+    
       <template #header>
         <div class="card-header">
           <span class="title">群组</span>
@@ -29,8 +29,8 @@
           <el-button :icon="Plus" type="primary" @click="searchDialog = true">加入</el-button>
         </div>
       </div>
-    </el-card>
-  </div>
+    
+  </el-card>
 
   <el-dialog v-model="createCohortDialog" title="创建群组" width="35%">
     <el-form-item label="群组名称">
@@ -126,8 +126,10 @@ onMounted(() => {
 </script>
 <style lang="scss" scoped>
 .container{
-  height: 100%;
+  // height: 100%;
   width: 100%;
+  margin: 10px;
+  border: 0;
 }
 
 .title {
@@ -135,9 +137,6 @@ onMounted(() => {
   font-size: 16px;
   width: 30%;
   font-weight: bold;
-}
-.box-card {
-  height: 100%;
 }
 .card-header {
   display: flex;

@@ -69,6 +69,7 @@
     // height: calc(100% - 15px);
     // background: #fff;
     // border-right: solid 1px var(--el-menu-border-color);
+    background-color: var(--el-bg-color-overlay);
     .orgnization-navbar  {
       height: 100%;
     }
