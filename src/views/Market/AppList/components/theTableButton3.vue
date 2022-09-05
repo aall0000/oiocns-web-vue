@@ -1,13 +1,11 @@
 <template>
   <DiyButton>
     <template v-slot:opt>
-      <template v-if="props.type === 'manage'">
-        <div class="diy-button" @click="unpublishFun"> 下架 </div>
+      <template>
+        <div class="diy-button" @click="unpublishFun"> 上架 </div>
+        <div class="diy-button" @click="requireItem"> 分享 </div>
         <div class="diy-button" @click="requireItem"> 分发 </div>
-      </template>
-      <template v-else>
-        <div class="diy-button" @click="requireItem"> 订阅 </div>
-        <div class="diy-button" @click="joinShopCar"> 加入购物车 </div>
+        <div class="diy-button" @click="requireItem"> 移除 </div>
       </template>
     </template>
   </DiyButton>
@@ -44,7 +42,7 @@
 
   const unpublishFun = () => {
     let title: string
-    console.log('是是是',props.data);
+    console.log('是是是', props.data)
 
     title = `确定把 ${props.data.caption} 下架吗？`
     ElMessageBox.confirm(title, '警告', {
