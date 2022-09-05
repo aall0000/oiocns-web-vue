@@ -38,12 +38,18 @@ v<template>
   watch(
     () => props.resource,
     (newValue, oldValue) => {
-      console.log('321', newValue)
       props.orgData.forEach((el) => {
         if (el.resource == newValue) {
           state.dataList = el.data
         }
       })
+    },
+    { immediate: true }
+  )
+  watch(
+    () => props.orgData,
+    (newValue, oldValue) => {
+      console.log('321123', newValue)
     },
     { immediate: true }
   )
