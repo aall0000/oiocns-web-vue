@@ -26,49 +26,55 @@
       </div> -->
       <div class="tab-list">
         <DiyTable
-            class="diytable"
-            ref="diyTable"
-            :hasTableHead="false"
-            @handleUpdate="handleUpdate"
-            :tableData="tableData"
-            :tableHead="tableHead"
-          >
-            <template #content="scope">
-                {{ scope.row.target.name }}申请加入{{ scope.row.team.name }}
-            </template>
-            <template #status="scope">
-              <div v-if="scope.row.status>= 0 && scope.row.status<=100">待批</div>
-              <div v-else-if="scope.row.status> 100 &&scope.row.status <=200">已通过</div>
-              <div v-else>已拒绝</div>
-            </template>
-            <template #option="scope">
-              <div v-if="activeIndex == '1'">
-                <el-button link type="primary" style="margin-right: 10px" @click="joinSuccess(scope.row)">通过</el-button>
-                <el-button link type="primary"  @click="joinRefse(scope.row)">拒绝</el-button>
-              </div>
-              <div v-else>
-                <el-button link type="primary"  @click="cancelJoin(scope.row)">取消申请</el-button>
-              </div>
-            </template>
-          </DiyTable>
+          class="diytable"
+          ref="diyTable"
+          :hasTableHead="false"
+          @handleUpdate="handleUpdate"
+          :tableData="tableData"
+          :tableHead="tableHead"
+        >
+          <template #content="scope">
+            {{ scope.row.target.name }}申请加入{{ scope.row.team.name }}
+          </template>
+          <template #status="scope">
+            <div v-if="scope.row.status >= 0 && scope.row.status <= 100">待批</div>
+            <div v-else-if="scope.row.status > 100 && scope.row.status <= 200">已通过</div>
+            <div v-else>已拒绝</div>
+          </template>
+          <template #option="scope">
+            <div v-if="activeIndex == '1'">
+              <el-button
+                link
+                type="primary"
+                style="margin-right: 10px"
+                @click="joinSuccess(scope.row)"
+                >通过</el-button
+              >
+              <el-button link type="primary" @click="joinRefse(scope.row)">拒绝</el-button>
+            </div>
+            <div v-else>
+              <el-button link type="primary" @click="cancelJoin(scope.row)">取消申请</el-button>
+            </div>
+          </template>
+        </DiyTable>
       </div>
     </div>
   </div>
 </template>
 <script lang="ts" setup>
   import $services from '@/services'
-  import { ref, onMounted,reactive } from 'vue'
-  import { ElMessage } from 'element-plus'
+  import { ref, onMounted, reactive } from 'vue'
   import { storeToRefs } from 'pinia'
   import { useUserStore } from '@/store/user'
   import { useRouter } from 'vue-router'
   import DiyTable from '@/components/diyTable/index.vue'
+  import { ElMessage, ElMessageBox } from 'element-plus'
 
   const store = useUserStore()
   const { workspaceData } = storeToRefs(store)
   var tableData = ref<any>([])
   const diyTable = ref(null)
-    // 表格展示数据
+  // 表格展示数据
   const pageStore = reactive({
     tableData: [],
     currentPage: 1,
@@ -81,26 +87,26 @@
     $services.person
       .approval({
         data: {
-          offset: (pageStore.currentPage-1)*pageStore.pageSize,
+          offset: (pageStore.currentPage - 1) * pageStore.pageSize,
           limit: pageStore.pageSize
         }
       })
       .then((res: ResultType) => {
         tableData.value = res.data.result
-        diyTable.value.state.page.total = res.data.total;
+        diyTable.value.state.page.total = res.data.total
       })
   }
   var getApplyList = () => {
     $services.person
       .getAllApply({
         data: {
-          offset: (pageStore.currentPage-1)*pageStore.pageSize,
+          offset: (pageStore.currentPage - 1) * pageStore.pageSize,
           limit: pageStore.pageSize
         }
       })
       .then((res: ResultType) => {
         tableData.value = res.data.result
-        diyTable.value.state.page.total = res.data.total;
+        diyTable.value.state.page.total = res.data.total
       })
   }
   const tableHead = ref([
@@ -110,13 +116,13 @@
       name: 'target.name'
     },
     {
-      type:'slot',
+      type: 'slot',
       prop: 'content',
       label: '内容',
       name: 'content'
     },
     {
-      type:'slot',
+      type: 'slot',
       prop: 'status',
       label: '状态',
       name: 'status'
@@ -138,63 +144,81 @@
     pageStore.pageSize = page.pageSize
     getList()
   }
-  
+
   var joinRefse = (item: { id: '' }) => {
-    $services.person
-      .joinRefuse({
-        data: {
-          id: item.id
-        }
-      })
-      .then((res: ResultType) => {
-        ElMessage({
-          message: '拒绝成功',
-          type: 'success'
+    ElMessageBox.confirm('确定拒绝吗？', '提示', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
+    }).then(() => {
+      $services.person
+        .joinRefuse({
+          data: {
+            id: item.id
+          }
         })
-        if (activeIndex.value === '1') {
-          getList()
-        } else {
-          getApplyList()
-        }
-      })
+        .then((res: ResultType) => {
+          ElMessage({
+            message: '拒绝成功',
+            type: 'success'
+          })
+          if (activeIndex.value === '1') {
+            getList()
+          } else {
+            getApplyList()
+          }
+        })
+    })
   }
   var cancelJoin = (item: { id: '' }) => {
-    $services.person
-      .cancelJoin({
-        data: {
-          id: item.id
-        }
-      })
-      .then((res: ResultType) => {
-        ElMessage({
-          message: '取消成功',
-          type: 'success'
+    ElMessageBox.confirm('确定取消吗？', '提示', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
+    }).then(() => {
+      $services.person
+        .cancelJoin({
+          data: {
+            id: item.id
+          }
         })
-        if (activeIndex.value === '1') {
-          getList()
-        } else {
-          getApplyList()
-        }
-      })
+        .then((res: ResultType) => {
+          ElMessage({
+            message: '取消成功',
+            type: 'success'
+          })
+          if (activeIndex.value === '1') {
+            getList()
+          } else {
+            getApplyList()
+          }
+        })
+    })
   }
   var joinSuccess = (item: { id: '' }) => {
-    $services.person
-      .joinSuccess({
-        data: {
-          id: item.id
-        }
-      })
-      .then((res: ResultType) => {
-        ElMessage({
-          message: '添加成功',
-          type: 'success'
+    ElMessageBox.confirm('确定通过吗？', '提示', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
+    }).then(() => {
+      $services.person
+        .joinSuccess({
+          data: {
+            id: item.id
+          }
         })
-        if (activeIndex.value === '1') {
-          getList()
-        } else {
-          getApplyList()
-        }
-      })
+        .then((res: ResultType) => {
+          ElMessage({
+            message: '添加成功',
+            type: 'success'
+          })
+          if (activeIndex.value === '1') {
+            getList()
+          } else {
+            getApplyList()
+          }
+        })
+    })
   }
   const handleSelect = (key: any, keyPath: string[]) => {
     activeIndex.value = key

@@ -1,8 +1,8 @@
 <template>
   <div class="unitLayout">
     <div class="tableBtn">
-      <div class="tableBtn-title">{{ route.query.name }}</div>
-      <el-button small link type="primary" @click="shareGroup">分享集团</el-button>
+      <div class="tableBtn-title">{{ groupName }}</div>
+      <el-button small link type="primary" @click="pullGroupDialog = true">分享集团</el-button>
     </div>
     <DiyTable
       class="diytable"
@@ -19,6 +19,16 @@
       </template>
     </DiyTable>
   </div>
+  <searchCompany
+    v-if="pullGroupDialog"
+    :checkList="tableData"
+    :tableData="tableData"
+    :id="groupId"
+    :selectLimit="0"
+    :serachType="6"
+    @closeDialog="closeDialog"
+    @checksSearch="checksSearch"
+  />
 </template>
 
 <script setup lang="ts">
@@ -26,9 +36,15 @@
   import { useRoute, useRouter } from 'vue-router'
   import { ElMessage } from 'element-plus'
   import $services from '@/services'
+  import searchCompany from './components/index.vue'
   const route = useRoute()
   const router = useRoute()
   const diyTable = ref(null)
+  const props = defineProps({
+    groupId: String,
+    appInfo: String,
+    groupName: String
+  })
   const tableHead = ref([
     {
       prop: 'name',
@@ -55,7 +71,7 @@
   })
   // 表格用户数据
   let tableData = ref<any>([])
-  const pullCompanysDialog = ref<boolean>(false)
+  const pullGroupDialog = ref<boolean>(false)
   onMounted(() => {
     getData()
   })
@@ -90,7 +106,7 @@
       .then((res: ResultType) => {
         if (res.data.result && res.data.result.length > 0) {
           let obj = res.data.result.find((el: any) => {
-            return el.id == route.query.id
+            return el.id == props.groupId
           })
           obj.hasChildren = true
           tableData.value.push(obj)
@@ -100,7 +116,7 @@
       })
   }
   const closeDialog = () => {
-    pullCompanysDialog.value = false
+    pullGroupDialog.value = false
   }
   type arrList = {
     id: string
@@ -113,7 +129,7 @@
       })
       pullCompanys(arr)
     } else {
-      pullCompanysDialog.value = false
+      pullGroupDialog.value = false
     }
   }
   //分享单位
@@ -121,7 +137,7 @@
     $services.company
       .pullCompanys({
         data: {
-          id: route.query.id,
+          id: props.groupId,
           targetIds: arr
         }
       })
@@ -133,7 +149,7 @@
           })
           getShareHistory()
         }
-        pullCompanysDialog.value = false
+        pullGroupDialog.value = false
       })
   }
   const getShareHistory = () => {}
@@ -154,7 +170,7 @@
   }
   .unitLayout {
     width: 100%;
-    height: 100%;
+    height: 500px;
     background: #fff;
     padding: 10px;
     display: flex;

@@ -31,11 +31,7 @@
                 :tableHead="tableHead"
               >
                 <template #option="scope">
-                  <el-popconfirm title="确认退出吗?" @confirm="handleExit(scope.row.id)">
-                    <template #reference>
-                      <el-button link type="danger">退出</el-button>
-                    </template>
-                  </el-popconfirm>
+                  <el-button link type="danger" @click="handleExit(scope.row.id)">退出</el-button>
                 </template>
               </DiyTable>
             </div>
@@ -57,12 +53,11 @@
 </template>
 
 <script lang="ts" setup>
-  import { Search } from '@element-plus/icons-vue'
   import { onMounted, reactive, ref } from 'vue'
   import $services from '@/services'
   import { useUserStore } from '@/store/user'
   import type { TabsPaneContext } from 'element-plus'
-  import { ElMessage } from 'element-plus'
+  import { ElMessage ,ElMessageBox} from 'element-plus'
   import searchCompany from '@/components/searchs/index.vue'
   import CreateUnitDialog from '@/views/Layout/components/createUnitDialog.vue'
   import DiyTable from '@/components/diyTable/index.vue'
@@ -108,12 +103,6 @@
       width:'200'
     },
     {
-      prop: 'state',
-      label: '申请状态',
-      name: 'state',
-      width:'100'
-    },
-    {
       type: 'slot',
       prop: 'option',
       label: '操作',
@@ -125,6 +114,15 @@
     console.log(tab, event)
   }
   const handleExit = (id: string) => {
+    ElMessageBox.confirm(
+    '确定退出吗？',
+    '提示',
+    {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
+    }
+  ).then(() => {
     $services.company
       .exit({
         data: {
@@ -140,6 +138,7 @@
           getList()
         }
       })
+    })
   }
   type listItem = {
     id: string

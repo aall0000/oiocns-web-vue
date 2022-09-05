@@ -191,7 +191,11 @@ export default {
     update: product + '/update', //更新产品
     updateMerchandise: product + '/update/merchandise', //更新商品信息
     updateResource: product + '/update/resource', //更新产品资源
-    updateWebappmenu: product + '/update/webAppMenu' //更新产品资源菜单
+    updateWebappmenu: product + '/update/webAppMenu', //更新产品资源菜单
+    productGroupShare: product + '/group/share',
+    searchGroupShare: product + '/search/group/share',
+    deleteGroupShare: product + '/delete/group/share'
+
   },
   // 历史记录
   history: {
@@ -221,7 +225,8 @@ export default {
     searchManagerPublishApply: appstore + '/search/manager/publish/apply',
     approvalPublish: appstore + '/approval/publish',
     pullTarget: appstore + '/pull/target',
-    searchPublishApply: appstore + '/search/publish/apply'
+    searchPublishApply: appstore + '/search/publish/apply',
+
   }
   //others
 }

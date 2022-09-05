@@ -290,6 +290,20 @@
       name: 'remark'
     }
   ])
+  const tableHead5 = ref([
+    {
+      prop: 'name',
+      label: '集团名称',
+      width: '300',
+      name: 'name'
+    },
+    {
+      type: 'slot',
+      prop: 'remark',
+      label: '集团简介',
+      name: 'remark'
+    }
+  ])
   const options = ref<any>({
     checkBox: true,
     order: true,
