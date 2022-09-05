@@ -161,7 +161,7 @@
       const obj = data.find((item) => item.customId === aimId)
       if (!obj) {
         data.forEach((val) => {
-          val?.menus && deepGet(val?.menus)
+          val?.menus && deepGet(val.menus)
         })
       } else {
         aimData = obj
