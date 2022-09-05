@@ -1,34 +1,48 @@
 <template>
-  <ul class="setAppMenu-wrap" :class="className" v-for="(menuItem, index) in menus" :key="index">
+  <ul
+    class="setAppMenu-wrap"
+    :class="className"
+    v-for="(menuItem, index) in menus"
+    :key="menuItem.customId"
+    @click.stop
+  >
     <!-- 子集导航样式 -->
     <template v-if="isChildren">
       <li class="menu-item flex">
         <el-input placeholder="请设置目录名称" v-model="menuItem.caption"></el-input>
-        <el-button type="primary" text>
-          <el-icon @click="addChild"><CirclePlusFilled />新增</el-icon>
-        </el-button>
-        <el-button type="primary" text>
+        <!-- <el-button type="primary" text>
+          <el-icon @click.stop="addChild(menuItem.customId)"><CirclePlusFilled />新增</el-icon>
+        </el-button> -->
+        <!-- <el-button type="primary" text>
           <el-icon><CirclePlusFilled />删除</el-icon>
         </el-button>
         <el-button type="primary" text>
-          <el-icon><CirclePlusFilled />排序</el-icon>
+          <el-icon><CirclePlusFilled />排序上</el-icon>
         </el-button>
         <el-button type="primary" text>
-          <el-icon><CirclePlusFilled />排序</el-icon>
-        </el-button>
+          <el-icon><CirclePlusFilled />排序下</el-icon>
+        </el-button> -->
+        <el-icon class="child-btn" @click.stop="handleEvent('Add', menuItem.customId)">
+          <CirclePlus />
+        </el-icon>
+        <el-icon class="child-btn" @click.stop="handleEvent('Delete', menuItem.customId)"><Delete /></el-icon>
+        <el-icon class="child-btn" @click.stop="handleEvent('Up', menuItem.customId)"><SortUp /></el-icon>
+        <el-icon class="child-btn" @click.stop="handleEvent('Down', menuItem.customId)"><SortDown /></el-icon>
       </li>
     </template>
     <!-- 一级导航 -->
     <template v-else>
       <li class="menu-item flex">
         <!-- <div class="menu-label">名称1:</div> -->
-        <el-input placeholder="请设置目录名称" v-model="menuItem.caption"></el-input>
-        <el-icon class="add-btn" :size="20"><CirclePlus /></el-icon>
+        <el-input placeholder="应用名称" readonly v-model="menuItem.caption"></el-input>
+        <el-icon class="add-btn" :size="20" @click.stop="handleEvent('add', menuItem.customId)">
+          <CirclePlus />
+        </el-icon>
       </li>
     </template>
     <!-- 共有部分 -->
     <li class="menu-item flex">
-      <div class="menu-label">URL地址:</div>
+      <div class="menu-label required">URL地址:</div>
       <el-input placeholder="请设置" v-model="menuItem.link"></el-input>
     </li>
     <li class="menu-item flex">
@@ -42,12 +56,15 @@
     <!-- <li class="more-btn">
       更多 <el-icon class="more"><DArrowLeft /> </el-icon>
     </li> -->
+
     <el-divider />
-    <template v-if="menuItem?.menus?.length">
+    <template v-if="menuItem?.menus">
       <SetAppMenu
         className="child-comp"
         :isChildren="true"
-        :menus="menuItem?.menus"
+        :menus="menuItem.menus"
+        @handleMemuEvent="handleEvent"
+        :key="menuItem.menus.length"
       />
     </template>
   </ul>
@@ -59,12 +76,12 @@
     className?: string
     isChildren?: boolean
   }
-
+  // type ProductMenuEventType = 'add' | 'delete' | 'up' | 'down'
   const { menus, className } = withDefaults(defineProps<Props>(), { isChildren: false })
   console.log('稻城亚丁', menus)
-  const emit= defineEmits(['addNewMenu'])
-  const addChild= ()=>{
-    emit('addNewMenu','test')
+  const emit = defineEmits(['handleMemuEvent'])
+  const handleEvent = (type: ProductMenuEventType, id: string) => {
+    emit('handleMemuEvent', type, id)
   }
 </script>
 
@@ -77,18 +94,38 @@
       align-items: center;
 
       .menu-label {
-        width: 80px;
-        min-width: 80px;
+        position: relative;
+        width: 90px;
+        min-width: 90px;
         height: 34px;
+        font-size: 14px;
         line-height: 34px;
         text-align: right;
         color: #666;
         padding-right: 10px;
         box-sizing: border-box;
       }
+      .required::after {
+        position: absolute;
+        left: -8px;
+        font-size: 14px;
+        content: '*';
+        color: var(--el-color-danger);
+        margin-right: 4px;
+        transform: translateX(20px);
+      }
       .add-btn {
         cursor: pointer;
+        color: var(--el-color-primary);
         margin: 0 10px;
+      }
+      .child-btn {
+        cursor: pointer;
+        color: #575757;
+        margin: 0 8px;
+        &:hover {
+          color: var(--el-color-primary);
+        }
       }
     }
     .more-btn {

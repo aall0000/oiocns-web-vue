@@ -1,19 +1,26 @@
 <template>
+  <MarketCard />
   <div class="app-register-wrap">
-    <div class="page-title register-content"> 应用注册 </div>
-    <el-divider />
     <div class="app-base-info register-content">
       <p class="custom-title"><span class="custom-span"></span> 基础信息</p>
-      <el-form :model="form" label-position="top" class="demo-form-inline">
+      <el-form
+        :model="form"
+        ref="registerFormRef"
+        :rules="rules"
+        label-position="top"
+        class="demo-form-inline"
+      >
         <el-row :gutter="40" justify="space-between">
-          <el-col :span="12"
-            ><el-form-item label="应用名称">
-              <el-input v-model="form.name" placeholder="请设置" /> </el-form-item
-          ></el-col>
-          <el-col :span="12"
-            ><el-form-item label="应用编码">
-              <el-input v-model="form.code" placeholder="请设置" /> </el-form-item
-          ></el-col>
+          <el-col :span="12">
+            <el-form-item label="应用名称" prop="name">
+              <el-input v-model="form.name" placeholder="请设置" @change="handleAppNameChage" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="应用编码" prop="code">
+              <el-input v-model="form.code" placeholder="请设置" />
+            </el-form-item>
+          </el-col>
         </el-row>
         <!-- <el-row :gutter="40" justify="space-between">
           <el-col :span="12"
@@ -36,7 +43,6 @@
         </el-form-item>
         <el-form-item label="应用介绍">
           <el-input
-            v-model="form.desc"
             :rows="2"
             type="textarea"
             maxlength="120"
@@ -49,53 +55,175 @@
     <el-divider />
     <div class="app-base-info register-content">
       <p class="custom-title"><span class="custom-span"></span> 资源信息</p>
-
-      <SetAppMenu :menus="appMenu.menus" />
+      <SetAppMenu :menus="appMenu.menus" @handleMemuEvent="handleMemuEvent" />
     </div>
-    <div class="app-base-info register-content">
-      <el-button type="primary">取消</el-button>
-      <el-button type="primary">确定</el-button>
+    <el-divider />
+    <div class="app-base-info register-content btns">
+      <el-button type="info" @click="router.back()">取消</el-button>
+      <el-button type="primary" @click="onSubmit">注册</el-button>
     </div>
   </div>
 </template>
 <script lang="ts" setup>
+  import API from '@/services'
   import SetAppMenu from './setAppMenu.vue'
-  import { reactive } from 'vue'
-
+  import { reactive, ref } from 'vue'
+  import { ElMessage, FormInstance, FormRules } from 'element-plus'
+  import { useRouter } from 'vue-router'
+  const router = useRouter()
+  // 注册基本信息
   const form = reactive({
     code: '',
     name: '',
-    desc: '',
+    // desc: '',
     privateKey: ''
   })
-
+  // 默认应用菜单
   const appMenu = reactive({
     menus: [
       {
-        caption: form.name ?? '系统名称',
-        menuType: 'string',
-        link: 'www.baidu.com',
-        resource: 'sdhja',
+        caption: form.name,
+        menuType: '',
+        link: '',
+        resource: '',
+        customId: '1',
         menus: [
           {
             caption: '子菜单1',
             menuType: 'string',
             link: 'www.baidu.com',
-            resource: 'sdhja'
-          },
-          {
-            caption: '子菜单2',
-            menuType: 'string',
-            link: 'www.baidu.com',
-            resource: 'sdhja'
+            resource: 'sdhja',
+            customId: '1-1',
+            menus: [
+              {
+                caption: '孙菜单1',
+                menuType: 'string',
+                link: 'www.baidu.com',
+                resource: 'sdhja',
+                customId: '1-1-1'
+              }
+            ]
           }
         ]
       }
     ]
   })
 
+  const handleMemuEvent = (type: ProductMenuEventType, selectId: string) => {
+    console.log('处理时间', type, selectId)
+    switch (type) {
+      case 'Add':
+        handleAddMenu(selectId)
+        break
+      case 'Delete':
+        handleDeleteMenu(selectId)
+        break
+      case 'Up':
+        handleSortMenu('Up', selectId)
+        break
+      case 'Down':
+        handleSortMenu('Down', selectId)
+        break
+      default:
+        break
+    }
+  }
+  // 组件功能处理 添加子应用菜单
+  const handleAddMenu = (selectId: string) => {
+    // 根据当前所选标志 获取目标数据信息
+    const aim: AppMenuType = getDataWithId(selectId)
+    const oldList = aim?.menus ?? []
+    // 向目标数据新增 展示位
+    aim['menus'] = [
+      ...oldList,
+      {
+        caption: '',
+        menuType: '',
+        link: '',
+        resource: '',
+        customId: `${selectId}-${oldList.length + 1}`
+      }
+    ]
+    console.log('selectId!', selectId, aim.menus)
+  }
+  const handleDeleteMenu = (id: string) => {
+    // 根据当前所选标志 获取目标数据信息
+    const aim: AppMenuType = getDataWithId(id)
+    aim.menus = aim.menus.filter((item) => item.customId !== id)
+    console.log('sss', aim)
+  }
+  const handleSortMenu = (a: string, id: string) => {}
+  // 获取目标数据
+  const getDataWithId = (aimId: string) => {
+    let aimData: AppMenuType
+    // 获取目标数据
+    function deepGet(data: AppMenuType[]) {
+      const obj = data.find((item) => item.customId === aimId)
+      if (!obj) {
+        data.forEach((val) => {
+          val?.menus && deepGet(val.menus)
+        })
+      } else {
+        aimData = obj
+      }
+    }
+    deepGet(appMenu.menus)
+    return aimData
+  }
+  // 根据填写内容设置资源展示名称
+  const handleAppNameChage = (name: string) => {
+    appMenu.menus[0].caption = name
+  }
   const onSubmit = () => {
-    console.log('submit!')
+    console.log('submit!', form, appMenu)
+    onRegisterSubmit()
+  }
+
+  const registerFormRef: FormInstance = ref(null)
+  // 注册验证规则
+  const rules = reactive<FormRules>({
+    name: [
+      { required: true, message: '请输入应用名称', trigger: 'blur' },
+      { min: 2, max: 8, message: '长度限制2-8', trigger: 'blur' }
+    ],
+    code: [
+      {
+        required: true,
+        message: '请输入应用编码',
+        trigger: 'blur'
+      }
+    ]
+  })
+  // 提交注册
+  const onRegisterSubmit = async () => {
+    if (!registerFormRef) return
+    registerFormRef.validate(async (valid, fields) => {
+      if (valid) {
+        const { success, data } = await API.product.register({
+          data: form
+        })
+        if (success) {
+          const registerParams = {
+            productId: data.id,
+            resources: [{ ...form, ...appMenu }]
+          }
+          createBatchResource(registerParams)
+        }
+      } else {
+        console.log('error submit!', fields)
+      }
+    })
+  }
+
+  const createBatchResource = async (params: any) => {
+    const { success } = await API.product.createResources({ data: params })
+    if (success) {
+      ElMessage({
+        type: 'success',
+        message: '应用注册成功'
+      })
+      router.back()
+    }
   }
 </script>
 
@@ -105,7 +233,7 @@
     background: var(--el-bg-color-overlay);
     padding: 20px;
     overflow-y: auto;
-    height: calc(100vh - 60px);
+    height: calc(100vh - 108px);
 
     .register-content {
       width: 600px;
@@ -124,6 +252,12 @@
     .page-title {
       font-size: 16px;
       text-align: center;
+    }
+    .btns {
+      display: flex;
+      justify-content: space-around;
+      padding: 10px 0;
+      margin-bottom: 40px;
     }
 
     // 自定义标题
