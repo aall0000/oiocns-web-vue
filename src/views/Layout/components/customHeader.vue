@@ -2,9 +2,9 @@
   <el-row class="page-custom-header">
     <!-- 左侧 -->
     <el-col class="head-title" :span="4">
-      <div style="display: flex; align-items: center" @mouseleave="handleClose()">
-        <!-- <img class="logo" src="@/assets/img/avatar.jpg" alt="logo" /> -->
-        <div class="select-item__imgSelect" style="margin-right: 5px;">
+      <!-- <div style="display: flex; align-items: center" @mouseleave="handleClose()"> -->
+      <!-- <img class="logo" src="@/assets/img/avatar.jpg" alt="logo" /> -->
+      <!-- <div class="select-item__imgSelect" style="margin-right: 5px;">
           {{  workHead() }}
         </div>
         <div class="col-box" @click="onClickUnit">
@@ -41,32 +41,34 @@
             </div>
           </div>
         </div>
-      </div>
+      </div> -->
 
-      <!-- <el-dropdown trigger="click" placement="bottom-start" ref="dropdown">
-        <span class="el-dropdown-link" @click="onClickDrop">
+      <el-dropdown trigger="hover" placement="bottom-start" ref="dropdown" @handleOpen="onClickDrop">
+        <!-- @click="onClickDrop" -->
+        <span class="el-dropdown-link" >
+          <headImg :name="workspaceData?.name" :limit="1" :imgWidth="24" :isSquare="false" />
           {{ workspaceData?.name || '' }}
           <el-icon>
             <CaretBottom />
           </el-icon>
         </span>
         <template #dropdown>
-          <el-dropdown-menu
-            v-infinite-scroll="load"
+          <!-- v-infinite-scroll="load"
             infinite-scroll-immediate="false"
             infinite-scroll-distance="1"
-            style="max-height: 300px; overflow: auto"
-          >
-            <el-dropdown-item
-              v-for="item in store.userCompanys"
-              :key="item.id"
-              @click="switchCompany(item)"
-              >{{ item.team ? item.team.name : item.name }}</el-dropdown-item
-            >
+            style="max-height: 300px; overflow: auto" -->
+          <el-dropdown-menu>
+            <el-dropdown-item v-for="item in store.userCompanys" :key="item.id" @click="switchCompany(item)">
+              <headImg :name="item.team ? item.team.name : item.name" :limit="1" :imgWidth="24" :isSquare="false"/>
+              {{ item.team ? item.team.name : item.name }}
+            </el-dropdown-item>
           </el-dropdown-menu>
-          <div class="joinBtn" @click="createCompany">+ 创建企业/单位/组织</div>
+          <div class="joinBox">
+            <div class="joinBtn" @click="createCompany">创建单位</div>
+            <div class="joinBtn" @click="friendShow">加入单位</div>
+          </div>
         </template>
-      </el-dropdown> -->
+      </el-dropdown>
     </el-col>
     <!-- 中间搜索 -->
     <el-col :span="6" class="col-center">
@@ -82,14 +84,19 @@
         <SearchDialog></SearchDialog>
       </el-popover>
     </el-col>
-     <!-- 右侧 -->
+    <!-- 右侧 -->
     <el-col :span="14" class="flex col-right">
       <el-space class="right-navbar">
-        <el-link  :underline="false" class="header-message-icon" @click="()=>router.push('/chat')">
-          <el-badge :value="anydata?.message?.noReadCount>10 ?`10+` : anydata?.message?.noReadCount" v-if="anydata?.message?.noReadCount &&anydata?.message?.noReadCount >0" >
-            <el-icon class="header-message-icon" :size="18"><ChatDotSquare /></el-icon>
+        <el-link :underline="false" class="header-message-icon" @click="() => router.push('/chat')">
+          <el-badge :value="anydata?.message?.noReadCount > 10 ? `10+` : anydata?.message?.noReadCount"
+            v-if="anydata?.message?.noReadCount && anydata?.message?.noReadCount > 0">
+            <el-icon class="header-message-icon" :size="18">
+              <ChatDotSquare />
+            </el-icon>
           </el-badge>
-          <el-icon class="header-message-icon" :size="18" v-else><ChatDotSquare /></el-icon>
+          <el-icon class="header-message-icon" :size="18" v-else>
+            <ChatDotSquare />
+          </el-icon>
         </el-link>
         <el-switch v-model="isDark" active-icon="Moon" inactive-icon="Sunny" inline-prompt></el-switch>
         <el-dropdown trigger="hover" size="large" class="dropdown-menu">
@@ -101,13 +108,13 @@
             </el-icon> -->
           </span>
           <template #dropdown>
-            <el-dropdown-menu >
+            <el-dropdown-menu>
               <el-dropdown-item @click="toWork" icon="Setting">首页配置</el-dropdown-item>
               <el-dropdown-item @click="toUserSetting" icon="Postcard">个人中心</el-dropdown-item>
               <el-dropdown-item v-if="isUnitWork" @click="toCompanySetting" icon="Postcard">单位中心</el-dropdown-item>
               <el-dropdown-item icon="Help">帮助中心 </el-dropdown-item>
               <el-dropdown-item icon="Switch">切换语言 </el-dropdown-item>
-              <el-dropdown-item  icon="Brush">切换主题 </el-dropdown-item>
+              <el-dropdown-item icon="Brush">切换主题 </el-dropdown-item>
               <el-dropdown-item @click="exitLogin" icon="SwitchButton" divided>退出登录</el-dropdown-item>
             </el-dropdown-menu>
           </template>
@@ -115,7 +122,8 @@
       </el-space>
     </el-col>
   </el-row>
-  <searchCompany v-if="searchDialog" :serachType="3" @closeDialog="closeDialog"  @checksSearch='checksSearch'></searchCompany>
+  <searchCompany v-if="searchDialog" :serachType="3" @closeDialog="closeDialog" @checksSearch='checksSearch'>
+  </searchCompany>
   <template v-for="item in dialogShow" :key="item.key">
     <CreateUnitDialog v-if="item.key == 'unit' && item.value" :dialogShow="item" @closeDialog="closeDialog"
       @switchCreateCompany="switchCreateCompany"></CreateUnitDialog>
@@ -125,44 +133,44 @@
 </template>
 
 <script lang="ts" setup>
-  
-  import { ref, watch, onMounted, reactive, computed } from 'vue'
-  import { Search } from '@element-plus/icons-vue'
-  import anyStore from '@/utils/hubConnection'
-  import { storeToRefs } from 'pinia'
-  import { useRouter } from 'vue-router'
-  import { useUserStore } from '@/store/user'
-  import { useAnyData } from '@/store/anydata'
-  import $services from '@/services'
-  import { ElMessage } from 'element-plus'
-  import CreateUnitDialog from './createUnitDialog.vue'
-  import searchCompany from '@/components/searchs/index.vue'
-  import JoinUnitDialog from './joinUnitDialog.vue'
-  import SearchDialog from './searchDialog.vue'
-  import headImg from '@/components/headImg.vue'
-  import { useDark, useToggle } from '@vueuse/core'
 
-  const isDark = useDark()
-  // const toggleDark = useToggle(isDark)
+import { ref, watch, onMounted, reactive, computed } from 'vue'
+import { Search } from '@element-plus/icons-vue'
+import anyStore from '@/utils/hubConnection'
+import { storeToRefs } from 'pinia'
+import { useRouter } from 'vue-router'
+import { useUserStore } from '@/store/user'
+import { useAnyData } from '@/store/anydata'
+import $services from '@/services'
+import { ElMessage } from 'element-plus'
+import CreateUnitDialog from './createUnitDialog.vue'
+import searchCompany from '@/components/searchs/index.vue'
+import JoinUnitDialog from './joinUnitDialog.vue'
+import SearchDialog from './searchDialog.vue'
+import headImg from '@/components/headImg.vue'
+import { useDark, useToggle } from '@vueuse/core'
 
-  const store = useUserStore()
-  const anydata = useAnyData()
-  const SearchInfo = ref('')
-  const router = useRouter()
-  let current = ref(1)
-  const visible = ref(false)
-  const showSearch = ref(false)
-  const btnType = ref(false)
-  const { queryInfo } = storeToRefs(store)
-  const workspaceData = store.workspaceData
-  const dropdown = ref()
-  const workHead = ()=>{
-    if(workspaceData?.name == "个人空间"){
-      return '我'
-    }
-    return workspaceData?.name[0] || ''
+const isDark = useDark()
+// const toggleDark = useToggle(isDark)
+
+const store = useUserStore()
+const anydata = useAnyData()
+const SearchInfo = ref('')
+const router = useRouter()
+let current = ref(1)
+const visible = ref(false)
+const showSearch = ref(false)
+const btnType = ref(false)
+const { queryInfo } = storeToRefs(store)
+const workspaceData = store.workspaceData
+const dropdown = ref()
+const workHead = () => {
+  if (workspaceData?.name == "个人空间") {
+    return '我'
   }
-  const isUnitWork = ref<boolean>(workspaceData.id != queryInfo.value.id)
+  return workspaceData?.name[0] || ''
+}
+const isUnitWork = ref<boolean>(workspaceData.id != queryInfo.value.id)
 
 const getDropMenuStyle = computed(() => {
   if (!btnType.value) {
@@ -173,145 +181,148 @@ const getDropMenuStyle = computed(() => {
   }
 })
 
-  const load = () => {
-    let currentPage = 0
-    current.value = current.value + 1
-    currentPage = (current.value - 1) * 10 + 1
-    store.getCompanyList(currentPage, workspaceData.id, true)
+const load = () => {
+  let currentPage = 0
+  current.value = current.value + 1
+  currentPage = (current.value - 1) * 10 + 1
+  store.getCompanyList(currentPage, workspaceData.id, true)
+}
+const dialogShow = reactive([
+  {
+    key: 'unit',
+    value: false
+  },
+  {
+    key: 'join',
+    value: false
+  },
+  {
+    key: 'search',
+    value: false
   }
-  const dialogShow = reactive([
-    {
-      key: 'unit',
-      value: false
-    },
-    {
-      key: 'join',
-      value: false
-    },
-    {
-      key: 'search',
-      value: false
-    }
-  ])
-  const showSearchInfo = () => {
-    visible.value = !visible.value
-  }
-  // const getFocus = () => {
-  //   visible.value = true
-  // }
-  // const getBlur = () => {
-  //   if (!showSearch.value) {
-  //     visible.value = false
-  //   }
-  // }
-  // const mouseenter = () => {
-  //   showSearch.value = true
-  // }
-  // const mouseleave = () => {
-  //   showSearch.value = false
-  // }
-  const searchDialog = ref<boolean>(false)
-  type arrList = {
-    id:string
-  }
-  const checksSearch=(val:any)=>{ 
-    if(val.value.length>0){
-      let arr:Array<arrList> =[]
-      val.value.forEach((element:any) => {
-        arr.push(element.id)
-      });
-      console.log('val',arr)
-      joinSubmit(arr)
-    }else{
-      searchDialog.value = false;
-    }
-  }
-  const friendShow = ()=>{
-    searchDialog.value = true;
-  }
-  const joinSubmit = (arr: any) => {
-    $services.company
-      .applyJoin({
-        data: {
-          id: arr.join('')
-        }
-      })
-      .then((res: ResultType) => {
-        if (res.code == 200) {
-          searchDialog.value = false;
-          ElMessage({
-            message: '申请成功',
-            type: 'success'
-          })
-        }
-      })
-  }
-
-  const onClickUnit = () => {
-    btnType.value = !btnType.value
-    if (!store.userCompanys || store.userCompanys.length == 0) {
-      store.getCompanyList(0, workspaceData.id, false)
-    }
-  }
-  const handleClose = () => {
-    btnType.value = false
-  }
-  const createCompany = () => {
-    dialogShow.map((el) => {
-      if (el.key == 'unit') {
-        el.value = true
-        btnType.value = false
-      }
-    })
-  }
-  const closeDialog = (key: string) => {
+])
+const showSearchInfo = () => {
+  visible.value = !visible.value
+}
+// const getFocus = () => {
+//   visible.value = true
+// }
+// const getBlur = () => {
+//   if (!showSearch.value) {
+//     visible.value = false
+//   }
+// }
+// const mouseenter = () => {
+//   showSearch.value = true
+// }
+// const mouseleave = () => {
+//   showSearch.value = false
+// }
+const searchDialog = ref<boolean>(false)
+type arrList = {
+  id: string
+}
+const checksSearch = (val: any) => {
+  if (val.value.length > 0) {
+    let arr: Array<arrList> = []
+    val.value.forEach((element: any) => {
+      arr.push(element.id)
+    });
+    console.log('val', arr)
+    joinSubmit(arr)
+  } else {
     searchDialog.value = false;
-    dialogShow.map((el) => {
-      if (el.key == key) {
-        el.value = false
+  }
+}
+const friendShow = () => {
+  searchDialog.value = true;
+}
+const joinSubmit = (arr: any) => {
+  $services.company
+    .applyJoin({
+      data: {
+        id: arr.join('')
       }
     })
-  }
-  const onClickDrop = () => {
-    if (store.userCompanys.length == 0) {
-      current.value = 0
-      store.getCompanyList(current.value, workspaceData.id, false)
-    }
-  }
+    .then((res: ResultType) => {
+      if (res.code == 200) {
+        searchDialog.value = false;
+        ElMessage({
+          message: '申请成功',
+          type: 'success'
+        })
+      }
+    })
+}
 
-  const switchCreateCompany = (data: { id: string }) => {
-    $services.person
-      .changeWorkspace({
-        data: {
-          id: data.id
-        }
-      })
-      .then((res: ResultType) => {
-        if (res.code == 200) {
-          sessionStorage.setItem('TOKEN', res.data.accessToken)
-          store.getQueryInfo(res.data.accessToken)
-          current.value = 0
-          store.createUnit(res.data).then(() => {
-            location.reload()
-          })
-        } else {
-          ElMessage({
-            message: res.msg,
-            type: 'warning'
-          })
-        }
-      })
+// const onClickUnit = () => {
+  
+//   // btnType.value = !btnType.value
+//   if (!store.userCompanys || store.userCompanys.length == 0) {
+//     store.getCompanyList(0, workspaceData.id, false)
+//   }
+// }
+
+// const handleClose = () => {
+//   btnType.value = false
+// }
+const createCompany = () => {
+  dialogShow.map((el) => {
+    if (el.key == 'unit') {
+      el.value = true
+      btnType.value = false
+    }
+  })
+}
+const closeDialog = (key: string) => {
+  searchDialog.value = false;
+  dialogShow.map((el) => {
+    if (el.key == key) {
+      el.value = false
+    }
+  })
+}
+const onClickDrop = () => {
+  
+  if (store.userCompanys.length == 0) {
+    current.value = 0
+    store.getCompanyList(current.value, workspaceData.id, false)
   }
-  const switchCompany = (data: { id: string }) => {
-    $services.person
-      .changeWorkspace({
-        data: {
-          id: data.id
-        }
-      })
-      .then((res: ResultType) => {
-        if (res.code == 200) {
-          sessionStorage.setItem('TOKEN', res.data.accessToken)
+}
+
+const switchCreateCompany = (data: { id: string }) => {
+  $services.person
+    .changeWorkspace({
+      data: {
+        id: data.id
+      }
+    })
+    .then((res: ResultType) => {
+      if (res.code == 200) {
+        sessionStorage.setItem('TOKEN', res.data.accessToken)
+        store.getQueryInfo(res.data.accessToken)
+        current.value = 0
+        store.createUnit(res.data).then(() => {
+          location.reload()
+        })
+      } else {
+        ElMessage({
+          message: res.msg,
+          type: 'warning'
+        })
+      }
+    })
+}
+const switchCompany = (data: { id: string }) => {
+  $services.person
+    .changeWorkspace({
+      data: {
+        id: data.id
+      }
+    })
+    .then((res: ResultType) => {
+      if (res.code == 200) {
+        sessionStorage.setItem('TOKEN', res.data.accessToken)
 
         store.getQueryInfo(res.data.accessToken)
         store.getWorkspaceData(res.data.workspaceId).then(() => {
@@ -328,10 +339,10 @@ const getDropMenuStyle = computed(() => {
 const toWork = () => {
   router.push('/workHome')
 }
-const toUserSetting = ()=>{
+const toUserSetting = () => {
   router.push('/user')
 }
-const toCompanySetting = ()=>{
+const toCompanySetting = () => {
   router.push('/company')
 }
 const exitLogin = () => {
@@ -339,8 +350,12 @@ const exitLogin = () => {
   store.resetState()
   router.push('/login')
   //  取消该账号的未读消息订阅
-  anyStore.unSubscribed(`message.noread`)
+  anyStore.unSubscribed(`message.noRead`)
 }
+onMounted(()=>
+  // 获取用户的组织列表
+  onClickDrop()
+)
 </script>
 
 <style lang="scss" scoped>
@@ -365,7 +380,7 @@ const exitLogin = () => {
 
 .select-drop__flex {
   display: flex;
-  padding:  10px;
+  padding: 10px;
   align-items: center;
   // margin: 10px;
 }
@@ -420,24 +435,24 @@ const exitLogin = () => {
 
 .joinBox {
   display: flex;
-  border-top: 1px solid #e0e0e0;
+  // border-top: 1px solid #e0e0e0;
 }
 
 .joinBtn {
   margin: 10px;
   display: flex;
-  height: 35px;
-  background: #ffffff;
+  height: 32px;
+  // background: var(--el-bg-color);
   text-align: center;
   align-items: center;
   cursor: pointer;
-  font-size: 16px;
-  padding: 10px 20px;
-  color: rgba(0, 0, 0, 0.65);
+  font-size: 14px;
+  padding: 8px 20px;
+  color: var(--el-color-info);
 
-  // &:hover {
-  //   color: #154ad8;
-  // }
+  &:hover {
+    color: var(--el-color-primary);
+  }
 }
 
 .el-dropdown-link {
@@ -473,26 +488,32 @@ const exitLogin = () => {
     .right-con {
       margin-right: 18px;
     }
+
     .right-navbar {
       height: 100%;
     }
-    :deep(.right-navbar .el-space__item ) {
-      
+
+    :deep(.right-navbar .el-space__item) {
+
       padding: 0 12px;
-     }
+    }
+
     :deep(.right-navbar .el-space__item .el-switch) {
-      
+
       height: var(--el-header-height);
-     }
+    }
+
     :deep(.right-navbar .el-space__item:hover) {
       background: rgba(0, 0, 0, 0.03);
       height: 100%;
     }
+
     // .dropdown-menu {
     //   padding:  0 12px;
     // }
     .header-message-icon {
       cursor: pointer;
+
       &:hover {
         color: var(--el-color-primary);
       }
