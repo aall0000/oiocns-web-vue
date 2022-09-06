@@ -28,7 +28,7 @@
     :tableData="tableData"
     :id="groupId"
     :selectLimit="0"
-    :serachType="7"
+    :serachType="shareRadio === '1' ? 8 : 9"
     @closeDialog="closeDialog"
     @checksSearch="checksSearch"
   />
@@ -140,6 +140,7 @@
   type arrList = {
     id: string
   }
+
   const checksSearch = (val: any) => {
     console.log('应用id', props.appInfo, '集团id', props.groupId, '所选列表', val.value[0].id)
     $services.product

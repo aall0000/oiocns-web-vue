@@ -123,12 +123,12 @@
       title.value = '查询子集团'
     } else if (props.serachType == 8) {
       space.value = 'person'
-      tableHead.value = tableHead6.value
+      tableHead.value = tableHead7.value
       url.value = 'getFriends'
       title.value = '查询我的好友'
     } else if (props.serachType == 9) {
       space.value = 'cohort'
-      tableHead.value = tableHead7.value
+      tableHead.value = tableHead6.value
       url.value = 'getJoinedCohorts'
       title.value = '查询我加入的群'
     } else {
