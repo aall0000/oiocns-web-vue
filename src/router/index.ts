@@ -314,6 +314,30 @@ const mainRouter: RouteRecordRaw[] = [
         }
       },
       {
+        path: '/market/appDetail',
+        name: 'appDetail',
+        component: () => import('@/views/Market/AppDetail/index.vue'),
+        meta: {
+          title: '应用详情'
+        }
+      },
+      {
+        path: '/market/merchandiseDetail',
+        name: 'merchandiseDetail',
+        component: () => import('@/views/Market/MerchandiseDetail/index.vue'),
+        meta: {
+          title: '商品详情'
+        }
+      },
+      {
+        path: '/market/marketDetail',
+        name: 'marketDetail',
+        component: () => import('@/views/Market/MarketDetail/index.vue'),
+        meta: {
+          title: '市场详情'
+        }
+      },
+      {
         path: '/market/managerApply',
         name: 'managerApply',
         component: () => import('@/views/Market/JoinMarketApproval/manager.vue'),

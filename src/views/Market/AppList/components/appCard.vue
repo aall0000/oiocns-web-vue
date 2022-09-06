@@ -15,7 +15,7 @@
                 <el-icon :size="18" ><Operation /></el-icon>
                 <template #dropdown>
                   <el-dropdown-menu>
-                    <el-dropdown-item >Action 1</el-dropdown-item>
+                    <el-dropdown-item @click="GoPageWithQuery('/market/merchandiseDetail',{data:item.id})">商品详情</el-dropdown-item>
                   </el-dropdown-menu>
                 </template>
               </el-dropdown>
@@ -35,6 +35,7 @@
                 <p>{{ item.information }}</p>
               </div>
             </template>
+            <template #icon><HeadImg :name="item.name" :url="item.icon || merchandiseImg" :imgWidth="48" :limit="1" :isSquare="false" /></template>
             <!-- <template #footer> -->
 
             <el-button-group v-if="type=='manage'">
@@ -93,6 +94,9 @@
   import AppInfoDialog from './appInfoDialog.vue'
   import moment from 'moment'
   import { ElNotification } from 'element-plus'
+  import merchandiseImg from '@/assets/img/merchandise.png'
+  import { useRouter } from 'vue-router'
+  const router = useRouter()
   const emit = defineEmits(['handleUpdate','shopcarNumChange'])
   type Props={
     dataList: any
@@ -125,6 +129,14 @@
             message: '更多操作',
             type: 'success'
     })
+  }
+
+  const GoPage = (path: string) => {
+    router.push(path)
+  }
+
+  const GoPageWithQuery = (path: string, query: any) => {
+    router.push({ path, query })
   }
 
   // 查看卡片详情

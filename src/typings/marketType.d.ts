@@ -27,4 +27,5 @@ interface ProductType {
   updateTime: string
   updateUser: string
   version?: string
+  icon?: string
 }

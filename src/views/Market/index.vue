@@ -23,6 +23,7 @@
             :key="item.id"
             :over-id="item.id"
           >
+          <template #icon><HeadImg :name="item.name" :url="item.icon || appImg" :imgWidth="48" :limit="1" :isSquare="false" /></template>
           <template #rightIcon>
               <el-dropdown trigger="click" @command="(value) => handleCommand('own', value, item)" placement="left-start">
                 <el-icon :size="18" ><Operation /></el-icon>
@@ -32,6 +33,7 @@
                     {{ action.label }}
                   </el-dropdown-item>
                   <el-dropdown-item  @click="deleteApp(item)">移除应用</el-dropdown-item>
+                  <el-dropdown-item  @click="GoPage('/market/appDetail')">应用详情</el-dropdown-item>
                   </el-dropdown-menu>
                 </template>
               </el-dropdown>
@@ -55,6 +57,7 @@
             :key="item.id"
             :over-id="item.id"
           >
+          <template #icon><HeadImg :name="item.name" :url="item.icon || appImg" :imgWidth="48" :limit="1" :isSquare="false" /></template>
           <template #rightIcon>
               <el-dropdown trigger="click" @command="(value) => handleCommand('own', value, item)" placement="left-start">
                 <el-icon :size="18" ><Operation /></el-icon>
@@ -64,6 +67,7 @@
                     {{ action.label }}
                   </el-dropdown-item>
                   <el-dropdown-item  @click="deleteApp(item)">移除应用</el-dropdown-item>
+                  <el-dropdown-item  @click="GoPage('/market/appDetail')">应用详情</el-dropdown-item>
                   </el-dropdown-menu>
                 </template>
               </el-dropdown>
@@ -201,6 +205,7 @@
   import type { TabsPaneContext } from 'element-plus'
   import { useUserStore } from '@/store/user'
   import { appendFile } from 'fs'
+  import appImg from '@/assets/img/whatsapp.png'
   import $services from '@/services'
   const add: string = '从应用市场中添加'
   // 注册页面实例
@@ -480,6 +485,9 @@ const putawaySubmit = () => {
   // 路由跳转
   const GoPage = (path: string) => {
     router.push(path)
+  }
+  const GoPageWithQuery = (path: string, query: any) => {
+    router.push({ path, query })
   }
 </script>
 

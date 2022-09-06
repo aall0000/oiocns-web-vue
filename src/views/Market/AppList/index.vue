@@ -25,6 +25,7 @@
             :overId="item.id"
             @click="gotoApp(item)"
           >
+          <template #icon><HeadImg :name="item.name" :url="item.icon || storeImg" :imgWidth="48" :limit="1" :isSquare="false" /></template>
             <template #rightTriangle
               ><div :class="item.public ? 'triangle-public' : 'triangle-'">{{
                 item.public ? '公' : ''
@@ -61,6 +62,7 @@
             :overId="item.id"
             @click="gotoApp(item)"
           >
+          <template #icon><HeadImg :name="item.name" :url="item.icon || storeImg" :imgWidth="48" :limit="1" :isSquare="false" /></template>
             <template #rightTriangle
               ><div :class="item.public ? 'triangle-public' : 'triangle-'">{{
                 item.public ? '公' : ''
@@ -127,6 +129,7 @@ import $services from '@/services'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import MarketCreate from '../components/marketCreate.vue'
 import { useUserStore } from '@/store/user'
+import storeImg from '@/assets/img/store.png'
 const router = useRouter()
 const store = useUserStore()
 const handleCurrentMy: any = computed(() => {
