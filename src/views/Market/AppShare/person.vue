@@ -1,8 +1,18 @@
 <template>
   <div class="unitLayout">
     <div class="tableBtn">
-      <div class="tableBtn-title">{{ groupName }}</div>
-      <el-button small link type="primary" @click="pullGroupDialog = true">分享集团</el-button>
+      <div class="tableBtn-title">
+        <el-radio-group v-model="shareRadio" @change="shareChange" class="ml-4">
+          <el-radio label="1" size="large">分享给好友</el-radio>
+          <el-radio label="2" size="large">分享给群组</el-radio>
+        </el-radio-group>
+      </div>
+      <el-button v-if="shareRadio === '1'" small link type="primary" @click="pullGroupDialog = true"
+        >分享给好友</el-button
+      >
+      <el-button v-else small link type="primary" @click="pullGroupDialog = true"
+        >分享给群组</el-button
+      >
     </div>
     <DiyTable class="diytable" ref="diyTable" :tableData="tableData" :tableHead="tableHead">
       <template #operate="scope">
@@ -18,7 +28,7 @@
     :tableData="tableData"
     :id="groupId"
     :selectLimit="0"
-    :serachType="7"
+    :serachType="shareRadio === '1' ? 8 : 9"
     @closeDialog="closeDialog"
     @checksSearch="checksSearch"
   />
@@ -34,11 +44,13 @@
   const router = useRoute()
   const diyTable = ref(null)
   const groupId = ref<string>('')
+  const shareRadio = ref('1')
   const props = defineProps({
     groupId: String,
-    appInfo: String,
-    groupName: String
+    appInfo: String
   })
+  const url = ref<string>('share')
+  const deleteUrl = ref<string>('deleteUnitShare')
   const tableHead = ref([
     {
       prop: 'name',
@@ -75,9 +87,21 @@
   const pullGroupDialog = ref<boolean>(false)
   onMounted(() => {
     groupId.value = props.groupId
-    getShareHistory()
+    getPersonShareHistory()
   })
+  const shareChange = (val: any) => {
+    shareRadio.value = val
+    if (val === '1') {
+      url.value = 'share'
+      deleteUrl.value = 'deleteUnitShare'
+      getPersonShareHistory()
+    } else {
+      url.value = 'groupShare'
+      deleteUrl.value = 'deleteGroupShare'
 
+      getCohortShareHistory()
+    }
+  }
   const shareGroup = () => {
     console.log(diyTable.value.state.multipleSelection)
   }
@@ -97,78 +121,85 @@
     // callback(res.data.data)
   }
 
-  const getData = () => {
-    $services.company
-      .companyGetGroups({
-        data: {
-          offset: 0,
-          limit: 1000
-        }
-      })
-      .then((res: ResultType) => {
-        if (res.data.result && res.data.result.length > 0) {
-          let obj = res.data.result.find((el: any) => {
-            return el.id == props.groupId
-          })
-          obj.hasChildren = true
-          tableData.value.push(obj)
-        } else {
-          tableData = []
-        }
-      })
-  }
   const closeDialog = () => {
     pullGroupDialog.value = false
   }
   type arrList = {
     id: string
   }
+  //分享
   const checksSearch = (val: any) => {
     console.log('应用id', props.appInfo, '集团id', props.groupId, '所选列表', val.value[0].id)
-    $services.product
-      .groupShare({
-        data: {
-          productId: props.appInfo,
-          teamId: props.groupId,
-          targetIds: [val.value[0].id]
+    console.log(url.value)
+
+    $services.product[url.value]({
+      data: {
+        productId: props.appInfo,
+        teamId: props.groupId,
+        targetIds: [val.value[0].id]
+      }
+    }).then((res: ResultType) => {
+      if (res.success) {
+        console.log(res)
+        ElMessage({
+          message: '分享成功',
+          type: 'success'
+        })
+        if (url.value === 'share') {
+          getPersonShareHistory()
+        } else {
+          getCohortShareHistory()
         }
-      })
-      .then((res: ResultType) => {
-        if (res.success) {
-          ElMessage({
-            message: '分享成功',
-            type: 'success'
-          })
-          getShareHistory()
-        }
-        pullGroupDialog.value = false
-      })
+      }
+      pullGroupDialog.value = false
+    })
   }
   //取消分享
   const cancelShare = (id: string) => {
     console.log('取消分享', props.appInfo, props.groupId, id)
-    $services.product
-      .deleteGroupShare({
-        data: {
-          productId: props.appInfo,
-          teamId: props.groupId,
-          targetIds: [id]
+    $services.product[deleteUrl.value]({
+      data: {
+        productId: props.appInfo,
+        teamId: props.groupId,
+        targetIds: [id]
+      }
+    }).then((res: ResultType) => {
+      if (res.success) {
+        ElMessage({
+          message: '取消分享成功',
+          type: 'success'
+        })
+        if (deleteUrl.value === 'deleteUnitShare') {
+          getPersonShareHistory()
+        } else {
+          getCohortShareHistory()
         }
-      })
-      .then((res: ResultType) => {
-        if (res.success) {
-          ElMessage({
-            message: '取消分享成功',
-            type: 'success'
-          })
-          getShareHistory()
-        }
-        pullGroupDialog.value = false
-      })
+      }
+      pullGroupDialog.value = false
+    })
   }
 
   //
-  const getShareHistory = () => {
+  const getPersonShareHistory = () => {
+    $services.product
+      .searchShare({
+        data: {
+          id: props.appInfo,
+          teamId: props.groupId,
+          offset: 0,
+          limit: 10000,
+          filter: ''
+        }
+      })
+      .then((res: ResultType) => {
+        console.log(res.data.result)
+
+        if (res.success) {
+          tableData.value = res.data.result ? res.data.result : []
+        }
+      })
+  }
+  const getCohortShareHistory = () => {
     $services.product
       .searchGroupShare({
         data: {
@@ -180,6 +211,7 @@
         }
       })
       .then((res: ResultType) => {
+        console.log(res.data.result)
         if (res.success) {
           tableData.value = res.data.result ? res.data.result : []
         }

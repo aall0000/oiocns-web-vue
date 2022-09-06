@@ -192,10 +192,12 @@ export default {
     updateMerchandise: product + '/update/merchandise', //更新商品信息
     updateResource: product + '/update/resource', //更新产品资源
     updateWebappmenu: product + '/update/webAppMenu', //更新产品资源菜单
-    productGroupShare: product + '/group/share',
+    groupShare: product + '/group/share',
     searchGroupShare: product + '/search/group/share',
-    deleteGroupShare: product + '/delete/group/share'
-
+    deleteGroupShare: product + '/delete/group/share',
+    share: product + '/share', //创建针对单位个人的分享
+    searchUnitShare: product + '/search/share',//查询
+    deleteUnitShare: product + '/delete/share',//删除
   },
   // 历史记录
   history: {
