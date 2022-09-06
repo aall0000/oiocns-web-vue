@@ -379,9 +379,7 @@
         type: 'success',
         message: '分享成功'
       })
-      setTimeout(() => {
-        getHistoryData(true)
-      }, 300)
+      closeDialog()
     })
   }
   // 中间树形滚动加载事件
