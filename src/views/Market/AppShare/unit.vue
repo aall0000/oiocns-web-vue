@@ -65,6 +65,7 @@
   let tableData = ref<any>([])
   const pullCompanysDialog = ref<boolean>(false)
   onMounted(() => {
+    groupId.value = props.groupId
     getShareHistory()
   })
   const closeDialog = () => {

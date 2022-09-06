@@ -85,7 +85,7 @@
   const pullGroupDialog = ref<boolean>(false)
   onMounted(() => {
     groupId.value = props.groupId
-    getShareHistory()
+    getPersonShareHistory()
   })
   const shareChange = (val: any) => {
     shareRadio.value = val
@@ -186,7 +186,7 @@
   //
   const getPersonShareHistory = () => {
     $services.product
-      .searchGroupShare({
+      .searchShare({
         data: {
           id: props.appInfo,
           teamId: props.groupId,
@@ -196,6 +196,8 @@
         }
       })
       .then((res: ResultType) => {
+        console.log(res.data.result)
+
         if (res.success) {
           tableData.value = res.data.result ? res.data.result : []
         }
@@ -213,6 +215,7 @@
         }
       })
       .then((res: ResultType) => {
+        console.log(res.data.result)
         if (res.success) {
           tableData.value = res.data.result ? res.data.result : []
         }

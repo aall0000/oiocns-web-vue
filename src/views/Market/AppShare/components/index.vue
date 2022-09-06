@@ -121,6 +121,16 @@
       tableHead.value = tableHead5.value
       url.value = 'getSubgroups'
       title.value = '查询子集团'
+    } else if (props.serachType == 8) {
+      space.value = 'person'
+      tableHead.value = tableHead6.value
+      url.value = 'getFriends'
+      title.value = '查询我的好友'
+    } else if (props.serachType == 9) {
+      space.value = 'cohort'
+      tableHead.value = tableHead7.value
+      url.value = 'getJoinedCohorts'
+      title.value = '查询我加入的群'
     } else {
       space.value = 'person'
       tableHead.value = tableHead1.value
@@ -309,6 +319,40 @@
     {
       prop: 'remark',
       label: '子集团简介',
+      name: 'remark'
+    }
+  ])
+  const tableHead6 = ref([
+    {
+      prop: 'name',
+      label: '群名称',
+      name: 'name'
+    },
+    {
+      prop: 'code',
+      label: '群编码',
+      name: 'code'
+    },
+    {
+      prop: 'remark',
+      label: '群简介',
+      name: 'remark'
+    }
+  ])
+  const tableHead7 = ref([
+    {
+      prop: 'name',
+      label: '好友名称',
+      name: 'name'
+    },
+    {
+      prop: 'code',
+      label: '好友编码',
+      name: 'code'
+    },
+    {
+      prop: 'remark',
+      label: '好友简介',
       name: 'remark'
     }
   ])

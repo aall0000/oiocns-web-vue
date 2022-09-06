@@ -129,6 +129,7 @@
       .GroupShare({
         data: {
           productId: props.appInfo,
+          teamId: props.groupId,
           targetIds: [val.value[0].id]
         }
       })
