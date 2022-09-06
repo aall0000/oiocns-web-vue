@@ -6,7 +6,14 @@
   <div class="mainAside-wrap">
     <ul class="top-ul">
       <li
-        :class="['aside-li', activeRouter.includes(item.path) ? 'active' : '']"
+        :class="[
+          'aside-li',
+          activeAppId == item.id
+            ? 'active'
+            : !activeAppId && activeRouter.includes(item.path)
+            ? 'active'
+            : ''
+        ]"
         v-for="item in state.mainMenus.filter((a) => !a?.bottom)"
         @click="handleRouterChage(item)"
         @contextmenu.prevent="rightClick($event, item)"
@@ -15,57 +22,25 @@
         <el-icon v-if="!item.type" class="aside-li-icon" :size="20">
           <component :is="item.icon" />
         </el-icon>
-        <img v-else :src="item.icon" style="width: 18px; height: 18px; border-radius: 25px" />
-        <span class="aside-li-name">{{ item.name }}</span>
+        <img v-else :src="item.icon" style="width: 26px; height: 26px; border-radius: 50%" />
+        <span :class="['aside-li-name', item.name?.length > 3 ? 'overTxt' : '']">{{
+          item.name
+        }}</span>
       </li>
     </ul>
     <ul class="top-ul">
       <li
         :class="['aside', activeRouter.includes(item.path) ? 'active' : '']"
         v-for="item in state.mainMenus.filter((a) => a?.bottom === true)"
-        @click="handleRouterChage(item)"
+        @click.stop="handleRouterChage(item)"
         :key="item.id"
       >
-        <div class="me" v-if="item.name === '我的'">
-          <el-icon class="icon1" :size="20">
-            <component :is="item.icon" />
-          </el-icon>
-          <span class="name1">{{ item.name }}</span>
-        </div>
         <div
           :class="['apps', activeRouter.includes(item.path) ? 'active' : '']"
           v-if="item.name === '开始'"
         >
-          <el-popover placement="right-end" title="小应用" :width="350" trigger="click">
-            <el-collapse v-model="activeNames">
-              <el-collapse-item title="我使用的应用" name="1">
-                <div
-                  v-for="(item, index) in appCreate"
-                  :key="index"
-                  style="width: 80px; height: 100px; float: left; margin: 10px"
-                  @click="onAppClick(item)"
-                >
-                  <div style="display: flex; flex-direction: column; align-items: center">
-                    <img :src="item.icon" style="width: 50px; height: 50px; border-radius: 25px" />
-                    <span class="appName">{{ item.name }}</span>
-                  </div>
-                </div>
-              </el-collapse-item>
-              <el-collapse-item title="我创建的应用" name="2">
-                <div
-                  v-for="(item, index) in appUse"
-                  :key="index"
-                  style="width: 80px; height: 100px; float: left; margin: 10px"
-                  @click="onAppClick(item)"
-                >
-                  <div style="display: flex; flex-direction: column; align-items: center">
-                    <img :src="item.icon" style="width: 50px; height: 50px; border-radius: 25px" />
-                    <span class="appName">{{ item.name }}</span>
-                  </div>
-                </div>
-              </el-collapse-item>
-            </el-collapse>
-
+          <el-popover placement="right-end" title="常用应用" :width="350" trigger="click">
+            <CanUseApp @AppChange="onAppClick" />
             <template #reference>
               <div class="title">
                 <el-icon class="icon2" :size="20">
@@ -82,26 +57,20 @@
 </template>
 
 <script lang="ts" setup>
-  import { ref, onMounted, onUnmounted, unref, watch, reactive } from 'vue'
+  import { ref, onMounted, onUnmounted, watch, reactive } from 'vue'
   import { useRouter } from 'vue-router'
   import { useUserStore } from '@/store/user'
+  import { useCommonStore } from '@store/common'
   import $services from '@/services'
   import { ElMessage } from 'element-plus'
-  import img1 from '@/assets/img/appIcon1.png'
-  import img2 from '@/assets/img/appIcon2.png'
-  import img3 from '@/assets/img/appIcon.png'
-  import img4 from '@/assets/img/appIcon4.png'
-  import img5 from '@/assets/img/appIcon5.png'
-  import img6 from '@/assets/img/appIcon6.png'
-import anyStore from '@/utils/hubConnection'
+  import CanUseApp from './canUseApp.vue'
 
   const router = useRouter()
   const store = useUserStore()
-  // const active = ref<string>('工作台')
+  const commonStore = useCommonStore()
   // 是否是个人空间  默认是个人空间
-  const IsSelfSpace = ref<boolean>(store?.workspaceData?.name === '个人空间' ?? true)
+  // const IsSelfSpace = ref<boolean>(store?.workspaceData?.name === '个人空间' ?? true)
 
-  const activeNames = ref(['1', '2'])
   const activeRouter = ref<string>('')
   // const handleChange = (val: string[]) => {
   //   console.log(val)
@@ -124,17 +93,10 @@ import anyStore from '@/utils/hubConnection'
   const state: StateType = reactive({
     mainMenus: [
       { name: '工作台', icon: 'DataAnalysis', path: '/workHome' },
-      // { name: '消息', icon: 'ChatDotSquare', path: '/chat' },
       { name: '关系', icon: 'SetUp', path: '/relation' },
       { name: '应用', icon: 'Suitcase', path: '/market' },
       { name: '开始', icon: 'Menu', path: '/appStpre', bottom: true },
-      { name: '数据', icon: 'SetUp', path: '/thing' },
-      // {
-      //   name: '我的',
-      //   icon: 'User',
-      //   path: IsSelfSpace ? '/user' : '/company',
-      //   bottom: true
-      // }
+      { name: '数据', icon: 'SetUp', path: '/thing' }
     ],
     clickMenu: [],
     storeObj: {
@@ -147,16 +109,6 @@ import anyStore from '@/utils/hubConnection'
   const visible = ref(false)
   const left = ref(0)
   const top = ref(0)
-  const appUse = [
-    { id: '1', name: '资产管理', icon: img1, path: '/appUse1' },
-    { id: '2', name: '苹果插件', icon: img2, path: '/appUse2' },
-    { id: '3', name: '推特服务', icon: img3, path: '/appUse3' },
-    { id: '4', name: '办公用品', icon: img4, path: '/appUse4' }
-  ]
-  const appCreate = [
-    { id: '5', name: '资产云', icon: img5, path: '/appUse5' },
-    { id: '6', name: '云服务', icon: img6, path: '/appUse6' }
-  ]
   onMounted(() => {
     window.addEventListener('click', clickother)
     getFixedData()
@@ -176,15 +128,21 @@ import anyStore from '@/utils/hubConnection'
   //     mainMenus[6].path = '/company/unitMsg'
   //   }
   // }
+  // 当前激活应用
+  const activeAppId = ref<string>('')
+
   // 判断是否已经存在菜单
-  const onAppClick = (data: MenuItemType) => {
+  const onAppClick = (data: any) => {
     data.type = 'app'
+    activeAppId.value = data.id ?? ''
+    commonStore.iframeLink = data?.link
     let bool = state.mainMenus.filter((el) => {
       return el.id == data.id
     })
     if (bool.length == 0) {
       state.mainMenus.push(data)
     }
+    data.id&&router.push(data.path)
   }
   const rightClick = (event: any, item: any) => {
     if (item.type == 'app') {
@@ -266,8 +224,12 @@ import anyStore from '@/utils/hubConnection'
   }
   const handleRouterChage = (item: any) => {
     if (item.name !== '开始') {
+      activeAppId.value = item?.id || ''
       // active.value = item.name
-      router.push(item.path)
+      if (activeAppId.value) {
+        commonStore.iframeLink = item?.link
+      }
+      router.push({ path: item.path })
     } else {
       // active.value = item.name
     }
@@ -321,15 +283,17 @@ import anyStore from '@/utils/hubConnection'
     height: calc(100vh - 50px);
     padding-bottom: 10px;
     box-sizing: border-box;
-
+    .top-ul {
+      width: 60px;
+      overflow-x: hidden;
+    }
     .aside-li {
       display: flex;
       flex-direction: column;
       padding: 4px;
-      margin: 6px 6px 0;
       font-size: 12px;
       align-items: center;
-      transform: scale(90%);
+      transform: scale(0.9);
       cursor: pointer;
 
       &-icon {
@@ -340,6 +304,10 @@ import anyStore from '@/utils/hubConnection'
       &-name {
         font-weight: bold;
         font-size: 10px;
+      }
+      .overTxt {
+        font-size: 12px;
+        transform: scale(0.7);
       }
 
       &.active {

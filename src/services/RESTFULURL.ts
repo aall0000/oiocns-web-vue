@@ -179,7 +179,7 @@ export default {
     queryOwnResource: product + '/query/own/resource', //查询组织/个人拥有的资源列表
     register: product + '/register', //产品登记
     publish: product + '/publish', //产品登记
-    searchUsefulProduct: product + 'search/useful/product',//查询组织/个人可用产品
+    searchUsefulProduct: product + '/search/useful/product',//查询组织/个人可用产品
     searchMerchandiseList: product + '​/search​/merchandise​/List', //根据产品查询产品上架信息
     searchMerchandiseApply: product + '​/search​/merchandise​/apply', //查询产品上架申请
     searchResource: product + '/search/resource', //查询产品资源列表
@@ -192,10 +192,12 @@ export default {
     updateMerchandise: product + '/update/merchandise', //更新商品信息
     updateResource: product + '/update/resource', //更新产品资源
     updateWebappmenu: product + '/update/webAppMenu', //更新产品资源菜单
-    productGroupShare: product + '/group/share',
+    groupShare: product + '/group/share',
     searchGroupShare: product + '/search/group/share',
-    deleteGroupShare: product + '/delete/group/share'
-
+    deleteGroupShare: product + '/delete/group/share',
+    share: product + '/share', //创建针对单位个人的分享
+    searchUnitShare: product + '/search/share',//查询
+    deleteUnitShare: product + '/delete/share',//删除
   },
   // 历史记录
   history: {

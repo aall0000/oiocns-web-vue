@@ -28,6 +28,7 @@
             :key="item.id"
             :over-id="item.id"
           >
+          <template #icon><HeadImg :name="item.name" :url="item.icon || appImg" :imgWidth="48" :limit="1" :isSquare="false" /></template>
             <template #rightIcon>
               <el-dropdown
                 trigger="click"
@@ -45,6 +46,7 @@
                       {{ action.label }}
                     </el-dropdown-item>
                     <el-dropdown-item @click="deleteApp(item)">移除应用</el-dropdown-item>
+                    <el-dropdown-item  @click="GoPage('/market/appDetail')">应用详情</el-dropdown-item>
                   </el-dropdown-menu>
                 </template>
               </el-dropdown>
@@ -98,6 +100,7 @@
             :key="item.id"
             :over-id="item.id"
           >
+          <template #icon><HeadImg :name="item.name" :url="item.icon || appImg" :imgWidth="48" :limit="1" :isSquare="false" /></template>
             <template #rightIcon>
               <el-dropdown
                 trigger="click"
@@ -115,6 +118,7 @@
                       {{ action.label }}
                     </el-dropdown-item>
                     <el-dropdown-item @click="deleteApp(item)">移除应用</el-dropdown-item>
+                    <el-dropdown-item  @click="GoPage('/market/appDetail')">应用详情</el-dropdown-item>
                   </el-dropdown-menu>
                 </template>
               </el-dropdown>
@@ -230,10 +234,10 @@
     </el-select>
     <template #footer>
       <span class="dialog-footer" v-if="store.workspaceData.type == 2">
-        <!-- <el-button @click="shareGroup">按集团分享</el-button>
-        <el-button type="primary" @click="shareUnit">按单位分享</el-button> -->
-        <el-button @click="groupVisible = false">取消</el-button>
-        <el-button type="primary" @click="shareUnit">确定</el-button>
+        <el-button @click="shareGroup">按集团分享</el-button>
+        <el-button type="primary" @click="shareUnit">按单位分享</el-button>
+        <!-- <el-button @click="groupVisible = false">取消</el-button>
+        <el-button type="primary" @click="shareUnit">确定</el-button> -->
       </span>
       <span class="dialog-footer" v-else>
         <el-button type="primary" @click="shareCohort">按群组分享</el-button>
@@ -273,6 +277,17 @@
   >
     <Group :groupId="groupId" :appInfo="appInfo" :groupName="groupName" />
   </el-dialog>
+  <el-dialog
+    v-if="personCohortShareVisible"
+    v-model="personCohortShareVisible"
+    custom-class="share-dialog"
+    title="应用分享"
+    width="1000px"
+    draggable
+    :close-on-click-modal="false"
+  >
+    <Person :groupId="groupId" :appInfo="appInfo" />
+  </el-dialog>
 </template>
 <script setup lang="ts">
   import API from '@/services'
@@ -289,13 +304,17 @@
   import { useUserStore } from '@/store/user'
   import DiyTable from '@/components/diyTable/index.vue'
   import { appendFile } from 'fs'
+  import appImg from '@/assets/img/whatsapp.png'
   import $services from '@/services'
   import Unit from '../Market/AppShare/unit.vue'
   import Group from '../Market/AppShare/group.vue'
+  import Person from '../Market/AppShare/person.vue'
   import TheTableButton from './AppList/components/theTableButton3.vue'
   const add: string = '从应用市场中添加'
   const groupShareVisible = ref<boolean>(false)
   const unitShareVisible = ref<boolean>(false)
+  const personCohortShareVisible = ref<boolean>(false)
+
   const isCard = ref(true)
   const mode = ref('card')
   // 注册页面实例
@@ -374,6 +393,9 @@
   })
   const title = ref<string>('')
   onMounted(() => {
+    if (store.workspaceData.type == 1) {
+      actionOptionsOfOwn.splice(2, 1)
+    }
     // 获取列表
     getProductList('own')
     getProductList('share')
@@ -484,36 +506,39 @@
         break
     }
   }
-  // 按群组分享
-  const shareCohort = () => {}
 
   //  打开集团选择弹窗
   const openShareDialog = () => {
     if (store.workspaceData.type == 1) {
-      API.cohort
-        .getJoinedCohorts({
-          data: {
-            offset: 0,
-            limit: 10000,
-            filter: ''
-          }
-        })
-        .then((res: ResultType) => {
-          console.log(res)
-          if (res.data.result && res.data.result.length > 0) {
-            let cor = res.data.result
-            state.options = cor.map((g: any) => {
-              return { value: g.id, label: g.name }
-            })
-            title.value = '选择群组'
-            groupVisible.value = true
-          } else {
-            ElMessage({
-              type: 'warning',
-              message: '您暂未加入群组'
-            })
-          }
-        })
+      groupId.value = store.queryInfo.team.id
+
+      appInfo.value = selectProductItem.value.id
+      personCohortShareVisible.value = true
+
+      // API.cohort
+      //   .getJoinedCohorts({
+      //     data: {
+      //       offset: 0,
+      //       limit: 10000,
+      //       filter: ''
+      //     }
+      //   })
+      //   .then((res: ResultType) => {
+      //     console.log(res)
+      //     if (res.data.result && res.data.result.length > 0) {
+      //       let cor = res.data.result
+      //       state.options = cor.map((g: any) => {
+      //         return { value: g.id, label: g.name }
+      //       })
+      //       title.value = '选择群组'
+      //       groupVisible.value = true
+      //     } else {
+      //       ElMessage({
+      //         type: 'warning',
+      //         message: '您暂未加入群组'
+      //       })
+      //     }
+      //   })
     } else {
       API.company
         .companyGetGroups({
@@ -564,7 +589,7 @@
       appInfo.value = selectProductItem.value.id
 
       groupVisible.value = false
-      groupShareVisible.value = true
+      unitShareVisible.value = true
     } else {
       ElMessage({
         type: 'warning',
@@ -572,6 +597,8 @@
       })
     }
   }
+  // 按群组分享
+  const shareCohort = () => {}
 
   // 上架应用功能
   const publishVisible = ref<boolean>(false)
@@ -579,6 +606,9 @@
   // 提交上架
   const putawaySubmit = () => {
     putawayRef.value.onPutawaySubmit()
+  }
+  const GoPageWithQuery = (path: string, query: any) => {
+    router.push({ path, query })
   }
 </script>
 

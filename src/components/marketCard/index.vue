@@ -10,8 +10,16 @@
             </span>
           </template>
           <template #title> <span style="margin-top: 5px">返回</span></template>
-          <template #content>
-            <span style="color: #3e5ed8; font-size: 17px">{{ activeRouterName }} </span>
+          
+          <template #content >
+            <div class="flex items-center" >  
+              <div style="padding-top:10px">
+                <slot name="routeContent" ></slot>
+              </div>
+              <slot name="marketNameSlot" ></slot>
+            <span style="color: #3e5ed8; font-size: 17px;">{{ activeRouterName }} </span>
+            </div>
+
           </template>
         </el-page-header>
       </div>
