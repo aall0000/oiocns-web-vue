@@ -5,7 +5,7 @@
         <el-button type="primary" @click="GoPage('/market/appApply')">我的上架申请</el-button>
         <el-button type="primary" @click="GoPage('/market/register')">注册应用</el-button>
         <el-button type="primary" @click="GoPage('/market/markList')">管理商店</el-button>
-        <el-button type="primary" @click="GoPage('/market/managerApproval')">申请审批</el-button>
+        <!-- <el-button type="primary" @click="GoPage('/market/managerApproval')">申请审批</el-button> -->
         <el-button type="primary" @click.stop="GoPage('/market/order')">我的订单</el-button>
         <el-badge :value="shopcarNum" style="padding-left: 10px">
           <el-button type="primary" @click.stop="GoPage('/market/shopCar')">购物车</el-button>
@@ -14,8 +14,13 @@
     </MarketCard>
     <div class="market-content box">
       <ul class="box-ul">
-        <p class="box-ul-title">我的应用</p>
-        <li class="app-card">
+        <div class="getApp-radio">
+          <p class="box-ul-title">我的应用</p>
+
+          <!-- <p style="margin-right: 20px">切换视图</p>
+          <el-switch v-model="isCard" /> -->
+        </div>
+        <li class="app-card" v-show="mode === 'card'">
           <MarketCreate :info="add" @myclick="GoPage('/market/getApp')" />
           <ShopCard
             v-for="item in state.ownProductList"
@@ -46,6 +51,37 @@
             </template>
           </ShopCard>
         </li>
+        <li v-show="mode === 'list'">
+          <DiyTable
+            ref="diyTable"
+            :hasTitle="true"
+            :tableData="state.ownProductList"
+            :tableHead="state.tableHead"
+          >
+            <template #operate="scope">
+              <el-dropdown
+                trigger="click"
+                @command="(value) => handleCommand('own', value, scope.row)"
+                placement="bottom-end"
+              >
+                <el-icon :size="18"><Operation /></el-icon>
+                <template #dropdown>
+                  <el-dropdown-menu>
+                    <el-dropdown-item
+                      v-for="action in actionOptionsOfOwn"
+                      :command="action.value"
+                      :key="action.value"
+                    >
+                      {{ action.label }}
+                    </el-dropdown-item>
+                    <el-dropdown-item @click="deleteApp(scope.row)">移除应用</el-dropdown-item>
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
+            </template>
+          </DiyTable>
+        </li>
+
         <el-pagination
           style="justify-content: end"
           hide-on-single-page
@@ -55,7 +91,7 @@
       </ul>
       <ul class="box-ul">
         <p class="box-ul-title">其他应用</p>
-        <li class="app-card">
+        <li class="app-card" v-show="mode === 'card'">
           <ShopCard
             v-for="item in state.shareProductList"
             :info="item"
@@ -107,6 +143,36 @@
             <el-button class="btn" link small @click="deleteApp(item)">移除应用</el-button> -->
           </ShopCard>
         </li>
+        <li v-show="mode === 'list'">
+          <DiyTable
+            ref="diyTable"
+            :hasTitle="true"
+            :tableData="state.shareProductList"
+            :tableHead="state.tableHead"
+          >
+            <template #operate="scope">
+              <el-dropdown
+                trigger="click"
+                @command="(value) => handleCommand('own', value, scope.row)"
+                placement="bottom-end"
+              >
+                <el-icon :size="18"><Operation /></el-icon>
+                <template #dropdown>
+                  <el-dropdown-menu>
+                    <el-dropdown-item
+                      v-for="action in actionOptionsOfOwn"
+                      :command="action.value"
+                      :key="action.value"
+                    >
+                      {{ action.label }}
+                    </el-dropdown-item>
+                    <el-dropdown-item @click="deleteApp(scope.row)">移除应用</el-dropdown-item>
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
+            </template>
+          </DiyTable>
+        </li>
         <el-pagination
           style="justify-content: end"
           hide-on-single-page
@@ -114,6 +180,14 @@
           :total="state.shareTotal"
         />
       </ul>
+      <el-radio-group v-model="mode" size="small" class="button">
+        <el-radio-button label="list"
+          ><el-icon :size="18"><Tickets /></el-icon
+        ></el-radio-button>
+        <el-radio-button label="card"
+          ><el-icon :size="18"><Menu /></el-icon
+        ></el-radio-button>
+      </el-radio-group>
     </div>
   </div>
   <el-dialog
@@ -156,8 +230,10 @@
     </el-select>
     <template #footer>
       <span class="dialog-footer" v-if="store.workspaceData.type == 2">
-        <el-button @click="shareGroup">按集团分享</el-button>
-        <el-button type="primary" @click="shareUnit">按单位分享</el-button>
+        <!-- <el-button @click="shareGroup">按集团分享</el-button>
+        <el-button type="primary" @click="shareUnit">按单位分享</el-button> -->
+        <el-button @click="groupVisible = false">取消</el-button>
+        <el-button type="primary" @click="shareUnit">确定</el-button>
       </span>
       <span class="dialog-footer" v-else>
         <el-button type="primary" @click="shareCohort">按群组分享</el-button>
@@ -201,7 +277,7 @@
 <script setup lang="ts">
   import API from '@/services'
   import { ElMessage, ElMessageBox } from 'element-plus'
-  import { onMounted, reactive, ref } from 'vue'
+  import { onMounted, reactive, ref, watch, nextTick } from 'vue'
   import ShopCard from './components/shopCard.vue'
   import PutawayComp from './components/putawayComp.vue'
   import { baseData, actionOptionsOfOther, actionOptionsOfOwn } from './config'
@@ -211,14 +287,17 @@
   import MarketCreate from './components/marketCreate.vue'
   import MarketCard from '@/components/marketCard/index.vue'
   import { useUserStore } from '@/store/user'
+  import DiyTable from '@/components/diyTable/index.vue'
   import { appendFile } from 'fs'
   import $services from '@/services'
   import Unit from '../Market/AppShare/unit.vue'
   import Group from '../Market/AppShare/group.vue'
+  import TheTableButton from './AppList/components/theTableButton3.vue'
   const add: string = '从应用市场中添加'
   const groupShareVisible = ref<boolean>(false)
   const unitShareVisible = ref<boolean>(false)
-
+  const isCard = ref(true)
+  const mode = ref('card')
   // 注册页面实例
   const registerFormRef = ref<FormInstance>()
   const router = useRouter()
@@ -244,6 +323,7 @@
     marketOptions: any[] //所有市场列表
     options: any[] //集团列表
     selectLabel: selectType // 选中的集团名称
+    tableHead: any[]
   }
 
   const state: StateType = reactive({
@@ -256,7 +336,41 @@
     selectLabel: {
       label: '',
       id: ''
-    }
+    },
+    tableHead: [
+      {
+        prop: 'name',
+        label: '应用名称'
+      },
+      {
+        prop: 'code',
+        label: '应用编码'
+      },
+      {
+        prop: 'source',
+        label: '应用来源'
+      },
+      {
+        prop: 'typeName',
+        label: '应用类型'
+      },
+      {
+        prop: 'authority',
+        label: '持有权限'
+      },
+      {
+        prop: 'createTime',
+        label: '创建时间'
+      },
+      {
+        type: 'slot',
+        label: '操作',
+        fixed: 'right',
+        align: 'center',
+        width: '80',
+        name: 'operate'
+      }
+    ]
   })
   const title = ref<string>('')
   onMounted(() => {
@@ -264,6 +378,22 @@
     getProductList('own')
     getProductList('share')
     getShopcarNum()
+  })
+
+  //列表
+  watch([isCard], ([val], [valOld]) => {
+    // 监听 展示方式变化
+    nextTick(() => {
+      if (val) {
+        getProductList('own')
+      } else {
+        getProductList('share')
+      }
+    })
+    // 监听所选市场变化
+    // if (activeMVal!==activeMValOld) {
+    //   getData()
+    // }
   })
 
   const selectchange = (val: string) => {
@@ -301,6 +431,7 @@
     })
     if (success) {
       const { result = [], total = 0 } = data
+      console.log(result)
       state[`${type}ProductList`] = [...result]
       state[`${type}Total`] = total
     }
@@ -433,7 +564,7 @@
       appInfo.value = selectProductItem.value.id
 
       groupVisible.value = false
-      unitShareVisible.value = true
+      groupShareVisible.value = true
     } else {
       ElMessage({
         type: 'warning',
@@ -525,6 +656,11 @@
       height: calc(100vh - 124px);
       overflow-y: auto;
     }
+    .button {
+      position: absolute;
+      right: 50px;
+      bottom: 20px;
+    }
     .box {
       .box-ul + .box-ul {
         margin-top: 10px;
@@ -536,6 +672,15 @@
         &-title {
           font-weight: bold;
           padding: 8px 0;
+        }
+        .getApp-radio {
+          display: flex;
+          width: 100%;
+          .box-ul-title {
+            width: 50%;
+            display: flex;
+            justify-content: flex-start;
+          }
         }
         .app-card {
           display: flex;

@@ -252,7 +252,7 @@ const mainRouter: RouteRecordRaw[] = [
         name: 'marketMarkList',
         component: () => import('@/views/Market/AppList/index.vue'),
         meta: {
-          title: '市场列表'
+          title: '商店列表'
         }
       },
       {

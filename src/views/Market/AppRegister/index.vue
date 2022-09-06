@@ -46,6 +46,7 @@
         <el-form-item label="应用介绍">
           <el-input
             :rows="2"
+            v-model="form.desc"
             type="textarea"
             maxlength="120"
             show-word-limit
@@ -86,7 +87,7 @@
   const form = reactive({
     code: '',
     name: '',
-    // desc: '',
+    desc: '',
     privateKey: ''
   })
   let resources = reactive({

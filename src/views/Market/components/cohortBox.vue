@@ -24,6 +24,11 @@
     </div>
     <div class="cohortLayout-content">
       <div class="cohortLayout-content-left" :style="'width:' + (radio == '1' ? '49%' : '33%')">
+        <el-input v-model="searchLeftValue" class="w-50 m-2" placeholder="搜索">
+          <template #prefix>
+            <el-icon class="el-input__icon"><search /></el-icon>
+          </template>
+        </el-input>
         <el-tree
           v-if="radio == '1'"
           ref="leftTree"
@@ -34,6 +39,7 @@
           :default-expand-all="true"
           show-checkbox
           @check-change="handleCheckChange"
+          :filter-node-method="filterNode"
         />
         <el-tree
           v-else
@@ -42,6 +48,7 @@
           :props="unitProps"
           :default-expand-all="true"
           @node-click="handleNodeClick"
+          :filter-node-method="filterNode"
         />
       </div>
       <div
@@ -69,20 +76,28 @@
         />
       </div>
       <div class="cohortLayout-content-right" :style="'width:' + (radio == '1' ? '49%' : '33%')">
-        <Group v-if="radio == '1'" @delContent="delContent" :orgData="state.orgData"></Group>
+        <Author
+          v-if="radio == '1'"
+          @delContent="delContent"
+          :resource="resource"
+          :orgData="state.orgData"
+        ></Author>
         <Author
           v-if="radio == '2'"
           @delContent="delContentAuth"
+          :resource="resource"
           :orgData="state.authorData"
         ></Author>
         <Author
           v-if="radio == '3'"
           @delContent="delContentAuth"
+          :resource="resource"
           :orgData="state.personsData"
         ></Author>
         <Author
           v-if="radio == '4'"
           @delContent="delContentAuth"
+          :resource="resource"
           :orgData="state.identitysData"
         ></Author>
       </div>
@@ -99,18 +114,19 @@
   import { onMounted, ref, reactive, toRefs, watch, nextTick, computed } from 'vue'
   import { ElMessage, ElMessageBox } from 'element-plus'
   import API from '@/services'
-  import Group from './components/group.vue'
   import Author from './components/author.vue'
   import type { TabsPaneContext } from 'element-plus'
   interface Tree {
     id: string
     label: string
+    data?: any
     children?: Tree[]
   }
   type createInfo = {
     info: ProductType
   }
   const searchValue = ref('')
+  const searchLeftValue = ref('')
   const activeName = ref(0)
   const tabs = ref([])
   const radio = ref('1')
@@ -170,24 +186,41 @@
     (newValue, oldValue) => {
       state.centerTree = []
       nextTick(() => {
-        if (newValue == '1' && state.orgData.length > 0) {
-          let arr: any[] = []
-          state.orgData.forEach((el) => {
-            if (el.type == 'add' || el.type == 'has') {
-              arr.push(el.id)
+        if (newValue == '1') {
+          state.orgData.forEach((el: any) => {
+            if (el.data.length > 0) {
+              let arr: any[] = []
+              el.data.forEach((al: any) => {
+                if (al.type == 'add' || al.type == 'has') {
+                  arr.push(al.id)
+                }
+              })
+              leftTree.value.setCheckedKeys(arr, true)
             }
           })
-          leftTree.value.setCheckedKeys(arr, true)
         }
       })
     },
     { immediate: true }
   )
   watch(
+    () => resource.value,
+    (newValue, oldValue) => {
+      console.log(newValue)
+      getAllHistory()
+    }
+  )
+  watch(
     () => searchValue.value,
     (newValue, oldValue) => {
       console.log(newValue)
       handleNodeClick(state.loadID, false, newValue)
+    }
+  )
+  watch(
+    () => searchLeftValue.value,
+    (newValue, oldValue) => {
+      leftTree.value!.filter(newValue)
     }
   )
   const props = defineProps<createInfo>()
@@ -198,6 +231,15 @@
   const emit = defineEmits(['closeDialog'])
   const closeDialog = () => {
     emit('closeDialog')
+  }
+
+  //获取当前资源下的所有
+  const getAllHistory = () => {}
+
+  // 树节点过滤
+  const filterNode = (value: string, data: any) => {
+    if (!value) return true
+    return data.label.includes(value)
   }
 
   // 提交表单
@@ -272,19 +314,43 @@
     console.log('点击中间', data, checked, indeterminate)
     if (checked) {
       if (radio.value == '2') {
-        handleBoxClick(state.authorHisData, state.authorData, data)
+        state.authorData.forEach((el) => {
+          if (el.resource == resource.value) {
+            handleBoxClick(state.authorHisData, el.data, data)
+          }
+        })
       } else if (radio.value == '3') {
-        handleBoxClick(state.personsHisData, state.personsData, data)
+        state.personsData.forEach((el) => {
+          if (el.resource == resource.value) {
+            handleBoxClick(state.personsHisData, el.data, data)
+          }
+        })
       } else {
-        handleBoxClick(state.identitysHisData, state.identitysData, data)
+        state.identitysData.forEach((el) => {
+          if (el.resource == resource.value) {
+            handleBoxClick(state.identitysHisData, el.data, data)
+          }
+        })
       }
     } else {
       if (radio.value == '2') {
-        handleBoxCancelClick(state.authorHisData, state.authorData, data)
+        state.authorData.forEach((el) => {
+          if (el.resource == resource.value) {
+            handleBoxCancelClick(state.authorHisData, el.data, data)
+          }
+        })
       } else if (radio.value == '3') {
-        handleBoxCancelClick(state.personsHisData, state.personsData, data)
+        state.personsData.forEach((el) => {
+          if (el.resource == resource.value) {
+            handleBoxCancelClick(state.personsHisData, el.data, data)
+          }
+        })
       } else {
-        handleBoxCancelClick(state.identitysHisData, state.identitysData, data)
+        state.identitysData.forEach((el) => {
+          if (el.resource == resource.value) {
+            handleBoxCancelClick(state.identitysHisData, el.data, data)
+          }
+        })
       }
     }
   }
@@ -326,11 +392,19 @@
     console.log('点击左侧', data, checked, indeterminate)
     if (checked) {
       if (radio.value == '1') {
-        handleBoxClick(state.rightData, state.orgData, data)
+        state.orgData.forEach((el) => {
+          if (el.resource == resource.value) {
+            handleBoxClick(state.rightData, el.data, data)
+          }
+        })
       }
     } else {
       if (radio.value == '1') {
-        handleBoxCancelClick(state.rightData, state.orgData, data)
+        state.orgData.forEach((el) => {
+          if (el.resource == resource.value) {
+            handleBoxCancelClick(state.rightData, el.data, data)
+          }
+        })
       }
     }
   }
@@ -360,9 +434,13 @@
             state.centerTree = arr
             if (state.authorData.length > 0) {
               let arr: any[] = []
-              state.authorData.forEach((el) => {
-                if (el.type == 'add' || el.type == 'has') {
-                  arr.push(el.id)
+              state.authorData.forEach((el: any) => {
+                if (el.resource == resource.value) {
+                  el.data.forEach((al: any) => {
+                    if (al.type == 'add' || al.type == 'has') {
+                      arr.push(al.id)
+                    }
+                  })
                 }
               })
               centerTree.value.setCheckedKeys(arr, true)
@@ -371,32 +449,70 @@
         break
       case '3':
         state.loadID = data
-        API.company
-          .getDepartmentPersons({
-            data: {
-              id: data.id,
-              limit: page.pageSize,
-              offset: handleCurrent.value,
-              filter: typeof search == 'string' ? search : ''
-            }
-          })
-          .then((res: ResultType) => {
-            if (load == true) {
-              state.centerTree.concat(res.data.result)
-            } else {
-              state.centerTree = res.data.result ? res.data.result : []
-            }
+        if (data.data.parentId == '0') {
+          API.company
+            .getPersons({
+              data: {
+                id: data.id,
+                limit: page.pageSize,
+                offset: handleCurrent.value,
+                filter: typeof search == 'string' ? search : ''
+              }
+            })
+            .then((res: ResultType) => {
+              if (load == true) {
+                state.centerTree.concat(res.data.result)
+              } else {
+                state.centerTree = res.data.result ? res.data.result : []
+              }
 
-            if (state.personsData.length > 0) {
-              let arr: any[] = []
-              state.personsData.forEach((el) => {
-                if (el.type == 'add' || el.type == 'has') {
-                  arr.push(el.id)
-                }
-              })
-              centerTree.value.setCheckedKeys(arr, true)
-            }
-          })
+              if (state.personsData.length > 0) {
+                let arr: any[] = []
+                state.personsData.forEach((el: any) => {
+                  if (el.resource == resource.value) {
+                    el.data.forEach((al: any) => {
+                      if (al.type == 'add' || al.type == 'has') {
+                        arr.push(al.id)
+                      }
+                    })
+                  }
+                })
+                centerTree.value.setCheckedKeys(arr, true)
+              }
+            })
+        } else {
+          API.company
+            .getDepartmentPersons({
+              data: {
+                id: data.id,
+                limit: page.pageSize,
+                offset: handleCurrent.value,
+                filter: typeof search == 'string' ? search : ''
+              }
+            })
+            .then((res: ResultType) => {
+              if (load == true) {
+                state.centerTree.concat(res.data.result)
+              } else {
+                state.centerTree = res.data.result ? res.data.result : []
+              }
+
+              if (state.personsData.length > 0) {
+                let arr: any[] = []
+                state.personsData.forEach((el) => {
+                  if (el.resource == resource.value) {
+                    el.data.forEach((al: any) => {
+                      if (al.type == 'add' || al.type == 'has') {
+                        arr.push(al.id)
+                      }
+                    })
+                  }
+                })
+                centerTree.value.setCheckedKeys(arr, true)
+              }
+            })
+        }
+
         break
       case '4':
         state.loadID = data
@@ -419,8 +535,12 @@
             if (state.identitysData.length > 0) {
               let arr: any[] = []
               state.identitysData.forEach((el) => {
-                if (el.type == 'add' || el.type == 'has') {
-                  arr.push(el.id)
+                if (el.resource == resource.value) {
+                  el.data.forEach((al: any) => {
+                    if (al.type == 'add' || al.type == 'has') {
+                      arr.push(al.id)
+                    }
+                  })
                 }
               })
               centerTree.value.setCheckedKeys(arr, true)
@@ -448,16 +568,24 @@
       if (item.type == 'del') {
         return
       } else if (item.type == 'add') {
-        state.authorData.forEach((el, index) => {
-          if (el.id == item.id) {
-            state.authorData.splice(index, 1)
-            centerTree.value.setChecked(item.id, false)
+        state.authorData.forEach((el) => {
+          if (el.resource == resource.value) {
+            el.data.forEach((al: any, index: number) => {
+              if (al.id == item.id) {
+                el.data.splice(index, 1)
+                centerTree.value.setChecked(item.id, false)
+              }
+            })
           }
         })
       } else {
         state.authorData.forEach((el, index) => {
-          if (el.id == item.id) {
-            el.type == 'del'
+          if (el.resource == resource.value) {
+            el.data.forEach((al: any) => {
+              if (al.id == item.id) {
+                al.type == 'del'
+              }
+            })
           }
         })
       }
@@ -465,16 +593,24 @@
       if (item.type == 'del') {
         return
       } else if (item.type == 'add') {
-        state.personsData.forEach((el, index) => {
-          if (el.id == item.id) {
-            state.personsData.splice(index, 1)
-            centerTree.value.setChecked(item.id, false)
+        state.personsData.forEach((el) => {
+          if (el.resource == resource.value) {
+            el.data.forEach((al: any, index: number) => {
+              if (al.id == item.id) {
+                el.data.splice(index, 1)
+                centerTree.value.setChecked(item.id, false)
+              }
+            })
           }
         })
       } else {
         state.personsData.forEach((el, index) => {
-          if (el.id == item.id) {
-            el.type == 'del'
+          if (el.resource == resource.value) {
+            el.data.forEach((al: any) => {
+              if (al.id == item.id) {
+                al.type == 'del'
+              }
+            })
           }
         })
       }
@@ -482,16 +618,24 @@
       if (item.type == 'del') {
         return
       } else if (item.type == 'add') {
-        state.identitysData.forEach((el, index) => {
-          if (el.id == item.id) {
-            state.identitysData.splice(index, 1)
-            centerTree.value.setChecked(item.id, false)
+        state.identitysData.forEach((el) => {
+          if (el.resource == resource.value) {
+            el.data.forEach((al: any, index: number) => {
+              if (al.id == item.id) {
+                el.data.splice(index, 1)
+                centerTree.value.setChecked(item.id, false)
+              }
+            })
           }
         })
       } else {
         state.identitysData.forEach((el, index) => {
-          if (el.id == item.id) {
-            el.type == 'del'
+          if (el.resource == resource.value) {
+            el.data.forEach((al: any) => {
+              if (al.id == item.id) {
+                al.type == 'del'
+              }
+            })
           }
         })
       }
@@ -502,15 +646,23 @@
       return
     } else if (item.type == 'add') {
       state.orgData.forEach((el, index) => {
-        if (el.id == item.id) {
-          state.orgData.splice(index, 1)
-          leftTree.value.setChecked(item.id, false)
+        if (el.resource == resource.value) {
+          el.data.forEach((al: any, index: number) => {
+            if (al.id == item.id) {
+              el.data.splice(index, 1)
+              leftTree.value.setChecked(item.id, false)
+            }
+          })
         }
       })
     } else {
       state.orgData.forEach((el, index) => {
-        if (el.id == item.id) {
-          el.type == 'del'
+        if (el.resource == resource.value) {
+          el.data.forEach((al: any) => {
+            if (al.id == item.id) {
+              al.type == 'del'
+            }
+          })
         }
       })
     }
@@ -529,6 +681,17 @@
         if (res.success) {
           tabs.value = res.data.result
           resource.value = res.data.result[0].id
+          res.data.result.forEach((el: any) => {
+            let obj: any = {
+              resource: el.id,
+              data: []
+            }
+            state.orgData.push(obj)
+            state.authorData.push(obj)
+            state.identitysData.push(obj)
+            state.personsData.push(obj)
+          })
+          console.log(state.orgData)
         }
       })
   }
