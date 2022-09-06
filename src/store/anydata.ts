@@ -5,7 +5,7 @@
     message 已读未读
 */
 import { defineStore } from 'pinia'
-import anyStore from '@/utils/hubConnection'
+import anyStore from '@/utils/anystore'
 
 type UsingSpace = {
     id: string;

@@ -37,7 +37,7 @@
   import { useAnyData } from '@/store/anydata'
   import { useRouter } from 'vue-router'
   import { ElMessage } from 'element-plus'
-  import anyStore from '@/utils/hubConnection'
+  import anyStore from '@/utils/anystore'
 
   const carousel = ref<any>()
   const store = useUserStore()

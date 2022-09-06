@@ -36,7 +36,7 @@ import { onMounted, reactive, ref, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/store/user'
 import { useAnyData } from '@/store/anydata'
-import anyStore from '@/utils/hubConnection'
+import anyStore from '@/utils/anystore'
 
 const router = useRouter()
 const store = useUserStore()

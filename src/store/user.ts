@@ -1,7 +1,6 @@
 import { defineStore } from 'pinia'
 import $services from '@/services'
 import { ElMessage } from 'element-plus'
-import anyStore from '@/utils/hubConnection'
 import { type } from 'os'
 
 type QueryInfoType = {
