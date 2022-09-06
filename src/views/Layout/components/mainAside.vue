@@ -93,6 +93,7 @@
   import img4 from '@/assets/img/appIcon4.png'
   import img5 from '@/assets/img/appIcon5.png'
   import img6 from '@/assets/img/appIcon6.png'
+import anyStore from '@/utils/hubConnection'
 
   const router = useRouter()
   const store = useUserStore()
@@ -198,14 +199,12 @@
       userId: store.queryInfo.id,
       workspaceId: store.workspaceData.id
     }
-    $services.diyHome
-      .diy(`/anydata/object/get/${params.userId}.${params.workspaceId}.menu`, { method: 'GET' })
-      .then((res: ResultType) => {
-        if (res.state) {
+    anyStore.get(`${params.workspaceId}.menu`).then((res)=>{
+      if (res && res.success) {
           state.mainMenus = state.mainMenus.concat(res.data)
           state.clickMenu = res.data
         }
-      })
+    })
   }
   const cancelFixed = () => {
     let findIndex = null

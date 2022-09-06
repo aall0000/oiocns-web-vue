@@ -40,6 +40,10 @@ import CustomHeadr from './components/customHeader.vue'
 import MainAsideVue from './components/mainAside.vue'
 import Breadcrumb from './components/breadcrumb.vue'
 import LoadingVue from './components/loading.vue'
+import { useUserStore } from '@/store/user'
+import anyStore from '@/utils/hubConnection'
+const { userToken } = useUserStore()
+anyStore.tokenAuth("user", userToken)
 </script>
 
 <style lang="scss" scoped>

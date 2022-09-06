@@ -72,12 +72,6 @@ export const useAnyData = defineStore({
        
     },
     actions: {
-        // getNoReadCount(groupid: string, userid: string) {
-        //     if(this.noRead[groupid] && this.noRead[groupid][userid]){
-        //         return this.noRead[groupid][userid] || 0
-        //     }
-        //     return 0
-        // },
         // 更新用户组件配置
         updateUserSpace(params: { workspaceId: string, content: UserSpace[] }) {
             console.log('更新用户组件', params.content)
@@ -109,12 +103,12 @@ export const useAnyData = defineStore({
             const { noReadMap } = this.message
             const newCount = (noReadMap[groupid] && noReadMap[groupid][userid] || 0) + count
             const  noReadCount = this.message.noReadCount + count
-            anyStore.set(`message.noRead.${groupid}.${userid}`,
+            anyStore.set(`chats.${groupid}.${userid}`,
                 {
                     operation: 'replaceAll',
                     data: newCount
                 })
-            anyStore.set(`message.noReadCount`,
+            anyStore.set(`chats.noReadCount`,
                 {
                     operation: 'replaceAll',
                     data: noReadCount
@@ -128,16 +122,19 @@ export const useAnyData = defineStore({
         },
         clearMessageNodread(groupid: string, userid: string) {
             const { noReadMap, noReadCount  } = this.message
-            const newnoReadCount = noReadCount - noReadMap[groupid][userid]
-            anyStore.delete(`message.noRead.${groupid}.${userid}`)
-            anyStore.set(`message.noReadCount`,
-                {
-                    operation: 'replaceAll',
-                    data: newnoReadCount
-            })
-            if (noReadMap[groupid] && noReadMap[groupid][userid]) {
-                this.message.noReadCount = newnoReadCount
-                delete this.message.noReadMap[groupid][userid]
+            if (noReadMap && noReadMap[groupid] && noReadMap[groupid][userid]){
+                const temp = noReadMap[groupid][userid]
+                const newnoReadCount = noReadCount - temp
+                anyStore.delete(`chats.${groupid}.${userid}`)
+                anyStore.set(`chats.noReadCount`,
+                    {
+                        operation: 'replaceAll',
+                        data: newnoReadCount
+                })
+                if (temp > 0) {
+                    this.message.noReadCount = newnoReadCount
+                    delete this.message.noReadMap[groupid][userid]
+                }
             }
         },
         // 初始化未读数量
