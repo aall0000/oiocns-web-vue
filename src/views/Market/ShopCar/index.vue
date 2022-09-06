@@ -66,7 +66,18 @@
             :cardContent="true"
             @click="checkedChange(item)"
           >
-            <template #rightIcon> </template>
+          <template #rightIcon>
+              <el-dropdown trigger="click" placement="left-start">
+                <el-icon :size="18" ><Operation /></el-icon>
+                <template #dropdown>
+                  <el-dropdown-menu>
+                    <el-dropdown-item @click="GoPageWithQuery('/market/merchandiseDetail',{data:item.id})">商品详情</el-dropdown-item>
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
+            </template>
+          <template #icon><HeadImg :name="item.name" :url="item.icon || merchandiseImg" :imgWidth="48" :limit="1" :isSquare="false" style="height: 40px;line-height: 40px;"/></template>
+
             <template #content>
               <div class="shopCar-box" @click="handleCardInfo(item)">
                 <div class="app-con-title">{{ item.merchandise.caption }}</div>
@@ -153,6 +164,7 @@ import { ElTable } from 'element-plus'
 import ShopCard from '../components/shopCard.vue'
 import AppInfoDialog from '../AppList/components/appInfoDialog.vue'
 import DiyButton from '@/components/diyButton/index.vue'
+import merchandiseImg from '@/assets/img/merchandise.png'
 import moment from 'moment'
 const router = useRouter()
 // 表格分页数据
@@ -178,6 +190,12 @@ const handleRowClick = (row: any) => {
   shopcarTableRef.value!.toggleRowSelection(row, undefined)
 }
 
+const GoPage = (path: string) => {
+    router.push(path)
+}
+const GoPageWithQuery = (path: string, query: any) => {
+    router.push({ path, query })
+  }
 const viewform = (item: any) => {
   alert('55')
 }
@@ -319,6 +337,7 @@ const createOrderByStaging = async (checkedId?: string) => {
     })
     return
   }
+  var checkedStages = pageStore.tableData.filter((item) => checkedStagIds.includes(item.id))
   ElMessageBox.confirm('此操作将生成交易订单。是否确认?', '确认订单', {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
@@ -329,8 +348,8 @@ const createOrderByStaging = async (checkedId?: string) => {
         await $services.market
           .createOrderByStaging({
             data: {
-              name: new Date().getTime().toString().substring(0, 13),
               code: new Date().getTime().toString().substring(0, 13),
+              name: checkedStages[0].merchandise.caption + (checkedStages.length>1?`...等${checkedStages.length}件商品`:''),
               stagIds: checkedStagIds
             }
           })

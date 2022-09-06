@@ -9,7 +9,7 @@
         <el-icon class="appCommon-content-icon" :size="22" :color="item.iconcolor">
           <component :is="item?.icon"></component>
         </el-icon>
-        <!-- <img src="@/assets/img/app_icon.png" alt="" /> -->
+        <!-- <img src="@/assets/img/whatsapp.png" alt="" /> -->
         <div class="textBox">
           <div class="textBox-top">{{ item.name }}</div>
           <div class="textBox-btm">{{ item.introduce }}</div>

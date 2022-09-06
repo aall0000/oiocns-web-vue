@@ -28,6 +28,7 @@
             :key="item.id"
             :over-id="item.id"
           >
+          <template #icon><HeadImg :name="item.name" :url="item.icon || appImg" :imgWidth="48" :limit="1" :isSquare="false" /></template>
             <template #rightIcon>
               <el-dropdown
                 trigger="click"
@@ -45,6 +46,7 @@
                       {{ action.label }}
                     </el-dropdown-item>
                     <el-dropdown-item @click="deleteApp(item)">移除应用</el-dropdown-item>
+                    <el-dropdown-item  @click="GoPage('/market/appDetail')">应用详情</el-dropdown-item>
                   </el-dropdown-menu>
                 </template>
               </el-dropdown>
@@ -98,6 +100,7 @@
             :key="item.id"
             :over-id="item.id"
           >
+          <template #icon><HeadImg :name="item.name" :url="item.icon || appImg" :imgWidth="48" :limit="1" :isSquare="false" /></template>
             <template #rightIcon>
               <el-dropdown
                 trigger="click"
@@ -115,6 +118,7 @@
                       {{ action.label }}
                     </el-dropdown-item>
                     <el-dropdown-item @click="deleteApp(item)">移除应用</el-dropdown-item>
+                    <el-dropdown-item  @click="GoPage('/market/appDetail')">应用详情</el-dropdown-item>
                   </el-dropdown-menu>
                 </template>
               </el-dropdown>
@@ -300,6 +304,7 @@
   import { useUserStore } from '@/store/user'
   import DiyTable from '@/components/diyTable/index.vue'
   import { appendFile } from 'fs'
+  import appImg from '@/assets/img/whatsapp.png'
   import $services from '@/services'
   import Unit from '../Market/AppShare/unit.vue'
   import Group from '../Market/AppShare/group.vue'
@@ -601,6 +606,9 @@
   // 提交上架
   const putawaySubmit = () => {
     putawayRef.value.onPutawaySubmit()
+  }
+  const GoPageWithQuery = (path: string, query: any) => {
+    router.push({ path, query })
   }
 </script>
 
