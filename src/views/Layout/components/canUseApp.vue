@@ -89,15 +89,14 @@
     const { data, success } = await $services.product.searchUsefulProduct({
       data: {
         offset: 0,
-        limit: 10,
+        limit: 20,
         filter: ''
       }
     })
-    debugger
     if (success) {
       const { result = [], total = 0 } = data
       appList.value = result
-      console.log('是是是', result)
+      console.log('可用应用', result)
     }
   }
   onMounted(() => {

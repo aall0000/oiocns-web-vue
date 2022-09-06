@@ -175,6 +175,15 @@ const mainRouter: RouteRecordRaw[] = [
       title: '我的申请'
     }
   },
+  {
+    component: () => import('@/views/ForeignApp/index.vue'),
+    name: 'ForeignApp',
+    path: '/online',
+    meta: {
+      keepAlive: false,
+      title: '外部应用'
+    }
+  },
   //个人中心信息设置路由
   {
     path: '/user',

@@ -46,7 +46,7 @@
         <el-form-item label="应用介绍">
           <el-input
             :rows="2"
-            v-model="form.desc"
+            v-model="form.remark"
             type="textarea"
             maxlength="120"
             show-word-limit
@@ -87,7 +87,7 @@
   const form = reactive({
     code: '',
     name: '',
-    desc: '',
+    remark: '',
     privateKey: ''
   })
   let resources = reactive({
@@ -191,19 +191,20 @@
             message: '请填写至少一个资源地址'
           })
         }
+        // 过滤无效填写
+        const resourcesData = resources.resources.filter((item) => {
+          return item.link
+        })
+        const params = { ...form, resources: resourcesData }
         const { success, data } = await API.product.register({
-          data: form
+          data: params
         })
         if (success) {
-          // 过滤无效填写
-          const resourcesData = resources.resources.filter((item) => {
-            return item.link
+          ElMessage({
+            type: 'success',
+            message: '应用注册成功'
           })
-          const registerParams = {
-            productId: data.id,
-            resources: resourcesData
-          }
-          createBatchcode(registerParams)
+          router.back()
         }
       } else {
         console.log('error submit!', fields)
@@ -211,16 +212,16 @@
     })
   }
 
-  const createBatchcode = async (params: any) => {
-    const { success } = await API.product.createResources({ data: params })
-    if (success) {
-      ElMessage({
-        type: 'success',
-        message: '应用注册成功'
-      })
-      router.back()
-    }
-  }
+  // const createBatchcode = async (params: any) => {
+  //   const { success } = await API.product.createResources({ data: params })
+  //   if (success) {
+  //     ElMessage({
+  //       type: 'success',
+  //       message: '应用注册成功'
+  //     })
+  //     router.back()
+  //   }
+  // }
 </script>
 
 <style lang="scss" scoped>
