@@ -10,7 +10,7 @@
           :isSquare="false"
       /></template>
       <template #marketNameSlot
-        ><span style="color: orange; font-size: 17px; margin-right: 20px"
+        ><span style="color: grey; font-size: 17px; margin-right: 20px"
           >{{ market.name }}
         </span></template
       >
@@ -289,17 +289,39 @@
           <div style="width: 66%; height: 100%">
             <!-- 发布者 条款 版权号Copyright 联系我们  -->
               <el-row :gutter="100">
-                <el-col :span="12"  style="border:1px solid"><span>资费</span><span>免费</span></el-col>
-                <el-col :span="12" style="border:1px solid"><span>应用分类</span><span>web应用</span></el-col>
+                <el-col :span="12" ><div class="infoitem"><span style="color: black;">资费</span><span style="float: right;">{{market.price}}</span></div></el-col>
+                <el-col :span="12" ><div class="infoitem"><span style="color: black;">应用分类</span><span style="float: right;">{{market.type}}</span></div></el-col>
+        
+                <el-col :span="12" ><div class="infoitem"><span style="color: black;">版本</span><span style="float: right;">{{market.version}}</span></div></el-col>
+                <el-col :span="12" ><div class="infoitem"><span style="color: black;">更新时间</span><span style="float: right;">2022/09/06</span></div></el-col>
+                <el-col :span="12" ><div class="infoitem" @click="showPolicy"><span style="color: black;">隐私政策</span><span style="float: right;"> > </span></div></el-col>
+                <el-col :span="12" ><div class="infoitem" @click="showPermissions"><span style="color: black;">应用权限</span><span style="float: right;" >权限 > </span></div></el-col>
+                <el-col :span="12" ><div class="infoitem"><span style="color: black;">供应商</span><span style="float: right;">吴胖胖</span></div></el-col>
+                <el-col :span="12" ><div class="infoitem"><span style="color: black;">联系电话</span><span style="float: right;">0571-85201102</span></div></el-col>
               </el-row>
-              <!-- <div></div>
-              <div></div>
-              <div></div>
-              <div></div>
-              <div></div>
-              <div></div>
-              <div></div>
-              <div></div> -->
+              <el-dialog
+                v-model="permissionsIsShowed"
+                append-to-body
+                :before-close="closeDialog"
+                :title="'应用权限'"
+              >
+              检测出此应用获取 15 个敏感隐私权限：<br/>
+              1.完全的网络访问权限<br/>
+              2.安装快捷方式<br/>
+              3.更改网络连接性<br/>
+              4.修改或删除存储卡中的内容<br/>
+              5.读取存储卡中的内容<br/>
+              6.录制音频<br/>
+              7.相机<br/>
+              8.显示在其他应用上面<br/>
+              9.查看 Wi-Fi 连接<br/>
+              10.连接 Wi-Fi 或断开连接<br/>
+              11.读取通话状态和移动网络信息<br/>
+              12.访问大致位置信息（使用网络进行定位）<br/>
+              13.访问确切位置信息（使用 GPS 和网络进行定位）<br/>
+              14.开机启动<br/>
+              15.与蓝牙设备配对<br/>
+              </el-dialog>
           </div>
         </div>
       </div>
@@ -329,8 +351,9 @@ const market = ref({
   icon: null,
   score: 4.5,
   orderNum: 56789,
-  version: 1.0,
-  price: 5000.0
+  version: 'beta1.0.1',
+  price: '免费',
+  type: 'web应用'
 })
 
 onMounted(() => {
@@ -342,7 +365,16 @@ const thousands = (num: number) => {
   var reg = str.indexOf('.') > -1 ? /(\d)(?=(\d{3})+\.)/g : /(\d)(?=(?:\d{3})+$)/g
   return str.replace(reg, '$1,')
 }
-
+const showPolicy = () => {
+  window.open('https://www.bilibili.com/blackboard/activity-GpejgaRvl5.html')
+}
+const permissionsIsShowed = ref(false)
+const showPermissions = () => {
+  permissionsIsShowed.value = true
+}
+const closeDialog = () => {
+  permissionsIsShowed.value = false
+}
 //查询上架申请
 const starterAppApprovalList = async () => {
   await $services.appstore
@@ -420,6 +452,15 @@ const starterAppApprovalList = async () => {
     width: 100%;
     height: calc(100vh - 130px);
     padding-left: 16px;
+  }
+  .infoitem {
+    border-bottom: 1px solid;
+    color: grey;
+    font-size: 14px;
+    padding: 5px;
+  }
+  .infoitem:hover{
+    background-color: rgb(231, 231, 231);
   }
 }
 </style>

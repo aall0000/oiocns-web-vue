@@ -337,6 +337,7 @@ const createOrderByStaging = async (checkedId?: string) => {
     })
     return
   }
+  var checkedStages = pageStore.tableData.filter((item) => checkedStagIds.includes(item.id))
   ElMessageBox.confirm('此操作将生成交易订单。是否确认?', '确认订单', {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
@@ -347,8 +348,8 @@ const createOrderByStaging = async (checkedId?: string) => {
         await $services.market
           .createOrderByStaging({
             data: {
-              name: new Date().getTime().toString().substring(0, 13),
               code: new Date().getTime().toString().substring(0, 13),
+              name: checkedStages[0].merchandise.caption + (checkedStages.length>1?`...等${checkedStages.length}件商品`:''),
               stagIds: checkedStagIds
             }
           })

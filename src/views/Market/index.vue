@@ -28,6 +28,7 @@
             :key="item.id"
             :over-id="item.id"
           >
+          <template #icon><HeadImg :name="item.name" :url="item.icon || appImg" :imgWidth="48" :limit="1" :isSquare="false" /></template>
             <template #rightIcon>
               <el-dropdown
                 trigger="click"
@@ -99,6 +100,7 @@
             :key="item.id"
             :over-id="item.id"
           >
+          <template #icon><HeadImg :name="item.name" :url="item.icon || appImg" :imgWidth="48" :limit="1" :isSquare="false" /></template>
             <template #rightIcon>
               <el-dropdown
                 trigger="click"

@@ -26,11 +26,13 @@
                 <el-table-column prop="sellAuth" label="售卖权属" />
                 <el-table-column prop="days" label="售卖期限" />
                 <el-table-column prop="price" label="售卖价格" />
+                <el-table-column prop="sellerId" label="卖方名称" />
                 <el-table-column
                   prop="status"
                   label="状态"
                   :formatter="(row, column) => renderDict(row, column, 'OrderStatus')"
                 />
+                <el-table-column prop="createTime" label="创建时间" />
                 <el-table-column prop="name" label="支付记录">
                   <template #default="scope">
                     <el-link type="primary" @click="showPayList(scope.row)">点击查看</el-link>
@@ -40,7 +42,7 @@
                   <template #default="scope">
                     <DiyButton >
                       <template v-slot:opt>
-                        <div
+                        <!-- <div
                           class="diy-button"
                           v-show="scope.row.status == 1 && scope.row.ordertype == 'sell'"
                           @click="sureContent(scope.row.id)"
@@ -53,18 +55,18 @@
                           @click="showPay(scope.row)"
                         >
                           支付
-                        </div>
-                        <div class="diy-button" @click="cancelOrderDetail(scope.row.id)">
-                          取消
-                        </div>
+                        </div>-->
+                        <div class="diy-button" v-show="scope.row.status < 102" @click="cancelOrderDetail(scope.row.id, 220, null)">
+                          取消订单
+                        </div> 
                         <div
                           class="diy-button"
-                          v-show="scope.row.status == 101 && scope.row.ordertype == 'sell'"
+                          v-show="scope.row.status < 102 && scope.row.ordertype == 'sell'"
                           @click="delivery(scope.row.id)"
                         >
-                          确认发货
+                          确认交付
                         </div>
-                        <div
+                        <!-- <div
                           class="diy-button"
                           v-show="scope.row.status == 102 && scope.row.ordertype == 'buy'"
                           @click="accept(scope.row.id)"
@@ -84,7 +86,7 @@
                           @click="viewComment(scope.row.id)"
                         >
                           查看评价
-                        </div>
+                        </div> -->
                       </template>
                     </DiyButton>
                   </template>
@@ -100,16 +102,17 @@
         </el-table-column>
         <el-table-column prop="code" label="订单号" />
         <el-table-column prop="name" label="名称" />
-        <el-table-column
+        <!-- <el-table-column
           prop="status"
           label="状态"
           :formatter="(row, column) => renderDict(row, column, 'OrderStatus')"
-        />
+        /> -->
+        <el-table-column prop="createTime" label="创建时间" />
         <el-table-column prop="name" label="操作" width="150" align="center">
           <template #default="scope">
             <DiyButton>
               <template v-slot:opt>
-                <div class="diy-button" @click="cancelOrder(scope.row.id)"> 取消 </div>
+                <!-- <div class="diy-button" @click="cancelOrder(scope.row.id)"> 取消订单 </div>  -->
               </template>
             </DiyButton>
           </template>
@@ -132,6 +135,7 @@
         </el-table-column>
         <el-table-column prop="code" label="订单号" />
         <el-table-column prop="name" label="名称" />
+        <el-table-column prop="belongId" label="买方名称" />
         <el-table-column prop="sellAuth" label="售卖权属" />
         <el-table-column prop="days" label="售卖期限" />
         <el-table-column prop="price" label="售卖价格" />
@@ -140,6 +144,7 @@
           label="状态"
           :formatter="(row, column) => renderDict(row, column, 'OrderStatus')"
         />
+        <el-table-column prop="createTime" label="创建时间" />
         <el-table-column prop="name" label="支付记录">
           <template #default="scope">
             <el-link type="primary" @click="showPayList(scope.row)">点击查看</el-link>
@@ -149,7 +154,7 @@
           <template #default="scope">
             <DiyButton>
               <template v-slot:opt>
-                <div
+                <!-- <div
                   class="diy-button"
                   v-show="scope.row.status == 1 && scope.row.ordertype == 'sell'"
                   @click="sureContent(scope.row.id)"
@@ -162,16 +167,16 @@
                   @click="showPay(scope.row)"
                 >
                   支付
-                </div>
-                <div class="diy-button" @click="cancelOrderDetail(scope.row.id)"> 取消 </div>
+                </div> -->
+                <div class="diy-button" v-show="scope.row.status < 102" @click="cancelOrderDetail(scope.row.id, 221, null)"> 取消订单 </div>
                 <div
                   class="diy-button"
-                  v-show="scope.row.status == 101 && scope.row.ordertype == 'sell'"
+                  v-show="scope.row.status < 102 && scope.row.ordertype == 'sell'"
                   @click="delivery(scope.row.id)"
                 >
-                  确认发货
+                  确认交付
                 </div>
-                <div
+                <!-- <div
                   class="diy-button"
                   v-show="scope.row.status == 102 && scope.row.ordertype == 'buy'"
                   @click="accept(scope.row.id)"
@@ -191,7 +196,7 @@
                   @click="viewComment(scope.row.id)"
                 >
                   查看评价
-                </div>
+                </div> -->
               </template>
             </DiyButton>
           </template>
@@ -217,7 +222,7 @@
 <script lang="ts" setup>
 import $services from '@/services'
 import { ref, reactive, onMounted } from 'vue'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElMessageBox } from 'element-plus'
 import { PAGE_SIZES, PAGE_NUM } from '@/constant'
 import renderDict from '@/services/dict'
 import payView from '@/components/pay/pay.vue'
@@ -330,14 +335,15 @@ const searchValue = ref<string>('')
         state.orderList = result?.map(
           (item: {
             merchandise: { caption: any; days: any; sellAuth: any; price: any; information: any }
-            order: { code: any; name: any; status: any }
+            order: { code: any; name: any; status: any,belongId:any }
           }) => {
             return {
               ...item,
               code: item.order.code,
               name: item.merchandise.caption,
               sellAuth: item.merchandise.sellAuth,
-              days: item.merchandise.days
+              days: item.merchandise.days,
+              belongId: item.order.belongId,
             }
           }
         )
@@ -350,7 +356,7 @@ const searchValue = ref<string>('')
         data: {
           offset: (pagination.current - 1) * pagination.limit,
           limit: pagination.limit,
-          status: 1, //后续改成-1
+          status: 0, //后续改成-1
           filter: ''
         }
       })
@@ -469,25 +475,48 @@ const searchValue = ref<string>('')
         }
       })
   }
-  //取消订单详情
-  const cancelOrderDetail = async (id: string) => {
-    await $services.order
-      .deleteDetail({
+  //取消订单详情  由删除更改为中止
+  const cancelOrderDetail = async (id: string,status:number,reason:string) => {
+    // await $services.order
+    //   .deleteDetail({
+    //     data: {
+    //       id: id
+    //     }
+    //   })
+    //   .then((res: ResultType) => {
+    //     if (res.code == 200) {
+    //       getTableList(searchType.value)
+    //       ElMessage({
+    //         message: '取消成功',
+    //         type: 'success'
+    //       })
+    //     }
+    //   })
+    ElMessageBox.prompt('请输入原因', '确认取消订单?', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+    })
+    .then(({ value }) => {
+      $services.order
+      .orderConfirm({
         data: {
-          id: id
+          id: id,
+          status: status
         }
       })
       .then((res: ResultType) => {
         if (res.code == 200) {
           getTableList(searchType.value)
           ElMessage({
-            message: '取消成功',
+            message: '取消订单成功',
             type: 'success'
           })
         }
       })
+    })
+    .catch(() => {})
   }
-  //确认发货
+  //确认交付
   const delivery = async (id: string) => {
     await $services.order
       .deliverMerchandise({
@@ -500,7 +529,7 @@ const searchValue = ref<string>('')
         if (res.code == 200) {
           getTableList(searchType.value)
           ElMessage({
-            message: '确认发货成功',
+            message: '交付成功',
             type: 'success'
           })
         }
@@ -649,7 +678,7 @@ const searchValue = ref<string>('')
     .group-side-bar-search {
       // padding: 10px;
       float: right;
-      width: 300px;
+      width: 220px;
       margin-right: 20px;
       margin-left: 20px;
       position: relative;
