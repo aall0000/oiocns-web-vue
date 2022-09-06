@@ -29,3 +29,13 @@ interface ProductType {
   version?: string
   icon?: string
 }
+
+interface AppMenuType {
+  name: string
+  link: string
+  customId: string
+  code:string
+  privateKey:string
+}
+
+type ProductMenuEventType = 'Add' | 'Delete' | 'Up' | 'Down'

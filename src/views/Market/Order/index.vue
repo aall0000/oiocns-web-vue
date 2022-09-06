@@ -360,7 +360,7 @@ const searchValue = ref<string>('')
         result.forEach((item: any) => {
           item.ordertype = 'buy'
           if (item.details) {
-            item.details = item.details.map((e) => {
+            item.details = item.details.map((e:any) => {
               if (!e.merchandise) {
                 return e
               }

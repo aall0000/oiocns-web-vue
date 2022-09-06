@@ -4,8 +4,8 @@
     <div class="manageSystem-title">轻松上手后台管理</div>
     </template>
     <div class="content">
-      <el-card shadow="hover" body-style="display:flex;align-items:center;padding:16px 20px;" 
-      
+      <el-card shadow="hover" body-style="display:flex;align-items:center;padding:16px 20px;"
+
       class="contentBox"
         v-for="(item, index) in dataList" :key="index" @click="gotoRouter(item)">
 
@@ -23,7 +23,7 @@
           <!-- <el-icon :size="16" color="#909399" >
             <ArrowRight />
           </el-icon> -->
-        </el-button> 
+        </el-button>
       </el-card>
     </div>
   </el-card>
@@ -37,7 +37,7 @@ const dataList = reactive([
     img: 'work_big',
     name: '去办“事”',
     introduce: '专属⼯作台。在这⾥查看待办，完成⼯作',
-    src: '/thing',
+    src: '/cardDetail?type=1',
     icon: 'Finished',
   },
   {

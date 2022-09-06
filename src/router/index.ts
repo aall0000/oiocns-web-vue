@@ -47,7 +47,7 @@ const mainRouter: RouteRecordRaw[] = [
     }
   },
   {
-    component: () => import('@/views/Layout/components/loading.vue'),
+    component: () => import('@/views/Thing/index.vue'),
     name: 'Thing',
     path: '/Thing',
     meta: {
@@ -261,6 +261,14 @@ const mainRouter: RouteRecordRaw[] = [
         component: () => import('@/views/Market/AppList/appList.vue'),
         meta: {
           title: '应用列表'
+        }
+      },
+      {
+        path: '/market/register',
+        name: 'marketAppRegister',
+        component: () => import('@/views/Market/AppRegister/index.vue'),
+        meta: {
+          title: '应用注册'
         }
       },
       {

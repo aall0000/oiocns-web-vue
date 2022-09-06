@@ -3,9 +3,9 @@
     <MarketCard>
       <template #right>
         <el-button type="primary" @click="GoPage('/market/appApply')">我的上架申请</el-button>
-        <el-button type="primary" @click="registerVisible = true">注册应用</el-button>
+        <el-button type="primary" @click="GoPage('/market/register')">注册应用</el-button>
         <el-button type="primary" @click="GoPage('/market/markList')">管理商店</el-button>
-        <el-button type="primary" @click="GoPage('/market/managerApproval')">申请审批</el-button>
+        <!-- <el-button type="primary" @click="GoPage('/market/managerApproval')">申请审批</el-button> -->
         <el-button type="primary" @click.stop="GoPage('/market/order')">我的订单</el-button>
         <el-badge :value="shopcarNum" style="padding-left: 10px">
           <el-button type="primary" @click.stop="GoPage('/market/shopCar')">购物车</el-button>
@@ -14,8 +14,13 @@
     </MarketCard>
     <div class="market-content box">
       <ul class="box-ul">
-        <p class="box-ul-title">我的应用</p>
-        <li class="app-card">
+        <div class="getApp-radio">
+          <p class="box-ul-title">我的应用</p>
+
+          <!-- <p style="margin-right: 20px">切换视图</p>
+          <el-switch v-model="isCard" /> -->
+        </div>
+        <li class="app-card" v-show="mode === 'card'">
           <MarketCreate :info="add" @myclick="GoPage('/market/getApp')" />
           <ShopCard
             v-for="item in state.ownProductList"
@@ -23,24 +28,61 @@
             :key="item.id"
             :over-id="item.id"
           >
-          <template #icon><HeadImg :name="item.name" :url="item.icon || appImg" :imgWidth="48" :limit="1" :isSquare="false" /></template>
-          <template #rightIcon>
-              <el-dropdown trigger="click" @command="(value) => handleCommand('own', value, item)" placement="left-start">
-                <el-icon :size="18" ><Operation /></el-icon>
+            <template #rightIcon>
+              <el-dropdown
+                trigger="click"
+                @command="(value) => handleCommand('own', value, item)"
+                placement="left-start"
+              >
+                <el-icon :size="18"><Operation /></el-icon>
                 <template #dropdown>
                   <el-dropdown-menu>
-                    <el-dropdown-item v-for="action in actionOptionsOfOwn" :command="action.value" :key="action.value">
-                    {{ action.label }}
-                  </el-dropdown-item>
-                  <el-dropdown-item  @click="deleteApp(item)">移除应用</el-dropdown-item>
-                  <el-dropdown-item  @click="GoPage('/market/appDetail')">应用详情</el-dropdown-item>
+                    <el-dropdown-item
+                      v-for="action in actionOptionsOfOwn"
+                      :command="action.value"
+                      :key="action.value"
+                    >
+                      {{ action.label }}
+                    </el-dropdown-item>
+                    <el-dropdown-item @click="deleteApp(item)">移除应用</el-dropdown-item>
+                    <el-dropdown-item  @click="GoPage('/market/appDetail')">应用详情</el-dropdown-item>
                   </el-dropdown-menu>
                 </template>
               </el-dropdown>
             </template>
-
           </ShopCard>
         </li>
+        <li v-show="mode === 'list'">
+          <DiyTable
+            ref="diyTable"
+            :hasTitle="true"
+            :tableData="state.ownProductList"
+            :tableHead="state.tableHead"
+          >
+            <template #operate="scope">
+              <el-dropdown
+                trigger="click"
+                @command="(value) => handleCommand('own', value, scope.row)"
+                placement="bottom-end"
+              >
+                <el-icon :size="18"><Operation /></el-icon>
+                <template #dropdown>
+                  <el-dropdown-menu>
+                    <el-dropdown-item
+                      v-for="action in actionOptionsOfOwn"
+                      :command="action.value"
+                      :key="action.value"
+                    >
+                      {{ action.label }}
+                    </el-dropdown-item>
+                    <el-dropdown-item @click="deleteApp(scope.row)">移除应用</el-dropdown-item>
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
+            </template>
+          </DiyTable>
+        </li>
+
         <el-pagination
           style="justify-content: end"
           hide-on-single-page
@@ -50,29 +92,36 @@
       </ul>
       <ul class="box-ul">
         <p class="box-ul-title">其他应用</p>
-        <li class="app-card">
+        <li class="app-card" v-show="mode === 'card'">
           <ShopCard
             v-for="item in state.shareProductList"
             :info="item"
             :key="item.id"
             :over-id="item.id"
           >
-          <template #icon><HeadImg :name="item.name" :url="item.icon || appImg" :imgWidth="48" :limit="1" :isSquare="false" /></template>
-          <template #rightIcon>
-              <el-dropdown trigger="click" @command="(value) => handleCommand('own', value, item)" placement="left-start">
-                <el-icon :size="18" ><Operation /></el-icon>
+            <template #rightIcon>
+              <el-dropdown
+                trigger="click"
+                @command="(value) => handleCommand('own', value, item)"
+                placement="left-start"
+              >
+                <el-icon :size="18"><Operation /></el-icon>
                 <template #dropdown>
                   <el-dropdown-menu>
-                    <el-dropdown-item v-for="action in actionOptionsOfOwn" :command="action.value" :key="action.value">
-                    {{ action.label }}
-                  </el-dropdown-item>
-                  <el-dropdown-item  @click="deleteApp(item)">移除应用</el-dropdown-item>
-                  <el-dropdown-item  @click="GoPage('/market/appDetail')">应用详情</el-dropdown-item>
+                    <el-dropdown-item
+                      v-for="action in actionOptionsOfOwn"
+                      :command="action.value"
+                      :key="action.value"
+                    >
+                      {{ action.label }}
+                    </el-dropdown-item>
+                    <el-dropdown-item @click="deleteApp(item)">移除应用</el-dropdown-item>
+                    <el-dropdown-item  @click="GoPage('/market/appDetail')">应用详情</el-dropdown-item>
                   </el-dropdown-menu>
                 </template>
               </el-dropdown>
             </template>
-          <!-- <template #rightIcon>
+            <!-- <template #rightIcon>
               <el-dropdown trigger="click">
                 <el-icon :size="18" ><Operation /></el-icon>
                 <template #dropdown>
@@ -96,6 +145,36 @@
             <el-button class="btn" link small @click="deleteApp(item)">移除应用</el-button> -->
           </ShopCard>
         </li>
+        <li v-show="mode === 'list'">
+          <DiyTable
+            ref="diyTable"
+            :hasTitle="true"
+            :tableData="state.shareProductList"
+            :tableHead="state.tableHead"
+          >
+            <template #operate="scope">
+              <el-dropdown
+                trigger="click"
+                @command="(value) => handleCommand('own', value, scope.row)"
+                placement="bottom-end"
+              >
+                <el-icon :size="18"><Operation /></el-icon>
+                <template #dropdown>
+                  <el-dropdown-menu>
+                    <el-dropdown-item
+                      v-for="action in actionOptionsOfOwn"
+                      :command="action.value"
+                      :key="action.value"
+                    >
+                      {{ action.label }}
+                    </el-dropdown-item>
+                    <el-dropdown-item @click="deleteApp(scope.row)">移除应用</el-dropdown-item>
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
+            </template>
+          </DiyTable>
+        </li>
         <el-pagination
           style="justify-content: end"
           hide-on-single-page
@@ -103,33 +182,16 @@
           :total="state.shareTotal"
         />
       </ul>
+      <el-radio-group v-model="mode" size="small" class="button">
+        <el-radio-button label="list"
+          ><el-icon :size="18"><Tickets /></el-icon
+        ></el-radio-button>
+        <el-radio-button label="card"
+          ><el-icon :size="18"><Menu /></el-icon
+        ></el-radio-button>
+      </el-radio-group>
     </div>
   </div>
-  <el-dialog
-    v-model="registerVisible"
-    title="注册应用"
-    width="600px"
-    draggable
-    :close-on-click-modal="false"
-  >
-    <el-form ref="registerFormRef" :model="form" label-width="120px" :rules="rules">
-      <el-form-item label="应用名称" prop="name">
-        <el-input v-model="form.name" />
-      </el-form-item>
-      <el-form-item label="应用编码" prop="code">
-        <el-input v-model="form.code" />
-      </el-form-item>
-      <el-form-item label="备注" prop="remark">
-        <el-input v-model="form.remark" :rows="3" type="textarea" placeholder="请输入描述/备注" />
-      </el-form-item>
-    </el-form>
-    <template #footer>
-      <span class="dialog-footer">
-        <el-button @click="resetForm(registerFormRef)">取消</el-button>
-        <el-button type="primary" @click="onRegisterSubmit(registerFormRef)">确认</el-button>
-      </span>
-    </template>
-  </el-dialog>
   <el-dialog
     v-model="publishVisible"
     title="上架应用"
@@ -170,8 +232,10 @@
     </el-select>
     <template #footer>
       <span class="dialog-footer" v-if="store.workspaceData.type == 2">
-        <el-button @click="shareGroup">按集团分享</el-button>
-        <el-button type="primary" @click="shareUnit">按单位分享</el-button>
+        <!-- <el-button @click="shareGroup">按集团分享</el-button>
+        <el-button type="primary" @click="shareUnit">按单位分享</el-button> -->
+        <el-button @click="groupVisible = false">取消</el-button>
+        <el-button type="primary" @click="shareUnit">确定</el-button>
       </span>
       <span class="dialog-footer" v-else>
         <el-button type="primary" @click="shareCohort">按群组分享</el-button>
@@ -189,11 +253,33 @@
   >
     <Cohort @closeDialog="cohortVisible = false" :info="selectProductItem"></Cohort>
   </el-dialog>
+  <el-dialog
+    v-if="unitShareVisible"
+    v-model="unitShareVisible"
+    custom-class="share-dialog"
+    title="应用分享"
+    width="1000px"
+    draggable
+    :close-on-click-modal="false"
+  >
+    <Unit :groupId="groupId" :appInfo="appInfo" :groupName="groupName" />
+  </el-dialog>
+  <el-dialog
+    v-if="groupShareVisible"
+    v-model="groupShareVisible"
+    custom-class="share-dialog"
+    title="应用分享"
+    width="1000px"
+    draggable
+    :close-on-click-modal="false"
+  >
+    <Group :groupId="groupId" :appInfo="appInfo" :groupName="groupName" />
+  </el-dialog>
 </template>
 <script setup lang="ts">
   import API from '@/services'
   import { ElMessage, ElMessageBox } from 'element-plus'
-  import { onMounted, reactive, ref } from 'vue'
+  import { onMounted, reactive, ref, watch, nextTick } from 'vue'
   import ShopCard from './components/shopCard.vue'
   import PutawayComp from './components/putawayComp.vue'
   import { baseData, actionOptionsOfOther, actionOptionsOfOwn } from './config'
@@ -202,17 +288,36 @@
   import type { FormInstance, FormRules } from 'element-plus'
   import MarketCreate from './components/marketCreate.vue'
   import MarketCard from '@/components/marketCard/index.vue'
-  import type { TabsPaneContext } from 'element-plus'
   import { useUserStore } from '@/store/user'
+  import DiyTable from '@/components/diyTable/index.vue'
   import { appendFile } from 'fs'
   import appImg from '@/assets/img/whatsapp.png'
   import $services from '@/services'
+  import Unit from '../Market/AppShare/unit.vue'
+  import Group from '../Market/AppShare/group.vue'
+  import TheTableButton from './AppList/components/theTableButton3.vue'
   const add: string = '从应用市场中添加'
+  const groupShareVisible = ref<boolean>(false)
+  const unitShareVisible = ref<boolean>(false)
+  const isCard = ref(true)
+  const mode = ref('card')
   // 注册页面实例
   const registerFormRef = ref<FormInstance>()
   const router = useRouter()
   const store = useUserStore()
   const cohort = ref(null)
+  // 当前用户的集团
+  let groups = reactive([])
+  // 当前选中的集团
+  let selectedValue = ref<string>('')
+  // 集团分享
+  const groupVisible = ref<boolean>(false)
+  // 分享功能
+  const cohortVisible = ref<boolean>(false)
+  // 路由跳转
+  const GoPage = (path: string) => {
+    router.push(path)
+  }
   type StateType = {
     ownProductList: ProductType[] //我的应用
     ownTotal: number
@@ -221,6 +326,7 @@
     marketOptions: any[] //所有市场列表
     options: any[] //集团列表
     selectLabel: selectType // 选中的集团名称
+    tableHead: any[]
   }
 
   const state: StateType = reactive({
@@ -233,7 +339,41 @@
     selectLabel: {
       label: '',
       id: ''
-    }
+    },
+    tableHead: [
+      {
+        prop: 'name',
+        label: '应用名称'
+      },
+      {
+        prop: 'code',
+        label: '应用编码'
+      },
+      {
+        prop: 'source',
+        label: '应用来源'
+      },
+      {
+        prop: 'typeName',
+        label: '应用类型'
+      },
+      {
+        prop: 'authority',
+        label: '持有权限'
+      },
+      {
+        prop: 'createTime',
+        label: '创建时间'
+      },
+      {
+        type: 'slot',
+        label: '操作',
+        fixed: 'right',
+        align: 'center',
+        width: '80',
+        name: 'operate'
+      }
+    ]
   })
   const title = ref<string>('')
   onMounted(() => {
@@ -243,22 +383,48 @@
     getShopcarNum()
   })
 
-  const shopcarNum = ref(0)
-
-const getShopcarNum = async () => {
-  await $services.market
-    .searchStaging({
-      data: {
-        id: 0, //市场id （需删除）
-        offset: 0,
-        limit: 20,
-        filter: ''
+  //列表
+  watch([isCard], ([val], [valOld]) => {
+    // 监听 展示方式变化
+    nextTick(() => {
+      if (val) {
+        getProductList('own')
+      } else {
+        getProductList('share')
       }
-    }).then((res: ResultType) => {
-      var { result = [], total = 0 } = res.data
-      shopcarNum.value = total
+    })
+    // 监听所选市场变化
+    // if (activeMVal!==activeMValOld) {
+    //   getData()
+    // }
+  })
+
+  const selectchange = (val: string) => {
+    state.selectLabel = state.options.find((el) => {
+      return el.value == val
     })
   }
+  const shopcarNum = ref(0)
+  const getShopcarNum = async () => {
+    await $services.market
+      .searchStaging({
+        data: {
+          id: 0, //市场id （需删除）
+          offset: 0,
+          limit: 20,
+          filter: ''
+        }
+      })
+      .then((res: ResultType) => {
+        var { result = [], total = 0 } = res.data
+        shopcarNum.value = total
+      })
+  }
+  // 关闭分享弹窗
+  // const closeDialog = () => {
+  //   shareVisible.value = false
+  // }
+
   // 获取我的应用列表
   const getProductList = async (type: 'own' | 'share') => {
     const { data, success } = await API.product[
@@ -268,33 +434,33 @@ const getShopcarNum = async () => {
     })
     if (success) {
       const { result = [], total = 0 } = data
+      console.log(result)
       state[`${type}ProductList`] = [...result]
       state[`${type}Total`] = total
     }
   }
 
-
-// 移除app
-const deleteApp = (item: any) => {
-  ElMessageBox.confirm(`确认删除  ${item.name}?`, '警告', {
-    confirmButtonText: '确认',
-    cancelButtonText: '取消',
-    type: 'warning'
-  })
-    .then(async () => {
-      const { success } = await API.product.delete({
-        data: { id: item.id }
-      })
-      if (success) {
-        getProductList('own')
-        ElMessage({
-          type: 'success',
-          message: '操作成功'
-        })
-      }
+  // 移除app
+  const deleteApp = (item: any) => {
+    ElMessageBox.confirm(`确认删除  ${item.name}?`, '警告', {
+      confirmButtonText: '确认',
+      cancelButtonText: '取消',
+      type: 'warning'
     })
-    .catch(() => {})
-}
+      .then(async () => {
+        const { success } = await API.product.delete({
+          data: { id: item.id }
+        })
+        if (success) {
+          getProductList('own')
+          ElMessage({
+            type: 'success',
+            message: '操作成功'
+          })
+        }
+      })
+      .catch(() => {})
+  }
 
   // 记录当前操作的 应用信息
   const selectProductItem = ref<ProductType>()
@@ -374,17 +540,18 @@ const deleteApp = (item: any) => {
         })
     }
   }
+
+  const groupId = ref('')
+  const groupName = ref('')
+  const appInfo = ref('')
   // 跳转到group分享界面
   const shareGroup = () => {
     if (selectedValue.value) {
-      router.push({
-        path: '/market/group',
-        query: {
-          id: selectedValue.value,
-          name: state.selectLabel.label,
-          appInfo: selectProductItem.value.id
-        }
-      })
+      groupId.value = selectedValue.value
+      groupName.value = state.selectLabel.label
+      appInfo.value = selectProductItem.value.id
+      groupVisible.value = false
+      groupShareVisible.value = true
     } else {
       ElMessage({
         type: 'warning',
@@ -395,14 +562,12 @@ const deleteApp = (item: any) => {
   // 跳转到unit分享界面
   const shareUnit = () => {
     if (selectedValue.value) {
-      router.push({
-        path: '/market/unit',
-        query: {
-          id: selectedValue.value,
-          name: state.selectLabel.label,
-          appInfo: selectProductItem.value.id
-        }
-      })
+      groupId.value = selectedValue.value
+      groupName.value = state.selectLabel.label
+      appInfo.value = selectProductItem.value.id
+
+      groupVisible.value = false
+      groupShareVisible.value = true
     } else {
       ElMessage({
         type: 'warning',
@@ -411,80 +576,12 @@ const deleteApp = (item: any) => {
     }
   }
 
-
-// 注册页面弹窗
-const registerVisible = ref<boolean>(false)
-
-// 注册信息
-const form = reactive({
-  name: '',
-  code: '',
-  remark: ''
-})
-
-// 提交注册
-const onRegisterSubmit = (formEl: FormInstance | undefined) => {
-  if (!formEl) return
-  formEl.validate(async (valid, fields) => {
-    if (valid) {
-      console.log('submit!', form)
-      const { success } = await API.product.register({
-        data: form
-      })
-      if (success) {
-        getProductList('own')
-        ElMessage({
-          type: 'success',
-          message: '应用注册成功'
-        })
-        resetForm(formEl)
-      }
-    } else {
-      console.log('error submit!', fields)
-    }
-  })
-}
-// 注册验证规则
-const rules = reactive<FormRules>({
-  name: [
-    { required: true, message: '请输入应用名称', trigger: 'blur' },
-    { min: 2, max: 8, message: '长度限制2-8', trigger: 'blur' }
-  ],
-  code: [
-    {
-      required: true,
-      message: '请输入应用编码',
-      trigger: 'blur'
-    }
-  ]
-})
-
-// 重置注册表单
-const resetForm = (formEl: FormInstance) => {
-  registerVisible.value = false
-  if (!formEl) return
-  formEl.resetFields()
-}
-
-// 上架应用功能
-const publishVisible = ref<boolean>(false)
-const putawayRef = ref<any>()
-// 提交上架
-const putawaySubmit = () => {
-  putawayRef.value.onPutawaySubmit()
-}
-
-  // 当前用户的集团
-  let groups = reactive([])
-  // 当前选中的集团
-  let selectedValue = ref<string>('')
-  // 集团分享
-  const groupVisible = ref<boolean>(false)
-  // 分享功能
-  const cohortVisible = ref<boolean>(false)
-  // 路由跳转
-  const GoPage = (path: string) => {
-    router.push(path)
+  // 上架应用功能
+  const publishVisible = ref<boolean>(false)
+  const putawayRef = ref<any>()
+  // 提交上架
+  const putawaySubmit = () => {
+    putawayRef.value.onPutawaySubmit()
   }
   const GoPageWithQuery = (path: string, query: any) => {
     router.push({ path, query })
@@ -528,60 +625,74 @@ const putawaySubmit = () => {
     align-items: center;
     cursor: pointer;
 
-  &-fixed {
-    padding: 5px 0;
+    &-fixed {
+      padding: 5px 0;
+      width: 100%;
+      text-align: center;
+      &:hover {
+        background-color: #fff;
+      }
+    }
+    &-cancel {
+      padding: 10px 0;
+      width: 100%;
+      text-align: center;
+      &:hover {
+        background-color: #fff;
+      }
+    }
+  }
+  .el-select {
     width: 100%;
-    text-align: center;
-    &:hover {
-      background-color: #fff;
-    }
   }
-  &-cancel {
-    padding: 10px 0;
+  .market-layout {
     width: 100%;
-    text-align: center;
-    &:hover {
-      background-color: #fff;
+    height: 100%;
+    min-width: 1000px;
+    .market-head {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      height: 60px;
+      padding: 0 20px;
     }
-  }
-}
-.el-select {
-  width: 100%;
-}
-.market-layout {
-  width: 100%;
-  height: 100%;
-  min-width: 1000px;
-  .market-head {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    height: 60px;
-    padding: 0 20px;
-  }
-  .market-content {
-    padding: 16px 16px 0;
-    // margin-top: 4px;
-    height: calc(100vh - 124px);
-    overflow-y: auto;
-  }
-  .box {
-    .box-ul + .box-ul {
-      margin-top: 10px;
+    .market-content {
+      padding: 16px 16px 0;
+      // margin-top: 4px;
+      height: calc(100vh - 124px);
+      overflow-y: auto;
     }
-    &-ul {
-      background-color: #fff;
-      padding: 10px 24px;
+    .button {
+      position: absolute;
+      right: 50px;
+      bottom: 20px;
+    }
+    .box {
+      .box-ul + .box-ul {
+        margin-top: 10px;
+      }
+      &-ul {
+        background-color: var(--el-bg-color);
+        padding: 10px 24px;
 
-      &-title {
-        font-weight: bold;
-        padding: 8px 0;
-      }
-      .app-card {
-        display: flex;
-        flex-wrap: wrap;
+        &-title {
+          font-weight: bold;
+          padding: 8px 0;
+        }
+        .getApp-radio {
+          display: flex;
+          width: 100%;
+          .box-ul-title {
+            width: 50%;
+            display: flex;
+            justify-content: flex-start;
+          }
+        }
+        .app-card {
+          display: flex;
+          flex-wrap: wrap;
+        }
       }
     }
   }
-}
 </style>

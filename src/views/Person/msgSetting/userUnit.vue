@@ -31,11 +31,7 @@
                 :tableHead="tableHead"
               >
                 <template #option="scope">
-                  <el-popconfirm title="确认退出吗?" @confirm="handleExit(scope.row.id)">
-                    <template #reference>
-                      <el-button link type="danger">退出</el-button>
-                    </template>
-                  </el-popconfirm>
+                  <el-button link type="danger" @click="handleExit(scope.row.id)">退出</el-button>
                 </template>
               </DiyTable>
             </div>
@@ -57,12 +53,11 @@
 </template>
 
 <script lang="ts" setup>
-  import { Search } from '@element-plus/icons-vue'
   import { onMounted, reactive, ref } from 'vue'
   import $services from '@/services'
   import { useUserStore } from '@/store/user'
   import type { TabsPaneContext } from 'element-plus'
-  import { ElMessage } from 'element-plus'
+  import { ElMessage ,ElMessageBox} from 'element-plus'
   import searchCompany from '@/components/searchs/index.vue'
   import CreateUnitDialog from '@/views/Layout/components/createUnitDialog.vue'
   import DiyTable from '@/components/diyTable/index.vue'
@@ -84,39 +79,28 @@
   }
   const tableHead = ref([
     {
-      prop: 'id',
-      label: '单位ID',
-      name: 'id'
-    },
-    {
       prop: 'name',
       label: '单位名称',
-      name: 'name'
+      name: 'name',
+      width:'300'
     },
     {
       prop: 'code',
       label: '统一社会信用代码',
-      name: 'code'
-    },
-    {
-      prop: 'isMain',
-      label: '是否主单位',
-      name: 'isMain'
+      name: 'code',
+      width:'190'
     },
     {
       prop: 'belongId',
       label: '管理员',
-      name: 'belongId'
+      name: 'belongId',
+      width:'200'
     },
     {
       prop: 'createTime',
       label: '创建时间',
-      name: 'createTime'
-    },
-    {
-      prop: 'state',
-      label: '申请状态',
-      name: 'state'
+      name: 'createTime',
+      width:'200'
     },
     {
       type: 'slot',
@@ -130,6 +114,15 @@
     console.log(tab, event)
   }
   const handleExit = (id: string) => {
+    ElMessageBox.confirm(
+    '确定退出吗？',
+    '提示',
+    {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
+    }
+  ).then(() => {
     $services.company
       .exit({
         data: {
@@ -145,6 +138,7 @@
           getList()
         }
       })
+    })
   }
   type listItem = {
     id: string

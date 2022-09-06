@@ -3,7 +3,7 @@
       <div ref="cardHeight">
         <el-card >
           <el-descriptions
-            title="组织信息"
+            :title="org?.title + '信息'"
             :column="2"
             :border="true"
           >
@@ -392,6 +392,7 @@
   onMounted(() => {
     belongId.value = router.currentRoute.value.query?.belongId
     org.value = router.currentRoute.value.query
+    console.log(org.value)
     mainHeight.value = document.documentElement.clientHeight-70-cardHeight.value.clientHeight;
     tableHeight.value=document.documentElement.clientHeight-160-cardHeight.value.clientHeight;
     loadAuthorityTree()

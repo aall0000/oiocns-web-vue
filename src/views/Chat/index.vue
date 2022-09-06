@@ -106,8 +106,8 @@ onMounted(() => {
   isShowMenu.value = true
   anyStore.setPrefix(myId)  // 设置订阅器前缀
   // 订阅未读消息
-  anyStore.subscribed(`message.noread`, (data) => {
-    // console.log('noread===', data)
+  anyStore.subscribed(`message`, (data) => {
+    // console.log('noRead===', data)
     setMessageNoRead(data)
   })
 
@@ -292,7 +292,7 @@ const handleNewMsgShow = (data: any) => {
           val.msgBody = data.msgBody
           val.msgTime = data.createTime
           val.msgType = data.msgType
-          if (val.id != activeInfo.value.id || item.id != activeInfo.value.spaceId) {
+          if (data.fromId!==data.toId && (val.id != activeInfo.value.id || item.id != activeInfo.value.spaceId)) {
             val.count = (val.count || 0) + 1
             console.log({ groupid: data.spaceId, userid: sessionId, count: 1 })
             updateMessageNoread({ groupid: data.spaceId, userid: sessionId, count: 1 })

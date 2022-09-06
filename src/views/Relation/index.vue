@@ -31,10 +31,13 @@
   const isShowMenu = ref<boolean>(false)
   
   const currentRouter = ref<string>(router.currentRoute.value.fullPath)
-  if(currentRouter.value.length < 12){
-    currentRouter.value = "/relation/friend"
-    router.push(currentRouter.value)
+ 
+  if(workspaceData.value.id == queryInfo.value.id){
+    currentRouter.value = "/relation/cohort"
+  }else{
+    currentRouter.value = "/relation/company"
   }
+  router.push(currentRouter.value)
 
   onMounted(() => {
     isShowMenu.value = true
@@ -66,6 +69,7 @@
     // height: calc(100% - 15px);
     // background: #fff;
     // border-right: solid 1px var(--el-menu-border-color);
+    background-color: var(--el-bg-color-overlay);
     .orgnization-navbar  {
       height: 100%;
     }
