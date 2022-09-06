@@ -23,21 +23,21 @@ const anyStore: anyStoreType = {
     _subscribedKeys: {},
     _prefix: "",
     start: () => { // 不传默认为链接用户属性库
-        if (anyStore._connection) return
-        // 初始化
-        anyStore._connection = new signalR.HubConnectionBuilder().withUrl('anydata/object/hub').withAutomaticReconnect().build()
-        anyStore._connection.on("Updated", anyStore._updated)
-        anyStore._connection.onclose((err)=>{
-            anyStore._subscribedKeys = {}
-        })
-        anyStore._connection.start().then(() => console.log('链接成功'))
-            .catch((error: any) => {
-                console.log('链接出错', error)
-                setTimeout(() => {
-                    anyStore._connection = null
-                    anyStore.start()
-                }, 2000);
-            })// 开启链接
+        // if (anyStore._connection) return
+        // // 初始化
+        // anyStore._connection = new signalR.HubConnectionBuilder().withUrl('anydata/object/hub').withAutomaticReconnect().build()
+        // anyStore._connection.on("Updated", anyStore._updated)
+        // anyStore._connection.onclose((err)=>{
+        //     anyStore._subscribedKeys = {}
+        // })
+        // anyStore._connection.start().then(() => console.log('链接成功'))
+        //     .catch((error: any) => {
+        //         console.log('链接出错', error)
+        //         setTimeout(() => {
+        //             anyStore._connection = null
+        //             anyStore.start()
+        //         }, 2000);
+        //     })// 开启链接
     },
     isConnected: () => {
         if (anyStore._connection != null) {

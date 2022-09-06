@@ -49,6 +49,8 @@
     groupId: String,
     appInfo: String
   })
+  const url = ref<string>('share')
+  const deleteUrl = ref<string>('deleteUnitShare')
   const tableHead = ref([
     {
       prop: 'name',
@@ -90,8 +92,13 @@
   const shareChange = (val: any) => {
     shareRadio.value = val
     if (val === '1') {
+      url.value = 'share'
+      deleteUrl.value = 'deleteUnitShare'
       getPersonShareHistory()
     } else {
+      url.value = 'groupShare'
+      deleteUrl.value = 'deleteGroupShare'
+
       getCohortShareHistory()
     }
   }
@@ -114,74 +121,62 @@
     // callback(res.data.data)
   }
 
-  const getData = () => {
-    $services.company
-      .companyGetGroups({
-        data: {
-          offset: 0,
-          limit: 1000
-        }
-      })
-      .then((res: ResultType) => {
-        if (res.data.result && res.data.result.length > 0) {
-          let obj = res.data.result.find((el: any) => {
-            return el.id == props.groupId
-          })
-          obj.hasChildren = true
-          tableData.value.push(obj)
-        } else {
-          tableData = []
-        }
-      })
-  }
   const closeDialog = () => {
     pullGroupDialog.value = false
   }
   type arrList = {
     id: string
   }
-
+  //分享
   const checksSearch = (val: any) => {
     console.log('应用id', props.appInfo, '集团id', props.groupId, '所选列表', val.value[0].id)
-    $services.product
-      .GroupShare({
-        data: {
-          productId: props.appInfo,
-          targetIds: [val.value[0].id]
+    console.log(url.value)
+
+    $services.product[url.value]({
+      data: {
+        productId: props.appInfo,
+        teamId: props.groupId,
+        targetIds: [val.value[0].id]
+      }
+    }).then((res: ResultType) => {
+      if (res.success) {
+        console.log(res)
+        ElMessage({
+          message: '分享成功',
+          type: 'success'
+        })
+        if (url.value === 'share') {
+          getPersonShareHistory()
+        } else {
+          getCohortShareHistory()
         }
-      })
-      .then((res: ResultType) => {
-        if (res.success) {
-          ElMessage({
-            message: '分享成功',
-            type: 'success'
-          })
-          getShareHistory()
-        }
-        pullGroupDialog.value = false
-      })
+      }
+      pullGroupDialog.value = false
+    })
   }
   //取消分享
   const cancelShare = (id: string) => {
     console.log('取消分享', props.appInfo, props.groupId, id)
-    $services.product
-      .deleteGroupShare({
-        data: {
-          productId: props.appInfo,
-          teamId: props.groupId,
-          targetIds: [id]
+    $services.product[deleteUrl.value]({
+      data: {
+        productId: props.appInfo,
+        teamId: props.groupId,
+        targetIds: [id]
+      }
+    }).then((res: ResultType) => {
+      if (res.success) {
+        ElMessage({
+          message: '取消分享成功',
+          type: 'success'
+        })
+        if (deleteUrl.value === 'deleteUnitShare') {
+          getPersonShareHistory()
+        } else {
+          getCohortShareHistory()
         }
-      })
-      .then((res: ResultType) => {
-        if (res.success) {
-          ElMessage({
-            message: '取消分享成功',
-            type: 'success'
-          })
-          getShareHistory()
-        }
-        pullGroupDialog.value = false
-      })
+      }
+      pullGroupDialog.value = false
+    })
   }
 
   //
