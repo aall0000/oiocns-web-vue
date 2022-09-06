@@ -20,7 +20,7 @@
 
     <div class="market-content box">
       <ul class="box-ul">
-        <p class="box-ul-title">我的市场</p>
+        <p class="box-ul-title">我的商店</p>
 
         <li class="app-card" v-show="mode === 'card'">
           <MarketCreate :info="add" @click="dialogVisible1 = true" />
@@ -39,7 +39,7 @@
               }}</div></template
             >
             <el-button class="btn" type="primary" link small @click.stop="hadleClick(item)"
-              >删除市场</el-button
+              >删除商店</el-button
             >
             <el-divider direction="vertical" />
             <el-button class="btn" link small @click.stop="hadleUserManage(item)"
@@ -65,7 +65,7 @@
                 >用户管理</el-button
               >
               <el-button class="btn" type="primary" link small @click.stop="marketQuit(scope.row)"
-                >退出市场</el-button
+                >退出商店</el-button
               >
             </template>
           </DiyTable>
@@ -79,7 +79,7 @@
         />
       </ul>
       <ul class="box-ul">
-        <p class="box-ul-title">我加入的市场</p>
+        <p class="box-ul-title">我加入的商店</p>
 
         <li class="app-card" v-show="mode === 'card'">
           <MarketCreate :info="add1" @click="state.dialogShow.value = true" />
@@ -97,7 +97,7 @@
               }}</div></template
             >
             <el-button class="btn" type="primary" link small @click.stop="marketQuit(item)"
-              >退出市场</el-button
+              >退出商店</el-button
             >
           </ShopCard>
         </li>
@@ -111,7 +111,7 @@
           >
             <template #operate="scope">
               <el-button class="btn" type="primary" link small @click.stop="marketQuit(scope.row)"
-                >退出市场</el-button
+                >退出商店</el-button
               >
             </template>
           </DiyTable>
@@ -125,18 +125,18 @@
         />
       </ul>
     </div>
-    <el-dialog v-model="dialogVisible1" title="创建市场" width="30%">
+    <el-dialog v-model="dialogVisible1" title="创建商店" width="30%">
       <el-form :model="form" label-width="120px">
-        <el-form-item label="市场名称">
+        <el-form-item label="商店名称">
           <el-input v-model="form.name" style="width: 80%" />
         </el-form-item>
-        <el-form-item label="市场编码">
+        <el-form-item label="商店编码">
           <el-input v-model="form.code" style="width: 80%" />
         </el-form-item>
-        <el-form-item label="市场简介">
+        <el-form-item label="商店简介">
           <el-input v-model="form.remark" style="width: 80%" />
         </el-form-item>
-        <el-form-item label="市场是否公开">
+        <el-form-item label="商店是否公开">
           <el-select v-model="form.public" style="width: 80%" placeholder="是否公开">
             <el-option v-for="item in options" :label="item.label" :value="item.value" />
           </el-select>
@@ -152,8 +152,8 @@
 
     <diySearch
       :dialogShow="state.dialogShow"
-      title="加入市场"
-      placeholder="搜索市场"
+      title="加入商店"
+      placeholder="搜索商店"
       @submit="submit"
       @remoteMethod="remoteMethod"
       @closeDialog="closeDialog"
@@ -180,8 +180,8 @@
     return (state.pageJoin.currentPage - 1) * state.pageJoin.pageSize
   })
   const mode = ref('card')
-  const add: string = '创建市场'
-  const add1: string = '加入市场'
+  const add: string = '创建商店'
+  const add1: string = '加入商店'
   const state = reactive({
     myMarket: [],
     joinMarket: [],
@@ -205,11 +205,11 @@
     tableHead: [
       {
         prop: 'name',
-        label: '市场名称'
+        label: '商店名称'
       },
       {
         prop: 'code',
-        label: '市场编码'
+        label: '商店编码'
       },
       {
         prop: 'public',
@@ -218,7 +218,7 @@
 
       {
         prop: 'remark',
-        label: '市场简介'
+        label: '商店简介'
       },
       {
         prop: 'createTime',
@@ -268,7 +268,7 @@
     await $services.market
       .searchStaging({
         data: {
-          id: 0, //市场id （需删除）
+          id: 0, //商店id （需删除）
           offset: 0,
           limit: 20,
           filter: ''
@@ -382,7 +382,7 @@
       label: '否'
     }
   ]
-  //创建市场
+  //创建商店
   const create = () => {
     if (store.workspaceData.type === 1) {
       $services.appstore
