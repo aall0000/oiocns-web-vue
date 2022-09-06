@@ -65,7 +65,6 @@
   let tableData = ref<any>([])
   const pullCompanysDialog = ref<boolean>(false)
   onMounted(() => {
-    groupId.value = props.groupId
     getShareHistory()
   })
   const closeDialog = () => {
@@ -78,9 +77,10 @@
   const checksSearch = (val: any) => {
     console.log('应用id', props.appInfo, '集团id', props.groupId, '所选列表', val.value[0].id)
     $services.product
-      .productGroupShare({
+      .share({
         data: {
           productId: props.appInfo,
+          teamId: props.groupId,
           targetIds: [val.value[0].id]
         }
       })
@@ -98,9 +98,10 @@
   //取消分享
   const cancelShare = (id: string) => {
     $services.product
-      .deleteGroupShare({
+      .deleteUnitShare({
         data: {
           productId: props.appInfo,
+          teamId: props.groupId,
           targetIds: [id]
         }
       })
@@ -116,28 +117,10 @@
       })
   }
   //分享单位
-  const pullCompanys = (arr: any) => {
-    $services.company
-      .pullCompanys({
-        data: {
-          id: props.groupId,
-          targetIds: arr
-        }
-      })
-      .then((res: ResultType) => {
-        if (res.success) {
-          ElMessage({
-            message: '添加成功',
-            type: 'success'
-          })
-          getShareHistory()
-        }
-        pullCompanysDialog.value = false
-      })
-  }
+
   const getShareHistory = () => {
     $services.product
-      .searchGroupShare({
+      .searchUnitShare({
         data: {
           id: props.appInfo,
           teamId: props.groupId,
@@ -147,6 +130,7 @@
         }
       })
       .then((res: ResultType) => {
+        console.log(res)
         if (res.success) {
           tableData.value = res.data.result ? res.data.result : []
         }

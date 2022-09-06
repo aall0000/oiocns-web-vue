@@ -116,6 +116,11 @@
       tableHead.value = tableHead3.value
       url.value = 'getGroupCompanies'
       title.value = '分配单位'
+    } else if (props.serachType == 7) {
+      space.value = 'company'
+      tableHead.value = tableHead5.value
+      url.value = 'getSubgroups'
+      title.value = '查询子集团'
     } else {
       space.value = 'person'
       tableHead.value = tableHead1.value
@@ -126,7 +131,7 @@
   })
   const remoteMethod = () => {
     let data
-    if (props.serachType == 5 || props.serachType == 6) {
+    if (props.serachType == 5 || props.serachType == 6 || props.serachType == 7) {
       data = {
         filter: value.value,
         offset: (pageStore.currentPage - 1) * pageStore.pageSize,
@@ -293,14 +298,17 @@
   const tableHead5 = ref([
     {
       prop: 'name',
-      label: '集团名称',
-      width: '300',
+      label: '子集团名称',
       name: 'name'
     },
     {
-      type: 'slot',
+      prop: 'code',
+      label: '子集团编码',
+      name: 'code'
+    },
+    {
       prop: 'remark',
-      label: '集团简介',
+      label: '子集团简介',
       name: 'remark'
     }
   ])

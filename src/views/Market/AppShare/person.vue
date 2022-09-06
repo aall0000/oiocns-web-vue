@@ -1,8 +1,18 @@
 <template>
   <div class="unitLayout">
     <div class="tableBtn">
-      <div class="tableBtn-title">{{ groupName }}</div>
-      <el-button small link type="primary" @click="pullGroupDialog = true">分享集团</el-button>
+      <div class="tableBtn-title">
+        <el-radio-group v-model="shareRadio" @change="shareChange" class="ml-4">
+          <el-radio label="1" size="large">分享给好友</el-radio>
+          <el-radio label="2" size="large">分享给群组</el-radio>
+        </el-radio-group>
+      </div>
+      <el-button v-if="shareRadio === '1'" small link type="primary" @click="pullGroupDialog = true"
+        >分享给好友</el-button
+      >
+      <el-button v-else small link type="primary" @click="pullGroupDialog = true"
+        >分享给群组</el-button
+      >
     </div>
     <DiyTable class="diytable" ref="diyTable" :tableData="tableData" :tableHead="tableHead">
       <template #operate="scope">
@@ -34,10 +44,10 @@
   const router = useRoute()
   const diyTable = ref(null)
   const groupId = ref<string>('')
+  const shareRadio = ref('1')
   const props = defineProps({
     groupId: String,
-    appInfo: String,
-    groupName: String
+    appInfo: String
   })
   const tableHead = ref([
     {
@@ -77,7 +87,14 @@
     groupId.value = props.groupId
     getShareHistory()
   })
-
+  const shareChange = (val: any) => {
+    shareRadio.value = val
+    if (val === '1') {
+      getPersonShareHistory()
+    } else {
+      getCohortShareHistory()
+    }
+  }
   const shareGroup = () => {
     console.log(diyTable.value.state.multipleSelection)
   }
@@ -167,7 +184,24 @@
   }
 
   //
-  const getShareHistory = () => {
+  const getPersonShareHistory = () => {
+    $services.product
+      .searchGroupShare({
+        data: {
+          id: props.appInfo,
+          teamId: props.groupId,
+          offset: 0,
+          limit: 10000,
+          filter: ''
+        }
+      })
+      .then((res: ResultType) => {
+        if (res.success) {
+          tableData.value = res.data.result ? res.data.result : []
+        }
+      })
+  }
+  const getCohortShareHistory = () => {
     $services.product
       .searchGroupShare({
         data: {
