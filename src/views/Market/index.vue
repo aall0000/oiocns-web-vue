@@ -581,7 +581,7 @@
       appInfo.value = selectProductItem.value.id
 
       groupVisible.value = false
-      unitShareVisible.value = true
+      groupShareVisible.value = true
     } else {
       ElMessage({
         type: 'warning',

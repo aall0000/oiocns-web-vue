@@ -142,8 +142,8 @@ export const useAnyData = defineStore({
         },
         // 初始化未读数量
         setMessageNoRead(data: Record<string, number>) {
-            if(data.noread){
-                this.message.noReadMap = data.noread
+            if(data.noRead){
+                this.message.noReadMap = data.noRead
                 this.message.noReadCount = data.noReadCount
             }else{
                 this.message.noReadMap = data

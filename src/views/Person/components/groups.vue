@@ -19,16 +19,8 @@
       :tableHead="tableHead"
       >
       <template #option="scope">
-        <el-popconfirm title="确认删除?" @confirm="handleDelete(scope.row.id)">
-          <template #reference>
-            <el-button link type="danger">删除</el-button>
-          </template>
-        </el-popconfirm>
-        <el-popconfirm title="确认退出吗?" @confirm="handleExit(scope.row.id)">
-          <template #reference>
-            <el-button link type="danger">退出</el-button>
-          </template>
-        </el-popconfirm>
+        <el-button link type="danger"  @click="handleDelete(scope.row.id)">删除</el-button>
+        <el-button link type="danger" @click="handleExit(scope.row.id)">退出</el-button>
       </template>
       </DiyTable>
     </div>
@@ -64,7 +56,7 @@
   import $services from '@/services'
   import { onMounted, ref,reactive } from 'vue'
   import { useUserStore } from '@/store/user'
-  import { ElMessage } from 'element-plus'
+  import { ElMessage ,ElMessageBox} from 'element-plus'
   import searchGroup from '@/components/searchs/index.vue'
   import DiyTable from '@/components/diyTable/index.vue'
 
@@ -130,6 +122,15 @@
     teamRemark: ''
   })
   const handleExit = (id: string) => {
+    ElMessageBox.confirm(
+    '确定退出吗？',
+    '提示',
+    {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
+    }
+  ).then(() => {
     $services.company
     .exitGroup({
       data: {
@@ -145,8 +146,18 @@
       fetchRequest()
       }
     })
+  })
   }
   const handleDelete = (id: any) => {
+    ElMessageBox.confirm(
+    '确定删除吗',
+    '提示',
+    {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
+    }
+  ).then(() => {
     let token = sessionStorage.getItem('TOKEN')
     $services.company
       .deleteGroup({
@@ -170,6 +181,7 @@
           })
         }
       })
+    })
   }
   const create = () => {
     dialogVisible.value = true

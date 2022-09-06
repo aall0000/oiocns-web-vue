@@ -47,7 +47,7 @@ const mainRouter: RouteRecordRaw[] = [
     }
   },
   {
-    component: () => import('@/views/Layout/components/loading.vue'),
+    component: () => import('@/views/Thing/index.vue'),
     name: 'Thing',
     path: '/Thing',
     meta: {
@@ -252,7 +252,7 @@ const mainRouter: RouteRecordRaw[] = [
         name: 'marketMarkList',
         component: () => import('@/views/Market/AppList/index.vue'),
         meta: {
-          title: '市场列表'
+          title: '商店列表'
         }
       },
       {

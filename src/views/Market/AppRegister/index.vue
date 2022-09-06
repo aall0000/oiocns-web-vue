@@ -2,7 +2,9 @@
   <MarketCard />
   <div class="app-register-wrap">
     <div class="app-base-info register-content">
-      <p class="custom-title"><span class="custom-span"></span> 基础信息</p>
+      <div class="custom-title">
+        <p><span class="custom-span"></span> 基础信息</p>
+      </div>
       <el-form
         :model="form"
         ref="registerFormRef"
@@ -13,7 +15,7 @@
         <el-row :gutter="40" justify="space-between">
           <el-col :span="12">
             <el-form-item label="应用名称" prop="name">
-              <el-input v-model="form.name" placeholder="请设置" @change="handleAppNameChage" />
+              <el-input v-model="form.name" placeholder="请设置" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -38,12 +40,13 @@
             <el-option label="Zone two" value="beijing" />
           </el-select>
         </el-form-item> -->
-        <el-form-item label="privateKey">
+        <!-- <el-form-item label="privateKey">
           <el-input v-model="form.privateKey" placeholder="请设置" />
-        </el-form-item>
+        </el-form-item> -->
         <el-form-item label="应用介绍">
           <el-input
             :rows="2"
+            v-model="form.desc"
             type="textarea"
             maxlength="120"
             show-word-limit
@@ -54,8 +57,17 @@
     </div>
     <el-divider />
     <div class="app-base-info register-content">
-      <p class="custom-title"><span class="custom-span"></span> 资源信息</p>
-      <SetAppMenu :menus="appMenu.menus" @handleMemuEvent="handleMemuEvent" />
+      <div class="custom-title">
+        <p> <span class="custom-span"></span> 资源信息 </p>
+        <el-icon class="add-btn" :size="20" @click.stop="handleMemuEvent('Add')">
+          <CirclePlus />
+        </el-icon>
+      </div>
+      <SetAppMenu
+        :menus="resources.resources"
+        :key="resources.resources.length"
+        @handleMemuEvent="handleMemuEvent"
+      />
     </div>
     <el-divider />
     <div class="app-base-info register-content btns">
@@ -68,55 +80,51 @@
   import API from '@/services'
   import SetAppMenu from './setAppMenu.vue'
   import { reactive, ref } from 'vue'
-  import { ElMessage, FormInstance, FormRules } from 'element-plus'
+  import { ElMessage, FormRules } from 'element-plus'
   import { useRouter } from 'vue-router'
   const router = useRouter()
   // 注册基本信息
   const form = reactive({
     code: '',
     name: '',
-    // desc: '',
+    desc: '',
     privateKey: ''
   })
-  // 默认应用菜单
-  const appMenu = reactive({
-    menus: [
+  let resources = reactive({
+    resources: [
       {
-        caption: form.name,
-        menuType: '',
+        name: '',
         link: '',
-        resource: '',
-        customId: '1',
-        menus: [
-          {
-            caption: '子菜单1',
-            menuType: 'string',
-            link: 'www.baidu.com',
-            resource: 'sdhja',
-            customId: '1-1',
-            menus: [
-              {
-                caption: '孙菜单1',
-                menuType: 'string',
-                link: 'www.baidu.com',
-                resource: 'sdhja',
-                customId: '1-1-1'
-              }
-            ]
-          }
-        ]
+        code: '',
+        privateKey: '',
+        customId: '1'
       }
     ]
   })
 
-  const handleMemuEvent = (type: ProductMenuEventType, selectId: string) => {
-    console.log('处理时间', type, selectId)
+  const handleMemuEvent = (type: ProductMenuEventType, selectId?: string) => {
+    console.log('处理事件', type, selectId)
     switch (type) {
       case 'Add':
-        handleAddMenu(selectId)
+        resources.resources.push({
+          name: '',
+          link: '',
+          code: '',
+          privateKey: '',
+          customId: `${resources.resources.length + 1}`
+        })
         break
       case 'Delete':
-        handleDeleteMenu(selectId)
+        // handleDeleteMenu(selectId)
+        if (resources.resources.length > 1) {
+          resources.resources = resources.resources.filter((item) => item.customId !== selectId)
+        } else {
+          ElMessage({
+            type: 'error',
+            message: '请填写至少一个资源信息'
+          })
+        }
+
         break
       case 'Up':
         handleSortMenu('Up', selectId)
@@ -128,58 +136,34 @@
         break
     }
   }
-  // 组件功能处理 添加子应用菜单
-  const handleAddMenu = (selectId: string) => {
+
+  const handleSortMenu = (type: ProductMenuEventType, aimId: string) => {
+    const data = resources.resources
     // 根据当前所选标志 获取目标数据信息
-    const aim: AppMenuType = getDataWithId(selectId)
-    const oldList = aim?.menus ?? []
-    // 向目标数据新增 展示位
-    aim['menus'] = [
-      ...oldList,
-      {
-        caption: '',
-        menuType: '',
-        link: '',
-        resource: '',
-        customId: `${selectId}-${oldList.length + 1}`
-      }
-    ]
-    console.log('selectId!', selectId, aim.menus)
-  }
-  const handleDeleteMenu = (id: string) => {
-    // 根据当前所选标志 获取目标数据信息
-    const aim: AppMenuType = getDataWithId(id)
-    aim.menus = aim.menus.filter((item) => item.customId !== id)
-    console.log('sss', aim)
-  }
-  const handleSortMenu = (a: string, id: string) => {}
-  // 获取目标数据
-  const getDataWithId = (aimId: string) => {
-    let aimData: AppMenuType
-    // 获取目标数据
-    function deepGet(data: AppMenuType[]) {
-      const obj = data.find((item) => item.customId === aimId)
-      if (!obj) {
-        data.forEach((val) => {
-          val?.menus && deepGet(val?.menus)
-        })
-      } else {
-        aimData = obj
-      }
+    const obj = data.find((item) => item.customId === aimId)
+
+    const idArr = data.map((item: AppMenuType) => item.customId)
+    const index = idArr.indexOf(aimId)
+    const endIndex = data.length - 1
+    const willChageIndex = type === 'Up' ? index - 1 : index + 1
+    // 若最后一个选择向下排序/第一个向上,则终止
+    if ((type === 'Down' && willChageIndex > endIndex) || (type === 'Up' && index === 0)) {
+      return
     }
-    deepGet(appMenu.menus)
-    return aimData
+    // 若最后一个选择向下排序,则终止
+    if (index > -1) {
+      const willChangeObj = data[willChageIndex]
+      data[index] = willChangeObj
+      data[willChageIndex] = obj
+    }
   }
-  // 根据填写内容设置资源展示名称
-  const handleAppNameChage = (name: string) => {
-    appMenu.menus[0].caption = name
-  }
+
   const onSubmit = () => {
-    console.log('submit!', form, appMenu)
+    console.log('submit!', form)
     onRegisterSubmit()
   }
 
-  const registerFormRef: FormInstance = ref(null)
+  const registerFormRef = ref<any>(null)
   // 注册验证规则
   const rules = reactive<FormRules>({
     name: [
@@ -197,17 +181,29 @@
   // 提交注册
   const onRegisterSubmit = async () => {
     if (!registerFormRef) return
-    registerFormRef.validate(async (valid, fields) => {
+
+    registerFormRef.value.validate(async (valid: any, fields: any) => {
       if (valid) {
+        // 无资源提示
+        if (!resources.resources[0].link) {
+          return ElMessage({
+            type: 'error',
+            message: '请填写至少一个资源地址'
+          })
+        }
         const { success, data } = await API.product.register({
           data: form
         })
         if (success) {
+          // 过滤无效填写
+          const resourcesData = resources.resources.filter((item) => {
+            return item.link
+          })
           const registerParams = {
             productId: data.id,
-            resources: [{ ...form, ...appMenu }]
+            resources: resourcesData
           }
-          createBatchResource(registerParams)
+          createBatchcode(registerParams)
         }
       } else {
         console.log('error submit!', fields)
@@ -215,7 +211,7 @@
     })
   }
 
-  const createBatchResource = async (params: any) => {
+  const createBatchcode = async (params: any) => {
     const { success } = await API.product.createResources({ data: params })
     if (success) {
       ElMessage({
@@ -257,12 +253,13 @@
       display: flex;
       justify-content: space-around;
       padding: 10px 0;
-      margin-bottom: 40px;
+      margin-bottom: 30px;
     }
 
     // 自定义标题
     .custom-title {
       display: flex;
+      justify-content: space-between;
       align-items: center;
       height: 26px;
       font-size: 14px;
@@ -270,11 +267,16 @@
 
       .custom-span {
         display: inline-block;
-        width: 4px;
-        height: 60%;
+        width: 3px;
+        height: 14px;
         margin-right: 6px;
         background-color: #3e5ed8;
       }
+    }
+    .add-btn {
+      cursor: pointer;
+      color: var(--el-color-primary);
+      margin: 0 10px;
     }
   }
 </style>
