@@ -192,7 +192,7 @@ export default {
     updateMerchandise: product + '/update/merchandise', //更新商品信息
     updateResource: product + '/update/resource', //更新产品资源
     updateWebappmenu: product + '/update/webAppMenu', //更新产品资源菜单
-    GroupShare: product + '/group/share',
+    groupShare: product + '/group/share',
     searchGroupShare: product + '/search/group/share',
     deleteGroupShare: product + '/delete/group/share',
     department: product + '/distribution/to/deptment',

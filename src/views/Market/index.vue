@@ -273,6 +273,28 @@
   >
     <Group :groupId="groupId" :appInfo="appInfo" :groupName="groupName" />
   </el-dialog>
+  <el-dialog
+    v-if="shareVisible"
+    v-model="shareVisible"
+    custom-class="share-dialog"
+    title="应用分享"
+    width="1000px"
+    draggable
+    :close-on-click-modal="false"
+  >
+    <ShareCohort
+      v-if="store.workspaceData.type == 2"
+      @closeDialog="shareVisible = false"
+      :groupId="selectedValue"
+      :info="selectProductItem"
+    ></ShareCohort>
+    <SharePersonBox
+      v-else
+      @closeDialog="shareVisible = false"
+      :groupId="selectedValue"
+      :info="selectProductItem"
+    ></SharePersonBox>
+  </el-dialog>
 </template>
 <script setup lang="ts">
   import API from '@/services'
@@ -282,6 +304,8 @@
   import PutawayComp from './components/putawayComp.vue'
   import { baseData, actionOptionsOfOther, actionOptionsOfOwn } from './config'
   import Cohort from './components/cohortBox.vue'
+  import ShareCohort from './components/shareCohortBox.vue'
+  import SharePersonBox from './components/sharePersonBox.vue'
   import { useRouter } from 'vue-router'
   import type { FormInstance, FormRules } from 'element-plus'
   import MarketCreate from './components/marketCreate.vue'
@@ -311,6 +335,8 @@
   const groupVisible = ref<boolean>(false)
   // 分享功能
   const cohortVisible = ref<boolean>(false)
+
+  const shareVisible = ref<boolean>(false)
   // 路由跳转
   const GoPage = (path: string) => {
     router.push(path)
@@ -490,30 +516,31 @@
   //  打开集团选择弹窗
   const openShareDialog = () => {
     if (store.workspaceData.type == 1) {
-      API.cohort
-        .getJoinedCohorts({
-          data: {
-            offset: 0,
-            limit: 10000,
-            filter: ''
-          }
-        })
-        .then((res: ResultType) => {
-          console.log(res)
-          if (res.data.result && res.data.result.length > 0) {
-            let cor = res.data.result
-            state.options = cor.map((g: any) => {
-              return { value: g.id, label: g.name }
-            })
-            title.value = '选择群组'
-            groupVisible.value = true
-          } else {
-            ElMessage({
-              type: 'warning',
-              message: '您暂未加入群组'
-            })
-          }
-        })
+      shareVisible.value = true
+      // API.cohort
+      //   .getJoinedCohorts({
+      //     data: {
+      //       offset: 0,
+      //       limit: 10000,
+      //       filter: ''
+      //     }
+      //   })
+      //   .then((res: ResultType) => {
+      //     console.log(res)
+      //     if (res.data.result && res.data.result.length > 0) {
+      //       let cor = res.data.result
+      //       state.options = cor.map((g: any) => {
+      //         return { value: g.id, label: g.name }
+      //       })
+      //       title.value = '选择群组'
+      //       groupVisible.value = true
+      //     } else {
+      //       ElMessage({
+      //         type: 'warning',
+      //         message: '您暂未加入群组'
+      //       })
+      //     }
+      //   })
     } else {
       API.company
         .companyGetGroups({
@@ -564,7 +591,8 @@
       appInfo.value = selectProductItem.value.id
 
       groupVisible.value = false
-      groupShareVisible.value = true
+      // groupShareVisible.value = true
+      shareVisible.value = true
     } else {
       ElMessage({
         type: 'warning',
