@@ -239,7 +239,7 @@
               filter: ''
             }
           })
-          .then((res) => {
+          .then((res: ResultType) => {
             state.rightData = res.data.result
             if (state.orgData.length == 0) {
               state.orgData = state.rightData
@@ -256,7 +256,7 @@
               filter: ''
             }
           })
-          .then((res) => {
+          .then((res: ResultType) => {
             state.identitysHisData = res.data.result
             if (state.identitysData.length == 0) {
               state.identitysData = state.identitysHisData
@@ -273,7 +273,7 @@
               filter: ''
             }
           })
-          .then((res) => {
+          .then((res: ResultType) => {
             state.personsHisData = res.data.result
             if (state.personsData.length == 0) {
               state.personsData = state.personsHisData
@@ -290,7 +290,7 @@
               filter: ''
             }
           })
-          .then((res) => {
+          .then((res: ResultType) => {
             state.authorHisData = res.data.result
             if (state.authorData.length == 0) {
               state.authorData = state.authorHisData
@@ -327,7 +327,7 @@
       }
     })
 
-    state.authorData.forEach((el) => {
+    state.personsData.forEach((el) => {
       if (el.type == 'add') {
         personsAdd.push(el.id)
       } else if (el.type == 'del') {
@@ -335,7 +335,7 @@
       }
     })
 
-    state.personsData.forEach((el) => {
+    state.authorData.forEach((el) => {
       if (el.type == 'add') {
         authorAdd.push(el.id)
       } else if (el.type == 'del') {
@@ -425,7 +425,7 @@
       })
     }
     Promise.all([promise1, promise2, promise3, promise4]).then((res) => {
-      if (res.success) {
+      if (res) {
         ElMessageBox.confirm('是否继续分发？', {
           confirmButtonText: '继续',
           cancelButtonText: '取消',

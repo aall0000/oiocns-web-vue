@@ -192,7 +192,7 @@ export default {
     updateMerchandise: product + '/update/merchandise', //更新商品信息
     updateResource: product + '/update/resource', //更新产品资源
     updateWebappmenu: product + '/update/webAppMenu', //更新产品资源菜单
-    productGroupShare: product + '/group/share',
+    GroupShare: product + '/group/share',
     searchGroupShare: product + '/search/group/share',
     deleteGroupShare: product + '/delete/group/share',
     department: product + '/distribution/to/deptment',
@@ -203,6 +203,8 @@ export default {
     toIdentity: product + '/search/distribution/to/identity',
     toPerson: product + '/search/distribution/to/person',
     toAuthority: product + '/search/distribution/to/authority',
+    share: product + '/share',
+    searchUnitShare: product + '/search/share'
   },
   // 历史记录
   history: {
