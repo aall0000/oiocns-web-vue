@@ -204,7 +204,8 @@ export default {
     toPerson: product + '/search/distribution/to/person',
     toAuthority: product + '/search/distribution/to/authority',
     share: product + '/share',
-    searchUnitShare: product + '/search/share'
+    searchUnitShare: product + '/search/share',
+    delteDeptment: product + '/delete/distribution/to/deptment'
   },
   // 历史记录
   history: {

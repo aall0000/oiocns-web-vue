@@ -186,8 +186,9 @@
             }
           })
           leftTree.value.setCheckedKeys(arr, true)
+        } else if (newValue == '2' && state.authorData.length == 0) {
+          getHistoryData()
         }
-        getHistoryData()
       })
     },
     { immediate: true }
@@ -226,14 +227,14 @@
     emit('closeDialog')
   }
 
-  // 获取历史数据
-  const getHistoryData = () => {
+  // 获取历史数据（提交表单后）
+  const getNewHistoryData = () => {
     switch (radio.value) {
       case '1':
         API.product
           .toDepartment({
             data: {
-              id: 0,
+              id: resource.value,
               offset: 0,
               limit: 1000,
               filter: ''
@@ -241,9 +242,13 @@
           })
           .then((res: ResultType) => {
             state.rightData = res.data.result
-            if (state.orgData.length == 0) {
-              state.orgData = state.rightData
-            }
+            state.orgData = state.rightData
+            leftTree.value.setCheckedKeys([])
+            let arr: any[] = []
+            state.rightData.forEach((el) => {
+              arr.push(el.id)
+            })
+            leftTree.value.setCheckedKeys(arr, true)
           })
         break
       case '2':
@@ -295,6 +300,89 @@
             if (state.authorData.length == 0) {
               state.authorData = state.authorHisData
             }
+          })
+        break
+      default:
+        break
+    }
+  }
+  // 获取历史数据
+  const getHistoryData = () => {
+    switch (radio.value) {
+      case '1':
+        API.product
+          .toDepartment({
+            data: {
+              id: resource.value,
+              offset: 0,
+              limit: 1000,
+              filter: ''
+            }
+          })
+          .then((res: ResultType) => {
+            state.rightData = res.data.result
+            let arr: any[] = []
+            state.rightData.forEach((el) => {
+              arr.push(el.id)
+            })
+            leftTree.value.setCheckedKeys(arr, true)
+          })
+        break
+      case '2':
+        API.product
+          .toAuthority({
+            data: {
+              id: resource.value,
+              offset: 0,
+              limit: 1000,
+              filter: ''
+            }
+          })
+          .then((res: ResultType) => {
+            state.authorHisData = res.data.result
+            state.authorData = state.authorHisData
+            let arr: any[] = []
+            state.authorData.forEach((el) => {
+              el.type = 'has'
+              arr.push(el.id)
+            })
+          })
+
+        break
+      case '3':
+        API.product
+          .toPerson({
+            data: {
+              id: 0,
+              offset: 0,
+              limit: 1000,
+              filter: ''
+            }
+          })
+          .then((res: ResultType) => {
+            state.personsHisData = res.data.result
+            if (state.personsData.length == 0) {
+              state.personsData = state.personsHisData
+            }
+          })
+        break
+      case '4':
+        API.product
+          .toIdentity({
+            data: {
+              id: resource.value,
+              offset: 0,
+              limit: 1000,
+              filter: ''
+            }
+          })
+          .then((res: ResultType) => {
+            state.identitysHisData = res.data.result
+            let arr: any[] = []
+            state.identitysHisData.forEach((el) => {
+              arr.push(el.id)
+            })
+            centerTree.value.setCheckedKeys(arr, true)
           })
         break
       default:
@@ -369,7 +457,7 @@
       })
     }
     if (departDel.length > 0) {
-      promise5 = API.product.department({
+      promise5 = API.product.delteDeptment({
         data: {
           resId: resource.value,
           targetIds: departDel
@@ -426,13 +514,13 @@
     }
     Promise.all([promise1, promise2, promise3, promise4]).then((res) => {
       if (res) {
-        ElMessageBox.confirm('是否继续分发？', {
+        ElMessageBox.confirm('分发成功，是否继续分发？', {
           confirmButtonText: '继续',
           cancelButtonText: '取消',
           type: 'warning'
         })
           .then(() => {
-            return
+            getNewHistoryData()
           })
           .catch(() => {
             closeDialog()
@@ -490,6 +578,8 @@
       if (dataList[i].id == data.id) {
         if (data.type == 'add') {
           return
+        } else if (data.type == 'has') {
+          return
         }
       }
     }
@@ -512,6 +602,8 @@
         for (let i = 0; i < state.orgData.length; i++) {
           if (state.orgData[i].id == data.id) {
             if (data.type == 'add') {
+              return
+            } else if (data.type == 'has') {
               return
             }
           }
@@ -572,7 +664,9 @@
                   arr.push(el.id)
                 }
               })
-              centerTree.value.setCheckedKeys(arr, true)
+              setTimeout(() => {
+                centerTree.value.setCheckedKeys(arr, true)
+              }, 300)
             }
           })
         break
@@ -747,7 +841,8 @@
     } else {
       state.orgData.forEach((el, index) => {
         if (el.id == item.id) {
-          el.type == 'del'
+          el.type = 'del'
+          leftTree.value.setChecked(el.id, false)
         }
       })
     }
