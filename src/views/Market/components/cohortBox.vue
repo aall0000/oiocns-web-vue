@@ -108,6 +108,7 @@
   import API from '@/services'
   import Author from './components/author.vue'
   import type { TabsPaneContext } from 'element-plus'
+  import { AnyAaaaRecord } from 'dns'
   interface Tree {
     id: string
     label: string
@@ -188,6 +189,10 @@
           leftTree.value.setCheckedKeys(arr, true)
         } else if (newValue == '2' && state.authorData.length == 0) {
           getHistoryData()
+        } else if (newValue == '3' && state.personsData.length == 0) {
+          getHistoryData()
+        } else if (newValue == '4' && state.identitysData.length == 0) {
+          getHistoryData()
         }
       })
     },
@@ -241,38 +246,44 @@
             }
           })
           .then((res: ResultType) => {
-            state.rightData = res.data.result
-            state.orgData = state.rightData
+            state.rightData = res.data.result ? res.data.result : []
             leftTree.value.setCheckedKeys([])
             let arr: any[] = []
             state.rightData.forEach((el) => {
+              el.type = 'has'
               arr.push(el.id)
             })
+            state.orgData = state.rightData
             leftTree.value.setCheckedKeys(arr, true)
           })
         break
       case '2':
         API.product
-          .toIdentity({
+          .toAuthority({
             data: {
-              id: 0,
+              id: resource.value,
               offset: 0,
               limit: 1000,
               filter: ''
             }
           })
           .then((res: ResultType) => {
-            state.identitysHisData = res.data.result
-            if (state.identitysData.length == 0) {
-              state.identitysData = state.identitysHisData
-            }
+            state.authorHisData = res.data.result ? res.data.result : []
+            centerTree.value.setCheckedKeys([])
+            let arr: any[] = []
+            state.authorHisData.forEach((el) => {
+              el.type = 'has'
+              arr.push(el.id)
+            })
+            state.authorData = state.authorHisData
+            centerTree.value.setCheckedKeys(arr, true)
           })
         break
       case '3':
         API.product
           .toPerson({
             data: {
-              id: 0,
+              id: resource.value,
               offset: 0,
               limit: 1000,
               filter: ''
@@ -287,19 +298,24 @@
         break
       case '4':
         API.product
-          .toAuthority({
+          .toIdentity({
             data: {
-              id: 0,
+              id: resource.value,
               offset: 0,
               limit: 1000,
               filter: ''
             }
           })
           .then((res: ResultType) => {
-            state.authorHisData = res.data.result
-            if (state.authorData.length == 0) {
-              state.authorData = state.authorHisData
-            }
+            state.identitysHisData = res.data.result ? res.data.result : []
+            centerTree.value.setCheckedKeys([])
+            let arr: any[] = []
+            state.identitysHisData.forEach((el) => {
+              el.type = 'has'
+              arr.push(el.id)
+            })
+            state.identitysData = state.identitysHisData
+            centerTree.value.setCheckedKeys(arr, true)
           })
         break
       default:
@@ -320,7 +336,7 @@
             }
           })
           .then((res: ResultType) => {
-            state.rightData = res.data.result
+            state.rightData = res.data.result ? res.data.result : []
             let arr: any[] = []
             state.rightData.forEach((el) => {
               arr.push(el.id)
@@ -339,7 +355,7 @@
             }
           })
           .then((res: ResultType) => {
-            state.authorHisData = res.data.result
+            state.authorHisData = res.data.result ? res.data.result : []
             state.authorData = state.authorHisData
             let arr: any[] = []
             state.authorData.forEach((el) => {
@@ -353,17 +369,20 @@
         API.product
           .toPerson({
             data: {
-              id: 0,
+              id: resource.value,
               offset: 0,
               limit: 1000,
               filter: ''
             }
           })
           .then((res: ResultType) => {
-            state.personsHisData = res.data.result
-            if (state.personsData.length == 0) {
-              state.personsData = state.personsHisData
-            }
+            state.personsHisData = res.data.result ? res.data.result : []
+            state.personsData = state.personsHisData
+            let arr: any[] = []
+            state.personsData.forEach((el) => {
+              el.type = 'has'
+              arr.push(el.id)
+            })
           })
         break
       case '4':
@@ -377,12 +396,13 @@
             }
           })
           .then((res: ResultType) => {
-            state.identitysHisData = res.data.result
+            state.identitysHisData = res.data.result ? res.data.result : []
+            state.identitysData = state.identitysHisData
             let arr: any[] = []
-            state.identitysHisData.forEach((el) => {
+            state.identitysData.forEach((el) => {
+              el.type = 'has'
               arr.push(el.id)
             })
-            centerTree.value.setCheckedKeys(arr, true)
           })
         break
       default:
@@ -472,11 +492,12 @@
         }
       })
     }
+
     if (authorDel.length > 0) {
-      promise6 = API.product.department({
+      promise6 = API.product.delteAuthority({
         data: {
           resId: resource.value,
-          targetIds: state.orgData
+          targetIds: authorDel
         }
       })
     }
@@ -489,10 +510,10 @@
       })
     }
     if (personsDel.length > 0) {
-      promise7 = API.product.department({
+      promise7 = API.product.deltePerson({
         data: {
           resId: resource.value,
-          targetIds: state.orgData
+          targetIds: personsDel
         }
       })
     }
@@ -505,10 +526,10 @@
       })
     }
     if (identityDel.length > 0) {
-      promise8 = API.product.department({
+      promise8 = API.product.delteIdentity({
         data: {
           resId: resource.value,
-          targetIds: state.orgData
+          targetIds: identityDel
         }
       })
     }
@@ -580,6 +601,9 @@
           return
         } else if (data.type == 'has') {
           return
+        }
+        if (!data.type) {
+          dataList = []
         }
       }
     }
@@ -653,13 +677,14 @@
             }
           })
           .then((res: ResultType) => {
-            let arr = []
+            let arr: any[] = []
             arr.push(res.data)
             handleTreeData(arr)
             state.centerTree = arr
+            debugger
             if (state.authorData.length > 0) {
               let arr: any[] = []
-              state.authorData.forEach((el) => {
+              state.authorData.forEach((el, index) => {
                 if (el.type == 'add' || el.type == 'has') {
                   arr.push(el.id)
                 }
@@ -788,7 +813,10 @@
       } else {
         state.authorData.forEach((el, index) => {
           if (el.id == item.id) {
-            el.type == 'del'
+            el.type = 'del'
+            if (state.centerTree.length !== 0) {
+              centerTree.value.setChecked(el.id, false)
+            }
           }
         })
       }

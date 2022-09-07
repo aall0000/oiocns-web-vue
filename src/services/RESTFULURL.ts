@@ -205,7 +205,10 @@ export default {
     toAuthority: product + '/search/distribution/to/authority',
     share: product + '/share',
     searchUnitShare: product + '/search/share',
-    delteDeptment: product + '/delete/distribution/to/deptment'
+    delteDeptment: product + '/delete/distribution/to/deptment',
+    delteAuthority: product + '/delete/distribution/to/authority',
+    delteIdentity: product + '/delete/distribution/to/identity',
+    deltePerson: product + '/delete/distribution/to/person'
   },
   // 历史记录
   history: {
