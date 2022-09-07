@@ -63,7 +63,7 @@
       // TODO:按照权限判断展示哪个资源
       const { id, name, icon, link } = result[0]
       console.log('当前资源', icon, result)
-      emit('AppChange', { id, name, icon:img1, link, path: '/online', })
+      emit('AppChange', { id, name:app.name, icon:img1, link, path: '/online', })
     }
     // emit('AppChange', app)
   }
