@@ -91,11 +91,11 @@
     margin-right: 1%;
     // background-color: aqua;
     &-con {
-      display: flex;
-      flex-direction: column;
+      // display: flex;
+      // flex-direction: column;
       padding: 24px;
       .app-con-title {
-        color: #000000d9;
+        // color: #000000d9;
         font-size: 16px;
         font-weight: 400;
       }
@@ -104,7 +104,7 @@
         height: 70px;
         font-size: 14px;
         font-weight: 400;
-        color: #00000073;
+        color: var(--el-color-info);// #00000073;
         overflow: hidden;
         text-overflow: 5;
         display: -webkit-box; //将对象作为弹性伸缩盒子模型显示。

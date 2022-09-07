@@ -1,6 +1,6 @@
 <template>
   <MarketCard />
-  <div class="app-register-wrap">
+  <el-card class="app-register-wrap">
     <div class="app-base-info register-content">
       <div class="custom-title">
         <p><span class="custom-span"></span> 基础信息</p>
@@ -74,7 +74,7 @@
       <el-button type="info" @click="router.back()">取消</el-button>
       <el-button type="primary" @click="onSubmit">注册</el-button>
     </div>
-  </div>
+  </el-card>
 </template>
 <script lang="ts" setup>
   import API from '@/services'
@@ -229,11 +229,12 @@
 
 <style lang="scss" scoped>
   .app-register-wrap {
-    height: 100%;
+    // height: 100%;
     background: var(--el-bg-color-overlay);
-    padding: 20px;
+    margin: 16px;
+    border: 0;
     overflow-y: auto;
-    height: calc(100vh - 108px);
+    height: calc(100vh - 148px);
 
     .register-content {
       width: 600px;

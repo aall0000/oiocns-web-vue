@@ -38,7 +38,7 @@
         </el-radio-group>
       </template>
     </MarketCard>
-    <div v-if="isRouterAlive" style="height: 100vh; background-color: #fff">
+    <div v-if="isRouterAlive" class="shopcar-content">
       <!-- <el-row :gutter="12" v-loading="loading" v-if="cardActive">
         <el-col :span="4" v-for="item in pageStore.tableData" :key="item.id">
            <el-card shadow="hover">
@@ -163,7 +163,7 @@
         class="page-pagination"
         @size-change="(e) => handlePaginationChange(e, 'limit')"
         @current-change="(e) => handlePaginationChange(e, 'current')"
-        small
+        
         background
         :page-sizes="pageSizes"
         v-model:currentPage="pagination.current"
@@ -497,7 +497,13 @@
 </script>
 
 <style scoped lang="scss">
-  .card-header {
+.shopcar-content{
+  margin: 16px;
+  height: calc(100vh - 148px);
+  
+  // padding: 20px;
+}
+.card-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -638,16 +644,19 @@
   }
 
   .box {
-    .box-ul + .box-ul {
-      margin-top: 10px;
-    }
+    // .box-ul + .box-ul {
+    //   margin-top: 10px;
+    // }
     &-ul {
       position: relative;
-      background-color: #fff;
-      height: 100%;
+      background-color: var(--el-bg-color-overlay);
+      height: calc(100vh - 12rem);
+      padding: 20px;
+      
       &-title {
         font-weight: bold;
         padding-bottom: 10px;
+       
       }
       .app-card {
         display: flex;

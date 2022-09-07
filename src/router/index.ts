@@ -303,7 +303,7 @@ const mainRouter: RouteRecordRaw[] = [
         name: 'marketOrder',
         component: () => import('@/views/Market/Order/index.vue'),
         meta: {
-          title: '订单页面'
+          title: '我的订单'
         }
       },
       {

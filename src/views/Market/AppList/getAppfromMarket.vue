@@ -1,16 +1,27 @@
 <template>
   <MarketCard>
     <template #right>
-      <el-button type="primary" @click.stop="GoPage('/market/order')">我的订单</el-button>
-      <el-badge :value="shopcarNum" style="padding-left:10px">
-        <el-button type="primary" @click.stop="GoPage('/market/shopCar')">购物车</el-button>
-      </el-badge>
+      <el-space>
+        <el-button type="primary" @click.stop="GoPage('/market/order')">我的订单</el-button>
+        <el-badge :value="shopcarNum" >
+          <el-button type="primary" @click.stop="GoPage('/market/shopCar')">购物车</el-button>
+        </el-badge>
+        <el-radio-group v-model="isCard" size="small" class="button" >
+            <el-radio-button :label="false"
+              ><el-icon :size="18"><Tickets /></el-icon
+            ></el-radio-button>
+            <el-radio-button :label="true"
+              ><el-icon :size="18"><Menu /></el-icon
+            ></el-radio-button>
+          </el-radio-group>
+        
+      </el-space>
     </template>
   </MarketCard>
-  <div class="getApp">
+  <el-card class="getApp">
     <div class="getApp-container">
       <el-tabs class="marketTag" v-model="activeMarket" @tabChange="handleTabChange">
-        <el-tab-pane v-for="item in marketTabs" :label="item.name" :name="item.id"></el-tab-pane>
+        <el-tab-pane v-for="item in marketTabs" :label="item.name" :name="item.id" :key="item.id"></el-tab-pane>
       </el-tabs>
       <div class="getApp-header">
         <p>应用{{isCard? '图':'列'}}表</p>
@@ -37,12 +48,12 @@
           </template>
         </DiyTable>
       </div>
-      <div class="getApp-radio">
+      <!-- <div class="getApp-radio">
         <p style="margin-right: 20px">切换视图</p>
         <el-switch v-model="isCard" />
-      </div>
+      </div> -->
     </div>
-  </div>
+  </el-card>
 </template>
 
 <script setup lang="ts">
@@ -208,36 +219,38 @@
 </script>
 <style lang="scss">
   .getApp-container {
-    .marketTag {
-      .el-tabs--top .el-tabs__item.is-top:nth-child(2){
-        padding-left: 20px;
-      }
-      .el-tabs__nav-next, .el-tabs__nav-prev{
-        padding: 0 5px;
-      }
-      .el-tabs__nav {
-        padding: 0 4px;
-      }
-    }
+    // .marketTag {
+    //   .el-tabs--top .el-tabs__item.is-top:nth-child(2){
+    //     padding-left: 20px;
+    //   }
+    //   .el-tabs__nav-next, .el-tabs__nav-prev{
+    //     padding: 0 5px;
+    //   }
+    //   .el-tabs__nav {
+    //     padding: 0 4px;
+    //   }
+    // }
   }
 </style>
 <style lang="scss" scoped>
   .getApp {
-    width: 100%;
-    height: calc(100vh - 60px);
-    padding: 16px;
-    &-radio {
-      display: flex;
-      align-items: center;
-      position: absolute;
-      left: 16px;
-      bottom: 0px;
-    }
+    // width: 100%;
+    height: calc(100vh - 148px);
+    border:0;
+    // padding: 16px;
+    margin: 16px;
+    // &-radio {
+    //   display: flex;
+    //   align-items: center;
+    //   position: absolute;
+    //   left: 16px;
+    //   bottom: 0px;
+    // }
     &-container {
       position: relative;
       width: 100%;
       height: calc(100% - 60px);
-      background-color: #fff;
+      background-color: var(--el-bg-color-overlay);
       overflow: auto;
       display: flex;
       flex-direction: column;
@@ -245,17 +258,17 @@
     &-content {
       width: 100%;
       flex: 1;
-      padding: 0 24px;
+      // padding: 0 24px;
     }
     &-header {
-      padding: 0 24px 16px 24px;
+      padding-bottom: 16px;
       display: flex;
       width: 100%;
       align-items: center;
       justify-content: space-between;
       p {
         font-weight: 600;
-        color: rgba(0, 0, 0, 0.85);
+        // color: rgba(0, 0, 0, 0.85);
       }
     }
   }

@@ -40,22 +40,22 @@ const orgChat: orgChatType = {
         orgChat._connection.on("RecvMsg", orgChat._recvMsg)
         orgChat._connection.onclose((error) => {
             if(!orgChat._stoped){
-                console.log('链接已断开,2秒后重连', error)
+                console.log('链接已断开,30秒后重连', error)
                 setTimeout(() => {
                     orgChat._connection = null
                     orgChat.start(accessToken,userId)
-                }, 2000)
+                }, 30000)
             }
         })
         orgChat._connection.start().then(async () => {
             await orgChat._connection.invoke("TokenAuth", accessToken)
             await orgChat.getChats()
         }).catch((error: any) => {
-            console.log('链接出错,2秒后重连', error)
+            console.log('链接出错,30秒后重连', error)
             setTimeout(() => {
                 orgChat._connection = null
                 orgChat.start(accessToken,userId)
-            }, 2000)
+            }, 30000)
         }) // 开启链接
     },
     isConnected: () => {

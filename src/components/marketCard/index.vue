@@ -17,7 +17,7 @@
                 <slot name="routeContent" ></slot>
               </div>
               <slot name="marketNameSlot" ></slot>
-            <span style="color: #3e5ed8; font-size: 17px;">{{ activeRouterName }} </span>
+            <span style="color: var(--el-color-primary); font-size: 17px;">{{ activeRouterName }} </span>
             </div>
 
           </template>
