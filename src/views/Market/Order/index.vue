@@ -154,7 +154,7 @@
             </DiyButton>
           </template>
         </el-table-column>
-      </el-table>
+      </el-table> -->
       <payView v-if="payDialog.show" :order="payDialog.data" @close="closePay"></payView>
       <payList v-if="payListDialog.show" :selectLimit="0" @closeDialog="closePayList" />
     </div>
