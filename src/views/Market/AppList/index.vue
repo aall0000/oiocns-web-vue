@@ -46,10 +46,10 @@
             <el-button class="btn" link small @click.stop="hadleUserManage(item)"
               >用户管理</el-button
             >
-            <el-divider direction="vertical" />
+            <!-- <el-divider direction="vertical" />
             <el-button class="btn" link small  @click="GoPageWithQuery('/market/marketDetail',{data:item.id})"
               >市场首页</el-button
-            >
+            > -->
           </ShopCard>
         </li>
         <li v-show="mode === 'list'">
@@ -106,9 +106,13 @@
               >退出商店</el-button
             >
             <el-divider direction="vertical" />
+            <el-button class="btn" link small @click.stop="hadleUserManage(item)"
+              >用户管理</el-button
+            >
+            <!-- <el-divider direction="vertical" />
             <el-button class="btn" link small  @click="GoPageWithQuery('/market/marketDetail',{data:item.id,type:'shop'})"
               >市场首页</el-button
-            >
+            > -->
           </ShopCard>
         </li>
         <li v-show="mode === 'list'">
