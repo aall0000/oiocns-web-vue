@@ -36,11 +36,21 @@
           <el-switch v-model="isCard" /> -->
         </div>
         <li class="app-card" v-show="mode === 'card'">
-          <MarketCreate :info="add" @myclick="GoPage('/market/getApp')" />
-          <ShopCard v-for="item in state.ownProductList" :info="item" :key="item.id" :over-id="item.id">
-            <template #icon>
-              <HeadImg :name="item.name" :url="item.icon || appImg" :imgWidth="48" :limit="1" :isSquare="false" />
-            </template>
+          <MarketCreate :info="add" @myclick="GoPage('/market/softShare')" />
+          <ShopCard
+            v-for="item in state.ownProductList"
+            :info="item"
+            :key="item.id"
+            :over-id="item.id"
+          >
+            <template #icon
+              ><HeadImg
+                :name="item.name"
+                :url="item.icon || appImg"
+                :imgWidth="48"
+                :limit="1"
+                :isSquare="false"
+            /></template>
             <template #rightIcon>
               <el-dropdown trigger="click" @command="(value) => handleCommand('own', value, item)"
                 placement="left-start">
@@ -426,53 +436,53 @@ const openShareDialog = () => {
     appInfo.value = selectProductItem.value.id
     personCohortShareVisible.value = true
 
-    // API.cohort
-    //   .getJoinedCohorts({
-    //     data: {
-    //       offset: 0,
-    //       limit: 10000,
-    //       filter: ''
-    //     }
-    //   })
-    //   .then((res: ResultType) => {
-    //     console.log(res)
-    //     if (res.data.result && res.data.result.length > 0) {
-    //       let cor = res.data.result
-    //       state.options = cor.map((g: any) => {
-    //         return { value: g.id, label: g.name }
-    //       })
-    //       title.value = '选择群组'
-    //       groupVisible.value = true
-    //     } else {
-    //       ElMessage({
-    //         type: 'warning',
-    //         message: '您暂未加入群组'
-    //       })
-    //     }
-    //   })
-  } else {
-    API.company
-      .companyGetGroups({
-        data: {
-          offset: 0,
-          limit: 1000
-        }
-      })
-      .then((res: ResultType) => {
-        if (res.data.result && res.data.result.length > 0) {
-          groups = res.data.result
-          state.options = groups.map((g) => {
-            return { value: g.id, label: g.name }
-          })
-          title.value = '选择集团'
-          groupVisible.value = true
-          // loadOrgTree(groups[0].id)
-        } else {
-          groups = []
-        }
-      })
+      // API.cohort
+      //   .getJoinedCohorts({
+      //     data: {
+      //       offset: 0,
+      //       limit: 10000,
+      //       filter: ''
+      //     }
+      //   })
+      //   .then((res: ResultType) => {
+      //     console.log(res)
+      //     if (res.data.result && res.data.result.length > 0) {
+      //       let cor = res.data.result
+      //       state.options = cor.map((g: any) => {
+      //         return { value: g.id, label: g.name }
+      //       })
+      //       title.value = '选择群组'
+      //       groupVisible.value = true
+      //     } else {
+      //       ElMessage({
+      //         type: 'warning',
+      //         message: '您暂未加入群组'
+      //       })
+      //     }
+      //   })
+    } else {
+      API.company
+        .companyGetGroups({
+          data: {
+            offset: 0,
+            limit: 1000
+          }
+        })
+        .then((res: ResultType) => {
+          if (res.data.result && res.data.result.length > 0) {
+            groups = res.data.result
+            state.options = groups.map((g) => {
+              return { value: g.id, label: g.name }
+            })
+            title.value = '选择集团'
+            groupVisible.value = true
+            // loadOrgTree(groups[0].id)
+          } else {
+            groups = []
+          }
+        })
+    }
   }
-}
 
 const groupId = ref('')
 const groupName = ref('')

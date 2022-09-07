@@ -105,7 +105,6 @@
   })
 
   const handleMemuEvent = (type: ProductMenuEventType, selectId?: string) => {
-    console.log('处理事件', type, selectId)
     switch (type) {
       case 'Add':
         resources.resources.push({
@@ -144,7 +143,7 @@
     // 根据当前所选标志 获取目标数据信息
     const obj = data.find((item) => item.customId === aimId)
 
-    const idArr = data.map((item: AppMenuType) => item.customId)
+    const idArr = data.map((item: AppResourcesType) => item.customId)
     const index = idArr.indexOf(aimId)
     const endIndex = data.length - 1
     const willChageIndex = type === 'Up' ? index - 1 : index + 1

@@ -24,7 +24,7 @@
         <el-tab-pane v-for="item in marketTabs" :label="item.name" :name="item.id" :key="item.id"></el-tab-pane>
       </el-tabs>
       <div class="getApp-header">
-        <p>应用{{isCard? '图':'列'}}表</p>
+        <p>应用{{ isCard ? '图' : '列' }}表</p>
       </div>
       <div class="getApp-content">
         <AppCard
@@ -33,14 +33,13 @@
           :dataList="state.myAppList"
           type="shop"
           @handleUpdate="handleCardUpdate"
-          @shopcarNumChange="getShopcarNum"
         ></AppCard>
         <DiyTable
           v-else
           ref="diyTable"
           :hasTitle="true"
           :tableData="state.myAppList"
-          :tableHead="state.tableHead"
+          :tableHead="tableHead"
           @handleUpdate="handleUpdate"
         >
           <template #operate="scope">
@@ -60,72 +59,71 @@
   import { reactive, onMounted, ref, watch, nextTick } from 'vue'
   import { useRouter } from 'vue-router'
   import $services from '@/services'
-  import AppCard from './components/appCard.vue'
+  import AppCard from '../appList/components/appCard.vue'
   import DiyTable from '@/components/diyTable/index.vue'
-  import TheTableButton from './components/theTableButton2.vue'
+  import TheTableButton from '../appList/components/theTableButton2.vue'
   import MarketCard from '@/components/marketCard/index.vue'
   const router = useRouter()
   const diyTable = ref(null)
   const isCard = ref(true)
   const appCard = ref(null)
   const shopcarNum = ref(0)
+  const softShareInfo = ref<MarketType>({} as MarketType)
   const state = reactive({
-    myAppList: [],
-    tableHead: [
-      {
-        prop: 'caption',
-        label: '应用名称'
-      },
-      {
-        prop: 'sellAuth',
-        label: '应用权限'
-      },
-      {
-        prop: 'price',
-        label: '单价/天'
-      },
-      {
-        prop: 'days',
-        label: '使用期限'
-      },
-      {
-        prop: 'createTime',
-        label: '创建时间'
-      },
-      {
-        type: 'slot',
-        label: '操作',
-        fixed: 'right',
-        align: 'center',
-        width: '80',
-        name: 'operate'
-      }
-    ]
+    myAppList: []
   })
-
-
-
+  // 表格展示信息
+  const tableHead = [
+    {
+      prop: 'caption',
+      label: '应用名称'
+    },
+    {
+      prop: 'sellAuth',
+      label: '应用权限'
+    },
+    {
+      prop: 'price',
+      label: '单价/天'
+    },
+    {
+      prop: 'days',
+      label: '使用期限'
+    },
+    {
+      prop: 'createTime',
+      label: '创建时间'
+    },
+    {
+      type: 'slot',
+      label: '操作',
+      fixed: 'right',
+      align: 'center',
+      width: '80',
+      name: 'operate'
+    }
+  ]
 
   onMounted(() => {
-    getJoinMarketData()
-    getShopcarNum()
+    getMarketInfo()
+    // getShopcarNum()
   })
 
-  const getShopcarNum = async () => {
-    await $services.market
-      .searchStaging({
-        data: {
-          id: 0, //市场id （需删除）
-          offset: 0,
-          limit: 20,
-          filter: ''
-        }
-      })
-      .then((res: ResultType) => {
-        var { result = [], total = 0 } = res.data
-        shopcarNum.value = total
-      })
-  }
+  // const getShopcarNum = async () => {
+  //   await $services.market
+  //     .searchStaging({
+  //       data: {
+  //         id: 0, //市场id （需删除）
+  //         offset: 0,
+  //         limit: 20,
+  //         filter: ''
+  //       }
+  //     })
+  //     .then((res: ResultType) => {
+  //       var { result = [], total = 0 } = res.data
+  //       shopcarNum.value = total
+  //     })
+  // }
 
   // 卡片切换页数
   const handleCardUpdate = () => {
@@ -147,7 +145,7 @@
         }
       })
       .then((res: ResultType) => {
-        console.log(res)
+        console.log('getTableData',res)
         if (res.code == 200) {
           state.myAppList = res.data.result || []
           diyTable.value.state.page.total = res.data.total || 0
@@ -159,7 +157,7 @@
     $services.appstore
       .merchandise({
         data: {
-          id: activeMarket.value,
+          id: softShareInfo.value.id,
           offset: appCard.value.state.page.current,
           limit: 12,
           filter: ''
@@ -177,32 +175,27 @@
   const activeMarket = ref<string>('')
 
   const handleTabChange = (name: string) => {
-    console.log('切换',name)
+    console.log('切换', name)
   }
   // 获取已加入市场列表
-  const getJoinMarketData = () => {
-    $services.appstore
-      .searchOwn({
-        data: {
-          offset: 0,
-          limit: 100,
-          filter: ''
-        }
-      })
-      .then((res: ResultType) => {
-        if (res.code == 200) {
-          const { result = [] } = res.data
-          marketTabs.value = result
-          activeMarket.value = result.length > 0 ? result[0].id : ''
-        }
-      })
+  const getMarketInfo = () => {
+    $services.market.getSoftShareInfo().then((res: ResultType) => {
+      if (res.code == 200) {
+        console.log('共享仓库', res.data)
+        softShareInfo.value = res?.data || {}
+        getData()
+        // const { result = [] } = res.data
+        // marketTabs.value = result
+        // activeMarket.value = result.length > 0 ? result[0].id : ''
+      }
+    })
   }
   const GoPage = (path: string) => {
     router.push(path)
   }
-  watch([isCard,activeMarket], ([val,activeMVal],[valOld,activeMValOld]) => {
+  watch([isCard, activeMarket], ([val, activeMVal], [valOld, activeMValOld]) => {
     // 监听 展示方式变化
-      nextTick(() => {
+    nextTick(() => {
       if (val) {
         appCard.value.state.page.currentPage = 1
         getData()

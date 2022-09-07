@@ -60,7 +60,7 @@
 <script lang="ts" setup>
 // import SetAppMenu from './setAppMenu.vue'
 type Props = {
-  menus?: AppMenuType[]
+  menus?: AppResourcesType[]
   className?: string
   isChildren?: boolean
 }
