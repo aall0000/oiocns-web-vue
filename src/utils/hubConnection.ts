@@ -6,7 +6,7 @@ import * as signalR from '@microsoft/signalr'
 
 type anyStoreType = {
     _prefix: string,
-    _connection: signalR.HubConnection, // 链接对象本身
+    _connection: signalR.HubConnection|null, // 链接对象本身
     _subscribedKeys: Record<string, (data: any) => void>, // 订阅的值和回调方法
     start: () => void, // 创建及启动链接
     stop: () => void, // 关闭链接
@@ -23,21 +23,21 @@ const anyStore: anyStoreType = {
     _subscribedKeys: {},
     _prefix: "",
     start: () => { // 不传默认为链接用户属性库
-        // if (anyStore._connection) return
-        // // 初始化
-        // anyStore._connection = new signalR.HubConnectionBuilder().withUrl('anydata/object/hub').withAutomaticReconnect().build()
-        // anyStore._connection.on("Updated", anyStore._updated)
-        // anyStore._connection.onclose((err)=>{
-        //     anyStore._subscribedKeys = {}
-        // })
-        // anyStore._connection.start().then(() => console.log('链接成功'))
-        //     .catch((error: any) => {
-        //         console.log('链接出错', error)
-        //         setTimeout(() => {
-        //             anyStore._connection = null
-        //             anyStore.start()
-        //         }, 2000);
-        //     })// 开启链接
+        if (anyStore._connection) return
+        // 初始化
+        anyStore._connection = new signalR.HubConnectionBuilder().withUrl('anydata/object/hub').withAutomaticReconnect().build()
+        anyStore._connection.on("Updated", anyStore._updated)
+        anyStore._connection.onclose((err)=>{
+            anyStore._subscribedKeys = {}
+        })
+        anyStore._connection.start().then(() => console.log('链接成功'))
+            .catch((error: any) => {
+                console.log('链接出错', error)
+                setTimeout(() => {
+                    anyStore._connection = null
+                    anyStore.start()
+                }, 2000);
+            })// 开启链接
     },
     isConnected: () => {
         if (anyStore._connection != null) {

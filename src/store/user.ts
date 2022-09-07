@@ -1,7 +1,6 @@
 import { defineStore } from 'pinia'
 import $services from '@/services'
 import { ElMessage } from 'element-plus'
-import anyStore from '@/utils/hubConnection'
 import { type } from 'os'
 
 type QueryInfoType = {
@@ -19,6 +18,7 @@ type UserStoreType = {
   userInfo: any
   queryInfo: QueryInfoType
   userUnitInfo: UnitInfoType
+  userToken: string
   [key: string]: any
 }
 
@@ -30,7 +30,7 @@ export const useUserStore = defineStore({
       queryInfo: {} as QueryInfoType, // 用户详细信息
       userCompanys: [], // 获取用户组织列表 分页
       copyCompanys: [],
-      userToken: '' || sessionStorage.getItem('TOKEN'),
+      userToken: '',
       workspaceData: {}, // 当前选中的公司
       userNameMap: new Map(),
       userUnitInfo: {} as UnitInfoType //所在单位信息
@@ -50,7 +50,6 @@ export const useUserStore = defineStore({
     ]
   },
   getters: {
-    // token: (state) => 'Bearer ' + state.userToken
     getUserName: (state) => {
       return (userId: string): string => state.userNameMap.get(userId)
     }

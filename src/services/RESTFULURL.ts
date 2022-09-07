@@ -179,7 +179,7 @@ export default {
     queryOwnResource: product + '/query/own/resource', //查询组织/个人拥有的资源列表
     register: product + '/register', //产品登记
     publish: product + '/publish', //产品登记
-    searchUsefulProduct: product + 'search/useful/product',//查询组织/个人可用产品
+    searchUsefulProduct: product + '/search/useful/product',//查询组织/个人可用产品
     searchMerchandiseList: product + '​/search​/merchandise​/List', //根据产品查询产品上架信息
     searchMerchandiseApply: product + '​/search​/merchandise​/apply', //查询产品上架申请
     searchResource: product + '/search/resource', //查询产品资源列表

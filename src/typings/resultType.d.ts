@@ -3,6 +3,4 @@ interface ResultType {
   data: any
   msg: string
   success: boolean
-  message?: string
-  state?: boolean
 }

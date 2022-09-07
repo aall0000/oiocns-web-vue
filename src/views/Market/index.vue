@@ -28,6 +28,14 @@
             :key="item.id"
             :over-id="item.id"
           >
+            <template #icon
+              ><HeadImg
+                :name="item.name"
+                :url="item.icon || appImg"
+                :imgWidth="48"
+                :limit="1"
+                :isSquare="false"
+            /></template>
             <template #rightIcon>
               <el-dropdown
                 trigger="click"
@@ -45,6 +53,9 @@
                       {{ action.label }}
                     </el-dropdown-item>
                     <el-dropdown-item @click="deleteApp(item)">移除应用</el-dropdown-item>
+                    <el-dropdown-item @click="GoPage('/market/appDetail')"
+                      >应用详情</el-dropdown-item
+                    >
                   </el-dropdown-menu>
                 </template>
               </el-dropdown>
@@ -98,6 +109,14 @@
             :key="item.id"
             :over-id="item.id"
           >
+            <template #icon
+              ><HeadImg
+                :name="item.name"
+                :url="item.icon || appImg"
+                :imgWidth="48"
+                :limit="1"
+                :isSquare="false"
+            /></template>
             <template #rightIcon>
               <el-dropdown
                 trigger="click"
@@ -107,14 +126,10 @@
                 <el-icon :size="18"><Operation /></el-icon>
                 <template #dropdown>
                   <el-dropdown-menu>
-                    <el-dropdown-item
-                      v-for="action in actionOptionsOfOwn"
-                      :command="action.value"
-                      :key="action.value"
-                    >
-                      {{ action.label }}
-                    </el-dropdown-item>
                     <el-dropdown-item @click="deleteApp(item)">移除应用</el-dropdown-item>
+                    <el-dropdown-item @click="GoPage('/market/appDetail')"
+                      >应用详情</el-dropdown-item
+                    >
                   </el-dropdown-menu>
                 </template>
               </el-dropdown>
@@ -300,6 +315,7 @@
   import { useUserStore } from '@/store/user'
   import DiyTable from '@/components/diyTable/index.vue'
   import { appendFile } from 'fs'
+  import appImg from '@/assets/img/whatsapp.png'
   import $services from '@/services'
   import Unit from '../Market/AppShare/unit.vue'
   import Group from '../Market/AppShare/group.vue'
@@ -388,6 +404,9 @@
   })
   const title = ref<string>('')
   onMounted(() => {
+    if (store.workspaceData.type == 1) {
+      actionOptionsOfOwn.splice(2, 1)
+    }
     // 获取列表
     getProductList('own')
     getProductList('share')
@@ -598,6 +617,9 @@
   // 提交上架
   const putawaySubmit = () => {
     putawayRef.value.onPutawaySubmit()
+  }
+  const GoPageWithQuery = (path: string, query: any) => {
+    router.push({ path, query })
   }
 </script>
 

@@ -20,7 +20,7 @@
         <div class="add-app"> +从应用市场添加应用 </div>
         <div class="app-item">
           <div class="app-box">
-            <img src="./../../assets/img/Group22.png" alt="" />
+            <img src="@/assets/img/group22.png" alt="" />
             <div class="app-right">
               <p>资产监管</p>
               <p>使⽤对象：财政、主管部⻔内容：审批、以及查询分析功能...</p>
