@@ -31,6 +31,7 @@
             :info="item"
             :key="item.id"
             :overId="item.id"
+            type="market"
             @click="GoPageWithQuery('/market/appList', { data: item.id, type: 'manage' })"
           >
             <template #icon
@@ -118,6 +119,7 @@
             :info="item"
             :key="item.id"
             :overId="item.id"
+            type="market"
             @click="GoPageWithQuery('/market/appList', { data: item.id, type: 'shop' })"
           >
             <template #icon
