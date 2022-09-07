@@ -76,21 +76,25 @@
         />
       </div>
       <div class="cohortLayout-content-right" :style="'width:' + (radio == '1' ? '49%' : '33%')">
-        <Author v-if="radio == '1'" @delContent="delContent" :orgData="state.orgData"></Author>
+        <Author
+          v-if="radio == '1'"
+          @delContent="delContent"
+          :departData="state.departData"
+        ></Author>
         <Author
           v-if="radio == '2'"
           @delContent="delContentAuth"
-          :orgData="state.authorData"
+          :departData="state.authorData"
         ></Author>
         <Author
           v-if="radio == '3'"
           @delContent="delContentAuth"
-          :orgData="state.personsData"
+          :departData="state.personsData"
         ></Author>
         <Author
           v-if="radio == '4'"
           @delContent="delContentAuth"
-          :orgData="state.identitysData"
+          :departData="state.identitysData"
         ></Author>
       </div>
     </div>
@@ -149,8 +153,8 @@
         label: '按身份分发'
       }
     ],
-    orgData: [], // 集团分发右侧数据
-    rightData: [], // 集团分发历史数据
+    departData: [], // 集团分发右侧数据
+    departHisData: [], // 集团分发历史数据
     centerTree: [], // 职权分发中间树形
     authorHisData: [], // 职权历史数据
     authorData: [], // 职权右侧数据
@@ -179,9 +183,9 @@
     (newValue, oldValue) => {
       state.centerTree = []
       nextTick(() => {
-        if (newValue == '1' && state.orgData.length > 0) {
+        if (newValue == '1' && state.departData.length > 0) {
           let arr: any[] = []
-          state.orgData.forEach((el) => {
+          state.departData.forEach((el) => {
             if (el.type == 'add' || el.type == 'has') {
               arr.push(el.id)
             }
@@ -202,7 +206,7 @@
     () => resource.value,
     (newValue, oldValue) => {
       state.authorData = []
-      state.orgData = []
+      state.departData = []
       state.personsData = []
       state.identitysData = []
       leftTree.value.setCheckedKeys([])
@@ -232,6 +236,9 @@
     emit('closeDialog')
   }
 
+  // 获取部门历史数据
+  const getOrgHistoryData = () => {}
+
   // 获取历史数据（提交表单后）
   const getNewHistoryData = () => {
     switch (radio.value) {
@@ -246,14 +253,14 @@
             }
           })
           .then((res: ResultType) => {
-            state.rightData = res.data.result ? res.data.result : []
+            state.departHisData = res.data.result ? res.data.result : []
             leftTree.value.setCheckedKeys([])
             let arr: any[] = []
-            state.rightData.forEach((el) => {
+            state.departHisData.forEach((el) => {
               el.type = 'has'
               arr.push(el.id)
             })
-            state.orgData = state.rightData
+            state.departData = state.departHisData
             leftTree.value.setCheckedKeys(arr, true)
           })
         break
@@ -290,10 +297,15 @@
             }
           })
           .then((res: ResultType) => {
-            state.personsHisData = res.data.result
-            if (state.personsData.length == 0) {
-              state.personsData = state.personsHisData
-            }
+            state.personsHisData = res.data.result ? res.data.result : []
+            centerTree.value.setCheckedKeys([])
+            let arr: any[] = []
+            state.personsHisData.forEach((el) => {
+              el.type = 'has'
+              arr.push(el.id)
+            })
+            state.personsData = state.personsHisData
+            centerTree.value.setCheckedKeys(arr, true)
           })
         break
       case '4':
@@ -336,9 +348,9 @@
             }
           })
           .then((res: ResultType) => {
-            state.rightData = res.data.result ? res.data.result : []
+            state.departHisData = res.data.result ? res.data.result : []
             let arr: any[] = []
-            state.rightData.forEach((el) => {
+            state.departHisData.forEach((el) => {
               arr.push(el.id)
             })
             leftTree.value.setCheckedKeys(arr, true)
@@ -356,7 +368,7 @@
           })
           .then((res: ResultType) => {
             state.authorHisData = res.data.result ? res.data.result : []
-            state.authorData = state.authorHisData
+            state.authorData = JSON.parse(JSON.stringify(state.authorHisData))
             let arr: any[] = []
             state.authorData.forEach((el) => {
               el.type = 'has'
@@ -377,7 +389,7 @@
           })
           .then((res: ResultType) => {
             state.personsHisData = res.data.result ? res.data.result : []
-            state.personsData = state.personsHisData
+            state.personsData = JSON.parse(JSON.stringify(state.personsHisData))
             let arr: any[] = []
             state.personsData.forEach((el) => {
               el.type = 'has'
@@ -397,7 +409,7 @@
           })
           .then((res: ResultType) => {
             state.identitysHisData = res.data.result ? res.data.result : []
-            state.identitysData = state.identitysHisData
+            state.identitysData = JSON.parse(JSON.stringify(state.identitysHisData))
             let arr: any[] = []
             state.identitysData.forEach((el) => {
               el.type = 'has'
@@ -427,7 +439,7 @@
     let identityAdd: any[] = []
     let identityDel: any[] = []
 
-    state.orgData.forEach((el) => {
+    state.departData.forEach((el) => {
       if (el.type == 'add') {
         departAdd.push(el.id)
       } else if (el.type == 'del') {
@@ -541,6 +553,10 @@
           type: 'warning'
         })
           .then(() => {
+            state.identitysData = []
+            state.departData = []
+            state.personsData = []
+            state.authorData = []
             getNewHistoryData()
           })
           .catch(() => {
@@ -584,6 +600,7 @@
     dataList.forEach((el: any, index: number) => {
       if (el.id == data.id) {
         if (result) {
+          data.type = 'del'
           el.type = 'del'
         } else {
           dataList.splice(index, 1)
@@ -602,14 +619,16 @@
         } else if (data.type == 'has') {
           return
         }
-        if (!data.type) {
-          dataList = []
-        }
       }
     }
+
     if (result) {
       data.type = 'has'
-      dataList.push(data)
+      dataList.forEach((el: any) => {
+        if (el.id == data.id) {
+          el.type = 'has'
+        }
+      })
     } else {
       data.type = 'add'
       dataList.push(data)
@@ -620,11 +639,11 @@
     console.log('点击左侧', data, checked, indeterminate)
     if (checked) {
       if (radio.value == '1') {
-        let result = state.rightData.some((item: any) => {
+        let result = state.departHisData.some((item: any) => {
           return item.id == data.id
         })
-        for (let i = 0; i < state.orgData.length; i++) {
-          if (state.orgData[i].id == data.id) {
+        for (let i = 0; i < state.departData.length; i++) {
+          if (state.departData[i].id == data.id) {
             if (data.type == 'add') {
               return
             } else if (data.type == 'has') {
@@ -634,23 +653,23 @@
         }
         if (result) {
           data.type = 'has'
-          state.orgData.push(data)
+          state.departData.push(data)
         } else {
           data.type = 'add'
-          state.orgData.push(data)
+          state.departData.push(data)
         }
       }
     } else {
       if (radio.value == '1') {
-        let result = state.rightData.some((item: any) => {
+        let result = state.departHisData.some((item: any) => {
           return item.id == data.id
         })
-        state.orgData.forEach((el, index) => {
+        state.departData.forEach((el, index) => {
           if (el.id == data.id) {
             if (result) {
               el.type = 'del'
             } else {
-              state.orgData.splice(index, 1)
+              state.departData.splice(index, 1)
             }
           }
         })
@@ -833,7 +852,10 @@
       } else {
         state.personsData.forEach((el, index) => {
           if (el.id == item.id) {
-            el.type == 'del'
+            el.type = 'del'
+            if (state.centerTree.length !== 0) {
+              centerTree.value.setChecked(el.id, false)
+            }
           }
         })
       }
@@ -850,7 +872,10 @@
       } else {
         state.identitysData.forEach((el, index) => {
           if (el.id == item.id) {
-            el.type == 'del'
+            el.type = 'del'
+            if (state.centerTree.length !== 0) {
+              centerTree.value.setChecked(el.id, false)
+            }
           }
         })
       }
@@ -860,14 +885,14 @@
     if (item.type == 'del') {
       return
     } else if (item.type == 'add') {
-      state.orgData.forEach((el, index) => {
+      state.departData.forEach((el, index) => {
         if (el.id == item.id) {
-          state.orgData.splice(index, 1)
+          state.departData.splice(index, 1)
           leftTree.value.setChecked(item.id, false)
         }
       })
     } else {
-      state.orgData.forEach((el, index) => {
+      state.departData.forEach((el, index) => {
         if (el.id == item.id) {
           el.type = 'del'
           leftTree.value.setChecked(el.id, false)

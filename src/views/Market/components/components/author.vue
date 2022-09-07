@@ -4,7 +4,7 @@ v<template>
     :style="
       item.type == 'add' ? 'background:#beffd0' : item.type == 'del' ? 'background:#ffb4c4' : ''
     "
-    v-for="(item, index) in orgData"
+    v-for="(item, index) in departData"
   >
     <div class="cohortLayout-content-right-box__icon">
       <el-icon @click="delContent(item)"><CircleClose /></el-icon>
@@ -23,7 +23,7 @@ v<template>
     id: string | number
   }
   type Props = {
-    orgData: Org[]
+    departData: Org[]
   }
   const emit = defineEmits(['delContent'])
   const props = defineProps<Props>()
