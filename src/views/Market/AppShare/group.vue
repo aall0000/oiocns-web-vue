@@ -125,12 +125,16 @@
   }
   const checksSearch = (val: any) => {
     console.log('应用id', props.appInfo, '集团id', props.groupId, '所选列表', val.value[0].id)
+    let selectId: any[] = []
+    val.value.forEach((el: { id: any }) => {
+      selectId.push(el.id)
+    })
     $services.product
       .groupShare({
         data: {
           productId: props.appInfo,
           teamId: props.groupId,
-          targetIds: [val.value[0].id]
+          targetIds: selectId
         }
       })
       .then((res: ResultType) => {
