@@ -319,7 +319,7 @@ const mainRouter: RouteRecordRaw[] = [
         name: 'userApply',
         component: () => import('@/views/Market/JoinMarketApproval/starter.vue'),
         meta: {
-          title: '加入市场申请列表'
+          title: '加入商店申请列表'
         }
       },
       {
@@ -351,7 +351,7 @@ const mainRouter: RouteRecordRaw[] = [
         name: 'marketDetail',
         component: () => import('@/views/Market/MarketDetail/index.vue'),
         meta: {
-          title: '市场详情'
+          title: '商店详情'
         }
       },
       {
@@ -359,7 +359,7 @@ const mainRouter: RouteRecordRaw[] = [
         name: 'managerApply',
         component: () => import('@/views/Market/JoinMarketApproval/manager.vue'),
         meta: {
-          title: '加入市场审批列表'
+          title: '加入商店审批列表'
         }
       },
       {
