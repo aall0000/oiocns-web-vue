@@ -2,12 +2,22 @@
   <div class="market-layout">
     <MarketCard>
       <template #right>
-        <el-button type="primary" @click="GoPage('/market/appApply')">我的上架申请</el-button>
-        <el-button type="primary" @click="GoPage('/market/register')">注册应用</el-button>
-        <el-button type="primary" @click="GoPage('/market/markList')">商店列表</el-button>
-        <el-button type="primary" @click.stop="GoPage('/market/order')">我的订单</el-button>
+        <el-button small link type="primary" @click="GoPage('/market/appApply')"
+          >我的上架申请</el-button
+        >
+        <el-button small link type="primary" @click="GoPage('/market/register')"
+          >注册应用</el-button
+        >
+        <el-button small link type="primary" @click="GoPage('/market/markList')"
+          >商店列表</el-button
+        >
+        <el-button small link type="primary" @click.stop="GoPage('/market/order')"
+          >我的订单</el-button
+        >
         <el-badge :value="shopcarNum" style="padding-left: 10px">
-          <el-button type="primary" @click.stop="GoPage('/market/shopCar')">购物车</el-button>
+          <el-button small link type="primary" @click.stop="GoPage('/market/shopCar')"
+            >购物车</el-button
+          >
         </el-badge>
       </template>
     </MarketCard>

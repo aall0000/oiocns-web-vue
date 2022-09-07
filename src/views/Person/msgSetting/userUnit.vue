@@ -16,8 +16,8 @@
                 <!-- <el-input class="search" placeholder="搜索单位名" :suffix-icon="Search" /> -->
               </div>
               <div class="topRight">
-                <el-button type="primary" @click="showdialogShow">创建单位</el-button>
-                <el-button type="primary" @click="friendShow">申请加入单位</el-button>
+                <el-button small link type="primary" @click="showdialogShow">创建单位</el-button>
+                <el-button small link type="primary" @click="friendShow">申请加入单位</el-button>
                 <!-- <el-button>查看申请记录</el-button> -->
               </div>
             </div>
@@ -57,7 +57,7 @@
   import $services from '@/services'
   import { useUserStore } from '@/store/user'
   import type { TabsPaneContext } from 'element-plus'
-  import { ElMessage ,ElMessageBox} from 'element-plus'
+  import { ElMessage, ElMessageBox } from 'element-plus'
   import searchCompany from '@/components/searchs/index.vue'
   import CreateUnitDialog from '@/views/Layout/components/createUnitDialog.vue'
   import DiyTable from '@/components/diyTable/index.vue'
@@ -82,25 +82,25 @@
       prop: 'name',
       label: '单位名称',
       name: 'name',
-      width:'300'
+      width: '300'
     },
     {
       prop: 'code',
       label: '统一社会信用代码',
       name: 'code',
-      width:'190'
+      width: '190'
     },
     {
       prop: 'belongId',
       label: '管理员',
       name: 'belongId',
-      width:'200'
+      width: '200'
     },
     {
       prop: 'createTime',
       label: '创建时间',
       name: 'createTime',
-      width:'200'
+      width: '200'
     },
     {
       type: 'slot',
@@ -114,30 +114,26 @@
     console.log(tab, event)
   }
   const handleExit = (id: string) => {
-    ElMessageBox.confirm(
-    '确定退出吗？',
-    '提示',
-    {
+    ElMessageBox.confirm('确定退出吗？', '提示', {
       confirmButtonText: '确定',
       cancelButtonText: '取消',
       type: 'warning'
-    }
-  ).then(() => {
-    $services.company
-      .exit({
-        data: {
-          id: id
-        }
-      })
-      .then((res: ResultType) => {
-        if (res.code == 200) {
-          ElMessage({
-            message: '退出成功',
-            type: 'warning'
-          })
-          getList()
-        }
-      })
+    }).then(() => {
+      $services.company
+        .exit({
+          data: {
+            id: id
+          }
+        })
+        .then((res: ResultType) => {
+          if (res.code == 200) {
+            ElMessage({
+              message: '退出成功',
+              type: 'warning'
+            })
+            getList()
+          }
+        })
     })
   }
   type listItem = {
@@ -255,18 +251,17 @@
     box-sizing: border-box;
     height: 100%;
     box-sizing: border-box;
-    .contet{
+    .contet {
       padding: 20px;
       box-sizing: border-box;
       height: calc(100vh - 140px);
-
     }
     .createdTop {
       width: 100%;
       padding: 20px;
       display: flex;
       justify-content: space-between;
-      background: #fff
+      background: #fff;
     }
     .createdBody {
       height: calc(100vh - 220px);
