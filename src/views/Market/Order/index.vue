@@ -1,8 +1,8 @@
 <template>
   <MarketCard>
     <template #right>
-      <el-button type="primary" @click="getTableList('buy')">已购入</el-button>
-      <el-button type="primary" @click="getTableList('sell')">已卖出</el-button>
+      <el-button type="primary" link @click="getTableList('buy')">已购入</el-button>
+      <el-button type="primary" link @click="getTableList('sell')">已卖出</el-button>
     </template>
   </MarketCard>
   <div class="container">
@@ -154,7 +154,7 @@
             </DiyButton>
           </template>
         </el-table-column>
-      </el-table> -->
+      </el-table>
       <payView v-if="payDialog.show" :order="payDialog.data" @close="closePay"></payView>
       <payList v-if="payListDialog.show" :selectLimit="0" @closeDialog="closePayList" />
     </div>
