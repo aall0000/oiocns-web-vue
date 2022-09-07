@@ -31,6 +31,7 @@
             :info="item"
             :key="item.id"
             :overId="item.id"
+            type="market"
             @click="GoPageWithQuery('/market/appList', { data: item.id, type: 'manage' })"
           >
             <template #icon
@@ -107,6 +108,7 @@
             :info="item"
             :key="item.id"
             :overId="item.id"
+            type="market"
             @click="GoPageWithQuery('/market/appList', { data: item.id, type: 'shop' })"
           >
             <template #icon
@@ -216,7 +218,7 @@
   import { ElMessage, ElMessageBox } from 'element-plus'
   import MarketCreate from '../components/marketCreate.vue'
   import { useUserStore } from '@/store/user'
-  import storeImg from '@/assets/img/store.png'
+  import storeImg from '@/assets/img/app_icon.png'
   const router = useRouter()
   const store = useUserStore()
   const handleCurrentMy: any = computed(() => {

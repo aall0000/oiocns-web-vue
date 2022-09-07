@@ -17,7 +17,12 @@
         <!-- <HeadImg :name="info.name" :url="appImg" :imgWidth="48" :limit="1" :isSquare="false" /> -->
         <slot name="icon"></slot>
         <div class="app-con" v-if="!cardContent">
-          <p class="app-con-title">{{ info.name }}</p>
+          <p class="app-con-title">
+            {{ info.name }}
+            <el-tag v-if="props.type == 'market'" style="margin-left:10px">{{
+              info.public ? '公开' : '私有'
+            }}</el-tag>
+          </p>
           <div class="app-card-item-con-desc">
             {{ info.remark }}
           </div>
@@ -34,12 +39,13 @@
 <script lang="ts" setup>
   import { reactive, toRefs } from 'vue'
   import HeadImg from '@/components/headImg.vue'
-  import appImg from '@/assets/img/whatsapp.png'
+  import appImg from '@/assets/img/app_icon.png'
   // hoverItem--鼠标移入item的id 用于展示按钮区域
   const state: { hoverItem: string } = reactive({ hoverItem: '' })
   type shopInfoType = {
     key?: string
     info: ProductType
+    type?: string
     overId?: string //当前鼠标移入id
     cardContent?: boolean // 卡片内容是否自定义
   }
