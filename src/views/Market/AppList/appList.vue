@@ -176,7 +176,7 @@
       })
   }
   const GoPage = (path: string) => {
-    router.push(path)
+    router.push({ path: path, query: { marketId: route.query.data } })
   }
 </script>
 

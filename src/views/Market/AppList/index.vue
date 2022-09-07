@@ -2,6 +2,13 @@
   <div class="market-layout">
     <MarketCard>
       <template #right>
+        <el-button
+          link
+          type="primary"
+          @click="GoPage('/market/userApply')"
+          style="margin-right: 15px"
+          >我的加入申请</el-button
+        >
         <el-radio-group v-model="mode" size="small" class="button">
           <el-radio-button label="list"
             ><el-icon :size="18"><Tickets /></el-icon
@@ -10,8 +17,8 @@
             ><el-icon :size="18"><Menu /></el-icon
           ></el-radio-button>
         </el-radio-group>
-        <!-- <el-button type="primary" @click="GoPage('/market/managerApproval')">申请审批</el-button>
-        <el-button type="primary" @click.stop="GoPage('/market/order')">我的订单</el-button>
+
+        <!-- <el-button type="primary" @click.stop="GoPage('/market/order')">我的订单</el-button>
         <el-badge :value="shopcarNum" style="padding-left:10px">
           <el-button type="primary" @click.stop="GoPage('/market/shopCar')">购物车</el-button>
         </el-badge> -->
@@ -84,7 +91,7 @@
                 >用户管理</el-button
               >
               <el-button class="btn" type="primary" link small @click.stop="marketQuit(scope.row)"
-                >退出商店</el-button
+                >删除商店</el-button
               >
             </template>
           </DiyTable>
@@ -158,7 +165,7 @@
           >
             <template #operate="scope">
               <el-button class="btn" type="primary" link small @click.stop="marketQuit(scope.row)"
-                >退出商店</el-button
+                >删除商店</el-button
               >
             </template>
           </DiyTable>
