@@ -240,12 +240,12 @@
       margin: 0 auto;
       :deep(.el-input__wrapper),
       :deep(.el-textarea__inner) {
-        background-color: #f3f5fa;
+        background-color: var(--el-color-primary-light-9); //#f3f5fa;
         box-shadow: none;
         border: 1px solid var(--el-input-focus-border-color);
       }
       :deep(.el-textarea .el-input__count) {
-        background-color: #f3f5fa;
+        background-color: var(--el-color-primary-light-9); //#f3f5fa;
         box-shadow: none;
       }
     }

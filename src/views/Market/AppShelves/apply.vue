@@ -119,7 +119,7 @@
   .managerApproval {
     width: 100%;
     height: 100%;
-    background-color: #fff;
+    background-color: var(--el-bg-color);
     .tabList {
       width: 100%;
       height: calc(100vh - 130px);
