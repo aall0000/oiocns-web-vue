@@ -40,6 +40,8 @@
 
   import { ElMessage } from 'element-plus'
   import DiyTable from '@/components/diyTable/index.vue'
+  import { useMarketStore } from '@/store/market'
+  const store = useMarketStore()
   const diyTable = ref(null)
   const state = reactive({
     approvalList: [],
@@ -88,6 +90,7 @@
   })
 
   onMounted(() => {
+    store.SearchAllMarket()
     searchApprovalList()
   })
   const approvalSuccess = async (index: number, status: number) => {
@@ -125,15 +128,18 @@
         }
       })
       .then((res: ResultType) => {
-        console.log(res)
         if (res.success) {
           const { result = [], total = 0 } = res.data
+          state.approvalList = []
           state.approvalList = result?.map(
             (item: {
+              marketId: any
               product: { name: any; code: any; source: any; authority: any; typeName: any }
             }) => {
+              console.log(store.marketMap.get(item.marketId))
               return {
                 ...item,
+                marketName: store.marketMap.get(item.marketId),
                 productCode: item.product.code,
                 productName: item.product.name,
                 productSource: item.product.source,
@@ -142,6 +148,53 @@
               }
             }
           )
+          state.tableHead = [
+            {
+              prop: 'marketName',
+              label: '市场名称'
+            },
+            {
+              prop: 'productCode',
+              label: '应用编号'
+            },
+            {
+              prop: 'productName',
+              label: '应用名称'
+            },
+            {
+              prop: 'productSource',
+              label: '应用来源'
+            },
+            {
+              prop: 'productAuthority',
+              label: '应用权限'
+            },
+            {
+              prop: 'productTypeName',
+              label: '应用类型'
+            },
+            {
+              prop: 'price',
+              label: '单价/天'
+            },
+            {
+              prop: 'days',
+              label: '使用期限'
+            },
+            {
+              prop: 'createTime',
+              label: '创建时间',
+              width: '200'
+            },
+            {
+              type: 'slot',
+              label: '操作',
+              fixed: 'right',
+              align: 'center',
+              width: '400',
+              name: 'operate'
+            }
+          ]
         }
       })
   }
