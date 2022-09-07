@@ -25,6 +25,7 @@ interface ProductType {
   typeName: string
   updateTime: string
   updateUser: string
+  public?:boolean
   version?: string
   remark?: string
   icon?:string
