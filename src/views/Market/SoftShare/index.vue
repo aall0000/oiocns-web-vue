@@ -12,9 +12,9 @@
       <el-tabs class="marketTag" v-model="activeMarket" @tabChange="handleTabChange">
         <el-tab-pane v-for="item in marketTabs" :label="item.name" :name="item.id"></el-tab-pane>
       </el-tabs>
-      <div class="getApp-header">
+      <!-- <div class="getApp-header">
         <p>应用{{ isCard ? '图' : '列' }}表</p>
-      </div>
+      </div> -->
       <div class="getApp-content">
         <AppCard
           v-if="isCard"
@@ -48,9 +48,9 @@
   import { reactive, onMounted, ref, watch, nextTick } from 'vue'
   import { useRouter } from 'vue-router'
   import $services from '@/services'
-  import AppCard from '../appList/components/appCard.vue'
+  import AppCard from '../AppList/components/appCard.vue'
   import DiyTable from '@/components/diyTable/index.vue'
-  import TheTableButton from '../appList/components/theTableButton2.vue'
+  import TheTableButton from '../AppList/components/theTableButton2.vue'
   import MarketCard from '@/components/marketCard/index.vue'
   const router = useRouter()
   const diyTable = ref(null)
