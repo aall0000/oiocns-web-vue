@@ -26,7 +26,7 @@
                 <el-table-column prop="sellAuth" label="售卖权属" />
                 <el-table-column prop="days" label="售卖期限" />
                 <el-table-column prop="price" label="售卖价格" />
-                <el-table-column prop="sellerId" label="卖方名称" />
+                <el-table-column prop="seller.name" label="卖方名称" />
                 <el-table-column
                   prop="status"
                   label="状态"
@@ -135,7 +135,7 @@
         </el-table-column>
         <el-table-column prop="code" label="订单号" />
         <el-table-column prop="name" label="名称" />
-        <el-table-column prop="belongId" label="买方名称" />
+        <el-table-column prop="belongName" label="买方名称" />
         <el-table-column prop="sellAuth" label="售卖权属" />
         <el-table-column prop="days" label="售卖期限" />
         <el-table-column prop="price" label="售卖价格" />
@@ -335,7 +335,7 @@ const searchValue = ref<string>('')
         state.orderList = result?.map(
           (item: {
             merchandise: { caption: any; days: any; sellAuth: any; price: any; information: any }
-            order: { code: any; name: any; status: any,belongId:any }
+            order: { code: any; name: any; status: any,belong:any }
           }) => {
             if(!item.merchandise) {item.merchandise = {caption: null, days: null, sellAuth: null, price:null, information: null}}
             return {
@@ -344,7 +344,7 @@ const searchValue = ref<string>('')
               name: item.merchandise.caption,
               sellAuth: item.merchandise.sellAuth,
               days: item.merchandise.days,
-              belongId: item.order.belongId,
+              belongName: item.order.belong.name,
             }
           }
         )
