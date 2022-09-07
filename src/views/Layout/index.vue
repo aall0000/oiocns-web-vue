@@ -43,13 +43,13 @@ import Breadcrumb from './components/breadcrumb.vue'
 import LoadingVue from './components/loading.vue'
 import { useUserStore } from '@/store/user'
 import anyStore from '@/utils/anystore'
-import orgChat from '@/utils/orgchat'
+import orgChat from '@/hubs/orgchat'
 import { onMounted, onBeforeUnmount } from 'vue'
-const { userToken } = useUserStore()
+const { userToken,queryInfo } = useUserStore()
 
 onMounted(()=>{
-  anyStore.start(userToken)
-  orgChat.start(userToken)
+  anyStore.start(userToken,queryInfo.id)
+  orgChat.start(userToken,queryInfo.id)
 })
 
 onBeforeUnmount(()=>{

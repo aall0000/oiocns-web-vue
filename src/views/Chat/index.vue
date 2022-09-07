@@ -3,8 +3,7 @@
     <!-- 导航传送门 -->
     <!-- <teleport v-if="isShowMenu" to="#menu-teleport-target"> -->
     <el-aside class="custom-group-silder-menu" width="260px">
-      <GroupSideBarVue v-model:active="activeInfo" :myId="myId" :sessionList="sessionList"
-        :clearHistoryMsg="clearHistoryMsg" />
+      <GroupSideBarVue v-model:active="activeInfo" :clearHistoryMsg="clearHistoryMsg" />
     </el-aside>
     <!-- </teleport> -->
 
@@ -28,8 +27,6 @@
 <script lang="ts" setup>
 import { useUserStore } from '@/store/user'
 import { useAnyData } from '@/store/anydata'
-// import API from '@/services'
-import * as signalR from '@microsoft/signalr'
 import anyStore from '@/utils/anystore'
 import {
   onMounted,
@@ -47,9 +44,8 @@ import GroupHeaderVue from './components/groupHeader.vue'
 import GroupInputBox from './components/groupInputBox.vue'
 import GroupContent from './components/groupContent.vue'
 import GroupDetail from './components/groupDetail.vue'
-import { ElMessage } from 'element-plus'
 import { useRouter } from 'vue-router'
-import orgChat from '@/utils/orgchat'
+import orgChat from '@/hubs/orgchat'
 
 interface infoType {
   detail: ImMsgChildType
@@ -57,7 +53,7 @@ interface infoType {
   total: number
   typeName: string
 }
-const { setUserNameMap, userToken, queryInfo } = useUserStore()
+const { setUserNameMap, queryInfo } = useUserStore()
 const { updateMessageNoread, setMessageNoRead } = useAnyData()
 const router = useRouter()
 provide('reWrite', ref(''))
@@ -74,7 +70,6 @@ const showMsgList = computed(() => {
   const key = activeInfo.value.id + '_' + activeInfo.value.spaceId
   return msgMap.value.get(key) ?? []
 })
-const sessionList = ref<ImMsgType[]>([])
 //内容展示 dom节点
 const contentWrapRef = ref(null)
 
@@ -106,27 +101,8 @@ onMounted(() => {
 
   // 把自己加入 名称map
   setUserNameMap(queryInfo.id, queryInfo.name)
-  loadChats()
-  // 存储用户名称map id=>名称
+  orgChat.subscribed(handleReaciveMsg)
 })
-
-const loadChats = ()=>{
-  if(orgChat.chats.length > 0){
-    sessionList.value = orgChat.chats
-    orgChat.chats.forEach((item: ImMsgType) => {
-      if (item?.chats?.length > 0) {
-        item?.chats?.forEach((child: ImMsgChildType) => {
-          setUserNameMap(child.id, child.name)
-        })
-      }
-    })
-    orgChat.subscribed(handleReaciveMsg)
-  }else{
-    setTimeout(() => {
-      loadChats()
-    }, 100);
-  }
-}
 
 // 处理接受消息
 const handleReaciveMsg = (data: any) => {
@@ -241,8 +217,8 @@ const getQunPerson = async (id: string, offset: number) => {
 }
 
 const handleNewMsgShow = (data: any) => {
-  const silderList = sessionList.value
-  sessionList.value = silderList.map((item: any) => {
+  const silderList = orgChat.chats.value
+  orgChat.chats.value = silderList.map((item: any) => {
     // 匹配会话空间
     if (item.id == myId) {
       let allSpaceIds = item.chats.map((c: ImMsgChildType) => {

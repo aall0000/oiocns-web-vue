@@ -1,14 +1,17 @@
 import * as signalR from '@microsoft/signalr'
 import { ElMessage } from 'element-plus'
+import { ref,Ref } from 'vue'
 // 消息服务
 // 创建链接
 
 type orgChatType = {
     _connection: signalR.HubConnection, // 链接对象本身
     _callBack: Function,
-    chats: ImMsgType[],
+    chats: Ref<ImMsgType[]>,
+    _stoped: boolean,
+    userId: string,
     nameMap: Map<string,string>,
-    start: (accessToken: string) => void, // 创建及启动链接
+    start: (accessToken: string, userId: string) => void, // 创建及启动链接
     stop: () => void, // 关闭链接
     getChats: () => Promise<ResultType>,
     sendMsg: (data: any) => Promise<ResultType>,
@@ -23,40 +26,35 @@ type orgChatType = {
 const orgChat: orgChatType = {
     _connection: null,
     _callBack: null,
-    chats: [],
+    chats: ref<ImMsgType[]>([]),
+    _stoped: false,
+    userId: "",
     nameMap: new Map(),
-    start: (accessToken: string) => {
+    start: (accessToken: string, userId: string) => {
+        orgChat._stoped = false
+        orgChat.userId = userId
         if (orgChat._connection)
             return
         // 初始化
         orgChat._connection = new signalR.HubConnectionBuilder().withUrl('/orginone/orgchat/msghub').build()
         orgChat._connection.on("RecvMsg", orgChat._recvMsg)
         orgChat._connection.onclose((error) => {
-            console.log('链接已断开,2秒后重连', error)
-            setTimeout(() => {
-                orgChat._connection = null
-                orgChat.start(accessToken)
-            }, 2000)
+            if(!orgChat._stoped){
+                console.log('链接已断开,2秒后重连', error)
+                setTimeout(() => {
+                    orgChat._connection = null
+                    orgChat.start(accessToken,userId)
+                }, 2000)
+            }
         })
         orgChat._connection.start().then(async () => {
             await orgChat._connection.invoke("TokenAuth", accessToken)
-            orgChat.getChats().then(res => {
-                if (res.success) {
-                    const { groups = [] } = res.data
-                    orgChat.chats = [...groups]
-                    orgChat.chats.forEach(item=>{
-                        item.chats.forEach(chat=>{
-                            let typeName = chat.typeName == '人员' ? '' : `[${chat.typeName}]`
-                            orgChat.nameMap.set(chat.id, `${chat.name}${typeName}`)
-                        })
-                    })
-                }
-            })
+            await orgChat.getChats()
         }).catch((error: any) => {
             console.log('链接出错,2秒后重连', error)
             setTimeout(() => {
                 orgChat._connection = null
-                orgChat.start(accessToken)
+                orgChat.start(accessToken,userId)
             }, 2000)
         }) // 开启链接
     },
@@ -70,10 +68,26 @@ const orgChat: orgChatType = {
         if (orgChat.isConnected()) {
             orgChat._connection.stop()
         }
+        orgChat._connection = null
+        orgChat._stoped = true;
     },
     getChats: async () => {
         if (orgChat.isConnected()) {
-            return await orgChat._connection.invoke("GetChats")
+            let res = await orgChat._connection.invoke("GetChats")
+            if(res.success){
+                const { groups = [] } = res.data
+                groups.forEach((item:ImMsgType)=>{
+                    item.chats.forEach((chat:ImMsgChildType)=>{
+                        if(chat.id == orgChat.userId){
+                            chat.name = `我 (${chat.name})`
+                        }
+                        let typeName = chat.typeName == '人员' ? '' : `[${chat.typeName}]`
+                        orgChat.nameMap.set(chat.id, `${chat.name}${typeName}`)
+                    })
+                })
+                orgChat.chats.value = [...groups]
+            }
+            return res
         }
         return { success: false, data: {}, code: 404, msg: "" }
     },
