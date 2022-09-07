@@ -347,6 +347,7 @@
             merchandise: { caption: any; days: any; sellAuth: any; price: any; information: any }
             order: { code: any; name: any; status: any; belongId: any }
           }) => {
+            if(!item.merchandise) {item.merchandise = {caption: null, days: null, sellAuth: null, price:null, information: null}}
             return {
               ...item,
               code: item.order.code,
