@@ -167,40 +167,40 @@
 </template>
 
 <script setup lang="ts">
-  import $services from '@/services'
-  import { ref, reactive, onMounted } from 'vue'
-  import { useRouter } from 'vue-router'
-  import { ElMessage, ElMessageBox } from 'element-plus'
-  import { PAGE_SIZES, PAGE_NUM } from '@/constant'
-  import { ElTable } from 'element-plus'
-  import ShopCard from '../components/shopCard.vue'
-  import AppInfoDialog from '../AppList/components/appInfoDialog.vue'
-  import DiyButton from '@/components/diyButton/index.vue'
-  import merchandiseImg from '@/assets/img/merchandise.png'
-  import moment from 'moment'
-  const router = useRouter()
-  // 表格分页数据
-  const pagination: { current: number; limit: number } = reactive({ current: 1, limit: PAGE_NUM })
-  // 表格展示数据
-  const pageStore = reactive({
-    tableData: [],
-    total: 0
-  })
-  const cardActive = ref(true)
-  const loading = ref(false)
-  const isRouterAlive = ref(true)
-  const allchecked = reactive({ anyData: [], checked: false })
-  const pageSizes = ref<Array<any>>(PAGE_SIZES)
-  onMounted(() => {
-    getTableList()
-  })
-  // 会话列表搜索关键字
-  const searchValue = ref<string>('')
-  const shopcarTableRef = ref<InstanceType<typeof ElTable>>()
-  //点击行触发，选中或不选中复选框
-  const handleRowClick = (row: any) => {
-    shopcarTableRef.value!.toggleRowSelection(row, undefined)
-  }
+import $services from '@/services'
+import { ref, reactive, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { ElMessage, ElMessageBox } from 'element-plus'
+import { PAGE_SIZES, PAGE_NUM } from '@/constant'
+import { ElTable } from 'element-plus'
+import ShopCard from '../components/shopCard.vue'
+import AppInfoDialog from '../AppList/components/appInfoDialog.vue'
+import DiyButton from '@/components/diyButton/index.vue'
+import merchandiseImg from '@/assets/img/app_icon.png'
+import moment from 'moment'
+const router = useRouter()
+// 表格分页数据
+const pagination: { current: number; limit: number } = reactive({ current: 1, limit: PAGE_NUM })
+// 表格展示数据
+const pageStore = reactive({
+  tableData: [],
+  total: 0
+})
+const cardActive = ref(true)
+const loading = ref(false)
+const isRouterAlive = ref(true)
+const allchecked = reactive({ anyData: [], checked: false })
+const pageSizes = ref<Array<any>>(PAGE_SIZES)
+onMounted(() => {
+  getTableList()
+})
+// 会话列表搜索关键字
+const searchValue = ref<string>('')
+const shopcarTableRef = ref<InstanceType<typeof ElTable>>()
+//点击行触发，选中或不选中复选框
+const handleRowClick = (row: any) => {
+  shopcarTableRef.value!.toggleRowSelection(row, undefined)
+}
 
   const GoPage = (path: string) => {
     router.push(path)

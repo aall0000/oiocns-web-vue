@@ -85,7 +85,7 @@
   import AppInfoDialog from './appInfoDialog.vue'
   import moment from 'moment'
   import { ElNotification } from 'element-plus'
-  import merchandiseImg from '@/assets/img/merchandise.png'
+  import merchandiseImg from '@/assets/img/app_icon.png'
   import { useRouter } from 'vue-router'
   const router = useRouter()
   const emit = defineEmits(['handleUpdate','shopcarNumChange'])
