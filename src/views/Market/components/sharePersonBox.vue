@@ -161,26 +161,34 @@
     () => radio.value,
     (newValue, oldValue) => {
       state.centerTree = []
-      nextTick(() => {
-        if (newValue == '1' && state.orgData.length > 0) {
-          let arr: any[] = []
-          let err: any[] = []
-          state.orgData.forEach((el) => {
-            if (el.type == 'add' || el.type == 'has') {
-              arr.push(el.id)
-            } else {
-              err.push(el)
-            }
-          })
-          state.orgData = []
-          err.forEach((el) => {
-            state.orgData.push(el)
-          })
-          leftTree.value.setCheckedKeys(arr, true)
-        } else if (newValue == '2') {
-          getHistoryData(false)
-        }
-      })
+      getNewHistoryData()
+      // nextTick(() => {
+      //   if (newValue == '1' && state.orgData.length > 0) {
+      //     let arr: any[] = []
+      //     let err: any[] = []
+      //     state.rightData.forEach((el) => {
+      //       state.orgData.forEach((al) => {
+      //         if (el.id == al.id) {
+      //           al.type = 'has'
+      //         }
+      //       })
+      //     })
+      //     state.orgData.forEach((el) => {
+      //       if (el.type == 'add' || el.type == 'has') {
+      //         arr.push(el.id)
+      //       } else {
+      //         err.push(el)
+      //       }
+      //     })
+      //     state.orgData = []
+      //     err.forEach((el) => {
+      //       state.orgData.push(el)
+      //     })
+      //     leftTree.value.setCheckedKeys(arr, true)
+      //   } else if (newValue == '2') {
+      //     getHistoryData(false)
+      //   }
+      // })
       //   getHistoryData(false)
     }
   )
@@ -216,6 +224,178 @@
         cascaderTree.value = obj
         getHistoryData(false)
       })
+  }
+
+  const getRadioHistory = () => {
+    switch (radio.value) {
+      case '1':
+        API.product
+          .searchGroupShare({
+            data: {
+              id: props.info.id,
+              teamId: store.queryInfo.team.id,
+              offset: 0,
+              limit: 10000,
+              filter: ''
+            }
+          })
+          .then((res: ResultType) => {
+            if (res.success) {
+              state.rightData = res.data.result ? res.data.result : []
+              if (state.rightData.length > 0) {
+                let arr: any[] = []
+                state.rightData.forEach((el) => {
+                  el.type = 'has'
+                  arr.push(el.id)
+                })
+                state.orgData = state.rightData
+                leftTree.value.setCheckedKeys(arr, true)
+                if (state.orgData.length > 0) {
+                  let err: any[] = []
+                  state.orgData.forEach((al) => {
+                    if (al.type == 'add') {
+                      err.push(al.id)
+                    }
+                    state.rightData.forEach((el) => {
+                      if (el.id == al.id) {
+                        al.type = 'has'
+                      }
+                    })
+                  })
+                }
+              }
+            }
+          })
+        break
+      case '2':
+        API.product
+          .searchUnitShare({
+            data: {
+              id: props.info.id,
+              teamId: props.groupId,
+              offset: 0,
+              limit: 10000,
+              filter: ''
+            }
+          })
+          .then((res: ResultType) => {
+            if (res.success) {
+              state.authorHisData = res.data.result ? res.data.result : []
+              if (state.authorHisData.length > 0) {
+                let arr: any[] = []
+                state.authorHisData.forEach((el) => {
+                  arr.push(el.id)
+                })
+                centerTree.value.setCheckedKeys(arr, true)
+                if (state.authorData.length > 0) {
+                  let err: any[] = []
+                  state.authorData.forEach((al) => {
+                    if (al.type == 'add') {
+                      err.push(al.id)
+                    }
+                    state.authorHisData.forEach((el) => {
+                      if (el.id == al.id) {
+                        al.type = 'has'
+                      }
+                    })
+                  })
+                  centerTree.value.setCheckedKeys(err, true)
+                } else {
+                  state.authorData = state.authorHisData
+                }
+              }
+            }
+          })
+        break
+      default:
+        break
+    }
+  }
+
+  const getNewHistoryData = () => {
+    switch (radio.value) {
+      case '1':
+        API.product
+          .searchGroupShare({
+            data: {
+              id: props.info.id,
+              teamId: store.queryInfo.team.id,
+              offset: 0,
+              limit: 10000,
+              filter: ''
+            }
+          })
+          .then((res: ResultType) => {
+            if (res.success) {
+              state.rightData = res.data.result ? res.data.result : []
+              if (state.rightData.length > 0) {
+                let arr: any[] = []
+                state.rightData.forEach((el) => {
+                  el.type = 'has'
+                  arr.push(el.id)
+                })
+                state.orgData = state.rightData
+                leftTree.value.setCheckedKeys(arr, true)
+                if (state.orgData.length > 0) {
+                  let err: any[] = []
+                  state.orgData.forEach((al) => {
+                    if (al.type == 'add') {
+                      err.push(al.id)
+                    }
+                    state.rightData.forEach((el) => {
+                      if (el.id == al.id) {
+                        al.type = 'has'
+                      }
+                    })
+                  })
+                }
+              }
+            }
+          })
+        break
+      case '2':
+        API.product
+          .searchUnitShare({
+            data: {
+              id: props.info.id,
+              teamId: props.groupId,
+              offset: 0,
+              limit: 10000,
+              filter: ''
+            }
+          })
+          .then((res: ResultType) => {
+            if (res.success) {
+              state.authorHisData = res.data.result ? res.data.result : []
+              if (state.authorHisData.length > 0) {
+                let arr: any[] = []
+                state.authorHisData.forEach((el) => {
+                  arr.push(el.id)
+                })
+                centerTree.value.setCheckedKeys(arr, true)
+                if (state.authorData.length > 0) {
+                  let err: any[] = []
+                  state.authorData.forEach((al) => {
+                    if (al.type == 'add') {
+                      err.push(al.id)
+                    }
+                    state.authorHisData.forEach((el) => {
+                      if (el.id == al.id) {
+                        al.type = 'has'
+                      }
+                    })
+                  })
+                  centerTree.value.setCheckedKeys(err, true)
+                } else {
+                  state.authorData = state.authorHisData
+                }
+              }
+            }
+          })
+        break
+      default:
+        break
+    }
   }
   // 获取历史数据
   const getHistoryData = (clear: boolean) => {
@@ -350,7 +530,7 @@
       promise2 = API.product.deleteGroupShare({
         data: {
           productId: props.info.id,
-          teamId: props.groupId,
+          teamId: store.queryInfo.team.id,
           targetIds: departDel
         }
       })
@@ -367,8 +547,9 @@
     if (authorDel.length > 0) {
       promise4 = API.product.department({
         data: {
-          resId: resource.value,
-          targetIds: state.orgData
+          productId: props.info.id,
+          teamId: store.queryInfo.team.id,
+          targetIds: authorAdd
         }
       })
     }
@@ -378,7 +559,8 @@
         message: '分享成功'
       })
       setTimeout(() => {
-        getHistoryData(true)
+        getNewHistoryData()
+        // getHistoryData(true)
       }, 300)
     })
   }
