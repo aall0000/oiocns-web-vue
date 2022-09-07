@@ -39,7 +39,7 @@
           <p class="box-ul-title">我的应用</p>
         </div>
         <li class="app-card" v-show="mode === 'card'">
-          <MarketCreate :info="add" @myclick="GoPage('/market/getApp')" />
+          <MarketCreate :info="add" @myclick="GoPage('/market/softShare')" />
           <ShopCard
             v-for="item in state.ownProductList"
             :info="item"
@@ -210,7 +210,7 @@
           :total="state.shareTotal"
         />
       </ul>
-    
+
     </div>
   </div>
   <el-dialog
@@ -472,7 +472,6 @@
     })
     if (success) {
       const { result = [], total = 0 } = data
-      console.log(result)
       state[`${type}ProductList`] = [...result]
       state[`${type}Total`] = total
     }
