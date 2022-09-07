@@ -91,7 +91,7 @@
                 >用户管理</el-button
               >
               <el-button class="btn" type="primary" link small @click.stop="marketQuit(scope.row)"
-                >退出商店</el-button
+                >删除商店</el-button
               >
             </template>
           </DiyTable>
@@ -165,7 +165,7 @@
           >
             <template #operate="scope">
               <el-button class="btn" type="primary" link small @click.stop="marketQuit(scope.row)"
-                >退出商店</el-button
+                >删除商店</el-button
               >
             </template>
           </DiyTable>
