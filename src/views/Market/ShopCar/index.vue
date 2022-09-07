@@ -164,7 +164,7 @@ import { ElTable } from 'element-plus'
 import ShopCard from '../components/shopCard.vue'
 import AppInfoDialog from '../AppList/components/appInfoDialog.vue'
 import DiyButton from '@/components/diyButton/index.vue'
-import merchandiseImg from '@/assets/img/merchandise.png'
+import merchandiseImg from '@/assets/img/app_icon.png'
 import moment from 'moment'
 const router = useRouter()
 // 表格分页数据

@@ -181,7 +181,7 @@
   import { ElMessage, ElMessageBox } from 'element-plus'
   import MarketCreate from '../components/marketCreate.vue'
   import { useUserStore } from '@/store/user'
-  import storeImg from '@/assets/img/store.png'
+  import storeImg from '@/assets/img/app_icon.png'
   const router = useRouter()
   const store = useUserStore()
   const handleCurrentMy: any = computed(() => {

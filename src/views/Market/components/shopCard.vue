@@ -33,7 +33,7 @@
 <script lang="ts" setup>
   import { reactive, toRefs } from 'vue'
   import HeadImg from '@/components/headImg.vue'
-  import appImg from '@/assets/img/whatsapp.png'
+  import appImg from '@/assets/img/app_icon.png'
   // hoverItem--鼠标移入item的id 用于展示按钮区域
   const state: { hoverItem: string } = reactive({ hoverItem: '' })
   type shopInfoType = {
