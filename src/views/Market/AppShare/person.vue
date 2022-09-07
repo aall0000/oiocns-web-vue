@@ -129,14 +129,16 @@
   }
   //分享
   const checksSearch = (val: any) => {
-    console.log('应用id', props.appInfo, '集团id', props.groupId, '所选列表', val.value[0].id)
-    console.log(url.value)
+    let selectId: any[] = []
+    val.value.forEach((el: { id: any }) => {
+      selectId.push(el.id)
+    })
 
     $services.product[url.value]({
       data: {
         productId: props.appInfo,
         teamId: props.groupId,
-        targetIds: [val.value[0].id]
+        targetIds: selectId
       }
     }).then((res: ResultType) => {
       if (res.success) {
@@ -156,7 +158,6 @@
   }
   //取消分享
   const cancelShare = (id: string) => {
-    console.log('取消分享', props.appInfo, props.groupId, id)
     $services.product[deleteUrl.value]({
       data: {
         productId: props.appInfo,

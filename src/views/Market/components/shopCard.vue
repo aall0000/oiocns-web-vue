@@ -3,6 +3,7 @@
     class="shop-card-wrap app-card-item"
     shadow="always"
     :key="info.id"
+    @mouseleave="handleWatchMouseOver('')"
     @mouseover="handleWatchMouseOver(info.id)"
   >
     <div class="app-card-item-con">
@@ -25,7 +26,7 @@
       </div>
     </div>
     <!-- v-show="hoverItem === info.id" -->
-    <div class="app-card-item-footer" v-show="props.overId === info.id" @click.stop>
+    <div class="app-card-item-footer" v-show="state.hoverItem === info.id" @click.stop>
       <slot />
     </div>
   </el-card>
@@ -46,7 +47,8 @@
   const { info } = props
   const emit = defineEmits(['handleMouseOver'])
   const handleWatchMouseOver = (selectId: string) => {
-    emit('handleMouseOver', selectId)
+    // emit('handleMouseOver', selectId)
+    state.hoverItem = selectId || ''
   }
 </script>
 
@@ -99,7 +101,7 @@
       position: absolute;
       bottom: 0;
       width: 100%;
-      height: 48px;
+      max-height: 48px;
       display: flex;
       justify-content: space-around;
       align-items: center;

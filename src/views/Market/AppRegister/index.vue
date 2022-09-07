@@ -82,6 +82,8 @@
   import { reactive, ref } from 'vue'
   import { ElMessage, FormRules } from 'element-plus'
   import { useRouter } from 'vue-router'
+  import { useCommonStore } from '@/store/common'
+  const commonStore = useCommonStore()
   const router = useRouter()
   // 注册基本信息
   const form = reactive({
@@ -168,7 +170,7 @@
   const rules = reactive<FormRules>({
     name: [
       { required: true, message: '请输入应用名称', trigger: 'blur' },
-      { min: 2, max: 8, message: '长度限制2-8', trigger: 'blur' }
+      { min: 2, max: 20, message: '长度限制2-20', trigger: 'blur' }
     ],
     code: [
       {
@@ -204,6 +206,7 @@
             type: 'success',
             message: '应用注册成功'
           })
+          commonStore.isChangeStartApp = true
           router.back()
         }
       } else {

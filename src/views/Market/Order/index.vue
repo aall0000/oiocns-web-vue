@@ -1,8 +1,8 @@
 <template>
   <MarketCard>
     <template #right>
-      <el-button type="primary" @click="getTableList('buy')">已购入</el-button>
-      <el-button type="primary" @click="getTableList('sell')">已卖出</el-button>
+      <el-button small link type="primary" @click="getTableList('buy')">已购入</el-button>
+      <el-button small link type="primary" @click="getTableList('sell')">已卖出</el-button>
     </template>
   </MarketCard>
   <div class="container">
@@ -40,7 +40,7 @@
                 </el-table-column>
                 <el-table-column prop="name" label="操作" width="150" align="center">
                   <template #default="scope">
-                    <DiyButton >
+                    <DiyButton>
                       <template v-slot:opt>
                         <!-- <div
                           class="diy-button"
@@ -56,9 +56,13 @@
                         >
                           支付
                         </div>-->
-                        <div class="diy-button" v-show="scope.row.status < 102" @click="cancelOrderDetail(scope.row.id, 220, null)">
+                        <div
+                          class="diy-button"
+                          v-show="scope.row.status < 102"
+                          @click="cancelOrderDetail(scope.row.id, 220, null)"
+                        >
                           取消订单
-                        </div> 
+                        </div>
                         <div
                           class="diy-button"
                           v-show="scope.row.status < 102 && scope.row.ordertype == 'sell'"
@@ -168,7 +172,13 @@
                 >
                   支付
                 </div> -->
-                <div class="diy-button" v-show="scope.row.status < 102" @click="cancelOrderDetail(scope.row.id, 221, null)"> 取消订单 </div>
+                <div
+                  class="diy-button"
+                  v-show="scope.row.status < 102"
+                  @click="cancelOrderDetail(scope.row.id, 221, null)"
+                >
+                  取消订单
+                </div>
                 <div
                   class="diy-button"
                   v-show="scope.row.status < 102 && scope.row.ordertype == 'sell'"
@@ -220,38 +230,38 @@
   </div>
 </template>
 <script lang="ts" setup>
-import $services from '@/services'
-import { ref, reactive, onMounted } from 'vue'
-import { ElMessage, ElMessageBox } from 'element-plus'
-import { PAGE_SIZES, PAGE_NUM } from '@/constant'
-import renderDict from '@/services/dict'
-import payView from '@/components/pay/pay.vue'
-import payList from '@/components/pay/list.vue'
-import DiyButton from '@/components/diyButton/index.vue'
-import { ElTable } from 'element-plus'
-import moment from 'moment'
-// 表格分页数据
-const pagination: { current: number; limit: number } = reactive({ current: 1, limit: PAGE_NUM })
-// 表格展示数据
-const pageStore = reactive({
-  tableData: [],
-  total: 0
-})
-const searchType = ref<string>('buy')
-const pageSizes = ref<Array<any>>(PAGE_SIZES)
-const payDialog = reactive({ show: false, data: {} })
-const payListDialog = reactive({ show: false, data: {} })
-const remoteOperate = ref<boolean>(false)
-const handleSelect = (key: string, keyPath: string[]) => {
-  console.log(key, keyPath)
-}
-const orderTableRef = ref<InstanceType<typeof ElTable>>()
-//点击行触发，选中或不选中复选框
-const handleRowClick = (row: any) => {
-  orderTableRef.value!.toggleRowSelection(row, undefined)
-}
-// 会话列表搜索关键字
-const searchValue = ref<string>('')
+  import $services from '@/services'
+  import { ref, reactive, onMounted } from 'vue'
+  import { ElMessage, ElMessageBox } from 'element-plus'
+  import { PAGE_SIZES, PAGE_NUM } from '@/constant'
+  import renderDict from '@/services/dict'
+  import payView from '@/components/pay/pay.vue'
+  import payList from '@/components/pay/list.vue'
+  import DiyButton from '@/components/diyButton/index.vue'
+  import { ElTable } from 'element-plus'
+  import moment from 'moment'
+  // 表格分页数据
+  const pagination: { current: number; limit: number } = reactive({ current: 1, limit: PAGE_NUM })
+  // 表格展示数据
+  const pageStore = reactive({
+    tableData: [],
+    total: 0
+  })
+  const searchType = ref<string>('buy')
+  const pageSizes = ref<Array<any>>(PAGE_SIZES)
+  const payDialog = reactive({ show: false, data: {} })
+  const payListDialog = reactive({ show: false, data: {} })
+  const remoteOperate = ref<boolean>(false)
+  const handleSelect = (key: string, keyPath: string[]) => {
+    console.log(key, keyPath)
+  }
+  const orderTableRef = ref<InstanceType<typeof ElTable>>()
+  //点击行触发，选中或不选中复选框
+  const handleRowClick = (row: any) => {
+    orderTableRef.value!.toggleRowSelection(row, undefined)
+  }
+  // 会话列表搜索关键字
+  const searchValue = ref<string>('')
 
   onMounted(() => {
     // window.addEventListener('resize', () => {
@@ -335,7 +345,7 @@ const searchValue = ref<string>('')
         state.orderList = result?.map(
           (item: {
             merchandise: { caption: any; days: any; sellAuth: any; price: any; information: any }
-            order: { code: any; name: any; status: any,belongId:any }
+            order: { code: any; name: any; status: any; belongId: any }
           }) => {
             return {
               ...item,
@@ -343,7 +353,7 @@ const searchValue = ref<string>('')
               name: item.merchandise.caption,
               sellAuth: item.merchandise.sellAuth,
               days: item.merchandise.days,
-              belongId: item.order.belongId,
+              belongId: item.order.belongId
             }
           }
         )
@@ -366,7 +376,7 @@ const searchValue = ref<string>('')
         result.forEach((item: any) => {
           item.ordertype = 'buy'
           if (item.details) {
-            item.details = item.details.map((e:any) => {
+            item.details = item.details.map((e: any) => {
               if (!e.merchandise) {
                 return e
               }
@@ -476,7 +486,7 @@ const searchValue = ref<string>('')
       })
   }
   //取消订单详情  由删除更改为中止
-  const cancelOrderDetail = async (id: string,status:number,reason:string) => {
+  const cancelOrderDetail = async (id: string, status: number, reason: string) => {
     // await $services.order
     //   .deleteDetail({
     //     data: {
@@ -494,27 +504,27 @@ const searchValue = ref<string>('')
     //   })
     ElMessageBox.prompt('请输入原因', '确认取消订单?', {
       confirmButtonText: '确定',
-      cancelButtonText: '取消',
+      cancelButtonText: '取消'
     })
-    .then(({ value }) => {
-      $services.order
-      .orderConfirm({
-        data: {
-          id: id,
-          status: status
-        }
-      })
-      .then((res: ResultType) => {
-        if (res.code == 200) {
-          getTableList(searchType.value)
-          ElMessage({
-            message: '取消订单成功',
-            type: 'success'
+      .then(({ value }) => {
+        $services.order
+          .orderConfirm({
+            data: {
+              id: id,
+              status: status
+            }
           })
-        }
+          .then((res: ResultType) => {
+            if (res.code == 200) {
+              getTableList(searchType.value)
+              ElMessage({
+                message: '取消订单成功',
+                type: 'success'
+              })
+            }
+          })
       })
-    })
-    .catch(() => {})
+      .catch(() => {})
   }
   //确认交付
   const delivery = async (id: string) => {
@@ -573,8 +583,8 @@ const searchValue = ref<string>('')
     pagination[type] = newVal
     getTableList(searchType.value)
   }
-    //配置表头背景
-    const getRowClass = ({
+  //配置表头背景
+  const getRowClass = ({
     row,
     column,
     rowIndex,
@@ -587,8 +597,8 @@ const searchValue = ref<string>('')
   }) => {
     if (rowIndex === 0) {
       return {
-        background: 'var(--el-color-primary-light-9)',// '#F5F6FC',
-        color: 'var(--el-text-color-primary)',// '#333333',
+        background: 'var(--el-color-primary-light-9)', // '#F5F6FC',
+        color: 'var(--el-text-color-primary)', // '#333333',
         height: '36px',
         padding: '2px 0'
       }

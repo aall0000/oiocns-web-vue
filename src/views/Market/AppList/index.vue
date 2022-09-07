@@ -31,13 +31,38 @@
             :info="item"
             :key="item.id"
             :overId="item.id"
-            @click="GoPageWithQuery( '/market/appList', { data: item.id,type:'manage' })"
+            @click="GoPageWithQuery('/market/appList', { data: item.id, type: 'manage' })"
           >
-          <template #icon><HeadImg :name="item.name" :url="item.icon || storeImg" :imgWidth="48" :limit="1" :isSquare="false" /></template>
-            <template #rightTriangle
+            <template #icon
+              ><HeadImg
+                :name="item.name"
+                :url="item.icon || storeImg"
+                :imgWidth="48"
+                :limit="1"
+                :isSquare="false"
+            /></template>
+            <template #rightIcon>
+              <el-dropdown trigger="click" placement="left-start">
+                <el-icon :size="18"><Operation /></el-icon>
+                <template #dropdown>
+                  <el-dropdown-menu>
+                    <el-dropdown-item @click.stop="hadleClick(item)"
+                      ><el-button class="btn" type="primary" link small
+                        >删除商店</el-button
+                      ></el-dropdown-item
+                    >
+                    <el-dropdown-item @click.stop="hadleUserManage(item)"
+                      ><el-button class="btn" link small>用户管理</el-button></el-dropdown-item
+                    >
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
+            </template>
+            <!-- <template #rightTriangle
               ><div :class="item.public ? 'triangle-public' : 'triangle-'">{{
                 item.public ? '公' : ''
               }}</div></template
+<<<<<<< HEAD
             >
             <el-button class="btn" type="primary" link small @click.stop="hadleClick(item)"
               >删除商店</el-button
@@ -49,6 +74,8 @@
             <!-- <el-divider direction="vertical" />
             <el-button class="btn" link small  @click="GoPageWithQuery('/market/marketDetail',{data:item.id})"
               >市场首页</el-button
+=======
+>>>>>>> origin/Dev
             > -->
           </ShopCard>
         </li>
@@ -94,13 +121,43 @@
             :info="item"
             :key="item.id"
             :overId="item.id"
-            @click="GoPageWithQuery( '/market/appList', { data: item.id,type:'shop' })"
+            @click="GoPageWithQuery('/market/appList', { data: item.id, type: 'shop' })"
           >
-          <template #icon><HeadImg :name="item.name" :url="item.icon || storeImg" :imgWidth="48" :limit="1" :isSquare="false" /></template>
-            <template #rightTriangle
+            <template #icon
+              ><HeadImg
+                :name="item.name"
+                :url="item.icon || storeImg"
+                :imgWidth="48"
+                :limit="1"
+                :isSquare="false"
+            /></template>
+            <template #rightIcon>
+              <el-dropdown trigger="click" placement="left-start">
+                <el-icon :size="18"><Operation /></el-icon>
+                <template #dropdown>
+                  <el-dropdown-menu>
+                    <el-dropdown-item @click.stop="hadleClick(item)"
+                      ><el-button
+                        class="btn"
+                        type="primary"
+                        link
+                        small
+                        @click.stop="marketQuit(item)"
+                        >退出商店</el-button
+                      ></el-dropdown-item
+                    >
+                    <el-dropdown-item @click.stop="hadleUserManage(item)"
+                      ><el-button class="btn" link small>用户管理</el-button></el-dropdown-item
+                    >
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
+            </template>
+            <!-- <template #rightTriangle
               ><div :class="item.public ? 'triangle-public' : 'triangle-'">{{
                 item.public ? '公' : ''
               }}</div></template
+<<<<<<< HEAD
             >
             <el-button class="btn" type="primary" link small @click.stop="marketQuit(item)"
               >退出商店</el-button
@@ -112,6 +169,8 @@
             <!-- <el-divider direction="vertical" />
             <el-button class="btn" link small  @click="GoPageWithQuery('/market/marketDetail',{data:item.id,type:'shop'})"
               >市场首页</el-button
+=======
+>>>>>>> origin/Dev
             > -->
           </ShopCard>
         </li>
@@ -281,7 +340,6 @@
   const gotoApp = (item: { id: string }) => {
     router.push({ path: '/market/appList', query: { data: item.id } })
   }
-
 
   const getShopcarNum = async () => {
     await $services.market

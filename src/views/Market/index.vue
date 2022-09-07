@@ -2,13 +2,35 @@
   <div class="market-layout">
     <MarketCard>
       <template #right>
-        <el-button type="primary" @click="GoPage('/market/appApply')">我的上架申请</el-button>
-        <el-button type="primary" @click="GoPage('/market/register')">注册应用</el-button>
-        <el-button type="primary" @click="GoPage('/market/markList')">商店列表</el-button>
-        <el-button type="primary" @click.stop="GoPage('/market/order')">我的订单</el-button>
-        <el-badge :value="shopcarNum" style="padding-left: 10px">
-          <el-button type="primary" @click.stop="GoPage('/market/shopCar')">购物车</el-button>
-        </el-badge>
+        <div class="edit-wrap">
+          <el-button small link type="primary" @click="GoPage('/market/appApply')"
+            >我的上架申请</el-button
+          >
+          <el-button small link type="primary" @click="GoPage('/market/register')"
+            >注册应用</el-button
+          >
+          <el-button small link type="primary" @click="GoPage('/market/markList')"
+            >商店列表</el-button
+          >
+          <el-button small link type="primary" @click.stop="GoPage('/market/order')"
+            >我的订单</el-button
+          >
+          <el-badge :value="shopcarNum" style="padding-left: 10px">
+            <el-button small link type="primary" @click.stop="GoPage('/market/shopCar')"
+              >购物车</el-button
+            >
+          </el-badge>
+        </div>
+        <div>
+          <el-radio-group v-model="mode" size="small" class="button">
+            <el-radio-button label="list"
+              ><el-icon :size="18"><Tickets /></el-icon
+            ></el-radio-button>
+            <el-radio-button label="card"
+              ><el-icon :size="18"><Menu /></el-icon
+            ></el-radio-button>
+          </el-radio-group>
+        </div>
       </template>
     </MarketCard>
     <div class="market-content box">
@@ -191,14 +213,7 @@
           :total="state.shareTotal"
         />
       </ul>
-      <el-radio-group v-model="mode" size="small" class="button">
-        <el-radio-button label="list"
-          ><el-icon :size="18"><Tickets /></el-icon
-        ></el-radio-button>
-        <el-radio-button label="card"
-          ><el-icon :size="18"><Menu /></el-icon
-        ></el-radio-button>
-      </el-radio-group>
+    
     </div>
   </div>
   <el-dialog
@@ -693,10 +708,16 @@
       height: calc(100vh - 124px);
       overflow-y: auto;
     }
+    .edit-wrap{
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
     .button {
-      position: absolute;
-      right: 50px;
-      bottom: 20px;
+      // position: absolute;
+      // right: 50px;
+      // bottom: 20px;
+      margin-left:20px
     }
     .box {
       .box-ul + .box-ul {
