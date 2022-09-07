@@ -135,6 +135,7 @@
                 :name="item.name"
                 :url="item.icon || appImg"
                 :imgWidth="48"
+                :createUser="item.createUser"
                 :limit="1"
                 :isSquare="false"
             /></template>
