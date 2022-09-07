@@ -21,7 +21,6 @@
           <template #default="props">
             <div style="margin-left: 50px">
               <el-table :data="props.row.details" border :header-cell-style="getRowClass">
-                <!-- <el-table-column prop="code" label="订单号" /> -->
                 <el-table-column prop="name" label="名称" />
                 <el-table-column prop="sellAuth" label="售卖权属" />
                 <el-table-column prop="days" label="售卖期限" />
@@ -102,11 +101,6 @@
         </el-table-column>
         <el-table-column prop="code" label="订单号" />
         <el-table-column prop="name" label="名称" />
-        <!-- <el-table-column
-          prop="status"
-          label="状态"
-          :formatter="(row, column) => renderDict(row, column, 'OrderStatus')"
-        /> -->
         <el-table-column prop="createTime" label="创建时间" />
         <el-table-column prop="name" label="操作" width="150" align="center">
           <template #default="scope">
@@ -118,7 +112,35 @@
           </template>
         </el-table-column>
       </el-table>
-      <el-table
+      <DiyTable
+            ref="diyTable"
+            :hasTitle="true"
+            :tableData="state.orderList"
+            :tableHead="state.tableHead"
+          >
+            <template #operate="scope">
+              <el-dropdown
+                trigger="click"
+                @command="(value) => handleCommand('own', value, scope.row)"
+                placement="bottom-end"
+              >
+                <el-icon :size="18"><Operation /></el-icon>
+                <template #dropdown>
+                  <el-dropdown-menu>
+                    <el-dropdown-item
+                      v-for="action in actionOptionsOfOwn"
+                      :command="action.value"
+                      :key="action.value"
+                    >
+                      {{ action.label }}
+                    </el-dropdown-item>
+                    <el-dropdown-item @click="deleteApp(scope.row)">移除应用</el-dropdown-item>
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
+            </template>
+          </DiyTable>
+      <!-- <el-table
         class="table-row-sty"
         :header-cell-style="getRowClass"
         :data="state.orderList"
@@ -154,20 +176,6 @@
           <template #default="scope">
             <DiyButton>
               <template v-slot:opt>
-                <!-- <div
-                  class="diy-button"
-                  v-show="scope.row.status == 1 && scope.row.ordertype == 'sell'"
-                  @click="sureContent(scope.row.id)"
-                >
-                  开始交易
-                </div>
-                <div
-                  class="diy-button"
-                  v-show="scope.row.status == 100 && scope.row.ordertype == 'buy'"
-                  @click="showPay(scope.row)"
-                >
-                  支付
-                </div> -->
                 <div class="diy-button" v-show="scope.row.status < 102" @click="cancelOrderDetail(scope.row.id, 221, null)"> 取消订单 </div>
                 <div
                   class="diy-button"
@@ -176,32 +184,11 @@
                 >
                   确认交付
                 </div>
-                <!-- <div
-                  class="diy-button"
-                  v-show="scope.row.status == 102 && scope.row.ordertype == 'buy'"
-                  @click="accept(scope.row.id)"
-                >
-                  确认收货
-                </div>
-                <div
-                  class="diy-button"
-                  v-show="scope.row.status == 103 && scope.row.ordertype == 'buy'"
-                  @click="comment(scope.row.id)"
-                >
-                  评价
-                </div>
-                <div
-                  class="diy-button"
-                  v-show="scope.row.status == 104 && scope.row.ordertype == 'sell'"
-                  @click="viewComment(scope.row.id)"
-                >
-                  查看评价
-                </div> -->
               </template>
             </DiyButton>
           </template>
         </el-table-column>
-      </el-table>
+      </el-table> -->
       <payView v-if="payDialog.show" :order="payDialog.data" @close="closePay"></payView>
       <payList v-if="payListDialog.show" :selectLimit="0" @closeDialog="closePayList" />
     </div>
