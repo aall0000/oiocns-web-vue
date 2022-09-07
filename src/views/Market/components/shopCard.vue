@@ -22,6 +22,10 @@
             <el-tag v-if="props.type == 'market'" style="margin-left:10px">{{
               info.public ? '公开' : '私有'
             }}</el-tag>
+            <el-tag v-if="props.type != 'market'" style="margin-left:10px" :type="info.createUser==queryInfo.id?'':'success'">{{
+              info.createUser==queryInfo.id ? '可管理' : '可使用'
+              
+            }}</el-tag>
           </p>
           <div class="app-card-item-con-desc">
             {{ info.remark }}
@@ -38,14 +42,20 @@
 </template>
 <script lang="ts" setup>
   import { reactive, toRefs } from 'vue'
+  import { useUserStore } from '@/store/user'
+  import { storeToRefs } from 'pinia'
   import HeadImg from '@/components/headImg.vue'
-  import appImg from '@/assets/img/whatsapp.png'
+  import appImg from '@/assets/img/app_icon.png'
   // hoverItem--鼠标移入item的id 用于展示按钮区域
+  const store = useUserStore()
+  const { queryInfo } = storeToRefs(store)
+
   const state: { hoverItem: string } = reactive({ hoverItem: '' })
   type shopInfoType = {
     key?: string
     info: ProductType
     type?: string
+    createUser?:string
     overId?: string //当前鼠标移入id
     cardContent?: boolean // 卡片内容是否自定义
   }
