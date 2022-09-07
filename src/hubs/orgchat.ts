@@ -73,8 +73,8 @@ const orgChat: orgChatType = {
         orgChat._stoped = true;
     },
     getName: (id: string) => {
-        let name = orgChat.nameMap.get(id) || '-'
-        if(name.indexOf("]")>-1){
+        let name = orgChat.nameMap.get(id)||'-';
+        if(name.indexOf(']')>-1){
             return name.split(']')[1]
         }
         return name

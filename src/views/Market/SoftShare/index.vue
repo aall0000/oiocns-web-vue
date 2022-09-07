@@ -12,9 +12,9 @@
       <el-tabs class="marketTag" v-model="activeMarket" @tabChange="handleTabChange">
         <el-tab-pane v-for="item in marketTabs" :label="item.name" :name="item.id"></el-tab-pane>
       </el-tabs>
-      <div class="getApp-header">
+      <!-- <div class="getApp-header">
         <p>应用{{ isCard ? '图' : '列' }}表</p>
-      </div>
+      </div> -->
       <div class="getApp-content">
         <AppCard
           v-if="isCard"

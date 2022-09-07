@@ -62,6 +62,7 @@ type Props = {
 const props = defineProps<Props>()
 const { list, myId, showName } = toRefs(props)
 
+
 // dom节点
 const nodeRef = ref(null)
 // 事件viewMoreMsg--查看更多 recallMsg--撤销消息

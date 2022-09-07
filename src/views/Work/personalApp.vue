@@ -17,7 +17,7 @@
         </div>
       </div>
       <div class="app-list clearfix">
-        <div class="add-app"> +从应用市场添加应用 </div>
+        <div class="add-app"> +从共享仓库中添加应用 </div>
         <div class="app-item">
           <div class="app-box">
             <img src="@/assets/img/group22.png" alt="" />
