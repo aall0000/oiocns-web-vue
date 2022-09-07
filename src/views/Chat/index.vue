@@ -1,13 +1,12 @@
 <template>
   <div class="cohort-wrap">
     <!-- 导航传送门 -->
-      <!-- <teleport v-if="isShowMenu" to="#menu-teleport-target"> -->
-        <el-aside class="custom-group-silder-menu" width="260px">
-          <GroupSideBarVue v-model:active="activeInfo" :myId="myId" :sessionList="sessionList"
-            :clearHistoryMsg="clearHistoryMsg" />
-        </el-aside>
-      <!-- </teleport> -->
-    
+    <!-- <teleport v-if="isShowMenu" to="#menu-teleport-target"> -->
+    <el-aside class="custom-group-silder-menu" width="260px">
+      <GroupSideBarVue v-model:active="activeInfo" :clearHistoryMsg="clearHistoryMsg" />
+    </el-aside>
+    <!-- </teleport> -->
+
     <!-- 右侧展示主体 -->
     <div class="chart-page">
       <!-- 头部 -->
@@ -28,9 +27,7 @@
 <script lang="ts" setup>
 import { useUserStore } from '@/store/user'
 import { useAnyData } from '@/store/anydata'
-// import API from '@/services'
-import * as signalR from '@microsoft/signalr'
-import anyStore from '@/utils/hubConnection'
+import anyStore from '@/utils/anystore'
 import {
   onMounted,
   reactive,
@@ -47,8 +44,8 @@ import GroupHeaderVue from './components/groupHeader.vue'
 import GroupInputBox from './components/groupInputBox.vue'
 import GroupContent from './components/groupContent.vue'
 import GroupDetail from './components/groupDetail.vue'
-import { ElMessage } from 'element-plus'
 import { useRouter } from 'vue-router'
+import orgChat from '@/hubs/orgchat'
 
 interface infoType {
   detail: ImMsgChildType
@@ -56,7 +53,7 @@ interface infoType {
   total: number
   typeName: string
 }
-const { setUserNameMap, userToken, queryInfo } = useUserStore()
+const { setUserNameMap, queryInfo } = useUserStore()
 const { updateMessageNoread, setMessageNoRead } = useAnyData()
 const router = useRouter()
 provide('reWrite', ref(''))
@@ -76,9 +73,6 @@ const showMsgList = computed(() => {
 //内容展示 dom节点
 const contentWrapRef = ref(null)
 
-// 会话列表
-const sessionList = ref<ImMsgType[]>([])
-
 //获取 登录人id-用于区分信息源
 const myId = queryInfo.id
 const current = ref<number>(0) //当前页码
@@ -96,61 +90,18 @@ let selectInfo = reactive<infoType>({
   total: 0,
   typeName: ''
 })
-// 消息服务
-const connection = new signalR.HubConnectionBuilder()
-  .withUrl('/orginone/orgchat/msghub')
-  .withAutomaticReconnect()
-  .build()
 
 onMounted(() => {
   isShowMenu.value = true
-  anyStore.setPrefix(myId)  // 设置订阅器前缀
   // 订阅未读消息
-  anyStore.subscribed(`message`, (data) => {
+  anyStore.subscribed(`chats`, (data) => {
     // console.log('noRead===', data)
     setMessageNoRead(data)
   })
 
-  // 开始链接接受聊天数据
-  connection
-    .start()
-    .then(async () => {
-      await connection.invoke('TokenAuth', userToken)
-      const { data, success } = await connection.invoke('GetChats')
-      if (success) {
-        const { groups = [] } = data
-        console.log('链接成功', data)
-        sessionList.value = [...groups]
-        // 把自己加入 名称map
-        setUserNameMap(queryInfo.id, queryInfo.name)
-        // 存储用户名称map id=>名称
-        groups.forEach((item: ImMsgType) => {
-          if (item?.chats?.length > 0) {
-            item?.chats?.forEach((child: ImMsgChildType) => {
-              setUserNameMap(child.id, child.name)
-            })
-          }
-        })
-      }
-    })
-    .catch((err) => {
-      if (err.toString().includes('请登录')) {
-        ElMessage({
-          message: '登录失效,请重新登录',
-          type: 'warning'
-        })
-        router.push({ path: '/login' })
-      }
-    })
-
-  // 接受信息--处理信息
-  connection.on('RecvMsg', handleReaciveMsg)
-  // 监听链接断开
-  connection.onclose(() => {
-    console.log('链接关闭了')
-    msgMap.value.clear()
-  })
-
+  // 把自己加入 名称map
+  setUserNameMap(queryInfo.id, queryInfo.name)
+  orgChat.subscribed(handleReaciveMsg)
 })
 
 // 处理接受消息
@@ -190,7 +141,7 @@ const handleReaciveMsg = (data: any) => {
 
 // 提交信息
 const submit = async (value: string) => {
-  
+
   let text = value.indexOf('span') > -1 ? value : value.replaceAll('&nbsp;', '')
   const params = {
     toId: activeInfo.value.id,
@@ -199,20 +150,21 @@ const submit = async (value: string) => {
     msgBody: text
   }
   if (activeInfo.value.id && text?.length > 0) {
-    await connection.send('SendMsg', params)
+    await orgChat.sendMsg(params)
   }
 }
 
 // 消息撤回
 const handleRecallMsg = (item: ImMsgChildType) => {
-  item.fromId === myId &&
-    connection.send('RecallMsg', { ids: [item.id] }).then(() => {
+  if (item.fromId === myId) {
+    orgChat.recallMsg([item.id]).then(() => {
       console.log('撤回成功')
     })
+  }
 }
 onBeforeUnmount(() => {
   // 离开页面关闭链接
-  connection.stop()
+  orgChat.unSubscribed()
   anyStore.unSubscribed(myId)
 })
 
@@ -220,7 +172,7 @@ onBeforeUnmount(() => {
 watch(
   () => activeInfo.value,
   async (val) => {
-    
+
     const { typeName, id, spaceId } = val
     selectInfo.typeName = typeName
     current.value = 0
@@ -248,15 +200,11 @@ const handleViewDetail = () => {
 
 // 获取群成员
 const getQunPerson = async (id: string, offset: number) => {
-  const { data, success } = await connection.invoke('GetPersons', {
-    cohortId: id,
-    limit: 10,
-    offset: offset
-  })
+  const { data, success } = await orgChat.getPersons(id, 10, offset)
   if (success === true) {
     selectInfo.total = data.total
     // 存储用户id=>名称 item.team.name 真实姓名
-     
+
     data.result.forEach((item: userType) => {
       setUserNameMap(item.id, item.team.name)
     })
@@ -269,9 +217,8 @@ const getQunPerson = async (id: string, offset: number) => {
 }
 
 const handleNewMsgShow = (data: any) => {
-
-  const silderList = sessionList.value
-  sessionList.value = silderList.map((item: any) => {
+  const silderList = orgChat.chats.value
+  orgChat.chats.value = silderList.map((item: any) => {
     // 匹配会话空间
     if (item.id == myId) {
       let allSpaceIds = item.chats.map((c: ImMsgChildType) => {
@@ -292,9 +239,8 @@ const handleNewMsgShow = (data: any) => {
           val.msgBody = data.msgBody
           val.msgTime = data.createTime
           val.msgType = data.msgType
-          if (data.fromId!==data.toId && (val.id != activeInfo.value.id || item.id != activeInfo.value.spaceId)) {
+          if (data.fromId !== data.toId && (val.id != activeInfo.value.id || item.id != activeInfo.value.spaceId)) {
             val.count = (val.count || 0) + 1
-            console.log({ groupid: data.spaceId, userid: sessionId, count: 1 })
             updateMessageNoread({ groupid: data.spaceId, userid: sessionId, count: 1 })
           }
           arr.unshift(val)
@@ -315,13 +261,7 @@ let theHistoryMsgTotal: number = 0
 // 获取历史消息
 const getHistoryMsg = async (id: string, spaceId: string, type: string, isGoEnd?: boolean) => {
   const url: string = type == '人员' ? 'QueryFriendMsg' : 'QueryCohortMsg'
-  const { data = [], success } = await connection.invoke(url, {
-    [type == '人员' ? 'friendId' : 'cohortId']: id,
-    offset: pageOffset.value,
-    limit: limit.value,
-    spaceId: activeInfo.value.spaceId
-  })
-
+  const { data = [], success } = await orgChat.getHistoryMsg(id, spaceId, type, limit.value, pageOffset.value)
   if (success) {
     const newHistoryMsgArr = (data.result && data.result?.reverse()) ?? []
     theHistoryMsgTotal = data.total
@@ -382,7 +322,7 @@ const handleViewMoreHistory = () => {
     .chart-input {
       height: max-content;
       min-height: 180px;
-      border-top: 1px solid  var(--el-border-color);// #ccc;
+      border-top: 1px solid var(--el-border-color); // #ccc;
 
       .el-textarea__inner {
         color: #fff;

@@ -19,7 +19,6 @@ interface ProductType {
   endTime: string
   id: string
   name: string
-  remark: string
   source: string
   status: number
   thingId: string
@@ -27,7 +26,8 @@ interface ProductType {
   updateTime: string
   updateUser: string
   version?: string
-  icon?: string
+  remark?: string
+  icon?:string
 }
 
 interface AppMenuType {

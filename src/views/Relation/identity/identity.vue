@@ -2,11 +2,11 @@
   <div class="container">
     <el-card class="wrap">
       <div>
-        <div class="title">当前{{title + '：' + router.currentRoute.value.query?.name}}</div>
+        <div class="title">当前{{title + ':' + router.currentRoute.value.query?.name}}</div>
       </div>
 
       <div class="search-wrap">
-        <el-input class="search" v-model="filterText" placeholder="搜索身份">
+        <el-input class="search" placeholder="搜索身份">
           <template #suffix>
             <el-icon class="el-input__icon">
               <search />
@@ -24,7 +24,7 @@
           default-active="2"
           class="el-menu-vertical-demo"
         >
-          <el-menu-item class="menu-item" :index="index" v-for="(item, index) in  identityList.list" @click="checkItem(item)">
+          <el-menu-item class="menu-item" :index="index.toString()" v-for="(item, index) in  identityList.list" @click="checkItem(item)">
               <div class="menu-nav">{{item.name}}</div>
           </el-menu-item>
         </el-menu>
