@@ -48,9 +48,9 @@
   import { reactive, onMounted, ref, watch, nextTick } from 'vue'
   import { useRouter } from 'vue-router'
   import $services from '@/services'
-  import AppCard from '../appList/components/appCard.vue'
+  import AppCard from '../AppList/components/appCard.vue'
   import DiyTable from '@/components/diyTable/index.vue'
-  import TheTableButton from '../appList/components/theTableButton2.vue'
+  import TheTableButton from '../AppList/components/theTableButton2.vue'
   import MarketCard from '@/components/marketCard/index.vue'
   const router = useRouter()
   const diyTable = ref(null)
