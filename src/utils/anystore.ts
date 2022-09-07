@@ -34,22 +34,22 @@ const anyStore: anyStoreType = {
         anyStore._connection.on("Updated", anyStore._updated)
         anyStore._connection.onclose((error) => {
             if(!anyStore._stoped){
-                console.log('链接已断开,2秒后重连', error)
+                console.log('链接已断开,30秒后重连', error)
                 setTimeout(() => {
                     anyStore._connection = null
                     anyStore.start(accessToken,userId)
-                }, 2000);
+                }, 30000);
             }
         })
         anyStore._connection.start().then(async() => {
             await anyStore._connection.invoke("TokenAuth", "user", accessToken)
             anyStore._resubscribed()
         }).catch((error: any) => {
-            console.log('链接出错,2秒后重连', error)
+            console.log('链接出错,30秒后重连', error)
             setTimeout(() => {
                 anyStore._connection = null
                 anyStore.start(accessToken,userId)
-            }, 2000);
+            }, 30000);
         })// 开启链接
     },
     isConnected: () => {
