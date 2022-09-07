@@ -38,7 +38,12 @@
             :info="item"
             :key="item.id"
             :overId="item.id"
-            @click="GoPageWithQuery('/market/appList', { data: item.id, type: 'manage' })"
+            @click="
+              GoPageWithQuery('/market/appList', {
+                data: item.id,
+                type: 'manage'
+              })
+            "
           >
             <template #icon
               ><HeadImg

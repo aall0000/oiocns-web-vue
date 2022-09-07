@@ -67,7 +67,7 @@
     judgeWorkSpace()
   })
   const GoPage = (path: string) => {
-    router.push({ path: path, query: { marketName: route.query.data } })
+    router.push({ path: path, query: { marketId: route.query.data } })
   }
   const checksSearch = (val: any) => {
     if (val.value.length > 0) {

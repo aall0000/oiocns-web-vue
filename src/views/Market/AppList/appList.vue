@@ -5,10 +5,9 @@
         >应用上架审批</el-button
       >
       <el-button type="primary" @click.stop="GoPage('/market/order')">我的订单</el-button>
-      <el-badge :value="shopcarNum" style="padding-left:10px">
-           <el-button type="primary" @click.stop="GoPage('/market/shopCar')">购物车</el-button>
+      <el-badge :value="shopcarNum" style="padding-left: 10px">
+        <el-button type="primary" @click.stop="GoPage('/market/shopCar')">购物车</el-button>
       </el-badge>
-
     </template>
   </MarketCard>
   <div class="appListLayout">
@@ -173,7 +172,7 @@
       })
   }
   const GoPage = (path: string) => {
-    router.push(path)
+    router.push({ path: path, query: { marketId: route.query.data } })
   }
 </script>
 

@@ -41,7 +41,9 @@
   import $services from '@/services'
   import { ref, reactive, onMounted, nextTick } from 'vue'
   import { ElMessage } from 'element-plus'
-
+  import { storeToRefs } from 'pinia'
+  import { useUserStore } from '@/store/user'
+  const store = useUserStore()
   const dialogVisible = ref<boolean>(true)
   const diyTable = ref(null)
   // 表格展示数据
@@ -165,17 +167,35 @@
           if (res.data.result != undefined) {
             let states = res.data.result
             if (states) {
-              states.forEach((el: any) => {
-                let obj = {
-                  id: el.id,
-                  code: el.code,
-                  name: el.name,
-                  trueName: el.team.name,
-                  teamCode: el.team.code,
-                  remark: el.team.remark
-                }
-                arr.push(obj)
-              })
+              if (props.serachType == 9) {
+                states.forEach((el: any) => {
+                  let obj = {}
+                  if (el.belongId === store.queryInfo.id) {
+                    obj = {
+                      id: el.id,
+                      code: el.code,
+                      name: el.name,
+                      trueName: el.team.name,
+                      teamCode: el.team.code,
+                      remark: el.team.remark
+                    }
+                    arr.push(obj)
+                  }
+                })
+              } else {
+                states.forEach((el: any) => {
+                  let obj = {
+                    id: el.id,
+                    code: el.code,
+                    name: el.name,
+                    trueName: el.team.name,
+                    teamCode: el.team.code,
+                    remark: el.team.remark
+                  }
+                  arr.push(obj)
+                })
+              }
+
               pageStore.total = res.data.total
               diyTable.value.state.page.total = pageStore.total
             } else {
