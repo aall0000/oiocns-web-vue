@@ -5,7 +5,7 @@
       <DiyTable
         ref="diyTable"
         :hasTitle="false"
-        :tableData="state.applyList"
+        :tableData="state.approvalList"
         :tableHead="state.tableHead"
       >
         <template #operate="scope"> </template>
@@ -37,13 +37,16 @@
 
   import { ElMessage } from 'element-plus'
   import DiyTable from '@/components/diyTable/index.vue'
+  import { useMarketStore } from '@/store/market'
+  const store = useMarketStore()
   const diyTable = ref(null)
   const state = reactive({
-    applyList: [],
+    approvalList: [],
     tableHead: []
   })
 
   onMounted(() => {
+    store.SearchAllMarket()
     starterAppApprovalList()
   })
 
@@ -58,15 +61,19 @@
         }
       })
       .then((res: ResultType) => {
+        console.log(store.marketMap)
+
         if (res.success) {
           const { result = [], total = 0 } = res.data
-          state.applyList = []
-          state.applyList = result?.map(
+          state.approvalList = []
+          state.approvalList = result?.map(
             (item: {
+              marketId: any
               product: { name: any; code: any; source: any; authority: any; typeName: any }
             }) => {
               return {
                 ...item,
+                marketName: store.marketMap.get(item.marketId),
                 productCode: item.product.code,
                 productName: item.product.name,
                 productSource: item.product.source,
@@ -76,6 +83,10 @@
             }
           )
           state.tableHead = [
+            {
+              prop: 'marketName',
+              label: '市场名称'
+            },
             {
               prop: 'productCode',
               label: '应用编号'

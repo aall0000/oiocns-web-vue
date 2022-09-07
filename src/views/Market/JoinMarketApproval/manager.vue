@@ -113,7 +113,7 @@
         }
       })
       .then((res: ResultType) => {
-        console.log(route.query.marketName)
+        console.log(route.query.marketId)
         if (res.success) {
           const { result = [], total = 0 } = res.data
           state.approvalList = []
@@ -123,7 +123,7 @@
               market: { name: any }
               target: { name: any; code: any; createTime: any }
             }) => {
-              if (item.marketId === route.query.marketName) {
+              if (item.marketId === route.query.marketId) {
                 console.log(item.marketId)
                 state.approvalList.push({
                   ...item,
