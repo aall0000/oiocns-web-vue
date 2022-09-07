@@ -129,13 +129,10 @@
   }
   //分享
   const checksSearch = (val: any) => {
-    console.log('应用id', props.appInfo, '集团id', props.groupId, '所选列表', val.value)
     let selectId: any[] = []
     val.value.forEach((el: { id: any }) => {
       selectId.push(el.id)
     })
-
-    console.log(url.value)
 
     $services.product[url.value]({
       data: {
@@ -161,7 +158,6 @@
   }
   //取消分享
   const cancelShare = (id: string) => {
-    console.log('取消分享', props.appInfo, props.groupId, id)
     $services.product[deleteUrl.value]({
       data: {
         productId: props.appInfo,

@@ -76,7 +76,6 @@
   }
   //确定分享
   const checksSearch = (val: any) => {
-    console.log('应用id', props.appInfo, '集团id', props.groupId, '所选列表', val.value)
     let selectId: any[] = []
     val.value.forEach((el: { id: any }) => {
       selectId.push(el.id)
