@@ -55,7 +55,7 @@
   )
   const emit = defineEmits(['AppChange'])
   const handleChooseItem = async (app: any) => {
-    const { data, success } = await $services.product.searchResource({
+    const { data, success } = await $services.product.queryOwnResource({
       data: {
         id: app.id,
         offset: 0,
