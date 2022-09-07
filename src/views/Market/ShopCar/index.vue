@@ -16,16 +16,17 @@
             "
             >全选</el-checkbox
           >
-          <el-switch
-            v-model="cardActive"
-            @change="changeView"
-            active-text="卡片"
-            inactive-text="列表"
-            style="display: inline-block; vertical-align: top; height: 28px; padding: 10px"
-          />
         </span>
-        <el-button small link type="primary" style="margin-top:14px" @click="deleteStagings">删除</el-button>
-        <el-button small link type="primary" style="margin-top:14px" @click="createOrderByStaging(null)">购买</el-button>
+        <el-button small link type="primary" style="margin-top:8px" @click="deleteStagings">删除</el-button>
+        <el-button small link type="primary" style="margin-top:8px" @click="createOrderByStaging(null)">购买</el-button>
+        <el-radio-group v-model="cardActive" size="small" class="button" style="margin-left:20px">
+          <el-radio-button label="list"
+            ><el-icon :size="18"><Tickets /></el-icon
+          ></el-radio-button>
+          <el-radio-button label="card"
+            ><el-icon :size="18"><Menu /></el-icon
+          ></el-radio-button>
+        </el-radio-group>
       </template>
     </MarketCard>
     <div v-if="isRouterAlive" style="height: 100vh; background-color: #fff">
