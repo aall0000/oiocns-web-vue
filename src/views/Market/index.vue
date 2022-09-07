@@ -28,7 +28,14 @@
             :key="item.id"
             :over-id="item.id"
           >
-          <template #icon><HeadImg :name="item.name" :url="item.icon || appImg" :imgWidth="48" :limit="1" :isSquare="false" /></template>
+            <template #icon
+              ><HeadImg
+                :name="item.name"
+                :url="item.icon || appImg"
+                :imgWidth="48"
+                :limit="1"
+                :isSquare="false"
+            /></template>
             <template #rightIcon>
               <el-dropdown
                 trigger="click"
@@ -100,7 +107,14 @@
             :key="item.id"
             :over-id="item.id"
           >
-          <template #icon><HeadImg :name="item.name" :url="item.icon || appImg" :imgWidth="48" :limit="1" :isSquare="false" /></template>
+            <template #icon
+              ><HeadImg
+                :name="item.name"
+                :url="item.icon || appImg"
+                :imgWidth="48"
+                :limit="1"
+                :isSquare="false"
+            /></template>
             <template #rightIcon>
               <el-dropdown
                 trigger="click"
@@ -110,13 +124,6 @@
                 <el-icon :size="18"><Operation /></el-icon>
                 <template #dropdown>
                   <el-dropdown-menu>
-                    <el-dropdown-item
-                      v-for="action in actionOptionsOfOwn"
-                      :command="action.value"
-                      :key="action.value"
-                    >
-                      {{ action.label }}
-                    </el-dropdown-item>
                     <el-dropdown-item @click="deleteApp(item)">移除应用</el-dropdown-item>
                     <!-- <el-dropdown-item  @click="GoPage('/market/appDetail')">应用详情</el-dropdown-item> -->
                   </el-dropdown-menu>
