@@ -5,7 +5,7 @@ const dict: { [key: string]: any }  = {
       {name: '否', code: 0}
     ],
     OrderStatus:[
-        {name: '未审核', code: 1},
+        {name: '待卖方确认', code: 1},
         //包含第三方监管和卖方的审核状态
         {name: '审核通过', code: 100},
         {name: '已付款', code: 101},
@@ -18,6 +18,8 @@ const dict: { [key: string]: any }  = {
         {name: '已退款', code: 107},
         {name: '卖方拒绝退款', code: 108},
         {name: '审核不通过', code: 200},
+        {name: '买方取消订单', code: 220},
+        {name: '卖方取消订单', code: 221},
     ]
 }
 

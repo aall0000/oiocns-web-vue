@@ -6,7 +6,7 @@ import * as signalR from '@microsoft/signalr'
 
 type anyStoreType = {
     _prefix: string,
-    _connection: signalR.HubConnection, // 链接对象本身
+    _connection: signalR.HubConnection|null, // 链接对象本身
     _subscribedKeys: Record<string, (data: any) => void>, // 订阅的值和回调方法
     start: () => void, // 创建及启动链接
     stop: () => void, // 关闭链接

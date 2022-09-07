@@ -175,6 +175,15 @@ const mainRouter: RouteRecordRaw[] = [
       title: '我的申请'
     }
   },
+  {
+    component: () => import('@/views/ForeignApp/index.vue'),
+    name: 'ForeignApp',
+    path: '/online',
+    meta: {
+      keepAlive: false,
+      title: '外部应用'
+    }
+  },
   //个人中心信息设置路由
   {
     path: '/user',
@@ -319,6 +328,30 @@ const mainRouter: RouteRecordRaw[] = [
         component: () => import('@/views/Market/AppShelves/apply.vue'),
         meta: {
           title: '应用上架申请列表'
+        }
+      },
+      {
+        path: '/market/appDetail',
+        name: 'appDetail',
+        component: () => import('@/views/Market/AppDetail/index.vue'),
+        meta: {
+          title: '应用详情'
+        }
+      },
+      {
+        path: '/market/merchandiseDetail',
+        name: 'merchandiseDetail',
+        component: () => import('@/views/Market/MerchandiseDetail/index.vue'),
+        meta: {
+          title: '商品详情'
+        }
+      },
+      {
+        path: '/market/marketDetail',
+        name: 'marketDetail',
+        component: () => import('@/views/Market/MarketDetail/index.vue'),
+        meta: {
+          title: '市场详情'
         }
       },
       {

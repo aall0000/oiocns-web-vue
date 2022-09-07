@@ -37,7 +37,7 @@
   import { useAnyData } from '@/store/anydata'
   import { useRouter } from 'vue-router'
   import { ElMessage } from 'element-plus'
-  import anyStore from '@/utils/hubConnection'
+  import anyStore from '@/utils/anystore'
 
   const carousel = ref<any>()
   const store = useUserStore()
@@ -71,9 +71,8 @@
       } else {
         setCookie('', '', -1)
       }
-      anyStore.setPrefix(res.id)  // 设置订阅器前缀
       // 订阅未读消息
-      anyStore.subscribed(`message`, (data) => {
+      anyStore.subscribed(`chats`, (data) => {
         // console.log('noRead===', data)
         useAnyData().setMessageNoRead(data)
       })

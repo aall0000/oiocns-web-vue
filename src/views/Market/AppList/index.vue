@@ -31,8 +31,9 @@
             :info="item"
             :key="item.id"
             :overId="item.id"
-            @click="gotoApp(item)"
+            @click="GoPageWithQuery( '/market/appList', { data: item.id,type:'manage' })"
           >
+          <template #icon><HeadImg :name="item.name" :url="item.icon || storeImg" :imgWidth="48" :limit="1" :isSquare="false" /></template>
             <template #rightTriangle
               ><div :class="item.public ? 'triangle-public' : 'triangle-'">{{
                 item.public ? '公' : ''
@@ -44,6 +45,10 @@
             <el-divider direction="vertical" />
             <el-button class="btn" link small @click.stop="hadleUserManage(item)"
               >用户管理</el-button
+            >
+            <el-divider direction="vertical" />
+            <el-button class="btn" link small  @click="GoPageWithQuery('/market/marketDetail',{data:item.id})"
+              >市场首页</el-button
             >
           </ShopCard>
         </li>
@@ -89,8 +94,9 @@
             :info="item"
             :key="item.id"
             :overId="item.id"
-            @click="gotoApp(item)"
+            @click="GoPageWithQuery( '/market/appList', { data: item.id,type:'shop' })"
           >
+          <template #icon><HeadImg :name="item.name" :url="item.icon || storeImg" :imgWidth="48" :limit="1" :isSquare="false" /></template>
             <template #rightTriangle
               ><div :class="item.public ? 'triangle-public' : 'triangle-'">{{
                 item.public ? '公' : ''
@@ -98,6 +104,10 @@
             >
             <el-button class="btn" type="primary" link small @click.stop="marketQuit(item)"
               >退出商店</el-button
+            >
+            <el-divider direction="vertical" />
+            <el-button class="btn" link small  @click="GoPageWithQuery('/market/marketDetail',{data:item.id,type:'shop'})"
+              >市场首页</el-button
             >
           </ShopCard>
         </li>
@@ -171,6 +181,7 @@
   import { ElMessage, ElMessageBox } from 'element-plus'
   import MarketCreate from '../components/marketCreate.vue'
   import { useUserStore } from '@/store/user'
+  import storeImg from '@/assets/img/store.png'
   const router = useRouter()
   const store = useUserStore()
   const handleCurrentMy: any = computed(() => {
@@ -179,6 +190,9 @@
   const handleCurrentJoin: any = computed(() => {
     return (state.pageJoin.currentPage - 1) * state.pageJoin.pageSize
   })
+  const GoPageWithQuery = (path: string, query: any) => {
+    router.push({ path, query })
+  }
   const mode = ref('card')
   const add: string = '创建商店'
   const add1: string = '加入商店'
@@ -263,6 +277,7 @@
   const gotoApp = (item: { id: string }) => {
     router.push({ path: '/market/appList', query: { data: item.id } })
   }
+
 
   const getShopcarNum = async () => {
     await $services.market

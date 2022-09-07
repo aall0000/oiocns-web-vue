@@ -21,6 +21,7 @@
           v-if="value1"
           ref="appCard"
           :dataList="state.myAppList"
+          :type="route.query.type"
           @handleUpdate="handleCardUpdate"
           @shopcarNumChange="getShopcarNum"
         ></AppCard>

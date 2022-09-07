@@ -36,7 +36,7 @@ import { onMounted, reactive, ref, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/store/user'
 import { useAnyData } from '@/store/anydata'
-import anyStore from '@/utils/hubConnection'
+import anyStore from '@/utils/anystore'
 
 const router = useRouter()
 const store = useUserStore()
@@ -69,7 +69,6 @@ onMounted(() => {
   // 当前标签index
   const templateContentLen = userOtherData.homeComplist ? userOtherData.homeComplist.length :0
   editableTabsValue.value = templateContentLen > 0 ? templateContentLen-1:0
-  anyStore.setPrefix(store.queryInfo.id) // 设置订阅器前缀
   // 订阅工作空间数据变化
   anyStore.subscribed(`${store.workspaceData.id}`, (data) => {
     // console.log('home===',data)

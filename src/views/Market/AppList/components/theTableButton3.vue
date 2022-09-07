@@ -42,8 +42,6 @@
 
   const unpublishFun = () => {
     let title: string
-    console.log('是是是', props.data)
-
     title = `确定把 ${props.data.caption} 下架吗？`
     ElMessageBox.confirm(title, '警告', {
       confirmButtonText: '确定',

@@ -4,18 +4,11 @@
       <div class="tableBtn-title">{{ groupName }}</div>
       <el-button small link type="primary" @click="pullGroupDialog = true">分享集团</el-button>
     </div>
-    <DiyTable
-      class="diytable"
-      ref="diyTable"
-      :tableData="tableData"
-      :tableHead="tableHead"
-      :options="state.options"
-      @handleLazyTree="handleLazyTree"
-    >
+    <DiyTable class="diytable" ref="diyTable" :tableData="tableData" :tableHead="tableHead">
       <template #operate="scope">
-        <!-- <el-button link type="danger" size="small" @click="removeFrom(scope.row)"
-          >移除单位</el-button
-        > -->
+        <el-button link type="danger" size="small" @click="cancelShare(scope.row.id)"
+          >取消分享</el-button
+        >
       </template>
     </DiyTable>
   </div>
@@ -25,7 +18,7 @@
     :tableData="tableData"
     :id="groupId"
     :selectLimit="0"
-    :serachType="6"
+    :serachType="7"
     @closeDialog="closeDialog"
     @checksSearch="checksSearch"
   />
@@ -40,6 +33,7 @@
   const route = useRoute()
   const router = useRoute()
   const diyTable = ref(null)
+  const groupId = ref<string>('')
   const props = defineProps({
     groupId: String,
     appInfo: String,
@@ -56,9 +50,16 @@
       label: '编码'
     },
     {
-      prop: 'team.code',
+      prop: 'remark',
       label: '简介',
       name: 'teamCode'
+    },
+    {
+      type: 'slot',
+      label: '操作',
+      fixed: 'right',
+      align: 'center',
+      name: 'operate'
     }
   ])
   const state = reactive({
@@ -73,7 +74,8 @@
   let tableData = ref<any>([])
   const pullGroupDialog = ref<boolean>(false)
   onMounted(() => {
-    getData()
+    groupId.value = props.groupId
+    getShareHistory()
   })
 
   const shareGroup = () => {
@@ -122,29 +124,19 @@
     id: string
   }
   const checksSearch = (val: any) => {
-    if (val.value.length > 0) {
-      let arr: Array<arrList> = []
-      val.value.forEach((element: any) => {
-        arr.push(element.id)
-      })
-      pullCompanys(arr)
-    } else {
-      pullGroupDialog.value = false
-    }
-  }
-  //分享单位
-  const pullCompanys = (arr: any) => {
-    $services.company
-      .pullCompanys({
+    console.log('应用id', props.appInfo, '集团id', props.groupId, '所选列表', val.value[0].id)
+    $services.product
+      .groupShare({
         data: {
-          id: props.groupId,
-          targetIds: arr
+          productId: props.appInfo,
+          teamId: props.groupId,
+          targetIds: [val.value[0].id]
         }
       })
       .then((res: ResultType) => {
         if (res.success) {
           ElMessage({
-            message: '添加成功',
+            message: '分享成功',
             type: 'success'
           })
           getShareHistory()
@@ -152,7 +144,47 @@
         pullGroupDialog.value = false
       })
   }
-  const getShareHistory = () => {}
+  //取消分享
+  const cancelShare = (id: string) => {
+    console.log('取消分享', props.appInfo, props.groupId, id)
+    $services.product
+      .deleteGroupShare({
+        data: {
+          productId: props.appInfo,
+          teamId: props.groupId,
+          targetIds: [id]
+        }
+      })
+      .then((res: ResultType) => {
+        if (res.success) {
+          ElMessage({
+            message: '取消分享成功',
+            type: 'success'
+          })
+          getShareHistory()
+        }
+        pullGroupDialog.value = false
+      })
+  }
+
+  //
+  const getShareHistory = () => {
+    $services.product
+      .searchGroupShare({
+        data: {
+          id: props.appInfo,
+          teamId: props.groupId,
+          offset: 0,
+          limit: 10000,
+          filter: ''
+        }
+      })
+      .then((res: ResultType) => {
+        if (res.success) {
+          tableData.value = res.data.result ? res.data.result : []
+        }
+      })
+  }
 </script>
 
 <style lang="scss" scoped>
