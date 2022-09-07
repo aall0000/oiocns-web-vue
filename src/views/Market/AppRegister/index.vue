@@ -170,7 +170,7 @@
   const rules = reactive<FormRules>({
     name: [
       { required: true, message: '请输入应用名称', trigger: 'blur' },
-      { min: 2, max: 8, message: '长度限制2-8', trigger: 'blur' }
+      { min: 2, max: 20, message: '长度限制2-20', trigger: 'blur' }
     ],
     code: [
       {
