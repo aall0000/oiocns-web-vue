@@ -1,8 +1,10 @@
 <template>
   <MarketCard>
     <template #right>
-      <el-button type="primary" @click="GoPage('/market/managerApply')">加入商店审批</el-button>
-      <el-button type="primary" @click="friendShow">邀请加入商店</el-button>
+      <el-button small link type="primary" @click="GoPage('/market/managerApply')"
+        >加入商店审批</el-button
+      >
+      <el-button small link type="primary" @click="friendShow">邀请加入商店</el-button>
     </template>
   </MarketCard>
   <div class="userLayout">
@@ -67,7 +69,7 @@
     judgeWorkSpace()
   })
   const GoPage = (path: string) => {
-    router.push({ path: path, query: { marketName: route.query.data } })
+    router.push({ path: path, query: { marketId: route.query.data } })
   }
   const checksSearch = (val: any) => {
     if (val.value.length > 0) {

@@ -1,8 +1,8 @@
 <template>
   <MarketCard>
     <template #right>
-      <el-button type="primary" @click="getTableList('buy')">已购入</el-button>
-      <el-button type="primary" @click="getTableList('sell')">已卖出</el-button>
+      <el-button type="primary" link @click="getTableList('buy')">已购入</el-button>
+      <el-button type="primary" link @click="getTableList('sell')">已卖出</el-button>
     </template>
   </MarketCard>
   <div class="container">
@@ -41,20 +41,7 @@
                   <template #default="scope">
                     <DiyButton >
                       <template v-slot:opt>
-                        <!-- <div
-                          class="diy-button"
-                          v-show="scope.row.status == 1 && scope.row.ordertype == 'sell'"
-                          @click="sureContent(scope.row.id)"
-                        >
-                          开始交易
-                        </div>
-                        <div
-                          class="diy-button"
-                          v-show="scope.row.status == 100 && scope.row.ordertype == 'buy'"
-                          @click="showPay(scope.row)"
-                        >
-                          支付
-                        </div>-->
+
                         <div class="diy-button" v-show="scope.row.status < 102" @click="cancelOrderDetail(scope.row.id, 220, null)">
                           取消订单
                         </div> 
@@ -65,27 +52,6 @@
                         >
                           确认交付
                         </div>
-                        <!-- <div
-                          class="diy-button"
-                          v-show="scope.row.status == 102 && scope.row.ordertype == 'buy'"
-                          @click="accept(scope.row.id)"
-                        >
-                          确认收货
-                        </div>
-                        <div
-                          class="diy-button"
-                          v-show="scope.row.status == 103 && scope.row.ordertype == 'buy'"
-                          @click="comment(scope.row.id)"
-                        >
-                          评价
-                        </div>
-                        <div
-                          class="diy-button"
-                          v-show="scope.row.status == 104 && scope.row.ordertype == 'sell'"
-                          @click="viewComment(scope.row.id)"
-                        >
-                          查看评价
-                        </div> -->
                       </template>
                     </DiyButton>
                   </template>
@@ -112,16 +78,17 @@
           </template>
         </el-table-column>
       </el-table>
-      <DiyTable
+      <!-- <DiyTable
             ref="diyTable"
             :hasTitle="true"
+            v-if="searchType == 'sell'"
+            :options="{  order: true }"
             :tableData="state.orderList"
             :tableHead="state.tableHead"
           >
             <template #operate="scope">
               <el-dropdown
                 trigger="click"
-                @command="(value) => handleCommand('own', value, scope.row)"
                 placement="bottom-end"
               >
                 <el-icon :size="18"><Operation /></el-icon>
@@ -134,13 +101,12 @@
                     >
                       {{ action.label }}
                     </el-dropdown-item>
-                    <el-dropdown-item @click="deleteApp(scope.row)">移除应用</el-dropdown-item>
                   </el-dropdown-menu>
                 </template>
               </el-dropdown>
             </template>
-          </DiyTable>
-      <!-- <el-table
+          </DiyTable> -->
+      <el-table
         class="table-row-sty"
         :header-cell-style="getRowClass"
         :data="state.orderList"
@@ -241,17 +207,46 @@ const handleRowClick = (row: any) => {
 const searchValue = ref<string>('')
 
   onMounted(() => {
-    // window.addEventListener('resize', () => {
-    //     this.tableHeight = calcHeightx(120);
-    //   });
-    //   this.tableHeight = calcHeightx(120);
     getTableList('buy')
   })
 
   const options = ref<ListItem[]>([])
   const value = ref('')
   const loading = ref(false)
-  const state = reactive({ qunList: [], orderList: [] })
+  const state = reactive({ qunList: [], orderList: [],   tableHead: [
+      {
+        prop: 'name',
+        label: '应用名称'
+      },
+      {
+        prop: 'code',
+        label: '应用编码'
+      },
+      {
+        prop: 'source',
+        label: '应用来源'
+      },
+      {
+        prop: 'typeName',
+        label: '应用类型'
+      },
+      {
+        prop: 'authority',
+        label: '持有权限'
+      },
+      {
+        prop: 'createTime',
+        label: '创建时间'
+      },
+      {
+        type: 'slot',
+        label: '操作',
+        fixed: 'right',
+        align: 'center',
+        width: '80',
+        name: 'operate'
+      }
+    ] })
   //查询
   const getTableList = async (type: string) => {
     searchType.value = type

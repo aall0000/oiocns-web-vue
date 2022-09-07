@@ -237,7 +237,7 @@ const mainRouter: RouteRecordRaw[] = [
         name: 'market',
         component: () => import('@/views/Market/index.vue'),
         meta: {
-          title: '应用市场'
+          title: '应用中心'
         }
       },
       {
@@ -281,11 +281,11 @@ const mainRouter: RouteRecordRaw[] = [
         }
       },
       {
-        path: '/market/getApp',
-        name: 'marketGetApp',
-        component: () => import('@/views/Market/AppList/getAppfromMarket.vue'),
+        path: '/market/softShare',
+        name: 'softShare',
+        component: () => import('@/views/Market/SoftShare/index.vue'),
         meta: {
-          title: '获取应用'
+          title: '共享仓库'
         }
       },
       {
@@ -319,7 +319,7 @@ const mainRouter: RouteRecordRaw[] = [
         name: 'userApply',
         component: () => import('@/views/Market/JoinMarketApproval/starter.vue'),
         meta: {
-          title: '加入市场申请列表'
+          title: '加入商店申请列表'
         }
       },
       {
@@ -351,7 +351,7 @@ const mainRouter: RouteRecordRaw[] = [
         name: 'marketDetail',
         component: () => import('@/views/Market/MarketDetail/index.vue'),
         meta: {
-          title: '市场详情'
+          title: '商店详情'
         }
       },
       {
@@ -359,7 +359,7 @@ const mainRouter: RouteRecordRaw[] = [
         name: 'managerApply',
         component: () => import('@/views/Market/JoinMarketApproval/manager.vue'),
         meta: {
-          title: '加入市场审批列表'
+          title: '加入商店审批列表'
         }
       },
       {

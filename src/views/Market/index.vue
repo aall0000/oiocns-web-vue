@@ -2,26 +2,44 @@
   <div class="market-layout">
     <MarketCard>
       <template #right>
-        <el-button type="primary" @click="GoPage('/market/appApply')">我的上架申请</el-button>
-        <el-button type="primary" @click="GoPage('/market/register')">注册应用</el-button>
-        <el-button type="primary" @click="GoPage('/market/markList')">管理商店</el-button>
-        <!-- <el-button type="primary" @click="GoPage('/market/managerApproval')">申请审批</el-button> -->
-        <el-button type="primary" @click.stop="GoPage('/market/order')">我的订单</el-button>
-        <el-badge :value="shopcarNum" style="padding-left: 10px">
-          <el-button type="primary" @click.stop="GoPage('/market/shopCar')">购物车</el-button>
-        </el-badge>
+        <div class="edit-wrap">
+          <el-button small link type="primary" @click="GoPage('/market/appApply')"
+            >我的上架申请</el-button
+          >
+          <el-button small link type="primary" @click="GoPage('/market/register')"
+            >注册应用</el-button
+          >
+          <el-button small link type="primary" @click="GoPage('/market/markList')"
+            >商店列表</el-button
+          >
+          <el-button small link type="primary" @click.stop="GoPage('/market/order')"
+            >我的订单</el-button
+          >
+          <el-badge :value="shopcarNum" style="padding-left: 10px">
+            <el-button small link type="primary" @click.stop="GoPage('/market/shopCar')"
+              >购物车</el-button
+            >
+          </el-badge>
+        </div>
+        <div>
+          <el-radio-group v-model="mode" size="small" class="button">
+            <el-radio-button label="list"
+              ><el-icon :size="18"><Tickets /></el-icon
+            ></el-radio-button>
+            <el-radio-button label="card"
+              ><el-icon :size="18"><Menu /></el-icon
+            ></el-radio-button>
+          </el-radio-group>
+        </div>
       </template>
     </MarketCard>
     <div class="market-content box">
       <ul class="box-ul">
         <div class="getApp-radio">
           <p class="box-ul-title">我的应用</p>
-
-          <!-- <p style="margin-right: 20px">切换视图</p>
-          <el-switch v-model="isCard" /> -->
         </div>
         <li class="app-card" v-show="mode === 'card'">
-          <MarketCreate :info="add" @myclick="GoPage('/market/getApp')" />
+          <MarketCreate :info="add" @myclick="GoPage('/market/softShare')" />
           <ShopCard
             v-for="item in state.ownProductList"
             :info="item"
@@ -112,6 +130,7 @@
                 :name="item.name"
                 :url="item.icon || appImg"
                 :imgWidth="48"
+                :createUser="item.createUser"
                 :limit="1"
                 :isSquare="false"
             /></template>
@@ -191,14 +210,7 @@
           :total="state.shareTotal"
         />
       </ul>
-      <el-radio-group v-model="mode" size="small" class="button">
-        <el-radio-button label="list"
-          ><el-icon :size="18"><Tickets /></el-icon
-        ></el-radio-button>
-        <el-radio-button label="card"
-          ><el-icon :size="18"><Menu /></el-icon
-        ></el-radio-button>
-      </el-radio-group>
+
     </div>
   </div>
   <el-dialog
@@ -317,7 +329,7 @@
   import Group from '../Market/AppShare/group.vue'
   import Person from '../Market/AppShare/person.vue'
   import TheTableButton from './AppList/components/theTableButton3.vue'
-  const add: string = '从应用市场中添加'
+  const add: string = '从共享仓库中添加应用'
   const groupShareVisible = ref<boolean>(false)
   const unitShareVisible = ref<boolean>(false)
   const personCohortShareVisible = ref<boolean>(false)
@@ -460,7 +472,6 @@
     })
     if (success) {
       const { result = [], total = 0 } = data
-      console.log(result)
       state[`${type}ProductList`] = [...result]
       state[`${type}Total`] = total
     }
@@ -693,10 +704,16 @@
       height: calc(100vh - 124px);
       overflow-y: auto;
     }
+    .edit-wrap{
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
     .button {
-      position: absolute;
-      right: 50px;
-      bottom: 20px;
+      // position: absolute;
+      // right: 50px;
+      // bottom: 20px;
+      margin-left:20px
     }
     .box {
       .box-ul + .box-ul {

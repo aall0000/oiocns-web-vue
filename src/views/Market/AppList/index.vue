@@ -2,6 +2,13 @@
   <div class="market-layout">
     <MarketCard>
       <template #right>
+        <el-button
+          link
+          type="primary"
+          @click="GoPage('/market/userApply')"
+          style="margin-right: 15px"
+          >我的加入申请</el-button
+        >
         <el-radio-group v-model="mode" size="small" class="button">
           <el-radio-button label="list"
             ><el-icon :size="18"><Tickets /></el-icon
@@ -10,8 +17,8 @@
             ><el-icon :size="18"><Menu /></el-icon
           ></el-radio-button>
         </el-radio-group>
-        <!-- <el-button type="primary" @click="GoPage('/market/managerApproval')">申请审批</el-button>
-        <el-button type="primary" @click.stop="GoPage('/market/order')">我的订单</el-button>
+
+        <!-- <el-button type="primary" @click.stop="GoPage('/market/order')">我的订单</el-button>
         <el-badge :value="shopcarNum" style="padding-left:10px">
           <el-button type="primary" @click.stop="GoPage('/market/shopCar')">购物车</el-button>
         </el-badge> -->
@@ -31,10 +38,35 @@
             :info="item"
             :key="item.id"
             :overId="item.id"
-            @click="GoPageWithQuery( '/market/appList', { data: item.id,type:'manage' })"
+            type="market"
+            @click="GoPageWithQuery('/market/appList', { data: item.id, type: 'manage' })"
           >
-          <template #icon><HeadImg :name="item.name" :url="item.icon || storeImg" :imgWidth="48" :limit="1" :isSquare="false" /></template>
-            <template #rightTriangle
+            <template #icon
+              ><HeadImg
+                :name="item.name"
+                :url="item.icon || storeImg"
+                :imgWidth="48"
+                :limit="1"
+                :isSquare="false"
+            /></template>
+            <template #rightIcon>
+              <el-dropdown trigger="click" placement="left-start">
+                <el-icon :size="18"><Operation /></el-icon>
+                <template #dropdown>
+                  <el-dropdown-menu>
+                    <el-dropdown-item @click.stop="hadleClick(item)"
+                      ><el-button class="btn" type="primary" link small
+                        >删除商店</el-button
+                      ></el-dropdown-item
+                    >
+                    <el-dropdown-item @click.stop="hadleUserManage(item)"
+                      ><el-button class="btn" link small>用户管理</el-button></el-dropdown-item
+                    >
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
+            </template>
+            <!-- <template #rightTriangle
               ><div :class="item.public ? 'triangle-public' : 'triangle-'">{{
                 item.public ? '公' : ''
               }}</div></template
@@ -49,7 +81,7 @@
             <el-divider direction="vertical" />
             <el-button class="btn" link small  @click="GoPageWithQuery('/market/marketDetail',{data:item.id})"
               >市场首页</el-button
-            >
+            > -->
           </ShopCard>
         </li>
         <li v-show="mode === 'list'">
@@ -70,7 +102,7 @@
                 >用户管理</el-button
               >
               <el-button class="btn" type="primary" link small @click.stop="marketQuit(scope.row)"
-                >退出商店</el-button
+                >删除商店</el-button
               >
             </template>
           </DiyTable>
@@ -94,10 +126,40 @@
             :info="item"
             :key="item.id"
             :overId="item.id"
-            @click="GoPageWithQuery( '/market/appList', { data: item.id,type:'shop' })"
+            type="market"
+            @click="GoPageWithQuery('/market/appList', { data: item.id, type: 'shop' })"
           >
-          <template #icon><HeadImg :name="item.name" :url="item.icon || storeImg" :imgWidth="48" :limit="1" :isSquare="false" /></template>
-            <template #rightTriangle
+            <template #icon
+              ><HeadImg
+                :name="item.name"
+                :url="item.icon || storeImg"
+                :imgWidth="48"
+                :limit="1"
+                :isSquare="false"
+            /></template>
+            <template #rightIcon>
+              <el-dropdown trigger="click" placement="left-start">
+                <el-icon :size="18"><Operation /></el-icon>
+                <template #dropdown>
+                  <el-dropdown-menu>
+                    <el-dropdown-item @click.stop="hadleClick(item)"
+                      ><el-button
+                        class="btn"
+                        type="primary"
+                        link
+                        small
+                        @click.stop="marketQuit(item)"
+                        >退出商店</el-button
+                      ></el-dropdown-item
+                    >
+                    <el-dropdown-item @click.stop="hadleUserManage(item)"
+                      ><el-button class="btn" link small>用户管理</el-button></el-dropdown-item
+                    >
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
+            </template>
+            <!-- <template #rightTriangle
               ><div :class="item.public ? 'triangle-public' : 'triangle-'">{{
                 item.public ? '公' : ''
               }}</div></template
@@ -106,9 +168,13 @@
               >退出商店</el-button
             >
             <el-divider direction="vertical" />
+            <el-button class="btn" link small @click.stop="hadleUserManage(item)"
+              >用户管理</el-button
+            >
+            <el-divider direction="vertical" />
             <el-button class="btn" link small  @click="GoPageWithQuery('/market/marketDetail',{data:item.id,type:'shop'})"
               >市场首页</el-button
-            >
+            > -->
           </ShopCard>
         </li>
         <li v-show="mode === 'list'">
@@ -121,7 +187,7 @@
           >
             <template #operate="scope">
               <el-button class="btn" type="primary" link small @click.stop="marketQuit(scope.row)"
-                >退出商店</el-button
+                >删除商店</el-button
               >
             </template>
           </DiyTable>
@@ -277,7 +343,6 @@
   const gotoApp = (item: { id: string }) => {
     router.push({ path: '/market/appList', query: { data: item.id } })
   }
-
 
   const getShopcarNum = async () => {
     await $services.market

@@ -257,6 +257,7 @@ const getTableList = async () => {
           market: { remark: any; code: any; name: any }
           merchandise: { caption: any; information: any; sellAuth: any; days: any; price: any }
         }) => {
+          
           return {
             ...item,
             caption: item.merchandise.caption,

@@ -9,7 +9,7 @@
       <img
         v-if="item.icon"
         :src="item.icon"
-        style="width: 40px; height: 40px; border-radius: 50%;margin-bottom: 10px;"
+        style="width: 40px; height: 40px; border-radius: 50%; margin-bottom: 10px"
       />
       <span class="appName">{{ item.name }}</span>
     </div>
@@ -18,8 +18,10 @@
 <script lang="ts" setup>
   import $services from '@/services'
   import img1 from '@/assets/img/group22.png'
-  import { onMounted, ref } from 'vue'
+  import { onMounted, ref, watch } from 'vue'
   import { ElMessage } from 'element-plus'
+  import { useCommonStore } from '@/store/common'
+  const commonStore = useCommonStore()
 
   // 展示数据
   const appList = ref<ProductType[]>([])
@@ -33,18 +35,27 @@
     })
     if (success) {
       const { result = [], total = 0 } = data
-      appList.value = result.map((item:any)=>{
-        return {...item,icon:img1}
+      appList.value = result.map((item: any) => {
+        return { ...item, icon: img1 }
       })
-      console.log('可用应用', result)
+      commonStore.isChangeStartApp = false
+      // console.log('可用应用', result)
     }
   }
   onMounted(() => {
     getAppList()
   })
+  watch(
+    () => commonStore.isChangeStartApp,
+    (val) => {
+      if (val) {
+        getAppList()
+      }
+    }
+  )
   const emit = defineEmits(['AppChange'])
   const handleChooseItem = async (app: any) => {
-    const { data, success } = await $services.product.searchResource({
+    const { data, success } = await $services.product.queryOwnResource({
       data: {
         id: app.id,
         offset: 0,
@@ -63,7 +74,7 @@
       // TODO:按照权限判断展示哪个资源
       const { id, name, icon, link } = result[0]
       console.log('当前资源', icon, result)
-      emit('AppChange', { id, name, icon:img1, link, path: '/online', })
+      emit('AppChange', { id, name: app.name, icon: img1, link, path: '/online' })
     }
     // emit('AppChange', app)
   }
