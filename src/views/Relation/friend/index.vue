@@ -1,15 +1,19 @@
 <template>
-
-  <el-card style="border:0;" shadow="never" class="container">
+  <el-card style="border: 0" shadow="never" class="container">
     <!-- 组内成员信息 -->
-   
-      <div class="card-header">
-        <span>我的好友</span>
-        <el-button type="primary" @click="friendShow">添加好友</el-button>
-      </div>
-    
+
+    <div class="card-header">
+      <span>我的好友</span>
+      <el-button small link type="primary" @click="friendShow">添加好友</el-button>
+    </div>
+
     <div class="tab-list">
-      <el-table :data="state.friendList" stripe @select="handleSelect" :header-cell-style="{'background':'var(--el-color-primary-light-9)'}" >
+      <el-table
+        :data="state.friendList"
+        stripe
+        @select="handleSelect"
+        :header-cell-style="{ background: 'var(--el-color-primary-light-9)' }"
+      >
         <el-table-column type="selection" width="50" />
         <el-table-column prop="code" label="账号" />
         <el-table-column prop="name" label="昵称" />
@@ -23,131 +27,133 @@
                 <el-button type="danger" link>删除</el-button>
               </template>
             </el-popconfirm>
-
           </template>
         </el-table-column>
       </el-table>
     </div>
-    <searchFriend v-if="searchDialog" @closeDialog="closeDialog" :serachType="1" @checksSearch='checksSearch' />
+    <searchFriend
+      v-if="searchDialog"
+      @closeDialog="closeDialog"
+      :serachType="1"
+      @checksSearch="checksSearch"
+    />
   </el-card>
 </template>
 <script lang="ts" setup>
-import $services from '@/services'
-import searchFriend from '@/components/searchs/index.vue'
-import { ref, reactive, onMounted } from 'vue'
-import { ElMessage } from 'element-plus'
+  import $services from '@/services'
+  import searchFriend from '@/components/searchs/index.vue'
+  import { ref, reactive, onMounted } from 'vue'
+  import { ElMessage } from 'element-plus'
 
-const searchDialog = ref<boolean>(false)
+  const searchDialog = ref<boolean>(false)
 
-type arrList = {
-  id: string
-}
+  type arrList = {
+    id: string
+  }
 
-const addFriends = (arr: Array<arrList>) => {
-  console.log('arrr', arr)
-  $services.person
-    .applyJoin({
-      data: {
-        id: arr.join(',')
-      }
-    })
-    .then((res: ResultType) => {
-      if (res.code == 200) {
-        ElMessage({
-          message: '申请成功',
-          type: 'warning'
-        })
-        searchDialog.value = false
-        getFriendList()
-      }
-    })
-}
-const handleSelect = (key: string, keyPath: string[]) => {
-  // console.log(key, keyPath)
-}
-onMounted(() => {
-  getFriendList()
-})
+  const addFriends = (arr: Array<arrList>) => {
+    console.log('arrr', arr)
+    $services.person
+      .applyJoin({
+        data: {
+          id: arr.join(',')
+        }
+      })
+      .then((res: ResultType) => {
+        if (res.code == 200) {
+          ElMessage({
+            message: '申请成功',
+            type: 'warning'
+          })
+          searchDialog.value = false
+          getFriendList()
+        }
+      })
+  }
+  const handleSelect = (key: string, keyPath: string[]) => {
+    // console.log(key, keyPath)
+  }
+  onMounted(() => {
+    getFriendList()
+  })
 
-const state = reactive({ qunList: [], friendList: [] })
-const getFriendList = async () => {
-  await $services.person
-    .getFriends({ data: { offset: 0, limit: 20 } })
-    .then((res: ResultType) => {
-      const { result = [] } = res.data
-      state.friendList = result?.map(
-        (item: { team: { remark: any; code: any; name: any } }) => {
+  const state = reactive({ qunList: [], friendList: [] })
+  const getFriendList = async () => {
+    await $services.person
+      .getFriends({ data: { offset: 0, limit: 20 } })
+      .then((res: ResultType) => {
+        const { result = [] } = res.data
+        state.friendList = result?.map((item: { team: { remark: any; code: any; name: any } }) => {
           return {
             ...item,
             remark: item.team.remark,
             teamCode: item.team.code,
             trueName: item.team.name
           }
-        }
-      )
-    })
-}
-//删除好友
-const deleteFriend = (id: string) => {
-  $services.person
-    .remove({
-      data: {
-        id: id,
-        targetIds: [id]
-      }
-    })
-    .then((res: ResultType) => {
-      if (res.code == 200) {
-        ElMessage({
-          message: '删除成功',
-          type: 'warning'
         })
-        getFriendList()
-      } else {
-        ElMessage({
-          message: res.msg,
-          type: 'warning'
-        })
-      }
-    })
-}
-const checksSearch = (val: any) => {
-  if (val.value.length > 0) {
-    let arr: Array<arrList> = []
-    val.value.forEach((element: any) => {
-      arr.push(element.id)
-    });
-    addFriends(arr)
-  } else {
-    searchDialog.value = false;
+      })
   }
-}
-const closeDialog = () => {
-  searchDialog.value = false;
-}
-const friendShow = () => {
-  searchDialog.value = true;
-}
-</script>
-<style lang="scss" scoped>
-.container {
-  width: 100%;
-  // height: 100%;
-  margin: 10px;
-  // background: #f0f2f5;
-  // padding: 5px;
-
-  .card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-bottom: 12px;
-    // padding: 10px;
-    // background: #fff;
-    .edit {
-      font-size: 14px;
-      font-weight: bold;
+  //删除好友
+  const deleteFriend = (id: string) => {
+    $services.person
+      .remove({
+        data: {
+          id: id,
+          targetIds: [id]
+        }
+      })
+      .then((res: ResultType) => {
+        if (res.code == 200) {
+          ElMessage({
+            message: '删除成功',
+            type: 'warning'
+          })
+          getFriendList()
+        } else {
+          ElMessage({
+            message: res.msg,
+            type: 'warning'
+          })
+        }
+      })
+  }
+  const checksSearch = (val: any) => {
+    if (val.value.length > 0) {
+      let arr: Array<arrList> = []
+      val.value.forEach((element: any) => {
+        arr.push(element.id)
+      })
+      addFriends(arr)
+    } else {
+      searchDialog.value = false
     }
   }
-}
+  const closeDialog = () => {
+    searchDialog.value = false
+  }
+  const friendShow = () => {
+    searchDialog.value = true
+  }
+</script>
+<style lang="scss" scoped>
+  .container {
+    width: 100%;
+    // height: 100%;
+    margin: 10px;
+    // background: #f0f2f5;
+    // padding: 5px;
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 12px;
+      // padding: 10px;
+      // background: #fff;
+      .edit {
+        font-size: 14px;
+        font-weight: bold;
+      }
+    }
+  }
 </style>

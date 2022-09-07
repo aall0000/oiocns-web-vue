@@ -237,7 +237,7 @@ const mainRouter: RouteRecordRaw[] = [
         name: 'market',
         component: () => import('@/views/Market/index.vue'),
         meta: {
-          title: '应用市场'
+          title: '应用中心'
         }
       },
       {

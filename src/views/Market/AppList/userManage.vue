@@ -1,8 +1,10 @@
 <template>
   <MarketCard>
     <template #right>
-      <el-button type="primary" @click="GoPage('/market/managerApply')">加入商店审批</el-button>
-      <el-button type="primary" @click="friendShow">邀请加入商店</el-button>
+      <el-button small link type="primary" @click="GoPage('/market/managerApply')"
+        >加入商店审批</el-button
+      >
+      <el-button small link type="primary" @click="friendShow">邀请加入商店</el-button>
     </template>
   </MarketCard>
   <div class="userLayout">

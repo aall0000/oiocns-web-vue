@@ -2,14 +2,35 @@
   <div class="market-layout">
     <MarketCard>
       <template #right>
-        <el-button type="primary" @click="GoPage('/market/appApply')">我的上架申请</el-button>
-        <el-button type="primary" @click="GoPage('/market/register')">注册应用</el-button>
-        <el-button type="primary" @click="GoPage('/market/markList')">管理商店</el-button>
-        <!-- <el-button type="primary" @click="GoPage('/market/managerApproval')">申请审批</el-button> -->
-        <el-button type="primary" @click.stop="GoPage('/market/order')">我的订单</el-button>
-        <el-badge :value="shopcarNum" style="padding-left: 10px">
-          <el-button type="primary" @click.stop="GoPage('/market/shopCar')">购物车</el-button>
-        </el-badge>
+        <div class="edit-wrap">
+          <el-button small link type="primary" @click="GoPage('/market/appApply')"
+            >我的上架申请</el-button
+          >
+          <el-button small link type="primary" @click="GoPage('/market/register')"
+            >注册应用</el-button
+          >
+          <el-button small link type="primary" @click="GoPage('/market/markList')"
+            >商店列表</el-button
+          >
+          <el-button small link type="primary" @click.stop="GoPage('/market/order')"
+            >我的订单</el-button
+          >
+          <el-badge :value="shopcarNum" style="padding-left: 10px">
+            <el-button small link type="primary" @click.stop="GoPage('/market/shopCar')"
+              >购物车</el-button
+            >
+          </el-badge>
+        </div>
+        <div>
+          <el-radio-group v-model="mode" size="small" class="button">
+            <el-radio-button label="list"
+              ><el-icon :size="18"><Tickets /></el-icon
+            ></el-radio-button>
+            <el-radio-button label="card"
+              ><el-icon :size="18"><Menu /></el-icon
+            ></el-radio-button>
+          </el-radio-group>
+        </div>
       </template>
     </MarketCard>
     <div class="market-content box">
@@ -53,9 +74,7 @@
                       {{ action.label }}
                     </el-dropdown-item>
                     <el-dropdown-item @click="deleteApp(item)">移除应用</el-dropdown-item>
-                    <el-dropdown-item @click="GoPage('/market/appDetail')"
-                      >应用详情</el-dropdown-item
-                    >
+                    <!-- <el-dropdown-item  @click="GoPage('/market/appDetail')">应用详情</el-dropdown-item> -->
                   </el-dropdown-menu>
                 </template>
               </el-dropdown>
@@ -127,9 +146,7 @@
                 <template #dropdown>
                   <el-dropdown-menu>
                     <el-dropdown-item @click="deleteApp(item)">移除应用</el-dropdown-item>
-                    <el-dropdown-item @click="GoPage('/market/appDetail')"
-                      >应用详情</el-dropdown-item
-                    >
+                    <!-- <el-dropdown-item  @click="GoPage('/market/appDetail')">应用详情</el-dropdown-item> -->
                   </el-dropdown-menu>
                 </template>
               </el-dropdown>
@@ -195,14 +212,7 @@
           :total="state.shareTotal"
         />
       </ul>
-      <el-radio-group v-model="mode" size="small" class="button">
-        <el-radio-button label="list"
-          ><el-icon :size="18"><Tickets /></el-icon
-        ></el-radio-button>
-        <el-radio-button label="card"
-          ><el-icon :size="18"><Menu /></el-icon
-        ></el-radio-button>
-      </el-radio-group>
+    
     </div>
   </div>
   <el-dialog
@@ -315,7 +325,7 @@
   import { useUserStore } from '@/store/user'
   import DiyTable from '@/components/diyTable/index.vue'
   import { appendFile } from 'fs'
-  import appImg from '@/assets/img/whatsapp.png'
+  import appImg from '@/assets/img/app_icon.png'
   import $services from '@/services'
   import Unit from '../Market/AppShare/unit.vue'
   import Group from '../Market/AppShare/group.vue'
@@ -697,10 +707,16 @@
       height: calc(100vh - 124px);
       overflow-y: auto;
     }
+    .edit-wrap{
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
     .button {
-      position: absolute;
-      right: 50px;
-      bottom: 20px;
+      // position: absolute;
+      // right: 50px;
+      // bottom: 20px;
+      margin-left:20px
     }
     .box {
       .box-ul + .box-ul {
