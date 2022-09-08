@@ -281,6 +281,14 @@ const mainRouter: RouteRecordRaw[] = [
         }
       },
       {
+        path: '/market/detail/:id',
+        name: 'marketAppDetail',
+        component: () => import('@/views/Market/AppRegister/index.vue'),
+        meta: {
+          title: '应用详情'
+        }
+      },
+      {
         path: '/market/softShare',
         name: 'softShare',
         component: () => import('@/views/Market/SoftShare/index.vue'),
