@@ -37,7 +37,9 @@
       <ul class="box-ul">
         <div class="getApp-radio">
           <p class="box-ul-title">我的应用</p>
-
+          <div class="search">
+            <el-input v-model="searchText" @input="searchList" placeholder="搜索应用" clearable />
+          </div>
           <!-- <p style="margin-right: 20px">切换视图</p>
           <el-switch v-model="isCard" /> -->
         </div>
@@ -60,10 +62,10 @@
             <template #rightIcon>
               <el-dropdown
                 trigger="click"
-                @command="(value) => handleCommand('own', value, item)"
+                @command="(value:any) => handleCommand('own', value, item)"
                 placement="left-start"
               >
-                <el-icon :size="18"><Operation /></el-icon>
+                <el-icon style="cursor: pointer;" :size="20" ><Operation /></el-icon>
                 <template #dropdown>
                   <el-dropdown-menu>
                     <el-dropdown-item
@@ -85,16 +87,17 @@
           <DiyTable
             ref="diyTable"
             :hasTitle="true"
+            @handleUpdate="handleUpdate"
             :tableData="state.ownProductList"
             :tableHead="state.tableHead"
           >
             <template #operate="scope">
               <el-dropdown
                 trigger="click"
-                @command="(value) => handleCommand('own', value, scope.row)"
+                @command="(value:any) => handleCommand('own', value, scope.row)"
                 placement="bottom-end"
               >
-                <el-icon :size="18"><Operation /></el-icon>
+                <el-icon style="cursor: pointer;" :size="20"><Operation /></el-icon>
                 <template #dropdown>
                   <el-dropdown-menu>
                     <el-dropdown-item
@@ -111,109 +114,10 @@
             </template>
           </DiyTable>
         </li>
-
-        <el-pagination
-          style="justify-content: end"
-          hide-on-single-page
-          layout="prev, pager, next"
-          :total="state.ownTotal"
-        />
+        <div class="page-flex">
+          <pagination ref="pageContent" @handleUpdate="handleUpdate"></pagination>
+        </div>
       </ul>
-      <ul class="box-ul">
-        <p class="box-ul-title">其他应用</p>
-        <li class="app-card" v-show="mode === 'card'">
-          <ShopCard
-            v-for="item in state.shareProductList"
-            :info="item"
-            :key="item.id"
-            :over-id="item.id"
-          >
-            <template #icon
-              ><HeadImg
-                :name="item.name"
-                :url="item.icon || appImg"
-                :imgWidth="48"
-                :createUser="item.createUser"
-                :limit="1"
-                :isSquare="false"
-            /></template>
-            <template #rightIcon>
-              <el-dropdown
-                trigger="click"
-                @command="(value) => handleCommand('own', value, item)"
-                placement="left-start"
-              >
-                <el-icon :size="18"><Operation /></el-icon>
-                <template #dropdown>
-                  <el-dropdown-menu>
-                    <el-dropdown-item @click="deleteApp(item)">移除应用</el-dropdown-item>
-                    <!-- <el-dropdown-item  @click="GoPage('/market/appDetail')">应用详情</el-dropdown-item> -->
-                  </el-dropdown-menu>
-                </template>
-              </el-dropdown>
-            </template>
-            <!-- <template #rightIcon>
-              <el-dropdown trigger="click">
-                <el-icon :size="18" ><Operation /></el-icon>
-                <template #dropdown>
-                  <el-dropdown-menu>
-                    <el-dropdown-item >Action 1</el-dropdown-item>
-                  </el-dropdown-menu>
-                </template>
-              </el-dropdown>
-            </template>
-            <el-dropdown @command="(value) => handleCommand('other', value, item)" placement="left-start">
-              <el-button class="btn" type="primary" link small> 设置 </el-button>
-              <template #dropdown>
-                <el-dropdown-menu>
-                  <el-dropdown-item v-for="action in actionOptionsOfOther" :command="action.value" :key="action.value">
-                    {{ action.label }}
-                  </el-dropdown-item>
-                </el-dropdown-menu>
-              </template>
-            </el-dropdown>
-            <el-divider direction="vertical" />
-            <el-button class="btn" link small @click="deleteApp(item)">移除应用</el-button> -->
-          </ShopCard>
-        </li>
-        <li v-show="mode === 'list'">
-          <DiyTable
-            ref="diyTable"
-            :hasTitle="true"
-            :tableData="state.shareProductList"
-            :tableHead="state.tableHead"
-          >
-            <template #operate="scope">
-              <el-dropdown
-                trigger="click"
-                @command="(value) => handleCommand('own', value, scope.row)"
-                placement="bottom-end"
-              >
-                <el-icon :size="18"><Operation /></el-icon>
-                <template #dropdown>
-                  <el-dropdown-menu>
-                    <el-dropdown-item
-                      v-for="action in actionOptionsOfOwn"
-                      :command="action.value"
-                      :key="action.value"
-                    >
-                      {{ action.label }}
-                    </el-dropdown-item>
-                    <el-dropdown-item @click="deleteApp(scope.row)">移除应用</el-dropdown-item>
-                  </el-dropdown-menu>
-                </template>
-              </el-dropdown>
-            </template>
-          </DiyTable>
-        </li>
-        <el-pagination
-          style="justify-content: end"
-          hide-on-single-page
-          layout="prev, pager, next"
-          :total="state.shareTotal"
-        />
-      </ul>
-    
     </div>
   </div>
   <el-dialog
@@ -332,6 +236,8 @@
   import Group from '../Market/AppShare/group.vue'
   import Person from '../Market/AppShare/person.vue'
   import TheTableButton from './AppList/components/theTableButton3.vue'
+  import pagination from '@/components/pagination/index.vue'
+
   const add: string = '从应用市场中添加'
   const groupShareVisible = ref<boolean>(false)
   const unitShareVisible = ref<boolean>(false)
@@ -353,6 +259,17 @@
   // 分享功能
   const cohortVisible = ref<boolean>(false)
   // 路由跳转
+  const searchText = ref<string>('')
+  const pageContent = ref(null)
+  const diyTable = ref(null)
+  // 表格展示数据
+  const pageStore = reactive({
+    tableData: [],
+    currentPage: 1,
+    pageSize: 20,
+    total: 0
+  })
+  //应用搜索
   const GoPage = (path: string) => {
     router.push(path)
   }
@@ -465,19 +382,26 @@
   // const closeDialog = () => {
   //   shareVisible.value = false
   // }
-
+  const handleUpdate = (page: any)=>{
+    pageStore.currentPage = page.currentPage
+    pageStore.pageSize = page.pageSize
+    getProductList('own')
+  }
   // 获取我的应用列表
   const getProductList = async (type: 'own' | 'share') => {
     const { data, success } = await API.product[
       type === 'own' ? 'searchOwnProduct' : 'searchShareProduct'
     ]({
-      data: { offset: 0, limit: 10, filter: '' }
+      data: { offset: (pageStore.currentPage-1)*pageStore.pageSize,
+        limit: pageStore.pageSize, filter: searchText.value }
     })
     if (success) {
       const { result = [], total = 0 } = data
       console.log(result)
       state[`${type}ProductList`] = [...result]
       state[`${type}Total`] = total
+      diyTable.value.state.page.total = total;
+      pageContent.value.state.page.total = total
     }
   }
 
@@ -632,6 +556,10 @@
   const GoPageWithQuery = (path: string, query: any) => {
     router.push({ path, query })
   }
+  //搜索应用
+  const searchList= ()=>{
+    getProductList('own')
+  }
 </script>
 
 <style>
@@ -658,6 +586,11 @@
     height: 500px;
     overflow: auto;
   }
+  .page-flex{
+      height: 50px;
+      width: 100%;
+      overflow: hidden;
+    }
   .menuRight {
     width: 100px;
     height: 60px;
@@ -670,7 +603,7 @@
     justify-content: center;
     align-items: center;
     cursor: pointer;
-
+   
     &-fixed {
       padding: 5px 0;
       width: 100%;
@@ -734,8 +667,15 @@
         .getApp-radio {
           display: flex;
           width: 100%;
+          justify-content: space-between;
+          margin-bottom: 20px;
           .box-ul-title {
             width: 50%;
+            display: flex;
+            justify-content: flex-start;
+          }
+          .search{
+            width: 200px;
             display: flex;
             justify-content: flex-start;
           }
