@@ -7,26 +7,10 @@
         :hasTitle="false"
         :tableData="state.approvalList"
         :tableHead="state.tableHead"
+        @handleUpdate="handleUpdate"
       >
         <template #operate="scope"> </template>
       </DiyTable>
-      <!-- <el-table :data="state.approvalList" stripe>
-        <el-table-column type="selection" width="50" />
-        <el-table-column prop="marketName" label="市场名称" />
-        <el-table-column prop="targetName" label="申请人昵称" />
-        <el-table-column prop="targetCode" label="申请人账号" />
-        <el-table-column prop="createTime" label="创建时间" />
-        <el-table-column prop="name" label="操作" width="600">
-          <template #default="scope">
-            <el-button @click="approvalSuccess(scope.row.id, 100)" type="primary"
-              >审批通过</el-button
-            >
-            <el-button @click="approvalSuccess(scope.row.id, 200)" type="danger"
-              >驳回申请</el-button
-            >
-          </template>
-        </el-table-column>
-      </el-table> -->
     </div>
   </div>
 </template>
@@ -42,9 +26,16 @@
   const diyTable = ref(null)
   const state = reactive({
     approvalList: [],
-    tableHead: []
+    tableHead: [],
+    currentPage: 1,
+    pageSize: 20,
+    total: 0
   })
-
+  const handleUpdate = (page: any) => {
+    state.currentPage = page.currentPage
+    state.pageSize = page.pageSize
+    starterAppApprovalList()
+  }
   onMounted(() => {
     store.SearchAllMarket()
     starterAppApprovalList()
@@ -55,8 +46,8 @@
     await $services.appstore
       .searchPublishApply({
         data: {
-          offset: 0,
-          limit: 10,
+          offset: (state.currentPage - 1) * state.pageSize,
+          limit: state.pageSize,
           filter: ''
         }
       })
@@ -82,6 +73,9 @@
               }
             }
           )
+          state.total = total
+          diyTable.value.state.loading = false
+          diyTable.value.state.page.total = state.total
           state.tableHead = [
             {
               prop: 'marketName',

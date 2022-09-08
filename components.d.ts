@@ -65,6 +65,7 @@ declare module '@vue/runtime-core' {
     ManageSystem: typeof import('./src/components/protal/components/manageSystem.vue')['default']
     MarketCard: typeof import('./src/components/marketCard/index.vue')['default']
     Organization: typeof import('./src/components/protal/components/organization.vue')['default']
+    Pagination: typeof import('./src/components/pagination/index.vue')['default']
     Pay: typeof import('./src/components/pay/pay.vue')['default']
     Protal: typeof import('./src/components/protal/index.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']

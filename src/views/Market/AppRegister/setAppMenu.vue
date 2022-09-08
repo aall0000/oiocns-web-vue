@@ -8,17 +8,17 @@
   >
     <!-- 子集导航样式 -->
     <li class="menu-item flex">
-      <el-input placeholder="请设置资源名称" v-model="menuItem.name"></el-input>
+      <el-input placeholder="请设置资源名称" v-model="menuItem.name" :readonly="readOnly"></el-input>
       <!-- <el-icon class="child-btn" @click.stop="handleEvent('Add', menuItem.customId)">
         <CirclePlus />
       </el-icon> -->
-      <el-icon class="child-btn" @click.stop="handleEvent('Delete', menuItem.customId)"
+      <el-icon class="child-btn" v-if="!readOnly" @click.stop="handleEvent('Delete', menuItem.customId)"
         ><Delete
       /></el-icon>
-      <el-icon class="child-btn" @click.stop="handleEvent('Up', menuItem.customId)"
+      <el-icon class="child-btn" v-if="!readOnly" @click.stop="handleEvent('Up', menuItem.customId)"
         ><SortUp
       /></el-icon>
-      <el-icon class="child-btn" @click.stop="handleEvent('Down', menuItem.customId)"
+      <el-icon class="child-btn" v-if="!readOnly" @click.stop="handleEvent('Down', menuItem.customId)"
         ><SortDown
       /></el-icon>
     </li>
@@ -33,18 +33,18 @@
     </template> -->
     <!-- 共有部分 -->
     <li class="menu-item flex">
-      <div class="menu-label required">资源地址:</div>
-      <el-input placeholder="例如:http://anyinone.com:800/" v-model="menuItem.link"></el-input>
+      <div :class="['menu-label',readOnly?'': 'required']">资源地址:</div>
+      <el-input placeholder="例如:http://anyinone.com:800/" v-model="menuItem.link" :readonly="readOnly"></el-input>
     </li>
 
     <li class="menu-item flex">
       <div class="menu-label">资源编码:</div>
-      <el-input placeholder="请设置" v-model="menuItem.code"></el-input>
+      <el-input placeholder="请设置" v-model="menuItem.code" :readonly="readOnly"></el-input>
     </li>
-    <li class="menu-item flex">
+    <!-- <li class="menu-item flex">
       <div class="menu-label">密钥:</div>
-      <el-input placeholder="请设置" v-model="menuItem.privateKey"></el-input>
-    </li>
+      <el-input placeholder="请设置" v-model="menuItem.privateKey" :readonly="readOnly"></el-input>
+    </li> -->
     <!-- <li class="more-btn">
       更多 <el-icon class="more"><DArrowLeft /> </el-icon>
     </li> -->
@@ -64,12 +64,13 @@
 <script lang="ts" setup>
   // import SetAppMenu from './setAppMenu.vue'
   type Props = {
+    readOnly?:boolean
     menus?: AppResourcesType[]
     className?: string
     isChildren?: boolean
   }
   // type ProductMenuEventType = 'add' | 'delete' | 'up' | 'down'
-  const { menus, className } = withDefaults(defineProps<Props>(), { isChildren: false })
+  const { menus, className,readOnly } = withDefaults(defineProps<Props>(), { isChildren: false,readOnly:false })
   console.log('稻城亚丁', menus)
   const emit = defineEmits(['handleMemuEvent'])
   const handleEvent = (type: ProductMenuEventType, id: string) => {
