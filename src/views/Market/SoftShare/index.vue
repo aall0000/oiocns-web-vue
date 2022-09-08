@@ -19,7 +19,7 @@
     <div class="getApp-container">
       <div class="getApp-search-box">
         <el-input v-model="searchVal" placeholder="应用名称/编码" class="search-input"> </el-input>
-        <el-button type="primary" @click="getAppList">搜一下</el-button>
+        <el-button type="primary" @click="searchList">搜一下</el-button>
       </div>
       <div class="getApp-content">
         <AppCard
@@ -27,8 +27,8 @@
           ref="appCard"
           :dataList="state.myAppList"
           type="shop"
-          @handleUpdate="handleCardUpdate"
         ></AppCard>
+        <Pagination v-if="modeType === 'card'" ref="pageContent" @handleUpdate="handleUpdate"></Pagination>
         <DiyTable
           v-else
           ref="diyTable"
@@ -54,14 +54,21 @@
   import DiyTable from '@/components/diyTable/index.vue'
   import TheTableButton from '../AppList/components/theTableButton2.vue'
   import MarketCard from '@/components/marketCard/index.vue'
-  import { Search } from '@element-plus/icons-vue'
+  import Pagination from '@/components/pagination/index.vue'
 
   const modeType = ref<'card' | 'list'>('card')
   const router = useRouter()
   const diyTable = ref(null)
   const appCard = ref(null)
   const shopcarNum = ref(0)
-
+  const pageContent = ref(null)
+   // 表格展示数据
+  const pageStore = reactive({
+    tableData: [],
+    currentPage: 1,
+    pageSize: 20,
+    total: 0
+  })
   // 软件共享仓库信息
   const softShareInfo = ref<MarketType>({} as MarketType)
 
@@ -99,7 +106,15 @@
       name: 'operate'
     }
   ]
-
+  const handleUpdate = (page: any)=>{
+    pageStore.currentPage = page.currentPage
+    pageStore.pageSize = page.pageSize
+    getAppList()
+  }
+  const searchList = ()=>{
+    pageStore.currentPage = 1
+    getAppList()
+  }
   onMounted(() => {
     getMarketInfo()
     getShopcarNum()
@@ -121,34 +136,6 @@
       })
   }
 
-  // 卡片切换页数
-  const handleCardUpdate = () => {
-    getAppList()
-  }
-  // 表格切换页数
-  const handleUpdate = (page: any) => {
-    getTableData()
-  }
-  // 获取展示数据
-  const getTableData = () => {
-    $services.appstore
-      .merchandise({
-        data: {
-          id: softShareInfo.value.id,
-          offset: diyTable.value.state.page.current,
-          limit: diyTable.value.state.page.pageSize,
-          filter: ''
-        }
-      })
-      .then((res: ResultType) => {
-        console.log('getTableData', res)
-        if (res.code == 200) {
-          state.myAppList = res.data.result || []
-          diyTable.value.state.page.total = res.data.total || 0
-        }
-      })
-  }
-
   // 搜索功能-关键词
   const searchVal = ref<string>('') // 搜索关键词
 
@@ -158,8 +145,8 @@
       .merchandise({
         data: {
           id: softShareInfo.value.id,
-          offset: appCard.value.state.page.current,
-          limit: 12,
+          offset: (pageStore.currentPage-1)*pageStore.pageSize,
+          limit: pageStore.pageSize,
           filter: searchVal.value || ''
         }
       })
@@ -167,6 +154,7 @@
         if (res.code == 200) {
           state.myAppList = res.data.result || []
           appCard.value.state.page.total = res.data.total || 0
+          pageContent.value.state.page.total = res.data.total || 0
         }
       })
   }
@@ -189,13 +177,8 @@
   watch(modeType, (val, valOld) => {
     // 监听 展示方式变化
     nextTick(() => {
-      if (val === 'card') {
-        appCard.value.state.page.currentPage = 1
-        getAppList()
-      } else {
-        diyTable.value.state.page.currentPage = 1
-        getTableData()
-      }
+      appCard.value.state.page.currentPage = 1
+      getAppList()
     })
   })
 </script>
