@@ -98,6 +98,7 @@
   const isDetailPage = !!routeInfo.params.id
   console.log('搜索', isDetailPage, routeInfo.params.id)
   let form = reactive({
+    id: '',
     code: '',
     name: '',
     remark: '',

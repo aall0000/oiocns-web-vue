@@ -112,9 +112,11 @@ const orgChat: orgChatType = {
             if (res.success) {
                 const { groups = [] } = res.data
                 groups.forEach((item: ImMsgType) => {
-                    orgChat.allUserSpaceId = item.chats.map((c) => {
-                        return c.id
-                    })
+                    if(item.id === orgChat.userId){
+                        orgChat.allUserSpaceId = item.chats.map((c) => {
+                            return c.id
+                        })
+                    }
                     item.chats.forEach((chat: ImMsgChildType) => {
                         chat.spaceId = item.id
                         chat.totalMsg = 10000
@@ -259,7 +261,7 @@ const orgChat: orgChatType = {
         }
         orgChat.chats.value.forEach((item: ImMsgType) => {
             if (item.id === orgChat.userId) {
-                if (orgChat.allUserSpaceId.indexOf(data.spaceId) > -1) {
+                if (orgChat.allUserSpaceId.includes(data.spaceId)) {
                     data.spaceId = orgChat.userId
                 }
             }
