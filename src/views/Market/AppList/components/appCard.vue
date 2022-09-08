@@ -56,15 +56,6 @@
           </ShopCard>
         </li>
         <div v-else>暂无数据</div>
-        <div class="pagination">
-          <el-pagination
-            v-if="dataList?.length !== 0"
-            @current-change="handleCurrentChange"
-            v-bind="state.page"
-            :pager-count="5"
-            style="text-align: right; margin-top: 10px; justify-content: end"
-          />
-        </div>
       </ul>
     </div>
   </div>
@@ -119,6 +110,11 @@
             message: '更多操作',
             type: 'success'
     })
+  }
+
+  const handleUpdate = (page: any)=>{
+    state.page.currentPage = page.currentPage
+    state.page.pageSize = page.pageSize
   }
 
   const GoPage = (path: string) => {

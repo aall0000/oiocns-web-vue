@@ -587,6 +587,7 @@
   }
   //搜索应用
   const searchList = () => {
+    pageStore.currentPage = 1
     getProductList()
   }
 </script>
