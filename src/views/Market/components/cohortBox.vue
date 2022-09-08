@@ -193,8 +193,7 @@
           getHistoryData()
         }
       })
-    },
-    { immediate: true }
+    }
   )
   watch(
     () => resource.value,
@@ -203,6 +202,9 @@
       state.departData = []
       state.personsData = []
       state.identitysData = []
+      if (radio.value == '1') {
+        clearTreeType(cascaderTree.value)
+      }
       if (radio.value == '1') {
         leftTree.value.setCheckedKeys([])
       }
@@ -230,6 +232,20 @@
   const emit = defineEmits(['closeDialog'])
   const closeDialog = () => {
     emit('closeDialog')
+  }
+
+  // 清除树形中的type
+  const clearTreeType = (data: any) => {
+    for (let i = 0; i < data.length; i++) {
+      if (data[i].type) {
+        delete data[i].type
+        if (data[i].children.length !== 0) {
+          clearTreeType(data[i].children)
+        }
+      } else {
+        clearTreeType(data[i].children)
+      }
+    }
   }
 
   // 获取部门历史数据
@@ -401,6 +417,9 @@
               el.type = 'has'
               arr.push(el.id)
             })
+            if (state.centerTree.length > 0) {
+              centerTree.value.setCheckedKeys(arr, true)
+            }
           })
 
         break
@@ -422,6 +441,9 @@
               el.type = 'has'
               arr.push(el.id)
             })
+            if (state.centerTree.length > 0) {
+              centerTree.value.setCheckedKeys(arr, true)
+            }
           })
         break
       case '4':
@@ -442,6 +464,9 @@
               el.type = 'has'
               arr.push(el.id)
             })
+            if (state.centerTree.length > 0) {
+              centerTree.value.setCheckedKeys(arr, true)
+            }
           })
         break
       default:
@@ -506,7 +531,6 @@
     let promise6
     let promise7
     let promise8
-    let promise9
     if (departAdd.length > 0) {
       promise1 = API.product.department({
         data: {
@@ -732,7 +756,6 @@
             arr.push(res.data)
             handleTreeData(arr)
             state.centerTree = arr
-            debugger
             if (state.authorData.length > 0) {
               let arr: any[] = []
               state.authorData.forEach((el, index) => {

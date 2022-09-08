@@ -198,7 +198,20 @@ export default {
     deleteGroupShare: product + '/delete/group/share',
     share: product + '/share', //创建针对单位个人的分享
     searchUnitShare: product + '/search/share', //查询
-    deleteUnitShare: product + '/delete/share' //删除
+    deleteUnitShare: product + '/delete/share', //删除
+    // 不确定是否已存在
+    department: product + '/distribution/to/deptment',
+    identity: product + '/distribution/to/identity',
+    person: product + '/distribution/to/person',
+    authority: product + '/distribution/to/authority',
+    toDepartment: product + '/search/distribution/to/deptment',
+    toIdentity: product + '/search/distribution/to/identity',
+    toPerson: product + '/search/distribution/to/person',
+    toAuthority: product + '/search/distribution/to/authority',
+    delteDeptment: product + '/delete/distribution/to/deptment',
+    delteAuthority: product + '/delete/distribution/to/authority',
+    delteIdentity: product + '/delete/distribution/to/identity',
+    deltePerson: product + '/delete/distribution/to/person'
   },
   // 历史记录
   history: {
