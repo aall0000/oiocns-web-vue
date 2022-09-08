@@ -27,17 +27,18 @@ interface teamType extends userType {
 interface ImMsgChildType {
   id: string
   label: string
-  msgTime: string
   name: string
   remark: string
   typeName: string
   createTime:string
+  msgTime: string
   msgType:string
   msgBody?: any
   spaceId?:string
-  fromId?:string
-  count?: number
+  noRead?: number
   showTxt?:string
+  totalMsg?:number
+  personNum?:number
 }
 // 聊天 侧边栏展示列表类型
 interface ImMsgType {

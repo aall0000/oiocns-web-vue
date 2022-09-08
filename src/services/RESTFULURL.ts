@@ -57,7 +57,7 @@ export default {
     joinSuccess: cohort + '/join/success', //加群组通过
     pullPerson: cohort + '/pull/persons', //拉人进群组
     removeIdentity: cohort + '/remove/identity', //移除群成员身份
-    removePerson: cohort + '/remove/person', //移除群成员
+    removePerson: cohort + '/remove/persons', //移除群成员
     searchCohorts: cohort + '/search/cohorts', //搜索群聊
     update: cohort + '/update' //变更群组
   },
