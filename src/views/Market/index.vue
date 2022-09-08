@@ -65,10 +65,10 @@
                 @command="(value:any) => handleCommand('own', value, item)"
                 placement="left-start"
               >
-                <el-icon style="cursor: pointer;" :size="20" ><Operation /></el-icon>
+                <el-icon style="cursor: pointer" :size="20"><Operation /></el-icon>
                 <template #dropdown>
                   <el-dropdown-menu>
-                    <div v-if="item.createUser==queryInfo.id">
+                    <div v-if="item.createUser == queryInfo.id">
                       <el-dropdown-item
                         v-for="action in actionOptionsOfOwn"
                         :command="action.value"
@@ -94,9 +94,12 @@
             :tableHead="state.tableHead"
           >
             <template #name="scope">
-              {{scope.row.name}}
-              <el-tag style="margin-left:10px" :type="scope.row.createUser==queryInfo.id?'':'success'">{{
-              scope.row.createUser==queryInfo.id ? '可管理' : '可使用'}}</el-tag>
+              {{ scope.row.name }}
+              <el-tag
+                style="margin-left: 10px"
+                :type="scope.row.createUser == queryInfo.id ? '' : 'success'"
+                >{{ scope.row.createUser == queryInfo.id ? '可管理' : '可使用' }}</el-tag
+              >
             </template>
             <template #operate="scope">
               <el-dropdown
@@ -104,10 +107,10 @@
                 @command="(value:any) => handleCommand('own', value, scope.row)"
                 placement="bottom-end"
               >
-                <el-icon style="cursor: pointer;" :size="20"><Operation /></el-icon>
+                <el-icon style="cursor: pointer" :size="20"><Operation /></el-icon>
                 <template #dropdown>
                   <el-dropdown-menu>
-                    <div v-if="scope.row.createUser==queryInfo.id">
+                    <div v-if="scope.row.createUser == queryInfo.id">
                       <el-dropdown-item
                         v-for="action in actionOptionsOfOwn"
                         :command="action.value"
@@ -116,7 +119,7 @@
                         {{ action.label }}
                       </el-dropdown-item>
                     </div>
-                    
+
                     <el-dropdown-item @click="deleteApp(scope.row)">移除应用</el-dropdown-item>
                   </el-dropdown-menu>
                 </template>
@@ -124,7 +127,7 @@
             </template>
           </DiyTable>
         </li>
-        <div class="page-flex" v-show="mode === 'card'"> 
+        <div class="page-flex" v-show="mode === 'card'">
           <Pagination ref="pageContent" @handleUpdate="handleUpdate"></Pagination>
         </div>
       </ul>
@@ -310,9 +313,9 @@
     },
     tableHead: [
       {
-        type:'slot',
+        type: 'slot',
         prop: 'name',
-        name:'name',
+        name: 'name',
         label: '应用名称'
       },
       {
@@ -396,7 +399,7 @@
   // const closeDialog = () => {
   //   shareVisible.value = false
   // }
-  const handleUpdate = (page: any)=>{
+  const handleUpdate = (page: any) => {
     pageStore.currentPage = page.currentPage
     pageStore.pageSize = page.pageSize
     getProductList()
@@ -404,14 +407,17 @@
   // 获取我的应用列表
   const getProductList = async () => {
     const { data, success } = await API.product['searchOwnProduct']({
-      data: { offset: (pageStore.currentPage-1)*pageStore.pageSize,
-        limit: pageStore.pageSize, filter: searchText.value }
+      data: {
+        offset: (pageStore.currentPage - 1) * pageStore.pageSize,
+        limit: pageStore.pageSize,
+        filter: searchText.value
+      }
     })
     if (success) {
       const { result = [], total = 0 } = data
       state[`ownProductList`] = [...result]
       state[`ownTotal`] = total
-      diyTable.value.state.page.total = total;
+      diyTable.value.state.page.total = total
       pageContent.value.state.page.total = total
     }
   }
@@ -458,6 +464,9 @@
         break
       case 'distribution':
         cohortVisible.value = true
+        break
+      case 'detail':
+        GoPage(`/market/detail/${item.id}`)
         break
       default:
         break
@@ -564,12 +573,9 @@
   const putawaySubmit = () => {
     putawayRef.value.onPutawaySubmit()
   }
-  const GoPageWithQuery = (path: string, query: any) => {
-    router.push({ path, query })
-  }
   //搜索应用
-  const searchList= ()=>{
-    pageStore.currentPage = 1;
+  const searchList = () => {
+    pageStore.currentPage = 1
     getProductList()
   }
 </script>
@@ -598,11 +604,11 @@
     height: 500px;
     overflow: auto;
   }
-  .page-flex{
-      height: 50px;
-      width: 100%;
-      overflow: hidden;
-    }
+  .page-flex {
+    height: 50px;
+    width: 100%;
+    overflow: hidden;
+  }
   .menuRight {
     width: 100px;
     height: 60px;
@@ -615,7 +621,7 @@
     justify-content: center;
     align-items: center;
     cursor: pointer;
-   
+
     &-fixed {
       padding: 5px 0;
       width: 100%;
@@ -686,7 +692,7 @@
             display: flex;
             justify-content: flex-start;
           }
-          .search{
+          .search {
             width: 200px;
             display: flex;
             justify-content: flex-start;

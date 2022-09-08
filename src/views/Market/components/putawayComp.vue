@@ -141,7 +141,7 @@ const emit = defineEmits(['closeDialog'])
   }
   const rules = reactive<FormRules>({
     price: [
-      { required: true, message: '请输入使用费用', trigger: 'blur' },
+      { required: false, message: '请输入使用费用', trigger: 'blur' },
     ],
     marketId: [
       {
