@@ -276,7 +276,6 @@
   type StateType = {
     ownProductList: ProductType[] //我的应用
     ownTotal: number
-    shareProductList: ProductType[] //其他应用
     shareTotal: number
     marketOptions: any[] //所有市场列表
     options: any[] //集团列表
@@ -287,7 +286,6 @@
   const state: StateType = reactive({
     ownProductList: [],
     ownTotal: 0,
-    shareProductList: [],
     shareTotal: 0,
     marketOptions: [],
     options: [],
@@ -336,8 +334,7 @@
       actionOptionsOfOwn.splice(2, 1)
     }
     // 获取列表
-    getProductList('own')
-    getProductList('share')
+    getProductList()
     getShopcarNum()
   })
 
@@ -346,9 +343,9 @@
     // 监听 展示方式变化
     nextTick(() => {
       if (val) {
-        getProductList('own')
+        getProductList()
       } else {
-        getProductList('share')
+        getProductList()
       }
     })
     // 监听所选市场变化
@@ -385,20 +382,18 @@
   const handleUpdate = (page: any)=>{
     pageStore.currentPage = page.currentPage
     pageStore.pageSize = page.pageSize
-    getProductList('own')
+    getProductList()
   }
   // 获取我的应用列表
-  const getProductList = async (type: 'own' | 'share') => {
-    const { data, success } = await API.product[
-      type === 'own' ? 'searchOwnProduct' : 'searchShareProduct'
-    ]({
+  const getProductList = async () => {
+    const { data, success } = await API.product['searchOwnProduct']({
       data: { offset: (pageStore.currentPage-1)*pageStore.pageSize,
         limit: pageStore.pageSize, filter: searchText.value }
     })
     if (success) {
       const { result = [], total = 0 } = data
-      state[`${type}ProductList`] = [...result]
-      state[`${type}Total`] = total
+      state[`ownProductList`] = [...result]
+      state[`ownTotal`] = total
       diyTable.value.state.page.total = total;
       pageContent.value.state.page.total = total
     }
@@ -416,7 +411,7 @@
           data: { id: item.id }
         })
         if (success) {
-          getProductList('own')
+          getProductList()
           ElMessage({
             type: 'success',
             message: '操作成功'
@@ -557,7 +552,7 @@
   }
   //搜索应用
   const searchList= ()=>{
-    getProductList('own')
+    getProductList()
   }
 </script>
 
