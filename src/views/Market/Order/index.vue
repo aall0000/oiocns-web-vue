@@ -7,6 +7,14 @@
   </MarketCard>
   <div class="container">
     <div class="limit_table_height">
+        <el-select v-model="statusvalue" filterable placeholder="订单状态" clearable size="small" @change="getTableList(searchType)">
+          <el-option
+            v-for="item in statusoptions"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          />
+        </el-select>
       <el-table
         class="table-row-sty"
         :header-cell-style="getRowClass"
@@ -21,7 +29,7 @@
           <template #default="props">
             <div style="margin-left: 50px">
               <el-table :data="props.row.details" border :header-cell-style="getRowClass">
-                <el-table-column prop="name" label="名称" />
+                <el-table-column prop="caption" label="名称" />
                 <el-table-column prop="sellAuth" label="售卖权属" />
                 <el-table-column prop="days" label="售卖期限" />
                 <el-table-column prop="price" label="售卖价格" />
@@ -37,6 +45,12 @@
                     <el-link type="primary" @click="showPayList(scope.row)">点击查看</el-link>
                   </template>
                 </el-table-column>
+                <el-table-column prop="name" label="商品状态" width="150" align="center">
+                  <template #default="scope">
+                    <el-tag v-show="scope.row.merchandise">存续</el-tag>
+                    <el-tag class="ml-2" type="danger"  v-show="!scope.row.merchandise">已失效</el-tag>
+                  </template>
+                </el-table-column>
                 <el-table-column prop="name" label="操作" width="150" align="center">
                   <template #default="scope">
                     <DiyButton >
@@ -45,13 +59,9 @@
                         <div class="diy-button" v-show="scope.row.status < 102" @click="cancelOrderDetail(scope.row.id, 220, null)">
                           取消订单
                         </div> 
-                        <div
-                          class="diy-button"
-                          v-show="scope.row.status < 102 && scope.row.ordertype == 'sell'"
-                          @click="delivery(scope.row.id)"
-                        >
-                          确认交付
-                        </div>
+                        <div class="diy-button" v-show="scope.row.status = 102" @click="reject(scope.row.id)">
+                          退货退款
+                        </div> 
                       </template>
                     </DiyButton>
                   </template>
@@ -122,7 +132,7 @@
           </template>
         </el-table-column>
         <el-table-column prop="code" label="订单号" />
-        <el-table-column prop="name" label="名称" />
+        <el-table-column prop="caption" label="名称" />
         <el-table-column prop="belongName" label="买方名称" />
         <el-table-column prop="sellAuth" label="售卖权属" />
         <el-table-column prop="days" label="售卖期限" />
@@ -138,6 +148,12 @@
             <el-link type="primary" @click="showPayList(scope.row)">点击查看</el-link>
           </template>
         </el-table-column>
+        <el-table-column prop="name" label="商品状态" width="150" align="center">
+          <template #default="scope">
+            <el-tag v-show="scope.row.merchandise" >存续</el-tag>
+            <el-tag class="ml-2" type="danger"  v-show="!scope.row.merchandise">已失效</el-tag>
+          </template>
+        </el-table-column>
         <el-table-column prop="name" label="操作" width="150" align="center">
           <template #default="scope">
             <DiyButton>
@@ -145,7 +161,7 @@
                 <div class="diy-button" v-show="scope.row.status < 102" @click="cancelOrderDetail(scope.row.id, 221, null)"> 取消订单 </div>
                 <div
                   class="diy-button"
-                  v-show="scope.row.status < 102 && scope.row.ordertype == 'sell'"
+                  v-show="scope.row.status < 102 && scope.row.merchandise"
                   @click="delivery(scope.row.id)"
                 >
                   确认交付
@@ -203,6 +219,16 @@ const orderTableRef = ref<InstanceType<typeof ElTable>>()
 const handleRowClick = (row: any) => {
   orderTableRef.value!.toggleRowSelection(row, undefined)
 }
+const statusvalue = ref('')
+const statusoptions = [
+        {label: '待卖方确认', value: 1},
+        //包含第三方监管和卖方的审核状态
+        {label: '已发货', value: 102},
+        //后续可能有物流状态接入
+        {label: '买方取消订单', value: 220},
+        {label: '卖方取消订单', value: 221},
+        {label: '已退货', value: 222}
+]
 // 会话列表搜索关键字
 const searchValue = ref<string>('')
 
@@ -303,7 +329,7 @@ const searchValue = ref<string>('')
         data: {
           offset: (pagination.current - 1) * pagination.limit,
           limit: pagination.limit,
-          status: 0, //后续改成-1
+          status: statusvalue.value? statusvalue.value:0, //后续改成-1
           filter: ''
         }
       })
@@ -319,13 +345,10 @@ const searchValue = ref<string>('')
             merchandise: { caption: any; days: any; sellAuth: any; price: any; information: any }
             order: { code: any; name: any; status: any,belong:any }
           }) => {
-            if(!item.merchandise) {item.merchandise = {caption: null, days: null, sellAuth: null, price:null, information: null}}
+            // if(!item.merchandise) {item.merchandise = {caption: null, days: null, sellAuth: null, price:null, information: null}}
             return {
               ...item,
               code: item.order.code,
-              name: item.merchandise.caption,
-              sellAuth: item.merchandise.sellAuth,
-              days: item.merchandise.days,
               belongName: item.order.belong.name,
             }
           }
@@ -339,7 +362,7 @@ const searchValue = ref<string>('')
         data: {
           offset: (pagination.current - 1) * pagination.limit,
           limit: pagination.limit,
-          status: 0, //后续改成-1
+          status: statusvalue.value? statusvalue.value:0, //后续改成-1
           filter: ''
         }
       })
@@ -350,15 +373,8 @@ const searchValue = ref<string>('')
           item.ordertype = 'buy'
           if (item.details) {
             item.details = item.details.map((e:any) => {
-              if (!e.merchandise) {
-                return e
-              }
               return {
                 ...e,
-                name: e.merchandise.caption,
-                sellAuth: e.merchandise.sellAuth,
-                price: e.merchandise.price,
-                days: e.merchandise.days
               }
             })
           }
@@ -458,6 +474,26 @@ const searchValue = ref<string>('')
         }
       })
   }
+    //退货退款
+  const reject = async (id: string) => {
+    await $services.order
+      .reject({
+        data: {
+          id: id,
+          status: 222
+        }
+      })
+      .then((res: ResultType) => {
+        if (res.code == 200) {
+          getTableList(searchType.value)
+          ElMessage({
+            message: '退货成功',
+            type: 'success'
+          })
+        }
+      })
+  }
+
   //取消订单详情  由删除更改为中止
   const cancelOrderDetail = async (id: string,status:number,reason:string) => {
     // await $services.order

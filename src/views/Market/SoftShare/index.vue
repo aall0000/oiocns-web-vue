@@ -22,6 +22,7 @@
           :dataList="state.myAppList"
           type="shop"
           @handleUpdate="handleCardUpdate"
+          @shopcarNumChange="getShopcarNum"
         ></AppCard>
         <DiyTable
           v-else
@@ -95,24 +96,24 @@
 
   onMounted(() => {
     getMarketInfo()
-    // getShopcarNum()
+    getShopcarNum()
   })
 
-  // const getShopcarNum = async () => {
-  //   await $services.market
-  //     .searchStaging({
-  //       data: {
-  //         id: 0, //市场id （需删除）
-  //         offset: 0,
-  //         limit: 20,
-  //         filter: ''
-  //       }
-  //     })
-  //     .then((res: ResultType) => {
-  //       var { result = [], total = 0 } = res.data
-  //       shopcarNum.value = total
-  //     })
-  // }
+  const getShopcarNum = async () => {
+    await $services.market
+      .searchStaging({
+        data: {
+          id: 0, //市场id （需删除）
+          offset: 0,
+          limit: 20,
+          filter: ''
+        }
+      })
+      .then((res: ResultType) => {
+        var { result = [], total = 0 } = res.data
+        shopcarNum.value = total
+      })
+  }
 
   // 卡片切换页数
   const handleCardUpdate = () => {

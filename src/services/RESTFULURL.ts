@@ -151,6 +151,7 @@ export default {
     create: order + '/create', //创建订单
     createPay: order + '/create/pay', //创建支付
     delete: order + '/delete', //删除订单
+    reject: order + '/reject', //退还商品
     deleteDetail: order + '/delete/detail', //删除订单详情
     deliverMerchandise: order + '/deliver', //交付订单详情中的商品
     searchBuyList: order + '/search/buy/list', //买方查询购买订单列表
