@@ -59,7 +59,7 @@
                         <div class="diy-button" v-show="scope.row.status < 102" @click="cancelOrderDetail(scope.row.id, 220, null)">
                           取消订单
                         </div> 
-                        <div class="diy-button" v-show="scope.row.status = 102" @click="reject(scope.row.id)">
+                        <div class="diy-button" v-show="scope.row.status == 102" @click="reject(scope.row.id)">
                           退货退款
                         </div> 
                       </template>
