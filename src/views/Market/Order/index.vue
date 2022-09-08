@@ -1,13 +1,16 @@
 <template>
   <MarketCard>
     <template #right>
-      <el-button type="primary" link @click="getTableList('buy')">已购入</el-button>
-      <el-button type="primary" link @click="getTableList('sell')">已卖出</el-button>
-    </template>
-  </MarketCard>
-  <div class="container">
-    <div class="limit_table_height">
-        <el-select v-model="statusvalue" filterable placeholder="订单状态" clearable size="small" @change="getTableList(searchType)">
+      <!-- <el-button type="primary" link @click="getTableList('buy')" >已购入</el-button>
+      <el-button type="primary" link @click="getTableList('sell')" >已卖出</el-button> -->
+        <el-switch
+          v-model="isBuy"
+          style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
+          active-text="已购入"
+          inactive-text="已卖出"
+          @change="getTableList(isBuy?'buy':'sell')"
+        />
+        <el-select v-model="statusvalue" filterable placeholder="订单状态" clearable size="small" @change="getTableList(searchType)" style="margin:5px 5px 5px 15px;">
           <el-option
             v-for="item in statusoptions"
             :key="item.value"
@@ -15,6 +18,11 @@
             :value="item.value"
           />
         </el-select>
+    </template>
+  </MarketCard>
+  <div class="container">
+    <div class="limit_table_height">
+
       <el-table
         class="table-row-sty"
         :header-cell-style="getRowClass"
@@ -207,6 +215,7 @@ const pageStore = reactive({
   total: 0
 })
 const searchType = ref<string>('buy')
+const isBuy =  ref<boolean>(true)
 const pageSizes = ref<Array<any>>(PAGE_SIZES)
 const payDialog = reactive({ show: false, data: {} })
 const payListDialog = reactive({ show: false, data: {} })
@@ -675,6 +684,7 @@ const searchValue = ref<string>('')
     padding-bottom: 10px;
 
     .limit_table_height {
+      
     }
     .tables {
       height: 50%;
@@ -826,6 +836,7 @@ const searchValue = ref<string>('')
   }
   .table-row-sty {
     height: calc(100vh - 12rem);
+    padding: 16px;
   }
   .table-row-sty tr:hover,
   .table-row-sty tbody tr.el-table__row.not-read:hover {
