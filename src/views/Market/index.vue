@@ -1,6 +1,6 @@
 <template>
   <div class="market-layout">
-    <MarketCard>
+    <MarketCard :isSee="true">
       <template #right>
         <div class="edit-wrap">
           <el-button small link type="primary" @click="GoPage('/market/appApply')"
@@ -210,7 +210,6 @@
           :total="state.shareTotal"
         />
       </ul>
-
     </div>
   </div>
   <el-dialog
@@ -704,7 +703,7 @@
       height: calc(100vh - 124px);
       overflow-y: auto;
     }
-    .edit-wrap{
+    .edit-wrap {
       display: flex;
       align-items: center;
       justify-content: center;
@@ -713,7 +712,7 @@
       // position: absolute;
       // right: 50px;
       // bottom: 20px;
-      margin-left:20px
+      margin-left: 20px;
     }
     .box {
       .box-ul + .box-ul {
