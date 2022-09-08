@@ -39,7 +39,7 @@
         return { ...item, icon: img1 }
       })
       commonStore.isChangeStartApp = false
-      console.log('可用应用', result)
+      // console.log('可用应用', result)
     }
   }
   onMounted(() => {
@@ -55,7 +55,7 @@
   )
   const emit = defineEmits(['AppChange'])
   const handleChooseItem = async (app: any) => {
-    const { data, success } = await $services.product.searchResource({
+    const { data, success } = await $services.product.queryOwnResource({
       data: {
         id: app.id,
         offset: 0,

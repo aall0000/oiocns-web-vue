@@ -9,7 +9,24 @@ interface selectType {
   label: string
   id: string | number
 }
-// 应用商品数据类型
+
+// 市场信息类型
+interface MarketType {
+  code: string
+  createTime: string
+  createUser: string
+  id: string
+  name: string
+  public: boolean
+  remark: string
+  samrId: string
+  status: number
+  updateTime: string
+  updateUser: string
+  version: string
+}
+
+// 应用/商品数据类型
 interface ProductType {
   authority?: string
   belongId?: string
@@ -25,18 +42,18 @@ interface ProductType {
   typeName: string
   updateTime: string
   updateUser: string
-  public?:boolean
+  public?: boolean
   version?: string
   remark?: string
-  icon?:string
+  icon?: string
 }
-
-interface AppMenuType {
+// 应用资源 数据类型
+interface AppResourcesType {
   name: string
   link: string
-  customId: string
-  code:string
-  privateKey:string
+  code: string
+  privateKey: string
+  customId?: string
 }
-
+// 注册应用 资源所需操作类型
 type ProductMenuEventType = 'Add' | 'Delete' | 'Up' | 'Down'

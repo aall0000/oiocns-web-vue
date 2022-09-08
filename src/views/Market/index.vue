@@ -37,12 +37,9 @@
       <ul class="box-ul">
         <div class="getApp-radio">
           <p class="box-ul-title">我的应用</p>
-
-          <!-- <p style="margin-right: 20px">切换视图</p>
-          <el-switch v-model="isCard" /> -->
         </div>
         <li class="app-card" v-show="mode === 'card'">
-          <MarketCreate :info="add" @myclick="GoPage('/market/getApp')" />
+          <MarketCreate :info="add" @myclick="GoPage('/market/softShare')" />
           <ShopCard
             v-for="item in state.ownProductList"
             :info="item"
@@ -133,6 +130,7 @@
                 :name="item.name"
                 :url="item.icon || appImg"
                 :imgWidth="48"
+                :createUser="item.createUser"
                 :limit="1"
                 :isSquare="false"
             /></template>
@@ -330,7 +328,7 @@
   import Group from '../Market/AppShare/group.vue'
   import Person from '../Market/AppShare/person.vue'
   import TheTableButton from './AppList/components/theTableButton3.vue'
-  const add: string = '从应用市场中添加'
+  const add: string = '从共享仓库中添加应用'
   const groupShareVisible = ref<boolean>(false)
   const unitShareVisible = ref<boolean>(false)
   const personCohortShareVisible = ref<boolean>(false)
@@ -473,7 +471,6 @@
     })
     if (success) {
       const { result = [], total = 0 } = data
-      console.log(result)
       state[`${type}ProductList`] = [...result]
       state[`${type}Total`] = total
     }

@@ -143,7 +143,8 @@ export default {
     searchMerchandiseApply: market + '​/search/merchandise/apply', //查询产品上架申请
     searchStaging: market + '/search/staging', //查询购物车
     unpublishMerchandise: market + '/unpublish', //下架商品
-    updateMarket: market + '​/update' //更新市场
+    updateMarket: market + '​/update', //更新市场
+    getSoftShareInfo: market + '/search/softshare' //获取共享仓库信息
   },
   order: {
     orderConfirm: order + '/confirm', //确认订单详情(买方确认收货)
