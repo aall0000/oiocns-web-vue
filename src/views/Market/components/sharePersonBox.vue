@@ -64,21 +64,15 @@
         />
       </div>
       <div class="cohortLayout-content-right" :style="'width:' + (radio == '1' ? '49%' : '33%')">
-        <Author v-if="radio == '1'" @delContent="delContent" :orgData="state.orgData"></Author>
+        <Author
+          v-if="radio == '1'"
+          @delContent="delContent"
+          :departData="state.departData"
+        ></Author>
         <Author
           v-if="radio == '2'"
           @delContent="delContentAuth"
-          :orgData="state.authorData"
-        ></Author>
-        <Author
-          v-if="radio == '3'"
-          @delContent="delContentAuth"
-          :orgData="state.personsData"
-        ></Author>
-        <Author
-          v-if="radio == '4'"
-          @delContent="delContentAuth"
-          :orgData="state.identitysData"
+          :departData="state.authorData"
         ></Author>
       </div>
     </div>
@@ -95,8 +89,8 @@
   import { ElMessage, ElMessageBox } from 'element-plus'
   import API from '@/services'
   import Author from './components/author.vue'
-  import { useUserStore } from '@/store/user'
   import type { TabsPaneContext } from 'element-plus'
+  import { AnyAaaaRecord } from 'dns'
   interface Tree {
     id: string
     label: string
@@ -109,14 +103,12 @@
   }
   const searchValue = ref('')
   const searchLeftValue = ref('')
-  const cascaderTree = ref([])
   const activeName = ref(0)
   const tabs = ref([])
   const radio = ref('1')
   const leftTree = ref(null)
   const centerTree = ref(null)
   const resource = ref<string>('')
-  const store = useUserStore()
   const state = reactive({
     loadID: {
       id: '',
@@ -132,8 +124,8 @@
         label: '按人员分享'
       }
     ],
-    orgData: [], // 集团分发右侧数据
-    rightData: [], // 集团分发历史数据
+    departData: [], // 集团分发右侧数据
+    departHisData: [], // 集团分发历史数据
     centerTree: [], // 职权分发中间树形
     authorHisData: [], // 职权历史数据
     authorData: [], // 职权右侧数据
@@ -147,7 +139,7 @@
     children: 'nodes'
   }
   const unitProps = {
-    label: 'name',
+    label: 'label',
     children: 'children'
   }
   const page = reactive({
@@ -161,35 +153,37 @@
     () => radio.value,
     (newValue, oldValue) => {
       state.centerTree = []
-      getNewHistoryData()
-      // nextTick(() => {
-      //   if (newValue == '1' && state.orgData.length > 0) {
-      //     let arr: any[] = []
-      //     let err: any[] = []
-      //     state.rightData.forEach((el) => {
-      //       state.orgData.forEach((al) => {
-      //         if (el.id == al.id) {
-      //           al.type = 'has'
-      //         }
-      //       })
-      //     })
-      //     state.orgData.forEach((el) => {
-      //       if (el.type == 'add' || el.type == 'has') {
-      //         arr.push(el.id)
-      //       } else {
-      //         err.push(el)
-      //       }
-      //     })
-      //     state.orgData = []
-      //     err.forEach((el) => {
-      //       state.orgData.push(el)
-      //     })
-      //     leftTree.value.setCheckedKeys(arr, true)
-      //   } else if (newValue == '2') {
-      //     getHistoryData(false)
-      //   }
-      // })
-      //   getHistoryData(false)
+      nextTick(() => {
+        if (newValue == '1' && state.departData.length > 0) {
+          let arr: any[] = []
+          state.departData.forEach((el) => {
+            if (el.type == 'add' || el.type == 'has') {
+              arr.push(el.id)
+            }
+          })
+          leftTree.value.setCheckedKeys(arr, true)
+        } else if (newValue == '2' && state.authorData.length == 0) {
+          getHistoryData()
+        } else if (newValue == '3' && state.personsData.length == 0) {
+          getHistoryData()
+        } else if (newValue == '4' && state.identitysData.length == 0) {
+          getHistoryData()
+        }
+      })
+    },
+    { immediate: true }
+  )
+  watch(
+    () => resource.value,
+    (newValue, oldValue) => {
+      state.authorData = []
+      state.departData = []
+      state.personsData = []
+      state.identitysData = []
+      if (radio.value == '1') {
+        leftTree.value.setCheckedKeys([])
+      }
+      getHistoryData()
     }
   )
   watch(
@@ -214,104 +208,10 @@
     emit('closeDialog')
   }
 
-  const getCompanyTree = () => {
-    API.cohort
-      .getJoinedCohorts({
-        data: { offset: 0, limit: 10000, filter: '' }
-      })
-      .then((res: any) => {
-        let obj = res.data.result
-        cascaderTree.value = obj
-        getHistoryData(false)
-      })
-  }
+  // 获取部门历史数据
+  const getOrgHistoryData = () => {}
 
-  const getRadioHistory = () => {
-    switch (radio.value) {
-      case '1':
-        API.product
-          .searchGroupShare({
-            data: {
-              id: props.info.id,
-              teamId: store.queryInfo.team.id,
-              offset: 0,
-              limit: 10000,
-              filter: ''
-            }
-          })
-          .then((res: ResultType) => {
-            if (res.success) {
-              state.rightData = res.data.result ? res.data.result : []
-              if (state.rightData.length > 0) {
-                let arr: any[] = []
-                state.rightData.forEach((el) => {
-                  el.type = 'has'
-                  arr.push(el.id)
-                })
-                state.orgData = state.rightData
-                leftTree.value.setCheckedKeys(arr, true)
-                if (state.orgData.length > 0) {
-                  let err: any[] = []
-                  state.orgData.forEach((al) => {
-                    if (al.type == 'add') {
-                      err.push(al.id)
-                    }
-                    state.rightData.forEach((el) => {
-                      if (el.id == al.id) {
-                        al.type = 'has'
-                      }
-                    })
-                  })
-                }
-              }
-            }
-          })
-        break
-      case '2':
-        API.product
-          .searchUnitShare({
-            data: {
-              id: props.info.id,
-              teamId: props.groupId,
-              offset: 0,
-              limit: 10000,
-              filter: ''
-            }
-          })
-          .then((res: ResultType) => {
-            if (res.success) {
-              state.authorHisData = res.data.result ? res.data.result : []
-              if (state.authorHisData.length > 0) {
-                let arr: any[] = []
-                state.authorHisData.forEach((el) => {
-                  arr.push(el.id)
-                })
-                centerTree.value.setCheckedKeys(arr, true)
-                if (state.authorData.length > 0) {
-                  let err: any[] = []
-                  state.authorData.forEach((al) => {
-                    if (al.type == 'add') {
-                      err.push(al.id)
-                    }
-                    state.authorHisData.forEach((el) => {
-                      if (el.id == al.id) {
-                        al.type = 'has'
-                      }
-                    })
-                  })
-                  centerTree.value.setCheckedKeys(err, true)
-                } else {
-                  state.authorData = state.authorHisData
-                }
-              }
-            }
-          })
-        break
-      default:
-        break
-    }
-  }
-
+  // 获取历史数据（提交表单后）
   const getNewHistoryData = () => {
     switch (radio.value) {
       case '1':
@@ -319,38 +219,22 @@
           .searchGroupShare({
             data: {
               id: props.info.id,
-              teamId: store.queryInfo.team.id,
               offset: 0,
-              limit: 10000,
-              filter: ''
+              limit: 1000,
+              filter: '',
+              teamId: props.groupId
             }
           })
           .then((res: ResultType) => {
-            if (res.success) {
-              state.rightData = res.data.result ? res.data.result : []
-              if (state.rightData.length > 0) {
-                let arr: any[] = []
-                state.rightData.forEach((el) => {
-                  el.type = 'has'
-                  arr.push(el.id)
-                })
-                state.orgData = state.rightData
-                leftTree.value.setCheckedKeys(arr, true)
-                if (state.orgData.length > 0) {
-                  let err: any[] = []
-                  state.orgData.forEach((al) => {
-                    if (al.type == 'add') {
-                      err.push(al.id)
-                    }
-                    state.rightData.forEach((el) => {
-                      if (el.id == al.id) {
-                        al.type = 'has'
-                      }
-                    })
-                  })
-                }
-              }
-            }
+            state.departHisData = res.data.result ? res.data.result : []
+            leftTree.value.setCheckedKeys([])
+            let arr: any[] = []
+            state.departHisData.forEach((el) => {
+              el.type = 'has'
+              arr.push(el.id)
+            })
+            state.departData = state.departHisData
+            leftTree.value.setCheckedKeys(arr, true)
           })
         break
       case '2':
@@ -358,39 +242,22 @@
           .searchUnitShare({
             data: {
               id: props.info.id,
-              teamId: props.groupId,
               offset: 0,
-              limit: 10000,
-              filter: ''
+              limit: 1000,
+              filter: '',
+              teamId: props.groupId
             }
           })
           .then((res: ResultType) => {
-            if (res.success) {
-              state.authorHisData = res.data.result ? res.data.result : []
-              if (state.authorHisData.length > 0) {
-                let arr: any[] = []
-                state.authorHisData.forEach((el) => {
-                  arr.push(el.id)
-                })
-                centerTree.value.setCheckedKeys(arr, true)
-                if (state.authorData.length > 0) {
-                  let err: any[] = []
-                  state.authorData.forEach((al) => {
-                    if (al.type == 'add') {
-                      err.push(al.id)
-                    }
-                    state.authorHisData.forEach((el) => {
-                      if (el.id == al.id) {
-                        al.type = 'has'
-                      }
-                    })
-                  })
-                  centerTree.value.setCheckedKeys(err, true)
-                } else {
-                  state.authorData = state.authorHisData
-                }
-              }
-            }
+            state.authorHisData = res.data.result ? res.data.result : []
+            centerTree.value.setCheckedKeys([])
+            let arr: any[] = []
+            state.authorHisData.forEach((el) => {
+              el.type = 'has'
+              arr.push(el.id)
+            })
+            state.authorData = state.authorHisData
+            centerTree.value.setCheckedKeys(arr, true)
           })
         break
       default:
@@ -398,46 +265,26 @@
     }
   }
   // 获取历史数据
-  const getHistoryData = (clear: boolean) => {
+  const getHistoryData = () => {
     switch (radio.value) {
       case '1':
         API.product
           .searchGroupShare({
             data: {
               id: props.info.id,
-              teamId: store.queryInfo.team.id,
               offset: 0,
-              limit: 10000,
-              filter: ''
+              limit: 1000,
+              filter: '',
+              teamId: props.groupId
             }
           })
           .then((res: ResultType) => {
-            if (res.success) {
-              state.rightData = res.data.result ? res.data.result : []
-              if (state.rightData.length > 0) {
-                let arr: any[] = []
-                state.rightData.forEach((el) => {
-                  arr.push(el.id)
-                })
-                leftTree.value.setCheckedKeys(arr, true)
-                if (state.orgData.length > 0) {
-                  let err: any[] = []
-                  state.orgData.forEach((al) => {
-                    if (al.type == 'add') {
-                      err.push(al.id)
-                    }
-                    state.rightData.forEach((el) => {
-                      if (el.id == al.id) {
-                        al.type = 'has'
-                      }
-                    })
-                  })
-                  if (!clear) {
-                    leftTree.value.setCheckedKeys(err, true)
-                  }
-                }
-              }
-            }
+            state.departHisData = res.data.result ? res.data.result : []
+            let arr: any[] = []
+            state.departHisData.forEach((el) => {
+              arr.push(el.id)
+            })
+            leftTree.value.setCheckedKeys(arr, true)
           })
         break
       case '2':
@@ -447,37 +294,18 @@
               id: props.info.id,
               teamId: props.groupId,
               offset: 0,
-              limit: 10000,
+              limit: 1000,
               filter: ''
             }
           })
           .then((res: ResultType) => {
-            if (res.success) {
-              state.authorHisData = res.data.result ? res.data.result : []
-              if (state.authorHisData.length > 0) {
-                let arr: any[] = []
-                state.authorHisData.forEach((el) => {
-                  arr.push(el.id)
-                })
-                centerTree.value.setCheckedKeys(arr, true)
-                if (state.authorData.length > 0) {
-                  let err: any[] = []
-                  state.authorData.forEach((al) => {
-                    if (al.type == 'add') {
-                      err.push(al.id)
-                    }
-                    state.authorHisData.forEach((el) => {
-                      if (el.id == al.id) {
-                        al.type = 'has'
-                      }
-                    })
-                  })
-                  centerTree.value.setCheckedKeys(err, true)
-                } else {
-                  state.authorData = state.authorHisData
-                }
-              }
-            }
+            state.authorHisData = res.data.result ? res.data.result : []
+            state.authorData = JSON.parse(JSON.stringify(state.authorHisData))
+            let arr: any[] = []
+            state.authorData.forEach((el) => {
+              el.type = 'has'
+              arr.push(el.id)
+            })
           })
         break
       default:
@@ -497,7 +325,7 @@
     let departDel: any[] = []
     let authorAdd: any[] = []
     let authorDel: any[] = []
-    state.orgData.forEach((el) => {
+    state.departData.forEach((el) => {
       if (el.type == 'add') {
         departAdd.push(el.id)
       } else if (el.type == 'del') {
@@ -521,7 +349,7 @@
       promise1 = API.product.groupShare({
         data: {
           productId: props.info.id,
-          teamId: store.queryInfo.team.id,
+          teamId: props.groupId,
           targetIds: departAdd
         }
       })
@@ -530,7 +358,7 @@
       promise2 = API.product.deleteGroupShare({
         data: {
           productId: props.info.id,
-          teamId: store.queryInfo.team.id,
+          teamId: props.groupId,
           targetIds: departDel
         }
       })
@@ -539,17 +367,17 @@
       promise3 = await API.product.share({
         data: {
           productId: props.info.id,
-          teamId: store.queryInfo.team.id,
+          teamId: props.groupId,
           targetIds: authorAdd
         }
       })
     }
     if (authorDel.length > 0) {
-      promise4 = API.product.department({
+      promise4 = API.product.deleteShare({
         data: {
           productId: props.info.id,
-          teamId: store.queryInfo.team.id,
-          targetIds: authorAdd
+          teamId: props.groupId,
+          targetIds: authorDel
         }
       })
     }
@@ -558,10 +386,7 @@
         type: 'success',
         message: '分享成功'
       })
-      setTimeout(() => {
-        getNewHistoryData()
-        // getHistoryData(true)
-      }, 300)
+      closeDialog()
     })
   }
   // 中间树形滚动加载事件
@@ -599,6 +424,7 @@
     dataList.forEach((el: any, index: number) => {
       if (el.id == data.id) {
         if (result) {
+          data.type = 'del'
           el.type = 'del'
         } else {
           dataList.splice(index, 1)
@@ -607,24 +433,26 @@
     })
   }
   const handleBoxClick = (hisData: any, dataList: any, data: any) => {
-    if (hisData) {
-      let result = hisData.some((item: any) => {
-        return item.id == data.id
-      })
-      for (let i = 0; i < dataList.length; i++) {
-        if (dataList[i].id == data.id) {
-          if (data.type == 'add') {
-            return
-          }
+    let result = hisData.some((item: any) => {
+      return item.id == data.id
+    })
+    for (let i = 0; i < dataList.length; i++) {
+      if (dataList[i].id == data.id) {
+        if (data.type == 'add') {
+          return
+        } else if (data.type == 'has') {
+          return
         }
       }
-      if (result) {
-        data.type = 'has'
-        dataList.push(data)
-      } else {
-        data.type = 'add'
-        dataList.push(data)
-      }
+    }
+
+    if (result) {
+      data.type = 'has'
+      dataList.forEach((el: any) => {
+        if (el.id == data.id) {
+          el.type = 'has'
+        }
+      })
     } else {
       data.type = 'add'
       dataList.push(data)
@@ -635,38 +463,42 @@
     console.log('点击左侧', data, checked, indeterminate)
     if (checked) {
       if (radio.value == '1') {
-        let result = state.rightData.some((item: any) => {
+        let result = state.departHisData.some((item: any) => {
           return item.id == data.id
         })
-        for (let i = 0; i < state.orgData.length; i++) {
-          if (state.orgData[i].id == data.id) {
+        for (let i = 0; i < state.departData.length; i++) {
+          if (state.departData[i].id == data.id) {
             if (data.type == 'add') {
               return
-            } else if (data.type == 'del') {
-              state.orgData[i].type = 'has'
+            } else if (data.type == 'has') {
               return
             }
           }
         }
         if (result) {
-          data.type = 'has'
-          state.orgData.push(data)
+          if (data.type == 'del') {
+            data.type = 'has'
+            return
+          } else {
+            data.type = 'has'
+            state.departData.push(data)
+          }
         } else {
           data.type = 'add'
-          state.orgData.push(data)
+          state.departData.push(data)
         }
       }
     } else {
       if (radio.value == '1') {
-        let result = state.rightData.some((item: any) => {
+        let result = state.departHisData.some((item: any) => {
           return item.id == data.id
         })
-        state.orgData.forEach((el, index) => {
+        state.departData.forEach((el, index) => {
           if (el.id == data.id) {
             if (result) {
               el.type = 'del'
             } else {
-              state.orgData.splice(index, 1)
+              state.departData.splice(index, 1)
             }
           }
         })
@@ -683,32 +515,61 @@
       page.currentPage = 1
     }
     state.loadID = data
-    API.cohort
-      .getPersons({
-        data: {
-          id: data.id,
-          limit: page.pageSize,
-          offset: handleCurrent.value,
-          filter: typeof search == 'string' ? search : ''
-        }
-      })
-      .then((res: ResultType) => {
-        if (load == true) {
-          state.centerTree.concat(res.data.result)
-        } else {
-          state.centerTree = res.data.result ? res.data.result : []
-        }
+    if (data.parentId == '0') {
+      API.company
+        .getGroupCompanies({
+          data: {
+            id: data.id,
+            limit: page.pageSize,
+            offset: handleCurrent.value,
+            filter: typeof search == 'string' ? search : ''
+          }
+        })
+        .then((res: ResultType) => {
+          if (load == true) {
+            state.centerTree.concat(res.data.result)
+          } else {
+            state.centerTree = res.data.result ? res.data.result : []
+          }
 
-        if (state.personsData.length > 0) {
-          let arr: any[] = []
-          state.personsData.forEach((el) => {
-            if (el.type == 'add' || el.type == 'has') {
-              arr.push(el.id)
-            }
-          })
-          centerTree.value.setCheckedKeys(arr, true)
-        }
-      })
+          if (state.personsData.length > 0) {
+            let arr: any[] = []
+            state.personsData.forEach((el) => {
+              if (el.type == 'add' || el.type == 'has') {
+                arr.push(el.id)
+              }
+            })
+            centerTree.value.setCheckedKeys(arr, true)
+          }
+        })
+    } else {
+      API.company
+        .getSubgroupCompanies({
+          data: {
+            id: data.id,
+            limit: page.pageSize,
+            offset: handleCurrent.value,
+            filter: typeof search == 'string' ? search : ''
+          }
+        })
+        .then((res: ResultType) => {
+          if (load == true) {
+            state.centerTree.concat(res.data.result)
+          } else {
+            state.centerTree = res.data.result ? res.data.result : []
+          }
+
+          if (state.personsData.length > 0) {
+            let arr: any[] = []
+            state.personsData.forEach((el) => {
+              if (el.type == 'add' || el.type == 'has') {
+                arr.push(el.id)
+              }
+            })
+            centerTree.value.setCheckedKeys(arr, true)
+          }
+        })
+    }
   }
   const handleTreeData = (item: any) => {
     for (let i = 0; i < item.length; i++) {
@@ -736,7 +597,10 @@
       } else {
         state.authorData.forEach((el, index) => {
           if (el.id == item.id) {
-            el.type == 'del'
+            el.type = 'del'
+            if (state.centerTree.length !== 0) {
+              centerTree.value.setChecked(el.id, false)
+            }
           }
         })
       }
@@ -753,7 +617,10 @@
       } else {
         state.personsData.forEach((el, index) => {
           if (el.id == item.id) {
-            el.type == 'del'
+            el.type = 'del'
+            if (state.centerTree.length !== 0) {
+              centerTree.value.setChecked(el.id, false)
+            }
           }
         })
       }
@@ -770,7 +637,10 @@
       } else {
         state.identitysData.forEach((el, index) => {
           if (el.id == item.id) {
-            el.type == 'del'
+            el.type = 'del'
+            if (state.centerTree.length !== 0) {
+              centerTree.value.setChecked(el.id, false)
+            }
           }
         })
       }
@@ -780,20 +650,56 @@
     if (item.type == 'del') {
       return
     } else if (item.type == 'add') {
-      state.orgData.forEach((el, index) => {
+      state.departData.forEach((el, index) => {
         if (el.id == item.id) {
-          state.orgData.splice(index, 1)
+          state.departData.splice(index, 1)
           leftTree.value.setChecked(item.id, false)
         }
       })
     } else {
-      state.orgData.forEach((el, index) => {
+      state.departData.forEach((el, index) => {
         if (el.id == item.id) {
           el.type = 'del'
           leftTree.value.setChecked(el.id, false)
         }
       })
     }
+  }
+
+  // 节点ID和对象映射关系
+  const parentIdMap: any = {}
+  let cascaderTree = ref<OrgTreeModel[]>([])
+  const getCompanyTree = () => {
+    API.cohort
+      .getJoinedCohorts({
+        data: { offset: 0, limit: 10000, filter: '' }
+      })
+      .then((res: any) => {
+        let obj = res.data.data
+        let children = res.data.children
+        obj.label = obj.name
+        obj.children = children
+        cascaderTree.value.push(obj)
+        console.log('===', cascaderTree)
+        getHistoryData()
+      })
+  }
+  // 初始化ID和对象映射关系
+  const initIdMap = (nodes: any[]) => {
+    for (const node of nodes) {
+      parentIdMap[node.id] = node
+      if (node.children) {
+        initIdMap(node.children)
+      }
+    }
+  }
+  // 过滤掉工作组作为表单级联数据
+  const filter = (nodes: OrgTreeModel[]): OrgTreeModel[] => {
+    nodes = nodes.filter((node) => node.data?.typeName !== '工作组')
+    for (const node of nodes) {
+      node.children = filter(node.children)
+    }
+    return nodes
   }
 </script>
 

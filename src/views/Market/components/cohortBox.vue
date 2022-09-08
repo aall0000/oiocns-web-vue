@@ -183,14 +183,8 @@
     (newValue, oldValue) => {
       state.centerTree = []
       nextTick(() => {
-        if (newValue == '1' && state.departData.length > 0) {
-          let arr: any[] = []
-          state.departData.forEach((el) => {
-            if (el.type == 'add' || el.type == 'has') {
-              arr.push(el.id)
-            }
-          })
-          leftTree.value.setCheckedKeys(arr, true)
+        if (newValue == '1') {
+          getOrgHistoryData()
         } else if (newValue == '2' && state.authorData.length == 0) {
           getHistoryData()
         } else if (newValue == '3' && state.personsData.length == 0) {
@@ -209,7 +203,9 @@
       state.departData = []
       state.personsData = []
       state.identitysData = []
-      leftTree.value.setCheckedKeys([])
+      if (radio.value == '1') {
+        leftTree.value.setCheckedKeys([])
+      }
       getHistoryData()
     }
   )
@@ -237,7 +233,38 @@
   }
 
   // 获取部门历史数据
-  const getOrgHistoryData = () => {}
+  const getOrgHistoryData = () => {
+    API.product
+      .toDepartment({
+        data: {
+          id: resource.value,
+          offset: 0,
+          limit: 1000,
+          filter: ''
+        }
+      })
+      .then((res: ResultType) => {
+        if (state.departData.length > 0) {
+          let arr: any[] = []
+          state.departData.forEach((el) => {
+            if (el.type == 'add' || el.type == 'has') {
+              arr.push(el.id)
+            }
+          })
+          leftTree.value.setCheckedKeys(arr, true)
+        } else {
+          state.departHisData = res.data.result ? res.data.result : []
+          leftTree.value.setCheckedKeys([])
+          let arr: any[] = []
+          state.departHisData.forEach((el) => {
+            el.type = 'has'
+            arr.push(el.id)
+          })
+          state.departData = state.departHisData
+          leftTree.value.setCheckedKeys(arr, true)
+        }
+      })
+  }
 
   // 获取历史数据（提交表单后）
   const getNewHistoryData = () => {
@@ -652,8 +679,13 @@
           }
         }
         if (result) {
-          data.type = 'has'
-          state.departData.push(data)
+          if (data.type == 'del') {
+            data.type = 'has'
+            return
+          } else {
+            data.type = 'has'
+            state.departData.push(data)
+          }
         } else {
           data.type = 'add'
           state.departData.push(data)
