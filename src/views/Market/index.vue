@@ -68,13 +68,15 @@
                 <el-icon style="cursor: pointer;" :size="20" ><Operation /></el-icon>
                 <template #dropdown>
                   <el-dropdown-menu>
-                    <el-dropdown-item
-                      v-for="action in actionOptionsOfOwn"
-                      :command="action.value"
-                      :key="action.value"
-                    >
-                      {{ action.label }}
-                    </el-dropdown-item>
+                    <div v-if="item.createUser==queryInfo.id">
+                      <el-dropdown-item
+                        v-for="action in actionOptionsOfOwn"
+                        :command="action.value"
+                        :key="action.value"
+                      >
+                        {{ action.label }}
+                      </el-dropdown-item>
+                    </div>
                     <el-dropdown-item @click="deleteApp(item)">移除应用</el-dropdown-item>
                     <!-- <el-dropdown-item  @click="GoPage('/market/appDetail')">应用详情</el-dropdown-item> -->
                   </el-dropdown-menu>
@@ -91,6 +93,11 @@
             :tableData="state.ownProductList"
             :tableHead="state.tableHead"
           >
+            <template #name="scope">
+              {{scope.row.name}}
+              <el-tag style="margin-left:10px" :type="scope.row.createUser==queryInfo.id?'':'success'">{{
+              scope.row.createUser==queryInfo.id ? '可管理' : '可使用'}}</el-tag>
+            </template>
             <template #operate="scope">
               <el-dropdown
                 trigger="click"
@@ -100,13 +107,16 @@
                 <el-icon style="cursor: pointer;" :size="20"><Operation /></el-icon>
                 <template #dropdown>
                   <el-dropdown-menu>
-                    <el-dropdown-item
-                      v-for="action in actionOptionsOfOwn"
-                      :command="action.value"
-                      :key="action.value"
-                    >
-                      {{ action.label }}
-                    </el-dropdown-item>
+                    <div v-if="scope.row.createUser==queryInfo.id">
+                      <el-dropdown-item
+                        v-for="action in actionOptionsOfOwn"
+                        :command="action.value"
+                        :key="action.value"
+                      >
+                        {{ action.label }}
+                      </el-dropdown-item>
+                    </div>
+                    
                     <el-dropdown-item @click="deleteApp(scope.row)">移除应用</el-dropdown-item>
                   </el-dropdown-menu>
                 </template>
@@ -114,8 +124,8 @@
             </template>
           </DiyTable>
         </li>
-        <div class="page-flex">
-          <pagination ref="pageContent" @handleUpdate="handleUpdate"></pagination>
+        <div class="page-flex" v-show="mode === 'card'"> 
+          <Pagination ref="pageContent" @handleUpdate="handleUpdate"></Pagination>
         </div>
       </ul>
     </div>
@@ -236,7 +246,9 @@
   import Group from '../Market/AppShare/group.vue'
   import Person from '../Market/AppShare/person.vue'
   import TheTableButton from './AppList/components/theTableButton3.vue'
-  import pagination from '@/components/pagination/index.vue'
+  import Pagination from '@/components/pagination/index.vue'
+  import { storeToRefs } from 'pinia'
+  // hoverItem--鼠标移入item的id 用于展示按钮区域
 
   const add: string = '从共享仓库中添加应用'
   const groupShareVisible = ref<boolean>(false)
@@ -250,6 +262,9 @@
   const router = useRouter()
   const store = useUserStore()
   const cohort = ref(null)
+
+  const { queryInfo } = storeToRefs(store)
+
   // 当前用户的集团
   let groups = reactive([])
   // 当前选中的集团
@@ -295,7 +310,9 @@
     },
     tableHead: [
       {
+        type:'slot',
         prop: 'name',
+        name:'name',
         label: '应用名称'
       },
       {
