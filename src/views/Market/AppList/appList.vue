@@ -1,14 +1,17 @@
 <template>
   <MarketCard>
     <template #right>
-      <el-button type="primary" @click="GoPage('/market/appShelvesApproval')"
+      <el-button small link type="primary" @click="GoPage('/market/appShelvesApproval')"
         >应用上架审批</el-button
       >
-      <el-button type="primary" @click.stop="GoPage('/market/order')">我的订单</el-button>
-      <el-badge :value="shopcarNum" style="padding-left:10px">
-           <el-button type="primary" @click.stop="GoPage('/market/shopCar')">购物车</el-button>
+      <el-button small link type="primary" @click.stop="GoPage('/market/order')"
+        >我的订单</el-button
+      >
+      <el-badge :value="shopcarNum" style="padding-left: 10px">
+        <el-button small link type="primary" @click.stop="GoPage('/market/shopCar')"
+          >购物车</el-button
+        >
       </el-badge>
-
     </template>
   </MarketCard>
   <div class="appListLayout">
@@ -18,9 +21,10 @@
       </div>
       <div class="appListLayout-content">
         <AppCard
-          v-if="value1"
+          v-if="switchValue"
           ref="appCard"
           :dataList="state.myAppList"
+          :type="route.query.type"
           @handleUpdate="handleCardUpdate"
           @shopcarNumChange="getShopcarNum"
         ></AppCard>
@@ -39,7 +43,7 @@
       </div>
       <div class="appListLayout-radio" v-if="state.myAppList.length > 0">
         <p style="margin-right: 20px">切换视图</p>
-        <el-switch v-model="value1" />
+        <el-switch v-model="switchValue" />
       </div>
     </div>
   </div>
@@ -56,7 +60,7 @@
   const router = useRouter()
   const route = useRoute()
   const diyTable = ref(null)
-  const value1 = ref(true)
+  const switchValue = ref(true)
   const appCard = ref(null)
   const shopcarNum = ref(0)
   const state = reactive({
@@ -93,7 +97,7 @@
     ]
   })
 
-  watch(value1, (val) => {
+  watch(switchValue, (val) => {
     nextTick(() => {
       if (val) {
         appCard.value.state.page.currentPage = 1
@@ -172,7 +176,7 @@
       })
   }
   const GoPage = (path: string) => {
-    router.push(path)
+    router.push({ path: path, query: { marketId: route.query.data } })
   }
 </script>
 

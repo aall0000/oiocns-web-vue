@@ -14,15 +14,16 @@
       <!-- <Breadcrumb></Breadcrumb> -->
       <el-main class="main-wrap">
         <Suspense>
-
-          <router-view v-slot="{ Component }">
-            <transition name="fade-transform">
-              <keep-alive v-if="$route.meta.keepAlive">
-                <component :is="Component" />
-              </keep-alive>
-              <component v-else :is="Component" />
-            </transition>
-          </router-view>
+          <template #default>
+            <router-view v-slot="{ Component }">
+              <transition name="fade-transform">
+                <keep-alive v-if="$route.meta.keepAlive">
+                  <component :is="Component" />
+                </keep-alive>
+                <component v-else :is="Component" />
+              </transition>
+            </router-view>
+          </template>
 
           <template #fallback>
             <LoadingVue />
@@ -40,12 +41,29 @@ import CustomHeadr from './components/customHeader.vue'
 import MainAsideVue from './components/mainAside.vue'
 import Breadcrumb from './components/breadcrumb.vue'
 import LoadingVue from './components/loading.vue'
+import { useUserStore } from '@/store/user'
+import anyStore from '@/utils/anystore'
+import orgChat from '@/hubs/orgchat'
+import { onMounted, onBeforeUnmount } from 'vue'
+const { userToken,queryInfo } = useUserStore()
+
+onMounted(()=>{
+  anyStore.start(userToken,queryInfo.id)
+  orgChat.start(userToken,queryInfo.id)
+})
+
+onBeforeUnmount(()=>{
+  anyStore.stop()
+  orgChat.stop()
+})
+
 </script>
 
 <style lang="scss" scoped>
 .el-header {
-    --el-header-padding: 0 0 0 16px;
+  --el-header-padding: 0 0 0 16px;
 }
+
 .el-footer {
   background: rgb(240, 242, 245);
   justify-content: center;
@@ -86,7 +104,7 @@ import LoadingVue from './components/loading.vue'
   }
 
   .main-wrap {
-    background:  var(--el-bg-color-page);
+    background: var(--el-bg-color-page);
     // width: 100%;
     // height: 100%;
     position: relative;

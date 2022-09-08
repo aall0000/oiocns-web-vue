@@ -2,6 +2,13 @@
   <div class="market-layout">
     <MarketCard>
       <template #right>
+        <el-button
+          link
+          type="primary"
+          @click="GoPage('/market/userApply')"
+          style="margin-right: 15px"
+          >我的加入申请</el-button
+        >
         <el-radio-group v-model="mode" size="small" class="button">
           <el-radio-button label="list"
             ><el-icon :size="18"><Tickets /></el-icon
@@ -10,8 +17,8 @@
             ><el-icon :size="18"><Menu /></el-icon
           ></el-radio-button>
         </el-radio-group>
-        <!-- <el-button type="primary" @click="GoPage('/market/managerApproval')">申请审批</el-button>
-        <el-button type="primary" @click.stop="GoPage('/market/order')">我的订单</el-button>
+
+        <!-- <el-button type="primary" @click.stop="GoPage('/market/order')">我的订单</el-button>
         <el-badge :value="shopcarNum" style="padding-left:10px">
           <el-button type="primary" @click.stop="GoPage('/market/shopCar')">购物车</el-button>
         </el-badge> -->
@@ -20,7 +27,7 @@
 
     <div class="market-content box">
       <ul class="box-ul">
-        <p class="box-ul-title">我的市场</p>
+        <p class="box-ul-title">我的商店</p>
 
         <li class="app-card" v-show="mode === 'card'">
           <MarketCreate :info="add" @click="dialogVisible1 = true" />
@@ -31,20 +38,50 @@
             :info="item"
             :key="item.id"
             :overId="item.id"
-            @click="gotoApp(item)"
+            type="market"
+            @click="GoPageWithQuery('/market/appList', { data: item.id, type: 'manage' })"
           >
-            <template #rightTriangle
+            <template #icon
+              ><HeadImg
+                :name="item.name"
+                :url="item.icon || storeImg"
+                :imgWidth="48"
+                :limit="1"
+                :isSquare="false"
+            /></template>
+            <template #rightIcon>
+              <el-dropdown trigger="click" placement="left-start">
+                <el-icon :size="18"><Operation /></el-icon>
+                <template #dropdown>
+                  <el-dropdown-menu>
+                    <el-dropdown-item @click.stop="hadleClick(item)"
+                      ><el-button class="btn" type="primary" link small
+                        >删除商店</el-button
+                      ></el-dropdown-item
+                    >
+                    <el-dropdown-item @click.stop="hadleUserManage(item)"
+                      ><el-button class="btn" link small>用户管理</el-button></el-dropdown-item
+                    >
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
+            </template>
+            <!-- <template #rightTriangle
               ><div :class="item.public ? 'triangle-public' : 'triangle-'">{{
                 item.public ? '公' : ''
               }}</div></template
             >
             <el-button class="btn" type="primary" link small @click.stop="hadleClick(item)"
-              >删除市场</el-button
+              >删除商店</el-button
             >
             <el-divider direction="vertical" />
             <el-button class="btn" link small @click.stop="hadleUserManage(item)"
               >用户管理</el-button
             >
+            <el-divider direction="vertical" />
+            <el-button class="btn" link small  @click="GoPageWithQuery('/market/marketDetail',{data:item.id})"
+              >市场首页</el-button
+            > -->
           </ShopCard>
         </li>
         <li v-show="mode === 'list'">
@@ -65,7 +102,7 @@
                 >用户管理</el-button
               >
               <el-button class="btn" type="primary" link small @click.stop="marketQuit(scope.row)"
-                >退出市场</el-button
+                >删除商店</el-button
               >
             </template>
           </DiyTable>
@@ -79,7 +116,7 @@
         />
       </ul>
       <ul class="box-ul">
-        <p class="box-ul-title">我加入的市场</p>
+        <p class="box-ul-title">我加入的商店</p>
 
         <li class="app-card" v-show="mode === 'card'">
           <MarketCreate :info="add1" @click="state.dialogShow.value = true" />
@@ -89,16 +126,55 @@
             :info="item"
             :key="item.id"
             :overId="item.id"
-            @click="gotoApp(item)"
+            type="market"
+            @click="GoPageWithQuery('/market/appList', { data: item.id, type: 'shop' })"
           >
-            <template #rightTriangle
+            <template #icon
+              ><HeadImg
+                :name="item.name"
+                :url="item.icon || storeImg"
+                :imgWidth="48"
+                :limit="1"
+                :isSquare="false"
+            /></template>
+            <template #rightIcon>
+              <el-dropdown trigger="click" placement="left-start">
+                <el-icon :size="18"><Operation /></el-icon>
+                <template #dropdown>
+                  <el-dropdown-menu>
+                    <el-dropdown-item @click.stop="hadleClick(item)"
+                      ><el-button
+                        class="btn"
+                        type="primary"
+                        link
+                        small
+                        @click.stop="marketQuit(item)"
+                        >退出商店</el-button
+                      ></el-dropdown-item
+                    >
+                    <el-dropdown-item @click.stop="hadleUserManage(item)"
+                      ><el-button class="btn" link small>用户管理</el-button></el-dropdown-item
+                    >
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
+            </template>
+            <!-- <template #rightTriangle
               ><div :class="item.public ? 'triangle-public' : 'triangle-'">{{
                 item.public ? '公' : ''
               }}</div></template
             >
             <el-button class="btn" type="primary" link small @click.stop="marketQuit(item)"
-              >退出市场</el-button
+              >退出商店</el-button
             >
+            <el-divider direction="vertical" />
+            <el-button class="btn" link small @click.stop="hadleUserManage(item)"
+              >用户管理</el-button
+            >
+            <el-divider direction="vertical" />
+            <el-button class="btn" link small  @click="GoPageWithQuery('/market/marketDetail',{data:item.id,type:'shop'})"
+              >市场首页</el-button
+            > -->
           </ShopCard>
         </li>
         <li v-show="mode === 'list'">
@@ -111,7 +187,7 @@
           >
             <template #operate="scope">
               <el-button class="btn" type="primary" link small @click.stop="marketQuit(scope.row)"
-                >退出市场</el-button
+                >退出商店</el-button
               >
             </template>
           </DiyTable>
@@ -125,18 +201,18 @@
         />
       </ul>
     </div>
-    <el-dialog v-model="dialogVisible1" title="创建市场" width="30%">
+    <el-dialog v-model="dialogVisible1" title="创建商店" width="30%">
       <el-form :model="form" label-width="120px">
-        <el-form-item label="市场名称">
+        <el-form-item label="商店名称">
           <el-input v-model="form.name" style="width: 80%" />
         </el-form-item>
-        <el-form-item label="市场编码">
+        <el-form-item label="商店编码">
           <el-input v-model="form.code" style="width: 80%" />
         </el-form-item>
-        <el-form-item label="市场简介">
+        <el-form-item label="商店简介">
           <el-input v-model="form.remark" style="width: 80%" />
         </el-form-item>
-        <el-form-item label="市场是否公开">
+        <el-form-item label="商店是否公开">
           <el-select v-model="form.public" style="width: 80%" placeholder="是否公开">
             <el-option v-for="item in options" :label="item.label" :value="item.value" />
           </el-select>
@@ -152,8 +228,8 @@
 
     <diySearch
       :dialogShow="state.dialogShow"
-      title="加入市场"
-      placeholder="搜索市场"
+      title="加入商店"
+      placeholder="搜索商店"
       @submit="submit"
       @remoteMethod="remoteMethod"
       @closeDialog="closeDialog"
@@ -171,6 +247,7 @@
   import { ElMessage, ElMessageBox } from 'element-plus'
   import MarketCreate from '../components/marketCreate.vue'
   import { useUserStore } from '@/store/user'
+  import storeImg from '@/assets/img/app_icon.png'
   const router = useRouter()
   const store = useUserStore()
   const handleCurrentMy: any = computed(() => {
@@ -179,9 +256,12 @@
   const handleCurrentJoin: any = computed(() => {
     return (state.pageJoin.currentPage - 1) * state.pageJoin.pageSize
   })
+  const GoPageWithQuery = (path: string, query: any) => {
+    router.push({ path, query })
+  }
   const mode = ref('card')
-  const add: string = '创建市场'
-  const add1: string = '加入市场'
+  const add: string = '创建商店'
+  const add1: string = '加入商店'
   const state = reactive({
     myMarket: [],
     joinMarket: [],
@@ -205,11 +285,11 @@
     tableHead: [
       {
         prop: 'name',
-        label: '市场名称'
+        label: '商店名称'
       },
       {
         prop: 'code',
-        label: '市场编码'
+        label: '商店编码'
       },
       {
         prop: 'public',
@@ -218,7 +298,7 @@
 
       {
         prop: 'remark',
-        label: '市场简介'
+        label: '商店简介'
       },
       {
         prop: 'createTime',
@@ -268,7 +348,7 @@
     await $services.market
       .searchStaging({
         data: {
-          id: 0, //市场id （需删除）
+          id: 0, //商店id （需删除）
           offset: 0,
           limit: 20,
           filter: ''
@@ -382,7 +462,7 @@
       label: '否'
     }
   ]
-  //创建市场
+  //创建商店
   const create = () => {
     if (store.workspaceData.type === 1) {
       $services.appstore

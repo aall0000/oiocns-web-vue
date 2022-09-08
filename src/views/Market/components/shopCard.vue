@@ -3,6 +3,7 @@
     class="shop-card-wrap app-card-item"
     shadow="always"
     :key="info.id"
+    @mouseleave="handleWatchMouseOver('')"
     @mouseover="handleWatchMouseOver(info.id)"
   >
     <div class="app-card-item-con">
@@ -13,9 +14,19 @@
         <div class="app-card-rightTriangle" @click.stop>
           <slot name="rightTriangle"></slot>
         </div>
-        <HeadImg :name="info.name" :url="appImg" :imgWidth="48" :limit="1" :isSquare="false" />
+        <!-- <HeadImg :name="info.name" :url="appImg" :imgWidth="48" :limit="1" :isSquare="false" /> -->
+        <slot name="icon"></slot>
         <div class="app-con" v-if="!cardContent">
-          <p class="app-con-title">{{ info.name }}</p>
+          <p class="app-con-title">
+            {{ info.name }}
+            <el-tag v-if="props.type == 'market'" style="margin-left:10px">{{
+              info.public ? '公开' : '私有'
+            }}</el-tag>
+            <el-tag v-if="props.type != 'market'" style="margin-left:10px" :type="info.createUser==queryInfo.id?'':'success'">{{
+              info.createUser==queryInfo.id ? '可管理' : '可使用'
+              
+            }}</el-tag>
+          </p>
           <div class="app-card-item-con-desc">
             {{ info.remark }}
           </div>
@@ -24,20 +35,27 @@
       </div>
     </div>
     <!-- v-show="hoverItem === info.id" -->
-    <div class="app-card-item-footer" v-show="props.overId === info.id" @click.stop>
+    <div class="app-card-item-footer" v-show="state.hoverItem === info.id" @click.stop>
       <slot />
     </div>
   </el-card>
 </template>
 <script lang="ts" setup>
   import { reactive, toRefs } from 'vue'
+  import { useUserStore } from '@/store/user'
+  import { storeToRefs } from 'pinia'
   import HeadImg from '@/components/headImg.vue'
   import appImg from '@/assets/img/app_icon.png'
   // hoverItem--鼠标移入item的id 用于展示按钮区域
+  const store = useUserStore()
+  const { queryInfo } = storeToRefs(store)
+
   const state: { hoverItem: string } = reactive({ hoverItem: '' })
   type shopInfoType = {
     key?: string
     info: ProductType
+    type?: string
+    createUser?:string
     overId?: string //当前鼠标移入id
     cardContent?: boolean // 卡片内容是否自定义
   }
@@ -45,7 +63,8 @@
   const { info } = props
   const emit = defineEmits(['handleMouseOver'])
   const handleWatchMouseOver = (selectId: string) => {
-    emit('handleMouseOver', selectId)
+    // emit('handleMouseOver', selectId)
+    state.hoverItem = selectId || ''
   }
 </script>
 
@@ -98,7 +117,7 @@
       position: absolute;
       bottom: 0;
       width: 100%;
-      height: 48px;
+      max-height: 48px;
       display: flex;
       justify-content: space-around;
       align-items: center;

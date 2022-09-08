@@ -1,45 +1,46 @@
 <template>
   <MarketCard>
     <template #right>
-      <el-button type="primary" @click.stop="GoPage('/market/order')">我的订单</el-button>
-      <el-badge :value="shopcarNum" style="padding-left:10px">
-        <el-button type="primary" @click.stop="GoPage('/market/shopCar')">购物车</el-button>
+      <el-button type="primary" link @click.stop="GoPage('/market/order')">我的订单</el-button>
+      <el-badge :value="shopcarNum" style="padding-left: 10px; display: flex; align-items: center">
+        <el-button type="primary" link @click.stop="GoPage('/market/shopCar')">购物车</el-button>
       </el-badge>
+      <el-radio-group v-model="modeType" size="small" style="padding-left: 15px" class="button">
+        <el-radio-button label="list"
+          ><el-icon :size="18"><Tickets /></el-icon
+        ></el-radio-button>
+        <el-radio-button label="card"
+          ><el-icon :size="18"><Menu /> </el-icon
+        ></el-radio-button>
+      </el-radio-group>
     </template>
   </MarketCard>
   <div class="getApp">
     <div class="getApp-container">
-      <el-tabs class="marketTag" v-model="activeMarket" @tabChange="handleTabChange">
-        <el-tab-pane v-for="item in marketTabs" :label="item.name" :name="item.id"></el-tab-pane>
-      </el-tabs>
-      <div class="getApp-header">
-        <p>应用{{isCard? '图':'列'}}表</p>
+      <div class="getApp-search-box">
+        <el-input v-model="searchVal" placeholder="应用名称/编码" class="search-input"> </el-input>
+        <el-button type="primary" @click="getAppList">搜一下</el-button>
       </div>
       <div class="getApp-content">
         <AppCard
-          v-if="isCard"
+          v-if="modeType === 'card'"
           ref="appCard"
           :dataList="state.myAppList"
           type="shop"
           @handleUpdate="handleCardUpdate"
-          @shopcarNumChange="getShopcarNum"
         ></AppCard>
         <DiyTable
           v-else
           ref="diyTable"
           :hasTitle="true"
           :tableData="state.myAppList"
-          :tableHead="state.tableHead"
+          :tableHead="tableHead"
           @handleUpdate="handleUpdate"
         >
           <template #operate="scope">
-            <TheTableButton :data="scope.row" type="shop" @update="getData"></TheTableButton>
+            <TheTableButton :data="scope.row" type="shop" @update="getAppList"></TheTableButton>
           </template>
         </DiyTable>
-      </div>
-      <div class="getApp-radio">
-        <p style="margin-right: 20px">切换视图</p>
-        <el-switch v-model="isCard" />
       </div>
     </div>
   </div>
@@ -49,57 +50,61 @@
   import { reactive, onMounted, ref, watch, nextTick } from 'vue'
   import { useRouter } from 'vue-router'
   import $services from '@/services'
-  import AppCard from './components/appCard.vue'
+  import AppCard from '../AppList/components/appCard.vue'
   import DiyTable from '@/components/diyTable/index.vue'
-  import TheTableButton from './components/theTableButton2.vue'
+  import TheTableButton from '../AppList/components/theTableButton2.vue'
   import MarketCard from '@/components/marketCard/index.vue'
+  import { Search } from '@element-plus/icons-vue'
+
+  const modeType = ref<'card' | 'list'>('card')
   const router = useRouter()
   const diyTable = ref(null)
-  const isCard = ref(true)
   const appCard = ref(null)
   const shopcarNum = ref(0)
+
+  // 软件共享仓库信息
+  const softShareInfo = ref<MarketType>({} as MarketType)
+
   const state = reactive({
-    myAppList: [],
-    tableHead: [
-      {
-        prop: 'caption',
-        label: '应用名称'
-      },
-      {
-        prop: 'sellAuth',
-        label: '应用权限'
-      },
-      {
-        prop: 'price',
-        label: '单价/天'
-      },
-      {
-        prop: 'days',
-        label: '使用期限'
-      },
-      {
-        prop: 'createTime',
-        label: '创建时间'
-      },
-      {
-        type: 'slot',
-        label: '操作',
-        fixed: 'right',
-        align: 'center',
-        width: '80',
-        name: 'operate'
-      }
-    ]
+    myAppList: []
   })
-
-
-
+  // 表格展示信息
+  const tableHead = [
+    {
+      prop: 'caption',
+      label: '应用名称'
+    },
+    {
+      prop: 'sellAuth',
+      label: '应用权限'
+    },
+    {
+      prop: 'price',
+      label: '单价/天'
+    },
+    {
+      prop: 'days',
+      label: '使用期限'
+    },
+    {
+      prop: 'createTime',
+      label: '创建时间'
+    },
+    {
+      type: 'slot',
+      label: '操作',
+      fixed: 'right',
+      align: 'center',
+      width: '80',
+      name: 'operate'
+    }
+  ]
 
   onMounted(() => {
-    getJoinMarketData()
+    getMarketInfo()
     getShopcarNum()
   })
-
+  // 获取购物车数量
   const getShopcarNum = async () => {
     await $services.market
       .searchStaging({
@@ -118,40 +123,44 @@
 
   // 卡片切换页数
   const handleCardUpdate = () => {
-    getData()
+    getAppList()
   }
   // 表格切换页数
   const handleUpdate = (page: any) => {
     getTableData()
   }
-
+  // 获取展示数据
   const getTableData = () => {
     $services.appstore
       .merchandise({
         data: {
-          id: activeMarket.value,
+          id: softShareInfo.value.id,
           offset: diyTable.value.state.page.current,
           limit: diyTable.value.state.page.pageSize,
           filter: ''
         }
       })
       .then((res: ResultType) => {
-        console.log(res)
+        console.log('getTableData', res)
         if (res.code == 200) {
           state.myAppList = res.data.result || []
           diyTable.value.state.page.total = res.data.total || 0
         }
       })
   }
+
+  // 搜索功能-关键词
+  const searchVal = ref<string>('') // 搜索关键词
+
   // 获取应用列表
-  const getData = () => {
+  const getAppList: (goFirst?: boolean) => void = (goFirst = true) => {
     $services.appstore
       .merchandise({
         data: {
-          id: activeMarket.value,
+          id: softShareInfo.value.id,
           offset: appCard.value.state.page.current,
           limit: 12,
-          filter: ''
+          filter: searchVal.value || ''
         }
       })
       .then((res: ResultType) => {
@@ -161,71 +170,41 @@
         }
       })
   }
-  // 页面顶部 tab页列表
-  const marketTabs = ref([])
-  const activeMarket = ref<string>('')
 
-  const handleTabChange = (name: string) => {
-    console.log('切换',name)
-  }
   // 获取已加入市场列表
-  const getJoinMarketData = () => {
-    $services.appstore
-      .searchOwn({
-        data: {
-          offset: 0,
-          limit: 100,
-          filter: ''
-        }
-      })
-      .then((res: ResultType) => {
-        if (res.code == 200) {
-          const { result = [] } = res.data
-          marketTabs.value = result
-          activeMarket.value = result.length > 0 ? result[0].id : ''
-        }
-      })
+  const getMarketInfo = () => {
+    $services.market.getSoftShareInfo().then((res: ResultType) => {
+      if (res.code == 200) {
+        console.log('共享仓库', res.data)
+        softShareInfo.value = res?.data || {}
+        getAppList()
+      }
+    })
   }
+
   const GoPage = (path: string) => {
     router.push(path)
   }
-  watch([isCard,activeMarket], ([val,activeMVal],[valOld,activeMValOld]) => {
+
+  watch(modeType, (val, valOld) => {
     // 监听 展示方式变化
-      nextTick(() => {
-      if (val) {
+    nextTick(() => {
+      if (val === 'card') {
         appCard.value.state.page.currentPage = 1
-        getData()
+        getAppList()
       } else {
         diyTable.value.state.page.currentPage = 1
         getTableData()
       }
     })
-    // 监听所选市场变化
-    // if (activeMVal!==activeMValOld) {
-    //   getData()
-    // }
   })
 </script>
-<style lang="scss">
-  .getApp-container {
-    .marketTag {
-      .el-tabs--top .el-tabs__item.is-top:nth-child(2){
-        padding-left: 20px;
-      }
-      .el-tabs__nav-next, .el-tabs__nav-prev{
-        padding: 0 5px;
-      }
-      .el-tabs__nav {
-        padding: 0 4px;
-      }
-    }
-  }
-</style>
 <style lang="scss" scoped>
   .getApp {
     width: 100%;
     height: calc(100vh - 60px);
     padding: 16px;
+
     &-radio {
       display: flex;
       align-items: center;
@@ -237,7 +216,7 @@
       position: relative;
       width: 100%;
       height: calc(100% - 60px);
-      background-color: #fff;
+      background-color: var(--el-bg-color);
       overflow: auto;
       display: flex;
       flex-direction: column;
@@ -247,15 +226,20 @@
       flex: 1;
       padding: 0 24px;
     }
-    &-header {
-      padding: 0 24px 16px 24px;
+    &-search-box {
       display: flex;
-      width: 100%;
-      align-items: center;
-      justify-content: space-between;
-      p {
-        font-weight: 600;
-        color: rgba(0, 0, 0, 0.85);
+      justify-content: center;
+      width: 600px;
+      margin: 14px auto;
+      :deep(.el-input__wrapper) {
+        background-color: var(--el-color-primary-light-9);
+        box-shadow: none;
+        border: 1px solid var(--el-input-focus-border-color);
+        border-radius: 0;
+      }
+      :deep(.el-button) {
+        border-radius: 0;
+        height: 34px;
       }
     }
   }

@@ -37,8 +37,8 @@
             {{ scope.row.target.name }}申请加入{{ scope.row.team.name }}
           </template>
           <template #status="scope">
-            <div v-if="scope.row.status >= 0 && scope.row.status <= 100">待批</div>
-            <div v-else-if="scope.row.status > 100 && scope.row.status <= 200">已通过</div>
+            <div v-if="scope.row.status >= 0 && scope.row.status < 100">待批</div>
+            <div v-else-if="scope.row.status >= 100 && scope.row.status < 200">已通过</div>
             <div v-else>已拒绝</div>
           </template>
           <template #option="scope">

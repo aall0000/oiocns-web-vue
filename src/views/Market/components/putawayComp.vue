@@ -36,8 +36,8 @@
     </el-form-item>
     <el-form-item label="应用权限" prop="sellAuth">
     <el-radio-group v-model.number="formLabelAlign.sellAuth">
-        <el-radio label="所属权" />
         <el-radio label="使用权" />
+        <el-radio label="所属权" />
       </el-radio-group>
     </el-form-item>
     <el-form-item label="使用费用" prop="price">
@@ -75,7 +75,7 @@
     caption: '',
     productid: props.info.id,
     price: undefined,
-    sellAuth: props.info.authority,
+    sellAuth: '使用权',
     marketId: undefined,
     information: '',
     days: undefined

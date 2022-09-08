@@ -143,7 +143,8 @@ export default {
     searchMerchandiseApply: market + '​/search/merchandise/apply', //查询产品上架申请
     searchStaging: market + '/search/staging', //查询购物车
     unpublishMerchandise: market + '/unpublish', //下架商品
-    updateMarket: market + '​/update' //更新市场
+    updateMarket: market + '​/update', //更新市场
+    getSoftShareInfo: market + '/search/softshare' //获取共享仓库信息
   },
   order: {
     orderConfirm: order + '/confirm', //确认订单详情(买方确认收货)
@@ -179,7 +180,7 @@ export default {
     queryOwnResource: product + '/query/own/resource', //查询组织/个人拥有的资源列表
     register: product + '/register', //产品登记
     publish: product + '/publish', //产品登记
-    searchUsefulProduct: product + 'search/useful/product', //查询组织/个人可用产品
+    searchUsefulProduct: product + '/search/useful/product', //查询组织/个人可用产品
     searchMerchandiseList: product + '​/search​/merchandise​/List', //根据产品查询产品上架信息
     searchMerchandiseApply: product + '​/search​/merchandise​/apply', //查询产品上架申请
     searchResource: product + '/search/resource', //查询产品资源列表
@@ -195,20 +196,9 @@ export default {
     groupShare: product + '/group/share',
     searchGroupShare: product + '/search/group/share',
     deleteGroupShare: product + '/delete/group/share',
-    department: product + '/distribution/to/deptment',
-    identity: product + '/distribution/to/identity',
-    person: product + '/distribution/to/person',
-    authority: product + '/distribution/to/authority',
-    toDepartment: product + '/search/distribution/to/deptment',
-    toIdentity: product + '/search/distribution/to/identity',
-    toPerson: product + '/search/distribution/to/person',
-    toAuthority: product + '/search/distribution/to/authority',
-    share: product + '/share',
-    searchUnitShare: product + '/search/share',
-    delteDeptment: product + '/delete/distribution/to/deptment',
-    delteAuthority: product + '/delete/distribution/to/authority',
-    delteIdentity: product + '/delete/distribution/to/identity',
-    deltePerson: product + '/delete/distribution/to/person'
+    share: product + '/share', //创建针对单位个人的分享
+    searchUnitShare: product + '/search/share', //查询
+    deleteUnitShare: product + '/delete/share' //删除
   },
   // 历史记录
   history: {

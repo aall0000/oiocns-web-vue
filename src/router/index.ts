@@ -73,11 +73,11 @@ const mainRouter: RouteRecordRaw[] = [
     },
     children: [
       {
-        path: '/relation/company',
-        name: 'company1',
-        component: () => import('@/views/Relation/company/index.vue'),
+        path: '/relation/department',
+        name: 'department',
+        component: () => import('@/views/Relation/department/index.vue'),
         meta: {
-          title: '单位维护'
+          title: '部门维护'
         }
       },
       {
@@ -175,6 +175,15 @@ const mainRouter: RouteRecordRaw[] = [
       title: '我的申请'
     }
   },
+  {
+    component: () => import('@/views/ForeignApp/index.vue'),
+    name: 'ForeignApp',
+    path: '/online',
+    meta: {
+      keepAlive: false,
+      title: '外部应用'
+    }
+  },
   //个人中心信息设置路由
   {
     path: '/user',
@@ -228,7 +237,7 @@ const mainRouter: RouteRecordRaw[] = [
         name: 'market',
         component: () => import('@/views/Market/index.vue'),
         meta: {
-          title: '应用市场'
+          title: '应用中心'
         }
       },
       {
@@ -252,7 +261,7 @@ const mainRouter: RouteRecordRaw[] = [
         name: 'marketMarkList',
         component: () => import('@/views/Market/AppList/index.vue'),
         meta: {
-          title: '市场列表'
+          title: '商店列表'
         }
       },
       {
@@ -272,11 +281,11 @@ const mainRouter: RouteRecordRaw[] = [
         }
       },
       {
-        path: '/market/getApp',
-        name: 'marketGetApp',
-        component: () => import('@/views/Market/AppList/getAppfromMarket.vue'),
+        path: '/market/softShare',
+        name: 'softShare',
+        component: () => import('@/views/Market/SoftShare/index.vue'),
         meta: {
-          title: '获取应用'
+          title: '共享仓库'
         }
       },
       {
@@ -310,7 +319,7 @@ const mainRouter: RouteRecordRaw[] = [
         name: 'userApply',
         component: () => import('@/views/Market/JoinMarketApproval/starter.vue'),
         meta: {
-          title: '加入市场申请列表'
+          title: '加入商店申请列表'
         }
       },
       {
@@ -322,11 +331,35 @@ const mainRouter: RouteRecordRaw[] = [
         }
       },
       {
+        path: '/market/appDetail',
+        name: 'appDetail',
+        component: () => import('@/views/Market/AppDetail/index.vue'),
+        meta: {
+          title: '应用详情'
+        }
+      },
+      {
+        path: '/market/merchandiseDetail',
+        name: 'merchandiseDetail',
+        component: () => import('@/views/Market/MerchandiseDetail/index.vue'),
+        meta: {
+          title: '商品详情'
+        }
+      },
+      {
+        path: '/market/marketDetail',
+        name: 'marketDetail',
+        component: () => import('@/views/Market/MarketDetail/index.vue'),
+        meta: {
+          title: '商店详情'
+        }
+      },
+      {
         path: '/market/managerApply',
         name: 'managerApply',
         component: () => import('@/views/Market/JoinMarketApproval/manager.vue'),
         meta: {
-          title: '加入市场审批列表'
+          title: '加入商店审批列表'
         }
       },
       {

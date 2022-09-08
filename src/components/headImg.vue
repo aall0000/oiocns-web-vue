@@ -6,7 +6,7 @@
     <img :class="['user-img', isSquare ? 'square-box' : 'circle-box']" :src="url" alt="" />
   </div>
   <div :class="['user-head-img-wrap', 'txt-img', isSquare ? 'square-box' : 'circle-box']" v-else>
-    <span>{{ props.name && props.name.slice(0, limit).toLocaleUpperCase() }}</span>
+    <span>{{ props.name.slice(0, limit).toLocaleUpperCase() }}</span>
   </div>
 </template>
 
@@ -15,7 +15,7 @@
   import { computed } from 'vue'
 
   type Props = {
-    name: string
+    name?: string
     label?: string
     url?: string //图片地址
     limit?: number // 文字展示长度
@@ -25,6 +25,7 @@
   }
 
   const props = withDefaults(defineProps<Props>(), {
+    name: '',
     label: '',
     limit: 2,
     isSquare: true,

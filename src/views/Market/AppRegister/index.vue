@@ -46,7 +46,7 @@
         <el-form-item label="应用介绍">
           <el-input
             :rows="2"
-            v-model="form.desc"
+            v-model="form.remark"
             type="textarea"
             maxlength="120"
             show-word-limit
@@ -82,12 +82,14 @@
   import { reactive, ref } from 'vue'
   import { ElMessage, FormRules } from 'element-plus'
   import { useRouter } from 'vue-router'
+  import { useCommonStore } from '@/store/common'
+  const commonStore = useCommonStore()
   const router = useRouter()
   // 注册基本信息
   const form = reactive({
     code: '',
     name: '',
-    desc: '',
+    remark: '',
     privateKey: ''
   })
   let resources = reactive({
@@ -103,7 +105,6 @@
   })
 
   const handleMemuEvent = (type: ProductMenuEventType, selectId?: string) => {
-    console.log('处理事件', type, selectId)
     switch (type) {
       case 'Add':
         resources.resources.push({
@@ -142,7 +143,7 @@
     // 根据当前所选标志 获取目标数据信息
     const obj = data.find((item) => item.customId === aimId)
 
-    const idArr = data.map((item: AppMenuType) => item.customId)
+    const idArr = data.map((item: AppResourcesType) => item.customId)
     const index = idArr.indexOf(aimId)
     const endIndex = data.length - 1
     const willChageIndex = type === 'Up' ? index - 1 : index + 1
@@ -168,7 +169,7 @@
   const rules = reactive<FormRules>({
     name: [
       { required: true, message: '请输入应用名称', trigger: 'blur' },
-      { min: 2, max: 8, message: '长度限制2-8', trigger: 'blur' }
+      { min: 2, max: 20, message: '长度限制2-20', trigger: 'blur' }
     ],
     code: [
       {
@@ -191,19 +192,21 @@
             message: '请填写至少一个资源地址'
           })
         }
+        // 过滤无效填写
+        const resourcesData = resources.resources.filter((item) => {
+          return item.link
+        })
+        const params = { ...form, resources: resourcesData }
         const { success, data } = await API.product.register({
-          data: form
+          data: params
         })
         if (success) {
-          // 过滤无效填写
-          const resourcesData = resources.resources.filter((item) => {
-            return item.link
+          ElMessage({
+            type: 'success',
+            message: '应用注册成功'
           })
-          const registerParams = {
-            productId: data.id,
-            resources: resourcesData
-          }
-          createBatchcode(registerParams)
+          commonStore.isChangeStartApp = true
+          router.back()
         }
       } else {
         console.log('error submit!', fields)
@@ -211,16 +214,16 @@
     })
   }
 
-  const createBatchcode = async (params: any) => {
-    const { success } = await API.product.createResources({ data: params })
-    if (success) {
-      ElMessage({
-        type: 'success',
-        message: '应用注册成功'
-      })
-      router.back()
-    }
-  }
+  // const createBatchcode = async (params: any) => {
+  //   const { success } = await API.product.createResources({ data: params })
+  //   if (success) {
+  //     ElMessage({
+  //       type: 'success',
+  //       message: '应用注册成功'
+  //     })
+  //     router.back()
+  //   }
+  // }
 </script>
 
 <style lang="scss" scoped>
@@ -236,12 +239,12 @@
       margin: 0 auto;
       :deep(.el-input__wrapper),
       :deep(.el-textarea__inner) {
-        background-color: #f3f5fa;
+        background-color: var(--el-color-primary-light-9); //#f3f5fa;
         box-shadow: none;
         border: 1px solid var(--el-input-focus-border-color);
       }
       :deep(.el-textarea .el-input__count) {
-        background-color: #f3f5fa;
+        background-color: var(--el-color-primary-light-9); //#f3f5fa;
         box-shadow: none;
       }
     }

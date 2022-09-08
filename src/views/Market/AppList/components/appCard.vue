@@ -15,7 +15,9 @@
                 <el-icon :size="18" ><Operation /></el-icon>
                 <template #dropdown>
                   <el-dropdown-menu>
-                    <el-dropdown-item >Action 1</el-dropdown-item>
+                    <el-dropdown-item @click="GoPageWithQuery('/market/merchandiseDetail',{data:item.id})">商品详情</el-dropdown-item>
+                    <el-dropdown-item @click="joinStaging(item)">加入购物车</el-dropdown-item>
+                    <el-dropdown-item @click="unpublishFun(item)" v-if="type == 'manage'">下架</el-dropdown-item>
                   </el-dropdown-menu>
                 </template>
               </el-dropdown>
@@ -35,9 +37,10 @@
                 <p>{{ item.information }}</p>
               </div>
             </template>
+            <template #icon><HeadImg :name="item.name" :url="item.icon || merchandiseImg" :imgWidth="48" :limit="1" :isSquare="false" /></template>
             <!-- <template #footer> -->
-
-            <div v-if="type == 'shop'">
+              <el-button link @click="createOrder(item)">立即购买</el-button>
+            <!-- <div v-if="type == 'shop'">
               <el-button link @click="joinStaging(item)">加入购物车</el-button>
               <el-divider direction="vertical" />
               <el-button link @click="createOrder(item)">立即购买</el-button>
@@ -49,10 +52,7 @@
                 @click="unpublishFun(item)"
                 >下架</el-button
               >
-            </div>
-            <!-- <el-divider direction="vertical" />
-            <el-button class="btn" link small>用户管理</el-button> -->
-            <!-- </template> -->
+            </div> -->
           </ShopCard>
         </li>
         <div v-else>暂无数据</div>
@@ -83,12 +83,14 @@
   import { ElMessage, ElMessageBox } from 'element-plus'
   import ShopCard from '../../components/shopCard.vue'
   import AppInfoDialog from './appInfoDialog.vue'
-  import moment from 'moment'
   import { ElNotification } from 'element-plus'
+  import merchandiseImg from '@/assets/img/app_icon.png'
+  import { useRouter } from 'vue-router'
+  const router = useRouter()
   const emit = defineEmits(['handleUpdate','shopcarNumChange'])
   type Props={
     dataList: any
-    type?: 'manage' | 'shop'
+    type?: any
   }
   const props = withDefaults(defineProps<Props>(), { dataList: [], type: 'manage' })
   const handleCurrent: any = computed(() => {
@@ -117,6 +119,14 @@
             message: '更多操作',
             type: 'success'
     })
+  }
+
+  const GoPage = (path: string) => {
+    router.push(path)
+  }
+
+  const GoPageWithQuery = (path: string, query: any) => {
+    router.push({ path, query })
   }
 
   // 查看卡片详情
@@ -205,8 +215,8 @@
        $services.order
       .create({
         data: {
-          name: (new Date().getTime()).toString().substring(0,13) ,
           code: (new Date().getTime()).toString().substring(0,13) ,
+          name: item.caption ,
           merchandiseId: item.id
         }
       })
@@ -259,8 +269,10 @@
 </script>
 
 <style lang="scss" scoped>
+  .market-layout{
+    height: 100%;
+  }
   .app-con-title {
-    color: #000000d9;
     font-size: 16px;
     font-weight: 600;
   }
@@ -303,7 +315,7 @@
     }
     &-ul {
       position: relative;
-      background-color: #fff;
+      background-color: var(--el-bg-color);
       height: 100%;
       &-title {
         font-weight: bold;
@@ -312,6 +324,7 @@
       .app-card {
         display: flex;
         flex-wrap: wrap;
+        height: calc(100% - 60px);
       }
     }
   }

@@ -3,15 +3,23 @@
     <div class="market-top-card">
       <!-- 左侧 -->
       <div class="left">
-        <el-page-header @back="$router.go(-1)" class="pageHeader">
+        <span v-if="isSee" style="color: #3e5ed8; font-size: 17px">{{ activeRouterName }} </span>
+        <el-page-header v-else @back="$router.go(-1)" class="pageHeader">
           <template #icon>
             <span style="padding-top: 3px">
               <el-icon><ArrowLeft /></el-icon>
             </span>
           </template>
           <template #title> <span style="margin-top: 5px">返回</span></template>
+
           <template #content>
-            <span style="color: #3e5ed8; font-size: 17px">{{ activeRouterName }} </span>
+            <div class="flex items-center">
+              <div style="padding-top: 10px">
+                <slot name="routeContent"></slot>
+              </div>
+              <slot name="marketNameSlot"></slot>
+              <span style="color: #3e5ed8; font-size: 17px">{{ activeRouterName }} </span>
+            </div>
           </template>
         </el-page-header>
       </div>
@@ -27,8 +35,12 @@
   import { useRouter } from 'vue-router'
   import { ArrowLeft } from '@element-plus/icons-vue'
   import { marketPathList } from '@/router/index'
+  import { Props } from '@yzfe/svgicon'
   const router = useRouter()
 
+  const props = withDefaults(defineProps<{ isSee: boolean }>(), {
+    isSee: false
+  })
   const activeRouter = ref<string>('')
   const activeRouterName = ref<string>('')
   watch(

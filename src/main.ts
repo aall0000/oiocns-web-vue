@@ -6,7 +6,6 @@ import { setGlobalProperties } from '@/services'
 import setupGlobalComponent from '@/components/global'
 import setupSvgIcon from '@/icons'
 import { createPinia } from 'pinia'
-import anyStore from '@/utils/hubConnection'
 // // 夜间模式 
 // import '@/assets/style/element.dark.scss'
 // import 'element-plus/theme-chalk/dark/css-vars.css'
@@ -28,7 +27,6 @@ import piniaPersist from 'pinia-plugin-persist'
 const pinia = createPinia()
 
 const app = createApp(App)
-anyStore.start()
 // 图标引入
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
   app.component(key, component)
