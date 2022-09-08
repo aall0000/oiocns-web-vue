@@ -217,15 +217,26 @@
     <Group :groupId="groupId" :appInfo="appInfo" :groupName="groupName" />
   </el-dialog>
   <el-dialog
-    v-if="personCohortShareVisible"
-    v-model="personCohortShareVisible"
+    v-if="shareVisible"
+    v-model="shareVisible"
     custom-class="share-dialog"
     title="应用分享"
     width="1000px"
     draggable
     :close-on-click-modal="false"
   >
-    <Person :groupId="groupId" :appInfo="appInfo" />
+    <ShareCohort
+      v-if="store.workspaceData.type == 2"
+      @closeDialog="shareVisible = false"
+      :groupId="selectedValue"
+      :info="selectProductItem"
+    ></ShareCohort>
+    <SharePersonBox
+      v-else
+      @closeDialog="shareVisible = false"
+      :groupId="selectedValue"
+      :info="selectProductItem"
+    ></SharePersonBox>
   </el-dialog>
 </template>
 <script setup lang="ts">
@@ -236,6 +247,8 @@
   import PutawayComp from './components/putawayComp.vue'
   import { baseData, actionOptionsOfOther, actionOptionsOfOwn } from './config'
   import Cohort from './components/cohortBox.vue'
+  import ShareCohort from './components/shareCohortBox.vue'
+  import SharePersonBox from './components/sharePersonBox.vue'
   import { useRouter } from 'vue-router'
   import type { FormInstance, FormRules } from 'element-plus'
   import MarketCreate from './components/marketCreate.vue'
@@ -276,6 +289,8 @@
   const groupVisible = ref<boolean>(false)
   // 分享功能
   const cohortVisible = ref<boolean>(false)
+
+  const shareVisible = ref<boolean>(false)
   // 路由跳转
   const searchText = ref<string>('')
   const pageContent = ref(null)
@@ -476,11 +491,7 @@
   //  打开集团选择弹窗
   const openShareDialog = () => {
     if (store.workspaceData.type == 1) {
-      groupId.value = store.queryInfo.team.id
-
-      appInfo.value = selectProductItem.value.id
-      personCohortShareVisible.value = true
-
+      shareVisible.value = true
       // API.cohort
       //   .getJoinedCohorts({
       //     data: {
@@ -555,7 +566,8 @@
       appInfo.value = selectProductItem.value.id
 
       groupVisible.value = false
-      unitShareVisible.value = true
+      // groupShareVisible.value = true
+      shareVisible.value = true
     } else {
       ElMessage({
         type: 'warning',

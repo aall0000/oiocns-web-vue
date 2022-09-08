@@ -1,19 +1,7 @@
 <template>
   <div class="cohortLayout">
-    <div class="cohortLayout-header">
-      <div class="cohortLayout-header-text">请选择资源：</div>
-      <div class="cohortLayout-header-tabs">
-        <el-tabs v-model="activeName" class="demo-tabs">
-          <el-tab-pane v-for="(item, index) in tabs" :key="item.id" :name="index">
-            <template #label>
-              <div slot="label" @click="handleTabClick(item.id)">{{ item.name }}</div>
-            </template>
-          </el-tab-pane>
-        </el-tabs>
-      </div>
-    </div>
     <div class="cohortLayout-header" style="margin-top: 10px">
-      <div class="cohortLayout-header-text">请选择分发方式：</div>
+      <div class="cohortLayout-header-text">请选择分享方式：</div>
       <div class="cohortLayout-header-tabs">
         <el-radio-group v-model="radio">
           <el-radio v-for="item in state.way" :key="item.id" :label="item.id">{{
@@ -86,16 +74,6 @@
           @delContent="delContentAuth"
           :departData="state.authorData"
         ></Author>
-        <Author
-          v-if="radio == '3'"
-          @delContent="delContentAuth"
-          :departData="state.personsData"
-        ></Author>
-        <Author
-          v-if="radio == '4'"
-          @delContent="delContentAuth"
-          :departData="state.identitysData"
-        ></Author>
       </div>
     </div>
     <div class="footer">
@@ -111,6 +89,7 @@
   import { ElMessage, ElMessageBox } from 'element-plus'
   import API from '@/services'
   import Author from './components/author.vue'
+  import { useUserStore } from '@/store/user'
   import type { TabsPaneContext } from 'element-plus'
   import { AnyAaaaRecord } from 'dns'
   interface Tree {
@@ -121,7 +100,9 @@
   }
   type createInfo = {
     info: ProductType
+    groupId: string
   }
+  const store = useUserStore()
   const searchValue = ref('')
   const searchLeftValue = ref('')
   const activeName = ref(0)
@@ -138,19 +119,11 @@
     way: [
       {
         id: '1',
-        label: '按部门分发'
+        label: '按群组分享'
       },
       {
         id: '2',
-        label: '按职权分发'
-      },
-      {
-        id: '3',
-        label: '按人员分发'
-      },
-      {
-        id: '4',
-        label: '按身份分发'
+        label: '按人员分享'
       }
     ],
     departData: [], // 集团分发右侧数据
@@ -168,7 +141,7 @@
     children: 'nodes'
   }
   const unitProps = {
-    label: 'label',
+    label: 'name',
     children: 'children'
   }
   const page = reactive({
@@ -183,9 +156,22 @@
     (newValue, oldValue) => {
       state.centerTree = []
       nextTick(() => {
-        if (newValue == '1') {
-          getOrgHistoryData()
+        if (newValue == '1' && state.departData.length > 0) {
+          let arr: any[] = []
+          state.departData.forEach((el) => {
+            if (el.type == 'add' || el.type == 'has') {
+              arr.push(el.id)
+            }
+          })
+          leftTree.value.setCheckedKeys(arr, true)
         } else if (newValue == '2' && state.authorData.length == 0) {
+          let obj = {
+            id: '1',
+            name: '我的好友',
+            label: '我的好友',
+            parentId: '0'
+          }
+          cascaderTree.value.unshift(obj)
           getHistoryData()
         } else if (newValue == '3' && state.personsData.length == 0) {
           getHistoryData()
@@ -193,7 +179,8 @@
           getHistoryData()
         }
       })
-    }
+    },
+    { immediate: true }
   )
   watch(
     () => resource.value,
@@ -202,9 +189,6 @@
       state.departData = []
       state.personsData = []
       state.identitysData = []
-      if (radio.value == '1') {
-        clearTreeType(cascaderTree.value)
-      }
       if (radio.value == '1') {
         leftTree.value.setCheckedKeys([])
       }
@@ -226,7 +210,6 @@
   )
   const props = defineProps<createInfo>()
   onMounted(() => {
-    searchResource()
     getCompanyTree()
   })
   const emit = defineEmits(['closeDialog'])
@@ -234,65 +217,21 @@
     emit('closeDialog')
   }
 
-  // 清除树形中的type
-  const clearTreeType = (data: any) => {
-    for (let i = 0; i < data.length; i++) {
-      if (data[i].type) {
-        delete data[i].type
-        if (data[i].children.length !== 0) {
-          clearTreeType(data[i].children)
-        }
-      } else {
-        clearTreeType(data[i].children)
-      }
-    }
-  }
-
   // 获取部门历史数据
-  const getOrgHistoryData = () => {
-    API.product
-      .toDepartment({
-        data: {
-          id: resource.value,
-          offset: 0,
-          limit: 1000,
-          filter: ''
-        }
-      })
-      .then((res: ResultType) => {
-        if (state.departData.length > 0) {
-          let arr: any[] = []
-          state.departData.forEach((el) => {
-            if (el.type == 'add' || el.type == 'has') {
-              arr.push(el.id)
-            }
-          })
-          leftTree.value.setCheckedKeys(arr, true)
-        } else {
-          state.departHisData = res.data.result ? res.data.result : []
-          leftTree.value.setCheckedKeys([])
-          let arr: any[] = []
-          state.departHisData.forEach((el) => {
-            el.type = 'has'
-            arr.push(el.id)
-          })
-          state.departData = state.departHisData
-          leftTree.value.setCheckedKeys(arr, true)
-        }
-      })
-  }
+  const getOrgHistoryData = () => {}
 
   // 获取历史数据（提交表单后）
   const getNewHistoryData = () => {
     switch (radio.value) {
       case '1':
         API.product
-          .toDepartment({
+          .searchGroupShare({
             data: {
-              id: resource.value,
+              id: props.info.id,
               offset: 0,
               limit: 1000,
-              filter: ''
+              filter: '',
+              teamId: props.groupId ? props.groupId : store.queryInfo.team.id
             }
           })
           .then((res: ResultType) => {
@@ -309,12 +248,13 @@
         break
       case '2':
         API.product
-          .toAuthority({
+          .searchUnitShare({
             data: {
-              id: resource.value,
+              id: props.info.id,
               offset: 0,
               limit: 1000,
-              filter: ''
+              filter: '',
+              teamId: props.groupId ? props.groupId : store.queryInfo.team.id
             }
           })
           .then((res: ResultType) => {
@@ -329,50 +269,6 @@
             centerTree.value.setCheckedKeys(arr, true)
           })
         break
-      case '3':
-        API.product
-          .toPerson({
-            data: {
-              id: resource.value,
-              offset: 0,
-              limit: 1000,
-              filter: ''
-            }
-          })
-          .then((res: ResultType) => {
-            state.personsHisData = res.data.result ? res.data.result : []
-            centerTree.value.setCheckedKeys([])
-            let arr: any[] = []
-            state.personsHisData.forEach((el) => {
-              el.type = 'has'
-              arr.push(el.id)
-            })
-            state.personsData = state.personsHisData
-            centerTree.value.setCheckedKeys(arr, true)
-          })
-        break
-      case '4':
-        API.product
-          .toIdentity({
-            data: {
-              id: resource.value,
-              offset: 0,
-              limit: 1000,
-              filter: ''
-            }
-          })
-          .then((res: ResultType) => {
-            state.identitysHisData = res.data.result ? res.data.result : []
-            centerTree.value.setCheckedKeys([])
-            let arr: any[] = []
-            state.identitysHisData.forEach((el) => {
-              el.type = 'has'
-              arr.push(el.id)
-            })
-            state.identitysData = state.identitysHisData
-            centerTree.value.setCheckedKeys(arr, true)
-          })
-        break
       default:
         break
     }
@@ -382,12 +278,13 @@
     switch (radio.value) {
       case '1':
         API.product
-          .toDepartment({
+          .searchGroupShare({
             data: {
-              id: resource.value,
+              id: props.info.id,
               offset: 0,
               limit: 1000,
-              filter: ''
+              filter: '',
+              teamId: props.groupId ? props.groupId : store.queryInfo.team.id
             }
           })
           .then((res: ResultType) => {
@@ -401,9 +298,10 @@
         break
       case '2':
         API.product
-          .toAuthority({
+          .searchUnitShare({
             data: {
-              id: resource.value,
+              id: props.info.id,
+              teamId: props.groupId ? props.groupId : store.queryInfo.team.id,
               offset: 0,
               limit: 1000,
               filter: ''
@@ -417,56 +315,6 @@
               el.type = 'has'
               arr.push(el.id)
             })
-            if (state.centerTree.length > 0) {
-              centerTree.value.setCheckedKeys(arr, true)
-            }
-          })
-
-        break
-      case '3':
-        API.product
-          .toPerson({
-            data: {
-              id: resource.value,
-              offset: 0,
-              limit: 1000,
-              filter: ''
-            }
-          })
-          .then((res: ResultType) => {
-            state.personsHisData = res.data.result ? res.data.result : []
-            state.personsData = JSON.parse(JSON.stringify(state.personsHisData))
-            let arr: any[] = []
-            state.personsData.forEach((el) => {
-              el.type = 'has'
-              arr.push(el.id)
-            })
-            if (state.centerTree.length > 0) {
-              centerTree.value.setCheckedKeys(arr, true)
-            }
-          })
-        break
-      case '4':
-        API.product
-          .toIdentity({
-            data: {
-              id: resource.value,
-              offset: 0,
-              limit: 1000,
-              filter: ''
-            }
-          })
-          .then((res: ResultType) => {
-            state.identitysHisData = res.data.result ? res.data.result : []
-            state.identitysData = JSON.parse(JSON.stringify(state.identitysHisData))
-            let arr: any[] = []
-            state.identitysData.forEach((el) => {
-              el.type = 'has'
-              arr.push(el.id)
-            })
-            if (state.centerTree.length > 0) {
-              centerTree.value.setCheckedKeys(arr, true)
-            }
           })
         break
       default:
@@ -481,29 +329,16 @@
   }
 
   // 提交表单
-  const submitAll = () => {
+  const submitAll = async () => {
     let departAdd: any[] = []
     let departDel: any[] = []
     let authorAdd: any[] = []
     let authorDel: any[] = []
-    let personsAdd: any[] = []
-    let personsDel: any[] = []
-    let identityAdd: any[] = []
-    let identityDel: any[] = []
-
     state.departData.forEach((el) => {
       if (el.type == 'add') {
         departAdd.push(el.id)
       } else if (el.type == 'del') {
         departDel.push(el.id)
-      }
-    })
-
-    state.personsData.forEach((el) => {
-      if (el.type == 'add') {
-        personsAdd.push(el.id)
-      } else if (el.type == 'del') {
-        personsDel.push(el.id)
       }
     })
 
@@ -515,105 +350,52 @@
       }
     })
 
-    state.identitysData.forEach((el) => {
-      if (el.type == 'add') {
-        identityAdd.push(el.id)
-      } else if (el.type == 'del') {
-        identityDel.push(el.id)
-      }
-    })
-
     let promise1
     let promise2
     let promise3
     let promise4
-    let promise5
-    let promise6
-    let promise7
-    let promise8
     if (departAdd.length > 0) {
-      promise1 = API.product.department({
+      promise1 = API.product.groupShare({
         data: {
-          resId: resource.value,
+          productId: props.info.id,
+          teamId: props.groupId ? props.groupId : store.queryInfo.team.id,
           targetIds: departAdd
         }
       })
     }
     if (departDel.length > 0) {
-      promise5 = API.product.delteDeptment({
+      promise2 = API.product.deleteGroupShare({
         data: {
-          resId: resource.value,
+          productId: props.info.id,
+          teamId: props.groupId ? props.groupId : store.queryInfo.team.id,
           targetIds: departDel
         }
       })
     }
     if (authorAdd.length > 0) {
-      promise2 = API.product.authority({
+      promise3 = await API.product.share({
         data: {
-          resId: resource.value,
+          productId: props.info.id,
+          teamId: props.groupId ? props.groupId : store.queryInfo.team.id,
           targetIds: authorAdd
         }
       })
     }
-
     if (authorDel.length > 0) {
-      promise6 = API.product.delteAuthority({
+      promise4 = API.product.deleteShare({
         data: {
-          resId: resource.value,
+          productId: props.info.id,
+          teamId: props.groupId ? props.groupId : store.queryInfo.team.id,
           targetIds: authorDel
         }
       })
     }
-    if (personsAdd.length > 0) {
-      promise3 = API.product.person({
-        data: {
-          resId: resource.value,
-          targetIds: personsAdd
-        }
-      })
-    }
-    if (personsDel.length > 0) {
-      promise7 = API.product.deltePerson({
-        data: {
-          resId: resource.value,
-          targetIds: personsDel
-        }
-      })
-    }
-    if (identityAdd.length > 0) {
-      promise4 = API.product.identity({
-        data: {
-          resId: resource.value,
-          targetIds: identityAdd
-        }
-      })
-    }
-    if (identityDel.length > 0) {
-      promise8 = API.product.delteIdentity({
-        data: {
-          resId: resource.value,
-          targetIds: identityDel
-        }
-      })
-    }
     Promise.all([promise1, promise2, promise3, promise4]).then((res) => {
-      if (res) {
-        ElMessageBox.confirm('分发成功，是否继续分发？', {
-          confirmButtonText: '继续',
-          cancelButtonText: '取消',
-          type: 'warning'
-        })
-          .then(() => {
-            state.identitysData = []
-            state.departData = []
-            state.personsData = []
-            state.authorData = []
-            getNewHistoryData()
-          })
-          .catch(() => {
-            closeDialog()
-          })
-      }
+      ElMessage({
+        type: 'success',
+        message: '分享成功'
+      })
+      closeDialog()
     })
   }
   // 中间树形滚动加载事件
@@ -732,7 +514,7 @@
       }
     }
   }
-  const handleNodeClick = (data: Tree, load: boolean, search?: string) => {
+  const handleNodeClick = (data: any, load: boolean, search?: string) => {
     if (typeof load == 'object' && typeof search == 'object') {
       searchValue.value = ''
     }
@@ -741,124 +523,60 @@
     } else if (typeof search == 'string') {
       page.currentPage = 1
     }
-    switch (radio.value) {
-      case '2':
-        state.loadID = data
-        API.company
-          .getAuthorityTree({
-            data: {
-              id: data.id,
-              filter: typeof search == 'string' ? search : ''
-            }
-          })
-          .then((res: ResultType) => {
+    state.loadID = data
+    if (data.parentId == '0') {
+      API.person
+        .getFriends({
+          data: {
+            limit: page.pageSize,
+            offset: handleCurrent.value,
+            filter: typeof search == 'string' ? search : ''
+          }
+        })
+        .then((res: ResultType) => {
+          if (load == true) {
+            state.centerTree.concat(res.data.result)
+          } else {
+            state.centerTree = res.data.result ? res.data.result : []
+          }
+
+          if (state.personsData.length > 0) {
             let arr: any[] = []
-            arr.push(res.data)
-            handleTreeData(arr)
-            state.centerTree = arr
-            if (state.authorData.length > 0) {
-              let arr: any[] = []
-              state.authorData.forEach((el, index) => {
-                if (el.type == 'add' || el.type == 'has') {
-                  arr.push(el.id)
-                }
-              })
-              setTimeout(() => {
-                centerTree.value.setCheckedKeys(arr, true)
-              }, 300)
-            }
-          })
-        break
-      case '3':
-        state.loadID = data
-        if (data.data.parentId == '0') {
-          API.company
-            .getPersons({
-              data: {
-                id: data.id,
-                limit: page.pageSize,
-                offset: handleCurrent.value,
-                filter: typeof search == 'string' ? search : ''
+            state.personsData.forEach((el) => {
+              if (el.type == 'add' || el.type == 'has') {
+                arr.push(el.id)
               }
             })
-            .then((res: ResultType) => {
-              if (load == true) {
-                state.centerTree.concat(res.data.result)
-              } else {
-                state.centerTree = res.data.result ? res.data.result : []
-              }
+            centerTree.value.setCheckedKeys(arr, true)
+          }
+        })
+    } else {
+      API.cohort
+        .getPersons({
+          data: {
+            id: data.id,
+            limit: page.pageSize,
+            offset: handleCurrent.value,
+            filter: typeof search == 'string' ? search : ''
+          }
+        })
+        .then((res: ResultType) => {
+          if (load == true) {
+            state.centerTree.concat(res.data.result)
+          } else {
+            state.centerTree = res.data.result ? res.data.result : []
+          }
 
-              if (state.personsData.length > 0) {
-                let arr: any[] = []
-                state.personsData.forEach((el) => {
-                  if (el.type == 'add' || el.type == 'has') {
-                    arr.push(el.id)
-                  }
-                })
-                centerTree.value.setCheckedKeys(arr, true)
+          if (state.personsData.length > 0) {
+            let arr: any[] = []
+            state.personsData.forEach((el) => {
+              if (el.type == 'add' || el.type == 'has') {
+                arr.push(el.id)
               }
             })
-        } else {
-          API.company
-            .getDepartmentPersons({
-              data: {
-                id: data.id,
-                limit: page.pageSize,
-                offset: handleCurrent.value,
-                filter: typeof search == 'string' ? search : ''
-              }
-            })
-            .then((res: ResultType) => {
-              if (load == true) {
-                state.centerTree.concat(res.data.result)
-              } else {
-                state.centerTree = res.data.result ? res.data.result : []
-              }
-
-              if (state.personsData.length > 0) {
-                let arr: any[] = []
-                state.personsData.forEach((el) => {
-                  if (el.type == 'add' || el.type == 'has') {
-                    arr.push(el.id)
-                  }
-                })
-                centerTree.value.setCheckedKeys(arr, true)
-              }
-            })
-        }
-
-        break
-      case '4':
-        state.loadID = data
-        API.company
-          .getIdentities({
-            data: {
-              id: data.id,
-              limit: page.pageSize,
-              offset: handleCurrent.value,
-              filter: typeof search == 'string' ? search : ''
-            }
-          })
-          .then((res: ResultType) => {
-            if (load == true) {
-              state.centerTree.concat(res.data.result)
-            } else {
-              state.centerTree = res.data.result ? res.data.result : []
-            }
-
-            if (state.identitysData.length > 0) {
-              let arr: any[] = []
-              state.identitysData.forEach((el) => {
-                if (el.type == 'add' || el.type == 'has') {
-                  arr.push(el.id)
-                }
-              })
-              centerTree.value.setCheckedKeys(arr, true)
-            }
-          })
-        break
-      default:
-        break
+            centerTree.value.setCheckedKeys(arr, true)
+          }
+        })
     }
   }
   const handleTreeData = (item: any) => {
@@ -955,51 +673,17 @@
       })
     }
   }
-  const searchResource = () => {
-    API.product
-      .searchResource({
-        data: {
-          id: props.info.id,
-          offset: 0,
-          limit: 1000,
-          filter: ''
-        }
-      })
-      .then((res: ResultType) => {
-        if (res.success) {
-          tabs.value = res.data.result
-          resource.value = res.data.result[0].id
-        }
-      })
-  }
 
-  // 节点ID和对象映射关系
-  const parentIdMap: any = {}
   let cascaderTree = ref<OrgTreeModel[]>([])
   const getCompanyTree = () => {
-    API.company.getCompanyTree({}).then((res: ResultType) => {
-      let orgTree = []
-      orgTree.push(res.data)
-      initIdMap(orgTree)
-      cascaderTree.value = filter(JSON.parse(JSON.stringify(orgTree)))
-    })
-  }
-  // 初始化ID和对象映射关系
-  const initIdMap = (nodes: any[]) => {
-    for (const node of nodes) {
-      parentIdMap[node.id] = node
-      if (node.children) {
-        initIdMap(node.children)
-      }
-    }
-  }
-  // 过滤掉工作组作为表单级联数据
-  const filter = (nodes: OrgTreeModel[]): OrgTreeModel[] => {
-    nodes = nodes.filter((node) => node.data?.typeName !== '工作组')
-    for (const node of nodes) {
-      node.children = filter(node.children)
-    }
-    return nodes
+    API.cohort
+      .getJoinedCohorts({
+        data: { offset: 0, limit: 10000, filter: '' }
+      })
+      .then((res: any) => {
+        cascaderTree.value = res.data.result ? res.data.result : []
+        getHistoryData()
+      })
   }
 </script>
 
