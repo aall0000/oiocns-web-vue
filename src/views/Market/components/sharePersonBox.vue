@@ -89,6 +89,7 @@
   import { ElMessage, ElMessageBox } from 'element-plus'
   import API from '@/services'
   import Author from './components/author.vue'
+  import { useUserStore } from '@/store/user'
   import type { TabsPaneContext } from 'element-plus'
   import { AnyAaaaRecord } from 'dns'
   interface Tree {
@@ -101,6 +102,7 @@
     info: ProductType
     groupId: string
   }
+  const store = useUserStore()
   const searchValue = ref('')
   const searchLeftValue = ref('')
   const activeName = ref(0)
@@ -139,7 +141,7 @@
     children: 'nodes'
   }
   const unitProps = {
-    label: 'label',
+    label: 'name',
     children: 'children'
   }
   const page = reactive({
@@ -163,6 +165,13 @@
           })
           leftTree.value.setCheckedKeys(arr, true)
         } else if (newValue == '2' && state.authorData.length == 0) {
+          let obj = {
+            id: '1',
+            name: '我的好友',
+            label: '我的好友',
+            parentId: '0'
+          }
+          cascaderTree.value.unshift(obj)
           getHistoryData()
         } else if (newValue == '3' && state.personsData.length == 0) {
           getHistoryData()
@@ -222,7 +231,7 @@
               offset: 0,
               limit: 1000,
               filter: '',
-              teamId: props.groupId
+              teamId: props.groupId ? props.groupId : store.queryInfo.team.id
             }
           })
           .then((res: ResultType) => {
@@ -245,7 +254,7 @@
               offset: 0,
               limit: 1000,
               filter: '',
-              teamId: props.groupId
+              teamId: props.groupId ? props.groupId : store.queryInfo.team.id
             }
           })
           .then((res: ResultType) => {
@@ -275,7 +284,7 @@
               offset: 0,
               limit: 1000,
               filter: '',
-              teamId: props.groupId
+              teamId: props.groupId ? props.groupId : store.queryInfo.team.id
             }
           })
           .then((res: ResultType) => {
@@ -292,7 +301,7 @@
           .searchUnitShare({
             data: {
               id: props.info.id,
-              teamId: props.groupId,
+              teamId: props.groupId ? props.groupId : store.queryInfo.team.id,
               offset: 0,
               limit: 1000,
               filter: ''
@@ -349,7 +358,7 @@
       promise1 = API.product.groupShare({
         data: {
           productId: props.info.id,
-          teamId: props.groupId,
+          teamId: props.groupId ? props.groupId : store.queryInfo.team.id,
           targetIds: departAdd
         }
       })
@@ -358,7 +367,7 @@
       promise2 = API.product.deleteGroupShare({
         data: {
           productId: props.info.id,
-          teamId: props.groupId,
+          teamId: props.groupId ? props.groupId : store.queryInfo.team.id,
           targetIds: departDel
         }
       })
@@ -367,7 +376,7 @@
       promise3 = await API.product.share({
         data: {
           productId: props.info.id,
-          teamId: props.groupId,
+          teamId: props.groupId ? props.groupId : store.queryInfo.team.id,
           targetIds: authorAdd
         }
       })
@@ -376,7 +385,7 @@
       promise4 = API.product.deleteShare({
         data: {
           productId: props.info.id,
-          teamId: props.groupId,
+          teamId: props.groupId ? props.groupId : store.queryInfo.team.id,
           targetIds: authorDel
         }
       })
@@ -516,10 +525,9 @@
     }
     state.loadID = data
     if (data.parentId == '0') {
-      API.company
-        .getGroupCompanies({
+      API.person
+        .getFriends({
           data: {
-            id: data.id,
             limit: page.pageSize,
             offset: handleCurrent.value,
             filter: typeof search == 'string' ? search : ''
@@ -543,8 +551,8 @@
           }
         })
     } else {
-      API.company
-        .getSubgroupCompanies({
+      API.cohort
+        .getPersons({
           data: {
             id: data.id,
             limit: page.pageSize,
@@ -666,8 +674,6 @@
     }
   }
 
-  // 节点ID和对象映射关系
-  const parentIdMap: any = {}
   let cascaderTree = ref<OrgTreeModel[]>([])
   const getCompanyTree = () => {
     API.cohort
@@ -675,31 +681,9 @@
         data: { offset: 0, limit: 10000, filter: '' }
       })
       .then((res: any) => {
-        let obj = res.data.data
-        let children = res.data.children
-        obj.label = obj.name
-        obj.children = children
-        cascaderTree.value.push(obj)
-        console.log('===', cascaderTree)
+        cascaderTree.value = res.data.result ? res.data.result : []
         getHistoryData()
       })
-  }
-  // 初始化ID和对象映射关系
-  const initIdMap = (nodes: any[]) => {
-    for (const node of nodes) {
-      parentIdMap[node.id] = node
-      if (node.children) {
-        initIdMap(node.children)
-      }
-    }
-  }
-  // 过滤掉工作组作为表单级联数据
-  const filter = (nodes: OrgTreeModel[]): OrgTreeModel[] => {
-    nodes = nodes.filter((node) => node.data?.typeName !== '工作组')
-    for (const node of nodes) {
-      node.children = filter(node.children)
-    }
-    return nodes
   }
 </script>
 
