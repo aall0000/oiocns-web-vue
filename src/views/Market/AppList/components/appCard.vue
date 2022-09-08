@@ -83,7 +83,6 @@
   import { ElMessage, ElMessageBox } from 'element-plus'
   import ShopCard from '../../components/shopCard.vue'
   import AppInfoDialog from './appInfoDialog.vue'
-  import moment from 'moment'
   import { ElNotification } from 'element-plus'
   import merchandiseImg from '@/assets/img/app_icon.png'
   import { useRouter } from 'vue-router'
@@ -270,8 +269,10 @@
 </script>
 
 <style lang="scss" scoped>
+  .market-layout{
+    height: 100%;
+  }
   .app-con-title {
-    color: #000000d9;
     font-size: 16px;
     font-weight: 600;
   }
@@ -314,7 +315,7 @@
     }
     &-ul {
       position: relative;
-      background-color: #fff;
+      background-color: var(--el-bg-color);
       height: 100%;
       &-title {
         font-weight: bold;
@@ -323,6 +324,7 @@
       .app-card {
         display: flex;
         flex-wrap: wrap;
+        height: calc(100% - 60px);
       }
     }
   }
