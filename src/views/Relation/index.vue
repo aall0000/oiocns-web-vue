@@ -5,7 +5,7 @@
     <!-- <teleport v-if="isShowMenu" to="#menu-teleport-target"> -->
       <div class="menu-tab">
         <el-menu router :default-active="currentRouter" class="orgnization-navbar" mode="vertical">
-          <el-menu-item v-if="!isMySpace" index="/relation/company">单位维护</el-menu-item>
+          <el-menu-item v-if="!isMySpace" index="/relation/department">部门维护</el-menu-item>
           <el-menu-item v-if="!isMySpace" index="/relation/group">集团维护</el-menu-item>
           <el-menu-item index="/relation/cohort">群组维护</el-menu-item>
           <el-menu-item index="/relation/friend">好友维护</el-menu-item>
@@ -35,7 +35,7 @@
   if(workspaceData.value.id == queryInfo.value.id){
     currentRouter.value = "/relation/cohort"
   }else{
-    currentRouter.value = "/relation/company"
+    currentRouter.value = "/relation/department"
   }
   router.push(currentRouter.value)
 
