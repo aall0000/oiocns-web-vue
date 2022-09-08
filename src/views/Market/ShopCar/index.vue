@@ -17,9 +17,18 @@
             >全选</el-checkbox
           >
         </span>
-        <el-button small link type="primary" style="margin-top:8px" @click="deleteStagings">删除</el-button>
-        <el-button small link type="primary" style="margin-top:8px" @click="createOrderByStaging(null)">购买</el-button>
-        <el-radio-group v-model="cardActive" size="small" class="button" style="margin-left:20px">
+        <el-button small link type="primary" style="margin-top: 8px" @click="deleteStagings"
+          >删除</el-button
+        >
+        <el-button
+          small
+          link
+          type="primary"
+          style="margin-top: 8px"
+          @click="createOrderByStaging(null)"
+          >购买</el-button
+        >
+        <el-radio-group v-model="cardActive" size="small" class="button" style="margin-left: 20px">
           <el-radio-button label="list"
             ><el-icon :size="18"><Tickets /></el-icon
           ></el-radio-button>
@@ -54,10 +63,10 @@
                <span style="padding: 10px;">{{ item.merchandise.sellAuth }} {{item.merchandise.sellAuth=='使用权'?item.merchandise.days:''}}{{item.merchandise.sellAuth=='使用权'?'天':''}}<span style="color:red;margin-left:50px;font-size:18px;bold">¥{{ item.merchandise.price }}</span></span>
               </div>
             </div>
-          </el-card> 
+          </el-card>
         </el-col>
       </el-row> -->
-      <ul class="box-ul" v-if="cardActive">
+      <ul class="box-ul" v-show="cardActive === 'card'">
         <li class="app-card">
           <ShopCard
             v-for="item in pageStore.tableData"
@@ -115,7 +124,7 @@
         border
         @select="handleSelect"
         @row-click="handleRowClick"
-        v-if="!cardActive"
+        v-show="cardActive === 'list'"
         @select-all="checkAll"
       >
         <el-table-column type="selection" width="50" />
@@ -167,40 +176,40 @@
 </template>
 
 <script setup lang="ts">
-import $services from '@/services'
-import { ref, reactive, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { ElMessage, ElMessageBox } from 'element-plus'
-import { PAGE_SIZES, PAGE_NUM } from '@/constant'
-import { ElTable } from 'element-plus'
-import ShopCard from '../components/shopCard.vue'
-import AppInfoDialog from '../AppList/components/appInfoDialog.vue'
-import DiyButton from '@/components/diyButton/index.vue'
-import merchandiseImg from '@/assets/img/app_icon.png'
-import moment from 'moment'
-const router = useRouter()
-// 表格分页数据
-const pagination: { current: number; limit: number } = reactive({ current: 1, limit: PAGE_NUM })
-// 表格展示数据
-const pageStore = reactive({
-  tableData: [],
-  total: 0
-})
-const cardActive = ref(true)
-const loading = ref(false)
-const isRouterAlive = ref(true)
-const allchecked = reactive({ anyData: [], checked: false })
-const pageSizes = ref<Array<any>>(PAGE_SIZES)
-onMounted(() => {
-  getTableList()
-})
-// 会话列表搜索关键字
-const searchValue = ref<string>('')
-const shopcarTableRef = ref<InstanceType<typeof ElTable>>()
-//点击行触发，选中或不选中复选框
-const handleRowClick = (row: any) => {
-  shopcarTableRef.value!.toggleRowSelection(row, undefined)
-}
+  import $services from '@/services'
+  import { ref, reactive, onMounted } from 'vue'
+  import { useRouter } from 'vue-router'
+  import { ElMessage, ElMessageBox } from 'element-plus'
+  import { PAGE_SIZES, PAGE_NUM } from '@/constant'
+  import { ElTable } from 'element-plus'
+  import ShopCard from '../components/shopCard.vue'
+  import AppInfoDialog from '../AppList/components/appInfoDialog.vue'
+  import DiyButton from '@/components/diyButton/index.vue'
+  import merchandiseImg from '@/assets/img/app_icon.png'
+  import moment from 'moment'
+  const router = useRouter()
+  // 表格分页数据
+  const pagination: { current: number; limit: number } = reactive({ current: 1, limit: PAGE_NUM })
+  // 表格展示数据
+  const pageStore = reactive({
+    tableData: [],
+    total: 0
+  })
+  const cardActive = ref('card')
+  const loading = ref(false)
+  const isRouterAlive = ref(true)
+  const allchecked = reactive({ anyData: [], checked: false })
+  const pageSizes = ref<Array<any>>(PAGE_SIZES)
+  onMounted(() => {
+    getTableList()
+  })
+  // 会话列表搜索关键字
+  const searchValue = ref<string>('')
+  const shopcarTableRef = ref<InstanceType<typeof ElTable>>()
+  //点击行触发，选中或不选中复选框
+  const handleRowClick = (row: any) => {
+    shopcarTableRef.value!.toggleRowSelection(row, undefined)
+  }
 
   const GoPage = (path: string) => {
     router.push(path)

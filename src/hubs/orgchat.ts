@@ -13,6 +13,7 @@ type orgChatType = {
     nameMap: Map<string,string>,
     start: (accessToken: string, userId: string) => void, // 创建及启动链接
     stop: () => void, // 关闭链接
+    getName: (id: string)=> string,
     getChats: () => Promise<ResultType>,
     sendMsg: (data: any) => Promise<ResultType>,
     recallMsg: (ids: [string]) => Promise<ResultType>,
@@ -70,6 +71,13 @@ const orgChat: orgChatType = {
         }
         orgChat._connection = null
         orgChat._stoped = true;
+    },
+    getName: (id: string) => {
+        let name = orgChat.nameMap.get(id)||'-';
+        if(name.indexOf(']')>-1){
+            return name.split(']')[1]
+        }
+        return name
     },
     getChats: async () => {
         if (orgChat.isConnected()) {

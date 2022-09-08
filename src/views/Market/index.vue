@@ -1,6 +1,6 @@
 <template>
   <div class="market-layout">
-    <MarketCard>
+    <MarketCard :isSee="true">
       <template #right>
         <div class="edit-wrap">
           <el-button small link type="primary" @click="GoPage('/market/appApply')"
@@ -44,7 +44,7 @@
           <el-switch v-model="isCard" /> -->
         </div>
         <li class="app-card" v-show="mode === 'card'">
-          <MarketCreate :info="add" @myclick="GoPage('/market/getApp')" />
+          <MarketCreate :info="add" @myclick="GoPage('/market/softShare')" />
           <ShopCard
             v-for="item in state.ownProductList"
             :info="item"
@@ -238,7 +238,7 @@
   import TheTableButton from './AppList/components/theTableButton3.vue'
   import pagination from '@/components/pagination/index.vue'
 
-  const add: string = '从应用市场中添加'
+  const add: string = '从共享仓库中添加应用'
   const groupShareVisible = ref<boolean>(false)
   const unitShareVisible = ref<boolean>(false)
   const personCohortShareVisible = ref<boolean>(false)
@@ -397,7 +397,6 @@
     })
     if (success) {
       const { result = [], total = 0 } = data
-      console.log(result)
       state[`${type}ProductList`] = [...result]
       state[`${type}Total`] = total
       diyTable.value.state.page.total = total;
@@ -641,7 +640,7 @@
       height: calc(100vh - 124px);
       overflow-y: auto;
     }
-    .edit-wrap{
+    .edit-wrap {
       display: flex;
       align-items: center;
       justify-content: center;
@@ -650,7 +649,7 @@
       // position: absolute;
       // right: 50px;
       // bottom: 20px;
-      margin-left:20px
+      margin-left: 20px;
     }
     .box {
       .box-ul + .box-ul {
