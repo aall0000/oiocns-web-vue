@@ -2,7 +2,7 @@
   <div class="common-layout">
     <MarketCard>
       <template #right>
-        <span class="top">
+        <!-- <span class="top">
           <el-checkbox
             :v-model="allchecked.checked"
             @change="checkAll"
@@ -23,9 +23,19 @@
             inactive-text="列表"
             style="display: inline-block; vertical-align: top; height: 28px; padding: 10px"
           />
-        </span>
-        <el-button type="primary" @click="deleteStagings">删除</el-button>
-        <el-button type="primary" @click="createOrderByStaging(null)">购买</el-button>
+        </span> -->
+        <el-button type="text" @click="deleteStagings">删除</el-button>
+        <el-button type="text" @click="createOrderByStaging(null)">购买</el-button>
+        <div>
+          <el-radio-group v-model="mode" size="small" class="button" @change="changeView">
+            <el-radio-button label="list"
+              ><el-icon :size="18"><Tickets /></el-icon
+            ></el-radio-button>
+            <el-radio-button label="card"
+              ><el-icon :size="18"><Menu /></el-icon
+            ></el-radio-button>
+          </el-radio-group>
+        </div>
       </template>
     </MarketCard>
     <div v-if="isRouterAlive" style="height:100vh;background-color: #fff;">
@@ -56,7 +66,7 @@
           </el-card> 
         </el-col>
       </el-row> -->
-      <ul class="box-ul" v-if="cardActive">
+      <ul class="box-ul" v-if="mode=='card'">
         <li class="app-card">
           <ShopCard
             v-for="item in pageStore.tableData"
@@ -103,7 +113,7 @@
         border
         @select="handleSelect"
         @row-click="handleRowClick"
-        v-if="!cardActive"
+        v-if="mode=='list'"
         @select-all="checkAll"
       >
         <el-table-column type="selection" width="50" />
@@ -174,7 +184,8 @@ const pageStore = reactive({
   tableData: [],
   total: 0
 })
-const cardActive = ref(true)
+// const cardActive = ref(true)
+const mode = ref('card')
 const loading = ref(false)
 const isRouterAlive = ref(true)
 const allchecked = reactive({ anyData: [], checked: false })
@@ -616,6 +627,10 @@ const checkedChange = (item: any) => {
   }
 }
 
+.button {
+  margin-left:20px
+}
+
 .box {
   .box-ul + .box-ul {
     margin-top: 10px;
@@ -631,6 +646,7 @@ const checkedChange = (item: any) => {
     .app-card {
       display: flex;
       flex-wrap: wrap;
+      padding: 16px;
       .bule-shadow {
         box-shadow: 0px 0px 4px rgb(0, 89, 255, 0.7);
       }

@@ -170,7 +170,7 @@
             </DiyButton>
           </template>
         </el-table-column>
-      </el-table> -->
+      </el-table> 
       <payView v-if="payDialog.show" :order="payDialog.data" @close="closePay"></payView>
       <payList v-if="payListDialog.show" :selectLimit="0" @closeDialog="closePayList" />
     </div>
@@ -324,6 +324,7 @@ const searchValue = ref<string>('')
   }
   //查询已出售订单
   const searchSellList = async () => {
+    state.orderList = [];
     await $services.order
       .searchSellList({
         data: {
@@ -357,6 +358,7 @@ const searchValue = ref<string>('')
   }
   //查询已购入订单
   const searchBuyList = async () => {
+     state.orderList = [];
     await $services.order
       .searchBuyList({
         data: {
