@@ -102,6 +102,14 @@ const orgChat: orgChatType = {
         }
         orgChat._connection = null
         orgChat._stoped = true
+        orgChat.chats.value = []
+        orgChat.curChat.value = null
+        orgChat.curMsgs.value = []
+        orgChat.openChats = []
+        orgChat.nameMap = {}
+        orgChat._callBack = null
+        orgChat.allUserSpaceId = []
+        orgChat.qunPersons.value = []
     },
     getName: (id: string) => {
         let name = orgChat.nameMap[id] || '-'
