@@ -156,9 +156,6 @@ const orgChat: orgChatType = {
                         chat.totalMsg = 10000
                         chat.personNum = 10000
                         chat.showTxt = chat.msgBody?.includes('img') ? "[图片]" : chat.msgBody
-                        if (chat.id == orgChat.userId) {
-                            chat.name = `我 (${chat.name})`
-                        }
                         let typeName = chat.typeName == '人员' ? '' : `[${chat.typeName}]`
                         orgChat.nameMap[chat.id] = `${chat.name}${typeName}`
                     })
@@ -222,9 +219,6 @@ const orgChat: orgChatType = {
                     res.data.result.forEach((item: any) => {
                         if (item.team) {
                             item.name = item.team.name
-                            if (item.id == orgChat.userId) {
-                                item.name = `我 (${item.name})`
-                            }
                             let typeName = item.typeName == '人员' ? '' : `[${item.typeName}]`
                             orgChat.nameMap[item.id] = `${item.name}${typeName}`
                         }
