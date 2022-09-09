@@ -1,5 +1,17 @@
 <template>
   <div class="cohortLayout">
+    <div class="cohortLayout-header">
+      <div class="cohortLayout-header-text">请选择集团：</div>
+      <div class="cohortLayout-header-tabs">
+        <el-tabs v-model="activeName" class="demo-tabs">
+          <el-tab-pane v-for="(item, index) in tabs" :key="item.id" :name="index">
+            <template #label>
+              <div slot="label" @click="handleTabClick(item.id)">{{ item.name }}</div>
+            </template>
+          </el-tab-pane>
+        </el-tabs>
+      </div>
+    </div>
     <div class="cohortLayout-header" style="margin-top: 10px">
       <div class="cohortLayout-header-text">请选择分享方式：</div>
       <div class="cohortLayout-header-tabs">
@@ -124,6 +136,7 @@
         label: '按单位分享'
       }
     ],
+    options: [], // 集团列表
     departData: [], // 集团分发右侧数据
     departHisData: [], // 集团分发历史数据
     centerTree: [], // 职权分发中间树形
@@ -178,8 +191,9 @@
     (newValue, oldValue) => {
       state.authorData = []
       state.departData = []
-      state.personsData = []
-      state.identitysData = []
+      if (radio.value == '1') {
+        clearTreeType(cascaderTree.value)
+      }
       if (radio.value == '1') {
         leftTree.value.setCheckedKeys([])
       }
@@ -201,13 +215,41 @@
   )
   const props = defineProps<createInfo>()
   onMounted(() => {
-    getCompanyTree()
+    getGroupList()
   })
   const emit = defineEmits(['closeDialog'])
   const closeDialog = () => {
     emit('closeDialog')
   }
-
+  // 清除树形中的type
+  const clearTreeType = (data: any) => {
+    for (let i = 0; i < data.length; i++) {
+      if (data[i].type) {
+        delete data[i].type
+        if (data[i].children.length !== 0) {
+          clearTreeType(data[i].children)
+        }
+      } else {
+        clearTreeType(data[i].children)
+      }
+    }
+  }
+  const getGroupList = () => {
+    API.company
+      .companyGetGroups({
+        data: {
+          offset: 0,
+          limit: 1000
+        }
+      })
+      .then((res: ResultType) => {
+        if (res.data.result && res.data.result.length > 0) {
+          tabs.value = res.data.result
+          resource.value = tabs.value[0].id
+          getCompanyTree()
+        }
+      })
+  }
   // 获取部门历史数据
   const getOrgHistoryData = () => {}
 
@@ -222,7 +264,7 @@
               offset: 0,
               limit: 1000,
               filter: '',
-              teamId: props.groupId
+              teamId: resource.value
             }
           })
           .then((res: ResultType) => {
@@ -245,7 +287,7 @@
               offset: 0,
               limit: 1000,
               filter: '',
-              teamId: props.groupId
+              teamId: resource.value
             }
           })
           .then((res: ResultType) => {
@@ -275,7 +317,7 @@
               offset: 0,
               limit: 1000,
               filter: '',
-              teamId: props.groupId
+              teamId: resource.value
             }
           })
           .then((res: ResultType) => {
@@ -292,7 +334,7 @@
           .searchUnitShare({
             data: {
               id: props.info.id,
-              teamId: props.groupId,
+              teamId: resource.value,
               offset: 0,
               limit: 1000,
               filter: ''
@@ -306,6 +348,9 @@
               el.type = 'has'
               arr.push(el.id)
             })
+            if (state.centerTree.length > 0) {
+              centerTree.value.setCheckedKeys(arr, true)
+            }
           })
         break
       default:
@@ -349,7 +394,7 @@
       promise1 = API.product.groupShare({
         data: {
           productId: props.info.id,
-          teamId: props.groupId,
+          teamId: resource.value,
           targetIds: departAdd
         }
       })
@@ -358,7 +403,7 @@
       promise2 = API.product.deleteGroupShare({
         data: {
           productId: props.info.id,
-          teamId: props.groupId,
+          teamId: resource.value,
           targetIds: departDel
         }
       })
@@ -367,7 +412,7 @@
       promise3 = await API.product.share({
         data: {
           productId: props.info.id,
-          teamId: props.groupId,
+          teamId: resource.value,
           targetIds: authorAdd
         }
       })
@@ -376,7 +421,7 @@
       promise4 = API.product.deleteShare({
         data: {
           productId: props.info.id,
-          teamId: props.groupId,
+          teamId: resource.value,
           targetIds: authorDel
         }
       })
@@ -672,7 +717,7 @@
   const getCompanyTree = () => {
     API.company
       .getGroupTree({
-        data: { id: props.groupId }
+        data: { id: resource.value }
       })
       .then((res: any) => {
         let obj = res.data.data

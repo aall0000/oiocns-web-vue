@@ -17,12 +17,20 @@
             <el-row :gutter="40" justify="space-between">
               <el-col :span="12">
                 <el-form-item label="应用名称" prop="name">
-                  <el-input v-model="form.data.name" :readonly="isDetailPage" placeholder="请设置" />
+                  <el-input
+                    v-model="form.data.name"
+                    :readonly="isDetailPage"
+                    placeholder="请设置"
+                  />
                 </el-form-item>
               </el-col>
               <el-col :span="12">
                 <el-form-item label="应用编码" prop="code">
-                  <el-input v-model="form.data.code" :readonly="isDetailPage" placeholder="请设置" />
+                  <el-input
+                    v-model="form.data.code"
+                    :readonly="isDetailPage"
+                    placeholder="请设置"
+                  />
                 </el-form-item>
               </el-col>
             </el-row>
@@ -86,7 +94,9 @@
           <el-button type="primary" @click="onSubmit" v-if="!isDetailPage">注册</el-button>
         </div>
       </el-tab-pane>
-      <el-tab-pane label="分享信息" name="1"><shareGroup></shareGroup> </el-tab-pane>
+      <el-tab-pane label="分享信息" name="1"
+        ><shareGroup :info="routeInfo.params"></shareGroup>
+      </el-tab-pane>
       <el-tab-pane label="分配信息" name="2">Role</el-tab-pane>
     </el-tabs>
   </div>

@@ -202,40 +202,6 @@
     </putaway-comp>
   </el-dialog>
   <el-dialog
-    v-if="groupVisible"
-    v-model="groupVisible"
-    custom-class="group-dialog"
-    :title="title"
-    width="600px"
-    draggable
-    :close-on-click-modal="false"
-  >
-    <el-select
-      v-model="selectedValue"
-      value-key="id"
-      :placeholder="'请' + title"
-      @change="selectchange"
-    >
-      <el-option
-        v-for="item in state.options"
-        :key="item.value"
-        :label="item.label"
-        :value="item.value"
-      />
-    </el-select>
-    <template #footer>
-      <span class="dialog-footer" v-if="store.workspaceData.type == 2">
-        <!-- <el-button @click="shareGroup"></el-button>
-        <el-button type="primary" @click="shareUnit">按单位分享</el-button> -->
-        <el-button @click="groupVisible = false">取消</el-button>
-        <el-button type="primary" @click="shareUnit">确定</el-button>
-      </span>
-      <span class="dialog-footer" v-else>
-        <el-button type="primary" @click="shareCohort">按群组分享</el-button>
-      </span>
-    </template>
-  </el-dialog>
-  <el-dialog
     v-if="cohortVisible"
     v-model="cohortVisible"
     custom-class="share-dialog"
@@ -258,13 +224,11 @@
     <ShareCohort
       v-if="store.workspaceData.type == 2"
       @closeDialog="shareVisible = false"
-      :groupId="selectedValue"
       :info="selectProductItem"
     ></ShareCohort>
     <SharePersonBox
       v-else
       @closeDialog="shareVisible = false"
-      :groupId="selectedValue"
       :info="selectProductItem"
     ></SharePersonBox>
   </el-dialog>
@@ -529,54 +493,7 @@
 
   //  打开集团选择弹窗
   const openShareDialog = () => {
-    if (store.workspaceData.type == 1) {
-      shareVisible.value = true
-      // API.cohort
-      //   .getJoinedCohorts({
-      //     data: {
-      //       offset: 0,
-      //       limit: 10000,
-      //       filter: ''
-      //     }
-      //   })
-      //   .then((res: ResultType) => {
-      //     console.log(res)
-      //     if (res.data.result && res.data.result.length > 0) {
-      //       let cor = res.data.result
-      //       state.options = cor.map((g: any) => {
-      //         return { value: g.id, label: g.name }
-      //       })
-      //       title.value = '选择群组'
-      //       groupVisible.value = true
-      //     } else {
-      //       ElMessage({
-      //         type: 'warning',
-      //         message: '您暂未加入群组'
-      //       })
-      //     }
-      //   })
-    } else {
-      API.company
-        .companyGetGroups({
-          data: {
-            offset: 0,
-            limit: 1000
-          }
-        })
-        .then((res: ResultType) => {
-          if (res.data.result && res.data.result.length > 0) {
-            groups = res.data.result
-            state.options = groups.map((g) => {
-              return { value: g.id, label: g.name }
-            })
-            title.value = '选择集团'
-            groupVisible.value = true
-            // loadOrgTree(groups[0].id)
-          } else {
-            groups = []
-          }
-        })
-    }
+    shareVisible.value = true
   }
 
   const groupId = ref('')
@@ -598,22 +515,22 @@
     }
   }
   // 跳转到unit分享界面
-  const shareUnit = () => {
-    if (selectedValue.value) {
-      groupId.value = selectedValue.value
-      groupName.value = state.selectLabel.label
-      appInfo.value = selectProductItem.value.id
+  // const shareUnit = () => {
+  //   if (selectedValue.value) {
+  //     groupId.value = selectedValue.value
+  //     groupName.value = state.selectLabel.label
+  //     appInfo.value = selectProductItem.value.id
 
-      groupVisible.value = false
-      // groupShareVisible.value = true
-      shareVisible.value = true
-    } else {
-      ElMessage({
-        type: 'warning',
-        message: '请选择集团'
-      })
-    }
-  }
+  //     groupVisible.value = false
+  //     // groupShareVisible.value = true
+  //     shareVisible.value = true
+  //   } else {
+  //     ElMessage({
+  //       type: 'warning',
+  //       message: '请选择集团'
+  //     })
+  //   }
+  // }
   // 按群组分享
   const shareCohort = () => {}
 
