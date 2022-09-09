@@ -70,7 +70,7 @@
         <li class="app-card">
           <ShopCard
             v-for="item in pageStore.tableData"
-            :class="item.checked ? 'bule-shadow' : 'dark-shadow'"
+            :class="{'bule-shadow':item.checked}"
             :info="item.id"
             :key="item.id"
             :cardContent="true"
@@ -98,19 +98,40 @@
                 :isSquare="false"
                 style="height: 40px; line-height: 40px"
             /></template>
-
+            <template #header>
+              <el-checkbox>
+                <div class="app-con-title">{{ item.merchandise.caption }}</div>
+              </el-checkbox>
+            </template>
             <template #content>
               <div class="shopCar-box" @click="handleCardInfo(item)">
                 <div class="app-con-title">{{ item.merchandise.caption }}</div>
-                <div class="app-con-info" v-if="item.merchandise.sellAuth !== '所属权'"
-                  >使用天数：{{ item.merchandise.days }}</div
-                >
-                <div class="app-con-info">价格：{{ item.merchandise.price }}</div>
-                <div class="app-con-info">售卖权属：{{ item.merchandise.sellAuth }}</div>
+                <!-- <div class="app-con-info" v-if="item.merchandise.sellAuth !== '所属权'"
+                  >使用天数：{{ item.merchandise.days }}天</div
+                > -->
+                <!-- <div class="app-con-info">价格：￥{{ item.merchandise.price ||'0.00'}}</div> -->
+                <div class="app-con-info"
+                  >单价：
+                  <span style="color: var(--el-color-warning)"> ￥ </span>
+                  <strong style="color: var(--el-color-warning); font-size: 16px">{{
+                    item.merchandise.price || '0.00'
+                  }}</strong>
+                </div>
+
+                <!-- <div class="app-con-info">售卖权属：{{ item.merchandise.sellAuth }}</div> -->
+                <div class="app-con-info"
+                  >售卖权属：{{ item.merchandise.sellAuth }}
+                  <el-tag size="small" v-if="item.merchandise.sellAuth !== '所属权'">
+                    使用期：{{ item.merchandise.sellAuth !== '所属权' ? item.merchandise.days + '天' : '无期限' }}</el-tag>
+                </div>
               </div>
+            </template>
+            <template #footer>
+              <el-divider style="margin:16px 0"></el-divider>
               <div class="app-card-item-con-desc"
-                ><p>{{ item.merchandise.information }}</p></div
+                ><p>详情：{{ item.merchandise.information || '暂无'}}</p></div
               >
+             
             </template>
           </ShopCard>
         </li>
@@ -136,8 +157,8 @@
         <el-table-column prop="caption" label="商品名称" />
         <el-table-column prop="information" label="商品信息" />
         <el-table-column prop="sellAuth" label="售卖权属" />
-        <el-table-column prop="days" label="售卖期限" />
-        <el-table-column prop="price" label="售卖价格" />
+        <el-table-column prop="days" label="使用期限" />
+        <el-table-column prop="price" label="单价" />
         <el-table-column prop="number" label="数量" />
         <el-table-column prop="marketName" label="市场名称" />
         <el-table-column prop="marketCode" label="市场编号" />
@@ -590,34 +611,39 @@
 
   .app-con-title {
     // color: #000000d9;
-    font-size: 16px;
+    // font-size: 16px;
     font-weight: 600;
+    margin-bottom: 10px;
   }
+  
   .app-con-info {
-    font-size: 12px;
-    font-weight: 400;
+    font-size: 13px;
+    // font-weight: 400;
+    color: var(--el-text-color-regular);
+    line-height: 1.8;
   }
   .app-card-item-con-desc {
-    font-size: 12px;
-    font-weight: 400;
-    color: rgba(0, 0, 0, 0.45);
-
-    position: absolute;
-    bottom: 50px;
-    width: 100%;
-    left: 0;
-    height: 30px;
-    padding: 0px 24px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: -webkit-box;
-    word-break: break-all;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
+    // padding-top: 16px;
+    p {
+      font-size: 12px;
+      // font-weight: 400;
+      color: var(--el-text-color-secondary);
+      // line-height: 1.5;
+      // position: absolute;
+      // bottom: 50px;
+      // width: 100%;
+      // left: 0;
+      // height: 30px;
+      // padding: 0px 24px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      word-break: break-all;
+      -webkit-line-clamp: 1;
+      -webkit-box-orient: vertical;
+    }
   }
-  :deep(.el-card__body) {
-    padding: 0;
-  }
+  
   .shopCar {
     padding: 4px;
     display: flex;
@@ -662,8 +688,23 @@
         display: flex;
         flex-wrap: wrap;
         .bule-shadow {
-          box-shadow: 0px 0px 4px rgb(0, 89, 255, 0.7);
+          box-shadow: none;// 0px 0px 4px rgb(0, 89, 255, 0.7);
+          border-color: var(--el-color-primary);
+          background-color: var(--el-color-primary-light-9);
+          &::before {
+            content: '';
+           
+            position: absolute;
+            left: 0;
+            top: 0;
+            display: block;
+            width: 12px;
+            height: 12px;
+            background: linear-gradient(135deg,var(--el-color-primary),var(--el-color-primary) 50%,transparent 50%,  transparent 100%);
+          }
         }
+        
+        
         .dark-shadow {
           // box-shadow: 4px 4px 4px rgb(174, 177, 184);
         }

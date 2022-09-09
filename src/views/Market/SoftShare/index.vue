@@ -6,11 +6,11 @@
         <el-badge :value="shopcarNum" >
           <el-button type="primary" @click.stop="GoPage('/market/shopCar')">购物车</el-button>
         </el-badge>
-        <el-radio-group v-model="isCard" size="small" class="button" >
-            <el-radio-button :label="false"
+        <el-radio-group v-model="modeType" size="small" class="button" >
+            <el-radio-button label="list"
               ><el-icon :size="18"><Tickets /></el-icon
             ></el-radio-button>
-            <el-radio-button :label="true"
+            <el-radio-button label="card"
               ><el-icon :size="18"><Menu /></el-icon
             ></el-radio-button>
           </el-radio-group>
@@ -53,9 +53,9 @@
   import { reactive, onMounted, ref, watch, nextTick } from 'vue'
   import { useRouter } from 'vue-router'
   import $services from '@/services'
-  import AppCard from '../appList/components/appCard.vue'
+  import AppCard from '../AppList/components/appCard.vue'
   import DiyTable from '@/components/diyTable/index.vue'
-  import TheTableButton from '../appList/components/theTableButton2.vue'
+  import TheTableButton from '../AppList/components/theTableButton2.vue'
   import MarketCard from '@/components/marketCard/index.vue'
   import Pagination from '@/components/pagination/index.vue'
 
