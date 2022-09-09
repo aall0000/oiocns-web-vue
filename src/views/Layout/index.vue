@@ -50,6 +50,11 @@ onMounted(() => {
   orgChat.start(userToken, queryInfo.id)
 })
 
+onBeforeUnmount(()=>{
+  orgChat.unSubscribed()
+  orgChat.stop()
+})
+
 //初始化关闭
 window.addEventListener('beforeunload', function (e) {
   orgChat.unSubscribed()
