@@ -195,28 +195,6 @@
     <Cohort @closeDialog="cohortVisible = false" :info="selectProductItem"></Cohort>
   </el-dialog>
   <el-dialog
-    v-if="unitShareVisible"
-    v-model="unitShareVisible"
-    custom-class="share-dialog"
-    title="应用分享"
-    width="1000px"
-    draggable
-    :close-on-click-modal="false"
-  >
-    <Unit :groupId="groupId" :appInfo="appInfo" :groupName="groupName" />
-  </el-dialog>
-  <el-dialog
-    v-if="groupShareVisible"
-    v-model="groupShareVisible"
-    custom-class="share-dialog"
-    title="应用分享"
-    width="1000px"
-    draggable
-    :close-on-click-modal="false"
-  >
-    <Group :groupId="groupId" :appInfo="appInfo" :groupName="groupName" />
-  </el-dialog>
-  <el-dialog
     v-if="shareVisible"
     v-model="shareVisible"
     custom-class="share-dialog"

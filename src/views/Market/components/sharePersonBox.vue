@@ -136,6 +136,7 @@
     identitysData: [], //身份右侧数据
     identitysHisData: [] // 身份历史数据
   })
+  let cascaderTree = ref<any[]>([])
   const authorityProps = {
     label: 'name',
     children: 'nodes'
@@ -155,6 +156,7 @@
     () => radio.value,
     (newValue, oldValue) => {
       state.centerTree = []
+      cascaderTree.value = []
       nextTick(() => {
         if (newValue == '1' && state.departData.length > 0) {
           let arr: any[] = []
@@ -675,7 +677,6 @@
     }
   }
 
-  let cascaderTree = ref<any[]>([])
   const getCompanyTree = () => {
     API.cohort
       .getJoinedCohorts({
