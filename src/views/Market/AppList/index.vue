@@ -2,14 +2,17 @@
   <div class="market-layout">
     <MarketCard>
       <template #right>
+        <el-button link type="primary" @click="createDialog = true">创建商店</el-button>
+        <el-button link type="primary" @click="state.addDialog.value = true">加入商店</el-button>
         <el-button
           link
           type="primary"
           @click="GoPage('/market/userApply')"
-          style="margin-right: 15px"
+          style="margin-right: 10px"
           >我的加入申请</el-button
         >
-        <el-radio-group v-model="mode" size="small" class="button">
+
+        <el-radio-group v-model="showType" size="small" class="button">
           <el-radio-button label="list"
             ><el-icon :size="18"><Tickets /></el-icon
           ></el-radio-button>
@@ -17,11 +20,6 @@
             ><el-icon :size="18"><Menu /></el-icon
           ></el-radio-button>
         </el-radio-group>
-
-        <!-- <el-button type="primary" @click.stop="GoPage('/market/order')">我的订单</el-button>
-        <el-badge :value="shopcarNum" style="padding-left:10px">
-          <el-button type="primary" @click.stop="GoPage('/market/shopCar')">购物车</el-button>
-        </el-badge> -->
       </template>
     </MarketCard>
 
@@ -29,9 +27,7 @@
       <ul class="box-ul">
         <p class="box-ul-title">我的商店</p>
 
-        <li class="app-card" v-show="mode === 'card'">
-          <MarketCreate :info="add" @click="dialogVisible1 = true" />
-
+        <li class="app-card" v-show="showType === 'card'">
           <ShopCard
             v-if="state.myMarket.length !== 0"
             v-for="item in state.myMarket"
@@ -84,7 +80,7 @@
             > -->
           </ShopCard>
         </li>
-        <li v-show="mode === 'list'">
+        <li v-show="showType === 'list'">
           <DiyTable
             ref="diyTable"
             :options="{ noPage: true, order: true }"
@@ -118,8 +114,7 @@
       <ul class="box-ul">
         <p class="box-ul-title">我加入的商店</p>
 
-        <li class="app-card" v-show="mode === 'card'">
-          <MarketCreate :info="add1" @click="state.dialogShow.value = true" />
+        <li class="app-card" v-show="showType === 'card'">
           <ShopCard
             v-if="state.joinMarket.length !== 0"
             v-for="item in state.joinMarket"
@@ -177,7 +172,7 @@
             > -->
           </ShopCard>
         </li>
-        <li v-show="mode === 'list'">
+        <li v-show="showType === 'list'">
           <DiyTable
             ref="diyTable"
             :hasTitle="true"
@@ -201,7 +196,7 @@
         />
       </ul>
     </div>
-    <el-dialog v-model="dialogVisible1" title="创建商店" width="30%">
+    <el-dialog v-model="createDialog" title="创建商店" width="30%">
       <el-form :model="form" label-width="120px">
         <el-form-item label="商店名称">
           <el-input v-model="form.name" style="width: 80%" />
@@ -220,14 +215,14 @@
       </el-form>
       <template #footer>
         <span class="dialog-footer">
-          <el-button @click="dialogVisible1 = false">取消</el-button>
+          <el-button @click="createDialog = false">取消</el-button>
           <el-button type="primary" @click="create">确认</el-button>
         </span>
       </template>
     </el-dialog>
 
     <diySearch
-      :dialogShow="state.dialogShow"
+      :dialogShow="state.addDialog"
       title="加入商店"
       placeholder="搜索商店"
       @submit="submit"
@@ -259,7 +254,7 @@
   const GoPageWithQuery = (path: string, query: any) => {
     router.push({ path, query })
   }
-  const mode = ref('card')
+  const showType = ref('card')
   const add: string = '创建商店'
   const add1: string = '加入商店'
   const state = reactive({
@@ -279,7 +274,7 @@
       pageSize: 12, // 每页条数
       layout: 'total, prev, pager, next'
     },
-    dialogShow: {
+    addDialog: {
       value: false
     },
     tableHead: [
@@ -315,7 +310,7 @@
     ]
   })
 
-  const dialogVisible1 = ref(false)
+  const createDialog = ref(false)
 
   onMounted(() => {
     getMyMarketData()
@@ -483,7 +478,7 @@
               type: 'success'
             })
           }
-          dialogVisible1.value = false
+          createDialog.value = false
           getMyMarketData()
         })
     }
@@ -506,7 +501,7 @@
               type: 'success'
             })
           }
-          dialogVisible1.value = false
+          createDialog.value = false
           getMyMarketData()
         })
     }
@@ -550,13 +545,13 @@
             message: '加入成功',
             type: 'success'
           })
-          state.dialogShow.value = false
+          state.addDialog.value = false
           getJoinMarketData()
         }
       })
   }
   const closeDialog = (data: { value: boolean }) => {
-    state.dialogShow.value = false
+    state.addDialog.value = false
   }
 </script>
 

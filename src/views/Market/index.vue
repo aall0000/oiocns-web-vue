@@ -9,6 +9,9 @@
           <el-button small link type="primary" @click="GoPage('/market/register')"
             >注册应用</el-button
           >
+          <el-button small link type="primary" @click="GoPage('/market/softShare')"
+            >从共享仓库中添加应用</el-button
+          >
           <el-button small link type="primary" @click="GoPage('/market/markList')"
             >商店列表</el-button
           >
@@ -44,7 +47,6 @@
           <el-switch v-model="isCard" /> -->
         </div>
         <li class="app-card" v-show="mode === 'card'">
-          <MarketCreate :info="add" @myclick="GoPage('/market/softShare')" />
           <ShopCard
             v-for="item in state.ownProductList"
             :info="item"
