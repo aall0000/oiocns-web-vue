@@ -29,7 +29,7 @@
           ref="appCard"
           :dataList="state.myAppList"
           type="shop"
-          @handleUpdate="handleCardUpdate"
+          @handleUpdate="handleUpdate"
           @shopcarNumChange="getShopcarNum"
         ></AppCard>
         <Pagination

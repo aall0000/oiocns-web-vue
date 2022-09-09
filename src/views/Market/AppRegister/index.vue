@@ -1,7 +1,7 @@
 <template>
   <MarketCard />
   <div class="app-register-wrap">
-    <el-tabs v-model="activeName" class="demo-tabs" @tab-click="handleTabsClick">
+    <el-tabs v-model="activeName" class="demo-tabs">
       <el-tab-pane label="基本信息" name="0">
         <div class="app-base-info register-content">
           <div class="custom-title">
@@ -67,7 +67,7 @@
           </el-form>
         </div>
         <el-divider />
-        <div class="app-base-info register-content">
+        <div class="app-base-info register-content resource-box">
           <div class="custom-title">
             <p> <span class="custom-span"></span> 资源信息 </p>
             <el-icon
@@ -94,10 +94,77 @@
           <el-button type="primary" @click="onSubmit" v-if="!isDetailPage">注册</el-button>
         </div>
       </el-tab-pane>
-      <el-tab-pane label="分享信息" name="1"
-        ><shareGroup :info="routeInfo.params"></shareGroup>
+      <el-tab-pane v-if="isDetailPage" label="分享信息" name="1">
+        <el-select
+          value-key="id"
+          placeholder="请选择集团"
+        >
+          <!-- <el-option
+            v-for="item in state.options"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          /> -->
+        </el-select>
+        <el-descriptions style="margin-top: 10px" class="margin-top" :column="3" border>
+          <el-descriptions-item>
+            <template #label>
+              <div class="cell-item">
+                <el-icon>
+                  <user />
+                </el-icon>
+                Username
+              </div>
+            </template>
+            kooriookami
+          </el-descriptions-item>
+          <el-descriptions-item>
+            <template #label>
+              <div class="cell-item">
+                <el-icon>
+                  <iphone />
+                </el-icon>
+                Telephone
+              </div>
+            </template>
+            18100000000
+          </el-descriptions-item>
+          <el-descriptions-item>
+            <template #label>
+              <div class="cell-item">
+                <el-icon>
+                  <location />
+                </el-icon>
+                Place
+              </div>
+            </template>
+            Suzhou
+          </el-descriptions-item>
+          <el-descriptions-item>
+            <template #label>
+              <div class="cell-item">
+                <el-icon>
+                  <tickets />
+                </el-icon>
+                Remarks
+              </div>
+            </template>
+            <el-tag size="small">School</el-tag>
+          </el-descriptions-item>
+          <el-descriptions-item>
+            <template #label>
+              <div class="cell-item">
+                <el-icon>
+                  <office-building />
+                </el-icon>
+                Address
+              </div>
+            </template>
+            No.1188, Wuzhong Avenue, Wuzhong District, Suzhou, Jiangsu Province
+          </el-descriptions-item>
+        </el-descriptions>
       </el-tab-pane>
-      <el-tab-pane label="分配信息" name="2">Role</el-tab-pane>
+      <el-tab-pane v-if="isDetailPage" label="分配信息" name="2">Role</el-tab-pane>
     </el-tabs>
   </div>
 </template>
@@ -315,6 +382,9 @@
         box-shadow: none;
       }
     }
+    .resource-box {
+      min-height: 200px;
+    }
     .page-title {
       font-size: 16px;
       text-align: center;
@@ -322,8 +392,8 @@
     .btns {
       display: flex;
       justify-content: space-around;
-      padding: 10px 0;
-      margin-bottom: 30px;
+      padding: 10px 0 24px;
+      // margin-bottom: 30px;
     }
 
     // 自定义标题
@@ -347,6 +417,16 @@
       cursor: pointer;
       color: var(--el-color-primary);
       margin: 0 10px;
+    }
+    .demo-tabs {
+      height: 100%;
+      :deep(.el-tabs__content) {
+        height: calc(100% - 55px);
+        overflow-y: auto;
+      }
+      :deep(.el-tab-pane) {
+        height: 100%;
+      }
     }
   }
 </style>
