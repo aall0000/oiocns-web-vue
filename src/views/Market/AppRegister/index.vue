@@ -1,6 +1,6 @@
 <template>
   <MarketCard />
-  <div class="app-register-wrap" >
+  <el-card class="app-register-wrap" >
     <div class="app-base-info register-content" :key="isDetailPage&&form?.id">
       <div class="custom-title">
         <p><span class="custom-span"></span> 基础信息</p>
