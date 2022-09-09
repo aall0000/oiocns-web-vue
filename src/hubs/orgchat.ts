@@ -77,7 +77,6 @@ const orgChat: orgChatType = {
                 if (data.openChats) {
                     orgChat.openChats = data.openChats
                 }
-                debugger
                 if (data.lastMsg && orgChat.curChat.value) {
                     if (orgChat.curChat.value.id === data.lastMsg.chat.id &&
                         orgChat.curChat.value.spaceId === data.lastMsg.chat.spaceId) {
