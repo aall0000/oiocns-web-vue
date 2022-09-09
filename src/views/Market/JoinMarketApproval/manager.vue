@@ -11,8 +11,12 @@
         @handleUpdate="handleUpdate"
       >
         <template #operate="scope">
-          <el-button @click="approvalSuccess(scope.row.id, 100)" type="primary">审批通过</el-button>
-          <el-button @click="approvalSuccess(scope.row.id, 200)" type="danger">驳回申请</el-button>
+          <el-button link @click="approvalSuccess(scope.row.id, 100)" type="primary"
+            >审批通过</el-button
+          >
+          <el-button link @click="approvalSuccess(scope.row.id, 200)" type="danger"
+            >驳回申请</el-button
+          >
         </template>
       </DiyTable>
     </div>
@@ -53,7 +57,7 @@
         label: '操作',
         fixed: 'right',
         align: 'center',
-        width: '400',
+        width: '200',
         name: 'operate'
       }
     ],

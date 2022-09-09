@@ -3,7 +3,7 @@
     @click.stop>
     <!-- 子集导航样式 -->
     <li class="menu-item flex">
-      <div class="menu-label required">资源名称:</div>
+      <div :class="['menu-label',readOnly?'': 'required']">资源名称:</div>
       <el-input placeholder="请设置资源名称" v-model="menuItem.name" :readonly="readOnly"></el-input>
       <!-- <el-icon class="child-btn" @click.stop="handleEvent('Add', menuItem.customId)">
         <CirclePlus />

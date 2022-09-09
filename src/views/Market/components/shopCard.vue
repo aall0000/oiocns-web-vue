@@ -19,14 +19,17 @@
         <div class="app-con" v-if="!cardContent">
           <p class="app-con-title">
             {{ info.name }}
-            <el-tag v-if="props.type == 'market'" style="margin-left:10px">{{
+          </p>
+          <div class="app-tag">
+            <el-tag v-if="props.type == 'market'" style="margin-right:10px">{{
               info.public ? '公开' : '私有'
             }}</el-tag>
-            <el-tag v-if="props.type != 'market' && (info.endTime==undefined||Math.round(new Date().getTime())<info?.endTime)" style="margin-left:10px" :type="info.createUser==queryInfo.id?'':'success'">{{
+            <el-tag v-if="props.type != 'market' && (info.endTime==undefined||new Date().getTime()<formartDateTime(info?.endTime))" style="margin-right:10px" :type="info.createUser==queryInfo.id?'':'success'">{{
               info.createUser==queryInfo.id ? '可管理' : '可使用'
             }}</el-tag>
-            <el-tag v-if="props.type != 'market' && Math.round(new Date().getTime())>info?.endTime" style="margin-left:10px" :type="'danger'">失效</el-tag>
-          </p>
+            <el-tag v-if="props.type != 'market' && new Date().getTime()>formartDateTime(info?.endTime)" style="margin-right:10px" :type="'danger'">失效</el-tag>
+            <el-tag v-if="props.type != 'market'" style="margin-right:10px">{{info.source}}</el-tag>
+          </div>
           <div class="app-card-item-con-desc">
             {{ info.remark }}
           </div>
@@ -67,6 +70,14 @@
     // emit('handleMouseOver', selectId)
     state.hoverItem = selectId || ''
   }
+  const formartDateTime = (dateStr:any)=>{
+    if(dateStr){
+      var timestamp = new Date(dateStr).getTime();
+      return timestamp
+    }else{
+      return new Date().getTime()+1000
+    }
+  }
 </script>
 
 <style lang="scss" scoped>
@@ -83,13 +94,21 @@
     right: 0px;
     top: 0px;
   }
+  @media not screen and (min-width: 1300px) {
+    /* styles */
+    .app-card-item{
+      width: calc(33% - 15px) !important;
+    }
+}
   .app-card-item {
     position: relative;
+
     width: 24%;
     min-width: 200px;
     height: 184px;
     margin-bottom: 10px;
-    margin-right: 1%;
+    margin-right: 10px;
+
     // background-color: aqua;
     &-con {
       // display: flex;
@@ -113,6 +132,9 @@
         -webkit-line-clamp: 3; //显示的行数
         // white-space: nowrap;
       }
+    }
+    .app-tag{
+      margin-top: 10px;
     }
     &-footer {
       position: absolute;
