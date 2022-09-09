@@ -70,17 +70,6 @@
               ><div :class="item.public ? 'triangle-public' : 'triangle-'">{{
                 item.public ? '公' : ''
               }}</div></template
-            >
-            <el-button class="btn" type="primary" link small @click.stop="hadleClick(item)"
-              >删除商店</el-button
-            >
-            <el-divider direction="vertical" />
-            <el-button class="btn" link small @click.stop="hadleUserManage(item)"
-              >用户管理</el-button
-            >
-            <el-divider direction="vertical" />
-            <el-button class="btn" link small  @click="GoPageWithQuery('/market/marketDetail',{data:item.id})"
-              >市场首页</el-button
             > -->
           </ShopCard>
         </li>
@@ -163,17 +152,6 @@
               ><div :class="item.public ? 'triangle-public' : 'triangle-'">{{
                 item.public ? '公' : ''
               }}</div></template
-            >
-            <el-button class="btn" type="primary" link small @click.stop="marketQuit(item)"
-              >退出商店</el-button
-            >
-            <el-divider direction="vertical" />
-            <el-button class="btn" link small @click.stop="hadleUserManage(item)"
-              >用户管理</el-button
-            >
-            <el-divider direction="vertical" />
-            <el-button class="btn" link small  @click="GoPageWithQuery('/market/marketDetail',{data:item.id,type:'shop'})"
-              >市场首页</el-button
             > -->
           </ShopCard>
         </li>

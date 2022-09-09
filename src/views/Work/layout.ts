@@ -8,7 +8,7 @@ export const testData = [
     url: 'appcommon'
   },
   {
-    name: '应用中心',
+    name: '应用市场',
     url: 'appMarket'
   },
   {

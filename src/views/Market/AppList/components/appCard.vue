@@ -251,6 +251,7 @@
       })
       .then((res: ResultType) => {
         if (res.code == 200) {
+          emit('handleUpdate')
           ElMessage({
             message: '下架成功',
             type: 'success'
@@ -269,6 +270,7 @@
     height: 100%;
   }
   .app-con-title {
+    // color: #000000d9;
     font-size: 16px;
     font-weight: 600;
   }
@@ -279,7 +281,7 @@
   .app-card-item-con-desc {
     font-size: 12px;
     font-weight: 400;
-    color: rgba(0, 0, 0, 0.45);
+    color: var(--el-color-info);
 
     position: absolute;
     bottom: 50px;
@@ -294,9 +296,9 @@
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
   }
-  :deep(.el-card__body) {
-    padding: 0;
-  }
+  // :deep(.el-card__body) {
+  //   padding: 0;
+  // }
   .shopCar {
     padding: 4px;
     display: flex;
@@ -311,7 +313,7 @@
     }
     &-ul {
       position: relative;
-      background-color: var(--el-bg-color);
+      // background-color: #fff;
       height: 100%;
       &-title {
         font-weight: bold;

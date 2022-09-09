@@ -186,7 +186,7 @@
       class="page-pagination"
       @size-change="(e) => handlePaginationChange(e, 'limit')"
       @current-change="(e) => handlePaginationChange(e, 'current')"
-      small
+      
       background
       :page-sizes="pageSizes"
       v-model:currentPage="pagination.current"
@@ -676,13 +676,13 @@ const searchValue = ref<string>('')
 </script>
 <style lang="scss" scoped>
   .container {
-    width: 100%;
+    // width: 100%;
     height: 100vh;
-    background: #f0f2f5;
+    // background: var(--el-bg-color);
     display: flex;
     flex-direction: column;
-    padding-bottom: 10px;
-
+    margin: 16px;
+    border: 0;
     .limit_table_height {
       
     }
@@ -693,7 +693,7 @@ const searchValue = ref<string>('')
       display: flex;
       justify-content: space-between;
       padding: 10px;
-      background: #fff;
+      // background: #fff;
       .edit {
         font-size: 14px;
         font-weight: bold;
@@ -733,12 +733,12 @@ const searchValue = ref<string>('')
       .header-title {
         font-size: 16px;
         font-weight: bold;
-        color: rgba(48, 49, 51, 1);
+        // color: #303133;
         padding: 0 0 10px;
 
         i {
           font-size: 20px;
-          color: rgba(21, 74, 216, 1);
+          color: var(--el-color-primary);
         }
       }
 

@@ -196,7 +196,7 @@
       position: relative;
       width: 100%;
       height: calc(100% - 60px);
-      background-color: #fff;
+      background-color: var(--el-bg-color-overlay);
       overflow: auto;
       display: flex;
       flex-direction: column;
@@ -214,7 +214,7 @@
       justify-content: space-between;
       p {
         font-weight: 600;
-        color: rgba(0, 0, 0, 0.85);
+        // color: rgba(0, 0, 0, 0.85);
       }
     }
   }

@@ -169,7 +169,8 @@
             id: '1',
             name: '我的好友',
             label: '我的好友',
-            parentId: '0'
+            parentId: '0',
+            data: {}
           }
           cascaderTree.value.unshift(obj)
           getHistoryData()
@@ -674,7 +675,7 @@
     }
   }
 
-  let cascaderTree = ref<OrgTreeModel[]>([])
+  let cascaderTree = ref<any[]>([])
   const getCompanyTree = () => {
     API.cohort
       .getJoinedCohorts({

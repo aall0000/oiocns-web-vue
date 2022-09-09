@@ -1,22 +1,22 @@
 <template>
   <div class="group-content-wrap" ref="nodeRef" @scroll="scrollEvent">
-    <template  v-for="(item, index) in list" :key="item.fromId">
+    <template  v-for="(item, index) in orgChat.curMsgs.value" :key="item.fromId">
         <!-- 聊天间隔时间3分钟则 显示时间 -->
-        <div class="chats-space-Time"
-          v-if="index == 0 || moment(item?.updateTime).diff(list[index - 1].updateTime, 'minute') > 3">
+        <div class="chats-space-Time" v-if="isShowTime(index)">
           <span>
-            {{  showChatTime(item?.updateTime)  }}
+            {{  showChatTime(item.createTime)  }}
           </span>
         </div>
         <!-- 左侧聊天内容显示 -->
         <div class="group-content-left con recall" v-if="item.msgType === 'recall'">
           {{  item.showTxt  }}
+          <!-- <span class="reWrite" @click="handleReWrite(item.msgBody)">重新编辑</span> -->
         </div>
 
-        <div class="group-content-left con" v-else-if="item.fromId !== myId" >
-          <HeadImg :name="orgChat.getName(item.fromId)" :label="''" />
+        <div class="group-content-left con" v-else-if="item.fromId !== orgChat?.userId" >
+          <HeadImg :name="orgChat?.getName(item.fromId)" :label="''" />
           <div class="con-content">
-            <span v-if="showName" class="con-content-name">{{  orgChat.getName(item.fromId)  }}</span>
+            <span v-if="orgChat?.curChat.value.typeName!=='人员'" class="con-content-name">{{  orgChat?.getName(item.fromId)  }}</span>
             <div class="con-content-link"></div>
             <div class="con-content-txt" v-html="item.msgBody"></div>
           </div>
@@ -24,10 +24,12 @@
         <!-- 右侧内容显示 -->
         <div class="group-content-right con" v-else>
           <div class="con-content" @contextmenu.prevent.stop="(e: MouseEvent) => handleContextClick(e, item)">
+            <!-- <span v-if="showName" class="con-content-name">{{ getUserName(item.fromId) }}</span> -->
             <div class="con-content-link"></div>
             <div class="con-content-txt" v-html="item.msgBody"></div>
+            <!-- {{ item.msgBody }} -->
           </div>
-          <HeadImg :name="orgChat.getName(myId)" />
+          <HeadImg :name="orgChat?.getName(orgChat?.userId)" />
         </div>
     </template>
     <!-- 鼠标右键 -->
@@ -44,7 +46,6 @@ import {
   onMounted,
   ref,
   nextTick,
-  toRefs,
   reactive,
   onBeforeUnmount,
   inject
@@ -54,31 +55,24 @@ import HeadImg from '@/components/headImg.vue'
 import moment from 'moment'
 import orgChat from '@/hubs/orgchat'
 
-type Props = {
-  list: any[] //消息列表
-  myId: string //使用者id
-  showName: boolean
-}
-const props = defineProps<Props>()
-const { list, myId, showName } = toRefs(props)
-
-
 // dom节点
 const nodeRef = ref(null)
 // 事件viewMoreMsg--查看更多 recallMsg--撤销消息
-const emit = defineEmits(['viewMoreMsg', 'recallMsg', 'handleReWrite'])
+const emit = defineEmits(['recallMsg', 'handleReWrite'])
 // 保存当前滚动条距离底部长度
 const scrollOfZeroToEnd = ref<number>(0)
 
-// 查看更多事件
-const getMoreHistory = () => {
-  emit('viewMoreMsg')
-}
 const info = inject('reWrite', ref(''))
 // 重新编辑功能
 const handleReWrite = (txt: string) => {
   info.value = txt
   emit('handleReWrite', txt)
+}
+
+const isShowTime = (index: number)=>{
+  if(index == 0) return true
+  return moment(orgChat.curMsgs.value[index].createTime).
+  diff(orgChat.curMsgs.value[index - 1].createTime, 'minute') > 3
 }
 
 // 显示聊天间隔时间
@@ -96,7 +90,7 @@ const showChatTime = (chatDate: moment.MomentInput) => {
 const scrollTop = debounce(() => {
   let scroll = nodeRef.value.scrollTop
   if (scroll < 10) {
-    emit('viewMoreMsg', true)
+    orgChat.getHistoryMsg()
   }
   console.log('监听滚动', nodeRef.value.scrollHeight)
   // 记录当前滚动位置
@@ -106,6 +100,7 @@ const scrollTop = debounce(() => {
 // 滚动设置到底部
 const goPageEnd = () => {
   nextTick(() => {
+    // console.log('滚动底部', nodeRef.value.scrollHeight);
     nodeRef.value.scrollTop = nodeRef.value.scrollHeight
   })
 }
@@ -134,6 +129,8 @@ const mousePosition: {
   selectedItem: ImMsgChildType
 } = reactive({ left: 0, top: 0, isShowContext: false, selectedItem: {} as ImMsgChildType })
 const handleContextClick = (e: MouseEvent, item: ImMsgChildType) => {
+  // console.log('otem', item, new Date(item.createTime));
+  // let bool= new Date(item.createTime) - new Date()
 
   if (!item) {
     return

@@ -17,9 +17,10 @@
               <div style="padding-top: 10px">
                 <slot name="routeContent"></slot>
               </div>
-              <slot name="marketNameSlot"></slot>
-              <span style="color: #3e5ed8; font-size: 17px">{{ activeRouterName }} </span>
+              <slot name="marketNameSlot" ></slot>
+            <span style="color: var(--el-color-primary); font-size: 17px;">{{ activeRouterName }} </span>
             </div>
+
           </template>
         </el-page-header>
       </div>

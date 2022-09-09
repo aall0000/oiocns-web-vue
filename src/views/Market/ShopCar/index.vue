@@ -38,7 +38,7 @@
         </div>
       </template>
     </MarketCard>
-    <div v-if="isRouterAlive" style="height:100vh;background-color: #fff;">
+    <div v-if="isRouterAlive" class="shopcar-content">
       <!-- <el-row :gutter="12" v-loading="loading" v-if="cardActive">
         <el-col :span="4" v-for="item in pageStore.tableData" :key="item.id">
            <el-card shadow="hover">
@@ -152,7 +152,7 @@
         class="page-pagination"
         @size-change="(e) => handlePaginationChange(e, 'limit')"
         @current-change="(e) => handlePaginationChange(e, 'current')"
-        small
+        
         background
         :page-sizes="pageSizes"
         v-model:currentPage="pagination.current"

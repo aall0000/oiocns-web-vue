@@ -26,30 +26,30 @@ const anyStore: anyStoreType = {
     _subscribedKeys: {},
     userId: "",
     start: (accessToken: string, userId: string) => { // 不传默认为链接用户属性库
-        anyStore._stoped = false
         anyStore.userId = userId
+        anyStore._stoped = false
         if (anyStore._connection) return
         // 初始化
         anyStore._connection = new signalR.HubConnectionBuilder().withUrl('/orginone/anydata/object/hub').build()
         anyStore._connection.on("Updated", anyStore._updated)
         anyStore._connection.onclose((error) => {
             if(!anyStore._stoped){
-                console.log('链接已断开,2秒后重连', error)
+                console.log('链接已断开,30秒后重连', error)
                 setTimeout(() => {
                     anyStore._connection = null
                     anyStore.start(accessToken,userId)
-                }, 2000);
+                }, 30000);
             }
         })
         anyStore._connection.start().then(async() => {
             await anyStore._connection.invoke("TokenAuth", "user", accessToken)
             anyStore._resubscribed()
         }).catch((error: any) => {
-            console.log('链接出错,2秒后重连', error)
+            console.log('链接出错,30秒后重连', error)
             setTimeout(() => {
                 anyStore._connection = null
                 anyStore.start(accessToken,userId)
-            }, 2000);
+            }, 30000);
         })// 开启链接
     },
     isConnected: () => {
@@ -74,10 +74,10 @@ const anyStore: anyStoreType = {
                 }, 1000)
             } else {
                 anyStore._subscribedKeys[key] = callback
-                const { data, state: success } = await anyStore._connection.invoke("Subscribed", key)
-                if (success) {
+                let res = await anyStore._connection.invoke("Subscribed", key)
+                if (res.success) {
                     console.log("已订阅===", key)
-                    callback.call(callback, data)
+                    callback.call(callback, res.data)
                 }
             }
         }
