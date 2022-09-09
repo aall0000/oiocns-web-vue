@@ -3,6 +3,9 @@ interface OptionType {
   value: string
   label?: string
   id?: string | number
+  authority?:string
+  belongId?:string
+  endtime?:string
 }
 // select数据类型
 interface selectType {

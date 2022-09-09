@@ -24,7 +24,6 @@
             }}</el-tag>
             <el-tag v-if="props.type != 'market'" style="margin-left:10px" :type="info.createUser==queryInfo.id?'':'success'">{{
               info.createUser==queryInfo.id ? '可管理' : '可使用'
-              
             }}</el-tag>
           </p>
           <div class="app-card-item-con-desc">

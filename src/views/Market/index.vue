@@ -68,14 +68,9 @@
                 <el-icon style="cursor: pointer;" :size="20" ><Operation /></el-icon>
                 <template #dropdown>
                   <el-dropdown-menu>
-                    <div v-if="item.createUser==queryInfo.id">
-                      <el-dropdown-item
-                        v-for="action in actionOptionsOfOwn"
-                        :command="action.value"
-                        :key="action.value"
-                      >
-                        {{ action.label }}
-                      </el-dropdown-item>
+                    
+                    <div v-for="action in actionOptionsOfOwn" :key="action.value">
+                      <el-dropdown-item v-if="item.authority=='所属权'&&action.label=='分享'" :command="action.value">{{ action.label }}</el-dropdown-item>
                     </div>
                     <el-dropdown-item @click="deleteApp(item)">移除应用</el-dropdown-item>
                     <!-- <el-dropdown-item  @click="GoPage('/market/appDetail')">应用详情</el-dropdown-item> -->
@@ -107,16 +102,13 @@
                 <el-icon style="cursor: pointer;" :size="20"><Operation /></el-icon>
                 <template #dropdown>
                   <el-dropdown-menu>
-                    <div v-if="scope.row.createUser==queryInfo.id">
-                      <el-dropdown-item
-                        v-for="action in actionOptionsOfOwn"
-                        :command="action.value"
-                        :key="action.value"
-                      >
-                        {{ action.label }}
-                      </el-dropdown-item>
-                    </div>
-                    
+                    <el-dropdown-item
+                      v-for="action in actionOptionsOfOwn"
+                      :command="action.value"
+                      :key="action.value"
+                    >
+                      {{ action.label }}
+                    </el-dropdown-item>                    
                     <el-dropdown-item @click="deleteApp(scope.row)">移除应用</el-dropdown-item>
                   </el-dropdown-menu>
                 </template>
