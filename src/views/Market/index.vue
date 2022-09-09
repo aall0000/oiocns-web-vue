@@ -51,6 +51,11 @@
           <el-switch v-model="isCard" /> -->
         </div>
         <li class="app-card" v-show="mode === 'card'">
+          <MarketCreate
+            :info="add"
+            v-show="!pageStore.total"
+            @myclick="GoPage('/market/softShare')"
+          />
           <ShopCard
             v-for="item in state.ownProductList"
             :info="item"
@@ -75,12 +80,30 @@
                 <template #dropdown>
                   <el-dropdown-menu>
                     <div v-for="action in actionOptionsOfOwn" :key="action.value">
-                      <div v-if="new Date().getTime()<formartDateTime(item?.endTime)">
-                        <el-dropdown-item v-if="item.authority=='所属权'&&item.belongId==store.workspaceData.id&&action.label=='上架'" :command="action.value">{{ action.label }}</el-dropdown-item>
-                        <el-dropdown-item v-if="(item.belongId==store.workspaceData.id)&&action.label=='分享'" :command="action.value">{{ action.label }}</el-dropdown-item>
-                        <el-dropdown-item v-if="store.workspaceData.type == 2&&action.label=='分发'" :command="action.value">{{ action.label }}</el-dropdown-item>
+                      <div v-if="new Date().getTime() < formartDateTime(item?.endTime)">
+                        <el-dropdown-item
+                          v-if="
+                            item.authority == '所属权' &&
+                            item.belongId == store.workspaceData.id &&
+                            action.label == '上架'
+                          "
+                          :command="action.value"
+                          >{{ action.label }}</el-dropdown-item
+                        >
+                        <el-dropdown-item
+                          v-if="item.belongId == store.workspaceData.id && action.label == '分享'"
+                          :command="action.value"
+                          >{{ action.label }}</el-dropdown-item
+                        >
+                        <el-dropdown-item
+                          v-if="store.workspaceData.type == 2 && action.label == '分发'"
+                          :command="action.value"
+                          >{{ action.label }}</el-dropdown-item
+                        >
                       </div>
-                      <el-dropdown-item v-if="action.label=='详情'" :command="action.value">{{ action.label }}</el-dropdown-item>
+                      <el-dropdown-item v-if="action.label == '详情'" :command="action.value">{{
+                        action.label
+                      }}</el-dropdown-item>
                     </div>
                     <el-dropdown-item @click="deleteApp(item)">移除应用</el-dropdown-item>
                     <!-- <el-dropdown-item  @click="GoPage('/market/appDetail')">应用详情</el-dropdown-item> -->
@@ -106,36 +129,55 @@
             </template>
             <template #tag="scope">
               <el-tag
-                v-if="scope.row.endTime==undefined||
-                new Date().getTime()<formartDateTime(scope.row?.endTime)"
+                v-if="
+                  scope.row.endTime == undefined ||
+                  new Date().getTime() < formartDateTime(scope.row?.endTime)
+                "
                 style="margin-left: 10px"
                 :type="scope.row.createUser == queryInfo.id ? '' : 'success'"
                 >{{ scope.row.createUser == queryInfo.id ? '可管理' : '可使用' }}</el-tag
               >
-              <el-tag v-if="new Date().getTime()>formartDateTime(scope.row?.endTime)" style="margin-left:10px" :type="'danger'">失效</el-tag>
-              <el-tag style="margin-left:10px">{{scope.row.source}}</el-tag>
+              <el-tag
+                v-if="new Date().getTime() > formartDateTime(scope.row?.endTime)"
+                style="margin-left: 10px"
+                :type="'danger'"
+                >失效</el-tag
+              >
+              <el-tag style="margin-left: 10px">{{ scope.row.source }}</el-tag>
             </template>
             <template #operate="scope">
-              <el-dropdown
-                trigger="click"
-                @command="(value:any) => handleCommand('own', value, scope.row)"
-                placement="bottom-end"
+              <el-button
+                v-if="
+                  scope.row.authority == '所属权' && scope.row.belongId == store.workspaceData.id
+                "
+                link
+                type="primary"
+                @click="publishVisible = true"
+                >上架</el-button
               >
-                <el-icon style="cursor: pointer" :size="20"><Operation /></el-icon>
-                <template #dropdown>
-                  <el-dropdown-menu>
-                    <div v-for="action in actionOptionsOfOwn" :key="action.value">
-                      <div v-if="new Date().getTime()<formartDateTime(scope.row?.endTime)">
-                        <el-dropdown-item v-if="scope.row.authority=='所属权'&&scope.row.belongId==store.workspaceData.id&&action.label=='上架'" :command="action.value">{{ action.label }}</el-dropdown-item>
-                        <el-dropdown-item v-if="(scope.row.belongId==store.workspaceData.id)&&action.label=='分享'" :command="action.value">{{ action.label }}</el-dropdown-item>
-                        <el-dropdown-item v-if="store.workspaceData.type == 2&&action.label=='分发'" :command="action.value">{{ action.label }}</el-dropdown-item>
-                      </div>
-                      <el-dropdown-item v-if="action.label=='详情'" :command="action.value">{{ action.label }}</el-dropdown-item>
-                    </div>        
-                    <el-dropdown-item @click="deleteApp(scope.row)">移除应用</el-dropdown-item>
-                  </el-dropdown-menu>
-                </template>
-              </el-dropdown>
+              <el-button
+                link
+                type="primary"
+                v-if="scope.row.belongId == store.workspaceData.id"
+                @click="openShareDialog"
+                >分享</el-button
+              >
+              <el-button
+                link
+                type="primary"
+                v-if="store.workspaceData.type == 2"
+                @click="cohortVisible = true"
+                >分发</el-button
+              >
+              <el-button
+                link
+                type="primary"
+                @click="GoPage(`/market/detail/${selectProductItem.id}`)"
+              >
+                详情
+              </el-button>
+
+              <el-button link type="primary" @click="deleteApp(scope.row)">移除应用</el-button>
             </template>
           </DiyTable>
         </li>
@@ -162,40 +204,6 @@
     </putaway-comp>
   </el-dialog>
   <el-dialog
-    v-if="groupVisible"
-    v-model="groupVisible"
-    custom-class="group-dialog"
-    :title="title"
-    width="600px"
-    draggable
-    :close-on-click-modal="false"
-  >
-    <el-select
-      v-model="selectedValue"
-      value-key="id"
-      :placeholder="'请' + title"
-      @change="selectchange"
-    >
-      <el-option
-        v-for="item in state.options"
-        :key="item.value"
-        :label="item.label"
-        :value="item.value"
-      />
-    </el-select>
-    <template #footer>
-      <span class="dialog-footer" v-if="store.workspaceData.type == 2">
-        <!-- <el-button @click="shareGroup"></el-button>
-        <el-button type="primary" @click="shareUnit">按单位分享</el-button> -->
-        <el-button @click="groupVisible = false">取消</el-button>
-        <el-button type="primary" @click="shareUnit">确定</el-button>
-      </span>
-      <span class="dialog-footer" v-else>
-        <el-button type="primary" @click="shareCohort">按群组分享</el-button>
-      </span>
-    </template>
-  </el-dialog>
-  <el-dialog
     v-if="cohortVisible"
     v-model="cohortVisible"
     custom-class="share-dialog"
@@ -218,13 +226,11 @@
     <ShareCohort
       v-if="store.workspaceData.type == 2"
       @closeDialog="shareVisible = false"
-      :groupId="selectedValue"
       :info="selectProductItem"
     ></ShareCohort>
     <SharePersonBox
       v-else
       @closeDialog="shareVisible = false"
-      :groupId="selectedValue"
       :info="selectProductItem"
     ></SharePersonBox>
   </el-dialog>
@@ -359,7 +365,7 @@
         label: '操作',
         fixed: 'right',
         align: 'center',
-        width: '80',
+        width: '300',
         name: 'operate'
       }
     ]
@@ -430,6 +436,7 @@
       const { result = [], total = 0 } = data
       state[`ownProductList`] = [...result]
       state[`ownTotal`] = total
+      pageStore.total = total
       diyTable.value.state.page.total = total
       pageContent.value.state.page.total = total
     }
@@ -488,54 +495,7 @@
 
   //  打开集团选择弹窗
   const openShareDialog = () => {
-    if (store.workspaceData.type == 1) {
-      shareVisible.value = true
-      // API.cohort
-      //   .getJoinedCohorts({
-      //     data: {
-      //       offset: 0,
-      //       limit: 10000,
-      //       filter: ''
-      //     }
-      //   })
-      //   .then((res: ResultType) => {
-      //     console.log(res)
-      //     if (res.data.result && res.data.result.length > 0) {
-      //       let cor = res.data.result
-      //       state.options = cor.map((g: any) => {
-      //         return { value: g.id, label: g.name }
-      //       })
-      //       title.value = '选择群组'
-      //       groupVisible.value = true
-      //     } else {
-      //       ElMessage({
-      //         type: 'warning',
-      //         message: '您暂未加入群组'
-      //       })
-      //     }
-      //   })
-    } else {
-      API.company
-        .companyGetGroups({
-          data: {
-            offset: 0,
-            limit: 1000
-          }
-        })
-        .then((res: ResultType) => {
-          if (res.data.result && res.data.result.length > 0) {
-            groups = res.data.result
-            state.options = groups.map((g) => {
-              return { value: g.id, label: g.name }
-            })
-            title.value = '选择集团'
-            groupVisible.value = true
-            // loadOrgTree(groups[0].id)
-          } else {
-            groups = []
-          }
-        })
-    }
+    shareVisible.value = true
   }
 
   const groupId = ref('')
@@ -557,22 +517,22 @@
     }
   }
   // 跳转到unit分享界面
-  const shareUnit = () => {
-    if (selectedValue.value) {
-      groupId.value = selectedValue.value
-      groupName.value = state.selectLabel.label
-      appInfo.value = selectProductItem.value.id
+  // const shareUnit = () => {
+  //   if (selectedValue.value) {
+  //     groupId.value = selectedValue.value
+  //     groupName.value = state.selectLabel.label
+  //     appInfo.value = selectProductItem.value.id
 
-      groupVisible.value = false
-      // groupShareVisible.value = true
-      shareVisible.value = true
-    } else {
-      ElMessage({
-        type: 'warning',
-        message: '请选择集团'
-      })
-    }
-  }
+  //     groupVisible.value = false
+  //     // groupShareVisible.value = true
+  //     shareVisible.value = true
+  //   } else {
+  //     ElMessage({
+  //       type: 'warning',
+  //       message: '请选择集团'
+  //     })
+  //   }
+  // }
   // 按群组分享
   const shareCohort = () => {}
 
@@ -588,12 +548,12 @@
     pageStore.currentPage = 1
     getProductList()
   }
-  const formartDateTime = (dateStr:any)=>{
-    if(dateStr){
-      var timestamp = new Date(dateStr).getTime();
+  const formartDateTime = (dateStr: any) => {
+    if (dateStr) {
+      var timestamp = new Date(dateStr).getTime()
       return timestamp
-    }else{
-      return new Date().getTime()+1000
+    } else {
+      return new Date().getTime() + 1000
     }
   }
 </script>

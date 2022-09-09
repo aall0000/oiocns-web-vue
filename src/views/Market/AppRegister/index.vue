@@ -17,12 +17,20 @@
             <el-row :gutter="40" justify="space-between">
               <el-col :span="12">
                 <el-form-item label="应用名称" prop="name">
-                  <el-input v-model="form.data.name" :readonly="isDetailPage" placeholder="请设置" />
+                  <el-input
+                    v-model="form.data.name"
+                    :readonly="isDetailPage"
+                    placeholder="请设置"
+                  />
                 </el-form-item>
               </el-col>
               <el-col :span="12">
                 <el-form-item label="应用编码" prop="code">
-                  <el-input v-model="form.data.code" :readonly="isDetailPage" placeholder="请设置" />
+                  <el-input
+                    v-model="form.data.code"
+                    :readonly="isDetailPage"
+                    placeholder="请设置"
+                  />
                 </el-form-item>
               </el-col>
             </el-row>
@@ -86,77 +94,8 @@
           <el-button type="primary" @click="onSubmit" v-if="!isDetailPage">注册</el-button>
         </div>
       </el-tab-pane>
-      <el-tab-pane label="分享信息" name="1">
-        <el-select
-          v-model="selectedValue"
-          @change="changeGroupIndex"
-          value-key="id"
-          placeholder="请选择集团"
-        >
-          <el-option
-            v-for="item in state.options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          />
-        </el-select>
-        <el-descriptions style="margin-top: 10px" class="margin-top" :column="3" border>
-          <el-descriptions-item>
-            <template #label>
-              <div class="cell-item">
-                <el-icon :style="iconStyle">
-                  <user />
-                </el-icon>
-                Username
-              </div>
-            </template>
-            kooriookami
-          </el-descriptions-item>
-          <el-descriptions-item>
-            <template #label>
-              <div class="cell-item">
-                <el-icon :style="iconStyle">
-                  <iphone />
-                </el-icon>
-                Telephone
-              </div>
-            </template>
-            18100000000
-          </el-descriptions-item>
-          <el-descriptions-item>
-            <template #label>
-              <div class="cell-item">
-                <el-icon :style="iconStyle">
-                  <location />
-                </el-icon>
-                Place
-              </div>
-            </template>
-            Suzhou
-          </el-descriptions-item>
-          <el-descriptions-item>
-            <template #label>
-              <div class="cell-item">
-                <el-icon :style="iconStyle">
-                  <tickets />
-                </el-icon>
-                Remarks
-              </div>
-            </template>
-            <el-tag size="small">School</el-tag>
-          </el-descriptions-item>
-          <el-descriptions-item>
-            <template #label>
-              <div class="cell-item">
-                <el-icon :style="iconStyle">
-                  <office-building />
-                </el-icon>
-                Address
-              </div>
-            </template>
-            No.1188, Wuzhong Avenue, Wuzhong District, Suzhou, Jiangsu Province
-          </el-descriptions-item>
-        </el-descriptions>
+      <el-tab-pane label="分享信息" name="1"
+        ><shareGroup :info="routeInfo.params"></shareGroup>
       </el-tab-pane>
       <el-tab-pane label="分配信息" name="2">Role</el-tab-pane>
     </el-tabs>
@@ -169,7 +108,7 @@
   import { ElMessage, FormRules } from 'element-plus'
   import { useRouter, useRoute } from 'vue-router'
   import { useCommonStore } from '@/store/common'
-  import type { TabsPaneContext } from 'element-plus'
+  import shareGroup from './shareGroup.vue'
   const commonStore = useCommonStore()
   const router = useRouter()
   const routeInfo = useRoute()
@@ -197,40 +136,6 @@
     ]
   })
 
-  // 当前选中的集团
-  let selectedValue = ref<string>()
-  // 当前用户的集团
-  let groups = reactive([])
-  const state = reactive({
-    options: []
-  })
-  const handleTabsClick = (tab: TabsPaneContext, event: Event) => {
-    console.log(tab.index)
-    if (tab.index == '1') {
-      getGroupList()
-    }
-  }
-  // 查询集团列表
-  const getGroupList = () => {
-    API.company
-      .companyGetGroups({
-        data: {
-          offset: 0,
-          limit: 1000
-        }
-      })
-      .then((res: ResultType) => {
-        if (res.data.result && res.data.result.length > 0) {
-          groups = res.data.result
-          state.options = groups.map((g) => {
-            return { value: g.id, label: g.name }
-          })
-          selectedValue.value = groups[0].name
-        } else {
-          groups = []
-        }
-      })
-  }
   // 处理资源信息操作
   const handleMemuEvent = (type: ProductMenuEventType, selectId?: string) => {
     switch (type) {
@@ -394,6 +299,7 @@
     border: 0;
     overflow-y: auto;
     height: calc(100vh - 148px);
+    padding: 20px;
 
     .register-content {
       width: 600px;

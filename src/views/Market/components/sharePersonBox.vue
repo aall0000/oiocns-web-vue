@@ -32,7 +32,7 @@
         <el-tree
           v-else
           ref="leftTree"
-          :data="personTree"
+          :data="cascaderTree"
           :props="unitProps"
           :default-expand-all="true"
           @node-click="handleNodeClick"
@@ -676,15 +676,14 @@
       })
       .then((res: ResultType) => {
         cascaderTree.value = res.data?.result ?? []
-        personTree.value = JSON.parse(JSON.stringify(res.data?.result ?? []))
         let obj = {
-          id: '1',
+          id: store.queryInfo.id,
           name: '我的好友',
           label: '我的好友',
           parentId: '0',
           data: {}
         }
-        personTree.value.unshift(obj)
+        cascaderTree.value.unshift(obj)
         getHistoryData()
       })
   }
