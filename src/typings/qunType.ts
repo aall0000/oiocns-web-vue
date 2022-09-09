@@ -30,7 +30,6 @@ interface ImMsgChildType {
   name: string
   remark: string
   typeName: string
-  createTime:string
   msgTime: string
   msgType:string
   msgBody?: any

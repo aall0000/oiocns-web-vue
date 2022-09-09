@@ -1,6 +1,7 @@
 import * as signalR from '@microsoft/signalr'
-import { ElMessage, valueEquals } from 'element-plus'
+import { ElMessage } from 'element-plus'
 import { ref, Ref } from 'vue'
+import anyStore from '@/utils/anystore'
 // 消息服务
 // 创建链接
 
@@ -11,7 +12,7 @@ type orgChatType = {
     _stoped: boolean,
     userId: string,
     allUserSpaceId: string[],
-    nameMap: Map<string, string>,
+    nameMap: Record<string, string>,
     curMsgs: Ref<any[]>,
     qunPersons: Ref<any[]>,
     curChat: Ref<ImMsgChildType>,
@@ -30,6 +31,7 @@ type orgChatType = {
     unSubscribed: () => void // 取消订阅
     _recvMsg: (data: any) => void // 订阅时，当数据发生更变时通知，不对外使用
     _handleMsg: (data: any) => void // 处理消息
+    _loadChats: (cache: boolean) => void //加载会话
 }
 const orgChat: orgChatType = {
     _connection: null,
@@ -40,11 +42,12 @@ const orgChat: orgChatType = {
     curChat: ref<ImMsgChildType>(null),
     qunPersons: ref<any[]>([]),
     allUserSpaceId: [],
-    nameMap: new Map(),
+    nameMap: {},
     curMsgs: ref<any[]>([]),
     start: (accessToken: string, userId: string) => {
-        orgChat._stoped = false
         orgChat.userId = userId
+        orgChat._stoped = false
+        anyStore.start(accessToken, userId)
         if (orgChat._connection)
             return
         // 初始化
@@ -60,8 +63,19 @@ const orgChat: orgChatType = {
             }
         })
         orgChat._connection.start().then(async () => {
+            await anyStore.subscribed("orgChat", async (data) => {
+                if (data.chats) {
+                    orgChat.chats.value = data.chats
+                }
+                if (data.nameMap) {
+                    orgChat.nameMap = data.nameMap
+                }
+                orgChat._loadChats(false)
+            })
             await orgChat._connection.invoke("TokenAuth", accessToken)
-            await orgChat.getChats()
+            if (orgChat.chats.value.length < 1) {
+                await orgChat.getChats()
+            }
         }).catch((error: any) => {
             console.log('链接出错,2秒后重连', error)
             setTimeout(() => {
@@ -77,15 +91,15 @@ const orgChat: orgChatType = {
         return false
     },
     stop: () => {
+        anyStore.stop()
         if (orgChat.isConnected()) {
             orgChat._connection.stop()
         }
         orgChat._connection = null
         orgChat._stoped = true
     },
-
     getName: (id: string) => {
-        let name = orgChat.nameMap.get(id) || '-'
+        let name = orgChat.nameMap[id] || '-'
         if (name.indexOf(']') > -1) {
             return name.split(']')[1]
         }
@@ -112,11 +126,6 @@ const orgChat: orgChatType = {
             if (res.success) {
                 const { groups = [] } = res.data
                 groups.forEach((item: ImMsgType) => {
-                    if(item.id === orgChat.userId){
-                        orgChat.allUserSpaceId = item.chats.map((c) => {
-                            return c.id
-                        })
-                    }
                     item.chats.forEach((chat: ImMsgChildType) => {
                         chat.spaceId = item.id
                         chat.totalMsg = 10000
@@ -126,10 +135,11 @@ const orgChat: orgChatType = {
                             chat.name = `我 (${chat.name})`
                         }
                         let typeName = chat.typeName == '人员' ? '' : `[${chat.typeName}]`
-                        orgChat.nameMap.set(chat.id, `${chat.name}${typeName}`)
+                        orgChat.nameMap[chat.id] = `${chat.name}${typeName}`
                     })
                 })
                 orgChat.chats.value = [...groups]
+                orgChat._loadChats(true)
             }
             return res
         }
@@ -152,6 +162,10 @@ const orgChat: orgChatType = {
         orgChat.curMsgs.value = []
         orgChat.qunPersons.value = []
         if (chat && chat.id.length > 0) {
+            if (chat.noRead > 0) {
+                chat.noRead = 0
+                orgChat._loadChats(true)
+            }
             orgChat.curChat.value = chat
             await orgChat.getHistoryMsg()
             if (chat.typeName !== "人员") {
@@ -162,7 +176,7 @@ const orgChat: orgChatType = {
         }
     },
     getPersons: async (reset: boolean) => {
-        if(reset){
+        if (reset) {
             orgChat.qunPersons.value = []
         }
         if (orgChat.isConnected() && orgChat.curChat &&
@@ -174,17 +188,21 @@ const orgChat: orgChatType = {
             })
             if (res.success) {
                 orgChat.curChat.value.personNum = res.data.total
-                if(res.data.result){
-                    res.data.result.forEach((item:any)=>{
-                        if(item.team){
+                if (res.data.result) {
+                    res.data.result.forEach((item: any) => {
+                        if (item.team) {
                             item.name = item.team.name
                             if (item.id == orgChat.userId) {
                                 item.name = `我 (${item.name})`
                             }
                             let typeName = item.typeName == '人员' ? '' : `[${item.typeName}]`
-                            orgChat.nameMap.set(item.id, `${item.name}${typeName}`)
+                            orgChat.nameMap[item.id] = `${item.name}${typeName}`
                         }
                         orgChat.qunPersons.value.push(item)
+                    })
+                    anyStore.set("orgChat.nameMap", {
+                        operation: "replaceAll",
+                        data: orgChat.nameMap
                     })
                 }
             }
@@ -210,7 +228,7 @@ const orgChat: orgChatType = {
             if (res.success) {
                 orgChat.curChat.value.totalMsg = res.data.total
                 if (res.data.result) {
-                    res.data.result.forEach((item:any)=>{
+                    res.data.result.forEach((item: any) => {
                         orgChat.curMsgs.value.unshift(item)
                     })
                 }
@@ -225,6 +243,34 @@ const orgChat: orgChatType = {
     },
     unSubscribed: () => {
         orgChat._callBack = null
+        orgChat.setCurrent(null)
+    },
+    _loadChats: (cache: boolean) => {
+        orgChat.chats.value.forEach((item) => {
+            if (item.id === orgChat.userId) {
+                orgChat.allUserSpaceId = item.chats.map((c) => {
+                    return c.id
+                })
+            }
+            if (orgChat.curChat.value) {
+                item.chats.forEach((chat: ImMsgChildType) => {
+                    if (chat.id === orgChat.curChat.value.id &&
+                        chat.spaceId === orgChat.curChat.value.spaceId) {
+                        chat.noRead = 0
+                    }
+                })
+            }
+        })
+        if (cache) {
+            anyStore.set("orgChat", {
+                operation: "replaceAll",
+                data: {
+                    name: "我的消息",
+                    chats: orgChat.chats.value,
+                    nameMap: orgChat.nameMap
+                }
+            })
+        }
     },
     _recvMsg: (data: any) => {
         orgChat._handleMsg(data)
@@ -236,8 +282,8 @@ const orgChat: orgChatType = {
                     orgChat._recvMsg(data)
                 }, 1000);
             } else {
-                let from = orgChat.nameMap.get(data.fromId) || ''
-                let to = orgChat.nameMap.get(data.toId) || ''
+                let from = orgChat.nameMap[data.fromId] || ''
+                let to = orgChat.nameMap[data.toId] || ''
                 if (to.startsWith('我')) {
                     to = "你"
                 }
@@ -278,12 +324,12 @@ const orgChat: orgChatType = {
                         chat.msgBody = data.msgBody
                         chat.msgTime = data.msgTime
                         chat.msgBody = data.msgType
-                        if(chat.msgType != "recall"){
+                        if (chat.msgType != "recall") {
                             chat.showTxt = data.msgBody?.includes('img') ? "[图片]" : data.msgBody
-                        }else{
+                        } else {
                             chat.showTxt = data.showTxt
                         }
-                        if (orgChat && orgChat.curChat.value.id === chat.id &&
+                        if (orgChat.curChat.value && orgChat.curChat.value.id === chat.id &&
                             orgChat.curChat.value.spaceId === chat.spaceId) {
                             orgChat.curMsgs.value.push(data)
                             newChats.unshift(chat)
@@ -291,12 +337,16 @@ const orgChat: orgChatType = {
                             chat.noRead = (chat.noRead || 0) + 1
                             newChats.push(chat)
                         }
-                    }else{
+                    } else {
                         newChats.push(chat)
                     }
                 })
                 item.chats = newChats
             }
+        })
+        anyStore.set("orgChat.chats", {
+            operation: "replaceAll",
+            data: orgChat.chats.value
         })
     },
 }

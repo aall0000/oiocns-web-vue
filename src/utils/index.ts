@@ -37,7 +37,7 @@ const formatDate = (date?: any, fmt?: string) => {
   if (fmt === void 0) fmt = 'yyyy-MM-dd HH:mm:ss'
 
   if (typeof date === 'string') {
-    date = new Date(formatTimeByPattern(date))
+    date = new Date(date)
   } else if (typeof date === 'number') {
     date = new Date(date)
   }
