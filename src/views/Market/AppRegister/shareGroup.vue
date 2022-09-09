@@ -84,7 +84,9 @@
     unitShare: []
   })
   type createInfo = {
-    info: ProductType
+    info: {
+      id: string
+    }
     // groupId: string
   }
   const props = defineProps<createInfo>()
