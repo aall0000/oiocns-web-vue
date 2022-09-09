@@ -7,11 +7,20 @@
       <el-button small link type="primary" @click.stop="GoPage('/market/order')"
         >我的订单</el-button
       >
-      <el-badge :value="shopcarNum" style="padding-left: 10px">
+      <el-badge :value="shopcarNum" style="margin-left: 10px;margin-top: 5px">
         <el-button small link type="primary" @click.stop="GoPage('/market/shopCar')"
           >购物车</el-button
         >
       </el-badge>
+
+        <el-radio-group v-model="switchValue" size="small" class="button">
+          <el-radio-button label="list"
+            ><el-icon :size="18"><Tickets /></el-icon
+          ></el-radio-button>
+          <el-radio-button label="card"
+            ><el-icon :size="18"><Menu /></el-icon
+          ></el-radio-button>
+        </el-radio-group>
     </template>
   </MarketCard>
   <div class="appListLayout">
@@ -21,7 +30,7 @@
       </div>
       <div class="appListLayout-content">
         <AppCard
-          v-if="switchValue"
+          v-if="switchValue=='card'"
           ref="appCard"
           :dataList="state.myAppList"
           :type="route.query.type"
@@ -41,10 +50,10 @@
           </template>
         </DiyTable>
       </div>
-      <div class="appListLayout-radio" v-if="state.myAppList.length > 0">
+      <!-- <div class="appListLayout-radio" v-if="state.myAppList.length > 0">
         <p style="margin-right: 20px">切换视图</p>
         <el-switch v-model="switchValue" />
-      </div>
+      </div> -->
     </div>
   </div>
 </template>
@@ -60,7 +69,7 @@
   const router = useRouter()
   const route = useRoute()
   const diyTable = ref(null)
-  const switchValue = ref(true)
+  const switchValue = ref('card')
   const appCard = ref(null)
   const shopcarNum = ref(0)
   const state = reactive({
@@ -181,6 +190,10 @@
 </script>
 
 <style lang="scss" scoped>
+  .button {
+    margin-left:20px
+  }
+
   .appListLayout {
     width: 100%;
     height: calc(100vh - 60px);
