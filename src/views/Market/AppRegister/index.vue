@@ -3,7 +3,7 @@
   <div class="app-register-wrap">
     <el-tabs v-model="activeName" class="demo-tabs" @tab-click="handleTabsClick">
       <el-tab-pane label="基本信息" name="0">
-        <div class="app-base-info register-content" :key="isDetailPage && form?.id">
+        <div class="app-base-info register-content">
           <div class="custom-title">
             <p><span class="custom-span"></span> 基础信息</p>
           </div>
