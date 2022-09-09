@@ -46,7 +46,7 @@
         </DiyTable>
       </div>
     </div>
-  </div>
+  </el-card>
 </template>
 
 <script setup lang="ts">
