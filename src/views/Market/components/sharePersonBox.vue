@@ -225,7 +225,7 @@
               offset: 0,
               limit: 1000,
               filter: '',
-              teamId: props.groupId ? props.groupId : store.queryInfo.team.id
+              teamId: store.queryInfo.team.id
             }
           })
           .then((res: ResultType) => {
@@ -248,7 +248,7 @@
               offset: 0,
               limit: 1000,
               filter: '',
-              teamId: props.groupId ? props.groupId : store.queryInfo.team.id
+              teamId: store.queryInfo.team.id
             }
           })
           .then((res: ResultType) => {

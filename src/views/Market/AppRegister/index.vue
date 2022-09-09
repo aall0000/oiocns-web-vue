@@ -135,7 +135,7 @@
       }
     ]
   })
-
+  const handleTabsClick = () => {}
   // 处理资源信息操作
   const handleMemuEvent = (type: ProductMenuEventType, selectId?: string) => {
     switch (type) {
