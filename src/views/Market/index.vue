@@ -3,12 +3,25 @@
     <MarketCard :isSee="true">
       <template #right>
         <div class="edit-wrap">
-          <el-button small link type="primary" @click="GoPage('/market/appApply')">我的上架申请</el-button>
-          <el-button small link type="primary" @click="GoPage('/market/register')">注册应用</el-button>
-          <el-button small link type="primary" @click="GoPage('/market/markList')">商店列表</el-button>
-          <el-button small link type="primary" @click.stop="GoPage('/market/order')">我的订单</el-button>
+          <el-button small link type="primary" @click="GoPage('/market/appApply')"
+            >我的上架申请</el-button
+          >
+          <el-button small link type="primary" @click="GoPage('/market/register')"
+            >注册应用</el-button
+          >
+          <el-button small link type="primary" @click="GoPage('/market/softShare')"
+            >从共享仓库中添加应用</el-button
+          >
+          <el-button small link type="primary" @click="GoPage('/market/markList')"
+            >商店列表</el-button
+          >
+          <el-button small link type="primary" @click.stop="GoPage('/market/order')"
+            >我的订单</el-button
+          >
           <el-badge :value="shopcarNum" style="padding-left: 10px">
-            <el-button small link type="primary" @click.stop="GoPage('/market/shopCar')">购物车</el-button>
+            <el-button small link type="primary" @click.stop="GoPage('/market/shopCar')"
+              >购物车</el-button
+            >
           </el-badge>
         </div>
         <div>
@@ -38,7 +51,6 @@
           <el-switch v-model="isCard" /> -->
         </div>
         <li class="app-card" v-show="mode === 'card'">
-          <MarketCreate :info="add" @myclick="GoPage('/market/softShare')" />
           <ShopCard
             v-for="item in state.ownProductList"
             :info="item"
@@ -63,16 +75,43 @@
                 <template #dropdown>
                   <el-dropdown-menu>
                     <div v-for="action in actionOptionsOfOwn" :key="action.value">
+<<<<<<< HEAD
                       <div v-if="new Date().getTime()<formartDateTime(item?.endTime)">
                         <el-dropdown-item v-if="item.authority=='所属权'&&item.belongId==store.workspaceData.id&&action.label=='上架'" :command="action.value">{{ action.label }}</el-dropdown-item>
                         <el-dropdown-item v-if="(item.belongId==store.workspaceData.id)&&action.label=='分享'" :command="action.value">{{ action.label }}</el-dropdown-item>
                         <el-dropdown-item v-if="store.workspaceData.type == 2&&action.label=='分发'" :command="action.value">{{ action.label }}</el-dropdown-item>
                       </div>
                       <el-dropdown-item v-if="action.label=='详情'" :command="action.value">{{ action.label }}</el-dropdown-item>
+=======
+                      <el-dropdown-item
+                        v-if="
+                          item.authority == '所属权' &&
+                          item.belongId == store.workspaceData.id &&
+                          action.label == '上架'
+                        "
+                        :command="action.value"
+                        >{{ action.label }}</el-dropdown-item
+                      >
+                      <el-dropdown-item
+                        v-if="item.belongId == store.workspaceData.id && action.label == '分享'"
+                        :command="action.value"
+                        >{{ action.label }}</el-dropdown-item
+                      >
+                      <el-dropdown-item
+                        v-if="store.workspaceData.type == 2 && action.label == '分发'"
+                        :command="action.value"
+                        >{{ action.label }}</el-dropdown-item
+                      >
+                      <el-dropdown-item v-if="action.label == '详情'" :command="action.value">{{
+                        action.label
+                      }}</el-dropdown-item>
+>>>>>>> Dev
                     </div>
                     <el-dropdown-item @click="deleteApp(item)">移除应用</el-dropdown-item>
                     <!-- <el-dropdown-item  @click="GoPage('/market/appDetail')">应用详情</el-dropdown-item> -->
-                    <el-dropdown-item  @click="GoPageWithQuery('/market/publishList',item)">应用上架列表</el-dropdown-item>
+                    <el-dropdown-item @click="GoPageWithQuery('/market/publishList', item)"
+                      >应用上架列表</el-dropdown-item
+                    >
                   </el-dropdown-menu>
                 </template>
               </el-dropdown>
@@ -131,7 +170,13 @@
       </ul>
     </div>
   </div>
-  <el-dialog v-model="publishVisible" title="上架应用" width="600px" draggable :close-on-click-modal="false">
+  <el-dialog
+    v-model="publishVisible"
+    title="上架应用"
+    width="600px"
+    draggable
+    :close-on-click-modal="false"
+  >
     <putaway-comp :info="selectProductItem" ref="putawayRef" @closeDialog="publishVisible = false">
       <template #btns>
         <div class="putaway-footer" style="text-align: right">
@@ -141,34 +186,50 @@
       </template>
     </putaway-comp>
   </el-dialog>
-  <el-dialog v-if="groupVisible" v-model="groupVisible" custom-class="group-dialog" :title="title" width="600px"
-    draggable :close-on-click-modal="false">
-    <el-select v-model="selectedValue" value-key="id" :placeholder="'请' + title" @change="selectchange">
-      <el-option v-for="item in state.options" :key="item.value" :label="item.label" :value="item.value" />
+  <el-dialog
+    v-if="groupVisible"
+    v-model="groupVisible"
+    custom-class="group-dialog"
+    :title="title"
+    width="600px"
+    draggable
+    :close-on-click-modal="false"
+  >
+    <el-select
+      v-model="selectedValue"
+      value-key="id"
+      :placeholder="'请' + title"
+      @change="selectchange"
+    >
+      <el-option
+        v-for="item in state.options"
+        :key="item.value"
+        :label="item.label"
+        :value="item.value"
+      />
     </el-select>
     <template #footer>
       <span class="dialog-footer" v-if="store.workspaceData.type == 2">
-        <el-button @click="shareGroup">按集团分享</el-button>
-        <el-button type="primary" @click="shareUnit">按单位分享</el-button>
-        <!-- <el-button @click="groupVisible = false">取消</el-button>
-        <el-button type="primary" @click="shareUnit">确定</el-button> -->
+        <!-- <el-button @click="shareGroup"></el-button>
+        <el-button type="primary" @click="shareUnit">按单位分享</el-button> -->
+        <el-button @click="groupVisible = false">取消</el-button>
+        <el-button type="primary" @click="shareUnit">确定</el-button>
       </span>
       <span class="dialog-footer" v-else>
         <el-button type="primary" @click="shareCohort">按群组分享</el-button>
       </span>
     </template>
   </el-dialog>
-  <el-dialog v-if="cohortVisible" v-model="cohortVisible" custom-class="share-dialog" title="应用分发" width="1000px"
-    draggable :close-on-click-modal="false">
+  <el-dialog
+    v-if="cohortVisible"
+    v-model="cohortVisible"
+    custom-class="share-dialog"
+    title="应用分发"
+    width="1000px"
+    draggable
+    :close-on-click-modal="false"
+  >
     <Cohort @closeDialog="cohortVisible = false" :info="selectProductItem"></Cohort>
-  </el-dialog>
-  <el-dialog v-if="unitShareVisible" v-model="unitShareVisible" custom-class="share-dialog" title="应用分享" width="1000px"
-    draggable :close-on-click-modal="false">
-    <Unit :groupId="groupId" :appInfo="appInfo" :groupName="groupName" />
-  </el-dialog>
-  <el-dialog v-if="groupShareVisible" v-model="groupShareVisible" custom-class="share-dialog" title="应用分享"
-    width="1000px" draggable :close-on-click-modal="false">
-    <Group :groupId="groupId" :appInfo="appInfo" :groupName="groupName" />
   </el-dialog>
   <el-dialog
     v-if="shareVisible"
@@ -316,7 +377,7 @@
       {
         prop: 'createTime',
         label: '创建时间',
-        width:'200'
+        width: '200'
       },
       {
         type: 'slot',
@@ -421,34 +482,34 @@
       .catch(() => {})
   }
 
-// 记录当前操作的 应用信息
-const selectProductItem = ref<ProductType>()
-// 处理 设置 菜单选择事件
-const handleCommand = (
-  type: 'own' | 'other',
-  command: string | number | object,
-  item: ProductType
-) => {
-  selectProductItem.value = item
-  switch (command) {
-    case 'share':
-      openShareDialog()
-      break
-    case 'putaway':
-      publishVisible.value = true
-      break
-    case 'unsubscribe':
-      break
-    case 'distribution':
-      cohortVisible.value = true
-      break
+  // 记录当前操作的 应用信息
+  const selectProductItem = ref<ProductType>()
+  // 处理 设置 菜单选择事件
+  const handleCommand = (
+    type: 'own' | 'other',
+    command: string | number | object,
+    item: ProductType
+  ) => {
+    selectProductItem.value = item
+    switch (command) {
+      case 'share':
+        openShareDialog()
+        break
+      case 'putaway':
+        publishVisible.value = true
+        break
+      case 'unsubscribe':
+        break
+      case 'distribution':
+        cohortVisible.value = true
+        break
       case 'detail':
         GoPage(`/market/detail/${item.id}`)
         break
-    default:
-      break
+      default:
+        break
+    }
   }
-}
 
   //  打开集团选择弹窗
   const openShareDialog = () => {
@@ -502,30 +563,30 @@ const handleCommand = (
     }
   }
 
-const groupId = ref('')
-const groupName = ref('')
-const appInfo = ref('')
-// 跳转到group分享界面
-const shareGroup = () => {
-  if (selectedValue.value) {
-    groupId.value = selectedValue.value
-    groupName.value = state.selectLabel.label
-    appInfo.value = selectProductItem.value.id
-    groupVisible.value = false
-    groupShareVisible.value = true
-  } else {
-    ElMessage({
-      type: 'warning',
-      message: '请选择集团'
-    })
+  const groupId = ref('')
+  const groupName = ref('')
+  const appInfo = ref('')
+  // 跳转到group分享界面
+  const shareGroup = () => {
+    if (selectedValue.value) {
+      groupId.value = selectedValue.value
+      groupName.value = state.selectLabel.label
+      appInfo.value = selectProductItem.value.id
+      groupVisible.value = false
+      groupShareVisible.value = true
+    } else {
+      ElMessage({
+        type: 'warning',
+        message: '请选择集团'
+      })
+    }
   }
-}
-// 跳转到unit分享界面
-const shareUnit = () => {
-  if (selectedValue.value) {
-    groupId.value = selectedValue.value
-    groupName.value = state.selectLabel.label
-    appInfo.value = selectProductItem.value.id
+  // 跳转到unit分享界面
+  const shareUnit = () => {
+    if (selectedValue.value) {
+      groupId.value = selectedValue.value
+      groupName.value = state.selectLabel.label
+      appInfo.value = selectProductItem.value.id
 
       groupVisible.value = false
       // groupShareVisible.value = true
@@ -563,50 +624,50 @@ const shareUnit = () => {
 </script>
 
 <style>
-.group-dialog>.el-dialog__body {
-  padding: 10px 20px;
-  height: 100px;
-  display: flex;
-  align-items: center;
-}
+  .group-dialog > .el-dialog__body {
+    padding: 10px 20px;
+    height: 100px;
+    display: flex;
+    align-items: center;
+  }
 
-.share-dialog>.el-dialog__header {
-  text-align: center;
-  font-weight: bold;
-}
+  .share-dialog > .el-dialog__header {
+    text-align: center;
+    font-weight: bold;
+  }
 
-.share-dialog>.el-dialog__body {
-  padding: 10px 20px;
-}
+  .share-dialog > .el-dialog__body {
+    padding: 10px 20px;
+  }
 </style>
 <style lang="scss" scoped>
-.header-box {
-  display: flex;
-}
+  .header-box {
+    display: flex;
+  }
 
-.cohortLayout {
-  width: 100%;
-  height: 500px;
-  overflow: auto;
-}
+  .cohortLayout {
+    width: 100%;
+    height: 500px;
+    overflow: auto;
+  }
 
   .page-flex {
     height: 50px;
     width: 100%;
     overflow: hidden;
   }
-.menuRight {
-  width: 100px;
-  height: 60px;
-  position: absolute;
-  background-color: rgb(247, 247, 247);
-  font-size: 12px;
-  z-index: 999;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
+  .menuRight {
+    width: 100px;
+    height: 60px;
+    position: absolute;
+    background-color: rgb(247, 247, 247);
+    font-size: 12px;
+    z-index: 999;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
 
     &-fixed {
       padding: 5px 0;
