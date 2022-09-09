@@ -22,10 +22,11 @@
             <el-tag v-if="props.type == 'market'" style="margin-left:10px">{{
               info.public ? '公开' : '私有'
             }}</el-tag>
-            <el-tag v-if="props.type != 'market' && (info.endTime==undefined||Math.round(new Date().getTime())<info?.endTime)" style="margin-left:10px" :type="info.createUser==queryInfo.id?'':'success'">{{
+            <el-tag v-if="props.type != 'market' && (info.endTime==undefined||new Date().getTime()<formartDateTime(info?.endTime))" style="margin-left:10px" :type="info.createUser==queryInfo.id?'':'success'">{{
               info.createUser==queryInfo.id ? '可管理' : '可使用'
             }}</el-tag>
-            <el-tag v-if="props.type != 'market' && Math.round(new Date().getTime())>info?.endTime" style="margin-left:10px" :type="'danger'">失效</el-tag>
+            <el-tag v-if="props.type != 'market' && new Date().getTime()>formartDateTime(info?.endTime)" style="margin-left:10px" :type="'danger'">失效</el-tag>
+            <el-tag v-if="props.type != 'market'" style="margin-left:10px">{{info.source}}</el-tag>
           </p>
           <div class="app-card-item-con-desc">
             {{ info.remark }}
@@ -66,6 +67,14 @@
   const handleWatchMouseOver = (selectId: string) => {
     // emit('handleMouseOver', selectId)
     state.hoverItem = selectId || ''
+  }
+  const formartDateTime = (dateStr:any)=>{
+    if(dateStr){
+      var timestamp = new Date(dateStr).getTime();
+      return timestamp
+    }else{
+      return new Date().getTime()+1000
+    }
   }
 </script>
 
