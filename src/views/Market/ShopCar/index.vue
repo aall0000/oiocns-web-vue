@@ -157,7 +157,7 @@
         :page-sizes="pageSizes"
         v-model:currentPage="pagination.current"
         v-model:page-size="pagination.limit"
-        layout="total, sizes, prev, pager, next, jumper"
+        layout="total, prev, pager, next, sizes"
         :total="pageStore.total"
       ></el-pagination>
     </div>
