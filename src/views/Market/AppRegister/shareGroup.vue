@@ -53,13 +53,13 @@
         v-if="store.workspaceData.type == 2"
         @closeDialog="shareVisible = false"
         :groupId="selectedValue"
-        :info="props.info"
+        :info="props.info as any"
       ></ShareCohort>
       <SharePersonBox
         v-else
         @closeDialog="shareVisible = false"
         :groupId="selectedValue"
-        :info="props.info"
+        :info="props.info as any"
       ></SharePersonBox>
     </el-dialog>
   </div>
