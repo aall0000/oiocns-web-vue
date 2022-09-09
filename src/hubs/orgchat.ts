@@ -11,6 +11,7 @@ type orgChatType = {
     chats: Ref<ImMsgType[]>,
     _stoped: boolean,
     userId: string,
+    lastMsg: any,
     allUserSpaceId: string[],
     nameMap: Record<string, string>,
     curMsgs: Ref<any[]>,
@@ -40,6 +41,7 @@ const orgChat: orgChatType = {
     chats: ref<ImMsgType[]>([]),
     _stoped: false,
     userId: "",
+    lastMsg: null,
     curChat: ref<ImMsgChildType>(null),
     qunPersons: ref<any[]>([]),
     allUserSpaceId: [],
@@ -74,6 +76,12 @@ const orgChat: orgChatType = {
                 }
                 if (data.openChats) {
                     orgChat.openChats = data.openChats
+                }
+                if (data.lastMsg && orgChat.curChat.value) {
+                    if (orgChat.curChat.value.id === data.lastMsg.chat.id &&
+                        orgChat.curChat.value.spaceId === data.lastMsg.chat.spaceId) {
+                        orgChat.curMsgs.value.push(data.lastMsg.data)
+                    }
                 }
                 orgChat._loadChats(false)
             })
@@ -171,8 +179,8 @@ const orgChat: orgChatType = {
         return { success: false, data: {}, code: 404, msg: "" }
     },
     setCurrent: async (chat: ImMsgChildType) => {
-        if(orgChat.curChat.value){
-            orgChat.openChats = orgChat.openChats.filter((item)=>{
+        if (orgChat.curChat.value) {
+            orgChat.openChats = orgChat.openChats.filter((item) => {
                 return item.id !== orgChat.curChat.value.id ||
                     item.spaceId !== orgChat.curChat.value.spaceId
             })
@@ -181,6 +189,7 @@ const orgChat: orgChatType = {
         orgChat.curMsgs.value = []
         orgChat.qunPersons.value = []
         if (chat && chat.id.length > 0) {
+            chat.noRead = 0
             orgChat.curChat.value = chat
             await orgChat.getHistoryMsg()
             if (chat.typeName !== "人员") {
@@ -190,10 +199,7 @@ const orgChat: orgChatType = {
             }
             orgChat.openChats.push(orgChat.curChat.value)
         }
-        anyStore.set("orgChat.openChats", {
-            operation: "replaceAll",
-            data: orgChat.openChats
-        })
+        orgChat._loadChats(true)
     },
     getPersons: async (reset: boolean) => {
         if (reset) {
@@ -287,7 +293,9 @@ const orgChat: orgChatType = {
                 data: {
                     name: "我的消息",
                     chats: orgChat.chats.value,
-                    nameMap: orgChat.nameMap
+                    nameMap: orgChat.nameMap,
+                    openChats: orgChat.openChats,
+                    lastMsg: orgChat.lastMsg
                 }
             })
         }
@@ -354,13 +362,17 @@ const orgChat: orgChatType = {
                             orgChat.curMsgs.value.push(data)
                             newChats.unshift(chat)
                         } else {
-                            let opened = orgChat.openChats.filter(i=>{
+                            let opened = orgChat.openChats.filter(i => {
                                 return i.id === chat.id && i.spaceId === chat.spaceId
                             }).length > 0
-                            if(!opened){
+                            if (!opened) {
                                 chat.noRead = (chat.noRead || 0) + 1
                             }
                             newChats.push(chat)
+                        }
+                        orgChat.lastMsg = {
+                            data: data,
+                            chat: chat
                         }
                     } else {
                         newChats.push(chat)
@@ -369,10 +381,7 @@ const orgChat: orgChatType = {
                 item.chats = newChats
             }
         })
-        anyStore.set("orgChat.chats", {
-            operation: "replaceAll",
-            data: orgChat.chats.value
-        })
+        orgChat._loadChats(true)
     },
 }
 export default orgChat
