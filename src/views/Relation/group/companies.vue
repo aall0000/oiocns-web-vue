@@ -202,7 +202,7 @@
     router.push('/cardDetail')
   }
 
-  // 移除
+  // 移除n
   const removeFrom = (row: any) => {
     let url: string
     let title: string
