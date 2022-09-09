@@ -100,7 +100,7 @@
   }
   type createInfo = {
     info: ProductType
-    groupId: string
+    groupId?: string
   }
   const store = useUserStore()
   const searchValue = ref('')
