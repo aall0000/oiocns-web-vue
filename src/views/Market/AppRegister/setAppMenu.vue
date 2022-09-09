@@ -52,7 +52,7 @@
     </ul>
   </template>
   <template v-else>
-    <div class="noData" style="text-align: center;">暂无资源</div>
+    <div class="noData" style="text-align: center;margin-top:50px">暂无资源</div>
   </template>
 </template>
 <script lang="ts" setup>
