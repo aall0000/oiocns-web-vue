@@ -225,10 +225,10 @@
     </el-select>
     <template #footer>
       <span class="dialog-footer" v-if="store.workspaceData.type == 2">
-        <el-button @click="shareGroup">按集团分享</el-button>
-        <el-button type="primary" @click="shareUnit">按单位分享</el-button>
-        <!-- <el-button @click="groupVisible = false">取消</el-button>
-        <el-button type="primary" @click="shareUnit">确定</el-button> -->
+        <!-- <el-button @click="shareGroup"></el-button>
+        <el-button type="primary" @click="shareUnit">按单位分享</el-button> -->
+        <el-button @click="groupVisible = false">取消</el-button>
+        <el-button type="primary" @click="shareUnit">确定</el-button>
       </span>
       <span class="dialog-footer" v-else>
         <el-button type="primary" @click="shareCohort">按群组分享</el-button>
@@ -245,28 +245,6 @@
     :close-on-click-modal="false"
   >
     <Cohort @closeDialog="cohortVisible = false" :info="selectProductItem"></Cohort>
-  </el-dialog>
-  <el-dialog
-    v-if="unitShareVisible"
-    v-model="unitShareVisible"
-    custom-class="share-dialog"
-    title="应用分享"
-    width="1000px"
-    draggable
-    :close-on-click-modal="false"
-  >
-    <Unit :groupId="groupId" :appInfo="appInfo" :groupName="groupName" />
-  </el-dialog>
-  <el-dialog
-    v-if="groupShareVisible"
-    v-model="groupShareVisible"
-    custom-class="share-dialog"
-    title="应用分享"
-    width="1000px"
-    draggable
-    :close-on-click-modal="false"
-  >
-    <Group :groupId="groupId" :appInfo="appInfo" :groupName="groupName" />
   </el-dialog>
   <el-dialog
     v-if="shareVisible"
