@@ -39,7 +39,7 @@
               <el-table :data="props.row.details" border :header-cell-style="getRowClass">
                 <el-table-column prop="caption" label="名称" />
                 <el-table-column prop="sellAuth" label="售卖权属" />
-                <el-table-column prop="days" label="售卖期限" />
+                <el-table-column prop="days" label="使用期限" />
                 <el-table-column prop="price" label="售卖价格" />
                 <el-table-column prop="seller.name" label="卖方名称" />
                 <el-table-column
@@ -143,7 +143,7 @@
         <el-table-column prop="caption" label="名称" />
         <el-table-column prop="belongName" label="买方名称" />
         <el-table-column prop="sellAuth" label="售卖权属" />
-        <el-table-column prop="days" label="售卖期限" />
+        <el-table-column prop="days" label="使用期限" />
         <el-table-column prop="price" label="售卖价格" />
         <el-table-column
           prop="status"

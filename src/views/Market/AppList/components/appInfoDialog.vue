@@ -21,7 +21,7 @@
       </el-descriptions-item>
       <el-descriptions-item>
         <template #label>
-          <div class="cell-item"> 售卖期限 </div>
+          <div class="cell-item"> 使用期限 </div>
         </template>
         {{ dialogShow.sendData.days??'--' }}
       </el-descriptions-item>

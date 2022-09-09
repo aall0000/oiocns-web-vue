@@ -125,7 +125,7 @@
         <el-table-column prop="caption" label="商品名称" />
         <el-table-column prop="information" label="商品信息" />
         <el-table-column prop="sellAuth" label="售卖权属" />
-        <el-table-column prop="days" label="售卖期限" />
+        <el-table-column prop="days" label="使用期限" />
         <el-table-column prop="price" label="售卖价格" />
         <el-table-column prop="number" label="数量" />
         <el-table-column prop="marketName" label="市场名称" />
