@@ -35,7 +35,7 @@
             {{ info.remark }}
           </div>
         </div>
-      
+
         <slot v-else name="content"></slot>
       </div>
       <div>
@@ -43,7 +43,7 @@
 
       </div>
     </div>
-    
+
     <!-- v-show="hoverItem === info.id" -->
     <div class="app-card-item-footer" v-show="state.hoverItem === info.id" @click.stop>
       <slot />
@@ -86,7 +86,7 @@
 </script>
 
 <style lang="scss" scoped>
-  
+
   .app-card-rightIcon {
     position: absolute;
     right: 10px;
@@ -108,7 +108,7 @@
 
     width: 24%;
     min-width: 200px;
-    // height: 184px;
+    max-height: 184px;
     margin-bottom: 10px;
     margin-right: 10px;
 
