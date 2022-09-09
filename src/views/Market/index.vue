@@ -68,20 +68,11 @@
                 <el-icon style="cursor: pointer" :size="20"><Operation /></el-icon>
                 <template #dropdown>
                   <el-dropdown-menu>
-<<<<<<< HEAD
-                    
+
                     <div v-for="action in actionOptionsOfOwn" :key="action.value">
-                      <el-dropdown-item v-if="item.authority=='所属权'&&action.label=='分享'" :command="action.value">{{ action.label }}</el-dropdown-item>
-=======
-                    <div v-if="item.createUser == queryInfo.id">
-                      <el-dropdown-item
-                        v-for="action in actionOptionsOfOwn"
-                        :command="action.value"
-                        :key="action.value"
-                      >
-                        {{ action.label }}
-                      </el-dropdown-item>
->>>>>>> Dev
+
+                      <el-dropdown-item v-if="item.authority=='所属权'&&action.label=='上架'" :command="action.value">{{ action.label }}</el-dropdown-item>
+                      <el-dropdown-item v-if="(item.belongId==queryInfo.id)&&action.label=='分享'" :command="action.value">{{ action.label }}</el-dropdown-item>
                     </div>
                     <el-dropdown-item @click="deleteApp(item)">移除应用</el-dropdown-item>
                     <!-- <el-dropdown-item  @click="GoPage('/market/appDetail')">应用详情</el-dropdown-item> -->
@@ -101,11 +92,15 @@
           >
             <template #name="scope">
               {{ scope.row.name }}
+            </template>
+            <template #tag="scope">
               <el-tag
+                v-if="scope.row.endTime==undefined||Math.round(new Date().getTime())<scope.row?.endTime"
                 style="margin-left: 10px"
                 :type="scope.row.createUser == queryInfo.id ? '' : 'success'"
                 >{{ scope.row.createUser == queryInfo.id ? '可管理' : '可使用' }}</el-tag
               >
+              <el-tag v-if=" Math.round(new Date().getTime())>scope.row?.endTime" style="margin-left:10px" :type="'danger'">失效</el-tag>
             </template>
             <template #operate="scope">
               <el-dropdown
@@ -116,26 +111,10 @@
                 <el-icon style="cursor: pointer" :size="20"><Operation /></el-icon>
                 <template #dropdown>
                   <el-dropdown-menu>
-<<<<<<< HEAD
-                    <el-dropdown-item
-                      v-for="action in actionOptionsOfOwn"
-                      :command="action.value"
-                      :key="action.value"
-                    >
-                      {{ action.label }}
-                    </el-dropdown-item>                    
-=======
-                    <div v-if="scope.row.createUser == queryInfo.id">
-                      <el-dropdown-item
-                        v-for="action in actionOptionsOfOwn"
-                        :command="action.value"
-                        :key="action.value"
-                      >
-                        {{ action.label }}
-                      </el-dropdown-item>
-                    </div>
-
->>>>>>> Dev
+                    <div v-for="action in actionOptionsOfOwn" :key="action.value">
+                      <el-dropdown-item v-if="scope.row.authority=='所属权'&&action.label=='上架'" :command="action.value">{{ action.label }}</el-dropdown-item>
+                      <el-dropdown-item v-if="(scope.row.belongId==queryInfo.id)&&action.label=='分享'" :command="action.value">{{ action.label }}</el-dropdown-item>
+                    </div>        
                     <el-dropdown-item @click="deleteApp(scope.row)">移除应用</el-dropdown-item>
                   </el-dropdown-menu>
                 </template>
@@ -350,6 +329,13 @@
         label: '应用名称'
       },
       {
+        type: 'slot',
+        prop: 'tag',
+        width:'110',
+        name: 'tag',
+        label: '应用状态'
+      },
+      {
         prop: 'code',
         label: '应用编码'
       },
@@ -367,7 +353,8 @@
       },
       {
         prop: 'createTime',
-        label: '创建时间'
+        label: '创建时间',
+        width:'200'
       },
       {
         type: 'slot',
@@ -446,6 +433,7 @@
     })
     if (success) {
       const { result = [], total = 0 } = data
+      result[0].endTime ='1000000'
       state[`ownProductList`] = [...result]
       state[`ownTotal`] = total
       diyTable.value.state.page.total = total

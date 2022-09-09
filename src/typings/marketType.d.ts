@@ -5,7 +5,7 @@ interface OptionType {
   id?: string | number
   authority?:string
   belongId?:string
-  endtime?:string
+  endTime?:string | boolean | number
 }
 // select数据类型
 interface selectType {
@@ -36,7 +36,7 @@ interface ProductType {
   code: string
   createTime: string
   createUser: string
-  endTime: string
+  endTime: string | boolean | number
   id: string
   name: string
   source: string
