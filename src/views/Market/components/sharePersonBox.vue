@@ -32,7 +32,7 @@
         <el-tree
           v-else
           ref="leftTree"
-          :data="cascaderTree"
+          :data="personTree"
           :props="unitProps"
           :default-expand-all="true"
           @node-click="handleNodeClick"
@@ -137,6 +137,7 @@
     identitysHisData: [] // 身份历史数据
   })
   let cascaderTree = ref<any[]>([])
+  let personTree = ref<any[]>([])
   const authorityProps = {
     label: 'name',
     children: 'nodes'
@@ -156,7 +157,6 @@
     () => radio.value,
     (newValue, oldValue) => {
       state.centerTree = []
-      cascaderTree.value = []
       nextTick(() => {
         if (newValue == '1' && state.departData.length > 0) {
           let arr: any[] = []
@@ -167,14 +167,6 @@
           })
           leftTree.value.setCheckedKeys(arr, true)
         } else if (newValue == '2' && state.authorData.length == 0) {
-          let obj = {
-            id: '1',
-            name: '我的好友',
-            label: '我的好友',
-            parentId: '0',
-            data: {}
-          }
-          cascaderTree.value.unshift(obj)
           getHistoryData()
         } else if (newValue == '3' && state.personsData.length == 0) {
           getHistoryData()
@@ -682,8 +674,17 @@
       .getJoinedCohorts({
         data: { offset: 0, limit: 10000, filter: '' }
       })
-      .then((res: any) => {
-        cascaderTree.value = res.data.result ? res.data.result : []
+      .then((res: ResultType) => {
+        cascaderTree.value = res.data?.result ?? []
+        personTree.value = JSON.parse(JSON.stringify(res.data?.result ?? []))
+        let obj = {
+          id: '1',
+          name: '我的好友',
+          label: '我的好友',
+          parentId: '0',
+          data: {}
+        }
+        personTree.value.unshift(obj)
         getHistoryData()
       })
   }

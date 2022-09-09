@@ -1,30 +1,32 @@
 <template>
   <MarketCard />
-  <div class="app-register-wrap" >
-    <div class="app-base-info register-content" :key="isDetailPage&&form?.id">
-      <div class="custom-title">
-        <p><span class="custom-span"></span> 基础信息</p>
-      </div>
-      <el-form
-        :model="form"
-        ref="registerFormRef"
-        :rules="isDetailPage ? {} : rules"
-        label-position="top"
-        class="demo-form-inline"
-      >
-        <el-row :gutter="40" justify="space-between">
-          <el-col :span="12">
-            <el-form-item label="应用名称" prop="name">
-              <el-input v-model="form.name" :readonly="isDetailPage" placeholder="请设置" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="应用编码" prop="code">
-              <el-input v-model="form.code" :readonly="isDetailPage" placeholder="请设置" />
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <!-- <el-row :gutter="40" justify="space-between">
+  <div class="app-register-wrap">
+    <el-tabs v-model="activeName" class="demo-tabs" @tab-click="handleTabsClick">
+      <el-tab-pane label="基本信息" name="0">
+        <div class="app-base-info register-content" :key="isDetailPage && form?.id">
+          <div class="custom-title">
+            <p><span class="custom-span"></span> 基础信息</p>
+          </div>
+          <el-form
+            :model="form"
+            ref="registerFormRef"
+            :rules="isDetailPage ? {} : rules"
+            label-position="top"
+            class="demo-form-inline"
+          >
+            <el-row :gutter="40" justify="space-between">
+              <el-col :span="12">
+                <el-form-item label="应用名称" prop="name">
+                  <el-input v-model="form.name" :readonly="isDetailPage" placeholder="请设置" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item label="应用编码" prop="code">
+                  <el-input v-model="form.code" :readonly="isDetailPage" placeholder="请设置" />
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <!-- <el-row :gutter="40" justify="space-between">
           <el-col :span="12"
             ><el-form-item label="负责人">
               <el-input v-model="form.user" placeholder="请设置" /> </el-form-item
@@ -34,55 +36,130 @@
               <el-input v-model="form.user" placeholder="请设置" /> </el-form-item
           ></el-col>
         </el-row> -->
-        <!-- <el-form-item label="Activity zone">
+            <!-- <el-form-item label="Activity zone">
           <el-select v-model="form.region" placeholder="Activity zone">
             <el-option label="Zone one" value="shanghai" />
             <el-option label="Zone two" value="beijing" />
           </el-select>
         </el-form-item> -->
-        <!-- <el-form-item label="privateKey">
+            <!-- <el-form-item label="privateKey">
           <el-input v-model="form.privateKey" placeholder="请设置" />
         </el-form-item> -->
-        <el-form-item label="应用介绍">
-          <el-input
-            :rows="2"
-            v-model="form.remark"
-            type="textarea"
-            maxlength="120"
-            show-word-limit
-            placeholder="请输入应用介绍"
-            :readonly="isDetailPage"
+            <el-form-item label="应用介绍">
+              <el-input
+                :rows="2"
+                v-model="form.remark"
+                type="textarea"
+                maxlength="120"
+                show-word-limit
+                placeholder="请输入应用介绍"
+                :readonly="isDetailPage"
+              />
+            </el-form-item>
+          </el-form>
+        </div>
+        <el-divider />
+        <div class="app-base-info register-content">
+          <div class="custom-title">
+            <p> <span class="custom-span"></span> 资源信息 </p>
+            <el-icon
+              v-if="!isDetailPage"
+              class="add-btn"
+              :size="20"
+              @click.stop="handleMemuEvent('Add')"
+            >
+              <CirclePlus />
+            </el-icon>
+          </div>
+          <SetAppMenu
+            :menus="resources.resources"
+            :key="`${resources.resources.length}-${resources.resources.map((v:any)=>v?.id||v.customId).join('&')}`"
+            :readOnly="isDetailPage"
+            @handleMemuEvent="handleMemuEvent"
           />
-        </el-form-item>
-      </el-form>
-    </div>
-    <el-divider />
-    <div class="app-base-info register-content">
-      <div class="custom-title">
-        <p> <span class="custom-span"></span> 资源信息 </p>
-        <el-icon
-          v-if="!isDetailPage"
-          class="add-btn"
-          :size="20"
-          @click.stop="handleMemuEvent('Add')"
+        </div>
+        <el-divider />
+        <div class="app-base-info register-content btns">
+          <el-button :type="isDetailPage ? 'primary' : 'info'" @click="router.back()">{{
+            isDetailPage ? '返回' : '取消'
+          }}</el-button>
+          <el-button type="primary" @click="onSubmit" v-if="!isDetailPage">注册</el-button>
+        </div>
+      </el-tab-pane>
+      <el-tab-pane label="分享信息" name="1">
+        <el-select
+          v-model="selectedValue"
+          @change="changeGroupIndex"
+          value-key="id"
+          placeholder="请选择集团"
         >
-          <CirclePlus />
-        </el-icon>
-      </div>
-      <SetAppMenu
-        :menus="resources.resources"
-        :key="`${resources.resources.length}-${resources.resources.map((v:any)=>v?.id||v.customId).join('&')}`"
-        :readOnly="isDetailPage"
-        @handleMemuEvent="handleMemuEvent"
-      />
-    </div>
-    <el-divider />
-    <div class="app-base-info register-content btns">
-      <el-button :type="isDetailPage ? 'primary' : 'info'" @click="router.back()">{{
-        isDetailPage ? '返回' : '取消'
-      }}</el-button>
-      <el-button type="primary" @click="onSubmit" v-if="!isDetailPage">注册</el-button>
-    </div>
+          <el-option
+            v-for="item in state.options"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          />
+        </el-select>
+        <el-descriptions style="margin-top: 10px" class="margin-top" :column="3" border>
+          <el-descriptions-item>
+            <template #label>
+              <div class="cell-item">
+                <el-icon :style="iconStyle">
+                  <user />
+                </el-icon>
+                Username
+              </div>
+            </template>
+            kooriookami
+          </el-descriptions-item>
+          <el-descriptions-item>
+            <template #label>
+              <div class="cell-item">
+                <el-icon :style="iconStyle">
+                  <iphone />
+                </el-icon>
+                Telephone
+              </div>
+            </template>
+            18100000000
+          </el-descriptions-item>
+          <el-descriptions-item>
+            <template #label>
+              <div class="cell-item">
+                <el-icon :style="iconStyle">
+                  <location />
+                </el-icon>
+                Place
+              </div>
+            </template>
+            Suzhou
+          </el-descriptions-item>
+          <el-descriptions-item>
+            <template #label>
+              <div class="cell-item">
+                <el-icon :style="iconStyle">
+                  <tickets />
+                </el-icon>
+                Remarks
+              </div>
+            </template>
+            <el-tag size="small">School</el-tag>
+          </el-descriptions-item>
+          <el-descriptions-item>
+            <template #label>
+              <div class="cell-item">
+                <el-icon :style="iconStyle">
+                  <office-building />
+                </el-icon>
+                Address
+              </div>
+            </template>
+            No.1188, Wuzhong Avenue, Wuzhong District, Suzhou, Jiangsu Province
+          </el-descriptions-item>
+        </el-descriptions>
+      </el-tab-pane>
+      <el-tab-pane label="分配信息" name="2">Role</el-tab-pane>
+    </el-tabs>
   </div>
 </template>
 <script lang="ts" setup>
@@ -92,6 +169,7 @@
   import { ElMessage, FormRules } from 'element-plus'
   import { useRouter, useRoute } from 'vue-router'
   import { useCommonStore } from '@/store/common'
+  import type { TabsPaneContext } from 'element-plus'
   const commonStore = useCommonStore()
   const router = useRouter()
   const routeInfo = useRoute()
@@ -104,6 +182,7 @@
     remark: '',
     privateKey: ''
   })
+  const activeName = ref<string>('0')
   let resources = reactive({
     resources: [
       {
@@ -115,6 +194,41 @@
       }
     ]
   })
+
+  // 当前选中的集团
+  let selectedValue = ref<string>()
+  // 当前用户的集团
+  let groups = reactive([])
+  const state = reactive({
+    options: []
+  })
+  const handleTabsClick = (tab: TabsPaneContext, event: Event) => {
+    console.log(tab.index)
+    if (tab.index == '1') {
+      getGroupList()
+    }
+  }
+  // 查询集团列表
+  const getGroupList = () => {
+    API.company
+      .companyGetGroups({
+        data: {
+          offset: 0,
+          limit: 1000
+        }
+      })
+      .then((res: ResultType) => {
+        if (res.data.result && res.data.result.length > 0) {
+          groups = res.data.result
+          state.options = groups.map((g) => {
+            return { value: g.id, label: g.name }
+          })
+          selectedValue.value = groups[0].name
+        } else {
+          groups = []
+        }
+      })
+  }
   // 处理资源信息操作
   const handleMemuEvent = (type: ProductMenuEventType, selectId?: string) => {
     switch (type) {
@@ -225,26 +339,25 @@
       }
     })
   }
-onMounted(()=>{
+  onMounted(() => {
+    if (isDetailPage) {
+      getAppResource()
+      queryInfo()
+    }
+  })
 
-  if (isDetailPage) {
-    getAppResource()
-    queryInfo()
-  }
-})
-
-const queryInfo = async () => {
+  const queryInfo = async () => {
     const { data, success } = await API.product.queryInfo({
       data: {
-        id: routeInfo.params.id,
+        id: routeInfo.params.id
       }
     })
     if (success) {
-      console.log('应用信息',data,form);
+      console.log('应用信息', data, form)
       // registerFormRef.value.resetFields(data)
-      form = {...data}
-      console.log('应用信息22',form);
-      form.code='4566'
+      form = { ...data }
+      console.log('应用信息22', form)
+      form.code = '4566'
     }
   }
   // 详情功能区域
@@ -265,7 +378,7 @@ const queryInfo = async () => {
           message: '该应用资源缺失,请联系管理员'
         })
       } else {
-        console.log('是是是',result);
+        console.log('是是是', result)
 
         resources.resources = result
       }

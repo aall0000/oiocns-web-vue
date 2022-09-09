@@ -173,10 +173,10 @@
     </el-select>
     <template #footer>
       <span class="dialog-footer" v-if="store.workspaceData.type == 2">
-        <el-button @click="shareGroup">按集团分享</el-button>
-        <el-button type="primary" @click="shareUnit">按单位分享</el-button>
-        <!-- <el-button @click="groupVisible = false">取消</el-button>
-        <el-button type="primary" @click="shareUnit">确定</el-button> -->
+        <!-- <el-button @click="shareGroup"></el-button>
+        <el-button type="primary" @click="shareUnit">按单位分享</el-button> -->
+        <el-button @click="groupVisible = false">取消</el-button>
+        <el-button type="primary" @click="shareUnit">确定</el-button>
       </span>
       <span class="dialog-footer" v-else>
         <el-button type="primary" @click="shareCohort">按群组分享</el-button>
