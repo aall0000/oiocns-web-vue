@@ -76,7 +76,7 @@
       },
       {
         prop: 'price',
-        label: '单价/天'
+        label: '价格'
       },
       {
         prop: 'days',

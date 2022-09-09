@@ -26,7 +26,7 @@
               <div class="shopCar-box">
                 <div class="app-con-title">{{ item.caption }}</div>
                 <div class="app-con-info" v-if="item.sellAuth !== '所属权'"
-                  >售卖期限(天)：{{ item.days }}</div
+                  >使用期限(天)：{{ item.days }}</div
                 >
                 <div class="app-con-info">售卖价格：{{ item.price }}</div>
 

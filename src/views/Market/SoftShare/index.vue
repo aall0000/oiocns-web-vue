@@ -30,6 +30,8 @@
           ref="appCard"
           :dataList="state.myAppList"
           type="shop"
+          @handleUpdate="handleCardUpdate"
+          @shopcarNumChange="getShopcarNum"
         ></AppCard>
         <Pagination v-if="modeType === 'card'" ref="pageContent" @handleUpdate="handleUpdate"></Pagination>
         <DiyTable
@@ -90,7 +92,7 @@
     },
     {
       prop: 'price',
-      label: '单价/天'
+      label: '价格'
     },
     {
       prop: 'days',
