@@ -589,7 +589,7 @@
   }
 
   .app-con-title {
-    color: #000000d9;
+    // color: #000000d9;
     font-size: 16px;
     font-weight: 600;
   }
@@ -665,7 +665,7 @@
           box-shadow: 0px 0px 4px rgb(0, 89, 255, 0.7);
         }
         .dark-shadow {
-          box-shadow: 4px 4px 4px rgb(174, 177, 184);
+          // box-shadow: 4px 4px 4px rgb(174, 177, 184);
         }
       }
     }
