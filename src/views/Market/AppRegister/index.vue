@@ -94,10 +94,9 @@
           <el-button type="primary" @click="onSubmit" v-if="!isDetailPage">注册</el-button>
         </div>
       </el-tab-pane>
-      <el-tab-pane label="分享信息" name="1">
+      <el-tab-pane v-if="isDetailPage" label="分享信息" name="1">
         <el-select
           v-model="selectedValue"
-          @change="changeGroupIndex"
           value-key="id"
           placeholder="请选择集团"
         >
@@ -112,7 +111,7 @@
           <el-descriptions-item>
             <template #label>
               <div class="cell-item">
-                <el-icon :style="iconStyle">
+                <el-icon>
                   <user />
                 </el-icon>
                 Username
@@ -123,7 +122,7 @@
           <el-descriptions-item>
             <template #label>
               <div class="cell-item">
-                <el-icon :style="iconStyle">
+                <el-icon>
                   <iphone />
                 </el-icon>
                 Telephone
@@ -134,7 +133,7 @@
           <el-descriptions-item>
             <template #label>
               <div class="cell-item">
-                <el-icon :style="iconStyle">
+                <el-icon>
                   <location />
                 </el-icon>
                 Place
@@ -145,7 +144,7 @@
           <el-descriptions-item>
             <template #label>
               <div class="cell-item">
-                <el-icon :style="iconStyle">
+                <el-icon>
                   <tickets />
                 </el-icon>
                 Remarks
@@ -156,7 +155,7 @@
           <el-descriptions-item>
             <template #label>
               <div class="cell-item">
-                <el-icon :style="iconStyle">
+                <el-icon>
                   <office-building />
                 </el-icon>
                 Address
@@ -166,7 +165,7 @@
           </el-descriptions-item>
         </el-descriptions>
       </el-tab-pane>
-      <el-tab-pane label="分配信息" name="2">Role</el-tab-pane>
+      <el-tab-pane v-if="isDetailPage" label="分配信息" name="2">Role</el-tab-pane>
     </el-tabs>
   </div>
 </template>
@@ -459,7 +458,7 @@
         height: calc(100% - 55px);
         overflow-y: auto;
       }
-      :deep(.el-tab-pane){
+      :deep(.el-tab-pane) {
         height: 100%;
       }
     }
