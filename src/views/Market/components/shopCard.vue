@@ -44,11 +44,9 @@
   </el-card>
 </template>
 <script lang="ts" setup>
-  import { reactive, toRefs ,ref} from 'vue'
+  import { reactive, ref } from 'vue'
   import { useUserStore } from '@/store/user'
   import { storeToRefs } from 'pinia'
-  import HeadImg from '@/components/headImg.vue'
-  import appImg from '@/assets/img/app_icon.png'
   // hoverItem--鼠标移入item的id 用于展示按钮区域
   const store = useUserStore()
   const { queryInfo } = storeToRefs(store)

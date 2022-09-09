@@ -17,12 +17,20 @@
             <el-row :gutter="40" justify="space-between">
               <el-col :span="12">
                 <el-form-item label="应用名称" prop="name">
-                  <el-input v-model="form.data.name" :readonly="isDetailPage" placeholder="请设置" />
+                  <el-input
+                    v-model="form.data.name"
+                    :readonly="isDetailPage"
+                    placeholder="请设置"
+                  />
                 </el-form-item>
               </el-col>
               <el-col :span="12">
                 <el-form-item label="应用编码" prop="code">
-                  <el-input v-model="form.data.code" :readonly="isDetailPage" placeholder="请设置" />
+                  <el-input
+                    v-model="form.data.code"
+                    :readonly="isDetailPage"
+                    placeholder="请设置"
+                  />
                 </el-form-item>
               </el-col>
             </el-row>
@@ -59,7 +67,7 @@
           </el-form>
         </div>
         <el-divider />
-        <div class="app-base-info register-content">
+        <div class="app-base-info register-content resource-box">
           <div class="custom-title">
             <p> <span class="custom-span"></span> 资源信息 </p>
             <el-icon
@@ -409,6 +417,9 @@
         box-shadow: none;
       }
     }
+    .resource-box {
+      min-height: 200px;
+    }
     .page-title {
       font-size: 16px;
       text-align: center;
@@ -416,8 +427,8 @@
     .btns {
       display: flex;
       justify-content: space-around;
-      padding: 10px 0;
-      margin-bottom: 30px;
+      padding: 10px 0 24px;
+      // margin-bottom: 30px;
     }
 
     // 自定义标题
@@ -441,6 +452,16 @@
       cursor: pointer;
       color: var(--el-color-primary);
       margin: 0 10px;
+    }
+    .demo-tabs {
+      height: 100%;
+      :deep(.el-tabs__content) {
+        height: calc(100% - 55px);
+        overflow-y: auto;
+      }
+      :deep(.el-tab-pane){
+        height: 100%;
+      }
     }
   }
 </style>
