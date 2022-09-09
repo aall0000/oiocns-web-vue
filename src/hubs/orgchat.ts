@@ -12,7 +12,6 @@ type orgChatType = {
     _stoped: boolean,
     userId: string,
     lastMsg: any,
-    allUserSpaceId: string[],
     nameMap: Record<string, string>,
     curMsgs: Ref<any[]>,
     qunPersons: Ref<any[]>,
@@ -44,7 +43,6 @@ const orgChat: orgChatType = {
     lastMsg: null,
     curChat: ref<ImMsgChildType>(null),
     qunPersons: ref<any[]>([]),
-    allUserSpaceId: [],
     nameMap: {},
     openChats: [],
     curMsgs: ref<any[]>([]),
@@ -121,7 +119,6 @@ const orgChat: orgChatType = {
         orgChat.openChats = []
         orgChat.nameMap = {}
         orgChat._callBack = null
-        orgChat.allUserSpaceId = []
         orgChat.qunPersons.value = []
     },
     getName: (id: string) => {
@@ -275,11 +272,6 @@ const orgChat: orgChatType = {
     },
     _loadChats: (cache: boolean) => {
         orgChat.chats.value.forEach((item) => {
-            if (item.id === orgChat.userId) {
-                orgChat.allUserSpaceId = item.chats.map((c) => {
-                    return c.id
-                })
-            }
             if (orgChat.curChat.value) {
                 item.chats.forEach((chat: ImMsgChildType) => {
                     if (chat.id === orgChat.curChat.value.id &&
@@ -335,12 +327,10 @@ const orgChat: orgChatType = {
                 }
             })
         }
+        if(data.spaceId === data.fromId){
+            data.spaceId = orgChat.userId
+        }
         orgChat.chats.value.forEach((item: ImMsgType) => {
-            if (item.id === orgChat.userId) {
-                if (orgChat.allUserSpaceId.includes(data.spaceId)) {
-                    data.spaceId = orgChat.userId
-                }
-            }
             if (item.id === data.spaceId) {
                 let newChats: ImMsgChildType[] = []
                 item.chats.forEach((chat: ImMsgChildType) => {

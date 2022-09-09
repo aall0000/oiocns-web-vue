@@ -57,7 +57,6 @@ onBeforeUnmount(() => {
   // 离开页面关闭链接
   orgChat.unSubscribed()
 })
-
 // 展示详情页
 const handleViewDetail = () => {
   isShowDetail.value = !isShowDetail.value

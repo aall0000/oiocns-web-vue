@@ -51,6 +51,7 @@ onMounted(()=>{
 })
 
 onBeforeUnmount(()=>{
+  orgChat.unSubscribed()
   orgChat.stop()
 })
 
