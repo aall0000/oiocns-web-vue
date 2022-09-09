@@ -278,7 +278,7 @@
               offset: 0,
               limit: 1000,
               filter: '',
-              teamId: props.groupId ? props.groupId : store.queryInfo.team.id
+              teamId: store.queryInfo.team.id
             }
           })
           .then((res: ResultType) => {
@@ -295,7 +295,7 @@
           .searchUnitShare({
             data: {
               id: props.info.id,
-              teamId: props.groupId ? props.groupId : store.queryInfo.team.id,
+              teamId: store.queryInfo.team.id,
               offset: 0,
               limit: 1000,
               filter: ''
@@ -352,7 +352,7 @@
       promise1 = API.product.groupShare({
         data: {
           productId: props.info.id,
-          teamId: props.groupId ? props.groupId : store.queryInfo.team.id,
+          teamId: store.queryInfo.team.id,
           targetIds: departAdd
         }
       })
@@ -361,7 +361,7 @@
       promise2 = API.product.deleteGroupShare({
         data: {
           productId: props.info.id,
-          teamId: props.groupId ? props.groupId : store.queryInfo.team.id,
+          teamId: store.queryInfo.team.id,
           targetIds: departDel
         }
       })
@@ -370,7 +370,7 @@
       promise3 = await API.product.share({
         data: {
           productId: props.info.id,
-          teamId: props.groupId ? props.groupId : store.queryInfo.team.id,
+          teamId: store.queryInfo.team.id,
           targetIds: authorAdd
         }
       })
@@ -379,7 +379,7 @@
       promise4 = API.product.deleteShare({
         data: {
           productId: props.info.id,
-          teamId: props.groupId ? props.groupId : store.queryInfo.team.id,
+          teamId: store.queryInfo.team.id,
           targetIds: authorDel
         }
       })
