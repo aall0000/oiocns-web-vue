@@ -1,10 +1,11 @@
 <template>
   <el-card
     class="shop-card-wrap app-card-item"
-    shadow="always"
+    shadow="hover"
     :key="info.id"
     @mouseleave="handleWatchMouseOver('')"
     @mouseover="handleWatchMouseOver(info.id)"
+    body-style="height:100%;"
   >
     <div class="app-card-item-con">
       <div class="app-card-item-con-top flex">
@@ -34,9 +35,15 @@
             {{ info.remark }}
           </div>
         </div>
+      
         <slot v-else name="content"></slot>
       </div>
+      <div>
+      <slot name="footer"></slot>
+
+      </div>
     </div>
+    
     <!-- v-show="hoverItem === info.id" -->
     <div class="app-card-item-footer" v-show="state.hoverItem === info.id" @click.stop>
       <slot />
@@ -79,9 +86,7 @@
 </script>
 
 <style lang="scss" scoped>
-  :deep(.el-card__body) {
-    padding: 0;
-  }
+  
   .app-card-rightIcon {
     position: absolute;
     right: 10px;
@@ -103,15 +108,20 @@
 
     width: 24%;
     min-width: 200px;
-    height: 184px;
+    // height: 184px;
     margin-bottom: 10px;
     margin-right: 10px;
 
     // background-color: aqua;
     &-con {
-      // display: flex;
-      // flex-direction: column;
-      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      // padding: 24px;
+      height: 100%;
+      &-top {
+        flex: 1;
+      }
       .app-con-title {
         // color: #000000d9;
         font-size: 16px;

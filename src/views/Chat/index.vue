@@ -83,7 +83,7 @@ const clearHistoryMsg = () => {
   height: calc(100vh - 60px);
   display: flex;
   justify-content: space-between;
-  background-color: #fff;
+  // background-color: #fff;
 
   .chart-page {
     height: 100%;
