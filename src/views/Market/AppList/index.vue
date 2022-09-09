@@ -534,10 +534,6 @@
 </script>
 
 <style lang="scss" scoped>
-  :deep(.el-card__body) {
-    padding: 0;
-  }
-
   .triangle-private {
     margin-right: 0px;
     margin-top: 0px;
