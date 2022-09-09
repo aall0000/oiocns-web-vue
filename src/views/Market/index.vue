@@ -433,7 +433,6 @@
     })
     if (success) {
       const { result = [], total = 0 } = data
-      result[0].endTime ='1000000'
       state[`ownProductList`] = [...result]
       state[`ownTotal`] = total
       diyTable.value.state.page.total = total
