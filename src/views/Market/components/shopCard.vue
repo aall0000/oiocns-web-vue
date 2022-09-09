@@ -133,6 +133,9 @@
         // white-space: nowrap;
       }
     }
+    .app-tag{
+      margin-top: 10px;
+    }
     &-footer {
       position: absolute;
       bottom: 0;
