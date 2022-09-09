@@ -10,9 +10,7 @@
         :tableHead="state.tableHead"
       >
         <template #operate="scope">
-          <el-button link @click="cancelApply(scope.row.id)" type="danger" size="small"
-            >取消申请</el-button
-          >
+          <el-button link @click="cancelApply(scope.row.id)" type="danger">取消申请</el-button>
         </template>
       </DiyTable>
     </div>
