@@ -325,9 +325,6 @@
   })
   const title = ref<string>('')
   onMounted(() => {
-    if (store.workspaceData.type == 1) {
-      actionOptionsOfOwn.splice(2, 1)
-    }
     // 获取列表
     getProductList()
     getShopcarNum()
