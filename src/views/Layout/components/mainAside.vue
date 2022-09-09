@@ -18,13 +18,14 @@
         @click="handleRouterChage(item)"
         @contextmenu.prevent="rightClick($event, item)"
         :key="item.id"
+        :title="item.name"
       >
         <el-icon v-if="!item.type" class="aside-li-icon" :size="20">
           <component :is="item.icon" />
         </el-icon>
         <img v-else :src="item.icon" style="width: 26px; height: 26px; border-radius: 50%" />
-        <span :class="['aside-li-name', item.name?.length > 3 ? 'overTxt' : '']">{{
-          item.name
+        <span class="aside-li-name">{{
+          item.name?.substr(0,2)
         }}</span>
       </li>
     </ul>
