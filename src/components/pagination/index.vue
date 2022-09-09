@@ -95,6 +95,20 @@
         overflow: hidden;
         display: flex;
         flex-direction: column-reverse;
+        & :deep(.btn-prev) {
+          border-radius: 16px;
+        }
+        & :deep(.el-pager > .number) {
+          border-radius: 4px;
+        }
+        & :deep(.btn-next) {
+          border-radius: 16px;
+        }
+        & :deep(.el-pagination__sizes .el-input__inner) {
+          border-radius: 16px;
+          // background: rgba(231, 239, 252, 1);
+          border-color: transparent;
+        }
     }
   </style>
   

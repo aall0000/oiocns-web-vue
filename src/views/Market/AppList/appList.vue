@@ -12,21 +12,23 @@
           >购物车</el-button
         >
       </el-badge>
-
-        <el-radio-group v-model="switchValue" size="small" class="button">
-          <el-radio-button label="list"
-            ><el-icon :size="18"><Tickets /></el-icon
-          ></el-radio-button>
-          <el-radio-button label="card"
-            ><el-icon :size="18"><Menu /></el-icon
-          ></el-radio-button>
-        </el-radio-group>
+      <el-radio-group v-model="switchValue" size="small" class="button">
+        <el-radio-button label="list"
+          ><el-icon :size="18"><Tickets /></el-icon
+        ></el-radio-button>
+        <el-radio-button label="card"
+          ><el-icon :size="18"><Menu /></el-icon
+        ></el-radio-button>
+      </el-radio-group>
     </template>
   </MarketCard>
   <div class="appListLayout">
     <div class="appListLayout-container">
       <div class="appListLayout-header">
         <p>应用列表</p>
+        <div class="search">
+          <el-input v-model="searchText" @input="searchList" placeholder="搜索应用" clearable />
+        </div>
       </div>
       <div class="appListLayout-content">
         <AppCard
@@ -34,11 +36,12 @@
           ref="appCard"
           :dataList="state.myAppList"
           :type="route.query.type"
-          @handleUpdate="handleCardUpdate"
-          @shopcarNumChange="getShopcarNum"
         ></AppCard>
+        <div class="page-flex" v-show="switchValue === 'card'">
+          <Pagination ref="pageContent" @handleUpdate="handleUpdate"></Pagination>
+        </div>
         <DiyTable
-          v-else
+          v-show="switchValue!='card'"
           ref="diyTable"
           :hasTitle="true"
           :tableData="state.myAppList"
@@ -72,6 +75,16 @@
   const switchValue = ref('card')
   const appCard = ref(null)
   const shopcarNum = ref(0)
+  const searchText = ref<string>('')
+  // 表格展示数据
+  const pageStore = reactive({
+    tableData: [],
+    currentPage: 1,
+    pageSize: 20,
+    total: 0
+  })
+  const pageContent = ref(null)
+
   const state = reactive({
     myAppList: [],
     tableHead: [
@@ -108,13 +121,7 @@
 
   watch(switchValue, (val) => {
     nextTick(() => {
-      if (val) {
-        appCard.value.state.page.currentPage = 1
-        getData()
-      } else {
-        diyTable.value.state.page.currentPage = 1
-        getTableData()
-      }
+      getData()
     })
   })
 
@@ -138,54 +145,35 @@
         shopcarNum.value = total
       })
   }
-
-  // 卡片切换页数
-  const handleCardUpdate = () => {
-    getData()
-  }
   // 表格切换页数
   const handleUpdate = (page: any) => {
-    getTableData()
+    pageStore.currentPage = page.currentPage
+    pageStore.pageSize = page.pageSize
+    getData()
   }
-
-  const getTableData = () => {
-    $services.appstore
-      .merchandise({
-        data: {
-          id: route.query.data,
-          offset: diyTable.value.state.page.current,
-          limit: diyTable.value.state.page.pageSize,
-          filter: ''
-        }
-      })
-      .then((res: ResultType) => {
-        console.log(res)
-        if (res.code == 200) {
-          state.myAppList = res.data.result || []
-          diyTable.value.state.page.total = res.data.total || 0
-        }
-      })
-  }
-
   const getData = () => {
     $services.appstore
       .merchandise({
         data: {
           id: route.query.data,
-          offset: appCard.value.state.page.current,
-          limit: 12,
-          filter: ''
+          offset: (pageStore.currentPage - 1) * pageStore.pageSize,
+          limit: pageStore.pageSize,
+          filter: searchText.value
         }
       })
       .then((res: ResultType) => {
         if (res.code == 200) {
           state.myAppList = res.data.result || []
-          appCard.value.state.page.total = res.data.total || 0
+          diyTable.value.state.page.total = res.data.total || 0
+          pageContent.value.state.page.total = res.data.total || 0
         }
       })
   }
   const GoPage = (path: string) => {
     router.push({ path: path, query: { marketId: route.query.data } })
+  }
+  const searchList = ()=>{
+    getData()
   }
 </script>
 

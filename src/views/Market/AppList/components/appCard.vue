@@ -1,5 +1,5 @@
 <template>
-  <div class="market-layout">
+  <div class="market-layout" style="height:calc(100% - 56px)">
     <div class="market-content box" style="height: 100%">
       <ul class="box-ul">
         <li class="app-card" v-if="dataList?.length !== 0">
