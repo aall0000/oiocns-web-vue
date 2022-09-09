@@ -70,6 +70,7 @@
                     </div>
                     <el-dropdown-item @click="deleteApp(item)">移除应用</el-dropdown-item>
                     <!-- <el-dropdown-item  @click="GoPage('/market/appDetail')">应用详情</el-dropdown-item> -->
+                    <el-dropdown-item  @click="GoPageWithQuery('/market/publishList',item)">应用上架列表</el-dropdown-item>
                   </el-dropdown-menu>
                 </template>
               </el-dropdown>
@@ -249,6 +250,10 @@
     pageSize: 20,
     total: 0
   })
+
+  const GoPageWithQuery = (path: string, query: any) => {
+    router.push({ path, query })
+  }
   //应用搜索
   const GoPage = (path: string) => {
     router.push(path)

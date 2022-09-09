@@ -20,6 +20,7 @@ const dict: { [key: string]: any }  = {
         {name: '审核不通过', code: 200},
         {name: '买方取消订单', code: 220},
         {name: '卖方取消订单', code: 221},
+        {name: '已退货', code: 222},
     ]
 }
 

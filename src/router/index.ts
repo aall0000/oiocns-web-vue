@@ -347,6 +347,14 @@ const mainRouter: RouteRecordRaw[] = [
         }
       },
       {
+        path: '/market/publishList',
+        name: 'publishList',
+        component: () => import('@/views/Market/AppDetail/publishList.vue'),
+        meta: {
+          title: '应用上架列表'
+        }
+      },
+      {
         path: '/market/merchandiseDetail',
         name: 'merchandiseDetail',
         component: () => import('@/views/Market/MerchandiseDetail/index.vue'),
