@@ -75,28 +75,12 @@
                 <template #dropdown>
                   <el-dropdown-menu>
                     <div v-for="action in actionOptionsOfOwn" :key="action.value">
-                      <el-dropdown-item
-                        v-if="
-                          item.authority == '所属权' &&
-                          item.belongId == store.workspaceData.id &&
-                          action.label == '上架'
-                        "
-                        :command="action.value"
-                        >{{ action.label }}</el-dropdown-item
-                      >
-                      <el-dropdown-item
-                        v-if="item.belongId == store.workspaceData.id && action.label == '分享'"
-                        :command="action.value"
-                        >{{ action.label }}</el-dropdown-item
-                      >
-                      <el-dropdown-item
-                        v-if="store.workspaceData.type == 2 && action.label == '分发'"
-                        :command="action.value"
-                        >{{ action.label }}</el-dropdown-item
-                      >
-                      <el-dropdown-item v-if="action.label == '详情'" :command="action.value">{{
-                        action.label
-                      }}</el-dropdown-item>
+                      <div v-if="new Date().getTime()<formartDateTime(item?.endTime)">
+                        <el-dropdown-item v-if="item.authority=='所属权'&&item.belongId==store.workspaceData.id&&action.label=='上架'" :command="action.value">{{ action.label }}</el-dropdown-item>
+                        <el-dropdown-item v-if="(item.belongId==store.workspaceData.id)&&action.label=='分享'" :command="action.value">{{ action.label }}</el-dropdown-item>
+                        <el-dropdown-item v-if="store.workspaceData.type == 2&&action.label=='分发'" :command="action.value">{{ action.label }}</el-dropdown-item>
+                      </div>
+                      <el-dropdown-item v-if="action.label=='详情'" :command="action.value">{{ action.label }}</el-dropdown-item>
                     </div>
                     <el-dropdown-item @click="deleteApp(item)">移除应用</el-dropdown-item>
                     <!-- <el-dropdown-item  @click="GoPage('/market/appDetail')">应用详情</el-dropdown-item> -->
@@ -122,20 +106,14 @@
             </template>
             <template #tag="scope">
               <el-tag
-                v-if="
-                  scope.row.endTime == undefined ||
-                  Math.round(new Date().getTime()) < scope.row?.endTime
-                "
+                v-if="scope.row.endTime==undefined||
+                new Date().getTime()<formartDateTime(scope.row?.endTime)"
                 style="margin-left: 10px"
                 :type="scope.row.createUser == queryInfo.id ? '' : 'success'"
                 >{{ scope.row.createUser == queryInfo.id ? '可管理' : '可使用' }}</el-tag
               >
-              <el-tag
-                v-if="Math.round(new Date().getTime()) > scope.row?.endTime"
-                style="margin-left: 10px"
-                :type="'danger'"
-                >失效</el-tag
-              >
+              <el-tag v-if="new Date().getTime()>formartDateTime(scope.row?.endTime)" style="margin-left:10px" :type="'danger'">失效</el-tag>
+              <el-tag style="margin-left:10px">{{scope.row.source}}</el-tag>
             </template>
             <template #operate="scope">
               <el-dropdown
@@ -147,31 +125,13 @@
                 <template #dropdown>
                   <el-dropdown-menu>
                     <div v-for="action in actionOptionsOfOwn" :key="action.value">
-                      <el-dropdown-item
-                        v-if="
-                          scope.row.authority == '所属权' &&
-                          scope.row.belongId == store.workspaceData.id &&
-                          action.label == '上架'
-                        "
-                        :command="action.value"
-                        >{{ action.label }}</el-dropdown-item
-                      >
-                      <el-dropdown-item
-                        v-if="
-                          scope.row.belongId == store.workspaceData.id && action.label == '分享'
-                        "
-                        :command="action.value"
-                        >{{ action.label }}</el-dropdown-item
-                      >
-                      <el-dropdown-item
-                        v-if="store.workspaceData.type == 2 && action.label == '分发'"
-                        :command="action.value"
-                        >{{ action.label }}</el-dropdown-item
-                      >
-                      <el-dropdown-item v-if="action.label == '详情'" :command="action.value">{{
-                        action.label
-                      }}</el-dropdown-item>
-                    </div>
+                      <div v-if="new Date().getTime()<formartDateTime(scope.row?.endTime)">
+                        <el-dropdown-item v-if="scope.row.authority=='所属权'&&scope.row.belongId==store.workspaceData.id&&action.label=='上架'" :command="action.value">{{ action.label }}</el-dropdown-item>
+                        <el-dropdown-item v-if="(scope.row.belongId==store.workspaceData.id)&&action.label=='分享'" :command="action.value">{{ action.label }}</el-dropdown-item>
+                        <el-dropdown-item v-if="store.workspaceData.type == 2&&action.label=='分发'" :command="action.value">{{ action.label }}</el-dropdown-item>
+                      </div>
+                      <el-dropdown-item v-if="action.label=='详情'" :command="action.value">{{ action.label }}</el-dropdown-item>
+                    </div>        
                     <el-dropdown-item @click="deleteApp(scope.row)">移除应用</el-dropdown-item>
                   </el-dropdown-menu>
                 </template>
@@ -370,7 +330,6 @@
       {
         type: 'slot',
         prop: 'tag',
-        width: '110',
         name: 'tag',
         label: '应用状态'
       },
@@ -628,6 +587,14 @@
   const searchList = () => {
     pageStore.currentPage = 1
     getProductList()
+  }
+  const formartDateTime = (dateStr:any)=>{
+    if(dateStr){
+      var timestamp = new Date(dateStr).getTime();
+      return timestamp
+    }else{
+      return new Date().getTime()+1000
+    }
   }
 </script>
 
