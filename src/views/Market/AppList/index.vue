@@ -165,7 +165,7 @@
           >
             <template #operate="scope">
               <el-button class="btn" type="primary" link small @click.stop="marketQuit(scope.row)"
-                >删除商店</el-button
+                >退出商店</el-button
               >
             </template>
           </DiyTable>

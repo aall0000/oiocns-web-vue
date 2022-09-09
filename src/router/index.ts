@@ -73,11 +73,11 @@ const mainRouter: RouteRecordRaw[] = [
     },
     children: [
       {
-        path: '/relation/company',
-        name: 'company1',
-        component: () => import('@/views/Relation/company/index.vue'),
+        path: '/relation/department',
+        name: 'department',
+        component: () => import('@/views/Relation/department/index.vue'),
         meta: {
-          title: '单位维护'
+          title: '部门维护'
         }
       },
       {
@@ -278,6 +278,14 @@ const mainRouter: RouteRecordRaw[] = [
         component: () => import('@/views/Market/AppRegister/index.vue'),
         meta: {
           title: '应用注册'
+        }
+      },
+      {
+        path: '/market/detail/:id',
+        name: 'marketAppDetail',
+        component: () => import('@/views/Market/AppRegister/index.vue'),
+        meta: {
+          title: '应用详情'
         }
       },
       {

@@ -51,18 +51,26 @@
 <script lang="ts" setup>
   import { ElMessage } from 'element-plus'
   import { onMounted, ref } from 'vue'
+  import orgChat from '@/hubs/orgchat'
+  
   const inputRef = ref(null)
   const faceBtnRef = ref(null)
 
   const emit = defineEmits(['submitInfo'])
 
-  const submit = () => {
-    
+  const submit = async () => {
     const value = document.getElementById('insterHtml').innerHTML
-    emit('submitInfo', value)
-    // textarea.value = ""
+    let text = value.indexOf('span') > -1 ? value : value.replaceAll('&nbsp;', '')
+    const params = {
+      toId: orgChat.curChat.value.id,
+      spaceId: orgChat.curChat.value.spaceId,
+      msgType: 'text',
+      msgBody: text
+    }
+    if (text?.length > 0) {
+      await orgChat.sendMsg(params)
+    }
     document.getElementById('insterHtml').innerHTML = ''
-    // console.log('sss',document.getElementById('insterHtml').innerHTML);
   }
  
   const handleImgChoosed = (url: string) => {

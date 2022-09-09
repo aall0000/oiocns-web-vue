@@ -31,6 +31,4 @@
   })
 </script>
 
-<style lang="scss">
-
-</style>
+<style scoped></style>

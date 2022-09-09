@@ -20,20 +20,18 @@
   </MarketCard>
   <el-card class="getApp">
     <div class="getApp-container">
-      <el-tabs class="marketTag" v-model="activeMarket" @tabChange="handleTabChange">
-        <el-tab-pane v-for="item in marketTabs" :label="item.name" :name="item.id" :key="item.id"></el-tab-pane>
-      </el-tabs>
-      <div class="getApp-header">
-        <p>应用{{ isCard ? '图' : '列' }}表</p>
+      <div class="getApp-search-box">
+        <el-input v-model="searchVal" placeholder="应用名称/编码" class="search-input"> </el-input>
+        <el-button type="primary" @click="searchList">搜一下</el-button>
       </div>
       <div class="getApp-content">
         <AppCard
-          v-if="isCard"
+          v-if="modeType === 'card'"
           ref="appCard"
           :dataList="state.myAppList"
           type="shop"
-          @handleUpdate="handleCardUpdate"
         ></AppCard>
+        <Pagination v-if="modeType === 'card'" ref="pageContent" @handleUpdate="handleUpdate"></Pagination>
         <DiyTable
           v-else
           ref="diyTable"
@@ -43,16 +41,12 @@
           @handleUpdate="handleUpdate"
         >
           <template #operate="scope">
-            <TheTableButton :data="scope.row" type="shop" @update="getData"></TheTableButton>
+            <TheTableButton :data="scope.row" type="shop" @update="getAppList"></TheTableButton>
           </template>
         </DiyTable>
       </div>
-      <!-- <div class="getApp-radio">
-        <p style="margin-right: 20px">切换视图</p>
-        <el-switch v-model="isCard" />
-      </div> -->
     </div>
-  </el-card>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -63,12 +57,24 @@
   import DiyTable from '@/components/diyTable/index.vue'
   import TheTableButton from '../appList/components/theTableButton2.vue'
   import MarketCard from '@/components/marketCard/index.vue'
+  import Pagination from '@/components/pagination/index.vue'
+
+  const modeType = ref<'card' | 'list'>('card')
   const router = useRouter()
   const diyTable = ref(null)
-  const isCard = ref(true)
   const appCard = ref(null)
   const shopcarNum = ref(0)
+  const pageContent = ref(null)
+   // 表格展示数据
+  const pageStore = reactive({
+    tableData: [],
+    currentPage: 1,
+    pageSize: 20,
+    total: 0
+  })
+  // 软件共享仓库信息
   const softShareInfo = ref<MarketType>({} as MarketType)
+
   const state = reactive({
     myAppList: []
   })
@@ -103,128 +109,82 @@
       name: 'operate'
     }
   ]
-
+  const handleUpdate = (page: any)=>{
+    pageStore.currentPage = page.currentPage
+    pageStore.pageSize = page.pageSize
+    getAppList()
+  }
+  const searchList = ()=>{
+    pageStore.currentPage = 1
+    getAppList()
+  }
   onMounted(() => {
     getMarketInfo()
-    // getShopcarNum()
+    getShopcarNum()
   })
-
-  // const getShopcarNum = async () => {
-  //   await $services.market
-  //     .searchStaging({
-  //       data: {
-  //         id: 0, //市场id （需删除）
-  //         offset: 0,
-  //         limit: 20,
-  //         filter: ''
-  //       }
-  //     })
-  //     .then((res: ResultType) => {
-  //       var { result = [], total = 0 } = res.data
-  //       shopcarNum.value = total
-  //     })
-  // }
-
-  // 卡片切换页数
-  const handleCardUpdate = () => {
-    getData()
-  }
-  // 表格切换页数
-  const handleUpdate = (page: any) => {
-    getTableData()
-  }
-
-  const getTableData = () => {
-    $services.appstore
-      .merchandise({
+  // 获取购物车数量
+  const getShopcarNum = async () => {
+    await $services.market
+      .searchStaging({
         data: {
-          id: activeMarket.value,
-          offset: diyTable.value.state.page.current,
-          limit: diyTable.value.state.page.pageSize,
+          id: 0, //市场id （需删除）
+          offset: 0,
+          limit: 20,
           filter: ''
         }
       })
       .then((res: ResultType) => {
-        console.log('getTableData',res)
-        if (res.code == 200) {
-          state.myAppList = res.data.result || []
-          diyTable.value.state.page.total = res.data.total || 0
-        }
+        var { result = [], total = 0 } = res.data
+        shopcarNum.value = total
       })
   }
+
+  // 搜索功能-关键词
+  const searchVal = ref<string>('') // 搜索关键词
+
   // 获取应用列表
-  const getData = () => {
+  const getAppList: (goFirst?: boolean) => void = (goFirst = true) => {
     $services.appstore
       .merchandise({
         data: {
           id: softShareInfo.value.id,
-          offset: appCard.value.state.page.current,
-          limit: 12,
-          filter: ''
+          offset: (pageStore.currentPage-1)*pageStore.pageSize,
+          limit: pageStore.pageSize,
+          filter: searchVal.value || ''
         }
       })
       .then((res: ResultType) => {
         if (res.code == 200) {
           state.myAppList = res.data.result || []
           appCard.value.state.page.total = res.data.total || 0
+          pageContent.value.state.page.total = res.data.total || 0
         }
       })
   }
-  // 页面顶部 tab页列表
-  const marketTabs = ref([])
-  const activeMarket = ref<string>('')
 
-  const handleTabChange = (name: string) => {
-    console.log('切换', name)
-  }
   // 获取已加入市场列表
   const getMarketInfo = () => {
     $services.market.getSoftShareInfo().then((res: ResultType) => {
       if (res.code == 200) {
         console.log('共享仓库', res.data)
         softShareInfo.value = res?.data || {}
-        getData()
-        // const { result = [] } = res.data
-        // marketTabs.value = result
-        // activeMarket.value = result.length > 0 ? result[0].id : ''
+        getAppList()
       }
     })
   }
+
   const GoPage = (path: string) => {
     router.push(path)
   }
-  watch([isCard, activeMarket], ([val, activeMVal], [valOld, activeMValOld]) => {
+
+  watch(modeType, (val, valOld) => {
     // 监听 展示方式变化
     nextTick(() => {
-      if (val) {
-        appCard.value.state.page.currentPage = 1
-        getData()
-      } else {
-        diyTable.value.state.page.currentPage = 1
-        getTableData()
-      }
+      appCard.value.state.page.currentPage = 1
+      getAppList()
     })
-    // 监听所选市场变化
-    // if (activeMVal!==activeMValOld) {
-    //   getData()
-    // }
   })
 </script>
-<style lang="scss">
-  .getApp-container {
-    // .marketTag {
-    //   .el-tabs--top .el-tabs__item.is-top:nth-child(2){
-    //     padding-left: 20px;
-    //   }
-    //   .el-tabs__nav-next, .el-tabs__nav-prev{
-    //     padding: 0 5px;
-    //   }
-    //   .el-tabs__nav {
-    //     padding: 0 4px;
-    //   }
-    // }
-  }
-</style>
 <style lang="scss" scoped>
   .getApp {
     // width: 100%;
@@ -253,15 +213,20 @@
       flex: 1;
       // padding: 0 24px;
     }
-    &-header {
-      padding-bottom: 16px;
+    &-search-box {
       display: flex;
-      width: 100%;
-      align-items: center;
-      justify-content: space-between;
-      p {
-        font-weight: 600;
-        // color: rgba(0, 0, 0, 0.85);
+      justify-content: center;
+      width: 600px;
+      margin: 14px auto;
+      :deep(.el-input__wrapper) {
+        background-color: var(--el-color-primary-light-9);
+        box-shadow: none;
+        border: 1px solid var(--el-input-focus-border-color);
+        border-radius: 0;
+      }
+      :deep(.el-button) {
+        border-radius: 0;
+        height: 34px;
       }
     }
   }

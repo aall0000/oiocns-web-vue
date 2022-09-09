@@ -42,18 +42,15 @@ import MainAsideVue from './components/mainAside.vue'
 import Breadcrumb from './components/breadcrumb.vue'
 import LoadingVue from './components/loading.vue'
 import { useUserStore } from '@/store/user'
-import anyStore from '@/utils/anystore'
 import orgChat from '@/hubs/orgchat'
 import { onMounted, onBeforeUnmount } from 'vue'
 const { userToken,queryInfo } = useUserStore()
 
 onMounted(()=>{
-  anyStore.start(userToken,queryInfo.id)
   orgChat.start(userToken,queryInfo.id)
 })
 
 onBeforeUnmount(()=>{
-  anyStore.stop()
   orgChat.stop()
 })
 

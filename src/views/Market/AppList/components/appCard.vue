@@ -56,15 +56,6 @@
           </ShopCard>
         </li>
         <div v-else>暂无数据</div>
-        <div class="pagination">
-          <el-pagination
-            v-if="dataList?.length !== 0"
-            @current-change="handleCurrentChange"
-            v-bind="state.page"
-            :pager-count="5"
-            style="text-align: right; margin-top: 10px; justify-content: end"
-          />
-        </div>
       </ul>
     </div>
   </div>
@@ -83,7 +74,6 @@
   import { ElMessage, ElMessageBox } from 'element-plus'
   import ShopCard from '../../components/shopCard.vue'
   import AppInfoDialog from './appInfoDialog.vue'
-  import moment from 'moment'
   import { ElNotification } from 'element-plus'
   import merchandiseImg from '@/assets/img/app_icon.png'
   import { useRouter } from 'vue-router'
@@ -120,6 +110,11 @@
             message: '更多操作',
             type: 'success'
     })
+  }
+
+  const handleUpdate = (page: any)=>{
+    state.page.currentPage = page.currentPage
+    state.page.pageSize = page.pageSize
   }
 
   const GoPage = (path: string) => {
@@ -270,6 +265,9 @@
 </script>
 
 <style lang="scss" scoped>
+  .market-layout{
+    height: 100%;
+  }
   .app-con-title {
     // color: #000000d9;
     font-size: 16px;
@@ -323,6 +321,7 @@
       .app-card {
         display: flex;
         flex-wrap: wrap;
+        height: calc(100% - 60px);
       }
     }
   }

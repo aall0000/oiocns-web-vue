@@ -86,6 +86,10 @@ export const actionOptionsOfOwn: Array<OptionType> = [
   {
     label: '分发',
     value: 'distribution'
+  },
+  {
+    label: '详情',
+    value: 'detail'
   }
 ]
 // 其他应用操作列表
