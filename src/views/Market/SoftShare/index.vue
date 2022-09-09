@@ -30,7 +30,6 @@
           ref="appCard"
           :dataList="state.myAppList"
           type="shop"
-          @handleUpdate="handleCardUpdate"
           @shopcarNumChange="getShopcarNum"
         ></AppCard>
         <Pagination v-if="modeType === 'card'" ref="pageContent" @handleUpdate="handleUpdate"></Pagination>
