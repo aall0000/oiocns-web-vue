@@ -80,7 +80,12 @@ const orgChat: orgChatType = {
                 if (data.lastMsg && orgChat.curChat.value) {
                     if (orgChat.curChat.value.id === data.lastMsg.chat.id &&
                         orgChat.curChat.value.spaceId === data.lastMsg.chat.spaceId) {
-                        orgChat.curMsgs.value.push(data.lastMsg.data)
+                        let exist = orgChat.curMsgs.value.filter(item=>{
+                            return item.id === data.lastMsg.data.id
+                        })
+                        if(!exist){
+                            orgChat.curMsgs.value.push(data.lastMsg.data)
+                        }
                     }
                 }
                 orgChat._loadChats(false)
@@ -226,10 +231,7 @@ const orgChat: orgChatType = {
                         }
                         orgChat.qunPersons.value.push(item)
                     })
-                    anyStore.set("orgChat.nameMap", {
-                        operation: "replaceAll",
-                        data: orgChat.nameMap
-                    })
+                    orgChat._loadChats(true)
                 }
             }
             return res
