@@ -20,7 +20,7 @@
           <p class="app-con-title">
             {{ info.name }}
           </p>
-          <div class="app-tag">
+          <div class="app-tag" style="margin-top:10px">
             <el-tag v-if="props.type == 'market'" style="margin-right:10px">{{
               info.public ? '公开' : '私有'
             }}</el-tag>

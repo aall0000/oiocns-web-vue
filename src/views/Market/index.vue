@@ -93,7 +93,7 @@
             </template>
           </ShopCard>
         </li>
-        <li v-show="mode === 'list'">
+        <li class="tab-card" v-show="mode === 'list'">
           <DiyTable
             ref="diyTable"
             :hasTitle="true"
@@ -627,7 +627,7 @@
   }
 
   .page-flex {
-    height: 50px;
+    height: 64px;
     width: 100%;
     overflow: hidden;
   }
@@ -668,6 +668,7 @@
     width: 100%;
     height: 100%;
     min-width: 1000px;
+    position: relative;
     .market-head {
       display: flex;
       justify-content: flex-end;
@@ -676,9 +677,11 @@
       padding: 0 20px;
     }
     .market-content {
+      position: absolute;
       padding: 16px 16px 0;
       // margin-top: 4px;
-      height: calc(100vh - 124px);
+      width: 100%;
+      height: calc(100% - 76px);
       overflow-y: auto;
     }
     .edit-wrap {
@@ -693,6 +696,12 @@
       margin-left: 20px;
     }
     .box {
+      .box-ul{
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+      }
       .box-ul + .box-ul {
         margin-top: 10px;
       }
@@ -723,6 +732,10 @@
         .app-card {
           display: flex;
           flex-wrap: wrap;
+          height: calc(100% - 50px);
+        }
+        .tab-card{
+          height: 100%;
         }
       }
     }
