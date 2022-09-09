@@ -19,15 +19,17 @@
         <div class="app-con" v-if="!cardContent">
           <p class="app-con-title">
             {{ info.name }}
-            <el-tag v-if="props.type == 'market'" style="margin-left:10px">{{
+          </p>
+          <div class="app-tag">
+            <el-tag v-if="props.type == 'market'" style="margin-right:10px">{{
               info.public ? '公开' : '私有'
             }}</el-tag>
-            <el-tag v-if="props.type != 'market' && (info.endTime==undefined||new Date().getTime()<formartDateTime(info?.endTime))" style="margin-left:10px" :type="info.createUser==queryInfo.id?'':'success'">{{
+            <el-tag v-if="props.type != 'market' && (info.endTime==undefined||new Date().getTime()<formartDateTime(info?.endTime))" style="margin-right:10px" :type="info.createUser==queryInfo.id?'':'success'">{{
               info.createUser==queryInfo.id ? '可管理' : '可使用'
             }}</el-tag>
-            <el-tag v-if="props.type != 'market' && new Date().getTime()>formartDateTime(info?.endTime)" style="margin-left:10px" :type="'danger'">失效</el-tag>
-            <el-tag v-if="props.type != 'market'" style="margin-left:10px">{{info.source}}</el-tag>
-          </p>
+            <el-tag v-if="props.type != 'market' && new Date().getTime()>formartDateTime(info?.endTime)" style="margin-right:10px" :type="'danger'">失效</el-tag>
+            <el-tag v-if="props.type != 'market'" style="margin-right:10px">{{info.source}}</el-tag>
+          </div>
           <div class="app-card-item-con-desc">
             {{ info.remark }}
           </div>
