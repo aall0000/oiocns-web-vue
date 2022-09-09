@@ -83,13 +83,21 @@
     right: 0px;
     top: 0px;
   }
+  @media not screen and (min-width: 1300px) {
+    /* styles */
+    .app-card-item{
+      width: calc(33% - 15px) !important;
+    }
+}
   .app-card-item {
     position: relative;
+
     width: 24%;
     min-width: 200px;
     height: 184px;
     margin-bottom: 10px;
-    margin-right: 1%;
+    margin-right: 10px;
+
     // background-color: aqua;
     &-con {
       // display: flex;
