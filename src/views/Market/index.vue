@@ -23,12 +23,16 @@
         </div>
         <div>
           <el-radio-group v-model="mode" size="small" class="button">
-            <el-radio-button label="list"
-              ><el-icon :size="18"><Tickets /></el-icon
-            ></el-radio-button>
-            <el-radio-button label="card"
-              ><el-icon :size="18"><Menu /></el-icon
-            ></el-radio-button>
+            <el-radio-button label="list">
+              <el-icon :size="18">
+                <Tickets />
+              </el-icon>
+            </el-radio-button>
+            <el-radio-button label="card">
+              <el-icon :size="18">
+                <Menu />
+              </el-icon>
+            </el-radio-button>
           </el-radio-group>
         </div>
       </template>
@@ -68,17 +72,35 @@
                 <el-icon style="cursor: pointer" :size="20"><Operation /></el-icon>
                 <template #dropdown>
                   <el-dropdown-menu>
-                    <div v-if="item.createUser == queryInfo.id">
+                    <div v-for="action in actionOptionsOfOwn" :key="action.value">
                       <el-dropdown-item
-                        v-for="action in actionOptionsOfOwn"
+                        v-if="
+                          item.authority == '所属权' &&
+                          item.belongId == store.workspaceData.id &&
+                          action.label == '上架'
+                        "
                         :command="action.value"
-                        :key="action.value"
+                        >{{ action.label }}</el-dropdown-item
                       >
-                        {{ action.label }}
-                      </el-dropdown-item>
+                      <el-dropdown-item
+                        v-if="item.belongId == store.workspaceData.id && action.label == '分享'"
+                        :command="action.value"
+                        >{{ action.label }}</el-dropdown-item
+                      >
+                      <el-dropdown-item
+                        v-if="store.workspaceData.type == 2 && action.label == '分发'"
+                        :command="action.value"
+                        >{{ action.label }}</el-dropdown-item
+                      >
+                      <el-dropdown-item v-if="action.label == '详情'" :command="action.value">{{
+                        action.label
+                      }}</el-dropdown-item>
                     </div>
                     <el-dropdown-item @click="deleteApp(item)">移除应用</el-dropdown-item>
                     <!-- <el-dropdown-item  @click="GoPage('/market/appDetail')">应用详情</el-dropdown-item> -->
+                    <el-dropdown-item @click="GoPageWithQuery('/market/publishList', item)"
+                      >应用上架列表</el-dropdown-item
+                    >
                   </el-dropdown-menu>
                 </template>
               </el-dropdown>
@@ -95,10 +117,22 @@
           >
             <template #name="scope">
               {{ scope.row.name }}
+            </template>
+            <template #tag="scope">
               <el-tag
+                v-if="
+                  scope.row.endTime == undefined ||
+                  Math.round(new Date().getTime()) < scope.row?.endTime
+                "
                 style="margin-left: 10px"
                 :type="scope.row.createUser == queryInfo.id ? '' : 'success'"
                 >{{ scope.row.createUser == queryInfo.id ? '可管理' : '可使用' }}</el-tag
+              >
+              <el-tag
+                v-if="Math.round(new Date().getTime()) > scope.row?.endTime"
+                style="margin-left: 10px"
+                :type="'danger'"
+                >失效</el-tag
               >
             </template>
             <template #operate="scope">
@@ -110,16 +144,32 @@
                 <el-icon style="cursor: pointer" :size="20"><Operation /></el-icon>
                 <template #dropdown>
                   <el-dropdown-menu>
-                    <div v-if="scope.row.createUser == queryInfo.id">
+                    <div v-for="action in actionOptionsOfOwn" :key="action.value">
                       <el-dropdown-item
-                        v-for="action in actionOptionsOfOwn"
+                        v-if="
+                          scope.row.authority == '所属权' &&
+                          scope.row.belongId == store.workspaceData.id &&
+                          action.label == '上架'
+                        "
                         :command="action.value"
-                        :key="action.value"
+                        >{{ action.label }}</el-dropdown-item
                       >
-                        {{ action.label }}
-                      </el-dropdown-item>
+                      <el-dropdown-item
+                        v-if="
+                          scope.row.belongId == store.workspaceData.id && action.label == '分享'
+                        "
+                        :command="action.value"
+                        >{{ action.label }}</el-dropdown-item
+                      >
+                      <el-dropdown-item
+                        v-if="store.workspaceData.type == 2 && action.label == '分发'"
+                        :command="action.value"
+                        >{{ action.label }}</el-dropdown-item
+                      >
+                      <el-dropdown-item v-if="action.label == '详情'" :command="action.value">{{
+                        action.label
+                      }}</el-dropdown-item>
                     </div>
-
                     <el-dropdown-item @click="deleteApp(scope.row)">移除应用</el-dropdown-item>
                   </el-dropdown-menu>
                 </template>
@@ -280,6 +330,10 @@
     pageSize: 20,
     total: 0
   })
+
+  const GoPageWithQuery = (path: string, query: any) => {
+    router.push({ path, query })
+  }
   //应用搜索
   const GoPage = (path: string) => {
     router.push(path)
@@ -312,6 +366,13 @@
         label: '应用名称'
       },
       {
+        type: 'slot',
+        prop: 'tag',
+        width: '110',
+        name: 'tag',
+        label: '应用状态'
+      },
+      {
         prop: 'code',
         label: '应用编码'
       },
@@ -329,7 +390,8 @@
       },
       {
         prop: 'createTime',
-        label: '创建时间'
+        label: '创建时间',
+        width: '200'
       },
       {
         type: 'slot',
@@ -343,9 +405,6 @@
   })
   const title = ref<string>('')
   onMounted(() => {
-    if (store.workspaceData.type == 1) {
-      actionOptionsOfOwn.splice(2, 1)
-    }
     // 获取列表
     getProductList()
     getShopcarNum()
@@ -577,10 +636,12 @@
     display: flex;
     align-items: center;
   }
+
   .share-dialog > .el-dialog__header {
     text-align: center;
     font-weight: bold;
   }
+
   .share-dialog > .el-dialog__body {
     padding: 10px 20px;
   }
@@ -589,11 +650,13 @@
   .header-box {
     display: flex;
   }
+
   .cohortLayout {
     width: 100%;
     height: 500px;
     overflow: auto;
   }
+
   .page-flex {
     height: 50px;
     width: 100%;

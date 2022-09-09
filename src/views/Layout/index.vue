@@ -90,7 +90,7 @@ onBeforeUnmount(()=>{
     box-shadow: 0px 2px 3px 1px var(--el-fill-color);
     background-color: var(--el-bg-color);
     // border-bottom: 1px solid #d7d7d7;
-    z-index: 2;
+    z-index: calc(var(--el-index-normal) + 2);
   }
 
   .main-menu-content {

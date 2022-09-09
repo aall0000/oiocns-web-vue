@@ -10,6 +10,7 @@
         <!-- 左侧聊天内容显示 -->
         <div class="group-content-left con recall" v-if="item.msgType === 'recall'">
           {{  item.showTxt  }}
+          <!-- <span class="reWrite" @click="handleReWrite(item.msgBody)">重新编辑</span> -->
         </div>
 
         <div class="group-content-left con" v-else-if="item.fromId !== orgChat?.userId" >
@@ -23,8 +24,10 @@
         <!-- 右侧内容显示 -->
         <div class="group-content-right con" v-else>
           <div class="con-content" @contextmenu.prevent.stop="(e: MouseEvent) => handleContextClick(e, item)">
+            <!-- <span v-if="showName" class="con-content-name">{{ getUserName(item.fromId) }}</span> -->
             <div class="con-content-link"></div>
             <div class="con-content-txt" v-html="item.msgBody"></div>
+            <!-- {{ item.msgBody }} -->
           </div>
           <HeadImg :name="orgChat?.getName(orgChat?.userId)" />
         </div>
@@ -97,6 +100,7 @@ const scrollTop = debounce(() => {
 // 滚动设置到底部
 const goPageEnd = () => {
   nextTick(() => {
+    // console.log('滚动底部', nodeRef.value.scrollHeight);
     nodeRef.value.scrollTop = nodeRef.value.scrollHeight
   })
 }
@@ -125,6 +129,8 @@ const mousePosition: {
   selectedItem: ImMsgChildType
 } = reactive({ left: 0, top: 0, isShowContext: false, selectedItem: {} as ImMsgChildType })
 const handleContextClick = (e: MouseEvent, item: ImMsgChildType) => {
+  // console.log('otem', item, new Date(item.createTime));
+  // let bool= new Date(item.createTime) - new Date()
 
   if (!item) {
     return

@@ -22,10 +22,10 @@
             <el-tag v-if="props.type == 'market'" style="margin-left:10px">{{
               info.public ? '公开' : '私有'
             }}</el-tag>
-            <el-tag v-if="props.type != 'market'" style="margin-left:10px" :type="info.createUser==queryInfo.id?'':'success'">{{
+            <el-tag v-if="props.type != 'market' && (info.endTime==undefined||Math.round(new Date().getTime())<info?.endTime)" style="margin-left:10px" :type="info.createUser==queryInfo.id?'':'success'">{{
               info.createUser==queryInfo.id ? '可管理' : '可使用'
-              
             }}</el-tag>
+            <el-tag v-if="props.type != 'market' && Math.round(new Date().getTime())>info?.endTime" style="margin-left:10px" :type="'danger'">失效</el-tag>
           </p>
           <div class="app-card-item-con-desc">
             {{ info.remark }}
@@ -41,7 +41,7 @@
   </el-card>
 </template>
 <script lang="ts" setup>
-  import { reactive, toRefs } from 'vue'
+  import { reactive, toRefs ,ref} from 'vue'
   import { useUserStore } from '@/store/user'
   import { storeToRefs } from 'pinia'
   import HeadImg from '@/components/headImg.vue'
@@ -59,6 +59,7 @@
     overId?: string //当前鼠标移入id
     cardContent?: boolean // 卡片内容是否自定义
   }
+  const systemTime = ref<number>();
   const props = defineProps<shopInfoType>()
   const { info } = props
   const emit = defineEmits(['handleMouseOver'])
@@ -91,11 +92,11 @@
     margin-right: 1%;
     // background-color: aqua;
     &-con {
-      display: flex;
-      flex-direction: column;
+      // display: flex;
+      // flex-direction: column;
       padding: 24px;
       .app-con-title {
-        color: #000000d9;
+        // color: #000000d9;
         font-size: 16px;
         font-weight: 400;
       }
@@ -104,7 +105,7 @@
         height: 70px;
         font-size: 14px;
         font-weight: 400;
-        color: #00000073;
+        color: var(--el-color-info);// #00000073;
         overflow: hidden;
         text-overflow: 5;
         display: -webkit-box; //将对象作为弹性伸缩盒子模型显示。

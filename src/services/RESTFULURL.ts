@@ -151,11 +151,12 @@ export default {
     create: order + '/create', //创建订单
     createPay: order + '/create/pay', //创建支付
     delete: order + '/delete', //删除订单
+    reject: order + '/reject', //退还商品
     deleteDetail: order + '/delete/detail', //删除订单详情
     deliverMerchandise: order + '/deliver', //交付订单详情中的商品
     searchBuyList: order + '/search/buy/list', //买方查询购买订单列表
     searchDetailList: order + '/search/detail/list', //查询订单详情信息
-    searchMerchandiseSellList: order + '​/search​/merchandise​/sell​/list', //卖方查询指定商品售卖订单列表
+    searchMerchandiseSellList: order + '/search/merchandise/sell/list', //卖方查询指定商品售卖订单列表
     searchPayList: order + '/search​/pay/list', //查询订单支付信息
     searchSellList: order + '/search/sell/list', //卖方查询售卖订单列表
     udpate: order + '/update' //更新订单
@@ -185,6 +186,7 @@ export default {
     searchMerchandiseApply: product + '​/search​/merchandise​/apply', //查询产品上架申请
     searchResource: product + '/search/resource', //查询产品资源列表
     searchOwnProduct: product + '/search/own/product', //模糊查找组织/个人产品
+    searchPublishList: product + '/search/publish/List', //查询指定产品的上架信息
     searchShare: product + '/search/share', //查询产品分享情况
     searchShareProduct: product + '/search/share/product', //模糊查找分享商品
     searchWebappmenu: product + '/search​/webappmenu', //查询产品资源菜单

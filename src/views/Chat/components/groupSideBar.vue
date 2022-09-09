@@ -1,8 +1,10 @@
 <template>
   <div class="chart-side-wrap" @contextmenu.stop>
-    <div class="group-side-bar-search">
+    <el-space class="group-side-bar-search flex" :size="4">
       <el-input placeholder="搜索" v-model="searchValue" prefix-icon="Search" />
-    </div>
+      <el-button icon="Refresh" type="primary" link class="refresh" @click="orgChat.getChats"></el-button>
+      <!-- <el-icon :size="20" class="refresh"><Refresh /></el-icon> -->
+    </el-space>
     <div class="group-side-bar-wrap" @contextmenu.prevent="mousePosition.isShowContext = false">
       <ul class="group-con" v-for="item in showList" :key="item.id">
         <li class="group-con-item">
@@ -76,6 +78,7 @@ import { computed, onBeforeUnmount, onMounted, reactive, ref, Ref, watch } from 
 import { formatDate } from '@/utils/index'
 import HeadImg from '@/components/headImg.vue'
 import orgChat from '@/hubs/orgchat'
+import { Refresh } from '@element-plus/icons-vue';
 
 const emit = defineEmits(['openChanged'])
 // 会话列表搜索关键字
@@ -206,7 +209,16 @@ const handleContextChange = (item: MenuItemType) => {
 }
 
 .group-side-bar-search {
+  display: flex;
+  align-items: center;
   padding: 10px;
+  
+  .refresh{
+    .el-icon {
+      font-size: 20px;
+    }
+    color: var(--el-color-primary);
+  }
 }
 
 .group-side-bar-wrap {

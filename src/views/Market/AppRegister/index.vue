@@ -176,11 +176,13 @@
   const isDetailPage = !!routeInfo.params.id
   console.log('搜索', isDetailPage, routeInfo.params.id)
   let form = reactive({
-    id: '',
-    code: '',
-    name: '',
-    remark: '',
-    privateKey: ''
+    data: {
+      id: '',
+      code: '',
+      name: '',
+      remark: '',
+      privateKey: ''
+    }
   })
   const activeName = ref<string>('0')
   let resources = reactive({
@@ -286,7 +288,7 @@
   }
   // 触发表单 提交信息
   const onSubmit = () => {
-    console.log('submit!', form)
+    console.log('submit!', form.data)
     onRegisterSubmit()
   }
   // 注册表单Dom
@@ -322,7 +324,7 @@
         const resourcesData = resources.resources.filter((item) => {
           return item.link
         })
-        const params = { ...form, resources: resourcesData }
+        const params = { ...form.data, resources: resourcesData }
         const { success, data } = await API.product.register({
           data: params
         })
@@ -372,7 +374,7 @@
     })
     if (success) {
       const { result = [], total = 0 } = data
-      if (total === 0) {
+      if (total === 0 && !isDetailPage) {
         return ElMessage({
           type: 'error',
           message: '该应用资源缺失,请联系管理员'
@@ -388,11 +390,12 @@
 
 <style lang="scss" scoped>
   .app-register-wrap {
-    height: 100%;
+    // height: 100%;
     background: var(--el-bg-color-overlay);
-    padding: 20px;
+    margin: 16px;
+    border: 0;
     overflow-y: auto;
-    height: calc(100vh - 108px);
+    height: calc(100vh - 148px);
 
     .register-content {
       width: 600px;
