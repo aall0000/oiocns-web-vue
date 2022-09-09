@@ -57,7 +57,7 @@ export default {
     joinSuccess: cohort + '/join/success', //加群组通过
     pullPerson: cohort + '/pull/persons', //拉人进群组
     removeIdentity: cohort + '/remove/identity', //移除群成员身份
-    removePerson: cohort + '/remove/person', //移除群成员
+    removePerson: cohort + '/remove/persons', //移除群成员
     searchCohorts: cohort + '/search/cohorts', //搜索群聊
     update: cohort + '/update' //变更群组
   },
@@ -180,7 +180,7 @@ export default {
     queryOwnResource: product + '/query/own/resource', //查询组织/个人拥有的资源列表
     register: product + '/register', //产品登记
     publish: product + '/publish', //产品登记
-    searchUsefulProduct: product + '/search/useful/product',//查询组织/个人可用产品
+    searchUsefulProduct: product + '/search/useful/product', //查询组织/个人可用产品
     searchMerchandiseList: product + '​/search​/merchandise​/List', //根据产品查询产品上架信息
     searchMerchandiseApply: product + '​/search​/merchandise​/apply', //查询产品上架申请
     searchResource: product + '/search/resource', //查询产品资源列表
@@ -197,8 +197,21 @@ export default {
     searchGroupShare: product + '/search/group/share',
     deleteGroupShare: product + '/delete/group/share',
     share: product + '/share', //创建针对单位个人的分享
-    searchUnitShare: product + '/search/share',//查询
-    deleteUnitShare: product + '/delete/share',//删除
+    searchUnitShare: product + '/search/share', //查询
+    deleteUnitShare: product + '/delete/share', //删除
+    // 不确定是否已存在
+    department: product + '/distribution/to/deptment',
+    identity: product + '/distribution/to/identity',
+    person: product + '/distribution/to/person',
+    authority: product + '/distribution/to/authority',
+    toDepartment: product + '/search/distribution/to/deptment',
+    toIdentity: product + '/search/distribution/to/identity',
+    toPerson: product + '/search/distribution/to/person',
+    toAuthority: product + '/search/distribution/to/authority',
+    delteDeptment: product + '/delete/distribution/to/deptment',
+    delteAuthority: product + '/delete/distribution/to/authority',
+    delteIdentity: product + '/delete/distribution/to/identity',
+    deltePerson: product + '/delete/distribution/to/person'
   },
   // 历史记录
   history: {
@@ -228,8 +241,7 @@ export default {
     searchManagerPublishApply: appstore + '/search/manager/publish/apply',
     approvalPublish: appstore + '/approval/publish',
     pullTarget: appstore + '/pull/target',
-    searchPublishApply: appstore + '/search/publish/apply',
-
+    searchPublishApply: appstore + '/search/publish/apply'
   }
   //others
 }

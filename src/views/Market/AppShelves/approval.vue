@@ -7,29 +7,13 @@
         :hasTitle="false"
         :tableData="state.approvalList"
         :tableHead="state.tableHead"
+        @handleUpdate="handleUpdate"
       >
         <template #operate="scope">
           <el-button @click="approvalSuccess(scope.row.id, 100)" type="primary">审批通过</el-button>
           <el-button @click="approvalSuccess(scope.row.id, 200)" type="danger">驳回申请</el-button>
         </template>
       </DiyTable>
-      <!-- <el-table :data="state.approvalList" stripe>
-        <el-table-column type="selection" width="50" />
-        <el-table-column prop="marketName" label="市场名称" />
-        <el-table-column prop="targetName" label="申请人昵称" />
-        <el-table-column prop="targetCode" label="申请人账号" />
-        <el-table-column prop="createTime" label="创建时间" />
-        <el-table-column prop="name" label="操作" width="600">
-          <template #default="scope">
-            <el-button @click="approvalSuccess(scope.row.id, 100)" type="primary"
-              >审批通过</el-button
-            >
-            <el-button @click="approvalSuccess(scope.row.id, 200)" type="danger"
-              >驳回申请</el-button
-            >
-          </template>
-        </el-table-column>
-      </el-table> -->
     </div>
   </div>
 </template>
@@ -90,9 +74,16 @@
         width: '400',
         name: 'operate'
       }
-    ]
+    ],
+    currentPage: 1,
+    pageSize: 20,
+    total: 0
   })
-
+  const handleUpdate = (page: any) => {
+    state.currentPage = page.currentPage
+    state.pageSize = page.pageSize
+    searchApprovalList()
+  }
   onMounted(() => {
     store.SearchAllMarket()
     searchApprovalList()
@@ -125,22 +116,25 @@
     await $services.appstore
       .searchManagerPublishApply({
         data: {
-          offset: 0,
-          limit: 10,
+          offset: (state.currentPage - 1) * state.pageSize,
+          limit: state.pageSize,
 
           filter: ''
         }
       })
       .then((res: ResultType) => {
         if (res.success) {
-          const { result = [], total = 0 } = res.data
+          const { result = [] } = res.data
           state.approvalList = []
+          let total = 0
           result?.forEach(
             (item: {
               marketId: any
               product: { name: any; code: any; source: any; authority: any; typeName: any }
             }) => {
               if (item.marketId === route.query.marketId) {
+                total = total + 1
+
                 console.log(item.marketId)
                 state.approvalList.push({
                   ...item,
@@ -154,23 +148,9 @@
               }
             }
           )
-          // state.approvalList = result?.map(
-          //   (item: {
-          //     marketId: any
-          //     product: { name: any; code: any; source: any; authority: any; typeName: any }
-          //   }) => {
-          //     console.log(store.marketMap.get(item.marketId))
-          //     return {
-          //       ...item,
-          //       marketName: store.marketMap.get(item.marketId),
-          //       productCode: item.product.code,
-          //       productName: item.product.name,
-          //       productSource: item.product.source,
-          //       productAuthority: item.product.authority,
-          //       productTypeName: item.product.typeName
-          //     }
-          //   }
-          // )
+          state.total = total
+          diyTable.value.state.loading = false
+          diyTable.value.state.page.total = state.total
           state.tableHead = [
             {
               prop: 'marketName',

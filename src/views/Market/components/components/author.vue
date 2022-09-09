@@ -4,7 +4,7 @@ v<template>
     :style="
       item.type == 'add' ? 'background:#beffd0' : item.type == 'del' ? 'background:#ffb4c4' : ''
     "
-    v-for="(item, index) in state.dataList"
+    v-for="(item, index) in departData"
   >
     <div class="cohortLayout-content-right-box__icon">
       <el-icon @click="delContent(item)"><CircleClose /></el-icon>
@@ -16,43 +16,15 @@ v<template>
 </template>
 
 <script setup lang="ts">
-  import { watch, reactive } from 'vue'
-
-  type dataValue = {
+  type Org = {
     name: string
     label: string
     type: string
     id: string | number
   }
-  type Org = {
-    resource: string
-    data: dataValue[]
-  }
   type Props = {
-    orgData: Org[]
-    resource: string
+    departData: Org[]
   }
-  const state = reactive({
-    dataList: []
-  })
-  watch(
-    () => props.resource,
-    (newValue, oldValue) => {
-      props.orgData.forEach((el) => {
-        if (el.resource == newValue) {
-          state.dataList = el.data
-        }
-      })
-    },
-    { immediate: true }
-  )
-  watch(
-    () => props.orgData,
-    (newValue, oldValue) => {
-      console.log('321123', newValue)
-    },
-    { immediate: true }
-  )
   const emit = defineEmits(['delContent'])
   const props = defineProps<Props>()
   const delContent = (item: any) => {

@@ -72,9 +72,7 @@
       <el-space class="right-navbar">
         <el-link :underline="false" class="header-message-icon" @click="() => router.push('/chat')">
           <el-badge
-            :value="anydata?.message?.noReadCount > 10 ? `10+` : anydata?.message?.noReadCount"
-            v-if="anydata?.message?.noReadCount && anydata?.message?.noReadCount > 0"
-          >
+            :value="orgChat.getNoRead()" v-if="orgChat.getNoRead().length > 0">
             <el-icon class="header-message-icon" :size="18"><ChatDotSquare /></el-icon>
           </el-badge>
           <el-icon class="header-message-icon" :size="18" v-else><ChatDotSquare /></el-icon>
@@ -141,7 +139,6 @@
   import { storeToRefs } from 'pinia'
   import { useRouter } from 'vue-router'
   import { useUserStore } from '@/store/user'
-  import { useAnyData } from '@/store/anydata'
   import $services from '@/services'
   import { ElMessage } from 'element-plus'
   import CreateUnitDialog from './createUnitDialog.vue'
@@ -150,12 +147,12 @@
   import SearchDialog from './searchDialog.vue'
   import headImg from '@/components/headImg.vue'
   import { useDark, useToggle } from '@vueuse/core'
+  import orgChat from '@/hubs/orgchat'
 
   const isDark = useDark()
   // const toggleDark = useToggle(isDark)
 
   const store = useUserStore()
-  const anydata = useAnyData()
   const SearchInfo = ref('')
   const router = useRouter()
   let current = ref(1)

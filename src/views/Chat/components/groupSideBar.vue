@@ -15,14 +15,14 @@
           <div v-show="openIdArr?.includes(item.id)">
             <div :class="[
               'con-body',
-              props.active.spaceId === item.id && props.active.id === child.id ? 'active' : ''
+              orgChat.curChat.value?.spaceId === item.id && orgChat.curChat.value?.id === child.id ? 'active' : ''
             ]" v-for="child in item.chats" :key="child.id"
               @contextmenu.prevent.stop="(e: MouseEvent) => handleContextClick(e, child)">
               <HeadImg :name="child.name" :label="child.label" />
-              <div class="group-con-dot" v-if="ohterData.getNoReadCount(item.id, child.id) > 0">
-                <span>{{ ohterData.getNoReadCount(item.id, child.id) }}</span>
+              <div class="group-con-dot" v-if="child.noRead > 0">
+                <span>{{ child.noRead }}</span>
               </div>
-              <div class="group-con-show" @click="changeInfo(child, item.id)">
+              <div class="group-con-show" @click="openChanged(child)">
                 <el-tooltip class="box-item" :disabled="child.name.length < 7" :content="child.name"
                   placement="right-start">
                   <p class="group-con-show-name">
@@ -31,27 +31,23 @@
                     </span>
                   </p>
                 </el-tooltip>
-                <p class="group-con-show-msg" v-if="child.msgType !== 'recall'"
-                  v-html="child?.msgBody?.includes('<img') ? '[图片]': child?.msgBody"></p>
-                <p class="group-con-show-msg" v-else>{{ child?.showTxt }}</p>
+                <p class="group-con-show-msg">{{ child.showTxt }}</p>
               </div>
             </div>
           </div>
           <!-- 如果该分组没有被打开 但是有未读消息 则把未读消息会话显示出来 -->
           <div :class="[
             'con-body',
-            props.active.spaceId === item.id && props.active.id === child.id ? 'active' : ''
+            orgChat.curChat.value?.spaceId === item.id && orgChat.curChat.value?.id === child.id ? 'active' : ''
           ]" v-for="child in item.chats.filter(
-              (v) =>
-                ohterData.message.noReadMap[item.id] &&
-                ohterData.message.noReadMap[item.id][v?.id] > 0
-            )" :key="child.id + child.name" v-show="!openIdArr?.includes(item.id)"
+            (v) => v.noRead > 0
+          )" :key="child.id + child.name" v-show="!openIdArr?.includes(item.id)"
             @contextmenu.prevent.stop="(e: MouseEvent) => handleContextClick(e, child)">
             <HeadImg :name="child.name" :label="child.label" />
-            <div class="group-con-dot" v-if="ohterData.getNoReadCount(item.id, child.id) > 0">
-              <span>{{ ohterData.getNoReadCount(item.id, child.id) }}</span>
+            <div class="group-con-dot" v-if="child.noRead > 0">
+              <span>{{ child.noRead }}</span>
             </div>
-            <div class="group-con-show" @click="changeInfo(child, item.id)">
+            <div class="group-con-show" @click="openChanged(child)">
               <el-tooltip class="box-item" :disabled="child.name.length < 7" :content="child.name"
                 placement="right-start">
                 <p class="group-con-show-name">
@@ -60,9 +56,7 @@
                   </span>
                 </p>
               </el-tooltip>
-              <p class="group-con-show-msg" v-if="child.msgType !== 'recall'"
-                v-html="child?.msgBody.includes('img') ? '[图片]': child?.msgBody"></p>
-              <p class="group-con-show-msg" v-else>{{ child?.showTxt }}</p>
+              <p class="group-con-show-msg">{{ child.showTxt }}</p>
             </div>
           </div>
         </li>
@@ -78,32 +72,26 @@
 </template>
 
 <script lang="ts" setup name="groupSideBar">
-import { computed, onBeforeUnmount, onMounted, reactive, ref,Ref, watch } from 'vue'
+import { computed, onBeforeUnmount, onMounted, reactive, ref, Ref, watch } from 'vue'
 import { formatDate } from '@/utils/index'
 import HeadImg from '@/components/headImg.vue'
-import { useAnyData } from '@/store/anydata'
 import orgChat from '@/hubs/orgchat'
 
-type propType = {
-  active: ImMsgChildType //当前激活聊天对象信息
-  clearHistoryMsg: Function //清空记录
-}
-const props = defineProps<propType>()
+const emit = defineEmits(['openChanged'])
 // 会话列表搜索关键字
 const searchValue = ref<string>('')
 
 // 是否已加载--判断是否需要默认打开
 const isMounted = ref<boolean>(false)
 
-// 外侧打开状态-持久化展示
-const outList = ref<any>(new Map())
-// 消息未读数量
-const ohterData = useAnyData()
+const openChanged = (async (child: ImMsgChildType) => {
+  await orgChat.setCurrent(child)
+  emit("openChanged", child)
+})
 
 //根据搜索条件-输出展示列表
 const showList = computed((): ImMsgType[] => {
   let showInfoArr = orgChat.chats.value
-  // console.log('展示顺序', props.sessionList);
 
   // 数据过滤 搜索关键词是否 在 列表名称 或 显示信息里
   if (searchValue.value) {
@@ -125,28 +113,8 @@ const showList = computed((): ImMsgType[] => {
     isMounted.value = true
   }
 
-  // showInfoArr.forEach((child: ImMsgType) => {
-  //   child?.chats.forEach((item: ImMsgChildType)=>{
-  //     if (item.count>0) {
-  //      const oldArr = outList.value.get(child.id)??[]
-  //       outList.value.set(child.id,[...oldArr,item.id])
-  //     }
-  //   })
-
-  // })
-  // console.log('outList',outList.value);
-
   return showInfoArr
 })
-
-const emit = defineEmits(['update:active'])
-const changeInfo = (item: ImMsgChildType, spaceId: string) => {
-  openIdArr.value.push(spaceId)
-  // 触发父组件值更新
-  // item.count = 0
-  ohterData.clearMessageNodread(spaceId, item.id)
-  emit('update:active', { ...item, spaceId })
-}
 
 // 时间处理
 const handleFormatDate = (timeStr: string) => {

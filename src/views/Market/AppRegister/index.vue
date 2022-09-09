@@ -1,26 +1,26 @@
 <template>
   <MarketCard />
-  <div class="app-register-wrap">
-    <div class="app-base-info register-content">
+  <div class="app-register-wrap" >
+    <div class="app-base-info register-content" :key="isDetailPage&&form?.id">
       <div class="custom-title">
         <p><span class="custom-span"></span> 基础信息</p>
       </div>
       <el-form
         :model="form"
         ref="registerFormRef"
-        :rules="rules"
+        :rules="isDetailPage ? {} : rules"
         label-position="top"
         class="demo-form-inline"
       >
         <el-row :gutter="40" justify="space-between">
           <el-col :span="12">
             <el-form-item label="应用名称" prop="name">
-              <el-input v-model="form.name" placeholder="请设置" />
+              <el-input v-model="form.name" :readonly="isDetailPage" placeholder="请设置" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="应用编码" prop="code">
-              <el-input v-model="form.code" placeholder="请设置" />
+              <el-input v-model="form.code" :readonly="isDetailPage" placeholder="请设置" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -51,6 +51,7 @@
             maxlength="120"
             show-word-limit
             placeholder="请输入应用介绍"
+            :readonly="isDetailPage"
           />
         </el-form-item>
       </el-form>
@@ -59,34 +60,45 @@
     <div class="app-base-info register-content">
       <div class="custom-title">
         <p> <span class="custom-span"></span> 资源信息 </p>
-        <el-icon class="add-btn" :size="20" @click.stop="handleMemuEvent('Add')">
+        <el-icon
+          v-if="!isDetailPage"
+          class="add-btn"
+          :size="20"
+          @click.stop="handleMemuEvent('Add')"
+        >
           <CirclePlus />
         </el-icon>
       </div>
       <SetAppMenu
         :menus="resources.resources"
-        :key="resources.resources.length"
+        :key="`${resources.resources.length}-${resources.resources.map((v:any)=>v?.id||v.customId).join('&')}`"
+        :readOnly="isDetailPage"
         @handleMemuEvent="handleMemuEvent"
       />
     </div>
     <el-divider />
     <div class="app-base-info register-content btns">
-      <el-button type="info" @click="router.back()">取消</el-button>
-      <el-button type="primary" @click="onSubmit">注册</el-button>
+      <el-button :type="isDetailPage ? 'primary' : 'info'" @click="router.back()">{{
+        isDetailPage ? '返回' : '取消'
+      }}</el-button>
+      <el-button type="primary" @click="onSubmit" v-if="!isDetailPage">注册</el-button>
     </div>
   </div>
 </template>
 <script lang="ts" setup>
   import API from '@/services'
   import SetAppMenu from './setAppMenu.vue'
-  import { reactive, ref } from 'vue'
+  import { onMounted, reactive, ref } from 'vue'
   import { ElMessage, FormRules } from 'element-plus'
-  import { useRouter } from 'vue-router'
+  import { useRouter, useRoute } from 'vue-router'
   import { useCommonStore } from '@/store/common'
   const commonStore = useCommonStore()
   const router = useRouter()
-  // 注册基本信息
-  const form = reactive({
+  const routeInfo = useRoute()
+  const isDetailPage = !!routeInfo.params.id
+  console.log('搜索', isDetailPage, routeInfo.params.id)
+  let form = reactive({
+    id: '',
     code: '',
     name: '',
     remark: '',
@@ -103,7 +115,7 @@
       }
     ]
   })
-
+  // 处理资源信息操作
   const handleMemuEvent = (type: ProductMenuEventType, selectId?: string) => {
     switch (type) {
       case 'Add':
@@ -137,7 +149,7 @@
         break
     }
   }
-
+  // 排序资源信息
   const handleSortMenu = (type: ProductMenuEventType, aimId: string) => {
     const data = resources.resources
     // 根据当前所选标志 获取目标数据信息
@@ -158,12 +170,12 @@
       data[willChageIndex] = obj
     }
   }
-
+  // 触发表单 提交信息
   const onSubmit = () => {
     console.log('submit!', form)
     onRegisterSubmit()
   }
-
+  // 注册表单Dom
   const registerFormRef = ref<any>(null)
   // 注册验证规则
   const rules = reactive<FormRules>({
@@ -213,17 +225,52 @@
       }
     })
   }
+onMounted(()=>{
 
-  // const createBatchcode = async (params: any) => {
-  //   const { success } = await API.product.createResources({ data: params })
-  //   if (success) {
-  //     ElMessage({
-  //       type: 'success',
-  //       message: '应用注册成功'
-  //     })
-  //     router.back()
-  //   }
-  // }
+  if (isDetailPage) {
+    getAppResource()
+    queryInfo()
+  }
+})
+
+const queryInfo = async () => {
+    const { data, success } = await API.product.queryInfo({
+      data: {
+        id: routeInfo.params.id,
+      }
+    })
+    if (success) {
+      console.log('应用信息',data,form);
+      // registerFormRef.value.resetFields(data)
+      form = {...data}
+      console.log('应用信息22',form);
+      form.code='4566'
+    }
+  }
+  // 详情功能区域
+  const getAppResource = async () => {
+    const { data, success } = await API.product.queryOwnResource({
+      data: {
+        id: routeInfo.params.id,
+        offset: 0,
+        limit: 10,
+        filter: ''
+      }
+    })
+    if (success) {
+      const { result = [], total = 0 } = data
+      if (total === 0) {
+        return ElMessage({
+          type: 'error',
+          message: '该应用资源缺失,请联系管理员'
+        })
+      } else {
+        console.log('是是是',result);
+
+        resources.resources = result
+      }
+    }
+  }
 </script>
 
 <style lang="scss" scoped>

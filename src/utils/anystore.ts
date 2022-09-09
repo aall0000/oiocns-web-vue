@@ -26,8 +26,8 @@ const anyStore: anyStoreType = {
     _subscribedKeys: {},
     userId: "",
     start: (accessToken: string, userId: string) => { // 不传默认为链接用户属性库
-        anyStore._stoped = false
         anyStore.userId = userId
+        anyStore._stoped = false
         if (anyStore._connection) return
         // 初始化
         anyStore._connection = new signalR.HubConnectionBuilder().withUrl('/orginone/anydata/object/hub').build()
@@ -74,10 +74,10 @@ const anyStore: anyStoreType = {
                 }, 1000)
             } else {
                 anyStore._subscribedKeys[key] = callback
-                const { data, state: success } = await anyStore._connection.invoke("Subscribed", key)
-                if (success) {
+                let res = await anyStore._connection.invoke("Subscribed", key)
+                if (res.success) {
                     console.log("已订阅===", key)
-                    callback.call(callback, data)
+                    callback.call(callback, res.data)
                 }
             }
         }
