@@ -3,18 +3,17 @@
     <template #right>
       <el-space>
         <el-button type="primary" link @click.stop="GoPage('/market/order')">我的订单</el-button>
-        <el-badge :value="shopcarNum" >
+        <el-badge :value="shopcarNum">
           <el-button type="primary" link @click.stop="GoPage('/market/shopCar')">购物车</el-button>
         </el-badge>
-        <el-radio-group v-model="modeType" size="small" class="button"  style="margin-left: 12px;">
-            <el-radio-button label="list"
-              ><el-icon :size="18"><Tickets /></el-icon
-            ></el-radio-button>
-            <el-radio-button label="card"
-              ><el-icon :size="18"><Menu /></el-icon
-            ></el-radio-button>
-          </el-radio-group>
-
+        <el-radio-group v-model="modeType" size="small" class="button" style="margin-left: 12px">
+          <el-radio-button label="list"
+            ><el-icon :size="18"><Tickets /></el-icon
+          ></el-radio-button>
+          <el-radio-button label="card"
+            ><el-icon :size="18"><Menu /></el-icon
+          ></el-radio-button>
+        </el-radio-group>
       </el-space>
     </template>
   </MarketCard>
@@ -33,7 +32,11 @@
           @handleUpdate="handleUpdate"
           @shopcarNumChange="getShopcarNum"
         ></AppCard>
-        <Pagination v-if="modeType === 'card'" ref="pageContent" @handleUpdate="handleUpdate"></Pagination>
+        <Pagination
+          v-if="modeType === 'card'"
+          ref="pageContent"
+          @handleUpdate="handleUpdate"
+        ></Pagination>
         <DiyTable
           v-else
           ref="diyTable"
@@ -43,7 +46,15 @@
           @handleUpdate="handleUpdate"
         >
           <template #operate="scope">
-            <TheTableButton :data="scope.row" type="shop" @update="getAppList"></TheTableButton>
+            <el-button
+              link
+              type="primary"
+              @click="GoPageWithQuery('/market/merchandiseDetail', { data: scope.row.id })"
+              >商品详情</el-button
+            >
+
+            <el-button link type="primary" @click="joinShopCar(scope.row.id)">加入购物车</el-button>
+            <el-button link type="primary" @click="requireItem">下单</el-button>
           </template>
         </DiyTable>
       </div>
@@ -60,14 +71,17 @@
   import TheTableButton from '../AppList/components/theTableButton2.vue'
   import MarketCard from '@/components/marketCard/index.vue'
   import Pagination from '@/components/pagination/index.vue'
-
+  import { ElMessage } from 'element-plus'
   const modeType = ref<'card' | 'list'>('card')
   const router = useRouter()
   const diyTable = ref(null)
   const appCard = ref(null)
   const shopcarNum = ref(0)
   const pageContent = ref(null)
-   // 表格展示数据
+  const GoPageWithQuery = (path: string, query: any) => {
+    router.push({ path, query })
+  }
+  // 表格展示数据
   const pageStore = reactive({
     tableData: [],
     currentPage: 1,
@@ -107,16 +121,16 @@
       label: '操作',
       fixed: 'right',
       align: 'center',
-      width: '80',
+      width: '300',
       name: 'operate'
     }
   ]
-  const handleUpdate = (page: any)=>{
+  const handleUpdate = (page: any) => {
     pageStore.currentPage = page.currentPage
     pageStore.pageSize = page.pageSize
     getAppList()
   }
-  const searchList = ()=>{
+  const searchList = () => {
     pageStore.currentPage = 1
     getAppList()
   }
@@ -124,6 +138,25 @@
     getMarketInfo()
     getShopcarNum()
   })
+  //加入购物车
+  const joinShopCar = (id: any) => {
+    $services.appstore
+      .staging({
+        data: {
+          id: id
+        }
+      })
+      .then((res: ResultType) => {
+        if (res.code == 200) {
+          ElMessage({
+            message: '添加成功',
+            type: 'success'
+          })
+          getAppList()
+        }
+      })
+  }
+  const requireItem = () => {}
   // 获取购物车数量
   const getShopcarNum = async () => {
     await $services.market
@@ -150,7 +183,7 @@
       .merchandise({
         data: {
           id: softShareInfo.value.id,
-          offset: (pageStore.currentPage-1)*pageStore.pageSize,
+          offset: (pageStore.currentPage - 1) * pageStore.pageSize,
           limit: pageStore.pageSize,
           filter: searchVal.value || ''
         }
@@ -191,7 +224,7 @@
   .getApp {
     // width: 100%;
     height: calc(100vh - 148px);
-    border:0;
+    border: 0;
     // padding: 16px;
     margin: 16px;
     // &-radio {
