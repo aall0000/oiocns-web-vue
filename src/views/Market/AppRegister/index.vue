@@ -3,12 +3,12 @@
   <div class="app-register-wrap">
     <el-tabs v-model="activeName" class="demo-tabs" @tab-click="handleTabsClick">
       <el-tab-pane label="基本信息" name="0">
-        <div class="app-base-info register-content" :key="isDetailPage && form?.id">
+        <div class="app-base-info register-content">
           <div class="custom-title">
             <p><span class="custom-span"></span> 基础信息</p>
           </div>
           <el-form
-            :model="form"
+            :model="form.data"
             ref="registerFormRef"
             :rules="isDetailPage ? {} : rules"
             label-position="top"
@@ -17,12 +17,12 @@
             <el-row :gutter="40" justify="space-between">
               <el-col :span="12">
                 <el-form-item label="应用名称" prop="name">
-                  <el-input v-model="form.name" :readonly="isDetailPage" placeholder="请设置" />
+                  <el-input v-model="form.data.name" :readonly="isDetailPage" placeholder="请设置" />
                 </el-form-item>
               </el-col>
               <el-col :span="12">
                 <el-form-item label="应用编码" prop="code">
-                  <el-input v-model="form.code" :readonly="isDetailPage" placeholder="请设置" />
+                  <el-input v-model="form.data.code" :readonly="isDetailPage" placeholder="请设置" />
                 </el-form-item>
               </el-col>
             </el-row>
@@ -48,7 +48,7 @@
             <el-form-item label="应用介绍">
               <el-input
                 :rows="2"
-                v-model="form.remark"
+                v-model="form.data.remark"
                 type="textarea"
                 maxlength="120"
                 show-word-limit
@@ -252,9 +252,7 @@
     if (success) {
       console.log('应用信息', data, form)
       // registerFormRef.value.resetFields(data)
-      form = { ...data }
-      console.log('应用信息22', form)
-      form.code = '4566'
+      form.data = { ...data }
     }
   }
   // 详情功能区域

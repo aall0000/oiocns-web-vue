@@ -10,8 +10,12 @@
         @handleUpdate="handleUpdate"
       >
         <template #operate="scope">
-          <el-button @click="approvalSuccess(scope.row.id, 100)" type="primary">审批通过</el-button>
-          <el-button @click="approvalSuccess(scope.row.id, 200)" type="danger">驳回申请</el-button>
+          <el-button link @click="approvalSuccess(scope.row.id, 100)" type="primary"
+            >审批通过</el-button
+          >
+          <el-button link @click="approvalSuccess(scope.row.id, 200)" type="danger"
+            >驳回申请</el-button
+          >
         </template>
       </DiyTable>
     </div>
@@ -33,48 +37,7 @@
   const diyTable = ref(null)
   const state = reactive({
     approvalList: [],
-    tableHead: [
-      {
-        prop: 'productCode',
-        label: '应用编号'
-      },
-      {
-        prop: 'productName',
-        label: '应用名称'
-      },
-      {
-        prop: 'productSource',
-        label: '应用来源'
-      },
-      {
-        prop: 'productAuthority',
-        label: '应用权限'
-      },
-      {
-        prop: 'productTypeName',
-        label: '应用类型'
-      },
-      {
-        prop: 'price',
-        label: '价格'
-      },
-      {
-        prop: 'days',
-        label: '使用期限'
-      },
-      {
-        prop: 'createTime',
-        label: '创建时间'
-      },
-      {
-        type: 'slot',
-        label: '操作',
-        fixed: 'right',
-        align: 'center',
-        width: '400',
-        name: 'operate'
-      }
-    ],
+    tableHead: [],
     currentPage: 1,
     pageSize: 20,
     total: 0
@@ -194,7 +157,7 @@
               label: '操作',
               fixed: 'right',
               align: 'center',
-              width: '400',
+              width: '200',
               name: 'operate'
             }
           ]
