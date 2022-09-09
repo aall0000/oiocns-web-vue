@@ -22,7 +22,7 @@
         <div>{{ scope.row.groupName }}</div>
       </template>
       <template #operate="scope">
-        <TheTableButton :data="scope.row" @update="getData"></TheTableButton>
+        <el-button link type="danger" @click="personDel(scope.row.id)">移出</el-button>
       </template>
     </DiyTable>
   </div>
@@ -82,6 +82,24 @@
       searchDialog.value = false
     }
   }
+  //删除人员
+  const personDel = (id: any) => {
+    $services.appstore
+      .removeMemver({
+        data: {
+          id: id
+        }
+      })
+      .then((res: ResultType) => {
+        if (res.code == 200) {
+          ElMessage({
+            message: '移出成功',
+            type: 'success'
+          })
+          getData()
+        }
+      })
+  }
   const addFriends = (arr: Array<arrList>) => {
     console.log('arrr', arr)
     $services.appstore
@@ -95,7 +113,7 @@
         if (res.code == 200) {
           ElMessage({
             message: '申请成功',
-            type: 'warning'
+            type: 'success'
           })
           getData()
           searchDialog.value = false
@@ -129,7 +147,7 @@
         label: '操作',
         fixed: 'right',
         align: 'center',
-        width: '80',
+        width: '100',
         name: 'operate'
       }
     ]

@@ -10,12 +10,13 @@
         @handleUpdate="handleUpdate"
       >
             <template #operate="scope">
-                <el-link type="primary" @click="showOrderList(scope.row.id)">售卖详情</el-link>
+                <el-link type="primary" @click="showOrderList(scope.row.id)">查看售卖详情</el-link>
           </template>
       </DiyTable>
     </div>
 
     <el-dialog
+    width="70%"
       v-model="orderListDialog.show"
       append-to-body
       :before-close="closeDialog"
@@ -48,7 +49,7 @@
     tableHead: [
 
             {
-              prop: 'code',
+              prop: 'order.code',
               label: '订单号'
             },
             {
@@ -134,7 +135,7 @@
                 label: '操作',
                 fixed: 'right',
                 align: 'center',
-                width: '100',
+                width: '120',
                 name: 'operate'
             }
           ],
@@ -177,7 +178,9 @@ const getDialogTableList = async(id:string)=>{
           dialogState.data =  result?.map(
             (item: any) => {
               return {
-                ...item
+                ...item,
+                code: item.order.code,
+                belongName: item.order.belong.name,
               }
             }
           )
@@ -239,6 +242,7 @@ const showOrderList = (id:string)=>{
       width: 100%;
       height: calc(100vh - 130px);
       padding-left: 16px;
+      padding-top: 16px;
     }
   }
 </style>

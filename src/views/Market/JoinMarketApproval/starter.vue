@@ -10,9 +10,7 @@
         :tableHead="state.tableHead"
       >
         <template #operate="scope">
-          <el-button @click="cancelApply(scope.row.id)" type="primary" size="small"
-            >取消申请</el-button
-          >
+          <el-button link @click="cancelApply(scope.row.id)" type="danger">取消申请</el-button>
         </template>
       </DiyTable>
     </div>
@@ -47,7 +45,7 @@
         label: '操作',
         fixed: 'right',
         align: 'center',
-        width: '400',
+        width: '200',
         name: 'operate'
       }
     ],
