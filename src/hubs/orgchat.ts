@@ -16,6 +16,7 @@ type orgChatType = {
     curMsgs: Ref<any[]>,
     qunPersons: Ref<any[]>,
     curChat: Ref<ImMsgChildType>,
+    openChats: ImMsgChildType[],
     start: (accessToken: string, userId: string) => void, // 创建及启动链接
     stop: () => void, // 关闭链接
     getName: (id: string) => string, //获取名称
@@ -43,6 +44,7 @@ const orgChat: orgChatType = {
     qunPersons: ref<any[]>([]),
     allUserSpaceId: [],
     nameMap: {},
+    openChats: [],
     curMsgs: ref<any[]>([]),
     start: (accessToken: string, userId: string) => {
         orgChat.userId = userId
@@ -69,6 +71,9 @@ const orgChat: orgChatType = {
                 }
                 if (data.nameMap) {
                     orgChat.nameMap = data.nameMap
+                }
+                if (data.openChats) {
+                    orgChat.openChats = data.openChats
                 }
                 orgChat._loadChats(false)
             })
@@ -158,14 +163,16 @@ const orgChat: orgChatType = {
         return { success: false, data: {}, code: 404, msg: "" }
     },
     setCurrent: async (chat: ImMsgChildType) => {
+        if(orgChat.curChat.value){
+            orgChat.openChats = orgChat.openChats.filter((item)=>{
+                return item.id !== orgChat.curChat.value.id ||
+                    item.spaceId !== orgChat.curChat.value.spaceId
+            })
+        }
         orgChat.curChat.value = null
         orgChat.curMsgs.value = []
         orgChat.qunPersons.value = []
         if (chat && chat.id.length > 0) {
-            if (chat.noRead > 0) {
-                chat.noRead = 0
-                orgChat._loadChats(true)
-            }
             orgChat.curChat.value = chat
             await orgChat.getHistoryMsg()
             if (chat.typeName !== "人员") {
@@ -173,7 +180,12 @@ const orgChat: orgChatType = {
             } else {
                 orgChat.curChat.value.personNum = 0
             }
+            orgChat.openChats.push(orgChat.curChat.value)
         }
+        anyStore.set("orgChat.openChats", {
+            operation: "replaceAll",
+            data: orgChat.openChats
+        })
     },
     getPersons: async (reset: boolean) => {
         if (reset) {
@@ -334,7 +346,12 @@ const orgChat: orgChatType = {
                             orgChat.curMsgs.value.push(data)
                             newChats.unshift(chat)
                         } else {
-                            chat.noRead = (chat.noRead || 0) + 1
+                            let opened = orgChat.openChats.filter(i=>{
+                                return i.id === chat.id && i.spaceId === chat.spaceId
+                            }).length > 0
+                            if(!opened){
+                                chat.noRead = (chat.noRead || 0) + 1
+                            }
                             newChats.push(chat)
                         }
                     } else {
