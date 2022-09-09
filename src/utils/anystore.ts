@@ -64,6 +64,7 @@ const anyStore: anyStoreType = {
         }
         anyStore._connection = null
         anyStore._stoped = true;
+        anyStore._subscribedKeys = {}
     },
     // 订阅数据 key: 订阅数据的key  callback 数据发生变化时的回调
     subscribed: async (key: string, callback: (data: any) => void) => {

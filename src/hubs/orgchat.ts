@@ -78,20 +78,22 @@ const orgChat: orgChatType = {
                 if (data.lastMsg && orgChat.curChat.value) {
                     if (orgChat.curChat.value.id === data.lastMsg.chat.id &&
                         orgChat.curChat.value.spaceId === data.lastMsg.chat.spaceId) {
-                        let exist = orgChat.curMsgs.value.filter(item=>{
+                        let exist = orgChat.curMsgs.value.filter(item => {
                             return item.id === data.lastMsg.data.id
                         }).length > 0
-                        if(!exist){
+                        if (!exist) {
                             orgChat.curMsgs.value.push(data.lastMsg.data)
                         }
                     }
                 }
                 orgChat._loadChats(false)
             })
-            await orgChat._connection.invoke("TokenAuth", accessToken)
-            if (orgChat.chats.value.length < 1) {
-                await orgChat.getChats()
-            }
+            setTimeout(async () => {
+                await orgChat._connection.invoke("TokenAuth", accessToken)
+                if (orgChat.chats.value.length < 1) {
+                    await orgChat.getChats()
+                }
+            }, 1000)
         }).catch((error: any) => {
             console.log('链接出错,30秒后重连', error)
             setTimeout(() => {
@@ -327,7 +329,7 @@ const orgChat: orgChatType = {
                 }
             })
         }
-        if(data.spaceId === data.fromId){
+        if (data.spaceId === data.fromId) {
             data.spaceId = orgChat.userId
         }
         orgChat.chats.value.forEach((item: ImMsgType) => {
