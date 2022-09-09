@@ -63,9 +63,10 @@
                 <template #dropdown>
                   <el-dropdown-menu>
                     <div v-for="action in actionOptionsOfOwn" :key="action.value">
-                      <el-dropdown-item v-if="item.authority=='所属权'&&item.belongId==queryInfo.id&&action.label=='上架'" :command="action.value">{{ action.label }}</el-dropdown-item>
-                      <el-dropdown-item v-if="(item.belongId==queryInfo.id)&&action.label=='分享'" :command="action.value">{{ action.label }}</el-dropdown-item>
+                      <el-dropdown-item v-if="item.authority=='所属权'&&item.belongId==store.workspaceData.id&&action.label=='上架'" :command="action.value">{{ action.label }}</el-dropdown-item>
+                      <el-dropdown-item v-if="(item.belongId==store.workspaceData.id)&&action.label=='分享'" :command="action.value">{{ action.label }}</el-dropdown-item>
                       <el-dropdown-item v-if="store.workspaceData.type == 2&&action.label=='分发'" :command="action.value">{{ action.label }}</el-dropdown-item>
+                      <el-dropdown-item v-if="action.label=='详情'" :command="action.value">{{ action.label }}</el-dropdown-item>
                     </div>
                     <el-dropdown-item @click="deleteApp(item)">移除应用</el-dropdown-item>
                     <!-- <el-dropdown-item  @click="GoPage('/market/appDetail')">应用详情</el-dropdown-item> -->
@@ -105,9 +106,10 @@
                 <template #dropdown>
                   <el-dropdown-menu>
                     <div v-for="action in actionOptionsOfOwn" :key="action.value">
-                      <el-dropdown-item v-if="scope.row.authority=='所属权'&&scope.row.belongId==queryInfo.id&&action.label=='上架'" :command="action.value">{{ action.label }}</el-dropdown-item>
-                      <el-dropdown-item v-if="(scope.row.belongId==queryInfo.id)&&action.label=='分享'" :command="action.value">{{ action.label }}</el-dropdown-item>
+                      <el-dropdown-item v-if="scope.row.authority=='所属权'&&scope.row.belongId==store.workspaceData.id&&action.label=='上架'" :command="action.value">{{ action.label }}</el-dropdown-item>
+                      <el-dropdown-item v-if="(scope.row.belongId==store.workspaceData.id)&&action.label=='分享'" :command="action.value">{{ action.label }}</el-dropdown-item>
                       <el-dropdown-item v-if="store.workspaceData.type == 2&&action.label=='分发'" :command="action.value">{{ action.label }}</el-dropdown-item>
+                      <el-dropdown-item v-if="action.label=='详情'" :command="action.value">{{ action.label }}</el-dropdown-item>
                     </div>        
                     <el-dropdown-item @click="deleteApp(scope.row)">移除应用</el-dropdown-item>
                   </el-dropdown-menu>
