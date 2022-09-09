@@ -1,21 +1,24 @@
 <template>
   <MarketCard>
     <template #right>
-      <el-button type="primary" link @click.stop="GoPage('/market/order')">我的订单</el-button>
-      <el-badge :value="shopcarNum" style="padding-left: 10px; display: flex; align-items: center">
-        <el-button type="primary" link @click.stop="GoPage('/market/shopCar')">购物车</el-button>
-      </el-badge>
-      <el-radio-group v-model="modeType" size="small" style="padding-left: 15px" class="button">
-        <el-radio-button label="list"
-          ><el-icon :size="18"><Tickets /></el-icon
-        ></el-radio-button>
-        <el-radio-button label="card"
-          ><el-icon :size="18"><Menu /> </el-icon
-        ></el-radio-button>
-      </el-radio-group>
+      <el-space>
+        <el-button type="primary" link @click.stop="GoPage('/market/order')">我的订单</el-button>
+        <el-badge :value="shopcarNum" >
+          <el-button type="primary" link @click.stop="GoPage('/market/shopCar')">购物车</el-button>
+        </el-badge>
+        <el-radio-group v-model="modeType" size="small" class="button"  style="margin-left: 12px;">
+            <el-radio-button label="list"
+              ><el-icon :size="18"><Tickets /></el-icon
+            ></el-radio-button>
+            <el-radio-button label="card"
+              ><el-icon :size="18"><Menu /></el-icon
+            ></el-radio-button>
+          </el-radio-group>
+
+      </el-space>
     </template>
   </MarketCard>
-  <div class="getApp">
+  <el-card class="getApp">
     <div class="getApp-container">
       <div class="getApp-search-box">
         <el-input v-model="searchVal" placeholder="应用名称/编码" class="search-input"> </el-input>
@@ -27,6 +30,8 @@
           ref="appCard"
           :dataList="state.myAppList"
           type="shop"
+          @handleUpdate="handleCardUpdate"
+          @shopcarNumChange="getShopcarNum"
         ></AppCard>
         <Pagination v-if="modeType === 'card'" ref="pageContent" @handleUpdate="handleUpdate"></Pagination>
         <DiyTable
@@ -43,7 +48,7 @@
         </DiyTable>
       </div>
     </div>
-  </div>
+  </el-card>
 </template>
 
 <script setup lang="ts">
@@ -87,7 +92,7 @@
     },
     {
       prop: 'price',
-      label: '单价/天'
+      label: '价格'
     },
     {
       prop: 'days',
@@ -184,22 +189,23 @@
 </script>
 <style lang="scss" scoped>
   .getApp {
-    width: 100%;
-    height: calc(100vh - 60px);
-    padding: 16px;
-
-    &-radio {
-      display: flex;
-      align-items: center;
-      position: absolute;
-      left: 16px;
-      bottom: 0px;
-    }
+    // width: 100%;
+    height: calc(100vh - 148px);
+    border:0;
+    // padding: 16px;
+    margin: 16px;
+    // &-radio {
+    //   display: flex;
+    //   align-items: center;
+    //   position: absolute;
+    //   left: 16px;
+    //   bottom: 0px;
+    // }
     &-container {
       position: relative;
       width: 100%;
       height: calc(100% - 60px);
-      background-color: var(--el-bg-color);
+      background-color: var(--el-bg-color-overlay);
       overflow: auto;
       display: flex;
       flex-direction: column;
@@ -207,7 +213,7 @@
     &-content {
       width: 100%;
       flex: 1;
-      padding: 0 24px;
+      // padding: 0 24px;
     }
     &-search-box {
       display: flex;

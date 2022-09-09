@@ -311,7 +311,7 @@ const mainRouter: RouteRecordRaw[] = [
         name: 'marketOrder',
         component: () => import('@/views/Market/Order/index.vue'),
         meta: {
-          title: '订单页面'
+          title: '我的订单'
         }
       },
       {
@@ -344,6 +344,14 @@ const mainRouter: RouteRecordRaw[] = [
         component: () => import('@/views/Market/AppDetail/index.vue'),
         meta: {
           title: '应用详情'
+        }
+      },
+      {
+        path: '/market/publishList',
+        name: 'publishList',
+        component: () => import('@/views/Market/AppDetail/publishList.vue'),
+        meta: {
+          title: '应用上架列表'
         }
       },
       {

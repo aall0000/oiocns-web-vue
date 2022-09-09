@@ -31,6 +31,9 @@
   })
 </script>
 
-<style scoped>
-  
+<style lang="scss">
+    .el-dialog > .el-dialog__header {
+  background-color: var(--el-fill-color-light)  !important;
+  margin-right: 0 !important;
+}
 </style>
