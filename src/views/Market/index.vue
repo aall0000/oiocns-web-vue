@@ -51,6 +51,11 @@
           <el-switch v-model="isCard" /> -->
         </div>
         <li class="app-card" v-show="mode === 'card'">
+          <MarketCreate
+            :info="add"
+            v-show="!pageStore.total"
+            @myclick="GoPage('/market/softShare')"
+          />
           <ShopCard
             v-for="item in state.ownProductList"
             :info="item"
@@ -75,25 +80,27 @@
                 <template #dropdown>
                   <el-dropdown-menu>
                     <div v-for="action in actionOptionsOfOwn" :key="action.value">
-                      <el-dropdown-item
-                        v-if="
-                          item.authority == '所属权' &&
-                          item.belongId == store.workspaceData.id &&
-                          action.label == '上架'
-                        "
-                        :command="action.value"
-                        >{{ action.label }}</el-dropdown-item
-                      >
-                      <el-dropdown-item
-                        v-if="item.belongId == store.workspaceData.id && action.label == '分享'"
-                        :command="action.value"
-                        >{{ action.label }}</el-dropdown-item
-                      >
-                      <el-dropdown-item
-                        v-if="store.workspaceData.type == 2 && action.label == '分发'"
-                        :command="action.value"
-                        >{{ action.label }}</el-dropdown-item
-                      >
+                      <div v-if="new Date().getTime() < formartDateTime(item?.endTime)">
+                        <el-dropdown-item
+                          v-if="
+                            item.authority == '所属权' &&
+                            item.belongId == store.workspaceData.id &&
+                            action.label == '上架'
+                          "
+                          :command="action.value"
+                          >{{ action.label }}</el-dropdown-item
+                        >
+                        <el-dropdown-item
+                          v-if="item.belongId == store.workspaceData.id && action.label == '分享'"
+                          :command="action.value"
+                          >{{ action.label }}</el-dropdown-item
+                        >
+                        <el-dropdown-item
+                          v-if="store.workspaceData.type == 2 && action.label == '分发'"
+                          :command="action.value"
+                          >{{ action.label }}</el-dropdown-item
+                        >
+                      </div>
                       <el-dropdown-item v-if="action.label == '详情'" :command="action.value">{{
                         action.label
                       }}</el-dropdown-item>
@@ -124,58 +131,53 @@
               <el-tag
                 v-if="
                   scope.row.endTime == undefined ||
-                  Math.round(new Date().getTime()) < scope.row?.endTime
+                  new Date().getTime() < formartDateTime(scope.row?.endTime)
                 "
                 style="margin-left: 10px"
                 :type="scope.row.createUser == queryInfo.id ? '' : 'success'"
                 >{{ scope.row.createUser == queryInfo.id ? '可管理' : '可使用' }}</el-tag
               >
               <el-tag
-                v-if="Math.round(new Date().getTime()) > scope.row?.endTime"
+                v-if="new Date().getTime() > formartDateTime(scope.row?.endTime)"
                 style="margin-left: 10px"
                 :type="'danger'"
                 >失效</el-tag
               >
+              <el-tag style="margin-left: 10px">{{ scope.row.source }}</el-tag>
             </template>
             <template #operate="scope">
-              <el-dropdown
-                trigger="click"
-                @command="(value:any) => handleCommand('own', value, scope.row)"
-                placement="bottom-end"
+              <el-button
+                v-if="
+                  scope.row.authority == '所属权' && scope.row.belongId == store.workspaceData.id
+                "
+                link
+                type="primary"
+                @click="publishVisible = true"
+                >上架</el-button
               >
-                <el-icon style="cursor: pointer" :size="20"><Operation /></el-icon>
-                <template #dropdown>
-                  <el-dropdown-menu>
-                    <div v-for="action in actionOptionsOfOwn" :key="action.value">
-                      <el-dropdown-item
-                        v-if="
-                          scope.row.authority == '所属权' &&
-                          scope.row.belongId == store.workspaceData.id &&
-                          action.label == '上架'
-                        "
-                        :command="action.value"
-                        >{{ action.label }}</el-dropdown-item
-                      >
-                      <el-dropdown-item
-                        v-if="
-                          scope.row.belongId == store.workspaceData.id && action.label == '分享'
-                        "
-                        :command="action.value"
-                        >{{ action.label }}</el-dropdown-item
-                      >
-                      <el-dropdown-item
-                        v-if="store.workspaceData.type == 2 && action.label == '分发'"
-                        :command="action.value"
-                        >{{ action.label }}</el-dropdown-item
-                      >
-                      <el-dropdown-item v-if="action.label == '详情'" :command="action.value">{{
-                        action.label
-                      }}</el-dropdown-item>
-                    </div>
-                    <el-dropdown-item @click="deleteApp(scope.row)">移除应用</el-dropdown-item>
-                  </el-dropdown-menu>
-                </template>
-              </el-dropdown>
+              <el-button
+                link
+                type="primary"
+                v-if="scope.row.belongId == store.workspaceData.id"
+                @click="openShareDialog"
+                >分享</el-button
+              >
+              <el-button
+                link
+                type="primary"
+                v-if="store.workspaceData.type == 2"
+                @click="cohortVisible = true"
+                >分发</el-button
+              >
+              <el-button
+                link
+                type="primary"
+                @click="GoPage(`/market/detail/${selectProductItem.id}`)"
+              >
+                详情
+              </el-button>
+
+              <el-button link type="primary" @click="deleteApp(scope.row)">移除应用</el-button>
             </template>
           </DiyTable>
         </li>
@@ -334,7 +336,6 @@
       {
         type: 'slot',
         prop: 'tag',
-        width: '110',
         name: 'tag',
         label: '应用状态'
       },
@@ -364,7 +365,7 @@
         label: '操作',
         fixed: 'right',
         align: 'center',
-        width: '80',
+        width: '300',
         name: 'operate'
       }
     ]
@@ -435,6 +436,7 @@
       const { result = [], total = 0 } = data
       state[`ownProductList`] = [...result]
       state[`ownTotal`] = total
+      pageStore.total = total
       diyTable.value.state.page.total = total
       pageContent.value.state.page.total = total
     }
@@ -545,6 +547,14 @@
   const searchList = () => {
     pageStore.currentPage = 1
     getProductList()
+  }
+  const formartDateTime = (dateStr: any) => {
+    if (dateStr) {
+      var timestamp = new Date(dateStr).getTime()
+      return timestamp
+    } else {
+      return new Date().getTime() + 1000
+    }
   }
 </script>
 
