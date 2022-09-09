@@ -1,19 +1,20 @@
 <template>
   <MarketCard>
     <template #right>
-      <el-space>
+      <el-space :size="16">
         <el-button type="primary" link @click.stop="GoPage('/market/order')">我的订单</el-button>
         <el-badge :value="shopcarNum">
           <el-button type="primary" link @click.stop="GoPage('/market/shopCar')">购物车</el-button>
         </el-badge>
-        <el-radio-group v-model="modeType" size="small" class="button" style="margin-left: 12px">
-          <el-radio-button label="list"
-            ><el-icon :size="18"><Tickets /></el-icon
-          ></el-radio-button>
-          <el-radio-button label="card"
-            ><el-icon :size="18"><Menu /></el-icon
-          ></el-radio-button>
-        </el-radio-group>
+        <el-radio-group v-model="modeType" size="small" class="button" >
+            <el-radio-button label="list"
+              ><el-icon :size="18"><Tickets /></el-icon
+            ></el-radio-button>
+            <el-radio-button label="card"
+              ><el-icon :size="18"><Menu /></el-icon
+            ></el-radio-button>
+          </el-radio-group>
+        
       </el-space>
     </template>
   </MarketCard>
@@ -29,6 +30,7 @@
           ref="appCard"
           :dataList="state.myAppList"
           type="shop"
+          @handleUpdate="handleUpdate"
           @shopcarNumChange="getShopcarNum"
         ></AppCard>
         <Pagination

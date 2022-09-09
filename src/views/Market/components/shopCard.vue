@@ -1,10 +1,11 @@
 <template>
   <el-card
     class="shop-card-wrap app-card-item"
-    shadow="always"
+    shadow="hover"
     :key="info.id"
     @mouseleave="handleWatchMouseOver('')"
     @mouseover="handleWatchMouseOver(info.id)"
+    body-style="height:100%;"
   >
     <div class="app-card-item-con">
       <div class="app-card-item-con-top flex">
@@ -20,7 +21,7 @@
           <p class="app-con-title">
             {{ info.name }}
           </p>
-          <div class="app-tag">
+          <div class="app-tag" style="margin-top:10px">
             <el-tag v-if="props.type == 'market'" style="margin-right:10px">{{
               info.public ? '公开' : '私有'
             }}</el-tag>
@@ -34,9 +35,15 @@
             {{ info.remark }}
           </div>
         </div>
+      
         <slot v-else name="content"></slot>
       </div>
+      <div>
+      <slot name="footer"></slot>
+
+      </div>
     </div>
+    
     <!-- v-show="hoverItem === info.id" -->
     <div class="app-card-item-footer" v-show="state.hoverItem === info.id" @click.stop>
       <slot />
@@ -44,11 +51,9 @@
   </el-card>
 </template>
 <script lang="ts" setup>
-  import { reactive, toRefs ,ref} from 'vue'
+  import { reactive, ref } from 'vue'
   import { useUserStore } from '@/store/user'
   import { storeToRefs } from 'pinia'
-  import HeadImg from '@/components/headImg.vue'
-  import appImg from '@/assets/img/app_icon.png'
   // hoverItem--鼠标移入item的id 用于展示按钮区域
   const store = useUserStore()
   const { queryInfo } = storeToRefs(store)
@@ -81,9 +86,7 @@
 </script>
 
 <style lang="scss" scoped>
-  :deep(.el-card__body) {
-    padding: 0;
-  }
+  
   .app-card-rightIcon {
     position: absolute;
     right: 10px;
@@ -105,15 +108,20 @@
 
     width: 24%;
     min-width: 200px;
-    height: 184px;
+    // height: 184px;
     margin-bottom: 10px;
     margin-right: 10px;
 
     // background-color: aqua;
     &-con {
-      // display: flex;
-      // flex-direction: column;
-      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      // padding: 24px;
+      height: 100%;
+      &-top {
+        flex: 1;
+      }
       .app-con-title {
         // color: #000000d9;
         font-size: 16px;

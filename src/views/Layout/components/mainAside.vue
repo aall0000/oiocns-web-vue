@@ -96,9 +96,9 @@
     mainMenus: [
       { name: '工作台', icon: 'DataAnalysis', path: '/workHome' },
       { name: '关系', icon: 'SetUp', path: '/relation' },
-      { name: '应用', icon: 'Suitcase', path: '/market' },
+      { name: '应用', icon: 'SoldOut', path: '/market' },
       { name: '开始', icon: 'Menu', path: '/appStpre', bottom: true },
-      { name: '数据', icon: 'SetUp', path: '/thing' }
+      { name: '数据', icon: 'Files', path: '/thing' }
     ],
     clickMenu: [],
     storeObj: {

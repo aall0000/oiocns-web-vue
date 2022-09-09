@@ -32,7 +32,7 @@
         <el-tree
           v-else
           ref="leftTree"
-          :data="personTree"
+          :data="cascaderTree"
           :props="unitProps"
           :default-expand-all="true"
           @node-click="handleNodeClick"
@@ -100,7 +100,6 @@
   }
   type createInfo = {
     info: ProductType
-    groupId: string
   }
   const store = useUserStore()
   const searchValue = ref('')
@@ -226,7 +225,7 @@
               offset: 0,
               limit: 1000,
               filter: '',
-              teamId: props.groupId ? props.groupId : store.queryInfo.team.id
+              teamId: store.queryInfo.team.id
             }
           })
           .then((res: ResultType) => {
@@ -249,7 +248,7 @@
               offset: 0,
               limit: 1000,
               filter: '',
-              teamId: props.groupId ? props.groupId : store.queryInfo.team.id
+              teamId: store.queryInfo.team.id
             }
           })
           .then((res: ResultType) => {
@@ -279,7 +278,7 @@
               offset: 0,
               limit: 1000,
               filter: '',
-              teamId: props.groupId ? props.groupId : store.queryInfo.team.id
+              teamId: store.queryInfo.team.id
             }
           })
           .then((res: ResultType) => {
@@ -296,7 +295,7 @@
           .searchUnitShare({
             data: {
               id: props.info.id,
-              teamId: props.groupId ? props.groupId : store.queryInfo.team.id,
+              teamId: store.queryInfo.team.id,
               offset: 0,
               limit: 1000,
               filter: ''
@@ -353,7 +352,7 @@
       promise1 = API.product.groupShare({
         data: {
           productId: props.info.id,
-          teamId: props.groupId ? props.groupId : store.queryInfo.team.id,
+          teamId: store.queryInfo.team.id,
           targetIds: departAdd
         }
       })
@@ -362,7 +361,7 @@
       promise2 = API.product.deleteGroupShare({
         data: {
           productId: props.info.id,
-          teamId: props.groupId ? props.groupId : store.queryInfo.team.id,
+          teamId: store.queryInfo.team.id,
           targetIds: departDel
         }
       })
@@ -371,7 +370,7 @@
       promise3 = await API.product.share({
         data: {
           productId: props.info.id,
-          teamId: props.groupId ? props.groupId : store.queryInfo.team.id,
+          teamId: store.queryInfo.team.id,
           targetIds: authorAdd
         }
       })
@@ -380,7 +379,7 @@
       promise4 = API.product.deleteShare({
         data: {
           productId: props.info.id,
-          teamId: props.groupId ? props.groupId : store.queryInfo.team.id,
+          teamId: store.queryInfo.team.id,
           targetIds: authorDel
         }
       })
@@ -676,15 +675,14 @@
       })
       .then((res: ResultType) => {
         cascaderTree.value = res.data?.result ?? []
-        personTree.value = JSON.parse(JSON.stringify(res.data?.result ?? []))
         let obj = {
-          id: '1',
+          id: store.queryInfo.id,
           name: '我的好友',
           label: '我的好友',
           parentId: '0',
           data: {}
         }
-        personTree.value.unshift(obj)
+        cascaderTree.value.unshift(obj)
         getHistoryData()
       })
   }

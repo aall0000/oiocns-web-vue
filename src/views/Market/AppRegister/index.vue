@@ -1,7 +1,7 @@
 <template>
   <MarketCard />
   <div class="app-register-wrap">
-    <el-tabs v-model="activeName" class="demo-tabs" @tab-click="handleTabsClick">
+    <el-tabs v-model="activeName" class="demo-tabs">
       <el-tab-pane label="基本信息" name="0">
         <div class="app-base-info register-content">
           <div class="custom-title">
@@ -17,12 +17,20 @@
             <el-row :gutter="40" justify="space-between">
               <el-col :span="12">
                 <el-form-item label="应用名称" prop="name">
-                  <el-input v-model="form.data.name" :readonly="isDetailPage" placeholder="请设置" />
+                  <el-input
+                    v-model="form.data.name"
+                    :readonly="isDetailPage"
+                    placeholder="请设置"
+                  />
                 </el-form-item>
               </el-col>
               <el-col :span="12">
                 <el-form-item label="应用编码" prop="code">
-                  <el-input v-model="form.data.code" :readonly="isDetailPage" placeholder="请设置" />
+                  <el-input
+                    v-model="form.data.code"
+                    :readonly="isDetailPage"
+                    placeholder="请设置"
+                  />
                 </el-form-item>
               </el-col>
             </el-row>
@@ -59,7 +67,7 @@
           </el-form>
         </div>
         <el-divider />
-        <div class="app-base-info register-content">
+        <div class="app-base-info register-content resource-box">
           <div class="custom-title">
             <p> <span class="custom-span"></span> 资源信息 </p>
             <el-icon
@@ -86,24 +94,23 @@
           <el-button type="primary" @click="onSubmit" v-if="!isDetailPage">注册</el-button>
         </div>
       </el-tab-pane>
-      <el-tab-pane label="分享信息" name="1">
+      <el-tab-pane v-if="isDetailPage" label="分享信息" name="1">
         <el-select
-          v-model="selectedValue"
           value-key="id"
           placeholder="请选择集团"
         >
-          <el-option
+          <!-- <el-option
             v-for="item in state.options"
             :key="item.value"
             :label="item.label"
             :value="item.value"
-          />
+          /> -->
         </el-select>
         <el-descriptions style="margin-top: 10px" class="margin-top" :column="3" border>
           <el-descriptions-item>
             <template #label>
               <div class="cell-item">
-                <el-icon >
+                <el-icon>
                   <user />
                 </el-icon>
                 Username
@@ -114,7 +121,7 @@
           <el-descriptions-item>
             <template #label>
               <div class="cell-item">
-                <el-icon >
+                <el-icon>
                   <iphone />
                 </el-icon>
                 Telephone
@@ -125,7 +132,7 @@
           <el-descriptions-item>
             <template #label>
               <div class="cell-item">
-                <el-icon >
+                <el-icon>
                   <location />
                 </el-icon>
                 Place
@@ -136,7 +143,7 @@
           <el-descriptions-item>
             <template #label>
               <div class="cell-item">
-                <el-icon >
+                <el-icon>
                   <tickets />
                 </el-icon>
                 Remarks
@@ -147,7 +154,7 @@
           <el-descriptions-item>
             <template #label>
               <div class="cell-item">
-                <el-icon >
+                <el-icon>
                   <office-building />
                 </el-icon>
                 Address
@@ -157,7 +164,7 @@
           </el-descriptions-item>
         </el-descriptions>
       </el-tab-pane>
-      <el-tab-pane label="分配信息" name="2">Role</el-tab-pane>
+      <el-tab-pane v-if="isDetailPage" label="分配信息" name="2">Role</el-tab-pane>
     </el-tabs>
   </div>
 </template>
@@ -168,7 +175,7 @@
   import { ElMessage, FormRules } from 'element-plus'
   import { useRouter, useRoute } from 'vue-router'
   import { useCommonStore } from '@/store/common'
-  import type { TabsPaneContext } from 'element-plus'
+  import shareGroup from './shareGroup.vue'
   const commonStore = useCommonStore()
   const router = useRouter()
   const routeInfo = useRoute()
@@ -195,41 +202,7 @@
       }
     ]
   })
-
-  // 当前选中的集团
-  let selectedValue = ref<string>()
-  // 当前用户的集团
-  let groups = reactive([])
-  const state = reactive({
-    options: []
-  })
-  const handleTabsClick = (tab: TabsPaneContext, event: Event) => {
-    console.log(tab.index)
-    if (tab.index == '1') {
-      getGroupList()
-    }
-  }
-  // 查询集团列表
-  const getGroupList = () => {
-    API.company
-      .companyGetGroups({
-        data: {
-          offset: 0,
-          limit: 1000
-        }
-      })
-      .then((res: ResultType) => {
-        if (res.data.result && res.data.result.length > 0) {
-          groups = res.data.result
-          state.options = groups.map((g) => {
-            return { value: g.id, label: g.name }
-          })
-          selectedValue.value = groups[0].name
-        } else {
-          groups = []
-        }
-      })
-  }
+  const handleTabsClick = () => {}
   // 处理资源信息操作
   const handleMemuEvent = (type: ProductMenuEventType, selectId?: string) => {
     switch (type) {
@@ -393,6 +366,7 @@
     border: 0;
     overflow-y: auto;
     height: calc(100vh - 148px);
+    padding: 20px;
 
     .register-content {
       width: 600px;
@@ -408,6 +382,9 @@
         box-shadow: none;
       }
     }
+    .resource-box {
+      min-height: 200px;
+    }
     .page-title {
       font-size: 16px;
       text-align: center;
@@ -415,8 +392,8 @@
     .btns {
       display: flex;
       justify-content: space-around;
-      padding: 10px 0;
-      margin-bottom: 30px;
+      padding: 10px 0 24px;
+      // margin-bottom: 30px;
     }
 
     // 自定义标题
@@ -440,6 +417,16 @@
       cursor: pointer;
       color: var(--el-color-primary);
       margin: 0 10px;
+    }
+    .demo-tabs {
+      height: 100%;
+      :deep(.el-tabs__content) {
+        height: calc(100% - 55px);
+        overflow-y: auto;
+      }
+      :deep(.el-tab-pane) {
+        height: 100%;
+      }
     }
   }
 </style>
