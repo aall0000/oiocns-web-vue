@@ -51,9 +51,9 @@ import {
   inject
 } from 'vue'
 import { debounce } from '@/utils/tools'
-import { useUserStore } from '@/store/user'
 import HeadImg from '@/components/headImg.vue'
 import moment from 'moment'
+import orgChat from '@/hubs/orgchat'
 
 // dom节点
 const nodeRef = ref(null)
