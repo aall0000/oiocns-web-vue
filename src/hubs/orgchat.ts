@@ -82,7 +82,7 @@ const orgChat: orgChatType = {
                         orgChat.curChat.value.spaceId === data.lastMsg.chat.spaceId) {
                         let exist = orgChat.curMsgs.value.filter(item=>{
                             return item.id === data.lastMsg.data.id
-                        })
+                        }).length > 0
                         if(!exist){
                             orgChat.curMsgs.value.push(data.lastMsg.data)
                         }
