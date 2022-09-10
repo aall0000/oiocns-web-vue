@@ -98,6 +98,7 @@
   }
 
   const setCookie = (username: string, password: string, days: any) => {
+    return
     let date = new Date() // 获取时间
     date.setTime(date.getTime() + 24 * 60 * 60 * 1000 * days) // 保存的天数
     // 字符串拼接cookie
