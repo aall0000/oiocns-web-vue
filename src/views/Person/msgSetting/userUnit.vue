@@ -61,6 +61,7 @@
   import searchCompany from '@/components/searchs/index.vue'
   import CreateUnitDialog from '@/views/Layout/components/createUnitDialog.vue'
   import DiyTable from '@/components/diyTable/index.vue'
+import orgChat from '@/hubs/orgchat'
 
   const store = useUserStore()
 
@@ -91,9 +92,9 @@
       width: '190'
     },
     {
-      prop: 'belongId',
-      label: '管理员',
-      name: 'belongId',
+      prop: 'createUser',
+      label: '设立人',
+      name: 'createUser',
       width: '200'
     },
     {
@@ -158,6 +159,12 @@
       })
       .then((res: ResultType) => {
         if (res.success) {
+          res.data.result.forEach((item:any)=>{
+            let name = orgChat.getName(item.createUser)
+            if(name && name.length > 0){
+              item.createUser = name
+            }
+          })
           dataList.list = res.data.result
           diyTable.value.state.page.total = res.data.total
         }

@@ -21,7 +21,7 @@
         <el-descriptions-item label="描述" :span="2" label-align="center" align="center">
         <div class="text-remark">
             {{selectItem?.data?.teamRemark}}
-          </div>
+        </div>
         </el-descriptions-item>
       </el-descriptions>
     </div>

@@ -10,7 +10,7 @@ type orgChatType = {
     _callBack: Function,
     chats: Ref<ImMsgType[]>,
     _stoped: boolean,
-    userId: string,
+    userId: Ref<string>,
     lastMsg: any,
     nameMap: Record<string, string>,
     curMsgs: Ref<any[]>,
@@ -39,7 +39,7 @@ const orgChat: orgChatType = {
     _callBack: null,
     chats: ref<ImMsgType[]>([]),
     _stoped: false,
-    userId: "",
+    userId: ref<string>(""),
     lastMsg: null,
     curChat: ref<ImMsgChildType>(null),
     qunPersons: ref<any[]>([]),
@@ -47,7 +47,7 @@ const orgChat: orgChatType = {
     openChats: [],
     curMsgs: ref<any[]>([]),
     start: (accessToken: string, userId: string) => {
-        orgChat.userId = userId
+        orgChat.userId.value = userId
         orgChat._stoped = false
         anyStore.start(accessToken, userId)
         if (orgChat._connection)
@@ -232,8 +232,7 @@ const orgChat: orgChatType = {
         return { success: false, data: {}, code: 404, msg: "" }
     },
     getHistoryMsg: async () => {
-        if (orgChat.isConnected() && orgChat.curChat &&
-            orgChat.curChat.value.totalMsg > orgChat.curMsgs.value.length) {
+        if (orgChat.isConnected() && orgChat.curChat) {
             let funcName = 'QueryFriendMsg'
             let idName = 'friendId'
             if (orgChat.curChat.value.typeName != '人员') {
