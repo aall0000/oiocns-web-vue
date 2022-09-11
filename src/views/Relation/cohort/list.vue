@@ -25,12 +25,12 @@
               <el-button link type="primary" class="dropdown-btn" @click="deleteCohort(scope.row.id)">更多</el-button>
               <template #dropdown>
                   <el-dropdown-menu>
-                    <el-dropdown-item v-if="props.type == '我创建'" @click="edit(scope.row)"><el-icon><Edit /></el-icon>修改群组</el-dropdown-item>
-                    <el-dropdown-item v-if="props.type == '我创建'" @click="toAuth(scope.row)"><el-icon><Edit /></el-icon>角色管理</el-dropdown-item>
-                    <el-dropdown-item v-if="props.type == '我创建'" @click="toIndentity(scope.row)"><el-icon><Avatar /></el-icon>身份管理</el-dropdown-item>
-                    <el-dropdown-item v-if="props.type == '我创建'" @click="moveAuth(scope.row)"><el-icon><Switch /></el-icon>转移权限</el-dropdown-item>
-                    <el-dropdown-item v-if="props.type == '我加入'" @click="exit(scope.row)"><el-icon><Remove /></el-icon>退出群聊</el-dropdown-item>
-                    <el-dropdown-item v-if="props.type == '我创建'" @click="deleteCohort(scope.row)"><el-icon><Delete /></el-icon>解散群组</el-dropdown-item>
+                    <el-dropdown-item v-if="props.type == '管理的'" @click="edit(scope.row)"><el-icon><Edit /></el-icon>修改群组</el-dropdown-item>
+                    <el-dropdown-item v-if="props.type == '管理的'" @click="toAuth(scope.row)"><el-icon><Edit /></el-icon>角色管理</el-dropdown-item>
+                    <el-dropdown-item v-if="props.type == '管理的'" @click="toIndentity(scope.row)"><el-icon><Avatar /></el-icon>身份管理</el-dropdown-item>
+                    <el-dropdown-item v-if="props.type == '管理的'" @click="moveAuth(scope.row)"><el-icon><Switch /></el-icon>转移权限</el-dropdown-item>
+                    <el-dropdown-item v-if="props.type == '加入的'" @click="exit(scope.row)"><el-icon><Remove /></el-icon>退出群聊</el-dropdown-item>
+                    <el-dropdown-item v-if="props.type == '管理的'" @click="deleteCohort(scope.row)"><el-icon><Delete /></el-icon>解散群组</el-dropdown-item>
                   </el-dropdown-menu>
                 </template>
             </el-dropdown>
@@ -94,10 +94,28 @@ const getCohorts = async () => {
   const res = await $services.cohort.getJoinedCohorts({ data: { offset: 0, limit: 10000 } })
   const { data, success } = res
   if (success) {
-    if(props.type == '我创建'){
-      state.cohorts = data.result.filter((d: any) => d.createUser == queryInfo.id)
-    } else if(props.type == '我加入'){
-      state.cohorts = data.result.filter((d: any) => d.createUser !== queryInfo.id)
+    if(props.type == '管理的'){
+      state.cohorts = data.result.filter((d: any) => {
+        if(d.identitys && d.identitys.length > 0){
+          for(let i of d.identitys){
+            if(i.authId === d.team.authId){
+              return true
+            }
+          }
+        }
+        return false
+      })
+    } else if(props.type == '加入的'){
+      state.cohorts = data.result.filter((d: any) => {
+        if(d.identitys && d.identitys.length > 0){
+          for(let i of d.identitys){
+            if(i.authId === d.team.authId){
+              return false
+            }
+          }
+        }
+        return true
+      })
     }
     for(const c of state.cohorts ){
       // 获取群组成员
@@ -273,7 +291,6 @@ onMounted(() => {
 watch(props, () => {
   getCohorts()
 });
-
 
 </script>
 <style lang="scss" scoped>

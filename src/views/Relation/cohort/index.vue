@@ -16,8 +16,8 @@
 
     <div class="tab-container">
       <el-tabs v-model="activeName" @tab-click="handleClick">
-        <el-tab-pane label="我创建" name="我创建"> </el-tab-pane>
-        <el-tab-pane label="我加入" name="我加入"> </el-tab-pane>
+        <el-tab-pane label="管理的" name="管理的"> </el-tab-pane>
+        <el-tab-pane label="加入的" name="加入的"> </el-tab-pane>
         <div v-show="mode === 'list'">
           <List :type="activeName" />
         </div>
@@ -69,7 +69,7 @@
 </template>
 
 <script lang="ts" setup>
-  import { ref, onMounted } from 'vue'
+  import { onMounted, ref } from 'vue'
   import List from './list.vue'
   import Card from './card.vue'
   import $services from '@/services'
@@ -78,7 +78,7 @@
   import SearchCohort from '@/components/searchs/index.vue'
 
   const mode = ref('card')
-  const activeName = ref('我创建')
+  const activeName = ref('管理的')
 
   const createCohortDialog = ref(false)
   const formData = ref<any>({})
@@ -129,7 +129,6 @@
         }
       })
   }
-
   onMounted(() => {})
 </script>
 <style lang="scss" scoped>
