@@ -44,13 +44,20 @@ import LoadingVue from './components/loading.vue'
 import { useUserStore } from '@/store/user'
 import orgChat from '@/hubs/orgchat'
 import { onMounted, onBeforeUnmount } from 'vue'
-const { userToken,queryInfo } = useUserStore()
+const { userToken, queryInfo, workspaceData } = useUserStore()
 
-onMounted(()=>{
-  orgChat.start(userToken,queryInfo.id)
+onMounted(() => {
+  orgChat.start(userToken, queryInfo.id, workspaceData.id)
 })
 
 onBeforeUnmount(()=>{
+  orgChat.unSubscribed()
+  orgChat.stop()
+})
+
+//初始化关闭
+window.addEventListener('beforeunload', function (e) {
+  orgChat.unSubscribed()
   orgChat.stop()
 })
 

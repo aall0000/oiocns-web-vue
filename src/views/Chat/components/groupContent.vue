@@ -13,10 +13,10 @@
           <!-- <span class="reWrite" @click="handleReWrite(item.msgBody)">重新编辑</span> -->
         </div>
 
-        <div class="group-content-left con" v-else-if="item.fromId !== orgChat?.userId" >
-          <HeadImg :name="orgChat?.getName(item.fromId)" :label="''" />
+        <div class="group-content-left con" v-else-if="item.fromId !== orgChat.userId.value" >
+          <HeadImg :name="orgChat.getName(item.fromId)" :label="''" />
           <div class="con-content">
-            <span v-if="orgChat?.curChat.value.typeName!=='人员'" class="con-content-name">{{  orgChat?.getName(item.fromId)  }}</span>
+            <span v-if="orgChat.curChat.value.typeName!=='人员'" class="con-content-name">{{  orgChat.getName(item.fromId)  }}</span>
             <div class="con-content-link"></div>
             <div class="con-content-txt" v-html="item.msgBody"></div>
           </div>
@@ -29,7 +29,7 @@
             <div class="con-content-txt" v-html="item.msgBody"></div>
             <!-- {{ item.msgBody }} -->
           </div>
-          <HeadImg :name="orgChat?.getName(orgChat?.userId)" />
+          <HeadImg :name="orgChat.getName(item.fromId)" />
         </div>
     </template>
     <!-- 鼠标右键 -->

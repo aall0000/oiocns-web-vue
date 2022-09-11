@@ -213,7 +213,7 @@ const submitInviteDel = () => {
 const openDialogAdd = () => {
   dialogVisible.value = true
   orgChat.chats.value.forEach((item)=>{
-    if(item.id === orgChat.userId){
+    if(item.id === orgChat.userId.value){
       state.friendsData = item.chats.filter((chat)=>{
         if(chat.typeName === "人员"){
           let exist = false

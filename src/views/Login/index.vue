@@ -37,7 +37,6 @@
   import { useAnyData } from '@/store/anydata'
   import { useRouter } from 'vue-router'
   import { ElMessage } from 'element-plus'
-  import anyStore from '@/utils/anystore'
 
   const carousel = ref<any>()
   const store = useUserStore()
@@ -71,11 +70,6 @@
       } else {
         setCookie('', '', -1)
       }
-      // 订阅未读消息
-      anyStore.subscribed(`chats`, (data) => {
-        // console.log('noRead===', data)
-        useAnyData().setMessageNoRead(data)
-      })
 
       router.push({ path: 'workHome' })
     })
@@ -104,6 +98,7 @@
   }
 
   const setCookie = (username: string, password: string, days: any) => {
+    return
     let date = new Date() // 获取时间
     date.setTime(date.getTime() + 24 * 60 * 60 * 1000 * days) // 保存的天数
     // 字符串拼接cookie
