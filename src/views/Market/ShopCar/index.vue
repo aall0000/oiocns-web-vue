@@ -81,7 +81,7 @@
               <div class="app-card-item-con-desc"
                 ><p>详情：{{ item.merchandise.information || '暂无'}}</p></div
               >
-             
+
             </template>
           </ShopCard>
         </li>
@@ -152,7 +152,7 @@
         class="page-pagination"
         @size-change="(e) => handlePaginationChange(e, 'limit')"
         @current-change="(e) => handlePaginationChange(e, 'current')"
-        
+
         background
         :page-sizes="pageSizes"
         v-model:currentPage="pagination.current"
@@ -172,7 +172,7 @@
   import { PAGE_SIZES, PAGE_NUM } from '@/constant'
   import { ElTable } from 'element-plus'
   import ShopCard from '../components/shopCard.vue'
-  import AppInfoDialog from '../AppList/components/appInfoDialog.vue'
+  import AppInfoDialog from '../MarketList/components/appInfoDialog.vue'
   import DiyButton from '@/components/diyButton/index.vue'
   import merchandiseImg from '@/assets/img/app_icon.png'
   import moment from 'moment'
@@ -303,7 +303,7 @@
       })
   }
   const gotoApp = (item: { id: string }) => {
-    router.push({ path: '/market/appList', query: { data: item.id } })
+    router.push({ path: '/market/MarketList', query: { data: item.id } })
   }
 
   const handleSelect = (e: any[], row: any) => {
@@ -595,7 +595,7 @@
     font-weight: 600;
     margin-bottom: 10px;
   }
-  
+
   .app-con-info {
     font-size: 13px;
     // font-weight: 400;
@@ -665,11 +665,11 @@
       background-color: var(--el-bg-color-overlay);
       height: calc(100vh - 12rem);
       padding: 20px;
-      
+
       &-title {
         font-weight: bold;
         padding-bottom: 10px;
-       
+
       }
       .app-card {
         display: flex;
@@ -680,7 +680,7 @@
           background-color: var(--el-color-primary-light-9);
           &::before {
             content: '';
-           
+
             position: absolute;
             left: 0;
             top: 0;
@@ -690,8 +690,8 @@
             background: linear-gradient(135deg,var(--el-color-primary),var(--el-color-primary) 50%,transparent 50%,  transparent 100%);
           }
         }
-        
-        
+
+
         .dark-shadow {
           // box-shadow: 4px 4px 4px rgb(174, 177, 184);
         }

@@ -14,7 +14,7 @@
               ><el-icon :size="18"><Menu /></el-icon
             ></el-radio-button>
           </el-radio-group>
-        
+
       </el-space>
     </template>
   </MarketCard>
@@ -67,9 +67,9 @@
   import { reactive, onMounted, ref, watch, nextTick } from 'vue'
   import { useRouter } from 'vue-router'
   import $services from '@/services'
-  import AppCard from '../AppList/components/appCard.vue'
+  import AppCard from '../MarketList/components/appCard.vue'
   import DiyTable from '@/components/diyTable/index.vue'
-  import TheTableButton from '../AppList/components/theTableButton2.vue'
+  import TheTableButton from '../MarketList/components/theTableButton2.vue'
   import MarketCard from '@/components/marketCard/index.vue'
   import Pagination from '@/components/pagination/index.vue'
   import { ElMessage } from 'element-plus'
