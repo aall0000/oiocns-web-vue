@@ -84,7 +84,7 @@ const handleClick = async (formEl: FormInstance | undefined) => {
           // temps: props.dialogShow.sendData
           content: params.content
         }
-      }).then((res: ResultType) => {
+      },"user").then((res: ResultType) => {
         if (res.success) {
           ElMessage({
             message: '添加成功',

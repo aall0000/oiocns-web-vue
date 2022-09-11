@@ -53,7 +53,6 @@
         <li class="app-card" v-show="mode === 'card'">
           <MarketCreate
             :info="add"
-            v-show="!pageStore.total"
             @myclick="GoPage('/market/softShare')"
           />
           <ShopCard

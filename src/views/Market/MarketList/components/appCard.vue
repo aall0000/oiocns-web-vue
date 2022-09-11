@@ -3,13 +3,8 @@
     <div class="market-content box" style="height: 100%">
       <ul class="box-ul">
         <li class="app-card" v-if="dataList?.length !== 0">
-          <ShopCard
-            v-for="item in dataList"
-            :info="item.id"
-            :key="item.id"
-            :cardContent="true"
-            @click="handleCardInfo(item)"
-          >
+          <ShopCard v-for="item in dataList" :info="item.id" :key="item.id" :cardContent="true"
+            @click="handleCardInfo(item)">
             <template #rightIcon>
               <el-dropdown trigger="click" placement="left-start">
                 <el-icon :size="18">
@@ -19,9 +14,7 @@
                   <el-dropdown-menu>
                     <el-dropdown-item @click="GoPageWithQuery('/market/merchandiseDetail',item)">商品详情</el-dropdown-item>
                     <el-dropdown-item @click="joinStaging(item)">加入购物车</el-dropdown-item>
-                    <el-dropdown-item @click="unpublishFun(item)" v-if="type == 'manage'"
-                      >下架</el-dropdown-item
-                    >
+                    <el-dropdown-item @click="unpublishFun(item)" v-if="type == 'manage'">下架</el-dropdown-item>
                   </el-dropdown-menu>
                 </template>
               </el-dropdown>
@@ -30,16 +23,14 @@
               <div class="shopCar-box">
                 <div class="app-con-title">{{ item.caption }} </div>
                 <!-- <div class="app-con-info" v-if="item.sellAuth !== '所属权'">使用期限：{{ item.days }}天</div> -->
-                <div class="app-con-info"
-                  >单价：
+                <div class="app-con-info">单价：
                   <span style="color: var(--el-color-warning)"> ￥ </span>
                   <strong style="color: var(--el-color-warning); font-size: 16px">{{
-                    item.price || '0.00'
+                  item.price || '0.00'
                   }}</strong>
                 </div>
 
-                <div class="app-con-info"
-                  >售卖权属：{{ item.sellAuth }}
+                <div class="app-con-info">售卖权属：{{ item.sellAuth }}
                   <el-tag size="small" v-if="item.sellAuth !== '所属权'">
                     使用期：{{ item.sellAuth !== '所属权' ? item.days + '天' : '无期限' }}</el-tag>
                 </div>
@@ -51,15 +42,13 @@
               <div class="app-card-item-con-desc">
                 <p>详情：{{ item.information || '暂无' }}</p>
               </div>
+              <div class="app-card-item-con-belong">
+                发起人: {{ orgChat.getName(item.createUser) }}
+              </div>
             </template>
             <template #icon>
-              <HeadImg
-                :name="item.name"
-                :url="item.icon || merchandiseImg"
-                :imgWidth="48"
-                :limit="1"
-                :isSquare="false"
-              />
+              <HeadImg :name="item.name" :url="item.icon || merchandiseImg" :imgWidth="48" :limit="1"
+                :isSquare="false" />
             </template>
             <!-- <template #footer> -->
             <el-button link @click="createOrder(item)">立即购买</el-button>
@@ -83,11 +72,7 @@
     </div>
   </div>
   <template v-for="item in state.dialogShow" :key="item.key">
-    <AppInfoDialog
-      v-if="item.key == 'info' && item.value"
-      :dialogShow="item"
-      @closeDialog="closeDialog"
-    >
+    <AppInfoDialog v-if="item.key == 'info' && item.value" :dialogShow="item" @closeDialog="closeDialog">
     </AppInfoDialog>
   </template>
 </template>
@@ -101,6 +86,7 @@ import AppInfoDialog from './appInfoDialog.vue'
 import { ElNotification } from 'element-plus'
 import merchandiseImg from '@/assets/img/app_icon.png'
 import { useRouter } from 'vue-router'
+import orgChat from '@/hubs/orgchat'
 const router = useRouter()
 const emit = defineEmits(['handleUpdate', 'shopcarNumChange'])
 type Props = {
@@ -246,41 +232,41 @@ const createOrder = async (item: any) => {
   })
 }
 
-  const unpublishFun = (item: any) => {
-    let title: string
-    title = `确定把 ${item.caption} 下架吗？`
-    ElMessageBox.confirm(title, '警告', {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      type: 'warning'
-    })
-      .then(() => {
-        unpublishApp(item)
-      })
-      .catch(() => {})
-  }
-  //下架应用
-  const unpublishApp = (item: any) => {
-    $services.market
-      .unpublishMerchandise({
-        data: {
-          id: item.id
-        }
-      })
-      .then((res: ResultType) => {
-        if (res.code == 200) {
-          emit('handleUpdate')
-          ElMessage({
-            message: '下架成功',
-            type: 'success'
-          })
-        }
-      })
-  }
-
-  defineExpose({
-    state
+const unpublishFun = (item: any) => {
+  let title: string
+  title = `确定把 ${item.caption} 下架吗？`
+  ElMessageBox.confirm(title, '警告', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning'
   })
+    .then(() => {
+      unpublishApp(item)
+    })
+    .catch(() => { })
+}
+//下架应用
+const unpublishApp = (item: any) => {
+  $services.market
+    .unpublishMerchandise({
+      data: {
+        id: item.id
+      }
+    })
+    .then((res: ResultType) => {
+      if (res.code == 200) {
+        emit('handleUpdate')
+        ElMessage({
+          message: '下架成功',
+          type: 'success'
+        })
+      }
+    })
+}
+
+defineExpose({
+  state
+})
 </script>
 
 <style lang="scss" scoped>
@@ -323,6 +309,19 @@ const createOrder = async (item: any) => {
   }
 }
 
+.app-card-item-con-belong {
+  margin-top: 10px;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--el-text-color-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  word-break: break-all;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+}
+
 // :deep(.el-card__body) {
 //   padding: 0;
 // }
@@ -336,7 +335,7 @@ const createOrder = async (item: any) => {
 }
 
 .box {
-  .box-ul + .box-ul {
+  .box-ul+.box-ul {
     margin-top: 16px;
   }
 
