@@ -305,8 +305,11 @@ const orgChat: orgChatType = {
                     to = "你"
                 }
                 ElMessage({
-                    message: `[${from}=>${to}]: ${data.msgBody}`,
-                    type: 'success'
+                    grouping: true,
+                    type: 'success',
+                    showClose: true,
+                    dangerouslyUseHTMLString: true,
+                    message: `[${from}=>${to}]: ${data.msgBody}`
                 })
             }
         }
