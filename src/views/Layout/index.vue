@@ -43,10 +43,10 @@ import Breadcrumb from './components/breadcrumb.vue'
 import LoadingVue from './components/loading.vue'
 import { useUserStore } from '@/store/user'
 import orgChat from '@/hubs/orgchat'
-import { onMounted, onBeforeUnmount } from 'vue'
+import { onBeforeMount, onBeforeUnmount } from 'vue'
 const { userToken, queryInfo, workspaceData } = useUserStore()
 
-onMounted(() => {
+onBeforeMount(() => {
   orgChat.start(userToken, queryInfo.id, workspaceData.id)
 })
 
