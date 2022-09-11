@@ -28,8 +28,11 @@
         v-for="item in state.mainMenus.filter((a) => a?.bottom === true)" @click.stop="handleRouterChage(item)"
         :key="item.id">
         <div :class="['apps', activeRouter.includes(item.path) ? 'active' : '']" v-if="item.name === '开始'">
-          <el-popover :visible="startAppVisible" placement="right-end" title="所有应用" :width="350" trigger="click">
-            <CanUseApp @AppChange="onAppClick" />
+          <el-popover :visible="startAppVisible" placement="right-end" title="所有应用" :width="500" trigger="click">
+            <div style="height:500px">
+              <el-input placeholder="搜索" v-model="searchValue" prefix-icon="Search" />
+              <CanUseApp @AppChange="onAppClick"/>
+            </div>
             <template #reference>
               <div class="title">
                 <el-icon class="icon2" :size="20">
@@ -56,6 +59,7 @@ import anyStore from '@/utils/anystore'
 const router = useRouter()
 const commonStore = useCommonStore()
 const activeRouter = ref<string>('')
+const searchValue = ref<string>('')
 type StateType = {
   mainMenus: MenuItemType[]
   clickMenu: Array<MenuItemType>

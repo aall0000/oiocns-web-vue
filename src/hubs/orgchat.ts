@@ -136,10 +136,7 @@ const orgChat: orgChatType = {
         orgChat.lastMsg = null
     },
     getName: (id: string) => {
-        let name = orgChat.nameMap[id] || '-'
-        if (name.indexOf(']') > -1) {
-            return name.split(']')[1]
-        }
+        let name = orgChat.nameMap[id] || id
         return name
     },
     getNoRead: () => {
