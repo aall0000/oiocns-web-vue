@@ -15,7 +15,7 @@
               ><el-icon :size="18"><Menu /></el-icon
             ></el-radio-button>
           </el-radio-group>
-        
+
       </el-space>
     </template>
   </MarketCard>

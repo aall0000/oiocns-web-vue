@@ -18,9 +18,10 @@ module.exports = {
   extends: [
     'plugin:vue/vue3-recommended',
     'plugin:@typescript-eslint/recommended',
-    'prettier',
-    'plugin:prettier/recommended'
+    'plugin:prettier/recommended',
+    'prettier'
   ],
+  plugins: ['vue', '@typescript-eslint'],
   rules: {
     'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off', // 禁用 debugger
     'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off', // 禁用 console
