@@ -12,7 +12,7 @@
           <el-button small link type="primary" @click="GoPage('/market/softShare')"
             >从共享仓库中添加应用</el-button
           >
-          <el-button small link type="primary" @click="GoPage('/market/markList')"
+          <el-button small link type="primary" @click="GoPage('/market/marketList')"
             >商店列表</el-button
           >
           <el-button small link type="primary" @click.stop="GoPage('/market/order')"

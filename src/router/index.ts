@@ -158,30 +158,12 @@ const mainRouter: RouteRecordRaw[] = [
     }
   },
   {
-    component: () => import('@/views/Work/personalApp.vue'),
-    name: 'personalApp',
-    path: '/personalApp',
-    meta: {
-      keepAlive: false,
-      title: '我的应用'
-    }
-  },
-  {
     component: () => import('@/views/Person/application/index.vue'),
     name: 'application',
     path: '/application',
     meta: {
       keepAlive: false,
       title: '我的申请'
-    }
-  },
-  {
-    component: () => import('@/views/ForeignApp/index.vue'),
-    name: 'ForeignApp',
-    path: '/online',
-    meta: {
-      keepAlive: false,
-      title: '外部应用'
     }
   },
   //个人中心信息设置路由
@@ -225,6 +207,16 @@ const mainRouter: RouteRecordRaw[] = [
     ]
   },
   {
+    component: () => import('@/views/ForeignApp/index.vue'),
+    name: 'ForeignApp',
+    path: '/online',
+    meta: {
+      keepAlive: false,
+      title: '外部应用'
+    }
+  },
+  // 应用市场 路由信息
+  {
     path: '/market',
     meta: {
       keepAlive: false,
@@ -257,9 +249,9 @@ const mainRouter: RouteRecordRaw[] = [
         }
       },
       {
-        path: '/market/markList',
-        name: 'marketMarkList',
-        component: () => import('@/views/Market/AppList/index.vue'),
+        path: '/market/marketList',
+        name: 'marketList',
+        component: () => import('@/views/Market/MarketList/index.vue'),
         meta: {
           title: '商店列表'
         }
@@ -267,7 +259,7 @@ const mainRouter: RouteRecordRaw[] = [
       {
         path: '/market/appList',
         name: 'marketAppList',
-        component: () => import('@/views/Market/AppList/appList.vue'),
+        component: () => import('@/views/Market/MarketList/appList.vue'),
         meta: {
           title: '应用列表'
         }
@@ -280,12 +272,13 @@ const mainRouter: RouteRecordRaw[] = [
           title: '应用注册'
         }
       },
+      // 可使用应用 信息展示页面
       {
         path: '/market/detail/:id',
         name: 'marketAppDetail',
-        component: () => import('@/views/Market/AppRegister/index.vue'),
+        component: () => import('@/views/Market/AppInfo/index.vue'),
         meta: {
-          title: '应用详情'
+          title: '应用信息'
         }
       },
       {
@@ -299,13 +292,11 @@ const mainRouter: RouteRecordRaw[] = [
       {
         path: '/market/userManage',
         name: 'marketUserManage',
-        component: () => import('@/views/Market/AppList/userManage.vue'),
+        component: () => import('@/views/Market/MarketList/userManage.vue'),
         meta: {
           title: '用户管理'
         }
       },
-
-
       {
         path: '/market/order',
         name: 'marketOrder',

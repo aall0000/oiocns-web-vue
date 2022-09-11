@@ -311,7 +311,7 @@
     emit('handleUpdate', page.value)
   }
   onMounted(() => {
-    console.log('props.options.selectLimit', props.options.selectLimit)
+    // console.log('props.options.selectLimit', props.options.selectLimit)
   })
   /**
    * 鼠标进入表格是隐藏groupselect的drop
