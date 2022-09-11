@@ -323,7 +323,7 @@ const orgChat: orgChatType = {
             })
         }
         if (data.spaceId === data.fromId) {
-            data.spaceId = orgChat.userId
+            data.spaceId = orgChat.userId.value
         }
         orgChat.chats.value.forEach((item: ImMsgType) => {
             if (item.id === data.spaceId) {
@@ -331,8 +331,8 @@ const orgChat: orgChatType = {
                 item.chats.forEach((chat: ImMsgChildType) => {
                     let sessionId = data.toId
                     if (chat.typeName === "人员" &&
-                        data.fromId !== orgChat.userId &&
-                        data.toId === orgChat.userId) {
+                        data.fromId !== orgChat.userId.value &&
+                        data.toId === orgChat.userId.value) {
                         sessionId = data.fromId
                     }
                     if (sessionId == chat.id) {
