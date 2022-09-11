@@ -13,13 +13,13 @@ type anyStoreType = {
     start: (accessToken: string, userId: string, spaceId: string) => void, // 创建及启动链接
     stop: () => void, // 关闭链接
     isConnected: () => boolean //  判断该链接的状态是否为connected
-    subscribed: (key: string, callback: (data: any) => void) => void // 订阅数据
-    get: (key: string) => Promise<ResultType>,
-    set: (methodsName: string, data?: any) => Promise<ResultType> // 更新数据
-    delete: (key: string) => Promise<ResultType>, // 删除数据
-    unSubscribed: (key: string) => void // 取消订阅
+    subscribed: (key: string, domain: string, callback: (data: any) => void) => void // 订阅数据
+    get: (key: string, domain: string) => Promise<ResultType>,
+    set: (methodsName: string, data: any, domain: string) => Promise<ResultType> // 更新数据
+    delete: (key: string, domain: string) => Promise<ResultType>, // 删除数据
+    unSubscribed: (key: string, domain: string) => void // 取消订阅
     _updated: (key: string, data: any) => void // 订阅时，当数据发生更变时通知，不对外使用
-    _resubscribed: ()=>void
+    _resubscribed: () => void
 }
 const anyStore: anyStoreType = {
     _stoped: false,
@@ -36,22 +36,22 @@ const anyStore: anyStoreType = {
         anyStore._connection = new signalR.HubConnectionBuilder().withUrl('/orginone/anydata/object/hub').build()
         anyStore._connection.on("Updated", anyStore._updated)
         anyStore._connection.onclose((error) => {
-            if(!anyStore._stoped){
+            if (!anyStore._stoped) {
                 console.log('链接已断开,30秒后重连', error)
                 setTimeout(() => {
                     anyStore._connection = null
-                    anyStore.start(accessToken,userId, spaceId)
+                    anyStore.start(accessToken, userId, spaceId)
                 }, 30000);
             }
         })
-        anyStore._connection.start().then(async() => {
-            await anyStore._connection.invoke("TokenAuth", "user", accessToken)
+        anyStore._connection.start().then(async () => {
+            await anyStore._connection.invoke("TokenAuth", accessToken, "user")
             anyStore._resubscribed()
         }).catch((error: any) => {
             console.log('链接出错,30秒后重连', error)
             setTimeout(() => {
                 anyStore._connection = null
-                anyStore.start(accessToken,userId,spaceId)
+                anyStore.start(accessToken, userId, spaceId)
             }, 30000);
         })// 开启链接
     },
@@ -70,15 +70,15 @@ const anyStore: anyStoreType = {
         anyStore._subscribedKeys = {}
     },
     // 订阅数据 key: 订阅数据的key  callback 数据发生变化时的回调
-    subscribed: async (key: string, callback: (data: any) => void) => {
+    subscribed: async (key: string, domain: string, callback: (data: any) => void) => {
         if (!anyStore._subscribedKeys[key]) {
             if (!anyStore.isConnected()) {
                 setTimeout(() => {
-                    anyStore.subscribed(key, callback)
+                    anyStore.subscribed(key, domain, callback)
                 }, 1000)
             } else {
                 anyStore._subscribedKeys[key] = callback
-                let res = await anyStore._connection.invoke("Subscribed", key)
+                let res = await anyStore._connection.invoke("Subscribed", key, domain)
                 if (res.success) {
                     console.log("已订阅===", key)
                     callback.call(callback, res.data)
@@ -86,28 +86,28 @@ const anyStore: anyStoreType = {
             }
         }
     },
-    get: async (key: string) => {
+    get: async (key: string, domain: string) => {
         if (anyStore.isConnected()) {
-            return await anyStore._connection.invoke("Get", key)
+            return await anyStore._connection.invoke("Get", key, domain)
         }
-        return {success: false,data: {},code: 404, msg: ""}
+        return { success: false, data: {}, code: 404, msg: "" }
     },
-    set: async (key: string, setData?: any) => {
+    set: async (key: string, setData: any, domain: string) => {
         if (anyStore.isConnected()) {
-            return await anyStore._connection.invoke("Set", key, setData)
+            return await anyStore._connection.invoke("Set", key, setData, domain)
         }
-        return {success: false,data: {},code: 404, msg: ""}
+        return { success: false, data: {}, code: 404, msg: "" }
     },
-    delete: async (key: string) => {
+    delete: async (key: string, domain: string) => {
         if (anyStore.isConnected()) {
-            return await anyStore._connection.invoke<ResultType>("Delete", key)
+            return await anyStore._connection.invoke<ResultType>("Delete", key, domain)
         }
-        return {success: false,data: {},code: 404, msg: ""}
+        return { success: false, data: {}, code: 404, msg: "" }
     },
-    unSubscribed: (key: string) => {
+    unSubscribed: (key: string, domain: string) => {
         if (!anyStore._subscribedKeys[key]) return
         delete anyStore._subscribedKeys[key]
-        anyStore.isConnected() && anyStore._connection.invoke("UnSubscribed", key).then(() => {
+        anyStore.isConnected() && anyStore._connection.invoke("UnSubscribed", key, domain).then(() => {
             console.log("取消订阅===", key)
         })
     },
@@ -120,9 +120,9 @@ const anyStore: anyStoreType = {
             callback.call(callback, data)
         }
     },
-    _resubscribed: ()=>{
-        if(anyStore.isConnected()){
-            Object.keys(anyStore._subscribedKeys).forEach(async key=>{
+    _resubscribed: () => {
+        if (anyStore.isConnected()) {
+            Object.keys(anyStore._subscribedKeys).forEach(async key => {
                 const { data, state: success } = await anyStore._connection.invoke("Subscribed", key)
                 if (success) {
                     anyStore._subscribedKeys[key].call(anyStore._subscribedKeys[key], data)

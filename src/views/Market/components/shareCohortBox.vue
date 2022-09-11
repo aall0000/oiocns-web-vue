@@ -738,7 +738,7 @@
   }
   // 过滤掉工作组作为表单级联数据
   const filter = (nodes: OrgTreeModel[]): OrgTreeModel[] => {
-    nodes = nodes.filter((node) => node.data?.typeName !== '工作组')
+    nodes = nodes.filter((node) => node.data?.typeName !== '工作组' && node.data?.authAdmin === true)
     for (const node of nodes) {
       node.children = filter(node.children)
     }

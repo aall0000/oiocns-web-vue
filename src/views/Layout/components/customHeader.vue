@@ -71,8 +71,8 @@
     <el-col :span="14" class="flex col-right">
       <el-space class="right-navbar">
         <el-link :underline="false" class="header-message-icon" @click="() => router.push('/chat')">
-          <el-badge
-            :value="orgChat.getNoRead()" v-if="orgChat.getNoRead().length > 0">
+          <el-icon v-if="orgChat.isConnected() === true" class="header-message-icon link" :size="12"><Link /></el-icon>
+          <el-badge :value="orgChat.getNoRead()" v-if="orgChat.getNoRead().length > 0">
             <el-icon class="header-message-icon" :size="18"><ChatDotSquare /></el-icon>
           </el-badge>
           <el-icon class="header-message-icon" :size="18" v-else><ChatDotSquare /></el-icon>
@@ -201,20 +201,6 @@
   const showSearchInfo = () => {
     visible.value = !visible.value
   }
-  // const getFocus = () => {
-  //   visible.value = true
-  // }
-  // const getBlur = () => {
-  //   if (!showSearch.value) {
-  //     visible.value = false
-  //   }
-  // }
-  // const mouseenter = () => {
-  //   showSearch.value = true
-  // }
-  // const mouseleave = () => {
-  //   showSearch.value = false
-  // }
   const searchDialog = ref<boolean>(false)
   type arrList = {
     id: string
@@ -505,6 +491,12 @@
         &:hover {
           color: var(--el-color-primary);
         }
+      }
+      .link{
+        right: 15px;
+        margin-bottom: 18px;
+        position: absolute;
+        color: var(--el-color-primary);
       }
     }
   }

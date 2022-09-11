@@ -34,6 +34,10 @@
           <div class="app-card-item-con-desc">
             {{ info.remark }}
           </div>
+          <div class="app-card-item-con-belong">
+            归属: {{ orgChat.getName(info.belongId) }}<br/>
+            创建人：{{ orgChat.getName(info.createUser) }}
+          </div>
         </div>
 
         <slot v-else name="content"></slot>
@@ -54,6 +58,7 @@
   import { reactive, ref } from 'vue'
   import { useUserStore } from '@/store/user'
   import { storeToRefs } from 'pinia'
+  import orgChat from '@/hubs/orgchat'
   // hoverItem--鼠标移入item的id 用于展示按钮区域
   const store = useUserStore()
   const { queryInfo } = storeToRefs(store)
@@ -132,13 +137,18 @@
         height: 70px;
         font-size: 14px;
         font-weight: 400;
-        color: var(--el-color-info);// #00000073;
+        color: var(--el-color-info);
         overflow: hidden;
         text-overflow: 5;
         display: -webkit-box; //将对象作为弹性伸缩盒子模型显示。
         -webkit-box-orient: vertical; // 从上到下垂直排列子元素
         -webkit-line-clamp: 3; //显示的行数
         // white-space: nowrap;
+      }
+
+      &-belong{
+        font-size: 14px;
+        color: var(--el-color-info);
       }
     }
     .app-tag{
