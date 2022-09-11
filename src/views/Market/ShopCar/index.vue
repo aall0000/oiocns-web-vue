@@ -32,9 +32,9 @@
                 <el-icon :size="18"><Operation /></el-icon>
                 <template #dropdown>
                   <el-dropdown-menu>
-                    <el-dropdown-item @click="GoPageWithQuery('/market/merchandiseDetail', item)"
+                    <!-- <el-dropdown-item @click="GoPageWithQuery('/market/merchandiseDetail', item)"
                       >商品详情</el-dropdown-item
-                    >
+                    > -->
                   </el-dropdown-menu>
                 </template>
               </el-dropdown>
@@ -72,7 +72,7 @@
                 <div class="app-con-info"
                   >售卖权属：{{ item.merchandise.sellAuth }}
                   <el-tag size="small" v-if="item.merchandise.sellAuth !== '所属权'">
-                    使用期：{{ item.merchandise.sellAuth !== '所属权' ? item.merchandise.days + '天' : '无期限' }}</el-tag>
+                    使用期：{{ (item.merchandise.sellAuth !== '所属权' && item.merchandise.days) ? item.merchandise.days + '天' : '无期限' }}</el-tag>
                 </div>
               </div>
             </template>
@@ -92,8 +92,9 @@
         :hasTitle="true"
         :tableData="pageStore.tableData"
         :tableHead="pageStore.tableHead"
-        :options="{ noPage: true }"
+        :options="{ noPage: true ,checkBox: true}"
         @handleUpdate="handleUpdate"
+        @select="handleSelect"
       >
         <template #operate="scope">
           <DiyButton>
@@ -172,7 +173,7 @@
   import { PAGE_SIZES, PAGE_NUM } from '@/constant'
   import { ElTable } from 'element-plus'
   import ShopCard from '../components/shopCard.vue'
-  import AppInfoDialog from '../AppList/components/appInfoDialog.vue'
+  import AppInfoDialog from '../MarketList/components/appInfoDialog.vue'
   import DiyButton from '@/components/diyButton/index.vue'
   import merchandiseImg from '@/assets/img/app_icon.png'
   import moment from 'moment'
