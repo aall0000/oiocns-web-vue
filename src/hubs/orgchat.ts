@@ -68,7 +68,7 @@ const orgChat: orgChatType = {
             }
         })
         orgChat._connection.start().then(async () => {
-            await anyStore.subscribed("orgChat", async (data) => {
+            await anyStore.subscribed("orgChat", "user", async (data) => {
                 if (data.chats) {
                     orgChat.chats.value = []
                     data.chats.forEach((item:ImMsgType)=>{
@@ -284,7 +284,7 @@ const orgChat: orgChatType = {
                 openChats: orgChat.openChats,
                 lastMsg: orgChat.lastMsg
             }
-        })
+        }, "user")
     },
     _recvMsg: (data: any) => {
         orgChat._handleMsg(data)

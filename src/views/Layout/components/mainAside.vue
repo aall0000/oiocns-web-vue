@@ -122,7 +122,7 @@ const rightClick = (event: any, item: any) => {
   }
 }
 const getFixedData = () => {
-  anyStore.subscribed(`${anyStore.spaceId}.menu`, (data) => {
+  anyStore.subscribed(`${anyStore.spaceId}.menu`, "user", (data) => {
     if (Array.isArray(data)) {
       state.mainMenus = state.mainMenus.concat(data)
       state.clickMenu = data
@@ -143,7 +143,7 @@ const cancelFixed = () => {
     .set(`${anyStore.spaceId}.menu`, {
       operation: 'replaceAll',
       data: arr
-    })
+    }, "user")
     .then((res: ResultType) => {
       if (res.success) {
         ElMessage({
@@ -165,7 +165,7 @@ const clickFixed = () => {
     .set(`${anyStore.spaceId}.menu`, {
       operation: 'replaceAll',
       data: state.clickMenu
-    })
+    }, "user")
     .then((res: ResultType) => {
       if (res.success) {
         ElMessage({
