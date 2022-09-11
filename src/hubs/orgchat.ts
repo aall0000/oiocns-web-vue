@@ -11,13 +11,14 @@ type orgChatType = {
     chats: Ref<ImMsgType[]>,
     _stoped: boolean,
     userId: Ref<string>,
+    spaceId: Ref<string>,
     lastMsg: any,
     nameMap: Record<string, string>,
     curMsgs: Ref<any[]>,
     qunPersons: Ref<any[]>,
     curChat: Ref<ImMsgChildType>,
     openChats: ImMsgChildType[],
-    start: (accessToken: string, userId: string) => void, // 创建及启动链接
+    start: (accessToken: string, userId: string, spaceId: string) => void, // 创建及启动链接
     stop: () => void, // 关闭链接
     getName: (id: string) => string, //获取名称
     getNoRead: () => string, //获取未读数量
@@ -32,7 +33,7 @@ type orgChatType = {
     unSubscribed: () => void // 取消订阅
     _recvMsg: (data: any) => void // 订阅时，当数据发生更变时通知，不对外使用
     _handleMsg: (data: any) => void // 处理消息
-    _loadChats: (cache: boolean) => void //加载会话
+    _cacheChats: () => void //缓存会话
 }
 const orgChat: orgChatType = {
     _connection: null,
@@ -40,16 +41,18 @@ const orgChat: orgChatType = {
     chats: ref<ImMsgType[]>([]),
     _stoped: false,
     userId: ref<string>(""),
+    spaceId: ref<string>(""),
     lastMsg: null,
     curChat: ref<ImMsgChildType>(null),
     qunPersons: ref<any[]>([]),
     nameMap: {},
     openChats: [],
     curMsgs: ref<any[]>([]),
-    start: (accessToken: string, userId: string) => {
+    start: (accessToken: string, userId: string, spaceId: string) => {
         orgChat.userId.value = userId
+        orgChat.spaceId.value = spaceId
         orgChat._stoped = false
-        anyStore.start(accessToken, userId)
+        anyStore.start(accessToken, userId, spaceId)
         if (orgChat._connection)
             return
         // 初始化
@@ -60,14 +63,21 @@ const orgChat: orgChatType = {
                 console.log('链接已断开,2秒后重连', error)
                 setTimeout(() => {
                     orgChat._connection = null
-                    orgChat.start(accessToken, userId)
+                    orgChat.start(accessToken, userId, spaceId)
                 }, 2000)
             }
         })
         orgChat._connection.start().then(async () => {
             await anyStore.subscribed("orgChat", async (data) => {
                 if (data.chats) {
-                    orgChat.chats.value = data.chats
+                    orgChat.chats.value = []
+                    data.chats.forEach((item:ImMsgType)=>{
+                        if(item.id === orgChat.spaceId.value){
+                            orgChat.chats.value.unshift(item)
+                        }else{
+                            orgChat.chats.value.push(item)
+                        }
+                    })
                 }
                 if (data.nameMap) {
                     orgChat.nameMap = data.nameMap
@@ -86,7 +96,6 @@ const orgChat: orgChatType = {
                         }
                     }
                 }
-                orgChat._loadChats(false)
             })
             setTimeout(async () => {
                 await orgChat._connection.invoke("TokenAuth", accessToken)
@@ -98,7 +107,7 @@ const orgChat: orgChatType = {
             console.log('链接出错,30秒后重连', error)
             setTimeout(() => {
                 orgChat._connection = null
-                orgChat.start(accessToken, userId)
+                orgChat.start(accessToken, userId, spaceId)
             }, 2000)
         }) // 开启链接
     },
@@ -114,14 +123,17 @@ const orgChat: orgChatType = {
             orgChat._connection.stop()
         }
         orgChat._connection = null
+        orgChat._callBack = null
         orgChat._stoped = true
         orgChat.chats.value = []
         orgChat.curChat.value = null
         orgChat.curMsgs.value = []
         orgChat.openChats = []
         orgChat.nameMap = {}
-        orgChat._callBack = null
         orgChat.qunPersons.value = []
+        orgChat.userId.value = ""
+        orgChat.spaceId.value = ""
+        orgChat.lastMsg = null
     },
     getName: (id: string) => {
         let name = orgChat.nameMap[id] || '-'
@@ -161,7 +173,7 @@ const orgChat: orgChatType = {
                     })
                 })
                 orgChat.chats.value = [...groups]
-                orgChat._loadChats(true)
+                orgChat._cacheChats()
             }
             return res
         }
@@ -200,7 +212,7 @@ const orgChat: orgChatType = {
             }
             orgChat.openChats.push(orgChat.curChat.value)
         }
-        orgChat._loadChats(true)
+        orgChat._cacheChats()
     },
     getPersons: async (reset: boolean) => {
         if (reset) {
@@ -224,7 +236,7 @@ const orgChat: orgChatType = {
                         }
                         orgChat.qunPersons.value.push(item)
                     })
-                    orgChat._loadChats(true)
+                    orgChat._cacheChats()
                 }
             }
             return res
@@ -265,29 +277,17 @@ const orgChat: orgChatType = {
         orgChat._callBack = null
         orgChat.setCurrent(null)
     },
-    _loadChats: (cache: boolean) => {
-        orgChat.chats.value.forEach((item) => {
-            if (orgChat.curChat.value) {
-                item.chats.forEach((chat: ImMsgChildType) => {
-                    if (chat.id === orgChat.curChat.value.id &&
-                        chat.spaceId === orgChat.curChat.value.spaceId) {
-                        chat.noRead = 0
-                    }
-                })
+    _cacheChats: () => {
+        anyStore.set("orgChat", {
+            operation: "replaceAll",
+            data: {
+                name: "我的消息",
+                chats: orgChat.chats.value,
+                nameMap: orgChat.nameMap,
+                openChats: orgChat.openChats,
+                lastMsg: orgChat.lastMsg
             }
         })
-        if (cache) {
-            anyStore.set("orgChat", {
-                operation: "replaceAll",
-                data: {
-                    name: "我的消息",
-                    chats: orgChat.chats.value,
-                    nameMap: orgChat.nameMap,
-                    openChats: orgChat.openChats,
-                    lastMsg: orgChat.lastMsg
-                }
-            })
-        }
     },
     _recvMsg: (data: any) => {
         orgChat._handleMsg(data)
@@ -371,7 +371,7 @@ const orgChat: orgChatType = {
                 item.chats = newChats
             }
         })
-        orgChat._loadChats(true)
+        orgChat._cacheChats()
     },
 }
 export default orgChat

@@ -28,7 +28,7 @@
         v-for="item in state.mainMenus.filter((a) => a?.bottom === true)" @click.stop="handleRouterChage(item)"
         :key="item.id">
         <div :class="['apps', activeRouter.includes(item.path) ? 'active' : '']" v-if="item.name === '开始'">
-          <el-popover :visible="startAppVisible" placement="right-end" title="常用应用" :width="350" trigger="click">
+          <el-popover :visible="startAppVisible" placement="right-end" title="所有应用" :width="350" trigger="click">
             <CanUseApp @AppChange="onAppClick" />
             <template #reference>
               <div class="title">
@@ -48,27 +48,14 @@
 <script lang="ts" setup>
 import { ref, onMounted, onUnmounted, watch, reactive } from 'vue'
 import { useRouter } from 'vue-router'
-import { useUserStore } from '@/store/user'
 import { useCommonStore } from '@store/common'
-import $services from '@/services'
 import { ElMessage } from 'element-plus'
 import CanUseApp from './canUseApp.vue'
 import anyStore from '@/utils/anystore'
 
 const router = useRouter()
-const store = useUserStore()
 const commonStore = useCommonStore()
 const activeRouter = ref<string>('')
-type MenuItemType = {
-  id?: string
-  name: string
-  icon: string
-  path: string
-  type?: string
-  fixed?: boolean
-  key?: string | unknown
-  bottom?: boolean | unknown
-}
 type StateType = {
   mainMenus: MenuItemType[]
   clickMenu: Array<MenuItemType>
@@ -131,12 +118,8 @@ const rightClick = (event: any, item: any) => {
   }
 }
 const getFixedData = () => {
-  let params = {
-    userId: store.queryInfo.id,
-    workspaceId: store.workspaceData.id
-  }
-  anyStore.subscribed(`${params.workspaceId}.menu`, (data) => {
-    if(Array.isArray(data)){
+  anyStore.subscribed(`${anyStore.spaceId}.menu`, (data) => {
+    if (Array.isArray(data)) {
       state.mainMenus = state.mainMenus.concat(data)
       state.clickMenu = data
     }
@@ -152,12 +135,8 @@ const cancelFixed = () => {
   if (bool && bool.fixed) {
     arr.splice(findIndex, 1)
   }
-  let params = {
-    userId: store.queryInfo.id,
-    workspaceId: store.workspaceData.id
-  }
   anyStore
-    .set(`${params.workspaceId}.menu`, {
+    .set(`${anyStore.spaceId}.menu`, {
       operation: 'replaceAll',
       data: arr
     })
@@ -178,12 +157,8 @@ const clickFixed = () => {
     state.storeObj.fixed = true
     state.clickMenu.push(state.storeObj)
   }
-  let params = {
-    userId: store.queryInfo.id,
-    workspaceId: store.workspaceData.id
-  }
   anyStore
-    .set(`${params.workspaceId}.menu`, {
+    .set(`${anyStore.spaceId}.menu`, {
       operation: 'replaceAll',
       data: state.clickMenu
     })

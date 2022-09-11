@@ -7,9 +7,10 @@ import * as signalR from '@microsoft/signalr'
 type anyStoreType = {
     _stoped: boolean,
     userId: string,
+    spaceId: string,
     _connection: signalR.HubConnection, // 链接对象本身
     _subscribedKeys: Record<string, (data: any) => void>, // 订阅的值和回调方法
-    start: (accessToken: string, userId: string) => void, // 创建及启动链接
+    start: (accessToken: string, userId: string, spaceId: string) => void, // 创建及启动链接
     stop: () => void, // 关闭链接
     isConnected: () => boolean //  判断该链接的状态是否为connected
     subscribed: (key: string, callback: (data: any) => void) => void // 订阅数据
@@ -25,8 +26,10 @@ const anyStore: anyStoreType = {
     _connection: null,
     _subscribedKeys: {},
     userId: "",
-    start: (accessToken: string, userId: string) => { // 不传默认为链接用户属性库
+    spaceId: "",
+    start: (accessToken: string, userId: string, spaceId: string) => { // 不传默认为链接用户属性库
         anyStore.userId = userId
+        anyStore.spaceId = spaceId
         anyStore._stoped = false
         if (anyStore._connection) return
         // 初始化
@@ -37,7 +40,7 @@ const anyStore: anyStoreType = {
                 console.log('链接已断开,30秒后重连', error)
                 setTimeout(() => {
                     anyStore._connection = null
-                    anyStore.start(accessToken,userId)
+                    anyStore.start(accessToken,userId, spaceId)
                 }, 30000);
             }
         })
@@ -48,7 +51,7 @@ const anyStore: anyStoreType = {
             console.log('链接出错,30秒后重连', error)
             setTimeout(() => {
                 anyStore._connection = null
-                anyStore.start(accessToken,userId)
+                anyStore.start(accessToken,userId,spaceId)
             }, 30000);
         })// 开启链接
     },
