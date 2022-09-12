@@ -223,9 +223,10 @@ const toIndentity = (cohort: any)=>{
   router.push({
     path: '/relation/identity',
     query: {
-      title: '群组',
       belongId:  cohort.id,
       name: cohort.name,
+      module: 'cohort',
+      persons: 'getPersons',
     }
   })
 }

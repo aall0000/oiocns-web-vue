@@ -157,9 +157,10 @@
     router.push({
       path: '/relation/identity',
       query: {
-        title: '群组',
         belongId: selectItem.value.id,
         name: selectItem.value.label,
+        module: 'company',
+        persons: 'getPersons',
       }
     })
   }
