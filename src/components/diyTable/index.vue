@@ -81,6 +81,15 @@
                 {{ scope.column.label }}
               </template>
             </el-table-column>
+            <el-table-column
+              v-else-if="item.type === 'expand'"
+              :key="item"
+              type="expand"
+            >
+            <template #default="scope">
+              <slot  :name="item.name" :row="scope.row" :index="scope.$index"></slot>
+              </template>
+            </el-table-column>
             <el-table-column v-else :key="'column' + index" v-bind="item"></el-table-column>
           </template>
         </el-table>
