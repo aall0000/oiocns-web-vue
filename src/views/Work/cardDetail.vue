@@ -83,30 +83,34 @@
   })
 
   const activeIndex = ref<string>('1')
+  const activeId = ref<string>('0')
   var getList = () => {
-    $services.person
-      .approval({
+    $services.person.getAllApproval({
         data: {
+          id: activeId.value,
           offset: (pageStore.currentPage - 1) * pageStore.pageSize,
           limit: pageStore.pageSize
         }
       })
       .then((res: ResultType) => {
-        tableData.value = res.data.result
-        diyTable.value.state.page.total = res.data.total
+        if(res.success){
+          tableData.value = res.data.result
+          diyTable.value.state.page.total = res.data.total
+        }
       })
   }
   var getApplyList = () => {
-    $services.person
-      .getAllApply({
+    $services.person.getAllApply({
         data: {
           offset: (pageStore.currentPage - 1) * pageStore.pageSize,
           limit: pageStore.pageSize
         }
       })
       .then((res: ResultType) => {
-        tableData.value = res.data.result
-        diyTable.value.state.page.total = res.data.total
+        if(res.success){
+          tableData.value = res.data.result
+          diyTable.value.state.page.total = res.data.total
+        }
       })
   }
   const tableHead = ref([
@@ -142,7 +146,7 @@
   const handleUpdate = (page: any) => {
     pageStore.currentPage = page.currentPage
     pageStore.pageSize = page.pageSize
-    getList()
+    handleSelect(activeIndex.value, [])
   }
 
   var joinRefse = (item: { id: '' }) => {
@@ -162,11 +166,7 @@
             message: '拒绝成功',
             type: 'success'
           })
-          if (activeIndex.value === '1') {
-            getList()
-          } else {
-            getApplyList()
-          }
+          handleSelect(activeIndex.value, [])
         })
     })
   }
@@ -187,11 +187,7 @@
             message: '取消成功',
             type: 'success'
           })
-          if (activeIndex.value === '1') {
-            getList()
-          } else {
-            getApplyList()
-          }
+          handleSelect(activeIndex.value, [])
         })
     })
   }
@@ -212,15 +208,13 @@
             message: '添加成功',
             type: 'success'
           })
-          if (activeIndex.value === '1') {
-            getList()
-          } else {
-            getApplyList()
-          }
+          handleSelect(activeIndex.value, [])
         })
     })
   }
   const handleSelect = (key: any, keyPath: string[]) => {
+    tableData.value = []
+    diyTable.value.state.page.total = 0
     activeIndex.value = key
     if (key === '1') {
       getList()
@@ -231,13 +225,13 @@
   onMounted(() => {
     const route = useRouter()
     const selectType = route.currentRoute.value.query.type
-    if (selectType == '1') {
-      activeIndex.value = '1'
-      getList()
-    } else {
-      activeIndex.value = '2'
-      getApplyList()
+    let id = route.currentRoute.value.query.id
+    if(Array.isArray(id)){
+      activeId.value = id[0]
+    }else{
+      activeId.value = id
     }
+    handleSelect(selectType, [])
   })
 
   var filterHandler = () => {}

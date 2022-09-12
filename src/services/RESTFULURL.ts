@@ -30,7 +30,6 @@ export default {
     login: person + '/login', // 登录
     logout: person + '/logout', //注销
     register: person + '/register', // 注册
-    approval: person + '/get/all/approval', // 代办列表
     queryInfo: person + '/query/info', // 查询当前登录人员详细信息
     remove: person + '/remove', //删除好友
     removeIdentity: person + '/remove/identity', //删除好友身份

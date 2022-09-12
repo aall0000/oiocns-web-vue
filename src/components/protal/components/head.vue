@@ -87,11 +87,11 @@ onMounted(() => {
 const approvalNum = ref<number>(0)
 const applyNum = ref<number>(0)
 const getNum = ()=>{
- $services.person
-  .getAllApproval({
+ $services.person.getAllApproval({
     data: {
+      id: 0,
       offset:0,
-      limit:100
+      limit:0
     }
   })
   .then((res: ResultType) => {
@@ -100,11 +100,10 @@ const getNum = ()=>{
       approvalNum.value = res.data.total
     }
   })
-  $services.person
-  .getAllApply({
+  $services.person.getAllApply({
     data: {
-      offset: 0,
-      limit: 10
+      offset:0,
+      limit:0
     }
   })
   .then((res: ResultType) => {
@@ -116,7 +115,7 @@ const getNum = ()=>{
 }
 const router = useRouter()
 const jumpApproval = (type:string)=>{
- router.push({ path: '/cardDetail' ,query: {type:type}})
+ router.push({ path: '/cardDetail' ,query: {type:type,id: "0"}})
 }
   
 </script>
