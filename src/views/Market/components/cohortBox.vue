@@ -120,7 +120,9 @@
     children?: Tree[]
   }
   type createInfo = {
-    info: ProductType
+    info: {
+      id:string
+    }
   }
   const searchValue = ref('')
   const searchLeftValue = ref('')
@@ -165,7 +167,8 @@
   })
   const authorityProps = {
     label: 'name',
-    children: 'nodes'
+    children: 'nodes',
+    disabled: 'disabled',
   }
   const unitProps = {
     label: 'label',
@@ -223,11 +226,14 @@
     }
   )
   const props = defineProps<createInfo>()
+
   onMounted(() => {
     searchResource()
     getCompanyTree()
   })
+
   const emit = defineEmits(['closeDialog'])
+  
   const closeDialog = () => {
     emit('closeDialog')
   }
@@ -595,7 +601,6 @@
       })
     }
     Promise.all([promise1, promise2, promise3, promise4]).then((res) => {
-      if (res) {
         ElMessageBox.confirm('分发成功，是否继续分发？', {
           confirmButtonText: '继续',
           cancelButtonText: '取消',
@@ -611,7 +616,11 @@
           .catch(() => {
             closeDialog()
           })
-      }
+    }).catch((err)=>{
+      ElMessage({
+          message: err,
+          type: 'warning'
+        })
     })
   }
   // 中间树形滚动加载事件
@@ -844,6 +853,10 @@
             }
           })
           .then((res: ResultType) => {
+            const { result = []} = res.data
+              result.forEach((el:any)=>{
+                el.name.indexOf('管理员') !== -1 ? el.disabled = true : ''
+              })
             if (load == true) {
               state.centerTree.concat(res.data.result)
             } else {
@@ -867,6 +880,9 @@
   }
   const handleTreeData = (item: any) => {
     for (let i = 0; i < item.length; i++) {
+      if(item[i].name == '管理员'){
+        item[i].disabled = true
+      }
       if (item[i].nodes) {
         handleTreeData(item[i].nodes)
       } else {

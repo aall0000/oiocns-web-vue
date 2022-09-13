@@ -24,7 +24,7 @@
               </el-dropdown>
             </div>
           </template>
-
+          <div class="row-text">归属权:{{orgChat.getName(cohort.belongId)}}</div>
           <div class="content">{{cohort.code}}</div>
           <div class="description">{{cohort.team?.remark}}</div>
 
@@ -75,6 +75,7 @@ import { useRouter } from 'vue-router';
 import SearchUser from '@/components/searchs/index.vue'
 import { Service } from '@element-plus/icons-vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
+import orgChat from '@/hubs/orgchat'
 
 const { queryInfo } = useUserStore()
 const router = useRouter()
@@ -324,7 +325,10 @@ watch(props, () => {
 .description{
   font-size: 12px;
 }
-
+.row-text{
+  font-size: 14px;
+  margin-bottom: 6px;
+}
 .avatar-container{
   display: inline-block;
   .avatar{
