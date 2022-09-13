@@ -120,7 +120,9 @@
     children?: Tree[]
   }
   type createInfo = {
-    info: ProductType
+    info: {
+      id:string
+    }
   }
   const searchValue = ref('')
   const searchLeftValue = ref('')
@@ -165,7 +167,8 @@
   })
   const authorityProps = {
     label: 'name',
-    children: 'nodes'
+    children: 'nodes',
+    disabled: 'disabled',
   }
   const unitProps = {
     label: 'label',
@@ -844,6 +847,10 @@
             }
           })
           .then((res: ResultType) => {
+            const { result = []} = res.data
+              result.forEach((el:any)=>{
+                el.name.indexOf('管理员') !== -1 ? el.disabled = true : ''
+              })
             if (load == true) {
               state.centerTree.concat(res.data.result)
             } else {
@@ -867,6 +874,9 @@
   }
   const handleTreeData = (item: any) => {
     for (let i = 0; i < item.length; i++) {
+      if(item[i].name == '管理员'){
+        item[i].disabled = true
+      }
       if (item[i].nodes) {
         handleTreeData(item[i].nodes)
       } else {
