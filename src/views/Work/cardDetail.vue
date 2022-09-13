@@ -50,10 +50,10 @@
                 @click="joinSuccess(scope.row)"
                 >通过</el-button
               >
-              <el-button link type="primary" @click="joinRefse(scope.row)">拒绝</el-button>
+              <el-button link type="warning" @click="joinRefse(scope.row)">拒绝</el-button>
             </div>
             <div v-else>
-              <el-button link type="primary" @click="cancelJoin(scope.row)">取消申请</el-button>
+              <el-button link type="warning" @click="cancelJoin(scope.row)">取消申请</el-button>
             </div>
           </template>
         </DiyTable>
@@ -250,7 +250,7 @@
   }
   .thing-head {
     padding: 30px;
-    background: #fff;
+    // background: #fff;
     .thing-type {
       font-size: 16px;
       color: #8d8d8d;
@@ -267,6 +267,7 @@
   .content {
     height: calc(100% - 60px);
     padding: 20px;
+    background: var(--el-bg-color-overlay);
     .search {
       background: #fff;
       padding: 20px;
@@ -284,8 +285,8 @@
       height: 100%;
       overflow: hidden;
       box-sizing: border-box;
-      padding: 20px 30px 0 30px;
-      background: #fff;
+      
+      background: var(--el-bg-color-overlay);
       span {
         cursor: pointer;
       }
