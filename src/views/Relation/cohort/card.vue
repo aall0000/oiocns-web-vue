@@ -24,7 +24,7 @@
               </el-dropdown>
             </div>
           </template>
-
+          <div>{{cohort.identitys[0].name}}</div>
           <div class="content">{{cohort.code}}</div>
           <div class="description">{{cohort.team?.remark}}</div>
 
