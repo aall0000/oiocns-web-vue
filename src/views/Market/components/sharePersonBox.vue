@@ -99,7 +99,9 @@
     children?: Tree[]
   }
   type createInfo = {
-    info: ProductType
+    info: {
+      id:string
+    }
   }
   const store = useUserStore()
   const searchValue = ref('')
