@@ -28,7 +28,7 @@
         v-for="item in state.mainMenus.filter((a) => a?.bottom === true)" @click.stop="handleRouterChage(item)"
         :key="item.id">
         <div :class="['apps', activeRouter.includes(item.path) ? 'active' : '']" v-if="item.name === '开始'">
-          <el-popover :visible="startAppVisible" placement="right-end" title="所有应用" :width="500" trigger="click">
+          <el-popover placement="right-end" title="所有应用" :width="500" trigger="hover">
             <div style="height:500px">
               <el-input placeholder="搜索" v-model="searchValue" prefix-icon="Search" />
               <CanUseApp @AppChange="onAppClick"/>
