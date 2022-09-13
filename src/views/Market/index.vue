@@ -9,9 +9,9 @@
           <el-button small link type="primary" @click="GoPage('/market/register')"
             >注册应用</el-button
           >
-          <el-button small link type="primary" @click="GoPage('/market/softShare')"
+          <!-- <el-button small link type="primary" @click="GoPage('/market/softShare')"
             >从共享仓库中添加应用</el-button
-          >
+          > -->
           <el-button small link type="primary" @click="GoPage('/market/marketList')"
             >商店列表</el-button
           >
@@ -191,7 +191,7 @@
   </div>
   <el-dialog
     v-model="publishVisible"
-    title="上架应用"
+    title="应用上架"
     width="600px"
     draggable
     :close-on-click-modal="false"
