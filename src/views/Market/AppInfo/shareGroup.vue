@@ -22,9 +22,14 @@
         <template #label>
           <div class="cell-item"> 集团分享记录 </div>
         </template>
-        <div style="margin-right: 10px" v-for="item in state.groupShare" :key="item.id"
+        <template  v-if="state.groupShare.length>0" >
+          <div style="margin-right: 10px" v-for="item in state.groupShare" :key="item.id"
           ><el-tag>{{ item.name }}</el-tag></div
         >
+        </template>
+        <template v-else>
+          <div>-</div>
+        </template>
       </el-descriptions-item>
       <el-descriptions-item>
         <template #label>
@@ -32,7 +37,7 @@
         </template>
         <template v-if="state.unitShare.length > 0">
           <div style="margin-right: 10px" v-for="item in state.unitShare" :key="item.id"
-            ><el-tag>{{ item.name }}</el-tag></div
+            ><el-tag>{{ item.name}}</el-tag></div
           >
         </template>
         <template v-else>
@@ -52,21 +57,19 @@
       <ShareCohort
         v-if="store.workspaceData.type == 2"
         @closeDialog="shareVisible = false"
-        :groupId="selectedValue"
-        :info="props.info as any"
+        :info="props.info"
       ></ShareCohort>
       <SharePersonBox
         v-else
         @closeDialog="shareVisible = false"
-        :groupId="selectedValue"
-        :info="props.info as any"
+        :info="props.info"
       ></SharePersonBox>
     </el-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
-  import { onMounted, reactive, ref } from 'vue'
+  import { onMounted, reactive, ref,nextTick } from 'vue'
   import API from '@/services'
   import type { TabsPaneContext } from 'element-plus'
   import { useUserStore } from '@/store/user'
@@ -91,8 +94,11 @@
   }
   const props = defineProps<createInfo>()
   onMounted(() => {
-    getGroupList()
-    getHistoryData()
+    nextTick(() => {
+      getGroupList()
+      getHistoryData()
+    })
+    
   })
   const handleTabsClick = (tab: TabsPaneContext, event: Event) => {
     console.log(tab.index)
@@ -100,9 +106,14 @@
       getGroupList()
     }
   }
-  const editDialog = () => {}
+  const editDialog = () => {
+    shareVisible.value = true
+
+  }
   // 切换集团
-  const changeGroupIndex = (id: string) => {}
+  const changeGroupIndex = (id: string) => {
+    getHistoryData()
+  }
   // 查询历史记录
   const getHistoryData = () => {
     API.product
@@ -116,7 +127,6 @@
         }
       })
       .then((res: ResultType) => {
-        console.log(res)
         let { result = [] } = res.data
         state.groupShare = result
       })
@@ -150,7 +160,7 @@
           state.options = groups.map((g) => {
             return { value: g.id, label: g.name }
           })
-          selectedValue.value = groups[0].name
+          selectedValue.value = groups[0].id
         } else {
           groups = []
         }
@@ -159,6 +169,9 @@
 </script>
 
 <style lang="scss" scoped>
+  :deep(.el-descriptions__label){
+    width:210px
+  }
   :deep(.is-bordered-content) {
     display: flex;
   }

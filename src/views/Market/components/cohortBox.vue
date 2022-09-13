@@ -204,8 +204,6 @@
       state.identitysData = []
       if (radio.value == '1') {
         clearTreeType(cascaderTree.value)
-      }
-      if (radio.value == '1') {
         leftTree.value.setCheckedKeys([])
       }
       getHistoryData()
@@ -303,7 +301,7 @@
               el.type = 'has'
               arr.push(el.id)
             })
-            state.departData = state.departHisData
+            state.departData = JSON.parse(JSON.stringify(state.departHisData))
             leftTree.value.setCheckedKeys(arr, true)
           })
         break
@@ -705,6 +703,11 @@
         if (result) {
           if (data.type == 'del') {
             data.type = 'has'
+            state.departData.forEach((el) => {
+              if (el.id == data.id) {
+                el.type = 'has'
+              }
+            })
             return
           } else {
             data.type = 'has'
@@ -724,6 +727,7 @@
           if (el.id == data.id) {
             if (result) {
               el.type = 'del'
+              data.type = 'del'
             } else {
               state.departData.splice(index, 1)
             }
@@ -995,7 +999,7 @@
   }
   // 过滤掉工作组作为表单级联数据
   const filter = (nodes: OrgTreeModel[]): OrgTreeModel[] => {
-    nodes = nodes.filter((node) => node.data?.typeName !== '工作组' && node.data.authAdmin === true)
+    nodes = nodes.filter((node) => node.data?.typeName !== '工作组')
     for (const node of nodes) {
       node.children = filter(node.children)
     }
