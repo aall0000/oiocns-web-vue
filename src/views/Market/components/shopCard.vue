@@ -134,7 +134,7 @@
       }
       &-desc {
         padding: 10px 0;
-        height: 70px;
+        max-height: 70px;
         font-size: 14px;
         font-weight: 400;
         color: var(--el-color-info);
