@@ -18,13 +18,14 @@
                     <el-dropdown-item v-if="props.type == '管理的'" @click="toIndentity(cohort)"><el-icon><Avatar /></el-icon>身份管理</el-dropdown-item>
                     <el-dropdown-item v-if="props.type == '管理的'" @click="moveAuth(cohort)"><el-icon><Switch /></el-icon>转移权限</el-dropdown-item>
                     <el-dropdown-item v-if="props.type == '加入的'" @click="exit(cohort)"><el-icon><Remove /></el-icon>退出群聊</el-dropdown-item>
-                    <el-dropdown-item v-if="props.type == '管理的'" @click="deleteCohort(cohort)"><el-icon><Delete /></el-icon>解散群组</el-dropdown-item>
+                    <el-dropdown-item v-if="props.type == '管理的' &&cohort.belongId ==queryInfo.id" @click="deleteCohort(cohort)"><el-icon><Delete /></el-icon>解散群组</el-dropdown-item>
                   </el-dropdown-menu>
                 </template>
               </el-dropdown>
             </div>
           </template>
-          <div>{{cohort.identitys[0].name}}</div>
+          <div class="row-text">归属权:{{orgChat.getName(cohort.belongId)}}</div>
+          <div class="row-text" v-if="cohort.identitys">管理人:{{cohort.identitys[0].name}}</div>
           <div class="content">{{cohort.code}}</div>
           <div class="description">{{cohort.team?.remark}}</div>
 
@@ -75,6 +76,7 @@ import { useRouter } from 'vue-router';
 import SearchUser from '@/components/searchs/index.vue'
 import { Service } from '@element-plus/icons-vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
+import orgChat from '@/hubs/orgchat'
 
 const { queryInfo } = useUserStore()
 const router = useRouter()
@@ -324,7 +326,10 @@ watch(props, () => {
 .description{
   font-size: 12px;
 }
-
+.row-text{
+  font-size: 14px;
+  margin-bottom: 6px;
+}
 .avatar-container{
   display: inline-block;
   .avatar{
