@@ -25,9 +25,12 @@
             <el-tag v-if="props.type == 'market'" style="margin-right:10px" :type="info.public?'success':'danger'">{{
               info.public ? '公开的' : '私有的'
             }}</el-tag>
-            <el-tag v-if="props.type == 'market'" style="margin-right:10px">{{
+            <el-tag v-if="props.type == 'market'&&info.id != '355346477339512833'" style="margin-right:10px">{{
               info.belongId == queryInfo.id ? '创建的' : '加入的'
             }}</el-tag>
+            <!-- <el-tag v-if="props.type == 'market'&&info.id == '355346477339512833'" style="margin-right:10px">{{
+              info.belongId == queryInfo.id ? '':''
+            }}</el-tag> -->
             <el-tag v-if="props.type != 'market' && (info.endTime==undefined||new Date().getTime()<formartDateTime(info?.endTime))" style="margin-right:10px" :type="info.createUser==queryInfo.id?'':'success'">{{
               info.createUser==queryInfo.id ? '可管理' : '可使用'
             }}</el-tag>
@@ -45,9 +48,9 @@
       <div>
       <slot name="footer"></slot>
 
-        <div class="app-card-item-con-footer">
+        <div class="app-card-item-con-footer" v-if="info.id != '355346477339512833'">
           <el-divider style="margin: 16px 0"></el-divider>
-            <div class="app-card-item-con-desc">
+            <div class="app-card-item-con-desc" >
               <p> 归属:{{ orgChat.getName(info.belongId) }}</p>
             </div>
             <div class="app-card-item-con-belong">
