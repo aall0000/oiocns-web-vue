@@ -23,9 +23,17 @@
       <el-form-item prop="password2">
         <el-input
           size="large"
-          placeholder="请再从输入密码"
+          placeholder="请再次输入密码"
           v-model="ruleForm.password2"
           type="password"
+          autocomplete="off"
+        />
+      </el-form-item>
+      <el-form-item prop="importValue">
+        <el-input
+          size="large"
+          placeholder="请输入助记词（助记词能帮助找回密码，请谨慎填写）"
+          v-model="ruleForm.importValue"
           autocomplete="off"
         />
       </el-form-item>
@@ -46,7 +54,8 @@ export default defineComponent({
     const ruleForm = reactive({
       password: '',
       account: '',
-      password2: ''
+      password2: '',
+      importValue: ''
     })
     const gotoPrev = () => {
       context.emit('gotoPrev')
@@ -81,10 +90,16 @@ export default defineComponent({
         }
       }
     }
+    const validatePass4 = (rule: any, value: any, callback: any) => {
+      if (value === '') {
+        callback(new Error('请输入助记词'))
+      }
+    }
     const rules = reactive({
       phone: [{ validator: validatePass, trigger: 'blur' }],
       password: [{ validator: validatePass2, trigger: 'blur' }],
-      password2: [{ validator: validatePass3, trigger: 'blur' }]
+      password2: [{ validator: validatePass3, trigger: 'blur' }],
+      importValue: [{ validator: validatePass4, trigger: 'blur' }]
     })
     const submitForm = (formEl: FormInstance | undefined) => {
       if (!formEl) return

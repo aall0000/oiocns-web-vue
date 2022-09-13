@@ -2,6 +2,9 @@ import * as signalR from '@microsoft/signalr'
 import { ElMessage } from 'element-plus'
 import { ref, Ref } from 'vue'
 import anyStore from '@/utils/anystore'
+
+
+
 // 消息服务
 // 创建链接
 
@@ -45,7 +48,7 @@ const orgChat: orgChatType = {
     lastMsg: null,
     curChat: ref<ImMsgChildType>(null),
     qunPersons: ref<any[]>([]),
-    nameMap: {},
+    nameMap: sessionStorage.getItem('nameMap')? JSON.parse(sessionStorage.getItem('nameMap')) : {},
     openChats: [],
     curMsgs: ref<any[]>([]),
     start: (accessToken: string, userId: string, spaceId: string) => {
@@ -81,6 +84,7 @@ const orgChat: orgChatType = {
                 }
                 if (data.nameMap) {
                     orgChat.nameMap = data.nameMap
+                    sessionStorage.setItem('nameMap', JSON.stringify(data.nameMap))
                 }
                 if (data.openChats) {
                     orgChat.openChats = data.openChats
@@ -136,6 +140,7 @@ const orgChat: orgChatType = {
         orgChat.lastMsg = null
     },
     getName: (id: string) => {
+     
         let name = orgChat.nameMap[id] || id
         return name
     },

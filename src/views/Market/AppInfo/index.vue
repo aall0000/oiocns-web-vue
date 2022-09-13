@@ -95,76 +95,12 @@
         </div>
       </el-tab-pane>
       <el-tab-pane v-if="isDetailPage" label="分享信息" name="1">
-        <el-select
-          value-key="id"
-          placeholder="请选择集团"
-        >
-          <!-- <el-option
-            v-for="item in state.options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          /> -->
-        </el-select>
-        <el-descriptions style="margin-top: 10px" class="margin-top" :column="3" border>
-          <el-descriptions-item>
-            <template #label>
-              <div class="cell-item">
-                <el-icon>
-                  <user />
-                </el-icon>
-                Username
-              </div>
-            </template>
-            kooriookami
-          </el-descriptions-item>
-          <el-descriptions-item>
-            <template #label>
-              <div class="cell-item">
-                <el-icon>
-                  <iphone />
-                </el-icon>
-                Telephone
-              </div>
-            </template>
-            18100000000
-          </el-descriptions-item>
-          <el-descriptions-item>
-            <template #label>
-              <div class="cell-item">
-                <el-icon>
-                  <location />
-                </el-icon>
-                Place
-              </div>
-            </template>
-            Suzhou
-          </el-descriptions-item>
-          <el-descriptions-item>
-            <template #label>
-              <div class="cell-item">
-                <el-icon>
-                  <tickets />
-                </el-icon>
-                Remarks
-              </div>
-            </template>
-            <el-tag size="small">School</el-tag>
-          </el-descriptions-item>
-          <el-descriptions-item>
-            <template #label>
-              <div class="cell-item">
-                <el-icon>
-                  <office-building />
-                </el-icon>
-                Address
-              </div>
-            </template>
-            No.1188, Wuzhong Avenue, Wuzhong District, Suzhou, Jiangsu Province
-          </el-descriptions-item>
-        </el-descriptions>
+        <ShareGroup v-if="!isPerson" :info="resources.info"></ShareGroup>
+        <SharePerson v-else :info="resources.info"></SharePerson>
       </el-tab-pane>
-      <el-tab-pane v-if="isDetailPage" label="分配信息" name="2">Role</el-tab-pane>
+      <el-tab-pane v-if="isDetailPage" label="分发信息" name="2">
+        <CohortBox :info="resources.info"></CohortBox>
+      </el-tab-pane>
     </el-tabs>
   </div>
 </template>
@@ -175,11 +111,17 @@
   import { ElMessage, FormRules } from 'element-plus'
   import { useRouter, useRoute } from 'vue-router'
   import { useCommonStore } from '@/store/common'
-  import shareGroup from './shareGroup.vue'
+  import ShareGroup from './shareGroup.vue'
+  import SharePerson from './sharePerson.vue'
+  import CohortBox from './cohortBox.vue'
+  import { useUserStore } from '@/store/user'
+
+  const useStore = useUserStore()
   const commonStore = useCommonStore()
   const router = useRouter()
   const routeInfo = useRoute()
   const isDetailPage = !!routeInfo.params.id
+  const isPerson = ref<boolean>(false)
   console.log('搜索', isDetailPage, routeInfo.params.id)
   let form = reactive({
     data: {
@@ -192,6 +134,9 @@
   })
   const activeName = ref<string>('0')
   let resources = reactive({
+    info:{
+      id:''
+    },
     resources: [
       {
         name: '',
@@ -314,6 +259,9 @@
     })
   }
   onMounted(() => {
+    useStore.workspaceData.type == 1 ? isPerson.value = true : isPerson.value = false
+    resources.info = JSON.parse(JSON.stringify(routeInfo.params))
+    resources.info.id.toString()
     if (isDetailPage) {
       getAppResource()
       queryInfo()

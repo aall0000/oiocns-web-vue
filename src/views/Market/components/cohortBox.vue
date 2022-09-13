@@ -120,7 +120,9 @@
     children?: Tree[]
   }
   type createInfo = {
-    info: ProductType
+    info: {
+      id:string
+    }
   }
   const searchValue = ref('')
   const searchLeftValue = ref('')
@@ -165,7 +167,8 @@
   })
   const authorityProps = {
     label: 'name',
-    children: 'nodes'
+    children: 'nodes',
+    disabled: 'disabled',
   }
   const unitProps = {
     label: 'label',
@@ -204,8 +207,6 @@
       state.identitysData = []
       if (radio.value == '1') {
         clearTreeType(cascaderTree.value)
-      }
-      if (radio.value == '1') {
         leftTree.value.setCheckedKeys([])
       }
       getHistoryData()
@@ -225,11 +226,14 @@
     }
   )
   const props = defineProps<createInfo>()
+
   onMounted(() => {
     searchResource()
     getCompanyTree()
   })
+
   const emit = defineEmits(['closeDialog'])
+  
   const closeDialog = () => {
     emit('closeDialog')
   }
@@ -303,7 +307,7 @@
               el.type = 'has'
               arr.push(el.id)
             })
-            state.departData = state.departHisData
+            state.departData = JSON.parse(JSON.stringify(state.departHisData))
             leftTree.value.setCheckedKeys(arr, true)
           })
         break
@@ -597,7 +601,6 @@
       })
     }
     Promise.all([promise1, promise2, promise3, promise4]).then((res) => {
-      if (res) {
         ElMessageBox.confirm('分发成功，是否继续分发？', {
           confirmButtonText: '继续',
           cancelButtonText: '取消',
@@ -613,7 +616,11 @@
           .catch(() => {
             closeDialog()
           })
-      }
+    }).catch((err)=>{
+      ElMessage({
+          message: err,
+          type: 'warning'
+        })
     })
   }
   // 中间树形滚动加载事件
@@ -705,6 +712,11 @@
         if (result) {
           if (data.type == 'del') {
             data.type = 'has'
+            state.departData.forEach((el) => {
+              if (el.id == data.id) {
+                el.type = 'has'
+              }
+            })
             return
           } else {
             data.type = 'has'
@@ -724,6 +736,7 @@
           if (el.id == data.id) {
             if (result) {
               el.type = 'del'
+              data.type = 'del'
             } else {
               state.departData.splice(index, 1)
             }
@@ -840,6 +853,10 @@
             }
           })
           .then((res: ResultType) => {
+            const { result = []} = res.data
+              result.forEach((el:any)=>{
+                el.name.indexOf('管理员') !== -1 ? el.disabled = true : ''
+              })
             if (load == true) {
               state.centerTree.concat(res.data.result)
             } else {
@@ -863,6 +880,9 @@
   }
   const handleTreeData = (item: any) => {
     for (let i = 0; i < item.length; i++) {
+      if(item[i].name == '管理员'){
+        item[i].disabled = true
+      }
       if (item[i].nodes) {
         handleTreeData(item[i].nodes)
       } else {
@@ -995,7 +1015,7 @@
   }
   // 过滤掉工作组作为表单级联数据
   const filter = (nodes: OrgTreeModel[]): OrgTreeModel[] => {
-    nodes = nodes.filter((node) => node.data?.typeName !== '工作组' && node.data.authAdmin === true)
+    nodes = nodes.filter((node) => node.data?.typeName !== '工作组')
     for (const node of nodes) {
       node.children = filter(node.children)
     }
