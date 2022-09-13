@@ -226,11 +226,14 @@
     }
   )
   const props = defineProps<createInfo>()
+
   onMounted(() => {
     searchResource()
     getCompanyTree()
   })
+
   const emit = defineEmits(['closeDialog'])
+  
   const closeDialog = () => {
     emit('closeDialog')
   }
@@ -598,7 +601,6 @@
       })
     }
     Promise.all([promise1, promise2, promise3, promise4]).then((res) => {
-      if (res) {
         ElMessageBox.confirm('分发成功，是否继续分发？', {
           confirmButtonText: '继续',
           cancelButtonText: '取消',
@@ -614,7 +616,11 @@
           .catch(() => {
             closeDialog()
           })
-      }
+    }).catch((err)=>{
+      ElMessage({
+          message: err,
+          type: 'warning'
+        })
     })
   }
   // 中间树形滚动加载事件
