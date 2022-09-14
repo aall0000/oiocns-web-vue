@@ -262,7 +262,7 @@
 
   //查询
   const getTableList = async () => {
-    isRouterAlive.value = false
+    pageStore.tableData = []
     await $services.market
       .searchStaging({
         data: {
@@ -285,6 +285,7 @@
             market: { remark: any; code: any; name: any }
             merchandise: { caption: any; information: any; sellAuth: any; days: any; price: any }
           }) => {
+            if(!item.merchandise) {item.merchandise={caption: null, information: null, sellAuth: null, days: null, price: null}}
             return {
               ...item,
               caption: item.merchandise.caption,
@@ -299,7 +300,7 @@
         )
 
         console.log('pageStore.tableData', pageStore.tableData)
-        isRouterAlive.value = true
+        // isRouterAlive.value = true
       })
   }
   const gotoApp = (item: { id: string }) => {

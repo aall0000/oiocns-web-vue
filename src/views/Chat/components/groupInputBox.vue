@@ -58,21 +58,43 @@
 
   const emit = defineEmits(['submitInfo'])
 
+  // 提交聊天内容
   const submit = async () => {
-    const value = document.getElementById('insterHtml').innerHTML
-    let text = value.indexOf('span') > -1 ? value : value.replaceAll('&nbsp;', '')
+    
+    const text = reCreatChatContent(document.getElementById('insterHtml').children)//.innerHTML
+   
+    
+    // let text = value.indexOf('span') > -1 ? value :
+    
+    // value.replaceAll('&nbsp;', '').substring(0,2048)
     const params = {
       toId: orgChat.curChat.value.id,
       spaceId: orgChat.curChat.value.spaceId,
       msgType: 'text',
-      msgBody: text
+      msgBody: text.toString()
     }
     if (text?.length > 0) {
       await orgChat.sendMsg(params)
     }
     document.getElementById('insterHtml').innerHTML = ''
   }
- 
+  // 解析聊天内容
+  const reCreatChatContent = (elementChild: any[]|HTMLCollection)=>{
+    console.log(elementChild)
+    const  arrElement = Array.from(elementChild)
+    // const newSpace  = document.createDocumentFragment()
+    if(arrElement.length>0) {
+
+      return arrElement.map(n=>{
+        const  newN = n
+        const conent = n.innerHTML ? n.innerHTML.replaceAll('&nbsp;', '').substring(0,2048) : n.innerHTML
+        newN.innerHTML  = conent
+        return newN.outerHTML
+      })
+    }
+    // return newSpace.innerHTML
+  }
+
   const handleImgChoosed = (url: string) => {
     const img = document.createElement('img')
     img.src = url

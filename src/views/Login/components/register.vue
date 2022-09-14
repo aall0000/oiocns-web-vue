@@ -29,14 +29,6 @@
           autocomplete="off"
         />
       </el-form-item>
-      <el-form-item prop="importValue">
-        <el-input
-          size="large"
-          placeholder="请输入助记词（助记词能帮助找回密码，请谨慎填写）"
-          v-model="ruleForm.importValue"
-          autocomplete="off"
-        />
-      </el-form-item>
     </el-form>
     <el-button class="loginBtn" type="primary" @click="submitForm(ruleFormRef)">注 册</el-button>
     <div class="textBox">

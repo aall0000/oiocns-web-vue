@@ -143,14 +143,15 @@ const handleContextClick = (e: MouseEvent, item: ImMsgChildType) => {
   if (!item) {
     return
   }
-  mousePosition.left = e.pageX
-  mousePosition.top = e.pageY
+  mousePosition.left = e.pageX- 60
+  mousePosition.top = e.pageY -48
   mousePosition.isShowContext = true
   mousePosition.selectedItem = item
 }
 // 页面加载完毕，点击其他位置则隐藏菜单
 onMounted(() => {
   window.addEventListener('click', () => {
+    debugger
     mousePosition.isShowContext = false
   })
   window.addEventListener('contextmenu', () => {
