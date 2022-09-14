@@ -60,7 +60,6 @@
       </li>
     </ul>
   </div>
-  {{ showMenu }}
 </template>
 
 <script lang="ts" setup>
