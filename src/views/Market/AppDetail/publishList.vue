@@ -42,6 +42,7 @@
   import { useRouter, useRoute } from 'vue-router'
   import { ElMessage, ElMessageBox } from 'element-plus'
   import DiyTable from '@/components/diyTable/index.vue'
+  import orgChat from '@/hubs/orgchat'
   const router = useRouter()
   const route = useRoute()
   const diyTable = ref(null)
@@ -59,8 +60,9 @@
               label: '名称'
             },
             {
-              prop: 'belongName',
-              label: '买方名称'
+              prop: 'belongId',
+              label: '买方名称',
+              formatter: (row:any, column:any) => orgChat.getName(row.belongId)
             },
             {
               prop: 'sellAuth',
@@ -182,7 +184,7 @@ const getDialogTableList = async(id:string)=>{
               return {
                 ...item,
                 code: item.order.code,
-                belongName: item.order.belong.name,
+                belongId: item.order.belongId,
               }
             }
           )
