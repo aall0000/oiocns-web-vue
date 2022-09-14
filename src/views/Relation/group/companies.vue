@@ -199,7 +199,7 @@
 
   //查看申请
   const viewApplication = (row: any) => {
-    router.push('/cardDetail')
+    router.push({ path: '/cardDetail' ,query: {type: 1,id: props.selectItem.id}})
   }
 
   // 移除n

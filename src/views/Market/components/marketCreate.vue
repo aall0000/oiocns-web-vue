@@ -24,12 +24,18 @@
 </script>
 
 <style lang="scss" scoped>
+    @media not screen and (min-width: 1300px) {
+    /* styles */
+    .marketCreate{
+      width: calc(33% - 15px) !important;
+    }
+}
   .marketCreate {
     width: 24%;
     min-width: 200px;
     height: 184px;
     margin-bottom: 10px;
-    margin-right: 1%;
+    margin-right: 10px;
     border: 2px dashed #409eff;
     text-align: center;
     line-height: 184px;

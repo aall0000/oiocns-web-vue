@@ -25,20 +25,19 @@
             :info="item.id"
             :key="item.id"
             :cardContent="true"
+            type="shopCard"
             @click="checkedChange(item)"
           >
-            <template #rightIcon>
+            <!-- <template #rightIcon>
               <el-dropdown trigger="click" placement="left-start">
                 <el-icon :size="18"><Operation /></el-icon>
                 <template #dropdown>
                   <el-dropdown-menu>
-                    <el-dropdown-item @click="GoPageWithQuery('/market/merchandiseDetail', item)"
-                      >商品详情</el-dropdown-item
-                    >
+
                   </el-dropdown-menu>
                 </template>
               </el-dropdown>
-            </template>
+            </template> -->
             <template #icon
               ><HeadImg
                 :name="item.name"
@@ -72,7 +71,7 @@
                 <div class="app-con-info"
                   >售卖权属：{{ item.merchandise.sellAuth }}
                   <el-tag size="small" v-if="item.merchandise.sellAuth !== '所属权'">
-                    使用期：{{ item.merchandise.sellAuth !== '所属权' ? item.merchandise.days + '天' : '无期限' }}</el-tag>
+                    使用期：{{ (item.merchandise.sellAuth !== '所属权' && item.merchandise.days) ? item.merchandise.days + '天' : '无期限' }}</el-tag>
                 </div>
               </div>
             </template>
@@ -81,7 +80,7 @@
               <div class="app-card-item-con-desc"
                 ><p>详情：{{ item.merchandise.information || '暂无'}}</p></div
               >
-             
+
             </template>
           </ShopCard>
         </li>
@@ -92,8 +91,9 @@
         :hasTitle="true"
         :tableData="pageStore.tableData"
         :tableHead="pageStore.tableHead"
-        :options="{ noPage: true }"
+        :options="{ noPage: true ,checkBox: true}"
         @handleUpdate="handleUpdate"
+        @select="handleSelect"
       >
         <template #operate="scope">
           <DiyButton>
@@ -152,7 +152,7 @@
         class="page-pagination"
         @size-change="(e) => handlePaginationChange(e, 'limit')"
         @current-change="(e) => handlePaginationChange(e, 'current')"
-        
+
         background
         :page-sizes="pageSizes"
         v-model:currentPage="pagination.current"
@@ -285,7 +285,7 @@
             market: { remark: any; code: any; name: any }
             merchandise: { caption: any; information: any; sellAuth: any; days: any; price: any }
           }) => {
-            if(!item.merchandise) {item.merchandise = { caption: null, information: null, sellAuth: null, days: null, price: null } }
+            if(!item.merchandise) {item.merchandise={caption: null, information: null, sellAuth: null, days: null, price: null}}
             return {
               ...item,
               caption: item.merchandise.caption,
@@ -304,7 +304,7 @@
       })
   }
   const gotoApp = (item: { id: string }) => {
-    router.push({ path: '/market/appList', query: { data: item.id } })
+    router.push({ path: '/market/MarketList', query: { data: item.id } })
   }
 
   const handleSelect = (e: any[], row: any) => {
@@ -596,7 +596,7 @@
     font-weight: 600;
     margin-bottom: 10px;
   }
-  
+
   .app-con-info {
     font-size: 13px;
     // font-weight: 400;
@@ -666,11 +666,11 @@
       background-color: var(--el-bg-color-overlay);
       height: calc(100vh - 12rem);
       padding: 20px;
-      
+
       &-title {
         font-weight: bold;
         padding-bottom: 10px;
-       
+
       }
       .app-card {
         display: flex;
@@ -681,7 +681,7 @@
           background-color: var(--el-color-primary-light-9);
           &::before {
             content: '';
-           
+
             position: absolute;
             left: 0;
             top: 0;
@@ -691,8 +691,8 @@
             background: linear-gradient(135deg,var(--el-color-primary),var(--el-color-primary) 50%,transparent 50%,  transparent 100%);
           }
         }
-        
-        
+
+
         .dark-shadow {
           // box-shadow: 4px 4px 4px rgb(174, 177, 184);
         }

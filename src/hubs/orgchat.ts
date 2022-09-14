@@ -2,6 +2,9 @@ import * as signalR from '@microsoft/signalr'
 import { ElMessage } from 'element-plus'
 import { ref, Ref } from 'vue'
 import anyStore from '@/utils/anystore'
+
+
+
 // 消息服务
 // 创建链接
 
@@ -102,7 +105,7 @@ const orgChat: orgChatType = {
                 if (orgChat.chats.value.length < 1) {
                     await orgChat.getChats()
                 }
-            }, 1000)
+            }, 500)
         }).catch((error: any) => {
             console.log('链接出错,30秒后重连', error)
             setTimeout(() => {
@@ -136,7 +139,15 @@ const orgChat: orgChatType = {
         orgChat.lastMsg = null
     },
     getName: (id: string) => {
-        let name = orgChat.nameMap[id] || id
+        let name = orgChat.nameMap[id] || ''
+        if(name === '' && orgChat.isConnected()){
+            orgChat._connection.invoke("GetName", parseInt(id)).then((res)=>{
+                if(res.success){
+                    orgChat.nameMap[id] = res.data
+                    orgChat._cacheChats()
+                }
+            })
+        }
         return name
     },
     getNoRead: () => {

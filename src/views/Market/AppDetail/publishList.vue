@@ -44,6 +44,7 @@
   const router = useRouter()
   const route = useRoute()
   const diyTable = ref(null)
+  const product = ref(null)
   const dialogState = reactive({
     data: [],
     tableHead: [
@@ -197,6 +198,18 @@ const showOrderList = (id:string)=>{
   const getTableList = async () => {
       state.data = []
     await $services.product
+      .queryInfo({
+        data: {
+          id: route.query.id,
+        }
+      })
+      .then((res: ResultType) => {
+        if (res.success) {
+          debugger
+          product.value = res.data
+        }
+      })  
+    await $services.product
       .searchPublishList({
         data: {
           id: route.query.id,
@@ -214,11 +227,11 @@ const showOrderList = (id:string)=>{
             (item: any) => {
               return {
                 ...item,
-                productCode: route.query.code,
-                productName: route.query.name,
-                productSource: route.query.source,
-                productAuthority: route.query.authority,
-                productTypeName: route.query.typeName,
+                productCode: product.value.code,
+                productName: product.value.name,
+                productSource: product.value.source,
+                productAuthority: product.value.authority,
+                productTypeName: product.value.typeName,
                 marketName: item.market.name,
                 marketCode: item.market.code,
               }

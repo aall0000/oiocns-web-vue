@@ -286,7 +286,7 @@ const mainRouter: RouteRecordRaw[] = [
         name: 'softShare',
         component: () => import('@/views/Market/SoftShare/index.vue'),
         meta: {
-          title: '共享仓库'
+          title: '开放市场'
         }
       },
       {
@@ -298,11 +298,19 @@ const mainRouter: RouteRecordRaw[] = [
         }
       },
       {
-        path: '/market/order',
-        name: 'marketOrder',
+        path: '/market/order/buy',
+        name: 'marketOrderBuy',
         component: () => import('@/views/Market/Order/index.vue'),
         meta: {
-          title: '我的订单'
+          title: '我买入的'
+        }
+      },
+      {
+        path: '/market/order/sell',
+        name: 'marketOrderSell',
+        component: () => import('@/views/Market/Order/index.vue'),
+        meta: {
+          title: '我卖出的'
         }
       },
       {

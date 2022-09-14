@@ -4,7 +4,12 @@
 
     <div class="card-header">
       <span>我的好友</span>
+      <div>
       <el-button small link type="primary" @click="friendShow">添加好友</el-button>
+      <el-button small link type="primary" @click="friendApply">查看申请</el-button>
+      <el-button small link type="primary" @click="toAuth">角色管理</el-button>
+      <el-button small link type="primary" @click="toIdentity">身份管理</el-button>
+      </div>
     </div>
 
     <div class="tab-list">
@@ -44,6 +49,9 @@
   import searchFriend from '@/components/searchs/index.vue'
   import { ref, reactive, onMounted } from 'vue'
   import { ElMessage } from 'element-plus'
+  import { useRouter } from 'vue-router'
+  import orgChat from '@/hubs/orgchat'
+  const router = useRouter()
 
   const searchDialog = ref<boolean>(false)
 
@@ -133,6 +141,36 @@
   }
   const friendShow = () => {
     searchDialog.value = true
+  }
+  const friendApply = () => {
+    router.push({ path: '/cardDetail' ,query: {type: 1,id: orgChat.userId.value}})
+  }
+  
+  // 跳转至角色管理页面
+  const toAuth = ()=>{
+    router.push({
+      path: '/relation/authority',
+      query: {
+        title: '好友',
+        belongId: orgChat.userId.value,
+        name: '我的好友',
+        code: 'friends',
+        teamRemark: '给好友设置角色',
+      }
+    })
+  }
+  
+  // 跳转至身份管理页面
+  const toIdentity = () => {
+    router.push({
+      path: '/relation/identity',
+      query: {
+        belongId: orgChat.userId.value,
+        name: '我的好友',
+        module: 'person',
+        persons: 'getFriends',
+      }
+    })
   }
 </script>
 <style lang="scss" scoped>

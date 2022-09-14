@@ -12,7 +12,7 @@
                 </el-icon>
                 <template #dropdown>
                   <el-dropdown-menu>
-                    <el-dropdown-item @click="GoPageWithQuery('/market/merchandiseDetail',item)">商品详情</el-dropdown-item>
+                    <!-- <el-dropdown-item @click="GoPageWithQuery('/market/merchandiseDetail',item)">商品详情</el-dropdown-item> -->
                     <el-dropdown-item @click="joinStaging(item)">加入购物车</el-dropdown-item>
                     <el-dropdown-item @click="unpublishFun(item)" v-if="type == 'manage'">下架</el-dropdown-item>
                   </el-dropdown-menu>
@@ -352,6 +352,7 @@ defineExpose({
     .app-card {
       display: flex;
       flex-wrap: wrap;
+      align-content:flex-start;
       height: calc(100% - 60px);
     }
   }

@@ -4,14 +4,6 @@
       <el-button small link type="primary" @click="GoPage('/market/appShelvesApproval')"
         >应用上架审批</el-button
       >
-      <el-button small link type="primary" @click.stop="GoPage('/market/order')"
-        >我的订单</el-button
-      >
-      <el-badge :value="shopcarNum" style="margin-left: 10px;margin-top: 5px">
-        <el-button small link type="primary" @click.stop="GoPage('/market/shopCar')"
-          >购物车</el-button
-        >
-      </el-badge>
       <el-radio-group v-model="switchValue" size="small" class="button">
         <el-radio-button label="list"
           ><el-icon :size="18"><Tickets /></el-icon
@@ -127,7 +119,6 @@
 
   onMounted(() => {
     getData()
-    getShopcarNum()
   })
 
   const getShopcarNum = async () => {

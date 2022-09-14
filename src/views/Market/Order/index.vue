@@ -1,15 +1,6 @@
 <template>
   <MarketCard>
     <template #right>
-      <!-- <el-button type="primary" link @click="getTableList('buy')" >已购入</el-button>
-      <el-button type="primary" link @click="getTableList('sell')" >已卖出</el-button> -->
-        <el-switch
-          v-model="isBuy"
-          style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
-          active-text="已购入"
-          inactive-text="已卖出"
-          @change="getTableList(isBuy?'buy':'sell')"
-        />
         <el-select v-model="statusvalue" filterable placeholder="订单状态" clearable size="small" @change="getTableList(searchType)" style="margin:5px 5px 5px 15px;">
           <el-option
             v-for="item in statusoptions"
@@ -22,148 +13,72 @@
   </MarketCard>
   <div class="container">
     <div class="limit_table_height">
-
-      <el-table
-        class="table-row-sty"
-        :header-cell-style="getRowClass"
-        :data="state.orderList"
-        stripe
-        border
+      <DiyTable
+        v-if="route.fullPath.includes('buy')"
+        ref="diyTable"
+        :hasTitle="true"
+        :tableData="state.orderList"
+        :tableHead="state.tableHeadBuy"
+        :options="{ noPage: true }"
+        @handleUpdate="handleUpdate"
         @select="handleSelect"
-        ref="orderTableRef"
-        v-if="searchType == 'buy'"
       >
-        <el-table-column type="expand">
-          <template #default="props">
-            <div style="margin-left: 50px">
-              <el-table :data="props.row.details" border :header-cell-style="getRowClass">
-                <el-table-column prop="caption" label="名称" />
-                <el-table-column prop="sellAuth" label="售卖权属" />
-                <el-table-column prop="days" label="使用期限" />
-                <el-table-column prop="price" label="售卖价格" />
-                <el-table-column prop="seller.name" label="卖方名称" />
-                <el-table-column
-                  prop="status"
-                  label="状态"
-                  :formatter="(row, column) => renderDict(row, column, 'OrderStatus')"
-                />
-                <el-table-column prop="createTime" label="创建时间" />
-                <el-table-column prop="name" label="支付记录">
-                  <template #default="scope">
-                    <el-link type="primary" @click="showPayList(scope.row)">点击查看</el-link>
-                  </template>
-                </el-table-column>
-                <el-table-column prop="name" label="商品状态" width="150" align="center">
-                  <template #default="scope">
-                    <el-tag v-show="scope.row.merchandise">存续</el-tag>
-                    <el-tag class="ml-2" type="danger"  v-show="!scope.row.merchandise">已失效</el-tag>
-                  </template>
-                </el-table-column>
-                <el-table-column prop="name" label="操作" width="150" align="center">
-                  <template #default="scope">
-                    <DiyButton >
-                      <template v-slot:opt>
+      <template #expand="props">
+        <div style="margin-left: 50px">
+          <DiyTable
+        ref="diyTableDetail"
+        :tableData="props.row.details"
+        :tableHead="state.tableHeadSellDetail"
+        :options="{ noPage: true }"
+      >
 
-                        <div class="diy-button" v-show="scope.row.status < 102" @click="cancelOrderDetail(scope.row.id, 220, null)">
-                          取消订单
-                        </div> 
-                        <div class="diy-button" v-show="scope.row.status == 102" @click="reject(scope.row.id)">
-                          退货退款
-                        </div> 
-                      </template>
-                    </DiyButton>
-                  </template>
-                </el-table-column>
-              </el-table>
-            </div>
-          </template>
-        </el-table-column>
-        <el-table-column label="序号" type="index" width="80" align="center">
-          <template #default="scope">
-            <span>{{ (pagination.current - 1) * pagination.limit + scope.$index + 1 }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column prop="code" label="订单号" />
-        <el-table-column prop="name" label="名称" />
-        <el-table-column prop="createTime" label="创建时间" />
-        <el-table-column prop="name" label="操作" width="150" align="center">
-          <template #default="scope">
-            <DiyButton>
-              <template v-slot:opt>
-                <!-- <div class="diy-button" @click="cancelOrder(scope.row.id)"> 取消订单 </div>  -->
-              </template>
-            </DiyButton>
-          </template>
-        </el-table-column>
-      </el-table>
-      <!-- <DiyTable
-            ref="diyTable"
-            :hasTitle="true"
-            v-if="searchType == 'sell'"
-            :options="{  order: true }"
-            :tableData="state.orderList"
-            :tableHead="state.tableHead"
-          >
-            <template #operate="scope">
-              <el-dropdown
-                trigger="click"
-                placement="bottom-end"
-              >
-                <el-icon :size="18"><Operation /></el-icon>
-                <template #dropdown>
-                  <el-dropdown-menu>
-                    <el-dropdown-item
-                      v-for="action in actionOptionsOfOwn"
-                      :command="action.value"
-                      :key="action.value"
-                    >
-                      {{ action.label }}
-                    </el-dropdown-item>
-                  </el-dropdown-menu>
-                </template>
-              </el-dropdown>
-            </template>
-          </DiyTable> -->
-      <el-table
-        class="table-row-sty"
-        :header-cell-style="getRowClass"
-        :data="state.orderList"
-        stripe
-        border
-        @select="handleSelect"
-        ref="orderTableRef"
-        v-if="searchType == 'sell'"
-      >
-        <el-table-column label="序号" type="index" width="80" align="center">
-          <template #default="scope">
-            <span>{{ (pagination.current - 1) * pagination.limit + scope.$index + 1 }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column prop="code" label="订单号" />
-        <el-table-column prop="caption" label="名称" />
-        <el-table-column prop="belongName" label="买方名称" />
-        <el-table-column prop="sellAuth" label="售卖权属" />
-        <el-table-column prop="days" label="使用期限" />
-        <el-table-column prop="price" label="售卖价格" />
-        <el-table-column
-          prop="status"
-          label="状态"
-          :formatter="(row, column) => renderDict(row, column, 'OrderStatus')"
-        />
-        <el-table-column prop="createTime" label="创建时间" />
-        <el-table-column prop="name" label="支付记录">
-          <template #default="scope">
+          <template #paylist="scope">
             <el-link type="primary" @click="showPayList(scope.row)">点击查看</el-link>
           </template>
-        </el-table-column>
-        <el-table-column prop="name" label="商品状态" width="150" align="center">
-          <template #default="scope">
-            <el-tag v-show="scope.row.merchandise" >存续</el-tag>
-            <el-tag class="ml-2" type="danger"  v-show="!scope.row.merchandise">已失效</el-tag>
+
+          <template #merchandiseStatus="scope">
+            <el-tag v-show="scope.row.merchandise" >在售</el-tag>
+            <el-tag class="ml-2" type="danger"  v-show="!scope.row.merchandise">已下架</el-tag>
           </template>
-        </el-table-column>
-        <el-table-column prop="name" label="操作" width="150" align="center">
-          <template #default="scope">
+
+          <template #operate="scope">
+            <DiyButton >
+                <template v-slot:opt>
+                  <div class="diy-button" v-show="scope.row.status < 102" @click="cancelOrderDetail(scope.row.id, 220, null)">
+                    取消订单
+                  </div> 
+                  <div class="diy-button" v-show="scope.row.status == 102" @click="reject(scope.row.id)">
+                    退货退款
+                  </div> 
+                </template>
+            </DiyButton>
+          </template>
+      </DiyTable>
+        </div>
+      </template>
+    </DiyTable>
+
+      <DiyTable
+        v-else
+        ref="diyTable"
+        :hasTitle="true"
+        :tableData="state.orderList"
+        :tableHead="state.tableHeadSell"
+        :options="{ noPage: true }"
+        @handleUpdate="handleUpdate"
+        @select="handleSelect"
+      >
+
+          <template #paylist="scope">
+            <el-link type="primary" @click="showPayList(scope.row)">点击查看</el-link>
+          </template>
+
+          <template #merchandiseStatus="scope">
+            <el-tag v-show="scope.row.merchandise" >在售</el-tag>
+            <el-tag class="ml-2" type="danger"  v-show="!scope.row.merchandise">已下架</el-tag>
+          </template>
+
+          <template #operate="scope">
             <DiyButton>
               <template v-slot:opt>
                 <div class="diy-button" v-show="scope.row.status < 102" @click="cancelOrderDetail(scope.row.id, 221, null)"> 取消订单 </div>
@@ -177,8 +92,7 @@
               </template>
             </DiyButton>
           </template>
-        </el-table-column>
-      </el-table> 
+      </DiyTable>
       <payView v-if="payDialog.show" :order="payDialog.data" @close="closePay"></payView>
       <payList v-if="payListDialog.show" :selectLimit="0" @closeDialog="closePayList" />
     </div>
@@ -206,7 +120,12 @@ import payView from '@/components/pay/pay.vue'
 import payList from '@/components/pay/list.vue'
 import DiyButton from '@/components/diyButton/index.vue'
 import { ElTable } from 'element-plus'
+import { useMarketStore } from '@/store/market'
 import moment from 'moment'
+import { useRoute, useRouter } from 'vue-router'
+const store = useMarketStore()
+const router = useRouter()
+  const route = useRoute()
 // 表格分页数据
 const pagination: { current: number; limit: number } = reactive({ current: 1, limit: PAGE_NUM })
 // 表格展示数据
@@ -242,32 +161,65 @@ const statusoptions = [
 const searchValue = ref<string>('')
 
   onMounted(() => {
-    getTableList('buy')
+    if(route.fullPath.includes('buy')){
+      getTableList('buy')
+    }else{
+      getTableList('sell')
+    }
+    
   })
 
   const options = ref<ListItem[]>([])
   const value = ref('')
   const loading = ref(false)
-  const state = reactive({ qunList: [], orderList: [],   tableHead: [
+  const handleUpdate = (page: any) => {
+    getTableList(searchType.value)
+  }
+  const state = reactive({ qunList: [], orderList: [], tableHeadBuy:[
       {
-        prop: 'name',
-        label: '应用名称'
+        type:'expand',
+        name:'expand',
       },
       {
         prop: 'code',
-        label: '应用编码'
+        label: '订单号'
       },
       {
-        prop: 'source',
-        label: '应用来源'
+        prop: 'name',
+        label: '名称'
       },
       {
-        prop: 'typeName',
-        label: '应用类型'
+        prop: 'createTime',
+        label: '创建时间'
+      },
+
+  ],tableHeadSellDetail:[
+
+      {
+        prop: 'caption',
+        label: '名称'
       },
       {
-        prop: 'authority',
-        label: '持有权限'
+        prop: 'sellAuth',
+        label: '售卖权属'
+      },
+      {
+        prop: 'days',
+        label: '使用期限'
+      },
+      {
+        prop: 'price',
+        label: '价格'
+      },
+      {
+        prop:'sellerId',
+        label:"卖方名称",
+        formatter: (row:any, column:any) => store.getMarketName(row.sellerId)
+      },
+      {
+        prop: 'status',
+        label: '状态',
+        formatter: (row:any, column:any) => renderDict(row, column, 'OrderStatus')
       },
       {
         prop: 'createTime',
@@ -275,10 +227,84 @@ const searchValue = ref<string>('')
       },
       {
         type: 'slot',
+        label: '支付记录',
+        fixed: 'right',
+        align: 'center',
+        width: '150',
+        name: 'paylist'
+      },
+      {
+        type: 'slot',
+        label: '商品状态',
+        fixed: 'right',
+        align: 'center',
+        width: '150',
+        name: 'merchandiseStatus'
+      },
+      {
+        type: 'slot',
         label: '操作',
         fixed: 'right',
         align: 'center',
-        width: '80',
+        width: '120',
+        name: 'operate'
+      }
+  ],tableHeadSell: [
+      {
+        prop: 'code',
+        label: '订单号'
+      },
+      {
+        prop: 'caption',
+        label: '名称'
+      },
+      {
+        prop: 'belongName',
+        label: '买方名称'
+      },
+      {
+        prop: 'sellAuth',
+        label: '售卖权属'
+      },
+      {
+        prop: 'days',
+        label: '使用期限'
+      },
+      {
+        prop: 'price',
+        label: '价格'
+      },
+      {
+        prop: 'status',
+        label: '状态',
+        formatter: (row:any, column:any) => renderDict(row, column, 'OrderStatus')
+      },
+      {
+        prop: 'createTime',
+        label: '创建时间'
+      },
+      {
+        type: 'slot',
+        label: '支付记录',
+        fixed: 'right',
+        align: 'center',
+        width: '150',
+        name: 'paylist'
+      },
+      {
+        type: 'slot',
+        label: '商品状态',
+        fixed: 'right',
+        align: 'center',
+        width: '150',
+        name: 'merchandiseStatus'
+      },
+      {
+        type: 'slot',
+        label: '操作',
+        fixed: 'right',
+        align: 'center',
+        width: '120',
         name: 'operate'
       }
     ] })

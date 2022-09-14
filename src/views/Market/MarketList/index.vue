@@ -25,7 +25,12 @@
 
     <div class="market-content box">
       <ul class="box-ul">
-        <p class="box-ul-title">我的商店</p>
+        <div class="getApp-radio">
+          <p class="box-ul-title">我的商店</p>
+          <div class="search">
+            <el-input v-model="searchText" @input="searchList" placeholder="搜索商店" clearable />
+          </div>
+        </div>
 
         <li class="app-card" v-show="showType === 'card'">
           <ShopCard
@@ -46,17 +51,17 @@
                 :isSquare="false"
             /></template>
             <template #rightIcon>
-              <el-dropdown trigger="click" placement="left-start">
+              <el-dropdown trigger="click" placement="left-start" v-if="item.id != '355346477339512833'">
                 <el-icon :size="18"><Operation /></el-icon>
                 <template #dropdown>
-                  <el-dropdown-menu>
+                  <el-dropdown-menu >
                     <el-dropdown-item @click.stop="hadleClick(item)"
                       ><el-button class="btn" type="primary" link small
                         >删除商店</el-button
                       ></el-dropdown-item
                     >
                     <el-dropdown-item @click.stop="hadleUserManage(item)"
-                      ><el-button class="btn" link small>用户管理</el-button></el-dropdown-item
+                      ><el-button class="btn" link small >用户管理</el-button></el-dropdown-item
                     >
                   </el-dropdown-menu>
                 </template>
@@ -77,8 +82,28 @@
             :tableData="state.myMarket"
             :tableHead="state.tableHead"
           >
+
+          <template #isPublic="scope">
+
+              <el-tag
+
+                style="margin-left: 10px"
+                :type="scope.row.createUser == queryInfo.id ? '' : 'success'"
+                >{{ scope.row.public == true ? '公开的' : '私有的' }}</el-tag
+              >
+          </template>
+          <template #tag="scope">
+            <el-tag
+            v-if="scope.row.id != '355346477339512833'"
+                style="margin-left: 10px"
+                :type="scope.row.createUser == queryInfo.id ? '' : 'success'"
+                >{{ scope.row.belongId == queryInfo.id ? '创建的' : '加入的' }}</el-tag
+              >
+
+          </template>
             <template #operate="scope">
               <el-button
+              v-if="scope.row.id != '355346477339512833'"
                 class="btn"
                 type="primary"
                 link
@@ -86,21 +111,24 @@
                 @click.stop="hadleUserManage(scope.row)"
                 >用户管理</el-button
               >
-              <el-button class="btn" type="primary" link small @click.stop="marketQuit(scope.row)"
+              <el-button class="btn" type="primary" link small @click.stop="marketQuit(scope.row)" v-if="scope.row.id != '355346477339512833'"
                 >删除商店</el-button
               >
             </template>
           </DiyTable>
         </li>
-        <el-pagination
+        <!-- <el-pagination
           v-if="state.myMarket?.length !== 0"
           @current-change="handleCurrentChange"
           v-bind="state.pageMy"
           :pager-count="5"
           style="text-align: right; margin-top: 10px; justify-content: end"
-        />
+        /> -->
+        <div class="page-flex" v-show="showType === 'card'">
+          <Pagination ref="pageContent" @handleUpdate="handleUpdate"></Pagination>
+        </div>
       </ul>
-      <ul class="box-ul">
+      <!-- <ul class="box-ul">
         <p class="box-ul-title">我加入的商店</p>
 
         <li class="app-card" v-show="showType === 'card'">
@@ -143,11 +171,7 @@
                 </template>
               </el-dropdown>
             </template>
-            <!-- <template #rightTriangle
-              ><div :class="item.public ? 'triangle-public' : 'triangle-'">{{
-                item.public ? '公' : ''
-              }}</div></template
-            > -->
+
           </ShopCard>
         </li>
         <li v-show="showType === 'list'">
@@ -172,25 +196,25 @@
           :pager-count="5"
           style="text-align: right; margin-top: 10px; justify-content: end"
         />
-      </ul>
+      </ul> -->
     </div>
-    <el-dialog v-model="createDialog" title="创建商店" width="30%">
-      <el-form :model="form" label-width="120px">
-        <el-form-item label="商店名称">
-          <el-input v-model="form.name" style="width: 80%" />
-        </el-form-item>
-        <el-form-item label="商店编码">
-          <el-input v-model="form.code" style="width: 80%" />
-        </el-form-item>
-        <el-form-item label="商店简介">
-          <el-input v-model="form.remark" style="width: 80%" />
-        </el-form-item>
-        <el-form-item label="商店是否公开">
-          <el-select v-model="form.public" style="width: 80%" placeholder="是否公开">
+    <el-dialog append-to-body v-model="createDialog" title="创建商店" width="30%" class="">
+      <el-descriptions :model="form"  :column="1" border>
+        <el-descriptions-item label="商店名称">
+          <el-input  v-model="form.name"   />
+        </el-descriptions-item>
+        <el-descriptions-item label="商店编码" >
+          <el-input  v-model="form.code" />
+        </el-descriptions-item>
+        <el-descriptions-item label="商店简介" >
+          <el-input  v-model="form.remark"  />
+        </el-descriptions-item>
+        <el-descriptions-item label="商店是否公开" >
+          <el-select  v-model="form.public" placeholder="是否公开" style="width:100%">
             <el-option v-for="item in options" :label="item.label" :value="item.value" />
           </el-select>
-        </el-form-item>
-      </el-form>
+        </el-descriptions-item>
+      </el-descriptions>
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="createDialog = false">取消</el-button>
@@ -221,8 +245,13 @@
   import MarketCreate from '../components/marketCreate.vue'
   import { useUserStore } from '@/store/user'
   import storeImg from '@/assets/img/app_icon.png'
+  import Pagination from '@/components/pagination/index.vue'
+  import { storeToRefs } from 'pinia'
+
+
   const router = useRouter()
   const store = useUserStore()
+  const { queryInfo } = storeToRefs(store)
   const handleCurrentMy: any = computed(() => {
     return (state.pageMy.currentPage - 1) * state.pageMy.pageSize
   })
@@ -232,9 +261,11 @@
   const GoPageWithQuery = (path: string, query: any) => {
     router.push({ path, query })
   }
+  const pageContent = ref(null)
   const showType = ref('card')
   const add: string = '创建商店'
   const add1: string = '加入商店'
+  const searchText = ref<string>('')
   const state = reactive({
     myMarket: [],
     joinMarket: [],
@@ -258,24 +289,32 @@
     tableHead: [
       {
         prop: 'name',
-        label: '商店名称'
+        label: '商店名称',
       },
       {
         prop: 'code',
-        label: '商店编码'
+        label: '商店编码',
       },
       {
-        prop: 'public',
-        label: '是否公开'
+        type: 'slot',
+        prop: 'isPublic',
+        name: 'isPublic',
+        label: '是否公开',
       },
-
+      {
+        type: 'slot',
+        prop: 'tag',
+        name: 'tag',
+        label: '应用权属',
+      },
       {
         prop: 'remark',
-        label: '商店简介'
+        label: '商店简介',
+
       },
       {
         prop: 'createTime',
-        label: '创建时间'
+        label: '创建时间',
       },
       {
         type: 'slot',
@@ -292,19 +331,24 @@
 
   onMounted(() => {
     getMyMarketData()
-    getJoinMarketData()
+    //getJoinMarketData()
     getShopcarNum()
   })
 
   const handleCurrentChange = (val: number) => {
-    state.pageMy.currentPage = val
+
     getMyMarketData()
     console.log(val)
   }
-  const handleCurrentJoinChange = (val: number) => {
-    state.pageJoin.currentPage = val
-    getJoinMarketData()
+  const handleUpdate = (val: any) => {
+    state.pageMy.currentPage = val
+
+    getMyMarketData()
   }
+  // const handleCurrentJoinChange = (val: number) => {
+  //   state.pageJoin.currentPage = val
+  //   getJoinMarketData()
+  // }
   const GoPage = (path: string) => {
     router.push(path)
   }
@@ -316,7 +360,10 @@
   const gotoApp = (item: { id: string }) => {
     router.push({ path: '/market/appList', query: { data: item.id } })
   }
-
+  const searchList = () => {
+    state.pageMy.currentPage = 1
+    getMyMarketData()
+  }
   const getShopcarNum = async () => {
     await $services.market
       .searchStaging({
@@ -334,37 +381,49 @@
   }
 
   const getMyMarketData = () => {
-    $services.appstore
-      .searchManager({
+    $services.market
+      .searchOwn({
         data: {
           offset: state.pageMy.current,
           limit: state.pageMy.pageSize,
-          filter: ''
+          filter: searchText.value
         }
       })
       .then((res: ResultType) => {
-        if (res.code == 200) {
-          state.myMarket = res.data.result ? res.data.result : []
-          state.pageMy.total = res.data.total
+        if (res.success) {
+          const {result = [],total = 0} = res.data
+          state.myMarket = []
+          result?.forEach((item: { id: string })=>{
+            if(item.id === '355346477339512833'){
+              state.myMarket.unshift(item)
+            }
+            else{
+              state.myMarket.push(item)
+            }
+
+          })
+
+          state.pageMy.total = total
+          pageContent.value.state.page.total = total
         }
       })
   }
-  const getJoinMarketData = () => {
-    $services.appstore
-      .searchJoined({
-        data: {
-          offset: state.pageJoin.current,
-          limit: state.pageJoin.pageSize,
-          filter: ''
-        }
-      })
-      .then((res: ResultType) => {
-        if (res.code == 200) {
-          state.joinMarket = res.data.result ? res.data.result : []
-          state.pageJoin.total = res.data.total
-        }
-      })
-  }
+  // const getJoinMarketData = () => {
+  //   $services.appstore
+  //     .searchJoined({
+  //       data: {
+  //         offset: state.pageJoin.current,
+  //         limit: state.pageJoin.pageSize,
+  //         filter: ''
+  //       }
+  //     })
+  //     .then((res: ResultType) => {
+  //       if (res.code == 200) {
+  //         state.joinMarket = res.data.result ? res.data.result : []
+  //         state.pageJoin.total = res.data.total
+  //       }
+  //     })
+  // }
   const marketQuit = (item: any) => {
     ElMessageBox.confirm(`确认退出  ${item.name}?`, '提示', {
       confirmButtonText: '确认',
@@ -380,7 +439,7 @@
           })
           .then((res: ResultType) => {
             if (res.code == 200) {
-              getJoinMarketData()
+              //getJoinMarketData()
               ElMessage({
                 message: '退出成功',
                 type: 'success'
@@ -524,7 +583,7 @@
             type: 'success'
           })
           state.addDialog.value = false
-          getJoinMarketData()
+          //getJoinMarketData()
         }
       })
   }
@@ -557,10 +616,12 @@
     color: #fff;
     text-align: right;
   }
+
   .market-layout {
     width: 100%;
     height: 100%;
     min-width: 1000px;
+
     .market-head {
       display: flex;
       justify-content: flex-end;
@@ -569,12 +630,21 @@
       padding: 0 20px;
     }
     .market-content {
+
       padding: 16px;
       // margin-top: 4px;
-      height: calc(100vh - 70px);
+      height: calc(100vh - 108px);
       overflow-y: auto;
     }
+
+
     .box {
+      .box-ul{
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+      }
       .box-ul + .box-ul {
         margin-top: 10px;
       }
@@ -584,11 +654,34 @@
 
         &-title {
           font-weight: bold;
-          padding-bottom: 10px;
+          padding: 8px 0;
+        }
+        .getApp-radio {
+          display: flex;
+          width: 100%;
+          justify-content: space-between;
+          margin-bottom: 20px;
+          .box-ul-title {
+            width: 50%;
+            display: flex;
+            justify-content: flex-start;
+          }
+          .search {
+            width: 200px;
+            display: flex;
+            justify-content: flex-start;
+          }
+        }
+        .page-flex {
+
+          position: absolute;
+          right: 40px;
+          bottom: 36px;
         }
         .app-card {
           display: flex;
           flex-wrap: wrap;
+
         }
       }
     }

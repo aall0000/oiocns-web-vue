@@ -126,12 +126,22 @@
   }
   // 跳转至身份管理页面
   const toIdentity = ()=>{
+    let persons = 'getPersons'
+    switch(selectItem.value.data.typeName){
+      case '部门':
+        persons = 'getDepartmentPersons'
+        break
+      case '工作组':
+        persons = 'getJobPersons'
+        break
+    }
     router.push({
       path: '/relation/identity',
       query: {
-        title: '单位',
         belongId: selectItem.value.id,
-        name: selectItem.value.label
+        name: selectItem.value.label,
+        module: 'company',
+        persons: persons,
       }
     })
   }

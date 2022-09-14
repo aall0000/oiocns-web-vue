@@ -9,14 +9,17 @@
           <el-button small link type="primary" @click="GoPage('/market/register')"
             >注册应用</el-button
           >
-          <el-button small link type="primary" @click="GoPage('/market/softShare')"
-            >从共享仓库中添加应用</el-button
-          >
+          <!-- <el-button small link type="primary" @click="GoPage('/market/softShare')"
+            >从开放市场中添加应用</el-button
+          > -->
           <el-button small link type="primary" @click="GoPage('/market/marketList')"
             >商店列表</el-button
           >
-          <el-button small link type="primary" @click.stop="GoPage('/market/order')"
-            >我的订单</el-button
+          <el-button small link type="primary" @click.stop="GoPage('/market/order/buy')"
+            >我买入的</el-button
+          >
+          <el-button small link type="primary" @click.stop="GoPage('/market/order/sell')"
+            >我卖出的</el-button
           >
           <el-badge :value="shopcarNum" style="padding-left: 10px">
             <el-button small link type="primary" @click.stop="GoPage('/market/shopCar')"
@@ -106,7 +109,7 @@
                     </div>
                     <el-dropdown-item @click="deleteApp(item)">移除应用</el-dropdown-item>
                     <!-- <el-dropdown-item  @click="GoPage('/market/appDetail')">应用详情</el-dropdown-item> -->
-                    <el-dropdown-item @click="GoPageWithQuery('/market/publishList', item)"
+                    <el-dropdown-item @click="GoPageWithQuery('/market/publishList', {id:item.id})"
                       >应用上架列表</el-dropdown-item
                     >
                   </el-dropdown-menu>
@@ -188,7 +191,7 @@
   </div>
   <el-dialog
     v-model="publishVisible"
-    title="上架应用"
+    title="应用上架"
     width="600px"
     draggable
     :close-on-click-modal="false"
@@ -256,12 +259,12 @@
   import Unit from '../Market/AppShare/unit.vue'
   import Group from '../Market/AppShare/group.vue'
   import Person from '../Market/AppShare/person.vue'
-  import TheTableButton from './AppList/components/theTableButton3.vue'
+  import TheTableButton from './MarketList/components/theTableButton3.vue'
   import Pagination from '@/components/pagination/index.vue'
   import { storeToRefs } from 'pinia'
   // hoverItem--鼠标移入item的id 用于展示按钮区域
 
-  const add: string = '从共享仓库中添加应用'
+  const add: string = '从开放市场中添加应用'
   const groupShareVisible = ref<boolean>(false)
   const unitShareVisible = ref<boolean>(false)
   const personCohortShareVisible = ref<boolean>(false)
@@ -693,6 +696,7 @@
           flex-wrap: wrap;
           height: calc(100% - 50px);
           align-content:flex-start;
+          overflow-y: auto;
         }
         .tab-card{
           height: 100%;

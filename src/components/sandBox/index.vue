@@ -1,5 +1,5 @@
 <template>
-  <div class="sandboxLayout">
+  <div :class="['sandboxLayout', props.containLink ? '' : 'noData']">
     <iframe
       v-if="props.containLink"
       id="myIframe"
@@ -12,7 +12,7 @@
       height="100%"
       frameborder="0"
     ></iframe>
-    <div v-else>暂无内容</div>
+    <div class="txt" v-else>暂无内容</div>
   </div>
 </template>
 
@@ -39,5 +39,18 @@
     display: flex;
     height: 100%;
     width: 100%;
+
+    &.noData {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+      .txt {
+        margin: 0 auto;
+        font-size: 40px;
+        text-shadow: 5px 5px 5px black, 0px 0px 2px black;
+        color: white;
+      }
+    }
   }
 </style>
