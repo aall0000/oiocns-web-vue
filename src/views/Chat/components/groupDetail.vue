@@ -1,27 +1,17 @@
 <template>
   <div class="group-detail-wrap">
     <el-row align="middle" style="padding-bottom:12px;">
-      <el-col :span="4"><HeadImg :name="detail.name" :label="''"/></el-col>
+      <el-col :span="4">
+        <HeadImg :name="orgChat.curChat.value?.name" :label="''" />
+      </el-col>
       <el-col :span="20">
-        <h4 class="title">{{ detail.name }}</h4>
-        <div class="base-info-desc">{{ detail.remark }}</div>
-        </el-col>
+        <h4 class="title">{{ orgChat.curChat.value?.name }}</h4>
+        <div class="base-info-desc">{{ orgChat.curChat.value?.remark }}</div>
+      </el-col>
     </el-row>
-    <!-- <h1 class="title">{{ detail.name }}</h1>
-    <ul class="base flex ">
-      <HeadImg :name="detail.name" :label="''"/>
-      <li class="base-info">
-        <div class="base-info-top flex"> -->
-          <!-- <p class="base-info-top-name">{{ detail.name }}</p>
-          <el-tag size="small">标签</el-tag> -->
-        <!-- </div>
-        <div class="base-info-desc">{{ detail.remark }}</div>
-      </li>
-    </ul> -->
-    <!-- 组成员 -->
-    <ul class="user-list" >
-      <li class="li-search con" v-if="typeName !== '人员'">
-        <p class="li-search-con">组成员<span class="li-search-con-num">{{ total }}</span>人</p>
+    <ul class="user-list">
+      <li class="li-search con" v-if="orgChat.curChat.value?.typeName !== '人员'">
+        <p class="li-search-con">组成员<span class="li-search-con-num">{{ orgChat.curChat.value?.personNum }}</span>人</p>
         <el-input class="li-search-inp" placeholder="搜索成员">
           <template #suffix>
             <el-icon class="el-input__icon">
@@ -31,40 +21,42 @@
         </el-input>
       </li>
       <ul class="img-list con">
-        <li class="img-list-con img-list-add " @click="openDialogAdd" v-if="typeName === '群组'">+</li>
-        <li class="img-list-con img-list-del " @click="openDialogDel" v-if="typeName === '群组'">
+        <li class="img-list-con img-list-add " @click="openDialogAdd" v-if="orgChat.curChat.value?.typeName === '群组'">+
+        </li>
+        <li class="img-list-con img-list-del " @click="openDialogDel" v-if="orgChat.curChat.value?.typeName === '群组'">
           <el-icon>
             <SemiSelect />
           </el-icon>
         </li>
-        <li class="img-list-con" v-for="item in userList" :key="item.id" :title="item.name">
-          <img class="img-list-con-img" src="@/assets/img/x.png" alt="" />
+        <li class="img-list-con" v-for="item in orgChat.qunPersons.value" :key="item.id" :title="item.name">
+          <HeadImg :name="item.name" :label="''" />
           <span class="img-list-con-name">{{ item.name }}</span>
         </li>
-        <span v-show="total > 10" class="img-list-more-btn" @click="handleViewMoreUser">查看更多</span>
+        <span v-show="orgChat.curChat.value?.personNum > 10" class="img-list-more-btn"
+          @click="orgChat.getPersons(false)">查看更多</span>
       </ul>
-    
-    <li class="con setting-con border-b" v-if="typeName === '群组'">
-      <span class="con-label">我在本群昵称</span>
-      <span class="con-value">测试昵称</span>
-    </li>
-    <li class="con setting-con border-b" v-if="typeName === '群组'">
-      <span class="con-label">{{ `${typeName}备注` }}</span>
-      <span class="con-value">{{ detail.remark }}</span>
-    </li>
-    <li class="con check-con">
-      <el-checkbox v-model="state.isIgnoreMsg" :label="typeName !== '人员' ? '设置群消息免打扰' : '设置免打扰'" />
-    </li>
-    <li class="con check-con">
-      <el-checkbox v-model="state.isStick" :label="typeName !== '人员' ? '置顶该群' : '置顶会话'" />
-    </li>
-  </ul>
+      <li class="con setting-con border-b" v-if="orgChat.curChat.value?.typeName === '群组'">
+        <span class="con-label">我在本群昵称</span>
+        <span class="con-value">测试昵称</span>
+      </li>
+      <li class="con setting-con border-b" v-if="orgChat.curChat.value?.typeName === '群组'">
+        <span class="con-label">{{ `${orgChat.curChat.value?.typeName}备注` }}</span>
+        <span class="con-value">{{ orgChat.curChat.value?.remark }}</span>
+      </li>
+      <li class="con check-con">
+        <el-checkbox v-model="state.isIgnoreMsg"
+          :label="orgChat.curChat.value?.typeName !== '人员' ? '设置群消息免打扰' : '设置免打扰'" />
+      </li>
+      <li class="con check-con">
+        <el-checkbox v-model="state.isStick" :label="orgChat.curChat.value?.typeName !== '人员' ? '置顶该群' : '置顶会话'" />
+      </li>
+    </ul>
     <div class="footer">
-      <template v-if="typeName==='群组'">
+      <template v-if="orgChat.curChat.value?.typeName==='群组'">
         <el-button type="danger" plain>退出该群</el-button>
         <el-button type="danger">解散该群</el-button>
       </template>
-       <template v-if="typeName==='人员'">
+      <template v-if="orgChat.curChat.value?.typeName==='人员'">
         <el-button type="danger" plain>删除好友</el-button>
       </template>
       <template v-else>
@@ -78,7 +70,7 @@
       <div class="invitateBox-box" v-for="(item, index) in state.friendsData" :key="item.id"
         @click="onClickBox(item, index)">
         <div class="invitateBox-flex">
-          <img src="https://cube.elemecdn.com/6/94/4d3ea53c084bad6931a56d5158a48jpeg.jpeg" alt="" />
+          <HeadImg :name="item.name" :label="''" />
           <div class="invitateBox-name">{{ item.name }}</div>
         </div>
         <div class="invitateBox-btn" :style="state.ids.includes(item.id) ? 'background:#466DFF' : ''">
@@ -95,10 +87,10 @@
   </el-dialog>
   <el-dialog v-model="dialogVisibleDel" title="移出群聊" width="30%">
     <div class="invitateBox">
-      <div class="invitateBox-box" v-for="(item, index) in state.delfriendsData" :key="item.id"
+      <div class="invitateBox-box" v-for="(item, index) in orgChat.qunPersons.value" :key="item.id"
         @click="onClickBoxDel(item, index)">
         <div class="invitateBox-flex">
-          <img src="https://cube.elemecdn.com/6/94/4d3ea53c084bad6931a56d5158a48jpeg.jpeg" alt="" />
+          <HeadImg :name="item.name" :label="''" />
           <div class="invitateBox-name">{{ item.name }}</div>
         </div>
         <div class="invitateBox-btn" :style="state.delids.includes(item.id) ? 'background:#466DFF' : ''">
@@ -119,34 +111,9 @@
 import $services from '@/services'
 import { ElMessage } from 'element-plus'
 import HeadImg from '@/components/headImg.vue'
-import { reactive, ref, toRefs } from 'vue'
+import { reactive, ref } from 'vue'
+import orgChat from '@/hubs/orgchat'
 
-
-interface itemResult {
-  code: string
-  createTime: string
-  createUser: string
-  id: string
-  name: string
-  status: number
-  thingId: string
-  typeName: string
-  updateTime: string
-  updateUser: string
-  version: string
-}
-
-type infoType = {
-  typeName: string
-  detail: ImMsgChildType
-  userList: userType[]
-  total: number
-}
-type prop = {
-  info: infoType
-}
-const { info } = defineProps<prop>()
-const { userList, total, detail, typeName } = toRefs(info)
 const dialogVisible = ref(false) // 控制拉入群聊dialog
 const dialogVisibleDel = ref(false) // 控制移出群聊dialog
 const state = reactive({
@@ -161,15 +128,19 @@ const state = reactive({
   delfriendsData: [], // 群聊人员
   delids: [] // 所选择到的好友id列表 移出
 })
-const emit = defineEmits(['updateUserList'])
 
-let current = ref(0)
-
-const isShowMoreUser = ref<boolean>(false)
-const handleViewMoreUser = () => {
-  isShowMoreUser.value = true
-  emit('updateUserList', info.detail.id, current)
-  current.value = info.userList.length - 1
+interface itemResult {
+  code: string
+  createTime: string
+  createUser: string
+  id: string
+  name: string
+  status: number
+  thingId: string
+  typeName: string
+  updateTime: string
+  updateUser: string
+  version: string
 }
 
 // 选择人员事件
@@ -193,7 +164,7 @@ const submitInvite = () => {
   $services.cohort
     .pullPerson({
       data: {
-        id: info.detail.id,
+        id: orgChat.curChat.value?.id,
         targetIds: state.ids
       }
     })
@@ -204,7 +175,7 @@ const submitInvite = () => {
           type: 'success'
         })
         dialogVisible.value = false
-        emit('updateUserList', info.detail.id, current)
+        orgChat.getPersons(true)
       } else {
         ElMessage({
           message: '您不是群管理员',
@@ -218,7 +189,7 @@ const submitInviteDel = () => {
   $services.cohort
     .removePerson({
       data: {
-        id: info.detail.id,
+        id: orgChat.curChat.value?.id,
         targetIds: state.delids
       }
     })
@@ -229,7 +200,7 @@ const submitInviteDel = () => {
           type: 'success'
         })
         dialogVisibleDel.value = false
-        emit('updateUserList', info.detail.id, current)
+        orgChat.getPersons(true)
       } else {
         ElMessage({
           message: '您不是群管理员',
@@ -241,46 +212,25 @@ const submitInviteDel = () => {
 
 const openDialogAdd = () => {
   dialogVisible.value = true
-  current.value = 0
-  $services.person
-    .getFriends({
-      data: {
-        offset: current.value,
-        limit: 10
-      }
-    })
-    .then((res: ResultType) => {
-      if (res.code == 200) {
-        state.friendsData = res.data.result
-      } else {
-        ElMessage({
-          message: res.msg,
-          type: 'warning'
-        })
-      }
-    })
+  orgChat.chats.value.forEach((item)=>{
+    if(item.id === orgChat.userId.value){
+      state.friendsData = item.chats.filter((chat)=>{
+        if(chat.typeName === "人员"){
+          let exist = false
+          orgChat.qunPersons.value.forEach((p)=>{
+            if(chat.id === p.id){
+              exist = true
+            }
+          })
+          return !exist
+        }
+        return false
+      })
+    }
+  })
 }
 const openDialogDel = () => {
   dialogVisibleDel.value = true
-  current.value = 0
-  $services.cohort
-    .getPersons({
-      data: {
-        id: info.detail.id,
-        offset: current.value,
-        limit: 10
-      }
-    })
-    .then((res: ResultType) => {
-      if (res.code == 200) {
-        state.delfriendsData = res.data.result
-      } else {
-        ElMessage({
-          message: res.msg,
-          type: 'warning'
-        })
-      }
-    })
 }
 </script>
 
@@ -457,6 +407,7 @@ const openDialogDel = () => {
       // margin-bottom: 10px;
       cursor: pointer;
       border-radius: 2px;
+
       &-img {
         width: 50px;
         height: 50px;
@@ -510,7 +461,7 @@ const openDialogDel = () => {
   }
 
   .border-b {
-    border-bottom: 1px solid var(--el-border-color);// #d6d6d6;
+    border-bottom: 1px solid var(--el-border-color); // #d6d6d6;
     padding-bottom: 10px;
   }
 }

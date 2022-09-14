@@ -311,7 +311,7 @@
             },
             {
               prop: 'price',
-              label: '单价/天'
+              label: '价格'
             },
             {
               prop: 'days',
@@ -350,10 +350,12 @@
           state.approvalList = []
           state.approvalList = result?.map(
             (item: {
+              marketId: any
               product: { name: any; code: any; source: any; authority: any; typeName: any }
             }) => {
               return {
                 ...item,
+                marketName: store.marketMap.get(item.marketId),
                 productCode: item.product.code,
                 productName: item.product.name,
                 productSource: item.product.source,
@@ -363,6 +365,10 @@
             }
           )
           state.tableHead = [
+            {
+              prop: 'marketName',
+              label: '市场名称'
+            },
             {
               prop: 'productCode',
               label: '应用编号'
@@ -385,7 +391,7 @@
             },
             {
               prop: 'price',
-              label: '单价/天'
+              label: '价格'
             },
             {
               prop: 'days',

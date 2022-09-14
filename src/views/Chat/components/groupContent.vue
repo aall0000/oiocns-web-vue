@@ -1,12 +1,10 @@
 <template>
   <div class="group-content-wrap" ref="nodeRef" @scroll="scrollEvent">
-    <!-- <li class="history-more" @click="getMoreHistory">查看更多</li> -->
-    <template  v-for="(item, index) in list" :key="item.fromId">
+    <template  v-for="(item, index) in orgChat.curMsgs.value" :key="item.fromId">
         <!-- 聊天间隔时间3分钟则 显示时间 -->
-        <div class="chats-space-Time"
-          v-if="index == 0 || moment(item?.updateTime).diff(list[index - 1].updateTime, 'minute') > 3">
+        <div class="chats-space-Time" v-if="isShowTime(index)">
           <span>
-            {{  showChatTime(item?.updateTime)  }}
+            {{  showChatTime(item.createTime)  }}
           </span>
         </div>
         <!-- 左侧聊天内容显示 -->
@@ -15,11 +13,10 @@
           <!-- <span class="reWrite" @click="handleReWrite(item.msgBody)">重新编辑</span> -->
         </div>
 
-        <div class="group-content-left con" v-else-if="item.fromId !== myId" >
-          <!-- <img class="con-img" src="@/assets/img/userIcon/ic_03.png" alt=""> -->
-          <HeadImg :name="getUserName(item.fromId)" :label="''" />
+        <div class="group-content-left con" v-else-if="item.fromId !== orgChat.userId.value" >
+          <HeadImg :name="orgChat.getName(item.fromId)" :label="''" />
           <div class="con-content">
-            <span v-if="showName" class="con-content-name">{{  getUserName(item.fromId)  }}</span>
+            <span v-if="orgChat.curChat.value.typeName!=='人员'" class="con-content-name">{{  orgChat.getName(item.fromId)  }}</span>
             <div class="con-content-link"></div>
             <div class="con-content-txt" v-html="item.msgBody"></div>
           </div>
@@ -32,8 +29,7 @@
             <div class="con-content-txt" v-html="item.msgBody"></div>
             <!-- {{ item.msgBody }} -->
           </div>
-          <!-- <img class="con-img" src="@/assets/img/userIcon/ic_06.png" alt=""> -->
-          <HeadImg :name="getUserName(myId)" />
+          <HeadImg :name="orgChat.getName(item.fromId)" />
         </div>
     </template>
     <!-- 鼠标右键 -->
@@ -50,46 +46,33 @@ import {
   onMounted,
   ref,
   nextTick,
-  onUnmounted,
-  computed,
-  watch,
-  toRefs,
   reactive,
   onBeforeUnmount,
   inject
 } from 'vue'
 import { debounce } from '@/utils/tools'
-import { useUserStore } from '@/store/user'
 import HeadImg from '@/components/headImg.vue'
 import moment from 'moment'
-
-type Props = {
-  list: any[] //消息列表
-  myId: string //使用者id
-  showName: boolean
-}
-const props = defineProps<Props>()
-const { list, myId, showName } = toRefs(props)
-
-const { getUserName, userNameMap } = useUserStore()
-
+import orgChat from '@/hubs/orgchat'
 
 // dom节点
 const nodeRef = ref(null)
 // 事件viewMoreMsg--查看更多 recallMsg--撤销消息
-const emit = defineEmits(['viewMoreMsg', 'recallMsg', 'handleReWrite'])
+const emit = defineEmits(['recallMsg', 'handleReWrite'])
 // 保存当前滚动条距离底部长度
 const scrollOfZeroToEnd = ref<number>(0)
 
-// 查看更多事件
-const getMoreHistory = () => {
-  emit('viewMoreMsg')
-}
 const info = inject('reWrite', ref(''))
 // 重新编辑功能
 const handleReWrite = (txt: string) => {
   info.value = txt
   emit('handleReWrite', txt)
+}
+
+const isShowTime = (index: number)=>{
+  if(index == 0) return true
+  return moment(orgChat.curMsgs.value[index].createTime).
+  diff(orgChat.curMsgs.value[index - 1].createTime, 'minute') > 3
 }
 
 // 显示聊天间隔时间
@@ -104,12 +87,15 @@ const showChatTime = (chatDate: moment.MomentInput) => {
 }
 
 // 实时滚动条高度
-const scrollTop = debounce(() => {
+const scrollTop = debounce(async() => {
   let scroll = nodeRef.value.scrollTop
   if (scroll < 10) {
-    emit('viewMoreMsg', true)
+   let {data,success} = await orgChat.getHistoryMsg()
+   if (success&&data.offset===data.total) {
+    return
+   }
+    keepScrollPos()
   }
-  console.log('监听滚动', nodeRef.value.scrollHeight)
   // 记录当前滚动位置
   scrollOfZeroToEnd.value = nodeRef.value.scrollHeight - nodeRef.value.scrollTop
 }, 200)
@@ -123,9 +109,9 @@ const goPageEnd = () => {
 }
 // 加载更多时,滚动位置固定
 const keepScrollPos = () => {
-  nextTick(() => {
+  // nextTick(() => {
     nodeRef.value.scrollTop = nodeRef.value.scrollHeight - scrollOfZeroToEnd.value
-  })
+  // })
 }
 
 const scrollEvent = () => {
@@ -202,7 +188,7 @@ defineExpose({
 
 </style>
 <style lang="scss" scoped>
- 
+
 .group-content-wrap {
   padding: 20px;
   background-color: var(--el-bg-color-page);

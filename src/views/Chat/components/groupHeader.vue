@@ -1,16 +1,16 @@
 <template>
   <div class="group-header-wrap">
     <ul class="user flex">
-      <HeadImg :name="info.detail.name" :label="''"/>
+      <HeadImg :name="orgChat.curChat.value?.name" :label="''"/>
       <li class="user-info">
         <div class="user-info-top flex">
-          <p class="user-info-top-name">{{ info.detail.name }}<span v-if="info.total > 0">({{ info.total }}人)</span></p>
-          <el-tag size="small">{{info.detail.label}}</el-tag>
+          <p class="user-info-top-name">{{ orgChat.curChat.value?.name }}<span v-if="orgChat.curChat.value?.personNum > 0">({{ orgChat.curChat.value?.personNum }}人)</span></p>
+          <el-tag size="small">{{orgChat.curChat.value?.label}}</el-tag>
         </div>
       </li>
     </ul>
     <span class="btn-box">
-      <el-icon class="add-btn btn" v-if="info?.detail?.typeName !== '人员'" :size="20" @click="handleAddFun()">
+      <el-icon class="add-btn btn" v-if="orgChat.curChat.value?.typeName !== '人员'" :size="20" @click="handleAddFun()">
         <Plus />
       </el-icon>
       <el-icon class="detail-btn btn" :size="20" @click="handleMoreFun()">
@@ -32,10 +32,7 @@
 <script lang="ts" setup>
 import HeadImg from '@/components/headImg.vue'
 import { ref } from 'vue';
-type prop = {
-  info: any
-}
-const { info } = defineProps<prop>()
+import orgChat from '@/hubs/orgchat'
 const emit = defineEmits(['viewDetail', 'addUserOrCohort'])
 
 const handleMoreFun = () => {

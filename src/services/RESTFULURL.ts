@@ -30,7 +30,6 @@ export default {
     login: person + '/login', // 登录
     logout: person + '/logout', //注销
     register: person + '/register', // 注册
-    approval: person + '/get/all/approval', // 代办列表
     queryInfo: person + '/query/info', // 查询当前登录人员详细信息
     remove: person + '/remove', //删除好友
     removeIdentity: person + '/remove/identity', //删除好友身份
@@ -57,7 +56,7 @@ export default {
     joinSuccess: cohort + '/join/success', //加群组通过
     pullPerson: cohort + '/pull/persons', //拉人进群组
     removeIdentity: cohort + '/remove/identity', //移除群成员身份
-    removePerson: cohort + '/remove/person', //移除群成员
+    removePerson: cohort + '/remove/persons', //移除群成员
     searchCohorts: cohort + '/search/cohorts', //搜索群聊
     update: cohort + '/update' //变更群组
   },
@@ -143,18 +142,20 @@ export default {
     searchMerchandiseApply: market + '​/search/merchandise/apply', //查询产品上架申请
     searchStaging: market + '/search/staging', //查询购物车
     unpublishMerchandise: market + '/unpublish', //下架商品
-    updateMarket: market + '​/update' //更新市场
+    updateMarket: market + '​/update', //更新市场
+    getSoftShareInfo: market + '/search/softshare' //获取开放市场信息
   },
   order: {
     orderConfirm: order + '/confirm', //确认订单详情(买方确认收货)
     create: order + '/create', //创建订单
     createPay: order + '/create/pay', //创建支付
     delete: order + '/delete', //删除订单
+    reject: order + '/reject', //退还商品
     deleteDetail: order + '/delete/detail', //删除订单详情
     deliverMerchandise: order + '/deliver', //交付订单详情中的商品
     searchBuyList: order + '/search/buy/list', //买方查询购买订单列表
     searchDetailList: order + '/search/detail/list', //查询订单详情信息
-    searchMerchandiseSellList: order + '​/search​/merchandise​/sell​/list', //卖方查询指定商品售卖订单列表
+    searchMerchandiseSellList: order + '/search/merchandise/sell/list', //卖方查询指定商品售卖订单列表
     searchPayList: order + '/search​/pay/list', //查询订单支付信息
     searchSellList: order + '/search/sell/list', //卖方查询售卖订单列表
     udpate: order + '/update' //更新订单
@@ -179,11 +180,12 @@ export default {
     queryOwnResource: product + '/query/own/resource', //查询组织/个人拥有的资源列表
     register: product + '/register', //产品登记
     publish: product + '/publish', //产品登记
-    searchUsefulProduct: product + '/search/useful/product',//查询组织/个人可用产品
+    searchUsefulProduct: product + '/search/useful/product', //查询组织/个人可用产品
     searchMerchandiseList: product + '​/search​/merchandise​/List', //根据产品查询产品上架信息
     searchMerchandiseApply: product + '​/search​/merchandise​/apply', //查询产品上架申请
     searchResource: product + '/search/resource', //查询产品资源列表
     searchOwnProduct: product + '/search/own/product', //模糊查找组织/个人产品
+    searchPublishList: product + '/search/publish/List', //查询指定产品的上架信息
     searchShare: product + '/search/share', //查询产品分享情况
     searchShareProduct: product + '/search/share/product', //模糊查找分享商品
     searchWebappmenu: product + '/search​/webappmenu', //查询产品资源菜单
@@ -196,8 +198,21 @@ export default {
     searchGroupShare: product + '/search/group/share',
     deleteGroupShare: product + '/delete/group/share',
     share: product + '/share', //创建针对单位个人的分享
-    searchUnitShare: product + '/search/share',//查询
-    deleteUnitShare: product + '/delete/share',//删除
+    searchUnitShare: product + '/search/share', //查询
+    deleteUnitShare: product + '/delete/share', //删除
+    // 不确定是否已存在
+    department: product + '/distribution/to/deptment',
+    identity: product + '/distribution/to/identity',
+    person: product + '/distribution/to/person',
+    authority: product + '/distribution/to/authority',
+    toDepartment: product + '/search/distribution/to/deptment',
+    toIdentity: product + '/search/distribution/to/identity',
+    toPerson: product + '/search/distribution/to/person',
+    toAuthority: product + '/search/distribution/to/authority',
+    delteDeptment: product + '/delete/distribution/to/deptment',
+    delteAuthority: product + '/delete/distribution/to/authority',
+    delteIdentity: product + '/delete/distribution/to/identity',
+    deltePerson: product + '/delete/distribution/to/person'
   },
   // 历史记录
   history: {
@@ -227,8 +242,7 @@ export default {
     searchManagerPublishApply: appstore + '/search/manager/publish/apply',
     approvalPublish: appstore + '/approval/publish',
     pullTarget: appstore + '/pull/target',
-    searchPublishApply: appstore + '/search/publish/apply',
-
+    searchPublishApply: appstore + '/search/publish/apply'
   }
   //others
 }

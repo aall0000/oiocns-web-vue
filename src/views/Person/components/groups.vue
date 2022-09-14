@@ -59,6 +59,7 @@
   import { ElMessage ,ElMessageBox} from 'element-plus'
   import searchGroup from '@/components/searchs/index.vue'
   import DiyTable from '@/components/diyTable/index.vue'
+import orgChat from '@/hubs/orgchat'
 
   const store = useUserStore()
   const tableData = ref([])
@@ -85,9 +86,9 @@
       name: 'remark'
     },
     {
-      prop: 'belongId',
-      label: '管理单位',
-      name: 'belongId'
+      prop: 'createUser',
+      label: '设立人',
+      name: 'createUser'
     },
     {
       prop: 'createTime',
@@ -163,9 +164,6 @@
       .deleteGroup({
         data: {
           id: id
-        },
-        headers: {
-          Authorization: token
         }
       })
       .then((res: ResultType) => {
@@ -188,7 +186,6 @@
     // console.log(dialogVisible)
   }
   const save = () => {
-    let token = sessionStorage.getItem('TOKEN')
     $services.company
       .createGroup({
         data: {
@@ -198,9 +195,6 @@
           teamName: form.teamName,
           teamCode: form.teamCode,
           teamRemark: form.teamRemark
-        },
-        headers: {
-          Authorization: token
         }
       })
       .then((res: ResultType) => {
@@ -232,6 +226,12 @@
       },
     })
     if (success) {
+      data.result.forEach((item:any)=>{
+        let name = orgChat.getName(item.createUser)
+        if(name && name.length > 0){
+          item.createUser = name
+        }
+      })
       tableData.value = data.result
       pageStore.total = data.total
       diyTable.value.state.page.total = data.total;

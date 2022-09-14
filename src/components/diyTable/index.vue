@@ -81,6 +81,15 @@
                 {{ scope.column.label }}
               </template>
             </el-table-column>
+            <el-table-column
+              v-else-if="item.type === 'expand'"
+              :key="item"
+              type="expand"
+            >
+            <template #default="scope">
+              <slot  :name="item.name" :row="scope.row" :index="scope.$index"></slot>
+              </template>
+            </el-table-column>
             <el-table-column v-else :key="'column' + index" v-bind="item"></el-table-column>
           </template>
         </el-table>
@@ -235,7 +244,7 @@
   }) => {
     if (row.saleStatus === 3) {
       return {
-        backgroundColor: 'var(--el-color-primary-light-9)',//  'rgb(245, 246, 252)',
+        backgroundColor: 'var(--el-color-primary-light-9)', //  'rgb(245, 246, 252)',
         cursor: 'no-drop',
         color: 'gainsboro'
       }
@@ -311,7 +320,7 @@
     emit('handleUpdate', page.value)
   }
   onMounted(() => {
-    console.log('props.options.selectLimit', props.options.selectLimit)
+    // console.log('props.options.selectLimit', props.options.selectLimit)
   })
   /**
    * 鼠标进入表格是隐藏groupselect的drop
@@ -360,8 +369,8 @@
   }) => {
     if (rowIndex === 0) {
       return {
-        background: 'var(--el-color-primary-light-9)',// '#F5F6FC',
-        color: 'var(--el-text-color-primary)',// '#333333',
+        background: 'var(--el-color-primary-light-9)', // '#F5F6FC',
+        color: 'var(--el-text-color-primary)', // '#333333',
         height: '36px',
         padding: '2px 0'
       }

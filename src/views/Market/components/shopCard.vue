@@ -1,9 +1,11 @@
 <template>
   <el-card
     class="shop-card-wrap app-card-item"
-    shadow="always"
+    shadow="hover"
     :key="info.id"
+    @mouseleave="handleWatchMouseOver('')"
     @mouseover="handleWatchMouseOver(info.id)"
+    body-style="height:100%;"
   >
     <div class="app-card-item-con">
       <div class="app-card-item-con-top flex">
@@ -16,44 +18,96 @@
         <!-- <HeadImg :name="info.name" :url="appImg" :imgWidth="48" :limit="1" :isSquare="false" /> -->
         <slot name="icon"></slot>
         <div class="app-con" v-if="!cardContent">
-          <p class="app-con-title">{{ info.name }}</p>
-          <div class="app-card-item-con-desc">
-            {{ info.remark }}
+          <p class="app-con-title">
+            {{ info.name }}
+          </p>
+          <div class="app-tag" style="margin-top:10px">
+            <el-tag v-if="props.type == 'market'" style="margin-right:10px" :type="info.public?'success':'danger'">{{
+              info.public ? '公开的' : '私有的'
+            }}</el-tag>
+            <el-tag v-if="props.type == 'market'&&info.id != '355346477339512833'" style="margin-right:10px">{{
+              info.belongId == queryInfo.id ? '创建的' : '加入的'
+            }}</el-tag>
+            <!-- <el-tag v-if="props.type == 'market'&&info.id == '355346477339512833'" style="margin-right:10px">{{
+              info.belongId == queryInfo.id ? '':''
+            }}</el-tag> -->
+            <el-tag v-if="props.type != 'market' && (info.endTime==undefined||new Date().getTime()<formartDateTime(info?.endTime))" style="margin-right:10px" :type="info.createUser==queryInfo.id?'':'success'">{{
+              info.createUser==queryInfo.id ? '可管理' : '可使用'
+            }}</el-tag>
+            <el-tag v-if="props.type != 'market' && new Date().getTime()>formartDateTime(info?.endTime)" style="margin-right:10px" :type="'danger'">失效</el-tag>
+            <el-tag v-if="props.type != 'market'" style="margin-right:10px">{{info.source}}</el-tag>
           </div>
+          <!-- <div class="app-card-item-con">
+            {{ info.remark }}
+          </div> -->
+
         </div>
+
         <slot v-else name="content"></slot>
       </div>
+      <div>
+      <slot name="footer"></slot>
+
+        <div class="app-card-item-con-footer" v-if="info.id != '355346477339512833'">
+          <el-divider style="margin: 16px 0" v-if="type!='shopCard'"></el-divider>
+            <div class="app-card-item-con-desc" >
+              <p> 归属:{{ orgChat.getName(info.belongId) }}</p>
+            </div>
+            <div class="app-card-item-con-belong">
+              <p>创建:{{ orgChat.getName(info.createUser) }}</p>
+
+            </div>
+            <div v-if="props.type != 'market'" class="app-card-item-con-version">
+             版本:0.0.1
+            </div>
+        </div>
+      </div>
     </div>
+
     <!-- v-show="hoverItem === info.id" -->
-    <div class="app-card-item-footer" v-show="props.overId === info.id" @click.stop>
+    <div class="app-card-item-footer" v-show="state.hoverItem === info.id" @click.stop>
       <slot />
     </div>
   </el-card>
 </template>
 <script lang="ts" setup>
-  import { reactive, toRefs } from 'vue'
-  import HeadImg from '@/components/headImg.vue'
-  import appImg from '@/assets/img/whatsapp.png'
+  import { reactive, ref } from 'vue'
+  import { useUserStore } from '@/store/user'
+  import { storeToRefs } from 'pinia'
+  import orgChat from '@/hubs/orgchat'
   // hoverItem--鼠标移入item的id 用于展示按钮区域
+  const store = useUserStore()
+  const { queryInfo } = storeToRefs(store)
+
   const state: { hoverItem: string } = reactive({ hoverItem: '' })
   type shopInfoType = {
     key?: string
     info: ProductType
+    type?: string
+    createUser?:string
     overId?: string //当前鼠标移入id
     cardContent?: boolean // 卡片内容是否自定义
   }
+  const systemTime = ref<number>();
   const props = defineProps<shopInfoType>()
   const { info } = props
   const emit = defineEmits(['handleMouseOver'])
   const handleWatchMouseOver = (selectId: string) => {
-    emit('handleMouseOver', selectId)
+    // emit('handleMouseOver', selectId)
+    state.hoverItem = selectId || ''
+  }
+  const formartDateTime = (dateStr:any)=>{
+    if(dateStr){
+      var timestamp = new Date(dateStr).getTime();
+      return timestamp
+    }else{
+      return new Date().getTime()+1000
+    }
   }
 </script>
 
 <style lang="scss" scoped>
-  :deep(.el-card__body) {
-    padding: 0;
-  }
+
   .app-card-rightIcon {
     position: absolute;
     right: 10px;
@@ -64,29 +118,42 @@
     right: 0px;
     top: 0px;
   }
+  @media not screen and (min-width: 1300px) {
+    /* styles */
+    .app-card-item{
+      width: calc(33% - 15px) !important;
+    }
+}
   .app-card-item {
     position: relative;
+
     width: 24%;
     min-width: 200px;
-    height: 184px;
+    max-height: 184px;
     margin-bottom: 10px;
-    margin-right: 1%;
+    margin-right: 10px;
+
     // background-color: aqua;
     &-con {
       display: flex;
       flex-direction: column;
-      padding: 24px;
+      justify-content: space-between;
+      // padding: 24px;
+      height: 100%;
+      &-top {
+        flex: 1;
+      }
       .app-con-title {
-        color: #000000d9;
+        // color: #000000d9;
         font-size: 16px;
         font-weight: 400;
       }
       &-desc {
         padding: 10px 0;
-        height: 70px;
+        max-height: 70px;
         font-size: 14px;
         font-weight: 400;
-        color: #00000073;
+        color: var(--el-color-info);
         overflow: hidden;
         text-overflow: 5;
         display: -webkit-box; //将对象作为弹性伸缩盒子模型显示。
@@ -94,12 +161,55 @@
         -webkit-line-clamp: 3; //显示的行数
         // white-space: nowrap;
       }
+
+      &-belong{
+        font-size: 14px;
+        color: var(--el-color-info);
+      }
+    }
+    .app-tag{
+      margin-top: 10px;
+    }
+    .app-card-item-con-footer{
+      width: 100%;
+      margin-top: 30px;
+
+      .app-card-item-con-desc {
+
+        p{
+          font-size: 12px;
+          font-weight: 400;
+          color: var(--el-text-color-secondary);
+
+        }
+
+      }
+      .app-card-item-con-belong {
+        p{
+          font-size: 12px;
+          font-weight: 400;
+          color: var(--el-text-color-secondary);
+
+        }
+
+        }
+      .app-card-item-con-version{
+
+
+        position: absolute;
+        right: 3px;
+        bottom: 7px;
+        font-size: 12px;
+        font-weight: 400;
+        color: var(--el-text-color-secondary);
+      }
+
     }
     &-footer {
       position: absolute;
       bottom: 0;
       width: 100%;
-      height: 48px;
+      max-height: 48px;
       display: flex;
       justify-content: space-around;
       align-items: center;

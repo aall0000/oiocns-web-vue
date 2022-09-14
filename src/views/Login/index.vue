@@ -2,9 +2,9 @@
   <div class="baseLayout">
     <img class="baseLayout-bg" src="@/assets/img/login.png" alt="" />
     <div class="baseLayout-loginBox">
-      <el-carousel
+      <!-- <el-carousel
         ref="carousel"
-        style="height: 100%"
+        style="height: 100%;width:500px"
         :autoplay="false"
         indicator-position="none"
         arrow="never"
@@ -18,7 +18,10 @@
         <el-carousel-item name="third">
           <Register @gotoPrev="gotoPrev" @registerUser="registerUser"></Register>
         </el-carousel-item>
-      </el-carousel>
+      </el-carousel> -->
+      <Login v-show="stept=='first'" @register="register" @userLogin="userLogin" :btnLoading="btnLoading"></Login>
+      <UserInfo v-show="stept=='second'" @gotoPrev="gotoPrev" @gotoNext="gotoNext"></UserInfo>
+      <Register v-show="stept=='third'" @gotoPrev="gotoPrev" @registerUser="registerUser"></Register>
     </div>
     <div class="baseLayout_btmText">
       Copyright 2021 资产云开放协同创新中⼼ 主办单位：浙江省财政厅
@@ -37,11 +40,11 @@
   import { useAnyData } from '@/store/anydata'
   import { useRouter } from 'vue-router'
   import { ElMessage } from 'element-plus'
-  import anyStore from '@/utils/anystore'
 
   const carousel = ref<any>()
   const store = useUserStore()
   const router = useRouter()
+  const stept = ref<string>('first')
   let btnLoading = ref(false)
 
   onMounted(() => {
@@ -51,15 +54,18 @@
 
   let registerData = reactive<Object>({})
   const register = () => {
-    carousel.value?.setActiveItem('second')
+    stept.value = 'second'
+    // carousel.value?.setActiveItem('second')
   }
   const gotoNext = (data: object) => {
+    stept.value = 'third'
     registerData = data
-    carousel.value?.setActiveItem('third')
+    // carousel.value?.setActiveItem('third')
     console.log(registerData)
   }
   const gotoPrev = () => {
-    carousel.value?.setActiveItem('first')
+    stept.value = 'first'
+    // carousel.value?.setActiveItem('first')
   }
   const userLogin = (data: { password: string; username: string; remind: boolean }) => {
     btnLoading.value = true
@@ -71,11 +77,6 @@
       } else {
         setCookie('', '', -1)
       }
-      // 订阅未读消息
-      anyStore.subscribed(`chats`, (data) => {
-        // console.log('noRead===', data)
-        useAnyData().setMessageNoRead(data)
-      })
 
       router.push({ path: 'workHome' })
     })
@@ -104,6 +105,7 @@
   }
 
   const setCookie = (username: string, password: string, days: any) => {
+    return
     let date = new Date() // 获取时间
     date.setTime(date.getTime() + 24 * 60 * 60 * 1000 * days) // 保存的天数
     // 字符串拼接cookie

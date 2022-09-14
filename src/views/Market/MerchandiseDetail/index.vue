@@ -1,19 +1,20 @@
 <template>
   <div class="managerApproval">
     <MarketCard>
-      <template #routeContent
-        ><HeadImg
+      <template #routeContent>
+        <!-- <HeadImg
           :name="market.name"
           :url="market.icon || storeImg"
           :imgWidth="35"
           :limit="1"
           :isSquare="false"
-      /></template>
-      <template #marketNameSlot
+      /> -->
+      </template>
+      <!-- <template #marketNameSlot
         ><span style="color: grey; font-size: 17px; margin-right: 20px"
           >{{ market.name }}
         </span></template
-      >
+      > -->
     </MarketCard>
     <div class="common-layout">
       <div style="height: 85vh">
@@ -39,7 +40,7 @@
               style="width: 90%; float: right; text-align: left; margin: 15px 0px; float: right"
             >
               <div>
-                <div style="font-size: 24px">必剪</div>
+                <div style="font-size: 24px">{{route.query.caption}}</div>
               </div>
               <div>
                 <div style="font-size: 14px; color: silver"
@@ -332,8 +333,8 @@
 import $services from '@/services'
 import { onMounted, reactive, ref } from 'vue'
 import MarketCard from '@/components/marketCard/index.vue'
-import storeImg from '@/assets/img/store.png'
-import bijianImg from '@/assets/img/bijian.png'
+import storeImg from '@/assets/img/app_icon.png'
+import bijianImg from '@/assets/img/app_icon.png'
 import bj1 from '@/assets/img/bj1.jpg'
 import bj2 from '@/assets/img/bj2.jpg'
 import bj3 from '@/assets/img/bj3.jpg'
@@ -341,18 +342,21 @@ import bj4 from '@/assets/img/bj4.jpg'
 import bj5 from '@/assets/img/bj5.jpg'
 import { ElMessage } from 'element-plus'
 import DiyTable from '@/components/diyTable/index.vue'
+  import { useRouter, useRoute } from 'vue-router'
+  const router = useRouter()
+  const route = useRoute()
 const diyTable = ref(null)
 const state = reactive({
   applyList: [],
   tableHead: []
 })
 const market = ref({
-  name: 'XX市场',
+  // name: route.query.market?route.query.market.name:'',
   icon: null,
   score: 4.5,
   orderNum: 56789,
   version: 'beta1.0.1',
-  price: '免费',
+  price: route.query.price?route.query.price:'免费',
   type: 'web应用'
 })
 
@@ -426,7 +430,7 @@ const starterAppApprovalList = async () => {
           },
           {
             prop: 'price',
-            label: '单价/天'
+            label: '价格'
           },
           {
             prop: 'days',

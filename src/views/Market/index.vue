@@ -1,202 +1,197 @@
 <template>
   <div class="market-layout">
-    <MarketCard>
+    <MarketCard :isSee="true">
       <template #right>
-        <el-button type="primary" @click="GoPage('/market/appApply')">我的上架申请</el-button>
-        <el-button type="primary" @click="GoPage('/market/register')">注册应用</el-button>
-        <el-button type="primary" @click="GoPage('/market/markList')">管理商店</el-button>
-        <!-- <el-button type="primary" @click="GoPage('/market/managerApproval')">申请审批</el-button> -->
-        <el-button type="primary" @click.stop="GoPage('/market/order')">我的订单</el-button>
-        <el-badge :value="shopcarNum" style="padding-left: 10px">
-          <el-button type="primary" @click.stop="GoPage('/market/shopCar')">购物车</el-button>
-        </el-badge>
+        <div class="edit-wrap">
+          <el-button small link type="primary" @click="GoPage('/market/appApply')"
+            >我的上架申请</el-button
+          >
+          <el-button small link type="primary" @click="GoPage('/market/register')"
+            >注册应用</el-button
+          >
+          <!-- <el-button small link type="primary" @click="GoPage('/market/softShare')"
+            >从开放市场中添加应用</el-button
+          > -->
+          <el-button small link type="primary" @click="GoPage('/market/marketList')"
+            >商店列表</el-button
+          >
+          <el-button small link type="primary" @click.stop="GoPage('/market/order/buy')"
+            >我买入的</el-button
+          >
+          <el-button small link type="primary" @click.stop="GoPage('/market/order/sell')"
+            >我卖出的</el-button
+          >
+          <el-badge :value="shopcarNum" style="padding-left: 10px">
+            <el-button small link type="primary" @click.stop="GoPage('/market/shopCar')"
+              >购物车</el-button
+            >
+          </el-badge>
+        </div>
+        <div>
+          <el-radio-group v-model="mode" size="small" class="button">
+            <el-radio-button label="list">
+              <el-icon :size="18">
+                <Tickets />
+              </el-icon>
+            </el-radio-button>
+            <el-radio-button label="card">
+              <el-icon :size="18">
+                <Menu />
+              </el-icon>
+            </el-radio-button>
+          </el-radio-group>
+        </div>
       </template>
     </MarketCard>
     <div class="market-content box">
       <ul class="box-ul">
         <div class="getApp-radio">
           <p class="box-ul-title">我的应用</p>
-
+          <div class="search">
+            <el-input v-model="searchText" @input="searchList" placeholder="搜索应用" clearable />
+          </div>
           <!-- <p style="margin-right: 20px">切换视图</p>
           <el-switch v-model="isCard" /> -->
         </div>
         <li class="app-card" v-show="mode === 'card'">
-          <MarketCreate :info="add" @myclick="GoPage('/market/getApp')" />
+          <MarketCreate
+            :info="add"
+            @myclick="GoPage('/market/softShare')"
+          />
           <ShopCard
             v-for="item in state.ownProductList"
             :info="item"
             :key="item.id"
             :over-id="item.id"
           >
-          <template #icon><HeadImg :name="item.name" :url="item.icon || appImg" :imgWidth="48" :limit="1" :isSquare="false" /></template>
+            <template #icon
+              ><HeadImg
+                :name="item.name"
+                :url="item.icon || appImg"
+                :imgWidth="48"
+                :limit="1"
+                :isSquare="false"
+            /></template>
             <template #rightIcon>
               <el-dropdown
                 trigger="click"
-                @command="(value) => handleCommand('own', value, item)"
+                @command="(value:any) => handleCommand('own', value, item)"
                 placement="left-start"
               >
-                <el-icon :size="18"><Operation /></el-icon>
+                <el-icon style="cursor: pointer" :size="20"><Operation /></el-icon>
                 <template #dropdown>
                   <el-dropdown-menu>
-                    <el-dropdown-item
-                      v-for="action in actionOptionsOfOwn"
-                      :command="action.value"
-                      :key="action.value"
-                    >
-                      {{ action.label }}
-                    </el-dropdown-item>
+                    <div v-for="action in actionOptionsOfOwn" :key="action.value">
+                      <div v-if="new Date().getTime() < formartDateTime(item?.endTime)">
+                        <el-dropdown-item
+                          v-if="
+                            item.authority == '所属权' &&
+                            item.belongId == store.workspaceData.id &&
+                            action.label == '上架'
+                          "
+                          :command="action.value"
+                          >{{ action.label }}</el-dropdown-item
+                        >
+                        <el-dropdown-item
+                          v-if="item.belongId == store.workspaceData.id && action.label == '分享'"
+                          :command="action.value"
+                          >{{ action.label }}</el-dropdown-item
+                        >
+                        <el-dropdown-item
+                          v-if="store.workspaceData.type == 2 && action.label == '分发'"
+                          :command="action.value"
+                          >{{ action.label }}</el-dropdown-item
+                        >
+                      </div>
+                      <el-dropdown-item v-if="action.label == '详情'" :command="action.value">{{
+                        action.label
+                      }}</el-dropdown-item>
+                    </div>
                     <el-dropdown-item @click="deleteApp(item)">移除应用</el-dropdown-item>
-                    <el-dropdown-item  @click="GoPage('/market/appDetail')">应用详情</el-dropdown-item>
+                    <!-- <el-dropdown-item  @click="GoPage('/market/appDetail')">应用详情</el-dropdown-item> -->
+                    <el-dropdown-item @click="GoPageWithQuery('/market/publishList', item)"
+                      >应用上架列表</el-dropdown-item
+                    >
                   </el-dropdown-menu>
                 </template>
               </el-dropdown>
             </template>
           </ShopCard>
         </li>
-        <li v-show="mode === 'list'">
+        <li class="tab-card" v-show="mode === 'list'">
           <DiyTable
             ref="diyTable"
             :hasTitle="true"
+            @handleUpdate="handleUpdate"
             :tableData="state.ownProductList"
             :tableHead="state.tableHead"
           >
-            <template #operate="scope">
-              <el-dropdown
-                trigger="click"
-                @command="(value) => handleCommand('own', value, scope.row)"
-                placement="bottom-end"
-              >
-                <el-icon :size="18"><Operation /></el-icon>
-                <template #dropdown>
-                  <el-dropdown-menu>
-                    <el-dropdown-item
-                      v-for="action in actionOptionsOfOwn"
-                      :command="action.value"
-                      :key="action.value"
-                    >
-                      {{ action.label }}
-                    </el-dropdown-item>
-                    <el-dropdown-item @click="deleteApp(scope.row)">移除应用</el-dropdown-item>
-                  </el-dropdown-menu>
-                </template>
-              </el-dropdown>
+            <template #name="scope">
+              {{ scope.row.name }}
             </template>
-          </DiyTable>
-        </li>
+            <template #tag="scope">
+              <el-tag
+                v-if="
+                  scope.row.endTime == undefined ||
+                  new Date().getTime() < formartDateTime(scope.row?.endTime)
+                "
+                style="margin-left: 10px"
+                :type="scope.row.createUser == queryInfo.id ? '' : 'success'"
+                >{{ scope.row.createUser == queryInfo.id ? '可管理' : '可使用' }}</el-tag
+              >
+              <el-tag
+                v-if="new Date().getTime() > formartDateTime(scope.row?.endTime)"
+                style="margin-left: 10px"
+                :type="'danger'"
+                >失效</el-tag
+              >
+              <el-tag style="margin-left: 10px">{{ scope.row.source }}</el-tag>
+            </template>
+            <template #operate="scope">
+              <el-button
+                v-if="
+                  scope.row.authority == '所属权' && scope.row.belongId == store.workspaceData.id
+                "
+                link
+                type="primary"
+                @click="publishVisible = true"
+                >上架</el-button
+              >
+              <el-button
+                link
+                type="primary"
+                v-if="scope.row.belongId == store.workspaceData.id"
+                @click="openShareDialog"
+                >分享</el-button
+              >
+              <el-button
+                link
+                type="primary"
+                v-if="store.workspaceData.type == 2"
+                @click="cohortVisible = true"
+                >分发</el-button
+              >
+              <el-button
+                link
+                type="primary"
+                @click="GoPage(`/market/detail/${selectProductItem.id}`)"
+              >
+                详情
+              </el-button>
 
-        <el-pagination
-          style="justify-content: end"
-          hide-on-single-page
-          layout="prev, pager, next"
-          :total="state.ownTotal"
-        />
-      </ul>
-      <ul class="box-ul">
-        <p class="box-ul-title">其他应用</p>
-        <li class="app-card" v-show="mode === 'card'">
-          <ShopCard
-            v-for="item in state.shareProductList"
-            :info="item"
-            :key="item.id"
-            :over-id="item.id"
-          >
-          <template #icon><HeadImg :name="item.name" :url="item.icon || appImg" :imgWidth="48" :limit="1" :isSquare="false" /></template>
-            <template #rightIcon>
-              <el-dropdown
-                trigger="click"
-                @command="(value) => handleCommand('own', value, item)"
-                placement="left-start"
-              >
-                <el-icon :size="18"><Operation /></el-icon>
-                <template #dropdown>
-                  <el-dropdown-menu>
-                    <el-dropdown-item
-                      v-for="action in actionOptionsOfOwn"
-                      :command="action.value"
-                      :key="action.value"
-                    >
-                      {{ action.label }}
-                    </el-dropdown-item>
-                    <el-dropdown-item @click="deleteApp(item)">移除应用</el-dropdown-item>
-                    <el-dropdown-item  @click="GoPage('/market/appDetail')">应用详情</el-dropdown-item>
-                  </el-dropdown-menu>
-                </template>
-              </el-dropdown>
-            </template>
-            <!-- <template #rightIcon>
-              <el-dropdown trigger="click">
-                <el-icon :size="18" ><Operation /></el-icon>
-                <template #dropdown>
-                  <el-dropdown-menu>
-                    <el-dropdown-item >Action 1</el-dropdown-item>
-                  </el-dropdown-menu>
-                </template>
-              </el-dropdown>
-            </template>
-            <el-dropdown @command="(value) => handleCommand('other', value, item)" placement="left-start">
-              <el-button class="btn" type="primary" link small> 设置 </el-button>
-              <template #dropdown>
-                <el-dropdown-menu>
-                  <el-dropdown-item v-for="action in actionOptionsOfOther" :command="action.value" :key="action.value">
-                    {{ action.label }}
-                  </el-dropdown-item>
-                </el-dropdown-menu>
-              </template>
-            </el-dropdown>
-            <el-divider direction="vertical" />
-            <el-button class="btn" link small @click="deleteApp(item)">移除应用</el-button> -->
-          </ShopCard>
-        </li>
-        <li v-show="mode === 'list'">
-          <DiyTable
-            ref="diyTable"
-            :hasTitle="true"
-            :tableData="state.shareProductList"
-            :tableHead="state.tableHead"
-          >
-            <template #operate="scope">
-              <el-dropdown
-                trigger="click"
-                @command="(value) => handleCommand('own', value, scope.row)"
-                placement="bottom-end"
-              >
-                <el-icon :size="18"><Operation /></el-icon>
-                <template #dropdown>
-                  <el-dropdown-menu>
-                    <el-dropdown-item
-                      v-for="action in actionOptionsOfOwn"
-                      :command="action.value"
-                      :key="action.value"
-                    >
-                      {{ action.label }}
-                    </el-dropdown-item>
-                    <el-dropdown-item @click="deleteApp(scope.row)">移除应用</el-dropdown-item>
-                  </el-dropdown-menu>
-                </template>
-              </el-dropdown>
+              <el-button link type="primary" @click="deleteApp(scope.row)">移除应用</el-button>
             </template>
           </DiyTable>
         </li>
-        <el-pagination
-          style="justify-content: end"
-          hide-on-single-page
-          layout="prev, pager, next"
-          :total="state.shareTotal"
-        />
+        <div class="page-flex" v-show="mode === 'card'">
+          <Pagination ref="pageContent" @handleUpdate="handleUpdate"></Pagination>
+        </div>
       </ul>
-      <el-radio-group v-model="mode" size="small" class="button">
-        <el-radio-button label="list"
-          ><el-icon :size="18"><Tickets /></el-icon
-        ></el-radio-button>
-        <el-radio-button label="card"
-          ><el-icon :size="18"><Menu /></el-icon
-        ></el-radio-button>
-      </el-radio-group>
     </div>
   </div>
   <el-dialog
     v-model="publishVisible"
-    title="上架应用"
+    title="应用上架"
     width="600px"
     draggable
     :close-on-click-modal="false"
@@ -211,40 +206,6 @@
     </putaway-comp>
   </el-dialog>
   <el-dialog
-    v-if="groupVisible"
-    v-model="groupVisible"
-    custom-class="group-dialog"
-    :title="title"
-    width="600px"
-    draggable
-    :close-on-click-modal="false"
-  >
-    <el-select
-      v-model="selectedValue"
-      value-key="id"
-      :placeholder="'请' + title"
-      @change="selectchange"
-    >
-      <el-option
-        v-for="item in state.options"
-        :key="item.value"
-        :label="item.label"
-        :value="item.value"
-      />
-    </el-select>
-    <template #footer>
-      <span class="dialog-footer" v-if="store.workspaceData.type == 2">
-        <el-button @click="shareGroup">按集团分享</el-button>
-        <el-button type="primary" @click="shareUnit">按单位分享</el-button>
-        <!-- <el-button @click="groupVisible = false">取消</el-button>
-        <el-button type="primary" @click="shareUnit">确定</el-button> -->
-      </span>
-      <span class="dialog-footer" v-else>
-        <el-button type="primary" @click="shareCohort">按群组分享</el-button>
-      </span>
-    </template>
-  </el-dialog>
-  <el-dialog
     v-if="cohortVisible"
     v-model="cohortVisible"
     custom-class="share-dialog"
@@ -256,37 +217,24 @@
     <Cohort @closeDialog="cohortVisible = false" :info="selectProductItem"></Cohort>
   </el-dialog>
   <el-dialog
-    v-if="unitShareVisible"
-    v-model="unitShareVisible"
+    v-if="shareVisible"
+    v-model="shareVisible"
     custom-class="share-dialog"
     title="应用分享"
     width="1000px"
     draggable
     :close-on-click-modal="false"
   >
-    <Unit :groupId="groupId" :appInfo="appInfo" :groupName="groupName" />
-  </el-dialog>
-  <el-dialog
-    v-if="groupShareVisible"
-    v-model="groupShareVisible"
-    custom-class="share-dialog"
-    title="应用分享"
-    width="1000px"
-    draggable
-    :close-on-click-modal="false"
-  >
-    <Group :groupId="groupId" :appInfo="appInfo" :groupName="groupName" />
-  </el-dialog>
-  <el-dialog
-    v-if="personCohortShareVisible"
-    v-model="personCohortShareVisible"
-    custom-class="share-dialog"
-    title="应用分享"
-    width="1000px"
-    draggable
-    :close-on-click-modal="false"
-  >
-    <Person :groupId="groupId" :appInfo="appInfo" />
+    <ShareCohort
+      v-if="store.workspaceData.type == 2"
+      @closeDialog="shareVisible = false"
+      :info="selectProductItem"
+    ></ShareCohort>
+    <SharePersonBox
+      v-else
+      @closeDialog="shareVisible = false"
+      :info="selectProductItem"
+    ></SharePersonBox>
   </el-dialog>
 </template>
 <script setup lang="ts">
@@ -297,6 +245,8 @@
   import PutawayComp from './components/putawayComp.vue'
   import { baseData, actionOptionsOfOther, actionOptionsOfOwn } from './config'
   import Cohort from './components/cohortBox.vue'
+  import ShareCohort from './components/shareCohortBox.vue'
+  import SharePersonBox from './components/sharePersonBox.vue'
   import { useRouter } from 'vue-router'
   import type { FormInstance, FormRules } from 'element-plus'
   import MarketCreate from './components/marketCreate.vue'
@@ -304,13 +254,17 @@
   import { useUserStore } from '@/store/user'
   import DiyTable from '@/components/diyTable/index.vue'
   import { appendFile } from 'fs'
-  import appImg from '@/assets/img/whatsapp.png'
+  import appImg from '@/assets/img/app_icon.png'
   import $services from '@/services'
   import Unit from '../Market/AppShare/unit.vue'
   import Group from '../Market/AppShare/group.vue'
   import Person from '../Market/AppShare/person.vue'
-  import TheTableButton from './AppList/components/theTableButton3.vue'
-  const add: string = '从应用市场中添加'
+  import TheTableButton from './MarketList/components/theTableButton3.vue'
+  import Pagination from '@/components/pagination/index.vue'
+  import { storeToRefs } from 'pinia'
+  // hoverItem--鼠标移入item的id 用于展示按钮区域
+
+  const add: string = '从开放市场中添加应用'
   const groupShareVisible = ref<boolean>(false)
   const unitShareVisible = ref<boolean>(false)
   const personCohortShareVisible = ref<boolean>(false)
@@ -322,6 +276,9 @@
   const router = useRouter()
   const store = useUserStore()
   const cohort = ref(null)
+
+  const { queryInfo } = storeToRefs(store)
+
   // 当前用户的集团
   let groups = reactive([])
   // 当前选中的集团
@@ -330,14 +287,30 @@
   const groupVisible = ref<boolean>(false)
   // 分享功能
   const cohortVisible = ref<boolean>(false)
+
+  const shareVisible = ref<boolean>(false)
   // 路由跳转
+  const searchText = ref<string>('')
+  const pageContent = ref(null)
+  const diyTable = ref(null)
+  // 表格展示数据
+  const pageStore = reactive({
+    tableData: [],
+    currentPage: 1,
+    pageSize: 20,
+    total: 0
+  })
+
+  const GoPageWithQuery = (path: string, query: any) => {
+    router.push({ path, query })
+  }
+  //应用搜索
   const GoPage = (path: string) => {
     router.push(path)
   }
   type StateType = {
     ownProductList: ProductType[] //我的应用
     ownTotal: number
-    shareProductList: ProductType[] //其他应用
     shareTotal: number
     marketOptions: any[] //所有市场列表
     options: any[] //集团列表
@@ -348,7 +321,6 @@
   const state: StateType = reactive({
     ownProductList: [],
     ownTotal: 0,
-    shareProductList: [],
     shareTotal: 0,
     marketOptions: [],
     options: [],
@@ -358,8 +330,16 @@
     },
     tableHead: [
       {
+        type: 'slot',
         prop: 'name',
+        name: 'name',
         label: '应用名称'
+      },
+      {
+        type: 'slot',
+        prop: 'tag',
+        name: 'tag',
+        label: '应用状态'
       },
       {
         prop: 'code',
@@ -379,26 +359,23 @@
       },
       {
         prop: 'createTime',
-        label: '创建时间'
+        label: '创建时间',
+        width: '200'
       },
       {
         type: 'slot',
         label: '操作',
         fixed: 'right',
         align: 'center',
-        width: '80',
+        width: '300',
         name: 'operate'
       }
     ]
   })
   const title = ref<string>('')
   onMounted(() => {
-    if (store.workspaceData.type == 1) {
-      actionOptionsOfOwn.splice(2, 1)
-    }
     // 获取列表
-    getProductList('own')
-    getProductList('share')
+    getProductList()
     getShopcarNum()
   })
 
@@ -407,9 +384,9 @@
     // 监听 展示方式变化
     nextTick(() => {
       if (val) {
-        getProductList('own')
+        getProductList()
       } else {
-        getProductList('share')
+        getProductList()
       }
     })
     // 监听所选市场变化
@@ -443,19 +420,27 @@
   // const closeDialog = () => {
   //   shareVisible.value = false
   // }
-
+  const handleUpdate = (page: any) => {
+    pageStore.currentPage = page.currentPage
+    pageStore.pageSize = page.pageSize
+    getProductList()
+  }
   // 获取我的应用列表
-  const getProductList = async (type: 'own' | 'share') => {
-    const { data, success } = await API.product[
-      type === 'own' ? 'searchOwnProduct' : 'searchShareProduct'
-    ]({
-      data: { offset: 0, limit: 10, filter: '' }
+  const getProductList = async () => {
+    const { data, success } = await API.product['searchOwnProduct']({
+      data: {
+        offset: (pageStore.currentPage - 1) * pageStore.pageSize,
+        limit: pageStore.pageSize,
+        filter: searchText.value
+      }
     })
     if (success) {
       const { result = [], total = 0 } = data
-      console.log(result)
-      state[`${type}ProductList`] = [...result]
-      state[`${type}Total`] = total
+      state[`ownProductList`] = [...result]
+      state[`ownTotal`] = total
+      pageStore.total = total
+      diyTable.value.state.page.total = total
+      pageContent.value.state.page.total = total
     }
   }
 
@@ -471,7 +456,7 @@
           data: { id: item.id }
         })
         if (success) {
-          getProductList('own')
+          getProductList()
           ElMessage({
             type: 'success',
             message: '操作成功'
@@ -502,6 +487,9 @@
       case 'distribution':
         cohortVisible.value = true
         break
+      case 'detail':
+        GoPage(`/market/detail/${item.id}`)
+        break
       default:
         break
     }
@@ -509,58 +497,7 @@
 
   //  打开集团选择弹窗
   const openShareDialog = () => {
-    if (store.workspaceData.type == 1) {
-      groupId.value = store.queryInfo.team.id
-
-      appInfo.value = selectProductItem.value.id
-      personCohortShareVisible.value = true
-
-      // API.cohort
-      //   .getJoinedCohorts({
-      //     data: {
-      //       offset: 0,
-      //       limit: 10000,
-      //       filter: ''
-      //     }
-      //   })
-      //   .then((res: ResultType) => {
-      //     console.log(res)
-      //     if (res.data.result && res.data.result.length > 0) {
-      //       let cor = res.data.result
-      //       state.options = cor.map((g: any) => {
-      //         return { value: g.id, label: g.name }
-      //       })
-      //       title.value = '选择群组'
-      //       groupVisible.value = true
-      //     } else {
-      //       ElMessage({
-      //         type: 'warning',
-      //         message: '您暂未加入群组'
-      //       })
-      //     }
-      //   })
-    } else {
-      API.company
-        .companyGetGroups({
-          data: {
-            offset: 0,
-            limit: 1000
-          }
-        })
-        .then((res: ResultType) => {
-          if (res.data.result && res.data.result.length > 0) {
-            groups = res.data.result
-            state.options = groups.map((g) => {
-              return { value: g.id, label: g.name }
-            })
-            title.value = '选择集团'
-            groupVisible.value = true
-            // loadOrgTree(groups[0].id)
-          } else {
-            groups = []
-          }
-        })
-    }
+    shareVisible.value = true
   }
 
   const groupId = ref('')
@@ -582,21 +519,22 @@
     }
   }
   // 跳转到unit分享界面
-  const shareUnit = () => {
-    if (selectedValue.value) {
-      groupId.value = selectedValue.value
-      groupName.value = state.selectLabel.label
-      appInfo.value = selectProductItem.value.id
+  // const shareUnit = () => {
+  //   if (selectedValue.value) {
+  //     groupId.value = selectedValue.value
+  //     groupName.value = state.selectLabel.label
+  //     appInfo.value = selectProductItem.value.id
 
-      groupVisible.value = false
-      unitShareVisible.value = true
-    } else {
-      ElMessage({
-        type: 'warning',
-        message: '请选择集团'
-      })
-    }
-  }
+  //     groupVisible.value = false
+  //     // groupShareVisible.value = true
+  //     shareVisible.value = true
+  //   } else {
+  //     ElMessage({
+  //       type: 'warning',
+  //       message: '请选择集团'
+  //     })
+  //   }
+  // }
   // 按群组分享
   const shareCohort = () => {}
 
@@ -607,8 +545,18 @@
   const putawaySubmit = () => {
     putawayRef.value.onPutawaySubmit()
   }
-  const GoPageWithQuery = (path: string, query: any) => {
-    router.push({ path, query })
+  //搜索应用
+  const searchList = () => {
+    pageStore.currentPage = 1
+    getProductList()
+  }
+  const formartDateTime = (dateStr: any) => {
+    if (dateStr) {
+      var timestamp = new Date(dateStr).getTime()
+      return timestamp
+    } else {
+      return new Date().getTime() + 1000
+    }
   }
 </script>
 
@@ -619,10 +567,12 @@
     display: flex;
     align-items: center;
   }
+
   .share-dialog > .el-dialog__header {
     text-align: center;
     font-weight: bold;
   }
+
   .share-dialog > .el-dialog__body {
     padding: 10px 20px;
   }
@@ -631,10 +581,17 @@
   .header-box {
     display: flex;
   }
+
   .cohortLayout {
     width: 100%;
     height: 500px;
     overflow: auto;
+  }
+
+  .page-flex {
+    height: 64px;
+    width: 100%;
+    overflow: hidden;
   }
   .menuRight {
     width: 100px;
@@ -673,6 +630,7 @@
     width: 100%;
     height: 100%;
     min-width: 1000px;
+    position: relative;
     .market-head {
       display: flex;
       justify-content: flex-end;
@@ -681,17 +639,31 @@
       padding: 0 20px;
     }
     .market-content {
+      position: absolute;
       padding: 16px 16px 0;
       // margin-top: 4px;
-      height: calc(100vh - 124px);
+      width: 100%;
+      height: calc(100% - 76px);
       overflow-y: auto;
     }
+    .edit-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
     .button {
-      position: absolute;
-      right: 50px;
-      bottom: 20px;
+      // position: absolute;
+      // right: 50px;
+      // bottom: 20px;
+      margin-left: 20px;
     }
     .box {
+      .box-ul{
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+      }
       .box-ul + .box-ul {
         margin-top: 10px;
       }
@@ -706,8 +678,15 @@
         .getApp-radio {
           display: flex;
           width: 100%;
+          justify-content: space-between;
+          margin-bottom: 20px;
           .box-ul-title {
             width: 50%;
+            display: flex;
+            justify-content: flex-start;
+          }
+          .search {
+            width: 200px;
             display: flex;
             justify-content: flex-start;
           }
@@ -715,6 +694,11 @@
         .app-card {
           display: flex;
           flex-wrap: wrap;
+          height: calc(100% - 50px);
+          align-content:flex-start;
+        }
+        .tab-card{
+          height: 100%;
         }
       }
     }

@@ -6,7 +6,7 @@
         <p><span class="custom-span"></span> 基础信息</p>
       </div>
       <el-form
-        :model="form"
+        :model="form.data"
         ref="registerFormRef"
         :rules="rules"
         label-position="top"
@@ -15,12 +15,12 @@
         <el-row :gutter="40" justify="space-between">
           <el-col :span="12">
             <el-form-item label="应用名称" prop="name">
-              <el-input v-model="form.name" placeholder="请设置" />
+              <el-input v-model="form.data.name" placeholder="请设置" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="应用编码" prop="code">
-              <el-input v-model="form.code" placeholder="请设置" />
+              <el-input v-model="form.data.code" placeholder="请设置" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -46,7 +46,7 @@
         <el-form-item label="应用介绍">
           <el-input
             :rows="2"
-            v-model="form.remark"
+            v-model="form.data.remark"
             type="textarea"
             maxlength="120"
             show-word-limit
@@ -56,7 +56,7 @@
       </el-form>
     </div>
     <el-divider />
-    <div class="app-base-info register-content">
+    <div class="app-base-info register-content resource-box">
       <div class="custom-title">
         <p> <span class="custom-span"></span> 资源信息 </p>
         <el-icon class="add-btn" :size="20" @click.stop="handleMemuEvent('Add')">
@@ -65,13 +65,13 @@
       </div>
       <SetAppMenu
         :menus="resources.resources"
-        :key="resources.resources.length"
+        :key="`${resources.resources.length}-${resources.resources.map((v:any)=>v?.id||v.customId).join('&')}`"
         @handleMemuEvent="handleMemuEvent"
       />
     </div>
     <el-divider />
     <div class="app-base-info register-content btns">
-      <el-button type="info" @click="router.back()">取消</el-button>
+      <el-button type="info" @click="router.back()"> 取消 </el-button>
       <el-button type="primary" @click="onSubmit">注册</el-button>
     </div>
   </div>
@@ -82,13 +82,17 @@
   import { reactive, ref } from 'vue'
   import { ElMessage, FormRules } from 'element-plus'
   import { useRouter } from 'vue-router'
+  import { useCommonStore } from '@/store/common'
+  const commonStore = useCommonStore()
   const router = useRouter()
-  // 注册基本信息
-  const form = reactive({
-    code: '',
-    name: '',
-    remark: '',
-    privateKey: ''
+  let form = reactive({
+    data: {
+      id: '',
+      code: '',
+      name: '',
+      remark: '',
+      privateKey: ''
+    }
   })
   let resources = reactive({
     resources: [
@@ -101,9 +105,8 @@
       }
     ]
   })
-
+  // 处理资源信息操作
   const handleMemuEvent = (type: ProductMenuEventType, selectId?: string) => {
-    console.log('处理事件', type, selectId)
     switch (type) {
       case 'Add':
         resources.resources.push({
@@ -136,13 +139,13 @@
         break
     }
   }
-
+  // 排序资源信息
   const handleSortMenu = (type: ProductMenuEventType, aimId: string) => {
     const data = resources.resources
     // 根据当前所选标志 获取目标数据信息
     const obj = data.find((item) => item.customId === aimId)
 
-    const idArr = data.map((item: AppMenuType) => item.customId)
+    const idArr = data.map((item: AppResourcesType) => item.customId)
     const index = idArr.indexOf(aimId)
     const endIndex = data.length - 1
     const willChageIndex = type === 'Up' ? index - 1 : index + 1
@@ -150,25 +153,25 @@
     if ((type === 'Down' && willChageIndex > endIndex) || (type === 'Up' && index === 0)) {
       return
     }
-    // 若最后一个选择向下排序,则终止
+    // 换位置
     if (index > -1) {
       const willChangeObj = data[willChageIndex]
       data[index] = willChangeObj
       data[willChageIndex] = obj
     }
   }
-
+  // 触发表单 提交信息
   const onSubmit = () => {
-    console.log('submit!', form)
+    console.log('submit!', form.data)
     onRegisterSubmit()
   }
-
+  // 注册表单Dom
   const registerFormRef = ref<any>(null)
   // 注册验证规则
   const rules = reactive<FormRules>({
     name: [
       { required: true, message: '请输入应用名称', trigger: 'blur' },
-      { min: 2, max: 8, message: '长度限制2-8', trigger: 'blur' }
+      { min: 2, max: 20, message: '长度限制2-20', trigger: 'blur' }
     ],
     code: [
       {
@@ -195,7 +198,7 @@
         const resourcesData = resources.resources.filter((item) => {
           return item.link
         })
-        const params = { ...form, resources: resourcesData }
+        const params = { ...form.data, resources: resourcesData }
         const { success, data } = await API.product.register({
           data: params
         })
@@ -204,6 +207,7 @@
             type: 'success',
             message: '应用注册成功'
           })
+          commonStore.isChangeStartApp = true
           router.back()
         }
       } else {
@@ -211,40 +215,34 @@
       }
     })
   }
-
-  // const createBatchcode = async (params: any) => {
-  //   const { success } = await API.product.createResources({ data: params })
-  //   if (success) {
-  //     ElMessage({
-  //       type: 'success',
-  //       message: '应用注册成功'
-  //     })
-  //     router.back()
-  //   }
-  // }
 </script>
 
 <style lang="scss" scoped>
   .app-register-wrap {
-    height: 100%;
+    // height: 100%;
     background: var(--el-bg-color-overlay);
-    padding: 20px;
+    margin: 16px;
+    border: 0;
     overflow-y: auto;
-    height: calc(100vh - 108px);
+    height: calc(100vh - 148px);
+    padding: 20px;
 
     .register-content {
       width: 600px;
       margin: 0 auto;
       :deep(.el-input__wrapper),
       :deep(.el-textarea__inner) {
-        background-color: #f3f5fa;
+        background-color: var(--el-color-primary-light-9); //#f3f5fa;
         box-shadow: none;
         border: 1px solid var(--el-input-focus-border-color);
       }
       :deep(.el-textarea .el-input__count) {
-        background-color: #f3f5fa;
+        background-color: var(--el-color-primary-light-9); //#f3f5fa;
         box-shadow: none;
       }
+    }
+    .resource-box {
+      min-height: 200px;
     }
     .page-title {
       font-size: 16px;
@@ -253,8 +251,8 @@
     .btns {
       display: flex;
       justify-content: space-around;
-      padding: 10px 0;
-      margin-bottom: 30px;
+      padding: 10px 0 24px;
+      // margin-bottom: 30px;
     }
 
     // 自定义标题
@@ -278,6 +276,16 @@
       cursor: pointer;
       color: var(--el-color-primary);
       margin: 0 10px;
+    }
+    .demo-tabs {
+      height: 100%;
+      :deep(.el-tabs__content) {
+        height: calc(100% - 55px);
+        overflow-y: auto;
+      }
+      :deep(.el-tab-pane) {
+        height: 100%;
+      }
     }
   }
 </style>

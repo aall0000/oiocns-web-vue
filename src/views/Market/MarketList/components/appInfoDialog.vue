@@ -11,19 +11,19 @@
         <template #label>
           <div class="cell-item"> 售卖价格 </div>
         </template>
-        {{ dialogShow.sendData.price }}
+        {{ dialogShow.sendData.price??'--' }}
       </el-descriptions-item>
       <el-descriptions-item>
         <template #label>
           <div class="cell-item"> 售卖权属 </div>
         </template>
-        {{ dialogShow.sendData.sellAuth }}
+        {{ dialogShow.sendData.sellAuth??'--' }}
       </el-descriptions-item>
       <el-descriptions-item>
         <template #label>
-          <div class="cell-item"> 售卖期限 </div>
+          <div class="cell-item"> 使用期限 </div>
         </template>
-        {{ dialogShow.sendData.days }}
+        {{ dialogShow.sendData.days??'--' }}
       </el-descriptions-item>
       <el-descriptions-item>
         <template #label>

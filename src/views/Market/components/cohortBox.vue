@@ -79,26 +79,22 @@
         <Author
           v-if="radio == '1'"
           @delContent="delContent"
-          :resource="resource"
-          :orgData="state.orgData"
+          :departData="state.departData"
         ></Author>
         <Author
           v-if="radio == '2'"
           @delContent="delContentAuth"
-          :resource="resource"
-          :orgData="state.authorData"
+          :departData="state.authorData"
         ></Author>
         <Author
           v-if="radio == '3'"
           @delContent="delContentAuth"
-          :resource="resource"
-          :orgData="state.personsData"
+          :departData="state.personsData"
         ></Author>
         <Author
           v-if="radio == '4'"
           @delContent="delContentAuth"
-          :resource="resource"
-          :orgData="state.identitysData"
+          :departData="state.identitysData"
         ></Author>
       </div>
     </div>
@@ -116,6 +112,7 @@
   import API from '@/services'
   import Author from './components/author.vue'
   import type { TabsPaneContext } from 'element-plus'
+  import { AnyAaaaRecord } from 'dns'
   interface Tree {
     id: string
     label: string
@@ -123,7 +120,9 @@
     children?: Tree[]
   }
   type createInfo = {
-    info: ProductType
+    info: {
+      id:string
+    }
   }
   const searchValue = ref('')
   const searchLeftValue = ref('')
@@ -156,8 +155,8 @@
         label: '按身份分发'
       }
     ],
-    orgData: [], // 集团分发右侧数据
-    rightData: [], // 集团分发历史数据
+    departData: [], // 集团分发右侧数据
+    departHisData: [], // 集团分发历史数据
     centerTree: [], // 职权分发中间树形
     authorHisData: [], // 职权历史数据
     authorData: [], // 职权右侧数据
@@ -168,7 +167,8 @@
   })
   const authorityProps = {
     label: 'name',
-    children: 'nodes'
+    children: 'nodes',
+    disabled: 'disabled',
   }
   const unitProps = {
     label: 'label',
@@ -187,27 +187,29 @@
       state.centerTree = []
       nextTick(() => {
         if (newValue == '1') {
-          state.orgData.forEach((el: any) => {
-            if (el.data.length > 0) {
-              let arr: any[] = []
-              el.data.forEach((al: any) => {
-                if (al.type == 'add' || al.type == 'has') {
-                  arr.push(al.id)
-                }
-              })
-              leftTree.value.setCheckedKeys(arr, true)
-            }
-          })
+          getOrgHistoryData()
+        } else if (newValue == '2' && state.authorData.length == 0) {
+          getHistoryData()
+        } else if (newValue == '3' && state.personsData.length == 0) {
+          getHistoryData()
+        } else if (newValue == '4' && state.identitysData.length == 0) {
+          getHistoryData()
         }
       })
-    },
-    { immediate: true }
+    }
   )
   watch(
     () => resource.value,
     (newValue, oldValue) => {
-      console.log(newValue)
-      getAllHistory()
+      state.authorData = []
+      state.departData = []
+      state.personsData = []
+      state.identitysData = []
+      if (radio.value == '1') {
+        clearTreeType(cascaderTree.value)
+        leftTree.value.setCheckedKeys([])
+      }
+      getHistoryData()
     }
   )
   watch(
@@ -224,17 +226,257 @@
     }
   )
   const props = defineProps<createInfo>()
+
   onMounted(() => {
     searchResource()
     getCompanyTree()
   })
+
   const emit = defineEmits(['closeDialog'])
+  
   const closeDialog = () => {
     emit('closeDialog')
   }
 
-  //获取当前资源下的所有
-  const getAllHistory = () => {}
+  // 清除树形中的type
+  const clearTreeType = (data: any) => {
+    for (let i = 0; i < data.length; i++) {
+      if (data[i].type) {
+        delete data[i].type
+        if (data[i].children.length !== 0) {
+          clearTreeType(data[i].children)
+        }
+      } else {
+        clearTreeType(data[i].children)
+      }
+    }
+  }
+
+  // 获取部门历史数据
+  const getOrgHistoryData = () => {
+    API.product
+      .toDepartment({
+        data: {
+          id: resource.value,
+          offset: 0,
+          limit: 1000,
+          filter: ''
+        }
+      })
+      .then((res: ResultType) => {
+        if (state.departData.length > 0) {
+          let arr: any[] = []
+          state.departData.forEach((el) => {
+            if (el.type == 'add' || el.type == 'has') {
+              arr.push(el.id)
+            }
+          })
+          leftTree.value.setCheckedKeys(arr, true)
+        } else {
+          state.departHisData = res.data.result ? res.data.result : []
+          leftTree.value.setCheckedKeys([])
+          let arr: any[] = []
+          state.departHisData.forEach((el) => {
+            el.type = 'has'
+            arr.push(el.id)
+          })
+          state.departData = state.departHisData
+          leftTree.value.setCheckedKeys(arr, true)
+        }
+      })
+  }
+
+  // 获取历史数据（提交表单后）
+  const getNewHistoryData = () => {
+    switch (radio.value) {
+      case '1':
+        API.product
+          .toDepartment({
+            data: {
+              id: resource.value,
+              offset: 0,
+              limit: 1000,
+              filter: ''
+            }
+          })
+          .then((res: ResultType) => {
+            state.departHisData = res.data.result ? res.data.result : []
+            leftTree.value.setCheckedKeys([])
+            let arr: any[] = []
+            state.departHisData.forEach((el) => {
+              el.type = 'has'
+              arr.push(el.id)
+            })
+            state.departData = JSON.parse(JSON.stringify(state.departHisData))
+            leftTree.value.setCheckedKeys(arr, true)
+          })
+        break
+      case '2':
+        API.product
+          .toAuthority({
+            data: {
+              id: resource.value,
+              offset: 0,
+              limit: 1000,
+              filter: ''
+            }
+          })
+          .then((res: ResultType) => {
+            state.authorHisData = res.data.result ? res.data.result : []
+            centerTree.value.setCheckedKeys([])
+            let arr: any[] = []
+            state.authorHisData.forEach((el) => {
+              el.type = 'has'
+              arr.push(el.id)
+            })
+            state.authorData = state.authorHisData
+            centerTree.value.setCheckedKeys(arr, true)
+          })
+        break
+      case '3':
+        API.product
+          .toPerson({
+            data: {
+              id: resource.value,
+              offset: 0,
+              limit: 1000,
+              filter: ''
+            }
+          })
+          .then((res: ResultType) => {
+            state.personsHisData = res.data.result ? res.data.result : []
+            centerTree.value.setCheckedKeys([])
+            let arr: any[] = []
+            state.personsHisData.forEach((el) => {
+              el.type = 'has'
+              arr.push(el.id)
+            })
+            state.personsData = state.personsHisData
+            centerTree.value.setCheckedKeys(arr, true)
+          })
+        break
+      case '4':
+        API.product
+          .toIdentity({
+            data: {
+              id: resource.value,
+              offset: 0,
+              limit: 1000,
+              filter: ''
+            }
+          })
+          .then((res: ResultType) => {
+            state.identitysHisData = res.data.result ? res.data.result : []
+            centerTree.value.setCheckedKeys([])
+            let arr: any[] = []
+            state.identitysHisData.forEach((el) => {
+              el.type = 'has'
+              arr.push(el.id)
+            })
+            state.identitysData = state.identitysHisData
+            centerTree.value.setCheckedKeys(arr, true)
+          })
+        break
+      default:
+        break
+    }
+  }
+  // 获取历史数据
+  const getHistoryData = () => {
+    switch (radio.value) {
+      case '1':
+        API.product
+          .toDepartment({
+            data: {
+              id: resource.value,
+              offset: 0,
+              limit: 1000,
+              filter: ''
+            }
+          })
+          .then((res: ResultType) => {
+            state.departHisData = res.data.result ? res.data.result : []
+            let arr: any[] = []
+            state.departHisData.forEach((el) => {
+              arr.push(el.id)
+            })
+            leftTree.value.setCheckedKeys(arr, true)
+          })
+        break
+      case '2':
+        API.product
+          .toAuthority({
+            data: {
+              id: resource.value,
+              offset: 0,
+              limit: 1000,
+              filter: ''
+            }
+          })
+          .then((res: ResultType) => {
+            state.authorHisData = res.data.result ? res.data.result : []
+            state.authorData = JSON.parse(JSON.stringify(state.authorHisData))
+            let arr: any[] = []
+            state.authorData.forEach((el) => {
+              el.type = 'has'
+              arr.push(el.id)
+            })
+            if (state.centerTree.length > 0) {
+              centerTree.value.setCheckedKeys(arr, true)
+            }
+          })
+
+        break
+      case '3':
+        API.product
+          .toPerson({
+            data: {
+              id: resource.value,
+              offset: 0,
+              limit: 1000,
+              filter: ''
+            }
+          })
+          .then((res: ResultType) => {
+            state.personsHisData = res.data.result ? res.data.result : []
+            state.personsData = JSON.parse(JSON.stringify(state.personsHisData))
+            let arr: any[] = []
+            state.personsData.forEach((el) => {
+              el.type = 'has'
+              arr.push(el.id)
+            })
+            if (state.centerTree.length > 0) {
+              centerTree.value.setCheckedKeys(arr, true)
+            }
+          })
+        break
+      case '4':
+        API.product
+          .toIdentity({
+            data: {
+              id: resource.value,
+              offset: 0,
+              limit: 1000,
+              filter: ''
+            }
+          })
+          .then((res: ResultType) => {
+            state.identitysHisData = res.data.result ? res.data.result : []
+            state.identitysData = JSON.parse(JSON.stringify(state.identitysHisData))
+            let arr: any[] = []
+            state.identitysData.forEach((el) => {
+              el.type = 'has'
+              arr.push(el.id)
+            })
+            if (state.centerTree.length > 0) {
+              centerTree.value.setCheckedKeys(arr, true)
+            }
+          })
+        break
+      default:
+        break
+    }
+  }
 
   // 树节点过滤
   const filterNode = (value: string, data: any) => {
@@ -244,63 +486,142 @@
 
   // 提交表单
   const submitAll = () => {
-    let departAdd = []
-    let departDel = []
-    let authorAdd = []
-    let authorDel = []
-    let personsAdd = []
-    let personsDel = []
-    let identityAdd = []
-    let identityDel = []
+    let departAdd: any[] = []
+    let departDel: any[] = []
+    let authorAdd: any[] = []
+    let authorDel: any[] = []
+    let personsAdd: any[] = []
+    let personsDel: any[] = []
+    let identityAdd: any[] = []
+    let identityDel: any[] = []
 
-    state.orgData.forEach((el) => {
+    state.departData.forEach((el) => {
       if (el.type == 'add') {
-        departAdd.push(el)
+        departAdd.push(el.id)
       } else if (el.type == 'del') {
-        departDel.push(el)
-      }
-    })
-
-    state.authorData.forEach((el) => {
-      if (el.type == 'add') {
-        personsAdd.push(el)
-      } else if (el.type == 'del') {
-        personsDel.push(el)
+        departDel.push(el.id)
       }
     })
 
     state.personsData.forEach((el) => {
       if (el.type == 'add') {
-        authorAdd.push(el)
+        personsAdd.push(el.id)
       } else if (el.type == 'del') {
-        authorDel.push(el)
+        personsDel.push(el.id)
+      }
+    })
+
+    state.authorData.forEach((el) => {
+      if (el.type == 'add') {
+        authorAdd.push(el.id)
+      } else if (el.type == 'del') {
+        authorDel.push(el.id)
       }
     })
 
     state.identitysData.forEach((el) => {
       if (el.type == 'add') {
-        identityAdd.push(el)
+        identityAdd.push(el.id)
       } else if (el.type == 'del') {
-        identityDel.push(el)
+        identityDel.push(el.id)
       }
     })
 
+    let promise1
+    let promise2
+    let promise3
+    let promise4
+    let promise5
+    let promise6
+    let promise7
+    let promise8
     if (departAdd.length > 0) {
+      promise1 = API.product.department({
+        data: {
+          resId: resource.value,
+          targetIds: departAdd
+        }
+      })
     }
     if (departDel.length > 0) {
+      promise5 = API.product.delteDeptment({
+        data: {
+          resId: resource.value,
+          targetIds: departDel
+        }
+      })
     }
     if (authorAdd.length > 0) {
+      promise2 = API.product.authority({
+        data: {
+          resId: resource.value,
+          targetIds: authorAdd
+        }
+      })
     }
+
     if (authorDel.length > 0) {
+      promise6 = API.product.delteAuthority({
+        data: {
+          resId: resource.value,
+          targetIds: authorDel
+        }
+      })
     }
     if (personsAdd.length > 0) {
+      promise3 = API.product.person({
+        data: {
+          resId: resource.value,
+          targetIds: personsAdd
+        }
+      })
     }
     if (personsDel.length > 0) {
+      promise7 = API.product.deltePerson({
+        data: {
+          resId: resource.value,
+          targetIds: personsDel
+        }
+      })
     }
     if (identityAdd.length > 0) {
+      promise4 = API.product.identity({
+        data: {
+          resId: resource.value,
+          targetIds: identityAdd
+        }
+      })
     }
     if (identityDel.length > 0) {
+      promise8 = API.product.delteIdentity({
+        data: {
+          resId: resource.value,
+          targetIds: identityDel
+        }
+      })
     }
+    Promise.all([promise1, promise2, promise3, promise4]).then((res) => {
+        ElMessageBox.confirm('分发成功，是否继续分发？', {
+          confirmButtonText: '继续',
+          cancelButtonText: '取消',
+          type: 'warning'
+        })
+          .then(() => {
+            state.identitysData = []
+            state.departData = []
+            state.personsData = []
+            state.authorData = []
+            getNewHistoryData()
+          })
+          .catch(() => {
+            closeDialog()
+          })
+    }).catch((err)=>{
+      ElMessage({
+          message: err,
+          type: 'warning'
+        })
+    })
   }
   // 中间树形滚动加载事件
   const load = () => {
@@ -314,43 +635,19 @@
     console.log('点击中间', data, checked, indeterminate)
     if (checked) {
       if (radio.value == '2') {
-        state.authorData.forEach((el) => {
-          if (el.resource == resource.value) {
-            handleBoxClick(state.authorHisData, el.data, data)
-          }
-        })
+        handleBoxClick(state.authorHisData, state.authorData, data)
       } else if (radio.value == '3') {
-        state.personsData.forEach((el) => {
-          if (el.resource == resource.value) {
-            handleBoxClick(state.personsHisData, el.data, data)
-          }
-        })
+        handleBoxClick(state.personsHisData, state.personsData, data)
       } else {
-        state.identitysData.forEach((el) => {
-          if (el.resource == resource.value) {
-            handleBoxClick(state.identitysHisData, el.data, data)
-          }
-        })
+        handleBoxClick(state.identitysHisData, state.identitysData, data)
       }
     } else {
       if (radio.value == '2') {
-        state.authorData.forEach((el) => {
-          if (el.resource == resource.value) {
-            handleBoxCancelClick(state.authorHisData, el.data, data)
-          }
-        })
+        handleBoxCancelClick(state.authorHisData, state.authorData, data)
       } else if (radio.value == '3') {
-        state.personsData.forEach((el) => {
-          if (el.resource == resource.value) {
-            handleBoxCancelClick(state.personsHisData, el.data, data)
-          }
-        })
+        handleBoxCancelClick(state.personsHisData, state.personsData, data)
       } else {
-        state.identitysData.forEach((el) => {
-          if (el.resource == resource.value) {
-            handleBoxCancelClick(state.identitysHisData, el.data, data)
-          }
-        })
+        handleBoxCancelClick(state.identitysHisData, state.identitysData, data)
       }
     }
   }
@@ -361,6 +658,7 @@
     dataList.forEach((el: any, index: number) => {
       if (el.id == data.id) {
         if (result) {
+          data.type = 'del'
           el.type = 'del'
         } else {
           dataList.splice(index, 1)
@@ -376,12 +674,19 @@
       if (dataList[i].id == data.id) {
         if (data.type == 'add') {
           return
+        } else if (data.type == 'has') {
+          return
         }
       }
     }
+
     if (result) {
       data.type = 'has'
-      dataList.push(data)
+      dataList.forEach((el: any) => {
+        if (el.id == data.id) {
+          el.type = 'has'
+        }
+      })
     } else {
       data.type = 'add'
       dataList.push(data)
@@ -392,17 +697,49 @@
     console.log('点击左侧', data, checked, indeterminate)
     if (checked) {
       if (radio.value == '1') {
-        state.orgData.forEach((el) => {
-          if (el.resource == resource.value) {
-            handleBoxClick(state.rightData, el.data, data)
-          }
+        let result = state.departHisData.some((item: any) => {
+          return item.id == data.id
         })
+        for (let i = 0; i < state.departData.length; i++) {
+          if (state.departData[i].id == data.id) {
+            if (data.type == 'add') {
+              return
+            } else if (data.type == 'has') {
+              return
+            }
+          }
+        }
+        if (result) {
+          if (data.type == 'del') {
+            data.type = 'has'
+            state.departData.forEach((el) => {
+              if (el.id == data.id) {
+                el.type = 'has'
+              }
+            })
+            return
+          } else {
+            data.type = 'has'
+            state.departData.push(data)
+          }
+        } else {
+          data.type = 'add'
+          state.departData.push(data)
+        }
       }
     } else {
       if (radio.value == '1') {
-        state.orgData.forEach((el) => {
-          if (el.resource == resource.value) {
-            handleBoxCancelClick(state.rightData, el.data, data)
+        let result = state.departHisData.some((item: any) => {
+          return item.id == data.id
+        })
+        state.departData.forEach((el, index) => {
+          if (el.id == data.id) {
+            if (result) {
+              el.type = 'del'
+              data.type = 'del'
+            } else {
+              state.departData.splice(index, 1)
+            }
           }
         })
       }
@@ -428,22 +765,20 @@
             }
           })
           .then((res: ResultType) => {
-            let arr = []
+            let arr: any[] = []
             arr.push(res.data)
             handleTreeData(arr)
             state.centerTree = arr
             if (state.authorData.length > 0) {
               let arr: any[] = []
-              state.authorData.forEach((el: any) => {
-                if (el.resource == resource.value) {
-                  el.data.forEach((al: any) => {
-                    if (al.type == 'add' || al.type == 'has') {
-                      arr.push(al.id)
-                    }
-                  })
+              state.authorData.forEach((el, index) => {
+                if (el.type == 'add' || el.type == 'has') {
+                  arr.push(el.id)
                 }
               })
-              centerTree.value.setCheckedKeys(arr, true)
+              setTimeout(() => {
+                centerTree.value.setCheckedKeys(arr, true)
+              }, 300)
             }
           })
         break
@@ -468,13 +803,9 @@
 
               if (state.personsData.length > 0) {
                 let arr: any[] = []
-                state.personsData.forEach((el: any) => {
-                  if (el.resource == resource.value) {
-                    el.data.forEach((al: any) => {
-                      if (al.type == 'add' || al.type == 'has') {
-                        arr.push(al.id)
-                      }
-                    })
+                state.personsData.forEach((el) => {
+                  if (el.type == 'add' || el.type == 'has') {
+                    arr.push(el.id)
                   }
                 })
                 centerTree.value.setCheckedKeys(arr, true)
@@ -500,12 +831,8 @@
               if (state.personsData.length > 0) {
                 let arr: any[] = []
                 state.personsData.forEach((el) => {
-                  if (el.resource == resource.value) {
-                    el.data.forEach((al: any) => {
-                      if (al.type == 'add' || al.type == 'has') {
-                        arr.push(al.id)
-                      }
-                    })
+                  if (el.type == 'add' || el.type == 'has') {
+                    arr.push(el.id)
                   }
                 })
                 centerTree.value.setCheckedKeys(arr, true)
@@ -526,6 +853,10 @@
             }
           })
           .then((res: ResultType) => {
+            const { result = []} = res.data
+              result.forEach((el:any)=>{
+                el.name.indexOf('管理员') !== -1 ? el.disabled = true : ''
+              })
             if (load == true) {
               state.centerTree.concat(res.data.result)
             } else {
@@ -535,12 +866,8 @@
             if (state.identitysData.length > 0) {
               let arr: any[] = []
               state.identitysData.forEach((el) => {
-                if (el.resource == resource.value) {
-                  el.data.forEach((al: any) => {
-                    if (al.type == 'add' || al.type == 'has') {
-                      arr.push(al.id)
-                    }
-                  })
+                if (el.type == 'add' || el.type == 'has') {
+                  arr.push(el.id)
                 }
               })
               centerTree.value.setCheckedKeys(arr, true)
@@ -553,6 +880,9 @@
   }
   const handleTreeData = (item: any) => {
     for (let i = 0; i < item.length; i++) {
+      if(item[i].name == '管理员'){
+        item[i].disabled = true
+      }
       if (item[i].nodes) {
         handleTreeData(item[i].nodes)
       } else {
@@ -568,24 +898,19 @@
       if (item.type == 'del') {
         return
       } else if (item.type == 'add') {
-        state.authorData.forEach((el) => {
-          if (el.resource == resource.value) {
-            el.data.forEach((al: any, index: number) => {
-              if (al.id == item.id) {
-                el.data.splice(index, 1)
-                centerTree.value.setChecked(item.id, false)
-              }
-            })
+        state.authorData.forEach((el, index) => {
+          if (el.id == item.id) {
+            state.authorData.splice(index, 1)
+            centerTree.value.setChecked(item.id, false)
           }
         })
       } else {
         state.authorData.forEach((el, index) => {
-          if (el.resource == resource.value) {
-            el.data.forEach((al: any) => {
-              if (al.id == item.id) {
-                al.type == 'del'
-              }
-            })
+          if (el.id == item.id) {
+            el.type = 'del'
+            if (state.centerTree.length !== 0) {
+              centerTree.value.setChecked(el.id, false)
+            }
           }
         })
       }
@@ -593,24 +918,19 @@
       if (item.type == 'del') {
         return
       } else if (item.type == 'add') {
-        state.personsData.forEach((el) => {
-          if (el.resource == resource.value) {
-            el.data.forEach((al: any, index: number) => {
-              if (al.id == item.id) {
-                el.data.splice(index, 1)
-                centerTree.value.setChecked(item.id, false)
-              }
-            })
+        state.personsData.forEach((el, index) => {
+          if (el.id == item.id) {
+            state.personsData.splice(index, 1)
+            centerTree.value.setChecked(item.id, false)
           }
         })
       } else {
         state.personsData.forEach((el, index) => {
-          if (el.resource == resource.value) {
-            el.data.forEach((al: any) => {
-              if (al.id == item.id) {
-                al.type == 'del'
-              }
-            })
+          if (el.id == item.id) {
+            el.type = 'del'
+            if (state.centerTree.length !== 0) {
+              centerTree.value.setChecked(el.id, false)
+            }
           }
         })
       }
@@ -618,24 +938,19 @@
       if (item.type == 'del') {
         return
       } else if (item.type == 'add') {
-        state.identitysData.forEach((el) => {
-          if (el.resource == resource.value) {
-            el.data.forEach((al: any, index: number) => {
-              if (al.id == item.id) {
-                el.data.splice(index, 1)
-                centerTree.value.setChecked(item.id, false)
-              }
-            })
+        state.identitysData.forEach((el, index) => {
+          if (el.id == item.id) {
+            state.identitysData.splice(index, 1)
+            centerTree.value.setChecked(item.id, false)
           }
         })
       } else {
         state.identitysData.forEach((el, index) => {
-          if (el.resource == resource.value) {
-            el.data.forEach((al: any) => {
-              if (al.id == item.id) {
-                al.type == 'del'
-              }
-            })
+          if (el.id == item.id) {
+            el.type = 'del'
+            if (state.centerTree.length !== 0) {
+              centerTree.value.setChecked(el.id, false)
+            }
           }
         })
       }
@@ -645,24 +960,17 @@
     if (item.type == 'del') {
       return
     } else if (item.type == 'add') {
-      state.orgData.forEach((el, index) => {
-        if (el.resource == resource.value) {
-          el.data.forEach((al: any, index: number) => {
-            if (al.id == item.id) {
-              el.data.splice(index, 1)
-              leftTree.value.setChecked(item.id, false)
-            }
-          })
+      state.departData.forEach((el, index) => {
+        if (el.id == item.id) {
+          state.departData.splice(index, 1)
+          leftTree.value.setChecked(item.id, false)
         }
       })
     } else {
-      state.orgData.forEach((el, index) => {
-        if (el.resource == resource.value) {
-          el.data.forEach((al: any) => {
-            if (al.id == item.id) {
-              al.type == 'del'
-            }
-          })
+      state.departData.forEach((el, index) => {
+        if (el.id == item.id) {
+          el.type = 'del'
+          leftTree.value.setChecked(el.id, false)
         }
       })
     }
@@ -681,17 +989,6 @@
         if (res.success) {
           tabs.value = res.data.result
           resource.value = res.data.result[0].id
-          res.data.result.forEach((el: any) => {
-            let obj: any = {
-              resource: el.id,
-              data: []
-            }
-            state.orgData.push(obj)
-            state.authorData.push(obj)
-            state.identitysData.push(obj)
-            state.personsData.push(obj)
-          })
-          console.log(state.orgData)
         }
       })
   }

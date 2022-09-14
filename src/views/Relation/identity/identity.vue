@@ -2,7 +2,7 @@
   <div class="container">
     <el-card class="wrap">
       <div>
-        <div class="title">当前{{title + ':' + router.currentRoute.value.query?.name}}</div>
+        <div class="title">{{router.currentRoute.value.query?.name}}身份</div>
       </div>
 
       <div class="search-wrap">
@@ -73,8 +73,9 @@
   // 当前组织ID
   const createIdntityDialog = ref<boolean>(false)
   let formData = reactive<any>({})
-  const belongId = ref(null)
-  const title = ref<any>('')
+  const belongId = ref<any>('')
+  const module = ref<any>('company')
+  const persons = ref<any>('getPersons')
   // 身份列表
   const identityList = reactive({list:[]})
 
@@ -85,6 +86,9 @@
   defineExpose({ refresh });
 
   const checkItem = (val: any) => {
+    val.module = module.value
+    val.persons = persons.value
+    val.belongId = belongId.value
     emit('itemClick', val)
   }
   // 加载身份
@@ -160,9 +164,9 @@
   }
 
   onMounted(() => {
+    module.value = router.currentRoute.value.query?.module
+    persons.value = router.currentRoute.value.query?.persons
     belongId.value = router.currentRoute.value.query?.belongId
-    title.value = router.currentRoute.value.query?.title
-    console.log(title.value)
     loadIdentities()
     loadAuthorityTree()
   })

@@ -1,32 +1,39 @@
 <template>
   <MarketCard>
     <template #right>
-      <el-button type="primary" @click="GoPage('/market/appShelvesApproval')"
+      <el-button small link type="primary" @click="GoPage('/market/appShelvesApproval')"
         >应用上架审批</el-button
       >
-      <el-button type="primary" @click.stop="GoPage('/market/order')">我的订单</el-button>
-      <el-badge :value="shopcarNum" style="padding-left:10px">
-           <el-button type="primary" @click.stop="GoPage('/market/shopCar')">购物车</el-button>
-      </el-badge>
-
+      <el-radio-group v-model="switchValue" size="small" class="button">
+        <el-radio-button label="list"
+          ><el-icon :size="18"><Tickets /></el-icon
+        ></el-radio-button>
+        <el-radio-button label="card"
+          ><el-icon :size="18"><Menu /></el-icon
+        ></el-radio-button>
+      </el-radio-group>
     </template>
   </MarketCard>
   <div class="appListLayout">
     <div class="appListLayout-container">
       <div class="appListLayout-header">
         <p>应用列表</p>
+        <div class="search">
+          <el-input v-model="searchText" @input="searchList" placeholder="搜索应用" clearable />
+        </div>
       </div>
       <div class="appListLayout-content">
         <AppCard
-          v-if="value1"
+          v-if="switchValue=='card'"
           ref="appCard"
           :dataList="state.myAppList"
           :type="route.query.type"
-          @handleUpdate="handleCardUpdate"
-          @shopcarNumChange="getShopcarNum"
         ></AppCard>
+        <div class="page-flex" v-show="switchValue === 'card'">
+          <Pagination ref="pageContent" @handleUpdate="handleUpdate"></Pagination>
+        </div>
         <DiyTable
-          v-else
+          v-show="switchValue!='card'"
           ref="diyTable"
           :hasTitle="true"
           :tableData="state.myAppList"
@@ -38,10 +45,10 @@
           </template>
         </DiyTable>
       </div>
-      <div class="appListLayout-radio" v-if="state.myAppList.length > 0">
+      <!-- <div class="appListLayout-radio" v-if="state.myAppList.length > 0">
         <p style="margin-right: 20px">切换视图</p>
-        <el-switch v-model="value1" />
-      </div>
+        <el-switch v-model="switchValue" />
+      </div> -->
     </div>
   </div>
 </template>
@@ -57,9 +64,19 @@
   const router = useRouter()
   const route = useRoute()
   const diyTable = ref(null)
-  const value1 = ref(true)
+  const switchValue = ref('card')
   const appCard = ref(null)
   const shopcarNum = ref(0)
+  const searchText = ref<string>('')
+  // 表格展示数据
+  const pageStore = reactive({
+    tableData: [],
+    currentPage: 1,
+    pageSize: 20,
+    total: 0
+  })
+  const pageContent = ref(null)
+
   const state = reactive({
     myAppList: [],
     tableHead: [
@@ -73,7 +90,7 @@
       },
       {
         prop: 'price',
-        label: '单价/天'
+        label: '价格'
       },
       {
         prop: 'days',
@@ -94,21 +111,14 @@
     ]
   })
 
-  watch(value1, (val) => {
+  watch(switchValue, (val) => {
     nextTick(() => {
-      if (val) {
-        appCard.value.state.page.currentPage = 1
-        getData()
-      } else {
-        diyTable.value.state.page.currentPage = 1
-        getTableData()
-      }
+      getData()
     })
   })
 
   onMounted(() => {
     getData()
-    getShopcarNum()
   })
 
   const getShopcarNum = async () => {
@@ -126,58 +136,43 @@
         shopcarNum.value = total
       })
   }
-
-  // 卡片切换页数
-  const handleCardUpdate = () => {
-    getData()
-  }
   // 表格切换页数
   const handleUpdate = (page: any) => {
-    getTableData()
+    pageStore.currentPage = page.currentPage
+    pageStore.pageSize = page.pageSize
+    getData()
   }
-
-  const getTableData = () => {
-    $services.appstore
-      .merchandise({
-        data: {
-          id: route.query.data,
-          offset: diyTable.value.state.page.current,
-          limit: diyTable.value.state.page.pageSize,
-          filter: ''
-        }
-      })
-      .then((res: ResultType) => {
-        console.log(res)
-        if (res.code == 200) {
-          state.myAppList = res.data.result || []
-          diyTable.value.state.page.total = res.data.total || 0
-        }
-      })
-  }
-
   const getData = () => {
     $services.appstore
       .merchandise({
         data: {
           id: route.query.data,
-          offset: appCard.value.state.page.current,
-          limit: 12,
-          filter: ''
+          offset: (pageStore.currentPage - 1) * pageStore.pageSize,
+          limit: pageStore.pageSize,
+          filter: searchText.value
         }
       })
       .then((res: ResultType) => {
         if (res.code == 200) {
           state.myAppList = res.data.result || []
-          appCard.value.state.page.total = res.data.total || 0
+          diyTable.value.state.page.total = res.data.total || 0
+          pageContent.value.state.page.total = res.data.total || 0
         }
       })
   }
   const GoPage = (path: string) => {
-    router.push(path)
+    router.push({ path: path, query: { marketId: route.query.data } })
+  }
+  const searchList = ()=>{
+    getData()
   }
 </script>
 
 <style lang="scss" scoped>
+  .button {
+    margin-left:20px
+  }
+
   .appListLayout {
     width: 100%;
     height: calc(100vh - 60px);
@@ -193,7 +188,7 @@
       position: relative;
       width: 100%;
       height: calc(100% - 60px);
-      background-color: #fff;
+      background-color: var(--el-bg-color-overlay);
       overflow: auto;
       display: flex;
       flex-direction: column;
@@ -211,7 +206,7 @@
       justify-content: space-between;
       p {
         font-weight: 600;
-        color: rgba(0, 0, 0, 0.85);
+        // color: rgba(0, 0, 0, 0.85);
       }
     }
   }

@@ -1,8 +1,10 @@
 <template>
   <MarketCard>
     <template #right>
-      <el-button type="primary" @click="GoPage('/market/managerApply')">加入商店审批</el-button>
-      <el-button type="primary" @click="friendShow">邀请加入商店</el-button>
+      <el-button small link type="primary" @click="GoPage('/market/managerApply')"
+        >加入商店审批</el-button
+      >
+      <el-button small link type="primary" @click="friendShow">邀请加入商店</el-button>
     </template>
   </MarketCard>
   <div class="userLayout">
@@ -20,7 +22,7 @@
         <div>{{ scope.row.groupName }}</div>
       </template>
       <template #operate="scope">
-        <TheTableButton :data="scope.row" @update="getData"></TheTableButton>
+        <el-button link type="danger" @click="personDel(scope.row.id)">移出</el-button>
       </template>
     </DiyTable>
   </div>
@@ -67,7 +69,7 @@
     judgeWorkSpace()
   })
   const GoPage = (path: string) => {
-    router.push({ path: path, query: { marketName: route.query.data } })
+    router.push({ path: path, query: { marketId: route.query.data } })
   }
   const checksSearch = (val: any) => {
     if (val.value.length > 0) {
@@ -79,6 +81,24 @@
     } else {
       searchDialog.value = false
     }
+  }
+  //删除人员
+  const personDel = (id: any) => {
+    $services.appstore
+      .removeMemver({
+        data: {
+          id: id
+        }
+      })
+      .then((res: ResultType) => {
+        if (res.code == 200) {
+          ElMessage({
+            message: '移出成功',
+            type: 'success'
+          })
+          getData()
+        }
+      })
   }
   const addFriends = (arr: Array<arrList>) => {
     console.log('arrr', arr)
@@ -93,7 +113,7 @@
         if (res.code == 200) {
           ElMessage({
             message: '申请成功',
-            type: 'warning'
+            type: 'success'
           })
           getData()
           searchDialog.value = false
@@ -127,7 +147,7 @@
         label: '操作',
         fixed: 'right',
         align: 'center',
-        width: '80',
+        width: '100',
         name: 'operate'
       }
     ]

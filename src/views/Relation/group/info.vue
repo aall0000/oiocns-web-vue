@@ -21,7 +21,7 @@
         <el-descriptions-item label="描述" :span="2" label-align="center" align="center">
         <div class="text-remark">
             {{selectItem?.data?.teamRemark}}
-          </div>
+        </div>
         </el-descriptions-item>
       </el-descriptions>
     </div>
@@ -157,9 +157,10 @@
     router.push({
       path: '/relation/identity',
       query: {
-        title: '群组',
         belongId: selectItem.value.id,
         name: selectItem.value.label,
+        module: 'company',
+        persons: 'getPersons',
       }
     })
   }

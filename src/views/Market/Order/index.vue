@@ -1,207 +1,98 @@
 <template>
   <MarketCard>
     <template #right>
-      <el-button type="primary" @click="getTableList('buy')">已购入</el-button>
-      <el-button type="primary" @click="getTableList('sell')">已卖出</el-button>
+        <el-select v-model="statusvalue" filterable placeholder="订单状态" clearable size="small" @change="getTableList(searchType)" style="margin:5px 5px 5px 15px;">
+          <el-option
+            v-for="item in statusoptions"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          />
+        </el-select>
     </template>
   </MarketCard>
   <div class="container">
     <div class="limit_table_height">
-      <el-table
-        class="table-row-sty"
-        :header-cell-style="getRowClass"
-        :data="state.orderList"
-        stripe
-        border
+      <DiyTable
+        v-if="route.fullPath.includes('buy')"
+        ref="diyTable"
+        :hasTitle="true"
+        :tableData="state.orderList"
+        :tableHead="state.tableHeadBuy"
+        :options="{ noPage: true }"
+        @handleUpdate="handleUpdate"
         @select="handleSelect"
-        ref="orderTableRef"
-        v-if="searchType == 'buy'"
       >
-        <el-table-column type="expand">
-          <template #default="props">
-            <div style="margin-left: 50px">
-              <el-table :data="props.row.details" border :header-cell-style="getRowClass">
-                <!-- <el-table-column prop="code" label="订单号" /> -->
-                <el-table-column prop="name" label="名称" />
-                <el-table-column prop="sellAuth" label="售卖权属" />
-                <el-table-column prop="days" label="售卖期限" />
-                <el-table-column prop="price" label="售卖价格" />
-                <el-table-column prop="sellerId" label="卖方名称" />
-                <el-table-column
-                  prop="status"
-                  label="状态"
-                  :formatter="(row, column) => renderDict(row, column, 'OrderStatus')"
-                />
-                <el-table-column prop="createTime" label="创建时间" />
-                <el-table-column prop="name" label="支付记录">
-                  <template #default="scope">
-                    <el-link type="primary" @click="showPayList(scope.row)">点击查看</el-link>
-                  </template>
-                </el-table-column>
-                <el-table-column prop="name" label="操作" width="150" align="center">
-                  <template #default="scope">
-                    <DiyButton >
-                      <template v-slot:opt>
-                        <!-- <div
-                          class="diy-button"
-                          v-show="scope.row.status == 1 && scope.row.ordertype == 'sell'"
-                          @click="sureContent(scope.row.id)"
-                        >
-                          开始交易
-                        </div>
-                        <div
-                          class="diy-button"
-                          v-show="scope.row.status == 100 && scope.row.ordertype == 'buy'"
-                          @click="showPay(scope.row)"
-                        >
-                          支付
-                        </div>-->
-                        <div class="diy-button" v-show="scope.row.status < 102" @click="cancelOrderDetail(scope.row.id, 220, null)">
-                          取消订单
-                        </div> 
-                        <div
-                          class="diy-button"
-                          v-show="scope.row.status < 102 && scope.row.ordertype == 'sell'"
-                          @click="delivery(scope.row.id)"
-                        >
-                          确认交付
-                        </div>
-                        <!-- <div
-                          class="diy-button"
-                          v-show="scope.row.status == 102 && scope.row.ordertype == 'buy'"
-                          @click="accept(scope.row.id)"
-                        >
-                          确认收货
-                        </div>
-                        <div
-                          class="diy-button"
-                          v-show="scope.row.status == 103 && scope.row.ordertype == 'buy'"
-                          @click="comment(scope.row.id)"
-                        >
-                          评价
-                        </div>
-                        <div
-                          class="diy-button"
-                          v-show="scope.row.status == 104 && scope.row.ordertype == 'sell'"
-                          @click="viewComment(scope.row.id)"
-                        >
-                          查看评价
-                        </div> -->
-                      </template>
-                    </DiyButton>
-                  </template>
-                </el-table-column>
-              </el-table>
-            </div>
-          </template>
-        </el-table-column>
-        <el-table-column label="序号" type="index" width="80" align="center">
-          <template #default="scope">
-            <span>{{ (pagination.current - 1) * pagination.limit + scope.$index + 1 }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column prop="code" label="订单号" />
-        <el-table-column prop="name" label="名称" />
-        <!-- <el-table-column
-          prop="status"
-          label="状态"
-          :formatter="(row, column) => renderDict(row, column, 'OrderStatus')"
-        /> -->
-        <el-table-column prop="createTime" label="创建时间" />
-        <el-table-column prop="name" label="操作" width="150" align="center">
-          <template #default="scope">
-            <DiyButton>
-              <template v-slot:opt>
-                <!-- <div class="diy-button" @click="cancelOrder(scope.row.id)"> 取消订单 </div>  -->
-              </template>
-            </DiyButton>
-          </template>
-        </el-table-column>
-      </el-table>
-      <el-table
-        class="table-row-sty"
-        :header-cell-style="getRowClass"
-        :data="state.orderList"
-        stripe
-        border
-        @select="handleSelect"
-        ref="orderTableRef"
-        v-if="searchType == 'sell'"
+      <template #expand="props">
+        <div style="margin-left: 50px">
+          <DiyTable
+        ref="diyTableDetail"
+        :tableData="props.row.details"
+        :tableHead="state.tableHeadSellDetail"
+        :options="{ noPage: true }"
       >
-        <el-table-column label="序号" type="index" width="80" align="center">
-          <template #default="scope">
-            <span>{{ (pagination.current - 1) * pagination.limit + scope.$index + 1 }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column prop="code" label="订单号" />
-        <el-table-column prop="name" label="名称" />
-        <el-table-column prop="belongId" label="买方名称" />
-        <el-table-column prop="sellAuth" label="售卖权属" />
-        <el-table-column prop="days" label="售卖期限" />
-        <el-table-column prop="price" label="售卖价格" />
-        <el-table-column
-          prop="status"
-          label="状态"
-          :formatter="(row, column) => renderDict(row, column, 'OrderStatus')"
-        />
-        <el-table-column prop="createTime" label="创建时间" />
-        <el-table-column prop="name" label="支付记录">
-          <template #default="scope">
+
+          <template #paylist="scope">
             <el-link type="primary" @click="showPayList(scope.row)">点击查看</el-link>
           </template>
-        </el-table-column>
-        <el-table-column prop="name" label="操作" width="150" align="center">
-          <template #default="scope">
+
+          <template #merchandiseStatus="scope">
+            <el-tag v-show="scope.row.merchandise" >在售</el-tag>
+            <el-tag class="ml-2" type="danger"  v-show="!scope.row.merchandise">已下架</el-tag>
+          </template>
+
+          <template #operate="scope">
+            <DiyButton >
+                <template v-slot:opt>
+                  <div class="diy-button" v-show="scope.row.status < 102" @click="cancelOrderDetail(scope.row.id, 220, null)">
+                    取消订单
+                  </div> 
+                  <div class="diy-button" v-show="scope.row.status == 102" @click="reject(scope.row.id)">
+                    退货退款
+                  </div> 
+                </template>
+            </DiyButton>
+          </template>
+      </DiyTable>
+        </div>
+      </template>
+    </DiyTable>
+
+      <DiyTable
+        v-else
+        ref="diyTable"
+        :hasTitle="true"
+        :tableData="state.orderList"
+        :tableHead="state.tableHeadSell"
+        :options="{ noPage: true }"
+        @handleUpdate="handleUpdate"
+        @select="handleSelect"
+      >
+
+          <template #paylist="scope">
+            <el-link type="primary" @click="showPayList(scope.row)">点击查看</el-link>
+          </template>
+
+          <template #merchandiseStatus="scope">
+            <el-tag v-show="scope.row.merchandise" >在售</el-tag>
+            <el-tag class="ml-2" type="danger"  v-show="!scope.row.merchandise">已下架</el-tag>
+          </template>
+
+          <template #operate="scope">
             <DiyButton>
               <template v-slot:opt>
-                <!-- <div
-                  class="diy-button"
-                  v-show="scope.row.status == 1 && scope.row.ordertype == 'sell'"
-                  @click="sureContent(scope.row.id)"
-                >
-                  开始交易
-                </div>
-                <div
-                  class="diy-button"
-                  v-show="scope.row.status == 100 && scope.row.ordertype == 'buy'"
-                  @click="showPay(scope.row)"
-                >
-                  支付
-                </div> -->
                 <div class="diy-button" v-show="scope.row.status < 102" @click="cancelOrderDetail(scope.row.id, 221, null)"> 取消订单 </div>
                 <div
                   class="diy-button"
-                  v-show="scope.row.status < 102 && scope.row.ordertype == 'sell'"
+                  v-show="scope.row.status < 102 && scope.row.merchandise"
                   @click="delivery(scope.row.id)"
                 >
                   确认交付
                 </div>
-                <!-- <div
-                  class="diy-button"
-                  v-show="scope.row.status == 102 && scope.row.ordertype == 'buy'"
-                  @click="accept(scope.row.id)"
-                >
-                  确认收货
-                </div>
-                <div
-                  class="diy-button"
-                  v-show="scope.row.status == 103 && scope.row.ordertype == 'buy'"
-                  @click="comment(scope.row.id)"
-                >
-                  评价
-                </div>
-                <div
-                  class="diy-button"
-                  v-show="scope.row.status == 104 && scope.row.ordertype == 'sell'"
-                  @click="viewComment(scope.row.id)"
-                >
-                  查看评价
-                </div> -->
               </template>
             </DiyButton>
           </template>
-        </el-table-column>
-      </el-table>
+      </DiyTable>
       <payView v-if="payDialog.show" :order="payDialog.data" @close="closePay"></payView>
       <payList v-if="payListDialog.show" :selectLimit="0" @closeDialog="closePayList" />
     </div>
@@ -209,7 +100,7 @@
       class="page-pagination"
       @size-change="(e) => handlePaginationChange(e, 'limit')"
       @current-change="(e) => handlePaginationChange(e, 'current')"
-      small
+      
       background
       :page-sizes="pageSizes"
       v-model:currentPage="pagination.current"
@@ -230,6 +121,9 @@ import payList from '@/components/pay/list.vue'
 import DiyButton from '@/components/diyButton/index.vue'
 import { ElTable } from 'element-plus'
 import moment from 'moment'
+import { useRoute, useRouter } from 'vue-router'
+const router = useRouter()
+  const route = useRoute()
 // 表格分页数据
 const pagination: { current: number; limit: number } = reactive({ current: 1, limit: PAGE_NUM })
 // 表格展示数据
@@ -238,6 +132,7 @@ const pageStore = reactive({
   total: 0
 })
 const searchType = ref<string>('buy')
+const isBuy =  ref<boolean>(true)
 const pageSizes = ref<Array<any>>(PAGE_SIZES)
 const payDialog = reactive({ show: false, data: {} })
 const payListDialog = reactive({ show: false, data: {} })
@@ -250,21 +145,166 @@ const orderTableRef = ref<InstanceType<typeof ElTable>>()
 const handleRowClick = (row: any) => {
   orderTableRef.value!.toggleRowSelection(row, undefined)
 }
+const statusvalue = ref('')
+const statusoptions = [
+        {label: '待卖方确认', value: 1},
+        //包含第三方监管和卖方的审核状态
+        {label: '已发货', value: 102},
+        //后续可能有物流状态接入
+        {label: '买方取消订单', value: 220},
+        {label: '卖方取消订单', value: 221},
+        {label: '已退货', value: 222}
+]
 // 会话列表搜索关键字
 const searchValue = ref<string>('')
 
   onMounted(() => {
-    // window.addEventListener('resize', () => {
-    //     this.tableHeight = calcHeightx(120);
-    //   });
-    //   this.tableHeight = calcHeightx(120);
-    getTableList('buy')
+    if(route.fullPath.includes('buy')){
+      getTableList('buy')
+    }else{
+      getTableList('sell')
+    }
+    
   })
 
   const options = ref<ListItem[]>([])
   const value = ref('')
   const loading = ref(false)
-  const state = reactive({ qunList: [], orderList: [] })
+  const handleUpdate = (page: any) => {
+    getTableList(searchType.value)
+  }
+  const state = reactive({ qunList: [], orderList: [], tableHeadBuy:[
+      {
+        type:'expand',
+        name:'expand',
+      },
+      {
+        prop: 'code',
+        label: '订单号'
+      },
+      {
+        prop: 'name',
+        label: '名称'
+      },
+      {
+        prop: 'createTime',
+        label: '创建时间'
+      },
+
+  ],tableHeadSellDetail:[
+
+      {
+        prop: 'caption',
+        label: '名称'
+      },
+      {
+        prop: 'sellAuth',
+        label: '售卖权属'
+      },
+      {
+        prop: 'days',
+        label: '使用期限'
+      },
+      {
+        prop: 'price',
+        label: '价格'
+      },
+      {
+        prop:'seller.name',
+        label:"卖方名称"
+      },
+      {
+        prop: 'status',
+        label: '状态',
+        formatter: (row:any, column:any) => renderDict(row, column, 'OrderStatus')
+      },
+      {
+        prop: 'createTime',
+        label: '创建时间'
+      },
+      {
+        type: 'slot',
+        label: '支付记录',
+        fixed: 'right',
+        align: 'center',
+        width: '150',
+        name: 'paylist'
+      },
+      {
+        type: 'slot',
+        label: '商品状态',
+        fixed: 'right',
+        align: 'center',
+        width: '150',
+        name: 'merchandiseStatus'
+      },
+      {
+        type: 'slot',
+        label: '操作',
+        fixed: 'right',
+        align: 'center',
+        width: '120',
+        name: 'operate'
+      }
+  ],tableHeadSell: [
+      {
+        prop: 'code',
+        label: '订单号'
+      },
+      {
+        prop: 'caption',
+        label: '名称'
+      },
+      {
+        prop: 'belongName',
+        label: '买方名称'
+      },
+      {
+        prop: 'sellAuth',
+        label: '售卖权属'
+      },
+      {
+        prop: 'days',
+        label: '使用期限'
+      },
+      {
+        prop: 'price',
+        label: '价格'
+      },
+      {
+        prop: 'status',
+        label: '状态',
+        formatter: (row:any, column:any) => renderDict(row, column, 'OrderStatus')
+      },
+      {
+        prop: 'createTime',
+        label: '创建时间'
+      },
+      {
+        type: 'slot',
+        label: '支付记录',
+        fixed: 'right',
+        align: 'center',
+        width: '150',
+        name: 'paylist'
+      },
+      {
+        type: 'slot',
+        label: '商品状态',
+        fixed: 'right',
+        align: 'center',
+        width: '150',
+        name: 'merchandiseStatus'
+      },
+      {
+        type: 'slot',
+        label: '操作',
+        fixed: 'right',
+        align: 'center',
+        width: '120',
+        name: 'operate'
+      }
+    ] })
   //查询
   const getTableList = async (type: string) => {
     searchType.value = type
@@ -316,12 +356,13 @@ const searchValue = ref<string>('')
   }
   //查询已出售订单
   const searchSellList = async () => {
+    state.orderList = [];
     await $services.order
       .searchSellList({
         data: {
           offset: (pagination.current - 1) * pagination.limit,
           limit: pagination.limit,
-          status: 0, //后续改成-1
+          status: statusvalue.value? statusvalue.value:0, //后续改成-1
           filter: ''
         }
       })
@@ -335,15 +376,13 @@ const searchValue = ref<string>('')
         state.orderList = result?.map(
           (item: {
             merchandise: { caption: any; days: any; sellAuth: any; price: any; information: any }
-            order: { code: any; name: any; status: any,belongId:any }
+            order: { code: any; name: any; status: any,belong:any }
           }) => {
+            // if(!item.merchandise) {item.merchandise = {caption: null, days: null, sellAuth: null, price:null, information: null}}
             return {
               ...item,
               code: item.order.code,
-              name: item.merchandise.caption,
-              sellAuth: item.merchandise.sellAuth,
-              days: item.merchandise.days,
-              belongId: item.order.belongId,
+              belongName: item.order.belong.name,
             }
           }
         )
@@ -351,12 +390,13 @@ const searchValue = ref<string>('')
   }
   //查询已购入订单
   const searchBuyList = async () => {
+     state.orderList = [];
     await $services.order
       .searchBuyList({
         data: {
           offset: (pagination.current - 1) * pagination.limit,
           limit: pagination.limit,
-          status: 0, //后续改成-1
+          status: statusvalue.value? statusvalue.value:0, //后续改成-1
           filter: ''
         }
       })
@@ -367,15 +407,8 @@ const searchValue = ref<string>('')
           item.ordertype = 'buy'
           if (item.details) {
             item.details = item.details.map((e:any) => {
-              if (!e.merchandise) {
-                return e
-              }
               return {
                 ...e,
-                name: e.merchandise.caption,
-                sellAuth: e.merchandise.sellAuth,
-                price: e.merchandise.price,
-                days: e.merchandise.days
               }
             })
           }
@@ -475,6 +508,26 @@ const searchValue = ref<string>('')
         }
       })
   }
+    //退货退款
+  const reject = async (id: string) => {
+    await $services.order
+      .reject({
+        data: {
+          id: id,
+          status: 222
+        }
+      })
+      .then((res: ResultType) => {
+        if (res.code == 200) {
+          getTableList(searchType.value)
+          ElMessage({
+            message: '退货成功',
+            type: 'success'
+          })
+        }
+      })
+  }
+
   //取消订单详情  由删除更改为中止
   const cancelOrderDetail = async (id: string,status:number,reason:string) => {
     // await $services.order
@@ -646,14 +699,15 @@ const searchValue = ref<string>('')
 </script>
 <style lang="scss" scoped>
   .container {
-    width: 100%;
+    // width: 100%;
     height: 100vh;
-    background: #f0f2f5;
+    // background: var(--el-bg-color);
     display: flex;
     flex-direction: column;
-    padding-bottom: 10px;
-
+    margin: 16px;
+    border: 0;
     .limit_table_height {
+      
     }
     .tables {
       height: 50%;
@@ -662,7 +716,7 @@ const searchValue = ref<string>('')
       display: flex;
       justify-content: space-between;
       padding: 10px;
-      background: #fff;
+      // background: #fff;
       .edit {
         font-size: 14px;
         font-weight: bold;
@@ -702,12 +756,12 @@ const searchValue = ref<string>('')
       .header-title {
         font-size: 16px;
         font-weight: bold;
-        color: rgba(48, 49, 51, 1);
+        // color: #303133;
         padding: 0 0 10px;
 
         i {
           font-size: 20px;
-          color: rgba(21, 74, 216, 1);
+          color: var(--el-color-primary);
         }
       }
 
@@ -805,6 +859,7 @@ const searchValue = ref<string>('')
   }
   .table-row-sty {
     height: calc(100vh - 12rem);
+    padding: 16px;
   }
   .table-row-sty tr:hover,
   .table-row-sty tbody tr.el-table__row.not-read:hover {

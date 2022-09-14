@@ -205,7 +205,7 @@ const handleUpdate = (page: any)=>{
 
 //查看申请
 const viewApplication = (row: any) => {
-  router.push('/cardDetail')
+ router.push({ path: '/cardDetail' ,query: {type: 1,id: props.selectItem.id}})
 }
 
 // 移除
@@ -310,8 +310,6 @@ const cardHeight = ref(null)
 const tableHeight = ref<number>(100)
 onMounted(() => {
   getUsers()
-
-
 })
 
 watch(props, () => {

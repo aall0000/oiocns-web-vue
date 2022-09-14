@@ -20,7 +20,7 @@
             </el-icon>
           </div>
         </div>
-        <div>
+      
           <div @mouseover="handleOpen()" class="select-drop" :style="getDropMenuStyle">
             <div class="select-box" v-infinite-scroll="load" infinite-scroll-immediate>
               <div
@@ -41,11 +41,11 @@
             </div>
 
             <div class="joinBox">
-              <div class="joinBtn" @click="createCompany">创建单位</div>
-              <div class="joinBtn" @click="friendShow">加入单位</div>
+              <el-button class="joinBtn" @click="createCompany" text type="primary">创建单位</el-button>
+              <el-button class="joinBtn" @click="friendShow" text type="primary">加入单位</el-button>
             </div>
           </div>
-        </div>
+        
       </div>
     </el-col>
     <!-- 中间搜索 -->
@@ -71,10 +71,8 @@
     <el-col :span="14" class="flex col-right">
       <el-space class="right-navbar">
         <el-link :underline="false" class="header-message-icon" @click="() => router.push('/chat')">
-          <el-badge
-            :value="anydata?.message?.noReadCount > 10 ? `10+` : anydata?.message?.noReadCount"
-            v-if="anydata?.message?.noReadCount && anydata?.message?.noReadCount > 0"
-          >
+          <el-icon v-if="orgChat.isConnected() === true" class="header-message-icon link" :size="12"><Link /></el-icon>
+          <el-badge :value="orgChat.getNoRead()" v-if="orgChat.getNoRead().length > 0">
             <el-icon class="header-message-icon" :size="18"><ChatDotSquare /></el-icon>
           </el-badge>
           <el-icon class="header-message-icon" :size="18" v-else><ChatDotSquare /></el-icon>
@@ -137,11 +135,9 @@
 <script lang="ts" setup>
   import { ref, watch, onMounted, reactive, computed } from 'vue'
   import { Search } from '@element-plus/icons-vue'
-  import anyStore from '@/utils/anystore'
   import { storeToRefs } from 'pinia'
   import { useRouter } from 'vue-router'
   import { useUserStore } from '@/store/user'
-  import { useAnyData } from '@/store/anydata'
   import $services from '@/services'
   import { ElMessage } from 'element-plus'
   import CreateUnitDialog from './createUnitDialog.vue'
@@ -150,12 +146,12 @@
   import SearchDialog from './searchDialog.vue'
   import headImg from '@/components/headImg.vue'
   import { useDark, useToggle } from '@vueuse/core'
+  import orgChat from '@/hubs/orgchat'
 
   const isDark = useDark()
   // const toggleDark = useToggle(isDark)
 
   const store = useUserStore()
-  const anydata = useAnyData()
   const SearchInfo = ref('')
   const router = useRouter()
   let current = ref(1)
@@ -205,20 +201,6 @@
   const showSearchInfo = () => {
     visible.value = !visible.value
   }
-  // const getFocus = () => {
-  //   visible.value = true
-  // }
-  // const getBlur = () => {
-  //   if (!showSearch.value) {
-  //     visible.value = false
-  //   }
-  // }
-  // const mouseenter = () => {
-  //   showSearch.value = true
-  // }
-  // const mouseleave = () => {
-  //   showSearch.value = false
-  // }
   const searchDialog = ref<boolean>(false)
   type arrList = {
     id: string
@@ -350,8 +332,6 @@
     sessionStorage.clear()
     store.resetState()
     router.push('/login')
-    //  取消该账号的未读消息订阅
-    anyStore.unSubscribed(`message.noread`)
   }
 </script>
 
@@ -371,7 +351,8 @@
     // height: 40px;
 
     &:hover {
-      background: rgb(248, 247, 249);
+      background: var(--el-color-primary-light-9);
+      color: var(--el-dropdown-menuItem-hover-color);
     }
   }
 
@@ -380,15 +361,19 @@
     padding: 10px;
     align-items: center;
     // margin: 10px;
+    &:hover {
+      background: var(--el-color-primary-light-9);
+      color: var(--el-color-primary);
+    }
   }
 
   .select-item__imgSelect {
     height: 25px;
     width: 25px;
     border-radius: 50%;
-    background: #154ad8;
+    background: var(--el-color-primary);
     font-size: 15px;
-    color: #ffffff;
+    color: #fff;
     line-height: 25px;
     text-align: center;
   }
@@ -404,16 +389,16 @@
 
   .select-drop {
     position: absolute;
-    top: 40px;
+    top: 49px;
     left: -20px;
     overflow: hidden;
-    background: var(--el-bg-color);
+    background: var(--el-bg-color-overlay);
     display: flex;
     flex-direction: column;
     transition: all 0.5s;
     box-shadow: 0px 6px 9px rgba(0, 0, 0, 0.161);
     border-radius: 0 0 4px 4px;
-    z-index: 2;
+    
     min-width: 250px;
   }
 
@@ -432,20 +417,20 @@
 
   .joinBox {
     display: flex;
-    border-top: 1px solid #e0e0e0;
+    border-top: 1px solid var(--el-border-color);
   }
 
   .joinBtn {
     margin: 10px;
     display: flex;
     height: 35px;
-    background: #ffffff;
+    // background: ;
     text-align: center;
     align-items: center;
     cursor: pointer;
     font-size: 16px;
     padding: 10px 20px;
-    color: rgba(0, 0, 0, 0.65);
+    color: var(--el-color-info);
 
     // &:hover {
     //   color: #154ad8;
@@ -506,6 +491,12 @@
         &:hover {
           color: var(--el-color-primary);
         }
+      }
+      .link{
+        right: 15px;
+        margin-bottom: 18px;
+        position: absolute;
+        color: var(--el-color-primary);
       }
     }
   }

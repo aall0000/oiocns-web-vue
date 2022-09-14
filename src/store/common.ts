@@ -5,7 +5,8 @@ export const useCommonStore = defineStore({
   state: () => {
     return {
       isLoading: false,//加载中...
-      iframeLink:''//记录当前打开的ifream内容链接
+      iframeLink:'',//记录当前打开的ifream内容链接用于变更外部应用
+      isChangeStartApp:false,// 记录是否新注册了新的 app 用于处理更新可使用列表
     }
   },
   persist: {

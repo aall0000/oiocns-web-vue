@@ -13,13 +13,13 @@
           ? 'active'
           : ''
       ]" v-for="item in state.mainMenus.filter((a) => !a?.bottom)" @click="handleRouterChage(item)"
-        @contextmenu.prevent="rightClick($event, item)" :key="item.id">
+        @contextmenu.prevent="rightClick($event, item)" :key="item.id" :title="item.name">
         <el-icon v-if="!item.type" class="aside-li-icon" :size="20">
           <component :is="item.icon" />
         </el-icon>
         <img v-else :src="item.icon" style="width: 26px; height: 26px; border-radius: 50%" />
-        <span :class="['aside-li-name', item.name?.length > 3 ? 'overTxt' : '']">{{
-        item.name
+        <span class="aside-li-name">{{
+        item.name?.substr(0,2)
         }}</span>
       </li>
     </ul>
@@ -28,8 +28,11 @@
         v-for="item in state.mainMenus.filter((a) => a?.bottom === true)" @click.stop="handleRouterChage(item)"
         :key="item.id">
         <div :class="['apps', activeRouter.includes(item.path) ? 'active' : '']" v-if="item.name === '开始'">
-          <el-popover placement="right-end" title="常用应用" :width="350" trigger="click">
-            <CanUseApp @AppChange="onAppClick" />
+          <el-popover placement="right-end" title="所有应用" :width="500" trigger="hover">
+            <div style="height:500px">
+              <el-input placeholder="搜索" v-model="searchValue" prefix-icon="Search" />
+              <CanUseApp @AppChange="onAppClick"/>
+            </div>
             <template #reference>
               <div class="title">
                 <el-icon class="icon2" :size="20">
@@ -48,27 +51,15 @@
 <script lang="ts" setup>
 import { ref, onMounted, onUnmounted, watch, reactive } from 'vue'
 import { useRouter } from 'vue-router'
-import { useUserStore } from '@/store/user'
 import { useCommonStore } from '@store/common'
-import $services from '@/services'
 import { ElMessage } from 'element-plus'
 import CanUseApp from './canUseApp.vue'
 import anyStore from '@/utils/anystore'
 
 const router = useRouter()
-const store = useUserStore()
 const commonStore = useCommonStore()
 const activeRouter = ref<string>('')
-type MenuItemType = {
-  id?: string
-  name: string
-  icon: string
-  path: string
-  type?: string
-  fixed?: boolean
-  key?: string | unknown
-  bottom?: boolean | unknown
-}
+const searchValue = ref<string>('')
 type StateType = {
   mainMenus: MenuItemType[]
   clickMenu: Array<MenuItemType>
@@ -78,9 +69,9 @@ const state: StateType = reactive({
   mainMenus: [
     { name: '工作台', icon: 'DataAnalysis', path: '/workHome' },
     { name: '关系', icon: 'SetUp', path: '/relation' },
-    { name: '应用', icon: 'Suitcase', path: '/market' },
+    { name: '应用', icon: 'SoldOut', path: '/market' },
     { name: '开始', icon: 'Menu', path: '/appStpre', bottom: true },
-    { name: '数据', icon: 'SetUp', path: '/thing' }
+    { name: '数据', icon: 'Files', path: '/thing' }
   ],
   clickMenu: [],
   storeObj: {
@@ -120,6 +111,7 @@ const onAppClick = (data: any) => {
     state.mainMenus.push(data)
   }
   data.id && router.push(data.path)
+  startAppVisible.value = false
 }
 const rightClick = (event: any, item: any) => {
   if (item.type == 'app') {
@@ -130,14 +122,10 @@ const rightClick = (event: any, item: any) => {
   }
 }
 const getFixedData = () => {
-  let params = {
-    userId: store.queryInfo.id,
-    workspaceId: store.workspaceData.id
-  }
-  anyStore.get(`${params.workspaceId}.menu`).then((res) => {
-    if (res && res.success) {
-      state.mainMenus = state.mainMenus.concat(res.data)
-      state.clickMenu = res.data
+  anyStore.subscribed(`${anyStore.spaceId}.menu`, "user", (data) => {
+    if (Array.isArray(data)) {
+      state.mainMenus = state.mainMenus.concat(data)
+      state.clickMenu = data
     }
   })
 }
@@ -151,21 +139,19 @@ const cancelFixed = () => {
   if (bool && bool.fixed) {
     arr.splice(findIndex, 1)
   }
-  let params = {
-    userId: store.queryInfo.id,
-    workspaceId: store.workspaceData.id
-  }
-  anyStore.set(`${params.workspaceId}.menu`, {
-    operation: 'replaceAll',
-    data: arr
-  }).then((res: ResultType) => {
-    if (res.success) {
-      ElMessage({
-        message: '取消成功',
-        type: 'success'
-      })
-    }
-  })
+  anyStore
+    .set(`${anyStore.spaceId}.menu`, {
+      operation: 'replaceAll',
+      data: arr
+    }, "user")
+    .then((res: ResultType) => {
+      if (res.success) {
+        ElMessage({
+          message: '取消成功',
+          type: 'success'
+        })
+      }
+    })
 }
 const clickFixed = () => {
   let bool = state.clickMenu.find((el) => {
@@ -175,22 +161,22 @@ const clickFixed = () => {
     state.storeObj.fixed = true
     state.clickMenu.push(state.storeObj)
   }
-  let params = {
-    userId: store.queryInfo.id,
-    workspaceId: store.workspaceData.id
-  }
-  anyStore.set(`${params.workspaceId}.menu`, {
-    operation: 'replaceAll',
-    data: state.clickMenu
-  }).then((res: ResultType) => {
-    if (res.success) {
-      ElMessage({
-        message: '固定成功',
-        type: 'success'
-      })
-    }
-  })
+  anyStore
+    .set(`${anyStore.spaceId}.menu`, {
+      operation: 'replaceAll',
+      data: state.clickMenu
+    }, "user")
+    .then((res: ResultType) => {
+      if (res.success) {
+        ElMessage({
+          message: '固定成功',
+          type: 'success'
+        })
+      }
+    })
 }
+
+const startAppVisible = ref<boolean>(false)
 const handleRouterChage = (item: any) => {
   if (item.name !== '开始') {
     activeAppId.value = item?.id || ''
@@ -200,6 +186,7 @@ const handleRouterChage = (item: any) => {
     }
     router.push({ path: item.path })
   } else {
+    startAppVisible.value = !startAppVisible.value
     // active.value = item.name
   }
 }

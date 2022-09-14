@@ -151,7 +151,7 @@
 import $services from '@/services'
 import { onMounted, reactive, ref } from 'vue'
 import MarketCard from '@/components/marketCard/index.vue'
-import storeImg from '@/assets/img/store.png'
+import storeImg from '@/assets/img/app_icon.png'
 import bijianImg from '@/assets/img/bijian.png'
 import bj1 from '@/assets/img/bj1.jpg'
 import bj2 from '@/assets/img/bj2.jpg'
@@ -251,7 +251,7 @@ const starterAppApprovalList = async () => {
           },
           {
             prop: 'price',
-            label: '单价/天'
+            label: '价格'
           },
           {
             prop: 'days',
