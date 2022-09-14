@@ -286,7 +286,7 @@ const mainRouter: RouteRecordRaw[] = [
         name: 'softShare',
         component: () => import('@/views/Market/SoftShare/index.vue'),
         meta: {
-          title: '共享仓库'
+          title: '开放市场'
         }
       },
       {
