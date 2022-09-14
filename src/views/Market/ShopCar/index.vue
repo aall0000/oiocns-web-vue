@@ -285,6 +285,7 @@
             market: { remark: any; code: any; name: any }
             merchandise: { caption: any; information: any; sellAuth: any; days: any; price: any }
           }) => {
+            if(!item.merchandise) {item.merchandise = { caption: null, information: null, sellAuth: null, days: null, price: null } }
             return {
               ...item,
               caption: item.merchandise.caption,
