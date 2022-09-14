@@ -42,7 +42,6 @@
             <div style="height: 500px">
               <el-input placeholder="搜索" v-model="searchValue" prefix-icon="Search" />
               <CanUseApp
-                ref="canUseRef"
                 @AppChange="onAppClick"
                 @onCanUseAppIdChange="hadleCanUseAppChange"
               />
@@ -74,7 +73,6 @@
   const commonStore = useCommonStore()
   const activeRouter = ref<string>('')
   const searchValue = ref<string>('')
-  const canUseRef = ref<any>()
   type StateType = {
     mainMenus: MenuItemType[]
     clickMenu: Array<MenuItemType>
