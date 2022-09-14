@@ -181,6 +181,7 @@ const getDialogTableList = async(id:string)=>{
           const { result = [], total = 0 } = res.data
           dialogState.data =  result?.map(
             (item: any) => {
+              if(!item.order){ item.order = {} }
               return {
                 ...item,
                 code: item.order.code,
