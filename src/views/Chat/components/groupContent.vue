@@ -179,8 +179,11 @@ defineExpose({
 </script>
 <style>
  .con-content-txt img {
-    max-width: 400px;
+    max-width: 100%;
     max-height: 400px;
+  }
+  .con-content-txt div {
+    max-width: 100% !important;
   }
 
 </style>
@@ -290,6 +293,9 @@ defineExpose({
         color: var(--el-text-color);
         background-color: var(--el-bg-color-overlay) ;
         box-shadow: var(--el-box-shadow-lighter);// 0 0 5px 5px #e5e5e580;
+        word-wrap: break-word;
+        word-break: normal;
+        max-width: 100%;
       }
     }
   }
@@ -314,6 +320,9 @@ defineExpose({
         text-align: left;
         background-color: #a2ddff;
         box-shadow: var(--el-box-shadow-lighter);// 0 0 3px 3px #e5e5e580;
+        word-wrap: break-word;
+        word-break: normal;
+        max-width: 100%;
       }
     }
   }
