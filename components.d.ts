@@ -77,6 +77,7 @@ declare module '@vue/runtime-core' {
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     SandBox: typeof import('./src/components/sandBox/index.vue')['default']
+    SearchGroupPerson: typeof import('./src/components/searchs/searchGroupPerson.vue')['default']
     Searchs: typeof import('./src/components/searchs/index.vue')['default']
     SvgIcon: typeof import('./src/components/global/SvgIcon/index.vue')['default']
   }
