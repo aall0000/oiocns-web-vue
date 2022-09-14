@@ -25,20 +25,19 @@
             :info="item.id"
             :key="item.id"
             :cardContent="true"
+            type="shopCard"
             @click="checkedChange(item)"
           >
-            <template #rightIcon>
+            <!-- <template #rightIcon>
               <el-dropdown trigger="click" placement="left-start">
                 <el-icon :size="18"><Operation /></el-icon>
                 <template #dropdown>
                   <el-dropdown-menu>
-                    <!-- <el-dropdown-item @click="GoPageWithQuery('/market/merchandiseDetail', item)"
-                      >商品详情</el-dropdown-item
-                    > -->
+
                   </el-dropdown-menu>
                 </template>
               </el-dropdown>
-            </template>
+            </template> -->
             <template #icon
               ><HeadImg
                 :name="item.name"
