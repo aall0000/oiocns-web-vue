@@ -16,10 +16,10 @@
             >商店列表</el-button
           >
           <el-button small link type="primary" @click.stop="GoPage('/market/order/buy')"
-            >我买入的</el-button
+            >采购订单</el-button
           >
           <el-button small link type="primary" @click.stop="GoPage('/market/order/sell')"
-            >我卖出的</el-button
+            >售卖订单</el-button
           >
           <el-badge :value="shopcarNum" style="padding-left: 10px">
             <el-button small link type="primary" @click.stop="GoPage('/market/shopCar')"
