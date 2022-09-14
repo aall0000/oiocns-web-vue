@@ -205,7 +205,6 @@ const showOrderList = (id:string)=>{
       })
       .then((res: ResultType) => {
         if (res.success) {
-          debugger
           product.value = res.data
         }
       })  
