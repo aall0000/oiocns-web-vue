@@ -14,6 +14,7 @@
                   <el-dropdown-menu>
                     <!-- <el-dropdown-item @click="GoPageWithQuery('/market/merchandiseDetail',item)">商品详情</el-dropdown-item> -->
                     <el-dropdown-item @click="joinStaging(item)">加入购物车</el-dropdown-item>
+                    <el-dropdown-item @click="buyThings(item)">购买</el-dropdown-item>
                     <el-dropdown-item @click="unpublishFun(item)" v-if="type == 'manage'">下架</el-dropdown-item>
                   </el-dropdown-menu>
                 </template>
@@ -31,7 +32,7 @@
                 </div>
 
                 <div class="app-con-info">售卖权属：{{ item.sellAuth }}
-                  <el-tag size="small" v-if="item.sellAuth !== '所属权'">
+                  <el-tag size="small" v-if="item.sellAuth !== '所属权'&&item?.days">
                     使用期：{{ item.sellAuth !== '所属权' ? item.days + '天' : '无期限' }}</el-tag>
                 </div>
                 <!-- <div class="app-con-info">上架时间：{{ item.createTime.substring(0, 11) }}</div> -->
@@ -93,6 +94,22 @@ type Props = {
   dataList: any
   type?: any
 }
+type AppType = {
+  caption:string
+  createTime:string 
+  createUser: string
+  days:string
+  id:string
+  information:string
+  marketId:string
+  price:number
+  productId:string
+  sellAuth:string
+  status:number
+  updateTime:string
+  updateUser:string
+  version:string
+}
 const props = withDefaults(defineProps<Props>(), { dataList: [], type: 'manage' })
 const handleCurrent: any = computed(() => {
   return (state.page.currentPage - 1) * state.page.pageSize
@@ -114,6 +131,36 @@ const state = reactive({
     }
   ]
 })
+
+const buyThings = (item:AppType) =>{
+    ElMessageBox.confirm('此操作将生成交易订单。是否确认?', '确认订单', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'success'
+    }).then(() => {
+      setTimeout(
+        async () => {
+          await $services.order
+            .create({
+              data: {
+                code: new Date().getTime().toString().substring(0, 13),
+                name:item.caption,
+                merchandiseId: item.id
+              }
+            })
+            .then((res: ResultType) => {
+              if (res.code == 200) {
+                ElMessage({
+                  message: '创建订单成功',
+                  type: 'success'
+                })
+              }
+            })
+        },
+        1
+      )
+    })
+}
 
 const moreOperations = () => {
   ElMessage({
@@ -352,6 +399,7 @@ defineExpose({
     .app-card {
       display: flex;
       flex-wrap: wrap;
+      align-content:flex-start;
       height: calc(100% - 60px);
     }
   }

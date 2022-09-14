@@ -1,5 +1,5 @@
 <template>
-  <div style="width: 100%; height: 100%">
+  <div style="width: 100%; height: 100px">
     <DiyTable
       ref="diyTable"
       :tableName="tableName"
@@ -14,11 +14,16 @@
       </template>
     </DiyTable>
   </div>
+  <div style="width: 100%; height: 200px;background-color: pink;">
+    <QrCodeCustom />
+  </div>
+
 </template>
 
 <script setup lang="ts">
   import DiyTable from '@/components/diyTable/index.vue'
   import { nextTick, onMounted, reactive, ref } from 'vue'
+  import QrCodeCustom from '@/components/qrCode/index.vue'
   const diyTable = ref(null)
   const tableName = ref('集团列表')
   const state = reactive({

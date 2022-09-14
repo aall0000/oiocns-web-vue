@@ -23,6 +23,7 @@ export const useMarketStore = defineStore({
   },
   getters: {
     getMarketName: (state) => {
+      console.log(state.marketMap)
       return (id: string): string => state.marketMap.get(id)
     }
   },
@@ -38,6 +39,7 @@ export const useMarketStore = defineStore({
           }
         })
         .then(async (res: ResultType) => {
+          
           if (res.success) {
             const {result = [],total = 0} = res.data
             result.forEach((item: { id: any; name: any })=>{
