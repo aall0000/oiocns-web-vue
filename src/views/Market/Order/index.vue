@@ -259,8 +259,9 @@ const searchValue = ref<string>('')
         label: '名称'
       },
       {
-        prop: 'belongName',
-        label: '买方名称'
+        prop: 'belongId',
+        label: '买方名称',
+        formatter: (row:any, column:any) => orgChat.getName(row.belongId)
       },
       {
         prop: 'sellAuth',
@@ -379,13 +380,13 @@ const searchValue = ref<string>('')
         state.orderList = result?.map(
           (item: {
             merchandise: { caption: any; days: any; sellAuth: any; price: any; information: any }
-            order: { code: any; name: any; status: any,belong:any }
+            order: { code: any; name: any; status: any,belongId:any }
           }) => {
             // if(!item.merchandise) {item.merchandise = {caption: null, days: null, sellAuth: null, price:null, information: null}}
             return {
               ...item,
               code: item.order.code,
-              belongName: item.order.belong.name,
+              belongId: item.order.belongId,
             }
           }
         )
