@@ -4,7 +4,7 @@
     <div class="baseLayout-loginBox">
       <el-carousel
         ref="carousel"
-        style="height: 100%;width:500px"
+        style="height: 100%;"
         :autoplay="false"
         indicator-position="none"
         arrow="never"
