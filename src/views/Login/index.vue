@@ -76,7 +76,6 @@
       btnLoading.value = false
       if (data.remind) {
         setCookie(data.username, data.password, 7)
-        marketStore.SearchAllMarket()
       } else {
         setCookie('', '', -1)
       }
