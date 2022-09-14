@@ -24,7 +24,6 @@
     setup(prop, context) {
       const username = ref<any>()
       const forgetPassword = () => {
-        console.log('213213')
       }
       let data = {
         activeName: 'first'

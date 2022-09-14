@@ -203,7 +203,6 @@
   const getMarketInfo = () => {
     $services.market.getSoftShareInfo().then((res: ResultType) => {
       if (res.code == 200) {
-        console.log('开放市场', res.data)
         softShareInfo.value = res?.data || {}
         getAppList()
       }

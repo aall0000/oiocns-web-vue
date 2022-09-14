@@ -68,7 +68,6 @@
     isChildren: false,
     readOnly: false
   })
-  // console.log('稻城亚丁', menus)
   const emit = defineEmits(['handleMemuEvent'])
   const handleEvent = (type: ProductMenuEventType, id: string) => {
     emit('handleMemuEvent', type, id)
