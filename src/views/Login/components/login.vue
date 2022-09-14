@@ -24,6 +24,7 @@
     setup(prop, context) {
       const username = ref<any>()
       const forgetPassword = () => {
+        context.emit('forgetPassword')
       }
       let data = {
         activeName: 'first'

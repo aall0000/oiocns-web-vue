@@ -262,7 +262,7 @@
 
   //查询
   const getTableList = async () => {
-    isRouterAlive.value = false
+    pageStore.tableData = []
     await $services.market
       .searchStaging({
         data: {
@@ -300,7 +300,7 @@
         )
 
         console.log('pageStore.tableData', pageStore.tableData)
-        isRouterAlive.value = true
+        // isRouterAlive.value = true
       })
   }
   const gotoApp = (item: { id: string }) => {
