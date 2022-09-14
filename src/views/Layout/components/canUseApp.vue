@@ -39,7 +39,7 @@
         return { ...item, icon: img1 }
       })
       commonStore.isChangeStartApp = false
-      // console.log('可用应用', result)
+      emit('onCanUseAppIdChange',appList.value.map(item=>item.id))
     }
   }
   onMounted(() => {
@@ -53,7 +53,7 @@
       }
     }
   )
-  const emit = defineEmits(['AppChange'])
+  const emit = defineEmits(['AppChange','onCanUseAppIdChange'])
   const handleChooseItem = async (app: any) => {
     const { data, success } = await $services.product.queryOwnResource({
       data: {
@@ -72,9 +72,8 @@
         })
       }
       // TODO:按照权限判断展示哪个资源
-      const { id, name, icon, link } = result[0]
-      console.log('当前资源', icon, result)
-      emit('AppChange', { id, name: app.name, icon: img1, link, path: '/online' })
+      const {link } = result[0]
+      emit('AppChange', { id:app.id, name: app.name, icon: img1, link, path: '/online' })
     }
     // emit('AppChange', app)
   }
