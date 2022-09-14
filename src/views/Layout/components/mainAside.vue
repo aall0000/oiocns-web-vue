@@ -247,7 +247,7 @@
       text-align: center;
 
       &:hover {
-        background-color: rgb(248, 247, 249);
+        background-color: #f8f7f9;
       }
     }
 
@@ -257,7 +257,7 @@
       text-align: center;
 
       &:hover {
-        background-color: rgb(248, 247, 249);
+        background-color: #f8f7f9;
       }
     }
   }

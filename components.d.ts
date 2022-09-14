@@ -73,6 +73,7 @@ declare module '@vue/runtime-core' {
     Pagination: typeof import('./src/components/pagination/index.vue')['default']
     Pay: typeof import('./src/components/pay/pay.vue')['default']
     Protal: typeof import('./src/components/protal/index.vue')['default']
+    QrCode: typeof import('./src/components/qrCode/index.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     SandBox: typeof import('./src/components/sandBox/index.vue')['default']
