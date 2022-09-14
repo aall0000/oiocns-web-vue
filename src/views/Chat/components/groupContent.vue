@@ -135,7 +135,7 @@ const handleContextClick = (e: MouseEvent, item: ImMsgChildType) => {
   if (!item) {
     return
   }
-  mousePosition.left = e.pageX - 60 - 260
+  mousePosition.left = e.pageX - 48// - 260
   mousePosition.top = e.pageY - 60
   mousePosition.isShowContext = true
   mousePosition.selectedItem = item
