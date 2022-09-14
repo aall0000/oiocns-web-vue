@@ -109,7 +109,7 @@
                     </div>
                     <el-dropdown-item @click="deleteApp(item)">移除应用</el-dropdown-item>
                     <!-- <el-dropdown-item  @click="GoPage('/market/appDetail')">应用详情</el-dropdown-item> -->
-                    <el-dropdown-item @click="GoPageWithQuery('/market/publishList', item)"
+                    <el-dropdown-item @click="GoPageWithQuery('/market/publishList', {id:item.id})"
                       >应用上架列表</el-dropdown-item
                     >
                   </el-dropdown-menu>

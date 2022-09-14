@@ -37,12 +37,14 @@
   import $services from '@/services'
   import { reactive, ref, onMounted } from 'vue'
   import { useUserStore } from '@/store/user'
+  import {useMarketStore} from '@/store/market'
   import { useAnyData } from '@/store/anydata'
   import { useRouter } from 'vue-router'
   import { ElMessage } from 'element-plus'
 
   const carousel = ref<any>()
   const store = useUserStore()
+  const marketStore = useMarketStore()
   const router = useRouter()
   const stept = ref<string>('first')
   let btnLoading = ref(false)
@@ -74,12 +76,16 @@
       btnLoading.value = false
       if (data.remind) {
         setCookie(data.username, data.password, 7)
+        marketStore.SearchAllMarket()
       } else {
         setCookie('', '', -1)
       }
 
       router.push({ path: 'workHome' })
     })
+
+
+
   }
   const registerUser = (data: any) => {
     registerData = { ...registerData, ...data }
