@@ -49,7 +49,7 @@
       <slot name="footer"></slot>
 
         <div class="app-card-item-con-footer" v-if="info.id != '355346477339512833'">
-          <el-divider style="margin: 16px 0"></el-divider>
+          <el-divider style="margin: 16px 0" v-if="type!='shopCard'"></el-divider>
             <div class="app-card-item-con-desc" >
               <p> 归属:{{ orgChat.getName(info.belongId) }}</p>
             </div>

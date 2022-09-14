@@ -198,23 +198,23 @@
         />
       </ul> -->
     </div>
-    <el-dialog v-model="createDialog" title="创建商店" width="30%">
-      <el-form :model="form" label-width="120px">
-        <el-form-item label="商店名称">
-          <el-input v-model="form.name" style="width: 80%" />
-        </el-form-item>
-        <el-form-item label="商店编码">
-          <el-input v-model="form.code" style="width: 80%" />
-        </el-form-item>
-        <el-form-item label="商店简介">
-          <el-input v-model="form.remark" style="width: 80%" />
-        </el-form-item>
-        <el-form-item label="商店是否公开">
-          <el-select v-model="form.public" style="width: 80%" placeholder="是否公开">
+    <el-dialog append-to-body v-model="createDialog" title="创建商店" width="30%" class="">
+      <el-descriptions :model="form"  :column="1" border>
+        <el-descriptions-item label="商店名称">
+          <el-input  v-model="form.name" placeholder="请输入商店名称"  />
+        </el-descriptions-item>
+        <el-descriptions-item label="商店编码" >
+          <el-input  v-model="form.code" placeholder="请输入商店编码"/>
+        </el-descriptions-item>
+        <el-descriptions-item label="商店简介" >
+          <el-input  v-model="form.remark" placeholder="请输入商店简介" />
+        </el-descriptions-item>
+        <el-descriptions-item label="商店是否公开" >
+          <el-select  v-model="form.public" placeholder="是否公开" style="width:100%">
             <el-option v-for="item in options" :label="item.label" :value="item.value" />
           </el-select>
-        </el-form-item>
-      </el-form>
+        </el-descriptions-item>
+      </el-descriptions>
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="createDialog = false">取消</el-button>
@@ -621,6 +621,7 @@
     width: 100%;
     height: 100%;
     min-width: 1000px;
+
     .market-head {
       display: flex;
       justify-content: flex-end;
@@ -635,6 +636,8 @@
       height: calc(100vh - 108px);
       overflow-y: auto;
     }
+
+
     .box {
       .box-ul{
         height: 100%;
