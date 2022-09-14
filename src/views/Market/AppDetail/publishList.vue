@@ -10,7 +10,8 @@
         @handleUpdate="handleUpdate"
       >
             <template #operate="scope">
-                <el-link type="primary" @click="showOrderList(scope.row.id)">查看售卖详情</el-link>
+                <el-button link type="primary" @click="showOrderList(scope.row.id)">查看售卖详情</el-button>
+                <el-button link type="primary" @click="unpublishFun(scope.row)">下架</el-button>
           </template>
       </DiyTable>
     </div>
@@ -39,8 +40,9 @@
   import { onMounted, reactive, ref } from 'vue'
   import MarketCard from '@/components/marketCard/index.vue'
   import { useRouter, useRoute } from 'vue-router'
-  import { ElMessage } from 'element-plus'
+  import { ElMessage, ElMessageBox } from 'element-plus'
   import DiyTable from '@/components/diyTable/index.vue'
+  import orgChat from '@/hubs/orgchat'
   const router = useRouter()
   const route = useRoute()
   const diyTable = ref(null)
@@ -58,8 +60,9 @@
               label: '名称'
             },
             {
-              prop: 'belongName',
-              label: '买方名称'
+              prop: 'belongId',
+              label: '买方名称',
+              formatter: (row:any, column:any) => orgChat.getName(row.belongId)
             },
             {
               prop: 'sellAuth',
@@ -136,7 +139,7 @@
                 label: '操作',
                 fixed: 'right',
                 align: 'center',
-                width: '120',
+                width: '250',
                 name: 'operate'
             }
           ],
@@ -181,7 +184,7 @@ const getDialogTableList = async(id:string)=>{
               return {
                 ...item,
                 code: item.order.code,
-                belongName: item.order.belong.name,
+                belongId: item.order.belongId,
               }
             }
           )
@@ -194,6 +197,36 @@ const showOrderList = (id:string)=>{
     orderListDialog.show = true
    getDialogTableList(id)
 }
+const unpublishFun = (item:any) => {
+    let title: string
+    title = `确定把 ${item.caption} 下架吗？`
+    ElMessageBox.confirm(title, '警告', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
+    })
+      .then(() => {
+        unpublishApp(item)
+      })
+      .catch(() => {})
+  }
+  //下架应用
+  const unpublishApp = (item:any) => {
+    $services.market
+      .unpublishMerchandise({
+        data: {
+          id: item.id
+        }
+      })
+      .then((res: ResultType) => {
+        if (res.code == 200) {
+          ElMessage({
+            message: '下架成功',
+            type: 'success'
+          })
+        }
+      })
+  }
   //查询上架申请
   const getTableList = async () => {
       state.data = []

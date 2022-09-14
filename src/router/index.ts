@@ -302,7 +302,7 @@ const mainRouter: RouteRecordRaw[] = [
         name: 'marketOrderBuy',
         component: () => import('@/views/Market/Order/index.vue'),
         meta: {
-          title: '我买入的'
+          title: '采购订单'
         }
       },
       {
@@ -310,7 +310,7 @@ const mainRouter: RouteRecordRaw[] = [
         name: 'marketOrderSell',
         component: () => import('@/views/Market/Order/index.vue'),
         meta: {
-          title: '我卖出的'
+          title: '售卖订单'
         }
       },
       {

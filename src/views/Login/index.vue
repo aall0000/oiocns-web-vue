@@ -129,7 +129,6 @@ import { dataType } from 'element-plus/es/components/table-v2/src/common'
       btnLoading.value = false
       if (data.remind) {
         setCookie(data.username, data.password, 7)
-        marketStore.SearchAllMarket()
       } else {
         setCookie('', '', -1)
       }

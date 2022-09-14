@@ -2,8 +2,8 @@
   <MarketCard>
     <template #right>
       <el-space :size="16">
-        <el-button type="primary" link @click.stop="GoPage('/market/order/buy')">我买入的</el-button>
-        <el-button type="primary" link @click.stop="GoPage('/market/order/sell')">我卖出的</el-button>
+        <el-button type="primary" link @click.stop="GoPage('/market/order/buy')">采购订单</el-button>
+        <el-button type="primary" link @click.stop="GoPage('/market/order/sell')">售卖订单</el-button>
         <el-badge :value="shopcarNum">
           <el-button type="primary" link @click.stop="GoPage('/market/shopCar')">购物车</el-button>
         </el-badge>
