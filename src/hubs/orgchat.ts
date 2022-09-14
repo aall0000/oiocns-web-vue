@@ -2,9 +2,7 @@ import * as signalR from '@microsoft/signalr'
 import { ElMessage } from 'element-plus'
 import { ref, Ref } from 'vue'
 import anyStore from '@/utils/anystore'
-
-
-
+const hisMsgCollName = "chat-message"
 // 消息服务
 // 创建链接
 
@@ -335,6 +333,7 @@ const orgChat: orgChatType = {
         }
         if (data.spaceId === data.fromId) {
             data.spaceId = orgChat.userId.value
+            anyStore.insert(hisMsgCollName, data, "user")
         }
         orgChat.chats.value.forEach((item: ImMsgType) => {
             if (item.id === data.spaceId) {
