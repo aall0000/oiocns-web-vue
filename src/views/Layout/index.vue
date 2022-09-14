@@ -39,27 +39,28 @@
 <script lang="ts" setup>
 import CustomHeadr from './components/customHeader.vue'
 import MainAsideVue from './components/mainAside.vue'
-import Breadcrumb from './components/breadcrumb.vue'
+// import Breadcrumb from './components/breadcrumb.vue'
 import LoadingVue from './components/loading.vue'
 import { useUserStore } from '@/store/user'
 import orgChat from '@/hubs/orgchat'
-import { onBeforeMount, onBeforeUnmount } from 'vue'
+import { onBeforeMount, onBeforeUnmount,onMounted } from 'vue'
 const { userToken, queryInfo, workspaceData } = useUserStore()
 
+const stopConnection = ()=>{
+  orgChat.unSubscribed()
+  orgChat.stop()
+}
 onBeforeMount(() => {
   orgChat.start(userToken, queryInfo.id, workspaceData.id)
 })
 
 onBeforeUnmount(()=>{
-  orgChat.unSubscribed()
-  orgChat.stop()
+  stopConnection()
+  window.removeEventListener('beforeunload', stopConnection)
 })
 
-//初始化关闭
-window.addEventListener('beforeunload', function (e) {
-  orgChat.unSubscribed()
-  orgChat.stop()
-})
+// 页面刷新时 关闭握手
+window.addEventListener('beforeunload', stopConnection)
 
 </script>
 
