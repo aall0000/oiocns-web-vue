@@ -352,6 +352,7 @@ defineExpose({
     .app-card {
       display: flex;
       flex-wrap: wrap;
+      align-content:flex-start;
       height: calc(100% - 60px);
     }
   }

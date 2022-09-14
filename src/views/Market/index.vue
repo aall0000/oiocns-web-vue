@@ -696,6 +696,7 @@
           flex-wrap: wrap;
           height: calc(100% - 50px);
           align-content:flex-start;
+          overflow-y: auto;
         }
         .tab-card{
           height: 100%;
