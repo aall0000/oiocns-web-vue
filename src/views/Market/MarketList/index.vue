@@ -3,7 +3,7 @@
     <MarketCard>
       <template #right>
         <el-button link type="primary" @click="createDialog = true">创建商店</el-button>
-        <el-button link type="primary" @click="state.addDialog.value = true">加入商店</el-button>
+        <el-button link type="primary" @click="searchDialog = true">加入商店</el-button>
         <el-button
           link
           type="primary"
@@ -223,14 +223,21 @@
       </template>
     </el-dialog>
 
-    <diySearch
+    <!-- <diySearch
       :dialogShow="state.addDialog"
       title="加入商店"
       placeholder="搜索商店"
       @submit="submit"
       @remoteMethod="remoteMethod"
       @closeDialog="closeDialog"
-    ></diySearch>
+    ></diySearch> -->
+
+    <searchMarket
+    v-if="searchDialog"
+    @closeDialog="closeDialog"
+    :serachType=7
+    @checksSearch="checksSearch"
+  />
   </div>
 </template>
 
@@ -241,6 +248,7 @@
   import ShopCardBadge from '../components/shopCardBadge.vue'
   import { useRouter } from 'vue-router'
   import $services from '@/services'
+  import searchMarket from '@/components/searchs/index.vue'
   import { ElMessage, ElMessageBox } from 'element-plus'
   import MarketCreate from '../components/marketCreate.vue'
   import { useUserStore } from '@/store/user'
@@ -248,6 +256,8 @@
   import Pagination from '@/components/pagination/index.vue'
   import { storeToRefs } from 'pinia'
 
+  const searchDialog = ref<boolean>(false)
+  const searchType = ref<number>()
 
   const router = useRouter()
   const store = useUserStore()
@@ -352,7 +362,9 @@
   const GoPage = (path: string) => {
     router.push(path)
   }
-
+  type arrList = {
+    id: string
+  }
   const hadleUserManage = (item: { id: number }) => {
     router.push({ path: '/market/userManage', query: { data: item.id } })
   }
@@ -364,6 +376,18 @@
     state.pageMy.currentPage = 1
     getMyMarketData()
   }
+  const checksSearch = (val: any) => {
+    if (val.value.length > 0) {
+      let arr: Array<arrList> = []
+      val.value.forEach((element: any) => {
+        arr.push(element.id)
+      })
+      submit(arr)
+    } else {
+      searchDialog.value = false
+    }
+  }
+
   const getShopcarNum = async () => {
     await $services.market
       .searchStaging({
@@ -573,7 +597,7 @@
     $services.appstore
       .applyJoin({
         data: {
-          id: data
+          id: data[0]
         }
       })
       .then((res: ResultType) => {
@@ -582,13 +606,13 @@
             message: '加入成功',
             type: 'success'
           })
-          state.addDialog.value = false
+          searchDialog.value = false
           //getJoinMarketData()
         }
       })
   }
   const closeDialog = (data: { value: boolean }) => {
-    state.addDialog.value = false
+    searchDialog.value = false
   }
 </script>
 

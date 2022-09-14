@@ -41,7 +41,7 @@
   import $services from '@/services'
   import { ref, reactive, onMounted, nextTick } from 'vue'
   import { ElMessage } from 'element-plus'
-
+  import orgChat from '@/hubs/orgchat'
   const dialogVisible = ref<boolean>(true)
   const diyTable = ref(null)
   // 表格展示数据
@@ -115,7 +115,13 @@
       tableHead.value = tableHead3.value
       url.value = 'getGroupCompanies'
       title.value = '分配单位'
-    } else {
+    }else if(props.serachType == 7) {
+      space.value = 'appstore'
+      tableHead.value = tableHead5.value
+      url.value = 'searchAll'
+      title.value = '搜索商店'
+    }
+    else {
       space.value = 'person'
       tableHead.value = tableHead1.value
       url.value = 'searchPersons'
@@ -148,14 +154,29 @@
             let states = res.data.result
             if (states) {
               states.forEach((el: any) => {
-                let obj = {
-                  id: el.id,
-                  code: el.code,
-                  name: el.name,
-                  trueName: el.team.name,
-                  teamCode: el.team.code,
-                  remark: el.team.remark
+                let obj = {}
+                if(props.serachType==7){
+                  obj={
+                    id: el.id,
+                    code: el.code,
+                    name: el.name,
+                    remark: el.remark,
+                    belong:orgChat.getName(el.belongId),
+                    create: orgChat.getName(el.createUser)
+                  }
+
                 }
+                else{
+                  obj={
+                    id: el.id,
+                    code: el.code,
+                    name: el.name,
+                    trueName: el.team.name,
+                    teamCode: el.team.code,
+                    remark: el.team.remark
+                  }
+                }
+
                 arr.push(obj)
               })
               pageStore.total = res.data.total
@@ -275,6 +296,40 @@
       prop: 'remark',
       label: '集团简介',
       name: 'remark'
+    },
+  ])
+  const tableHead5 = ref([
+    {
+      prop: 'name',
+      label: '商店名称',
+
+      name: 'name'
+    },
+
+    {
+      prop: 'code',
+      label: '商店编码',
+
+      name: 'code'
+    },
+
+    {
+      type:'slot',
+      prop: 'remark',
+      label: '商店简介',
+      name: 'remark'
+    },
+    {
+      prop: 'belong',
+      label: '商店归属',
+
+      name: 'belong'
+    },
+    {
+      prop: 'create',
+      label: '商店创建',
+
+      name: 'create'
     },
   ])
   const options = ref<any>({
