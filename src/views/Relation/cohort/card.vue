@@ -1,8 +1,8 @@
 <template>
   <div class="container">
 
-    <el-row :gutter="20">
-      <el-col :span="6" v-for="cohort of state.cohorts">
+    <el-row class="list" :gutter="20">
+      <el-col class="list-item" :span="6" v-for="cohort of state.cohorts">
         <el-card class="box-card" shadow="hover">
           <template #header>
             <div class="card-header">
@@ -16,7 +16,7 @@
                     <el-dropdown-item @click="invite(cohort)"><el-icon><User /></el-icon>邀请成员</el-dropdown-item>
                     <el-dropdown-item v-if="props.type == '管理的'" @click="toAuth(cohort)"><el-icon><Edit /></el-icon>角色管理</el-dropdown-item>
                     <el-dropdown-item v-if="props.type == '管理的'" @click="toIndentity(cohort)"><el-icon><Avatar /></el-icon>身份管理</el-dropdown-item>
-                    <el-dropdown-item v-if="props.type == '管理的'" @click="moveAuth(cohort)"><el-icon><Switch /></el-icon>转移权限</el-dropdown-item>
+                    <el-dropdown-item v-if="props.type == '管理的' && workspaceData.type !=2" @click="moveAuth(cohort)"><el-icon><Switch /></el-icon>转移权限</el-dropdown-item>
                     <el-dropdown-item v-if="props.type == '加入的'" @click="exit(cohort)"><el-icon><Remove /></el-icon>退出群聊</el-dropdown-item>
                     <el-dropdown-item v-if="props.type == '管理的'" @click="deleteCohort(cohort)"><el-icon><Delete /></el-icon>解散群组</el-dropdown-item>
                   </el-dropdown-menu>
@@ -24,7 +24,7 @@
               </el-dropdown>
             </div>
           </template>
-
+          <div class="row-text">归属:{{orgChat.getName(cohort.belongId)}}</div>
           <div class="content">{{cohort.code}}</div>
           <div class="description">{{cohort.team?.remark}}</div>
 
@@ -65,6 +65,12 @@
       </span>
     </template>
   </el-dialog>
+  <SearchGroupPerson  
+  v-if="searchGroupDialog"
+  :serachType="2"
+  :id="checkId"
+  @closeDialog="searchGroupDialog = false"
+  @checksGroupSearch="checksGroupSearch" />
 </template>
 
 <script lang="ts" setup>
@@ -73,11 +79,16 @@ import { ref, onMounted, reactive, watch } from 'vue'
 import { useUserStore } from '@/store/user'
 import { useRouter } from 'vue-router';
 import SearchUser from '@/components/searchs/index.vue'
+import SearchGroupPerson from '@/components/searchs/searchGroupPerson.vue'
 import { Service } from '@element-plus/icons-vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
+import orgChat from '@/hubs/orgchat'
+import Pagination from '@/components/pagination/index.vue'
 
-const { queryInfo } = useUserStore()
+const { queryInfo,workspaceData } = useUserStore()
 const router = useRouter()
+
+const searchGroupDialog = ref<boolean>(false)
 
 let searchDialog = ref<boolean>(false)
 
@@ -126,7 +137,7 @@ const getCohorts = async () => {
     }
     for(const c of state.cohorts ){
       // 获取群组成员
-      $services.cohort.getPersons({ data: { id: c.id, offset: 0, limit: 100000 } }).then((res: any) => {
+      $services.cohort.getPersons({ data: { id: c.id, offset: 0, limit: 100 } }).then((res: any) => {
         if(res.success){
           c.persons = res.data.result;
         } else {
@@ -149,7 +160,39 @@ const edit = (cohort: any)=>{
   curCohort.value = cohort
   formData.value = { name: cohort.name, code: cohort.code, remark: cohort.team?.remark }
 }
-
+//权限转移
+const checksGroupSearch = (val:any)=>{
+  if (val.value.length > 0) {
+    updateBelong(val.value[0].id)
+  } else {
+    searchGroupDialog.value = false
+  }
+}
+const updateBelong = (belongId?:string)=>{
+  const data = {
+    id: curCohort.value.id,
+    name: curCohort.value.name,
+    code: curCohort.value.code,
+    thingId: curCohort.value.thingId,
+    belongId: belongId,
+    teamName: curCohort.value.name,
+    teamCode: curCohort.value.code,
+    teamRemark: curCohort.value.remark,
+    teamAuthId: curCohort.value.team.authId,
+  }
+  $services.cohort.update({
+      data
+    }).then((res: ResultType) => {
+      if (res.success) {
+        ElMessage({
+          message: '转让成功',
+          type: 'success'
+        })
+        searchGroupDialog.value = false;
+        getCohorts()
+      }
+    })
+}
 const update = ()=>{
   const data = {
     id: curCohort.value.id,
@@ -230,10 +273,12 @@ const toIndentity = (cohort: any)=>{
     }
   })
 }
-
+const checkId=ref<string>('');
 // 转移权限
 const moveAuth = (cohort: any)=>{
-  ElMessage.warning('待开发。。。')
+  curCohort.value = cohort
+  searchGroupDialog.value = true;
+  checkId.value = cohort.id
 }
 
 // 退出群聊
@@ -302,8 +347,11 @@ watch(props, () => {
 </script>
 <style lang="scss" scoped>
 .container{
-  height: 100%;
+  height: calc(100vh - 230px);
   width: 100%;
+  position: relative;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .box-card{
@@ -324,7 +372,10 @@ watch(props, () => {
 .description{
   font-size: 12px;
 }
-
+.row-text{
+  font-size: 14px;
+  margin-bottom: 6px;
+}
 .avatar-container{
   display: inline-block;
   .avatar{

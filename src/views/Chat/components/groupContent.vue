@@ -87,12 +87,15 @@ const showChatTime = (chatDate: moment.MomentInput) => {
 }
 
 // 实时滚动条高度
-const scrollTop = debounce(() => {
+const scrollTop = debounce(async() => {
   let scroll = nodeRef.value.scrollTop
   if (scroll < 10) {
-    orgChat.getHistoryMsg()
+   let {data,success} = await orgChat.getHistoryMsg()
+   if (success&&data.offset===data.total) {
+    return
+   }
+    keepScrollPos()
   }
-  console.log('监听滚动', nodeRef.value.scrollHeight)
   // 记录当前滚动位置
   scrollOfZeroToEnd.value = nodeRef.value.scrollHeight - nodeRef.value.scrollTop
 }, 200)
@@ -106,9 +109,9 @@ const goPageEnd = () => {
 }
 // 加载更多时,滚动位置固定
 const keepScrollPos = () => {
-  nextTick(() => {
+  // nextTick(() => {
     nodeRef.value.scrollTop = nodeRef.value.scrollHeight - scrollOfZeroToEnd.value
-  })
+  // })
 }
 
 const scrollEvent = () => {
@@ -188,7 +191,7 @@ defineExpose({
 
 </style>
 <style lang="scss" scoped>
- 
+
 .group-content-wrap {
   padding: 20px;
   background-color: var(--el-bg-color-page);

@@ -122,7 +122,6 @@
   const routeInfo = useRoute()
   const isDetailPage = !!routeInfo.params.id
   const isPerson = ref<boolean>(false)
-  console.log('搜索', isDetailPage, routeInfo.params.id)
   let form = reactive({
     data: {
       id: '',
@@ -205,7 +204,6 @@
   }
   // 触发表单 提交信息
   const onSubmit = () => {
-    console.log('submit!', form.data)
     onRegisterSubmit()
   }
   // 注册表单Dom
@@ -275,7 +273,6 @@
       }
     })
     if (success) {
-      console.log('应用信息', data, form)
       // registerFormRef.value.resetFields(data)
       form.data = { ...data }
     }
@@ -298,8 +295,6 @@
           message: '该应用资源缺失,请联系管理员'
         })
       } else {
-        console.log('是是是', result)
-
         resources.resources = result
       }
     }

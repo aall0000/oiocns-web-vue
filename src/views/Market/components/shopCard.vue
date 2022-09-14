@@ -22,22 +22,25 @@
             {{ info.name }}
           </p>
           <div class="app-tag" style="margin-top:10px">
-            <el-tag v-if="props.type == 'market'" style="margin-right:10px">{{
-              info.public ? '公开' : '私有'
+            <el-tag v-if="props.type == 'market'" style="margin-right:10px" :type="info.public?'success':'danger'">{{
+              info.public ? '公开的' : '私有的'
             }}</el-tag>
+            <el-tag v-if="props.type == 'market'&&info.id != '355346477339512833'" style="margin-right:10px">{{
+              info.belongId == queryInfo.id ? '创建的' : '加入的'
+            }}</el-tag>
+            <!-- <el-tag v-if="props.type == 'market'&&info.id == '355346477339512833'" style="margin-right:10px">{{
+              info.belongId == queryInfo.id ? '':''
+            }}</el-tag> -->
             <el-tag v-if="props.type != 'market' && (info.endTime==undefined||new Date().getTime()<formartDateTime(info?.endTime))" style="margin-right:10px" :type="info.createUser==queryInfo.id?'':'success'">{{
               info.createUser==queryInfo.id ? '可管理' : '可使用'
             }}</el-tag>
             <el-tag v-if="props.type != 'market' && new Date().getTime()>formartDateTime(info?.endTime)" style="margin-right:10px" :type="'danger'">失效</el-tag>
             <el-tag v-if="props.type != 'market'" style="margin-right:10px">{{info.source}}</el-tag>
           </div>
-          <div class="app-card-item-con-desc">
+          <!-- <div class="app-card-item-con">
             {{ info.remark }}
-          </div>
-          <div class="app-card-item-con-belong">
-            归属: {{ orgChat.getName(info.belongId) }}<br/>
-            创建人：{{ orgChat.getName(info.createUser) }}
-          </div>
+          </div> -->
+
         </div>
 
         <slot v-else name="content"></slot>
@@ -45,6 +48,19 @@
       <div>
       <slot name="footer"></slot>
 
+        <div class="app-card-item-con-footer" v-if="info.id != '355346477339512833'">
+          <el-divider style="margin: 16px 0" v-if="type!='shopCard'"></el-divider>
+            <div class="app-card-item-con-desc" >
+              <p> 归属:{{ orgChat.getName(info.belongId) }}</p>
+            </div>
+            <div class="app-card-item-con-belong">
+              <p>创建:{{ orgChat.getName(info.createUser) }}</p>
+
+            </div>
+            <div v-if="props.type != 'market'" class="app-card-item-con-version">
+             版本:0.0.1
+            </div>
+        </div>
       </div>
     </div>
 
@@ -153,6 +169,41 @@
     }
     .app-tag{
       margin-top: 10px;
+    }
+    .app-card-item-con-footer{
+      width: 100%;
+      margin-top: 30px;
+
+      .app-card-item-con-desc {
+
+        p{
+          font-size: 12px;
+          font-weight: 400;
+          color: var(--el-text-color-secondary);
+
+        }
+
+      }
+      .app-card-item-con-belong {
+        p{
+          font-size: 12px;
+          font-weight: 400;
+          color: var(--el-text-color-secondary);
+
+        }
+
+        }
+      .app-card-item-con-version{
+
+
+        position: absolute;
+        right: 3px;
+        bottom: 7px;
+        font-size: 12px;
+        font-weight: 400;
+        color: var(--el-text-color-secondary);
+      }
+
     }
     &-footer {
       position: absolute;

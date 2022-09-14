@@ -75,7 +75,7 @@
     caption: props.info.name,
     productid: props.info.id,
     price: undefined,
-    sellAuth: props.info.authority,
+    sellAuth: '使用权',
     marketId: undefined,
     information: '',
     days: undefined

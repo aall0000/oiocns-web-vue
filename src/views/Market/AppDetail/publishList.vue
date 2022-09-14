@@ -10,7 +10,8 @@
         @handleUpdate="handleUpdate"
       >
             <template #operate="scope">
-                <el-link type="primary" @click="showOrderList(scope.row.id)">查看售卖详情</el-link>
+                <el-button link type="primary" @click="showOrderList(scope.row.id)">查看售卖详情</el-button>
+                <el-button link type="primary" @click="unpublishFun(scope.row)">下架</el-button>
           </template>
       </DiyTable>
     </div>
@@ -39,11 +40,12 @@
   import { onMounted, reactive, ref } from 'vue'
   import MarketCard from '@/components/marketCard/index.vue'
   import { useRouter, useRoute } from 'vue-router'
-  import { ElMessage } from 'element-plus'
+  import { ElMessage, ElMessageBox } from 'element-plus'
   import DiyTable from '@/components/diyTable/index.vue'
   const router = useRouter()
   const route = useRoute()
   const diyTable = ref(null)
+  const product = ref(null)
   const dialogState = reactive({
     data: [],
     tableHead: [
@@ -135,7 +137,7 @@
                 label: '操作',
                 fixed: 'right',
                 align: 'center',
-                width: '120',
+                width: '250',
                 name: 'operate'
             }
           ],
@@ -193,9 +195,50 @@ const showOrderList = (id:string)=>{
     orderListDialog.show = true
    getDialogTableList(id)
 }
+const unpublishFun = (item:any) => {
+    let title: string
+    title = `确定把 ${item.caption} 下架吗？`
+    ElMessageBox.confirm(title, '警告', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
+    })
+      .then(() => {
+        unpublishApp(item)
+      })
+      .catch(() => {})
+  }
+  //下架应用
+  const unpublishApp = (item:any) => {
+    $services.market
+      .unpublishMerchandise({
+        data: {
+          id: item.id
+        }
+      })
+      .then((res: ResultType) => {
+        if (res.code == 200) {
+          ElMessage({
+            message: '下架成功',
+            type: 'success'
+          })
+        }
+      })
+  }
   //查询上架申请
   const getTableList = async () => {
       state.data = []
+    await $services.product
+      .queryInfo({
+        data: {
+          id: route.query.id,
+        }
+      })
+      .then((res: ResultType) => {
+        if (res.success) {
+          product.value = res.data
+        }
+      })  
     await $services.product
       .searchPublishList({
         data: {
@@ -214,11 +257,11 @@ const showOrderList = (id:string)=>{
             (item: any) => {
               return {
                 ...item,
-                productCode: route.query.code,
-                productName: route.query.name,
-                productSource: route.query.source,
-                productAuthority: route.query.authority,
-                productTypeName: route.query.typeName,
+                productCode: product.value.code,
+                productName: product.value.name,
+                productSource: product.value.source,
+                productAuthority: product.value.authority,
+                productTypeName: product.value.typeName,
                 marketName: item.market.name,
                 marketCode: item.market.code,
               }

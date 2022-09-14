@@ -22,13 +22,13 @@
             <el-button link type="primary" @click="toChat(scope.row)">进入会话</el-button>
             <el-button link type="primary" @click="invite(scope.row)">邀请成员</el-button>
             <el-dropdown>
-              <el-button link type="primary" class="dropdown-btn" @click="deleteCohort(scope.row.id)">更多</el-button>
+              <el-button link type="primary" class="dropdown-btn">更多</el-button>
               <template #dropdown>
                   <el-dropdown-menu>
                     <el-dropdown-item v-if="props.type == '管理的'" @click="edit(scope.row)"><el-icon><Edit /></el-icon>修改群组</el-dropdown-item>
                     <el-dropdown-item v-if="props.type == '管理的'" @click="toAuth(scope.row)"><el-icon><Edit /></el-icon>角色管理</el-dropdown-item>
                     <el-dropdown-item v-if="props.type == '管理的'" @click="toIndentity(scope.row)"><el-icon><Avatar /></el-icon>身份管理</el-dropdown-item>
-                    <el-dropdown-item v-if="props.type == '管理的'" @click="moveAuth(scope.row)"><el-icon><Switch /></el-icon>转移权限</el-dropdown-item>
+                    <el-dropdown-item v-if="props.type == '管理的' && workspaceData.type !=2" @click="moveAuth(scope.row)"><el-icon><Switch /></el-icon>转移权限</el-dropdown-item>
                     <el-dropdown-item v-if="props.type == '加入的'" @click="exit(scope.row)"><el-icon><Remove /></el-icon>退出群聊</el-dropdown-item>
                     <el-dropdown-item v-if="props.type == '管理的'" @click="deleteCohort(scope.row)"><el-icon><Delete /></el-icon>解散群组</el-dropdown-item>
                   </el-dropdown-menu>
@@ -59,6 +59,12 @@
       </span>
     </template>
   </el-dialog>
+  <SearchGroupPerson  
+  v-if="searchGroupDialog"
+  :serachType="2"
+  :id="checkId"
+  @closeDialog="searchGroupDialog = false"
+  @checksGroupSearch="checksGroupSearch" />
 </template>
 
 <script lang="ts" setup>
@@ -69,10 +75,12 @@ import { useRouter } from 'vue-router';
 import SearchUser from '@/components/searchs/index.vue'
 import { ElMessage, ElMessageBox } from 'element-plus';
 
-const { queryInfo } = useUserStore()
+const { queryInfo,workspaceData } = useUserStore()
 const router = useRouter()
 
 let searchDialog = ref<boolean>(false)
+
+const searchGroupDialog = ref<boolean>(false)
 
 const props = defineProps({
   type: {
@@ -91,7 +99,7 @@ const editCohortDialog = ref(false)
 
 // 获取我加入的群列表
 const getCohorts = async () => {
-  const res = await $services.cohort.getJoinedCohorts({ data: { offset: 0, limit: 10000 } })
+  const res = await $services.cohort.getJoinedCohorts({ data: { offset: 0, limit: 100 } })
   const { data, success } = res
   if (success) {
     if(props.type == '管理的'){
@@ -119,7 +127,7 @@ const getCohorts = async () => {
     }
     for(const c of state.cohorts ){
       // 获取群组成员
-      $services.cohort.getPersons({ data: { id: c.id, offset: 0, limit: 100000 } }).then((res: any) => {
+      $services.cohort.getPersons({ data: { id: c.id, offset: 0, limit: 1000 } }).then((res: any) => {
         if(res.success){
           c.persons = res.data.result;
         } else {
@@ -168,8 +176,39 @@ const update = ()=>{
       }
     })
 }
-
-
+//权限转移
+const checksGroupSearch = (val:any)=>{
+  if (val.value.length > 0) {
+    updateBelong(val.value[0].id)
+  } else {
+    searchGroupDialog.value = false
+  }
+}
+const updateBelong = (belongId?:string)=>{
+  const data = {
+    id: curCohort.value.id,
+    name: curCohort.value.name,
+    code: curCohort.value.code,
+    thingId: curCohort.value.thingId,
+    belongId: belongId,
+    teamName: curCohort.value.name,
+    teamCode: curCohort.value.code,
+    teamRemark: curCohort.value.remark,
+    teamAuthId: curCohort.value.team.authId,
+  }
+  $services.cohort.update({
+      data
+    }).then((res: ResultType) => {
+      if (res.success) {
+        ElMessage({
+          message: '转让成功',
+          type: 'success'
+        })
+        searchGroupDialog.value = false;
+        getCohorts()
+      }
+    })
+}
 
 // 选择人员后的回调
 const checksSearch = (res: any)=>{
@@ -223,9 +262,13 @@ const toIndentity = (cohort: any)=>{
   })
 }
 
+const checkId=ref<string>('');
+
 // 转移权限
 const moveAuth = (cohort: any)=>{
-  ElMessage.warning('待开发。。。')
+  curCohort.value = cohort
+  searchGroupDialog.value = true;
+  checkId.value = cohort.id
 }
 
 // 退出群聊

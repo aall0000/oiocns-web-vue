@@ -169,10 +169,16 @@
 </script>
 
 <style lang="scss" scoped>
-  :deep(.el-descriptions__label){
-    width:210px
-  }
-  :deep(.is-bordered-content) {
-    display: flex;
-  }
+  :deep(.el-tag){
+      margin-bottom:10px
+    }
+    :deep(.el-descriptions__content){
+      flex-wrap: wrap;
+    }
+    :deep(.el-descriptions__label){
+      width:210px
+    }
+    :deep(.is-bordered-content) {
+      display: flex;
+    }
 </style>

@@ -1,10 +1,10 @@
 <template>
   <el-dialog append-to-body	 v-model="dialogShow.value" title="创建单位" width="30%">
     <el-form ref="ruleFormRef" :rules="rules" :model="ruleForm" status-icon class="demo-ruleForm">
-      <el-form-item prop="name">
+      <el-form-item prop="teamName">
         <el-input
           size="large"
-          v-model="ruleForm.name"
+          v-model="ruleForm.teamName"
           autocomplete="off"
           placeholder="请输入单位名称"
         />
@@ -17,10 +17,10 @@
           placeholder="请输入社会信用统一代码"
         />
       </el-form-item>
-      <el-form-item prop="teamName">
+      <el-form-item prop="name">
         <el-input
           size="large"
-          v-model="ruleForm.teamName"
+          v-model="ruleForm.name"
           autocomplete="off"
           placeholder="请输入团队简称"
         />

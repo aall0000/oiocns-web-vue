@@ -47,7 +47,7 @@ const orgChat: orgChatType = {
     lastMsg: null,
     curChat: ref<ImMsgChildType>(null),
     qunPersons: ref<any[]>([]),
-    nameMap: sessionStorage.getItem('nameMap')? JSON.parse(sessionStorage.getItem('nameMap')) : {},
+    nameMap: {},
     openChats: [],
     curMsgs: ref<any[]>([]),
     start: (accessToken: string, userId: string, spaceId: string) => {
@@ -83,7 +83,6 @@ const orgChat: orgChatType = {
                 }
                 if (data.nameMap) {
                     orgChat.nameMap = data.nameMap
-                    sessionStorage.setItem('nameMap', JSON.stringify(data.nameMap))
                 }
                 if (data.openChats) {
                     orgChat.openChats = data.openChats
@@ -105,7 +104,7 @@ const orgChat: orgChatType = {
                 if (orgChat.chats.value.length < 1) {
                     await orgChat.getChats()
                 }
-            }, 1000)
+            }, 500)
         }).catch((error: any) => {
             console.log('链接出错,30秒后重连', error)
             setTimeout(() => {
@@ -139,8 +138,15 @@ const orgChat: orgChatType = {
         orgChat.lastMsg = null
     },
     getName: (id: string) => {
-     
-        let name = orgChat.nameMap[id] || id
+        let name = orgChat.nameMap[id] || ''
+        if(name === '' && orgChat.isConnected()){
+            orgChat._connection.invoke("GetName", parseInt(id)).then((res)=>{
+                if(res.success){
+                    orgChat.nameMap[id] = res.data
+                    orgChat._cacheChats()
+                }
+            })
+        }
         return name
     },
     getNoRead: () => {

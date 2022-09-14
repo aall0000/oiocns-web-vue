@@ -16,7 +16,7 @@
         </el-select>
         <el-button small link type="primary" @click="editDialog">编辑</el-button>
       </div>
-  
+
       <el-descriptions style="margin-top: 10px" class="margin-top" :column="1" border>
         <el-descriptions-item>
           <template #label>
@@ -85,7 +85,7 @@
       </el-dialog>
     </div>
   </template>
-  
+
   <script setup lang="ts">
     import { onMounted, reactive, ref,nextTick } from 'vue'
     import API from '@/services'
@@ -117,12 +117,11 @@
     onMounted(() => {
       nextTick(() => {
         getGroupList()
-        
+
       })
-      
+
     })
     const handleTabsClick = (tab: TabsPaneContext, event: Event) => {
-      console.log(tab.index)
       if (tab.index == '1') {
         getGroupList()
       }
@@ -208,11 +207,17 @@
           }
           getHistoryData()
         })
-        
+
     }
   </script>
-  
+
   <style lang="scss" scoped>
+    :deep(.el-tag){
+      margin-bottom:10px
+    }
+    :deep(.el-descriptions__content){
+      flex-wrap: wrap;
+    }
     :deep(.el-descriptions__label){
       width:210px
     }
@@ -220,4 +225,3 @@
       display: flex;
     }
   </style>
-  
