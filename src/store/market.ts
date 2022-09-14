@@ -23,11 +23,14 @@ export const useMarketStore = defineStore({
   },
   getters: {
     getMarketName: (state) => {
+      debugger
+      console.log(state.marketMap)
       return (id: string): string => state.marketMap.get(id)
     }
   },
   actions: {
     async SearchAllMarket() {
+      debugger
       // 获取市场信息
       await $services.appstore
         .searchAll({
@@ -38,12 +41,14 @@ export const useMarketStore = defineStore({
           }
         })
         .then(async (res: ResultType) => {
+          
           if (res.success) {
             const {result = [],total = 0} = res.data
             result.forEach((item: { id: any; name: any })=>{
               this.marketMap.set(item.id,item.name)
 
             })
+            debugger
             console.log(this.marketMap)
 
           } else {
