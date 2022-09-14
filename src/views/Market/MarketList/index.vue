@@ -201,13 +201,13 @@
     <el-dialog append-to-body v-model="createDialog" title="创建商店" width="30%" class="">
       <el-descriptions :model="form"  :column="1" border>
         <el-descriptions-item label="商店名称">
-          <el-input  v-model="form.name" placeholder="请输入商店名称"  />
+          <el-input  v-model="form.name"   />
         </el-descriptions-item>
         <el-descriptions-item label="商店编码" >
-          <el-input  v-model="form.code" placeholder="请输入商店编码"/>
+          <el-input  v-model="form.code" />
         </el-descriptions-item>
         <el-descriptions-item label="商店简介" >
-          <el-input  v-model="form.remark" placeholder="请输入商店简介" />
+          <el-input  v-model="form.remark"  />
         </el-descriptions-item>
         <el-descriptions-item label="商店是否公开" >
           <el-select  v-model="form.public" placeholder="是否公开" style="width:100%">
