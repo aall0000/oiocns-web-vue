@@ -7,6 +7,7 @@ const market = '/orginone/appstore/market'
 const order = '/orginone/appstore/order'
 const product = '/orginone/appstore/product'
 const appstore = '/orginone/appstore/market'
+const collection = '/orginone/anydata/collection'
 export default {
   // 人员接口
   person: {
@@ -244,6 +245,12 @@ export default {
     approvalPublish: appstore + '/approval/publish',
     pullTarget: appstore + '/pull/target',
     searchPublishApply: appstore + '/search/publish/apply'
+  },
+  collection: {
+    insert: (collName: string) => collection + '/insert/' + collName,
+    aggregate: (collName: string) => collection + '/aggregate/' + collName,
+    update: (collName: string) => collection + '/update/' + collName,
+    remove: (collName: string) => collection + '/remove/' + collName
   }
   //others
 }
