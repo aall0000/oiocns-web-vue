@@ -41,7 +41,7 @@
   import $services from '@/services'
   import { ref, reactive, onMounted, nextTick } from 'vue'
   import { ElMessage } from 'element-plus'
-
+  import orgChat from '@/hubs/orgchat'
   const dialogVisible = ref<boolean>(true)
   const diyTable = ref(null)
   // 表格展示数据
@@ -160,8 +160,11 @@
                     id: el.id,
                     code: el.code,
                     name: el.name,
-                    remark: el.remark
+                    remark: el.remark,
+                    belong:orgChat.getName(el.belongId),
+                    create: orgChat.getName(el.createUser)
                   }
+
                 }
                 else{
                   obj={
@@ -299,20 +302,34 @@
     {
       prop: 'name',
       label: '商店名称',
-      width: '300',
+
       name: 'name'
     },
+
     {
       prop: 'code',
-      label: '商店名称',
-      width: '300',
+      label: '商店编码',
+
       name: 'code'
     },
+
     {
       type:'slot',
       prop: 'remark',
       label: '商店简介',
       name: 'remark'
+    },
+    {
+      prop: 'belong',
+      label: '商店归属',
+
+      name: 'belong'
+    },
+    {
+      prop: 'create',
+      label: '商店创建',
+
+      name: 'create'
     },
   ])
   const options = ref<any>({
