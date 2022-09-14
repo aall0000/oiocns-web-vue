@@ -90,7 +90,7 @@
     pageSize: 20,
     total: 0
   })
-  // 软件共享仓库信息
+  // 软件开放市场信息
   const softShareInfo = ref<MarketType>({} as MarketType)
 
   const state = reactive({
@@ -203,7 +203,6 @@
   const getMarketInfo = () => {
     $services.market.getSoftShareInfo().then((res: ResultType) => {
       if (res.code == 200) {
-        console.log('共享仓库', res.data)
         softShareInfo.value = res?.data || {}
         getAppList()
       }

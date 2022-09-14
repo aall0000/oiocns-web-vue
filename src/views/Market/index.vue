@@ -10,7 +10,7 @@
             >注册应用</el-button
           >
           <!-- <el-button small link type="primary" @click="GoPage('/market/softShare')"
-            >从共享仓库中添加应用</el-button
+            >从开放市场中添加应用</el-button
           > -->
           <el-button small link type="primary" @click="GoPage('/market/marketList')"
             >商店列表</el-button
@@ -109,7 +109,7 @@
                     </div>
                     <el-dropdown-item @click="deleteApp(item)">移除应用</el-dropdown-item>
                     <!-- <el-dropdown-item  @click="GoPage('/market/appDetail')">应用详情</el-dropdown-item> -->
-                    <el-dropdown-item @click="GoPageWithQuery('/market/publishList', item)"
+                    <el-dropdown-item @click="GoPageWithQuery('/market/publishList', {id:item.id})"
                       >应用上架列表</el-dropdown-item
                     >
                   </el-dropdown-menu>
@@ -264,7 +264,7 @@
   import { storeToRefs } from 'pinia'
   // hoverItem--鼠标移入item的id 用于展示按钮区域
 
-  const add: string = '从共享仓库中添加应用'
+  const add: string = '从开放市场中添加应用'
   const groupShareVisible = ref<boolean>(false)
   const unitShareVisible = ref<boolean>(false)
   const personCohortShareVisible = ref<boolean>(false)
@@ -696,6 +696,7 @@
           flex-wrap: wrap;
           height: calc(100% - 50px);
           align-content:flex-start;
+          overflow-y: auto;
         }
         .tab-card{
           height: 100%;

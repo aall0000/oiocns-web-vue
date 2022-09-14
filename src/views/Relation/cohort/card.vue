@@ -24,7 +24,7 @@
               </el-dropdown>
             </div>
           </template>
-          <div class="row-text">归属权:{{orgChat.getName(cohort.belongId)}}</div>
+          <div class="row-text">归属:{{orgChat.getName(cohort.belongId)}}</div>
           <div class="content">{{cohort.code}}</div>
           <div class="description">{{cohort.team?.remark}}</div>
 

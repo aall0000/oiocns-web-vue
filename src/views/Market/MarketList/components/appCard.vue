@@ -32,7 +32,7 @@
                 </div>
 
                 <div class="app-con-info">售卖权属：{{ item.sellAuth }}
-                  <el-tag size="small" v-if="item.sellAuth !== '所属权'">
+                  <el-tag size="small" v-if="item.sellAuth !== '所属权'&&item?.days">
                     使用期：{{ item.sellAuth !== '所属权' ? item.days + '天' : '无期限' }}</el-tag>
                 </div>
                 <!-- <div class="app-con-info">上架时间：{{ item.createTime.substring(0, 11) }}</div> -->
@@ -399,6 +399,7 @@ defineExpose({
     .app-card {
       display: flex;
       flex-wrap: wrap;
+      align-content:flex-start;
       height: calc(100% - 60px);
     }
   }

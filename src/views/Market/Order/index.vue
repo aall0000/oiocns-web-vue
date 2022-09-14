@@ -120,8 +120,10 @@ import payView from '@/components/pay/pay.vue'
 import payList from '@/components/pay/list.vue'
 import DiyButton from '@/components/diyButton/index.vue'
 import { ElTable } from 'element-plus'
+import { useMarketStore } from '@/store/market'
 import moment from 'moment'
 import { useRoute, useRouter } from 'vue-router'
+const store = useMarketStore()
 const router = useRouter()
   const route = useRoute()
 // 表格分页数据
@@ -210,8 +212,9 @@ const searchValue = ref<string>('')
         label: '价格'
       },
       {
-        prop:'seller.name',
-        label:"卖方名称"
+        prop:'sellerId',
+        label:"卖方名称",
+        formatter: (row:any, column:any) => store.getMarketName(row.sellerId)
       },
       {
         prop: 'status',
