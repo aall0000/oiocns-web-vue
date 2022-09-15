@@ -259,7 +259,6 @@
   import Unit from '../Market/AppShare/unit.vue'
   import Group from '../Market/AppShare/group.vue'
   import Person from '../Market/AppShare/person.vue'
-  import TheTableButton from './MarketList/components/theTableButton3.vue'
   import Pagination from '@/components/pagination/index.vue'
   import { storeToRefs } from 'pinia'
   // hoverItem--鼠标移入item的id 用于展示按钮区域

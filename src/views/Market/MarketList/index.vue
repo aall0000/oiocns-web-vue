@@ -40,6 +40,7 @@
             :key="item.id"
             :overId="item.id"
             type="market"
+            :softwareId = software
             @click="GoPageWithQuery('/market/appList', { data: item.id, type: 'manage' })"
           >
             <template #icon
@@ -51,14 +52,17 @@
                 :isSquare="false"
             /></template>
             <template #rightIcon>
-              <el-dropdown trigger="click" placement="left-start" v-if="item.id != '355346477339512833'">
+              <el-dropdown trigger="click" placement="left-start" v-if="item.id != software">
                 <el-icon :size="18"><Operation /></el-icon>
                 <template #dropdown>
                   <el-dropdown-menu >
                     <el-dropdown-item @click.stop="hadleClick(item)"
-                      ><el-button class="btn" type="primary" link small
-                        >删除商店</el-button
-                      ></el-dropdown-item
+                      >
+                      <el-button class="btn" type="primary" link small v-if="item.id==workspaceData.id"
+                        >删除商店</el-button>
+                      <el-button class="btn" type="primary" link small v-if="item.id!=workspaceData.id"
+                        >退出商店</el-button>
+                      </el-dropdown-item
                     >
                     <el-dropdown-item @click.stop="hadleUserManage(item)"
                       ><el-button class="btn" link small >用户管理</el-button></el-dropdown-item
@@ -88,22 +92,22 @@
               <el-tag
 
                 style="margin-left: 10px"
-                :type="scope.row.createUser == queryInfo.id ? '' : 'success'"
+                :type="scope.row.public == true ? 'success' : ''"
                 >{{ scope.row.public == true ? '公开的' : '私有的' }}</el-tag
               >
           </template>
           <template #tag="scope">
             <el-tag
-            v-if="scope.row.id != '355346477339512833'"
+            v-if="scope.row.id != software"
                 style="margin-left: 10px"
-                :type="scope.row.createUser == queryInfo.id ? '' : 'success'"
-                >{{ scope.row.belongId == queryInfo.id ? '创建的' : '加入的' }}</el-tag
+                :type="scope.row.createUser == workspaceData.id ? '' : 'success'"
+                >{{ scope.row.belongId == workspaceData.id ? '创建的' : '加入的' }}</el-tag
               >
 
           </template>
             <template #operate="scope">
               <el-button
-              v-if="scope.row.id != '355346477339512833'"
+              v-if="scope.row.id != software"
                 class="btn"
                 type="primary"
                 link
@@ -111,7 +115,7 @@
                 @click.stop="hadleUserManage(scope.row)"
                 >用户管理</el-button
               >
-              <el-button class="btn" type="primary" link small @click.stop="marketQuit(scope.row)" v-if="scope.row.id != '355346477339512833'"
+              <el-button class="btn" type="primary" link small @click.stop="marketQuit(scope.row)" v-if="scope.row.id != software"
                 >删除商店</el-button
               >
             </template>
@@ -262,6 +266,8 @@
   const router = useRouter()
   const store = useUserStore()
   const { queryInfo } = storeToRefs(store)
+  const { workspaceData } = storeToRefs(store)
+
   const handleCurrentMy: any = computed(() => {
     return (state.pageMy.currentPage - 1) * state.pageMy.pageSize
   })
@@ -276,7 +282,9 @@
   const add: string = '创建商店'
   const add1: string = '加入商店'
   const searchText = ref<string>('')
+  const software = ref<string>('')
   const state = reactive({
+    softShareInfo:[],
     myMarket: [],
     joinMarket: [],
     pageMy: {
@@ -340,6 +348,7 @@
   const createDialog = ref(false)
 
   onMounted(() => {
+    getMarketInfo()
     getMyMarketData()
     //getJoinMarketData()
     getShopcarNum()
@@ -418,7 +427,7 @@
           const {result = [],total = 0} = res.data
           state.myMarket = []
           result?.forEach((item: { id: string })=>{
-            if(item.id === '355346477339512833'){
+            if(item.id === software.value){
               state.myMarket.unshift(item)
             }
             else{
@@ -614,6 +623,15 @@
   const closeDialog = (data: { value: boolean }) => {
     searchDialog.value = false
   }
+   // 获取共享仓库信息
+  const getMarketInfo = () => {
+    $services.market.getSoftShareInfo().then((res: ResultType) => {
+      if (res.code == 200) {
+        state.softShareInfo = res?.data || {}
+        software.value = state.softShareInfo.id
+      }
+    })
+}
 </script>
 
 <style lang="scss" scoped>

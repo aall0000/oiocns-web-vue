@@ -4,7 +4,7 @@
       <ul class="box-ul">
         <li class="app-card" v-if="dataList?.length !== 0">
           <ShopCard v-for="item in dataList" :info="item.id" :key="item.id" :cardContent="true"
-            @click="handleCardInfo(item)">
+           >
             <template #rightIcon>
               <el-dropdown trigger="click" placement="left-start">
                 <el-icon :size="18">
@@ -12,7 +12,7 @@
                 </el-icon>
                 <template #dropdown>
                   <el-dropdown-menu>
-                    <!-- <el-dropdown-item @click="GoPageWithQuery('/market/merchandiseDetail',item)">商品详情</el-dropdown-item> -->
+                    <el-dropdown-item @click="handleCardInfo(item)">详情</el-dropdown-item>
                     <el-dropdown-item @click="joinStaging(item)">加入购物车</el-dropdown-item>
                     <el-dropdown-item @click="buyThings(item)">购买</el-dropdown-item>
                     <el-dropdown-item @click="unpublishFun(item)" v-if="type == 'manage'">下架</el-dropdown-item>
@@ -40,13 +40,19 @@
             </template>
             <template #footer>
               <el-divider style="margin: 16px 0"></el-divider>
-              <div class="app-card-item-con-desc">
-                <p>详情：{{ item.information || '暂无' }}</p>
-              </div>
-              <div class="app-card-item-con-belong">
-                发起人: {{ orgChat.getName(item.createUser) }}
+              <div class="app-card-item-con-footer" v-if="item.id != '355346477339512833'">
+
+                <div class="app-card-item-con-desc" >
+                  <p>详情：{{ item.information || '暂无' }}</p>
+                  <p>发起人: {{ orgChat.getName(item.createUser) }}</p>
+                </div>
+
+                <div v-if="props.type != 'market'" class="app-card-item-con-version">
+                版本:0.0.1
+                </div>
               </div>
             </template>
+
             <template #icon>
               <HeadImg :name="item.name" :url="item.icon || merchandiseImg" :imgWidth="48" :limit="1"
                 :isSquare="false" />
@@ -96,7 +102,7 @@ type Props = {
 }
 type AppType = {
   caption:string
-  createTime:string 
+  createTime:string
   createUser: string
   days:string
   id:string
@@ -335,38 +341,38 @@ defineExpose({
   line-height: 1.8;
 }
 
-.app-card-item-con-desc {
-  p {
+.app-card-item-con-footer{
+
+display: flex;
+width: 100%;
+align-items: flex-end;
+
+
+  .app-card-item-con-desc {
+    width: 50%;
+    justify-content: flex-start;
+    padding: 0px;
+    p{
+      font-size: 12px;
+      font-weight: 400;
+      color: var(--el-text-color-secondary);
+      padding-top: 5px;
+      display: -webkit-box;
+      word-break: break-all;
+      -webkit-line-clamp: 1;
+      -webkit-box-orient: vertical;
+
+    }
+  }
+  .app-card-item-con-version{
+    display: flex;
+    width: 50%;
+    justify-content: flex-end;
     font-size: 12px;
     font-weight: 400;
     color: var(--el-text-color-secondary);
-    // line-height: 1.8;
-    // position: absolute;
-    // bottom: 50px;
-    // width: 100%;
-    // left: 0;
-    // height: 30px;
-    // padding: 0px 24px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: -webkit-box;
-    word-break: break-all;
-    -webkit-line-clamp: 1;
-    -webkit-box-orient: vertical;
   }
-}
 
-.app-card-item-con-belong {
-  margin-top: 10px;
-  font-size: 12px;
-  font-weight: 400;
-  color: var(--el-text-color-secondary);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: -webkit-box;
-  word-break: break-all;
-  -webkit-line-clamp: 1;
-  -webkit-box-orient: vertical;
 }
 
 // :deep(.el-card__body) {
