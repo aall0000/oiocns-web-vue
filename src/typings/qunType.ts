@@ -36,6 +36,7 @@ interface ImMsgChildType {
   spaceId?:string
   noRead?: number
   showTxt?:string
+  personNum?:number
 }
 // 聊天 侧边栏展示列表类型
 interface ImMsgType {

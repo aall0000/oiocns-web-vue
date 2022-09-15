@@ -242,6 +242,7 @@ const orgChat: orgChatType = {
                 offset: orgChat.qunPersons.value.length
             })
             if (res.success) {
+                orgChat.curChat.value.personNum = res.data.total
                 if (res.data.result) {
                     res.data.result.forEach((item: any) => {
                         if (item.team) {
