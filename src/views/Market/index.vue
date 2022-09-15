@@ -63,6 +63,7 @@
             :info="item"
             :key="item.id"
             :over-id="item.id"
+            type="soft"
           >
             <template #icon
               ><HeadImg
@@ -116,9 +117,9 @@
                 </template>
               </el-dropdown>
             </template>
-            
-            <template #footer>
-              <el-descriptions size="small" :column="1" style="padding-left: 58px;">
+
+            <!-- <template #footer> -->
+              <!-- <el-descriptions size="small" :column="1" style="padding-left: 58px;">
                   <el-descriptions-item label="简介：">{{
                     item?.remark || '暂无'
                   }}</el-descriptions-item>
@@ -126,14 +127,14 @@
               <el-divider style="margin: 6px 0 16px 0"></el-divider>
               <div class="app-card-item-con-belong">
                 <span>归属: {{ orgChat.getName(item.belongId) || '未知' }}</span>
-                
+
                 <span>版本： 0.0.1</span>
-              </div>
+              </div> -->
               <!-- <div class="app-card-item-con-desc"
                 ><p>详情：{{ item.merchandise.information || '暂无'}}</p></div
               > -->
 
-            </template>
+            <!-- </template> -->
           </ShopCard>
         </li>
         <li class="tab-card" v-show="mode === 'list'">

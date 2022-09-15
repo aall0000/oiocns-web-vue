@@ -48,26 +48,25 @@
       <div>
         <slot name="footer"></slot>
 
-        <!-- <div class="app-card-item-con-footer" v-if="info.id != '355346477339512833'">
-          <el-divider v-if="type != 'shopCard'"></el-divider>
-          <div v-if="type == 'market'" class="app-card-item-con-belong" style="margin-top: 5px">
-            <p>code:{{ info.code }}</p>
-          </div>
-          <div class="app-card-item-con-desc">
-            <p> 归属:{{ orgChat.getName(info.belongId) }}</p>
-          </div>
-          <div class="app-card-item-con-belong">
-            <p>创建:{{ orgChat.getName(info.createUser) }}</p>
-          </div>
-          <div v-if="props.type != 'market'" class="app-card-item-con-version"> 版本:0.0.1 </div>
-        </div> -->
+        <div class="app-card-item-con-line" v-if="props.type != 'market'">
+        <el-divider style="margin: 16px 0" v-if="type!='shopCard'&&info.id != softwareId"></el-divider>
+      </div>
+        <div class="app-card-item-con-footer" v-if="info.id != softwareId&&props.type != 'market'">
+
+            <div class="app-card-item-con-desc" >
+              <p> 归属:{{ orgChat.getName(info.belongId) }}</p>
+              <p>创建:{{ orgChat.getName(info.createUser) }}</p>
+            </div>
+
+            <div v-if="props.type != 'market'" class="app-card-item-con-version">
+             版本:0.0.1
+            </div>
+        </div>
       </div>
     </div>
 
     <!-- v-show="hoverItem === info.id" -->
-    <div class="app-card-item-footer" v-show="state.hoverItem === info.id" @click.stop>
-      <slot />
-    </div>
+
               </el-card>
 </template>
 <script lang="ts" setup>

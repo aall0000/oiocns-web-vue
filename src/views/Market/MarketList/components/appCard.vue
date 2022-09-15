@@ -14,6 +14,7 @@
                   <el-dropdown-menu>
                     <el-dropdown-item @click="handleCardInfo(item)">详情</el-dropdown-item>
                     <el-dropdown-item @click="joinStaging(item)">加入购物车</el-dropdown-item>
+                    <el-dropdown-item @click="buyThings(item)"> 购买 </el-dropdown-item>
                     <el-dropdown-item @click="unpublishFun(item)" v-if="type == 'manage'"
                       >下架</el-dropdown-item
                     >

@@ -77,10 +77,16 @@
             </template>
             <template #footer>
               <el-divider style="margin:16px 0"></el-divider>
-              <div class="app-card-item-con-belong">
-                <span>归属: {{ orgChat.getName(item.belongId) || '未知' }}</span>
-                
-                <span>版本： 0.0.1</span>
+              <div class="app-card-item-con-footer">
+
+              <div class="app-card-item-con-desc" >
+                <p> 归属:{{ orgChat.getName(item.belongId) }}</p>
+                <p>创建:{{ orgChat.getName(item.createUser) }}</p>
+              </div>
+
+              <div class="app-card-item-con-version">
+              版本:0.0.1
+              </div>
               </div>
               <!-- <div class="app-card-item-con-desc"
                 ><p>详情：{{ item.merchandise.information || '暂无'}}</p></div
@@ -573,13 +579,36 @@
     color: var(--el-text-color-regular);
     line-height: 1.8;
   }
-  .app-card-item-con-belong {
-    // margin-top: 10px;
-    font-size: 12px;
-    font-weight: 400;
-    color: var(--el-text-color-secondary);
+  .app-card-item-con-footer{
+
     display: flex;
-    justify-content: space-between;
+    width: 100%;
+    align-items: flex-end;
+
+
+    .app-card-item-con-desc {
+      width: 75%;
+      justify-content: flex-start;
+      padding: 0px;
+      p{
+        font-size: 12px;
+        font-weight: 400;
+        color: var(--el-text-color-secondary);
+        padding-top: 5px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+
+      }
+    }
+    .app-card-item-con-version{
+      display: flex;
+      width: 25%;
+      justify-content: flex-end;
+      font-size: 12px;
+      font-weight: 400;
+      color: var(--el-text-color-secondary);
+    }
 }
 
   .shopCar {
