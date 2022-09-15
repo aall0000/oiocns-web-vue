@@ -149,7 +149,7 @@ const handleRowClick = (row: any) => {
 }
 const statusvalue = ref('')
 const statusoptions = [
-        {label: '待卖方确认', value: 1},
+        {label: '待交付', value: 1},
         //包含第三方监管和卖方的审核状态
         {label: '已发货', value: 102},
         //后续可能有物流状态接入
@@ -205,7 +205,8 @@ const searchValue = ref<string>('')
       },
       {
         prop: 'days',
-        label: '使用期限'
+        label: '使用期限',
+        formatter: (row:any, column:any) => {return row.days || '永久'}
       },
       {
         prop: 'price',
@@ -214,12 +215,12 @@ const searchValue = ref<string>('')
       {
         prop:'marketId',
         label:"市场名称",
-        formatter: (row:any, column:any) => orgChat.getName(row.marketId)
+        formatter: (row:any, column:any) => {return row.marketId? orgChat.getName(row.marketId) :null} 
       },
       {
         prop:'sellerId',
         label:"卖方名称",
-        formatter: (row:any, column:any) => orgChat.getName(row.sellerId)
+        formatter: (row:any, column:any) =>  {return row.sellerId? orgChat.getName(row.sellerId) :null} 
       },
       {
         prop: 'status',
@@ -266,7 +267,7 @@ const searchValue = ref<string>('')
       {
         prop:'marketId',
         label:"市场名称",
-        formatter: (row:any, column:any) => orgChat.getName(row.marketId)
+        formatter: (row:any, column:any) => {return row.marketId? orgChat.getName(row.marketId) :null} 
       },
       {
         prop: 'belongId',
@@ -279,7 +280,8 @@ const searchValue = ref<string>('')
       },
       {
         prop: 'days',
-        label: '使用期限'
+        label: '使用期限',
+        formatter: (row:any, column:any) => {return row.days || '永久'}
       },
       {
         prop: 'price',
@@ -389,7 +391,7 @@ const searchValue = ref<string>('')
         })
         state.orderList = result?.map(
           (item: {
-            merchandise: { caption: any; days: any; sellAuth: any; price: any; information: any }
+            merchandise: { caption: any; days: any; sellAuth: any; price: any; information: any; marketId:any }
             order: { code: any; name: any; status: any,belongId:any }
           }) => {
             // if(!item.merchandise) {item.merchandise = {caption: null, days: null, sellAuth: null, price:null, information: null}}
@@ -398,6 +400,7 @@ const searchValue = ref<string>('')
               ...item,
               code: item.order.code,
               belongId: item.order.belongId,
+              marketId: item.merchandise? item.merchandise.marketId : null
             }
           }
         )
@@ -436,9 +439,10 @@ const searchValue = ref<string>('')
           return item
         })
 
-        state.orderList = result?.map((item: { market: { remark: any; code: any; name: any } }) => {
+        state.orderList = result?.map((item: any) => {
           return {
-            ...item
+            ...item,
+            marketId: item.merchandise? item.merchandise.marketId : null
           }
         })
       })

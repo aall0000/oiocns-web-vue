@@ -151,7 +151,6 @@ const handleContextClick = (e: MouseEvent, item: ImMsgChildType) => {
 // 页面加载完毕，点击其他位置则隐藏菜单
 onMounted(() => {
   window.addEventListener('click', () => {
-    debugger
     mousePosition.isShowContext = false
   })
   window.addEventListener('contextmenu', () => {
