@@ -141,7 +141,7 @@ const getCohorts = async () => {
 
 // 进入会话
 const toChat = (cohort: any)=>{
-  router.push({ name: 'chat',params:{defaultOpenID:cohort.id} })
+  router.push({ name: 'chat',params:{defaultOpenID:cohort.id,spaceId:cohort.belongId} })
 }
 
 // 修改群组信息

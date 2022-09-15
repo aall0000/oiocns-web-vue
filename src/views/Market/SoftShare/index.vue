@@ -199,7 +199,7 @@
       })
   }
 
-  // 获取已加入市场列表
+  // 获取共享仓库信息
   const getMarketInfo = () => {
     $services.market.getSoftShareInfo().then((res: ResultType) => {
       if (res.code == 200) {
