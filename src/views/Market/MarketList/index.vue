@@ -235,7 +235,9 @@ const add1: string = '加入商店'
 const searchText = ref<string>('')
 const software = ref<string>('')
 const state = reactive({
-  softShareInfo:[],
+  softShareInfo:{
+    id: ""
+  },
   myMarket: [],
   joinMarket: [],
   pageMy: {
