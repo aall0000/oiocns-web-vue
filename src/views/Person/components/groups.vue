@@ -27,13 +27,13 @@
     <el-dialog v-model="dialogVisible" title="提示" width="30%">
       <el-form :model="form" label-width="120px">
         <el-form-item label="集团名称">
-          <el-input v-model="form.name" style="width: 80%" />
+          <el-input v-model="form.teamName" style="width: 80%" />
         </el-form-item>
         <el-form-item label="集团编码">
           <el-input v-model="form.code" style="width: 80%" />
         </el-form-item>
         <el-form-item label="集团简称">
-          <el-input v-model="form.teamName" style="width: 80%" />
+          <el-input v-model="form.name" style="width: 80%" />
         </el-form-item>
         <el-form-item label="集团代码">
           <el-input v-model="form.teamCode" style="width: 80%" />
