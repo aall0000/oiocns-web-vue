@@ -61,7 +61,7 @@
   // 提交聊天内容
   const submit = async () => {
     const inputContent = document.getElementById('insterHtml').childNodes
-    const text = inputContent.length>0? reCreatChatContent(document.getElementById('insterHtml').childNodes) :  document.getElementById('insterHtml').innerHTML
+    const text = inputContent.length>0? reCreatChatContent(document.getElementById('insterHtml').childNodes) : [ document.getElementById('insterHtml').innerHTML]
 
     const params = {
       toId: orgChat.curChat.value.id,
@@ -75,7 +75,7 @@
     document.getElementById('insterHtml').innerHTML = ''
   }
   // 解析聊天内容
-  const reCreatChatContent = (elementChild: NodeList): Array<any>  =>{
+  const reCreatChatContent = (elementChild: NodeList|any[]): Array<string>  =>{
     // console.log(elementChild)
     const  arrElement = Array.from(elementChild)
     // const newSpace  = document.createDocumentFragment()
@@ -90,6 +90,7 @@
         return n?.outerHTML
       })
     }
+   
     // return newSpace.innerHTML
   }
 
