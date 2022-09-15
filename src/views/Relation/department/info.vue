@@ -83,7 +83,7 @@
   // 加载职权树
   const loadAuthorityTree = () => {
     console.log('selectItem',selectItem.value)
-    $services.company.getAuthorityTree({data: {id: selectItem.value.data.belongId}}).then((res: any)=>{
+    $services.company.getAuthorityTree({data: {id: selectItem.value.data.id}}).then((res: any)=>{
       authTree.value = []
       authTree.value.push(res.data)
       initIdMap(authTree.value)
