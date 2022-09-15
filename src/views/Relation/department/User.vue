@@ -61,14 +61,20 @@ const tableHead = ref([
   },
   {
     prop: 'name',
-    label: '姓名',
-    width: '240',
+    label: '昵称',
+    width: '200',
     name:'name',
+  },
+  {
+    prop: 'team.name',
+    label: '姓名',
+    width: '200',
+    name:'teamName',
   },
   {
     prop: 'team.code',
     label: '手机号',
-    width: '330',
+    width: '200',
     name:'teamCode',
   },
   {

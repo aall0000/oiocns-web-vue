@@ -92,12 +92,21 @@
   const tableHead = ref([
     {
       prop: 'name',
-      label: '名称',
+      label: '简称',
       name: 'name'
     },
     {
       prop: 'code',
-      label: '编码'
+      label: '信用代码'
+    },
+    {
+      prop: 'team.name',
+      label: '全称',
+      name: 'teamName'
+    },
+    {
+      prop: 'team.code',
+      label: '代码'
     },
     {
       prop: 'team.code',
