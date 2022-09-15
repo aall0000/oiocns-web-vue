@@ -20,32 +20,33 @@
             </el-icon>
           </div>
         </div>
-      
-          <div @mouseover="handleOpen()" class="select-drop" :style="getDropMenuStyle">
-            <div class="select-box" v-infinite-scroll="load" infinite-scroll-immediate>
-              <div
-                class="seletc-drop__box"
-                v-for="item in store.userCompanys"
-                :key="item.id"
-                @click="switchCompany(item)"
-              >
-                <div class="select-drop__flex">
-                  <div class="select-item__imgSelect">
-                    {{ item.team ? item.team.name.slice(0, 1) : item.name.slice(0, 1) }}
-                  </div>
-                  <div class="select-item__titleSelect">{{
-                    item.team ? item.team.name : item.name
-                  }}</div>
+
+        <div @mouseover="handleOpen()" class="select-drop" :style="getDropMenuStyle">
+          <div class="select-box" v-infinite-scroll="load" infinite-scroll-immediate>
+            <div
+              class="seletc-drop__box"
+              v-for="item in store.userCompanys"
+              :key="item.id"
+              @click="switchCompany(item)"
+            >
+              <div class="select-drop__flex">
+                <div class="select-item__imgSelect">
+                  {{ item.team ? item.team.name.slice(0, 1) : item.name.slice(0, 1) }}
                 </div>
+                <div class="select-item__titleSelect">{{
+                  item.team ? item.team.name : item.name
+                }}</div>
               </div>
             </div>
-
-            <div class="joinBox">
-              <el-button class="joinBtn" @click="createCompany" text type="primary">创建单位</el-button>
-              <el-button class="joinBtn" @click="friendShow" text type="primary">加入单位</el-button>
-            </div>
           </div>
-        
+
+          <div class="joinBox">
+            <el-button class="joinBtn" @click="createCompany" text type="primary"
+              >创建单位</el-button
+            >
+            <el-button class="joinBtn" @click="friendShow" text type="primary">加入单位</el-button>
+          </div>
+        </div>
       </div>
     </el-col>
     <!-- 中间搜索 -->
@@ -71,7 +72,9 @@
     <el-col :span="14" class="flex col-right">
       <el-space class="right-navbar">
         <el-link :underline="false" class="header-message-icon" @click="() => router.push('/chat')">
-          <el-icon v-if="orgChat.isConnected() === true" class="header-message-icon link" :size="12"><Link /></el-icon>
+          <el-icon v-if="orgChat.isConnected() === true" class="header-message-icon link" :size="12"
+            ><Link
+          /></el-icon>
           <el-badge :value="orgChat.getNoRead()" v-if="orgChat.getNoRead().length > 0">
             <el-icon class="header-message-icon" :size="18"><ChatDotSquare /></el-icon>
           </el-badge>
@@ -398,7 +401,7 @@
     transition: all 0.5s;
     box-shadow: 0px 6px 9px rgba(0, 0, 0, 0.161);
     border-radius: 0 0 4px 4px;
-    
+
     min-width: 250px;
   }
 
@@ -492,7 +495,7 @@
           color: var(--el-color-primary);
         }
       }
-      .link{
+      .link {
         right: 15px;
         margin-bottom: 18px;
         position: absolute;

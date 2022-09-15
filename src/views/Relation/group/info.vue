@@ -3,10 +3,10 @@
     <div class="header">
       <div class="title">集团信息</div>
       <div class="box-btns">
-        <el-button small link type="primary" @click="handleUpdate">编辑</el-button>
-        <el-button small link type="primary" @click="handleDelete">删除</el-button>
-        <el-button small link type="primary" @click="toAuth">角色管理</el-button>
-        <el-button small link type="primary" @click="toIdentity">身份管理</el-button>
+        <el-button small link type="primary" :disabled=!selectItem?.data?.authAdmin @click="handleUpdate">编辑</el-button>
+        <el-button small link type="primary" :disabled=!selectItem?.data?.authAdmin @click="handleDelete">删除</el-button>
+        <el-button small link type="primary" :disabled=!selectItem?.data?.authAdmin @click="toAuth">角色管理</el-button>
+        <el-button small link type="primary" :disabled=!selectItem?.data?.authAdmin @click="toIdentity">身份管理</el-button>
       </div>
     </div>
     <div class="tab-list">
@@ -29,13 +29,19 @@
 
   <el-dialog v-model="dialogVisible" :title="'请编辑集团信息'" width="50%">
     <el-form-item :label="'集团名称'">
-      <el-input v-model="formData.name" :placeholder="'请输入集团名称'" clearable />
+      <el-input v-model="formData.teamName" :placeholder="'请输入集团名称'" clearable />
     </el-form-item>
     <el-form-item :label="'集团编号'">
-      <el-input v-model="formData.code" :placeholder="'请输入集团描述'" clearable />
+      <el-input v-model="formData.code" :placeholder="'请输入集团简介'" clearable />
     </el-form-item>
-    <el-form-item :label="'集团描述'">
-      <el-input v-model="formData.teamRemark" :placeholder="'请输入集团描述'" :autosize="{ minRows: 5 }" type="textarea" clearable />
+
+    <el-form-item label="管理角色" style="width: 100%">
+      <el-cascader :props="authorityCascaderProps" :options="authorityTree" v-model="formData.teamAuthId" style="width: 100%"
+        placeholder="请选择管理角色" />
+    </el-form-item>
+
+    <el-form-item :label="'集团简介'">
+      <el-input v-model="formData.teamRemark" :placeholder="'请输入集团简介'" :autosize="{ minRows: 5 }" type="textarea" clearable />
     </el-form-item>
     <template #footer>
       <span class="dialog-footer">
@@ -56,6 +62,30 @@
   let selectItem = ref<any>({})
   let dialogVisible = ref<boolean>(false)
   let formData: any = ref({})
+
+  const authorityCascaderProps = {
+    checkStrictly: true,
+    value: 'id',
+    label: 'name',
+    emitPath: false,
+    children: 'nodes'
+  }
+  // 角色树
+  let authorityTree = ref([])
+
+  // 表单上级节点改变时
+  const parentIdChange = (value: any)=>{
+    loadAuthorityTree(value)
+  }
+
+  // 加载职权树
+  const loadAuthorityTree = (id: string) => {
+    $services.company.getAuthorityTree({data: {id}}).then((res: any)=>{
+      authorityTree.value = []
+      authorityTree.value.push(res.data)
+    })
+  }
+
 
   // 获取单位树点击的信息
   const selectItemChange = (data: any) => {
@@ -117,6 +147,7 @@
     }
     formData.value = selectItem.value.data
     dialogVisible.value = true
+    loadAuthorityTree(selectItem.value.data.id)
   }
 
   // 保存

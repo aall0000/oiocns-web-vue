@@ -20,12 +20,12 @@
         :header-cell-style="{ background: 'var(--el-color-primary-light-9)' }"
       >
         <el-table-column type="selection" width="50" />
-        <el-table-column prop="code" label="账号" />
-        <el-table-column prop="name" label="昵称" />
-        <el-table-column prop="trueName" label="姓名" />
-        <el-table-column prop="teamCode" label="手机号" />
-        <el-table-column prop="remark" label="座右铭" width="280" />
-        <el-table-column prop="name" label="操作">
+        <el-table-column prop="code" label="账号" width="180" />
+        <el-table-column prop="name" label="昵称" width="180"  />
+        <el-table-column prop="trueName" label="姓名" width="180"  />
+        <el-table-column prop="teamCode" label="手机号" width="180"  />
+        <el-table-column prop="remark" label="座右铭"  min-width="150" />
+        <el-table-column prop="name" label="操作" width="150" >
           <template #default="scope">
             <el-popconfirm title="您确认删除该好友吗?" @confirm="deleteFriend(scope.row.id)">
               <template #reference>
@@ -145,7 +145,7 @@
   const friendApply = () => {
     router.push({ path: '/cardDetail' ,query: {type: 1,id: orgChat.userId.value}})
   }
-  
+
   // 跳转至角色管理页面
   const toAuth = ()=>{
     router.push({
@@ -159,7 +159,7 @@
       }
     })
   }
-  
+
   // 跳转至身份管理页面
   const toIdentity = () => {
     router.push({

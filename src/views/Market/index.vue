@@ -63,6 +63,7 @@
             :info="item"
             :key="item.id"
             :over-id="item.id"
+            type="soft"
           >
             <template #icon
               ><HeadImg
@@ -116,6 +117,24 @@
                 </template>
               </el-dropdown>
             </template>
+
+            <!-- <template #footer> -->
+              <!-- <el-descriptions size="small" :column="1" style="padding-left: 58px;">
+                  <el-descriptions-item label="简介：">{{
+                    item?.remark || '暂无'
+                  }}</el-descriptions-item>
+                </el-descriptions>
+              <el-divider style="margin: 6px 0 16px 0"></el-divider>
+              <div class="app-card-item-con-belong">
+                <span>归属: {{ orgChat.getName(item.belongId) || '未知' }}</span>
+
+                <span>版本： 0.0.1</span>
+              </div> -->
+              <!-- <div class="app-card-item-con-desc"
+                ><p>详情：{{ item.merchandise.information || '暂无'}}</p></div
+              > -->
+
+            <!-- </template> -->
           </ShopCard>
         </li>
         <li class="tab-card" v-show="mode === 'list'">
@@ -259,8 +278,8 @@
   import Unit from '../Market/AppShare/unit.vue'
   import Group from '../Market/AppShare/group.vue'
   import Person from '../Market/AppShare/person.vue'
-  import TheTableButton from './MarketList/components/theTableButton3.vue'
   import Pagination from '@/components/pagination/index.vue'
+  import orgChat from '@/hubs/orgchat'
   import { storeToRefs } from 'pinia'
   // hoverItem--鼠标移入item的id 用于展示按钮区域
 
@@ -593,6 +612,14 @@
     width: 100%;
     overflow: hidden;
   }
+  .app-card-item-con-belong {
+    // margin-top: 10px;
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--el-text-color-secondary);
+    display: flex;
+    justify-content: space-between;
+}
   .menuRight {
     width: 100px;
     height: 60px;

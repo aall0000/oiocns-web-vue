@@ -77,9 +77,20 @@
             </template>
             <template #footer>
               <el-divider style="margin:16px 0"></el-divider>
-              <div class="app-card-item-con-desc"
+              <div class="app-card-item-con-footer">
+
+              <div class="app-card-item-con-desc" >
+                <p> 归属:{{ orgChat.getName(item.belongId) }}</p>
+                <p>创建:{{ orgChat.getName(item.createUser) }}</p>
+              </div>
+
+              <div class="app-card-item-con-version">
+              版本:0.0.1
+              </div>
+              </div>
+              <!-- <div class="app-card-item-con-desc"
                 ><p>详情：{{ item.merchandise.information || '暂无'}}</p></div
-              >
+              > -->
 
             </template>
           </ShopCard>
@@ -104,43 +115,7 @@
           </DiyButton>
         </template>
       </DiyTable>
-      <!-- <el-table
-        class="table-row-sty"
-        :header-cell-style="getRowClass"
-        ref="shopcarTableRef"
-        :data="pageStore.tableData"
-        stripe
-        border
-        @select="handleSelect"
-        @row-click="handleRowClick"
-        v-if="mode=='list'"
-        @select-all="checkAll"
-      >
-        <el-table-column type="selection" width="50" />
-        <el-table-column label="序号" type="index" width="80" align="center">
-          <template #default="scope">
-            <span>{{ (pagination.current - 1) * pagination.limit + scope.$index + 1 }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column prop="caption" label="商品名称" />
-        <el-table-column prop="information" label="商品信息" />
-        <el-table-column prop="sellAuth" label="售卖权属" />
-        <el-table-column prop="days" label="使用期限" />
-        <el-table-column prop="price" label="单价" />
-        <el-table-column prop="number" label="数量" />
-        <el-table-column prop="marketName" label="市场名称" />
-        <el-table-column prop="marketCode" label="市场编号" />
-        <el-table-column prop="name" label="操作" width="200" align="center">
-          <template #default="scope">
-            <DiyButton>
-              <template v-slot:opt>
-                <div class="diy-button" @click="deleteStaging(scope.row.id)"> 删除 </div>
-                <div class="diy-button" @click="createOrderByStaging(scope.row.id)"> 购买 </div>
-              </template>
-            </DiyButton>
-          </template>
-        </el-table-column>
-      </el-table> -->
+
       <template v-for="item in state.dialogShow" :key="item.key">
         <AppInfoDialog
           v-if="item.key == 'info' && item.value"
@@ -176,6 +151,7 @@
   import DiyButton from '@/components/diyButton/index.vue'
   import merchandiseImg from '@/assets/img/app_icon.png'
   import moment from 'moment'
+  import orgChat from '@/hubs/orgchat'
   const router = useRouter()
   // 表格分页数据
   const pagination: { current: number; limit: number } = reactive({ current: 1, limit: PAGE_NUM })
@@ -603,27 +579,38 @@
     color: var(--el-text-color-regular);
     line-height: 1.8;
   }
-  .app-card-item-con-desc {
-    // padding-top: 16px;
-    p {
-      font-size: 12px;
-      // font-weight: 400;
-      color: var(--el-text-color-secondary);
-      // line-height: 1.5;
-      // position: absolute;
-      // bottom: 50px;
-      // width: 100%;
-      // left: 0;
-      // height: 30px;
-      // padding: 0px 24px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      display: -webkit-box;
-      word-break: break-all;
-      -webkit-line-clamp: 1;
-      -webkit-box-orient: vertical;
+  .app-card-item-con-footer{
+
+    display: flex;
+    width: 100%;
+    align-items: flex-end;
+
+
+    .app-card-item-con-desc {
+      width: 75%;
+      justify-content: flex-start;
+      padding: 0px;
+      p{
+        font-size: 12px;
+        font-weight: 400;
+        color: var(--el-text-color-secondary);
+        padding-top: 5px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+
+      }
     }
-  }
+    .app-card-item-con-version{
+      display: flex;
+      width: 25%;
+      justify-content: flex-end;
+      font-size: 12px;
+      font-weight: 400;
+      color: var(--el-text-color-secondary);
+    }
+}
+
   .shopCar {
     padding: 4px;
     display: flex;
