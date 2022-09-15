@@ -59,7 +59,7 @@
       </span>
     </template>
   </el-dialog>
-  <SearchGroupPerson  
+  <SearchGroupPerson
   v-if="searchGroupDialog"
   :serachType="2"
   :id="checkId"
@@ -101,7 +101,7 @@ const editCohortDialog = ref(false)
 const getCohorts = async () => {
   const res = await $services.cohort.getJoinedCohorts({ data: { offset: 0, limit: 100 } })
   const { data, success } = res
-  if (success) {
+  if (success  && data && data.result) {
     if(props.type == '管理的'){
       state.cohorts = data.result.filter((d: any) => {
         if(d.identitys && d.identitys.length > 0){
