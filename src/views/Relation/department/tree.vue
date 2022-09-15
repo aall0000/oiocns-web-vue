@@ -8,7 +8,7 @@
         </el-icon>
         <template #dropdown>
           <el-dropdown-menu>
-            <el-dropdown-item :disabled=!selectItem?.data?.authAdmin @click="deptDialogVisible = true">
+            <el-dropdown-item :disabled=!selectItem?.data?.authAdmin @click="showDep">
               <el-icon class="el-icon--right">
                 <plus />
               </el-icon>
@@ -58,7 +58,7 @@
         <el-input v-model="formData.code" placeholder="请输入" clearable style="width: 100%" />
       </el-form-item>
       <el-form-item label="上级节点" style="width: 100%">
-        <el-cascader :props="cascaderProps" :options="cascaderTree" v-model="formData.parentIds" style="width: 100%"
+        <el-cascader :props="cascaderProps"  @change="authChange" :options="cascaderTree"  v-model="formData.parentIds" style="width: 100%"
           placeholder="请选择" />
       </el-form-item>
       <el-form-item label="管理角色" style="width: 100%">
@@ -91,7 +91,7 @@
         <el-input v-model="formData.code" placeholder="请输入" clearable style="width: 100%" />
       </el-form-item>
       <el-form-item class="dialog-workGroup" label="上级节点" style="width: 100%">
-        <el-cascader :props="cascaderProps" :options="cascaderTree" v-model="formData.parentIds" style="width: 100%"
+        <el-cascader :props="cascaderProps" @change="authChange" :options="cascaderTree" v-model="formData.parentIds" style="width: 100%"
           placeholder="请选择" />
       </el-form-item>
       <el-form-item label="管理的角色" style="width: 100%">
@@ -138,6 +138,7 @@
   let formData = ref<any>({})
   const cascaderProps = {
     checkStrictly: true,
+    emitPath:false,
     // expandTrigger: ExpandTrigger.HOVER,
     value: 'id',
   }
@@ -166,10 +167,12 @@
       cascaderTree.value = filter(JSON.parse(JSON.stringify(orgTree.value)))
       defaultExpandedKeys.value = [res.data.id]
       nodeClick(res.data)
-      loadAuthorityTree()
     })
   }
-
+  const authChange =(val:any) => {
+    formData.value.teamAuthId = '';
+    loadAuthorityTree(val)
+  }
   // 初始化ID和对象映射关系
   const initIdMap = (nodes: any[]) => {
     for(const node of nodes){
@@ -207,6 +210,7 @@
     let parentIds: any[] = val.data.typeName == '工作组'? [] : [val.id]
     parentIds = getParentIds(val, parentIds).reverse();
     formData.value.parentIds = parentIds
+    loadAuthorityTree(val.data.id)
   }
   // 树节点搜索
   const filterNode = (value: string, data: any) => {
@@ -238,6 +242,7 @@
         code: formData.value.code,
         name: formData.value.name,
         parentId: parentId,
+        teamAuthId:formData.teamAuthId,
         teamName: formData.value.name,
         teamRemark: formData.value.remark
       }
@@ -257,7 +262,10 @@
       }
     })
   }
-
+  const showDep= ()=>{
+    deptDialogVisible.value = true;
+    loadAuthorityTree(selectItem.value.data.id)
+  }
   // 创建工作组
   const createJob  = () => {
     let parentId = null;
@@ -270,6 +278,7 @@
         id: formData.value.id,
         code: formData.value.code,
         name: formData.value.name,
+        teamAuthId:formData.teamAuthId,
         parentId: parentId,
         teamName: formData.value.name,
         teamRemark: formData.value.remark
@@ -302,9 +311,9 @@
   let authTree = ref<any[]>([])
 
   // 加载职权树
-  const loadAuthorityTree = () => {
+  const loadAuthorityTree = (belongId:string) => {
     console.log('selectItem',selectItem.value)
-    $services.company.getAuthorityTree({data: {id: selectItem.value.data.belongId}}).then((res: any)=>{
+    $services.company.getAuthorityTree({data: {id: belongId}}).then((res: any)=>{
       authTree.value = []
       authTree.value.push(res.data)
       initIdMap(authTree.value)
