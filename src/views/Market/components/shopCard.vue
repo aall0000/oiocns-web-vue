@@ -21,44 +21,26 @@
           <p class="app-con-title">
             {{ info.name }}
           </p>
-          <div class="app-tag" style="margin-top: 10px">
-            <el-tag
-              v-if="props.type == 'market'"
-              style="margin-right: 10px"
-              :type="info.public ? 'success' : 'danger'"
-              v-show="!info.public"
-              >{{ info.public ? '公开' : '私有' }}</el-tag
-            >
-            <el-tag
-              v-if="props.type == 'market' && info.id != '355346477339512833'"
-              style="margin-right: 10px"
-              >{{ info.belongId == workspaceData.id ? '创建的' : '加入的' }}</el-tag
-            >
+          <div class="app-tag" style="margin-top:10px">
+            <el-tag v-if="props.type == 'market'" style="margin-right:10px" :type="info.public?'success':'danger'">{{
+              info.public ? '公开的' : '私有的'
+            }}</el-tag>
+            <el-tag v-if="props.type == 'market'&&info.id != softwareId" style="margin-right:10px">{{
+              info.belongId == workspaceData.id ? '创建的' : '加入的'
+            }}</el-tag>
             <!-- <el-tag v-if="props.type == 'market'&&info.id == '355346477339512833'" style="margin-right:10px">{{
               info.belongId == queryInfo.id ? '':''
             }}</el-tag> -->
-            <el-tag
-              v-if="
-                props.type != 'market' &&
-                (info.endTime == undefined || new Date().getTime() < formartDateTime(info?.endTime))
-              "
-              style="margin-right: 10px"
-              :type="info.createUser == queryInfo.id ? '' : 'success'"
-              >{{ info.createUser == workspaceData.id ? '可管理' : '可使用' }}</el-tag
-            >
-            <el-tag
-              v-if="props.type != 'market' && new Date().getTime() > formartDateTime(info?.endTime)"
-              style="margin-right: 10px"
-              :type="'danger'"
-              >失效</el-tag
-            >
-            <el-tag v-if="props.type != 'market'" style="margin-right: 10px">{{
-              info.source
+            <el-tag v-if="props.type != 'market' && (info.endTime==undefined||new Date().getTime()<formartDateTime(info?.endTime))" style="margin-right:10px" :type="info.createUser==queryInfo.id?'success':''">{{
+              info.createUser==queryInfo.id ? '可管理' : '可使用'
             }}</el-tag>
+            <el-tag v-if="props.type != 'market' && new Date().getTime()>formartDateTime(info?.endTime)" style="margin-right:10px" :type="'danger'">失效</el-tag>
+            <el-tag v-if="props.type != 'market'" style="margin-right:10px">{{info.source}}</el-tag>
           </div>
           <!-- <div class="app-card-item-con">
             {{ info.remark }}
           </div> -->
+
         </div>
 
         <slot v-else name="content"></slot>
@@ -66,27 +48,26 @@
       <div>
         <slot name="footer"></slot>
 
-        <!-- <div class="app-card-item-con-footer" v-if="info.id != '355346477339512833'">
-          <el-divider v-if="type != 'shopCard'"></el-divider>
-          <div v-if="type == 'market'" class="app-card-item-con-belong" style="margin-top: 5px">
-            <p>code:{{ info.code }}</p>
-          </div>
-          <div class="app-card-item-con-desc">
-            <p> 归属:{{ orgChat.getName(info.belongId) }}</p>
-          </div>
-          <div class="app-card-item-con-belong">
-            <p>创建:{{ orgChat.getName(info.createUser) }}</p>
-          </div>
-          <div v-if="props.type != 'market'" class="app-card-item-con-version"> 版本:0.0.1 </div>
-        </div> -->
+        <div class="app-card-item-con-line" v-if="props.type != 'market'">
+        <el-divider style="margin: 16px 0" v-if="type!='shopCard'&&info.id != softwareId"></el-divider>
+      </div>
+        <div class="app-card-item-con-footer" v-if="info.id != softwareId&&props.type != 'market'">
+
+            <div class="app-card-item-con-desc" >
+              <p> 归属:{{ orgChat.getName(info.belongId) }}</p>
+              <p>创建:{{ orgChat.getName(info.createUser) }}</p>
+            </div>
+
+            <div v-if="props.type != 'market'" class="app-card-item-con-version">
+             版本:0.0.1
+            </div>
+        </div>
       </div>
     </div>
 
     <!-- v-show="hoverItem === info.id" -->
-    <div class="app-card-item-footer" v-show="state.hoverItem === info.id" @click.stop>
-      <slot />
-    </div>
-  </el-card>
+
+              </el-card>
 </template>
 <script lang="ts" setup>
   import { reactive, ref } from 'vue'
@@ -95,19 +76,19 @@
   import orgChat from '@/hubs/orgchat'
   // hoverItem--鼠标移入item的id 用于展示按钮区域
   const store = useUserStore()
-  const { queryInfo, workspaceData } = storeToRefs(store)
-
+  const { queryInfo } = storeToRefs(store)
+  const { workspaceData } = storeToRefs(store)
   const state: { hoverItem: string } = reactive({ hoverItem: '' })
   type shopInfoType = {
     key?: string
     info: ProductType
     type?: string
-    createUser?: string
-    code?: string
+    createUser?:string
     overId?: string //当前鼠标移入id
     cardContent?: boolean // 卡片内容是否自定义
+    softwareId?:string
   }
-  const systemTime = ref<number>()
+  const systemTime = ref<number>();
   const props = defineProps<shopInfoType>()
   const { info } = props
   const emit = defineEmits(['handleMouseOver'])
@@ -115,20 +96,18 @@
     // emit('handleMouseOver', selectId)
     state.hoverItem = selectId || ''
   }
-  const formartDateTime = (dateStr: any) => {
-    if (dateStr) {
-      var timestamp = new Date(dateStr).getTime()
+  const formartDateTime = (dateStr:any)=>{
+    if(dateStr){
+      var timestamp = new Date(dateStr).getTime();
       return timestamp
-    } else {
-      return new Date().getTime() + 1000
+    }else{
+      return new Date().getTime()+1000
     }
   }
 </script>
 
 <style lang="scss" scoped>
-  .el-divider--horizontal {
-    margin: unset;
-  }
+
   .app-card-rightIcon {
     position: absolute;
     right: 20px;
@@ -142,10 +121,10 @@
   }
   @media not screen and (min-width: 1300px) {
     /* styles */
-    .app-card-item {
+    .app-card-item{
       width: calc(33% - 15px) !important;
     }
-  }
+}
   .app-card-item {
     position: relative;
 
@@ -192,28 +171,36 @@
     .app-tag {
       margin-top: 10px;
     }
-    .app-card-item-con-footer {
-      width: 100%;
+    .app-card-item-con-line{
       margin-top: 30px;
+      height:30px;
+    }
+    .app-card-item-con-footer{
+
+      display: flex;
+      width: 100%;
+      align-items: flex-end;
+
 
       .app-card-item-con-desc {
-        p {
+        width: 75%;
+        justify-content: flex-start;
+        padding: 0px;
+        p{
           font-size: 12px;
           font-weight: 400;
           color: var(--el-text-color-secondary);
+          padding-top: 5px;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+
         }
       }
-      .app-card-item-con-belong {
-        p {
-          font-size: 12px;
-          font-weight: 400;
-          color: var(--el-text-color-secondary);
-        }
-      }
-      .app-card-item-con-version {
-        position: absolute;
-        right: 3px;
-        bottom: 7px;
+      .app-card-item-con-version{
+        display: flex;
+        width: 25%;
+        justify-content: flex-end;
         font-size: 12px;
         font-weight: 400;
         color: var(--el-text-color-secondary);

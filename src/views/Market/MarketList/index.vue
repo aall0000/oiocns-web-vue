@@ -43,11 +43,12 @@
               :info="item"
               :key="item.id"
               :overId="item.id"
+              :softwareId = software
               type="market"
               @click="GoPageWithQuery('/market/appList', { data: item.id, type: 'manage' })"
             >
               <template #icon>
-                
+
                 <HeadImg
                   :name="item.name"
                   :url="item.icon || storeImg"
@@ -60,7 +61,7 @@
                 <el-dropdown
                   trigger="click"
                   placement="left-start"
-                  v-if="item.id != '355346477339512833'"
+                  v-if="item.id != software"
                 >
                   <el-icon :size="18">
                     <Operation />
@@ -68,7 +69,10 @@
                   <template #dropdown>
                     <el-dropdown-menu>
                       <el-dropdown-item @click.stop="hadleClick(item)">
-                        <el-button class="btn" type="primary" link small>删除商店</el-button>
+                        <el-button class="btn" type="primary" link small v-if="item.belongId==workspaceData.id"
+                        >删除商店</el-button>
+                        <el-button class="btn" type="primary" link small v-if="item.belongId!=workspaceData.id"
+                        >退出商店</el-button>
                       </el-dropdown-item>
                       <el-dropdown-item @click.stop="hadleUserManage(item)">
                         <el-button class="btn" link small>用户管理</el-button>
@@ -104,21 +108,22 @@
             <template #isPublic="scope">
               <el-tag
                 style="margin-left: 10px"
-                :type="scope.row.createUser == workspaceData.id ? '' : 'success'"
-                >{{ scope.row.public == true ? '公开' : '私有' }}</el-tag
+                :type="scope.row.public == true ? 'success' : ''"
+                >{{ scope.row.public == true ? '公开的' : '私有的' }}</el-tag
               >
-            </template>
-            <template #tag="scope">
-              <el-tag
-                v-if="scope.row.id != '355346477339512833'"
+          </template>
+          <template #tag="scope">
+            <el-tag
+            v-if="scope.row.id != software"
                 style="margin-left: 10px"
                 :type="scope.row.createUser == workspaceData.id ? '' : 'success'"
                 >{{ scope.row.belongId == workspaceData.id ? '创建的' : '加入的' }}</el-tag
               >
-            </template>
+
+          </template>
             <template #operate="scope">
               <el-button
-                v-if="scope.row.id != '355346477339512833'"
+                v-if="scope.row.id != software"
                 class="btn"
                 type="primary"
                 link
@@ -132,13 +137,13 @@
                 link
                 small
                 @click.stop="marketQuit(scope.row)"
-                v-if="scope.row.id != '355346477339512833'"
+                v-if="scope.row.id != software"
                 >删除商店</el-button
               >
             </template>
           </DiyTable>
         </li>
-       
+
         <div class="page-flex" v-show="showType === 'card'">
           <Pagination ref="pageContent" @handleUpdate="handleUpdate"></Pagination>
         </div>
@@ -228,7 +233,9 @@ const showType = ref('card')
 const add: string = '创建商店'
 const add1: string = '加入商店'
 const searchText = ref<string>('')
+const software = ref<string>('')
 const state = reactive({
+  softShareInfo:[],
   myMarket: [],
   joinMarket: [],
   pageMy: {
@@ -288,13 +295,14 @@ const state = reactive({
   ]
 })
 
-const createDialog = ref(false)
+  const createDialog = ref(false)
 
-onMounted(() => {
-  getMyMarketData()
-  //getJoinMarketData()
-  getShopcarNum()
-})
+  onMounted(() => {
+    getMarketInfo()
+    getMyMarketData()
+    //getJoinMarketData()
+    getShopcarNum()
+  })
 
 const handleCurrentChange = (val: number) => {
   getMyMarketData()
@@ -338,21 +346,21 @@ const checksSearch = (val: any) => {
   }
 }
 
-const getShopcarNum = async () => {
-  await $services.market
-    .searchStaging({
-      data: {
-        id: 0, //商店id （需删除）
-        offset: 0,
-        limit: 20,
-        filter: ''
-      }
-    })
-    .then((res: ResultType) => {
-      var { result = [], total = 0 } = res.data
-      shopcarNum.value = total
-    })
-}
+  const getShopcarNum = async () => {
+    await $services.market
+      .searchStaging({
+        data: {
+          id: 0, //商店id （需删除）
+          offset: 0,
+          limit: 20,
+          filter: ''
+        }
+      })
+      .then((res: ResultType) => {
+        var { result = [], total = 0 } = res.data
+        shopcarNum.value = total
+      })
+  }
 
 const getMyMarketData = () => {
   $services.market
@@ -368,7 +376,7 @@ const getMyMarketData = () => {
         const { result = [], total = 0 } = res.data
         state.myMarket = []
         result?.forEach((item: { id: string }) => {
-          if (item.id === '355346477339512833') {
+          if (item.id === software.value) {
             state.myMarket.unshift(item)
           } else {
             state.myMarket.push(item)
@@ -503,40 +511,49 @@ const remoteMethod = (query: string, callback: any) => {
     .then((res: ResultType) => {
       console.log(res)
 
-      if (res.data.result) {
-        let states = res.data.result
-        let arr: { value: any; label: any }[] = []
-        states.forEach((el: any) => {
-          let obj = {
-            value: el.id,
-            label: el.name
-          }
-          arr.push(obj)
-        })
-        callback(arr)
+        if (res.data.result) {
+          let states = res.data.result
+          let arr: { value: any; label: any }[] = []
+          states.forEach((el: any) => {
+            let obj = {
+              value: el.id,
+              label: el.name
+            }
+            arr.push(obj)
+          })
+          callback(arr)
+        }
+      })
+  }
+  const submit = (data: any) => {
+    $services.appstore
+      .applyJoin({
+        data: {
+          id: data[0]
+        }
+      })
+      .then((res: ResultType) => {
+        if (res.success) {
+          ElMessage({
+            message: '加入成功',
+            type: 'success'
+          })
+          searchDialog.value = false
+          //getJoinMarketData()
+        }
+      })
+  }
+  const closeDialog = (data: { value: boolean }) => {
+    searchDialog.value = false
+  }
+   // 获取共享仓库信息
+  const getMarketInfo = () => {
+    $services.market.getSoftShareInfo().then((res: ResultType) => {
+      if (res.code == 200) {
+        state.softShareInfo = res?.data || {}
+        software.value = state.softShareInfo.id
       }
     })
-}
-const submit = (data: any) => {
-  $services.appstore
-    .applyJoin({
-      data: {
-        id: data[0]
-      }
-    })
-    .then((res: ResultType) => {
-      if (res.success) {
-        ElMessage({
-          message: '加入成功',
-          type: 'success'
-        })
-        searchDialog.value = false
-        //getJoinMarketData()
-      }
-    })
-}
-const closeDialog = (data: { value: boolean }) => {
-  searchDialog.value = false
 }
 </script>
 
@@ -584,7 +601,7 @@ const closeDialog = (data: { value: boolean }) => {
     height: calc(100vh - 108px);
     overflow-y: auto;
   }
- 
+
   .box {
     .box-ul {
       height: 100%;

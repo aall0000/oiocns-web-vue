@@ -42,7 +42,11 @@
           @handleUpdate="handleUpdate"
         >
           <template #operate="scope">
+
             <TheTableButton :data="scope.row" @update="getData"></TheTableButton>
+            <!-- <div class="diy-button" @click="joinStaging(scope.row)"> 加入购物车 </div>
+            <div class="diy-button"  @click="buyThings(scope.row)"> 购买 </div>
+            <div class="diy-button" @click="unpublishFun(scope.row)"> 下架 </div> -->
           </template>
         </DiyTable>
       </div>
@@ -52,6 +56,7 @@
       </div> -->
     </div>
   </div>
+
 </template>
 
 <script setup lang="ts">
@@ -62,6 +67,7 @@
   import DiyTable from '@/components/diyTable/index.vue'
   import TheTableButton from './components/theTableButton2.vue'
   import MarketCard from '@/components/marketCard/index.vue'
+
   const router = useRouter()
   const route = useRoute()
   const diyTable = ref(null)
@@ -106,10 +112,16 @@
         label: '操作',
         fixed: 'right',
         align: 'center',
-        width: '80',
+        width: '250',
         name: 'operate'
       }
-    ]
+    ],
+    dialogShow: [
+    {
+      key: 'info',
+      value: false
+    }
+  ]
   })
 
   watch(switchValue, (val) => {
@@ -167,6 +179,8 @@
   const searchList = ()=>{
     getData()
   }
+
+
 </script>
 
 <style lang="scss" scoped>

@@ -1,6 +1,5 @@
 <template>
   <el-card class="card">
-
     <div>
       <el-select v-model="selectedValue" @change="changeGroupIndex" value-key="id" placeholder="请选择集团">
         <el-option v-for="item in state.options" :key="item.value" :label="item.label" :value="item.value" />
@@ -13,7 +12,7 @@
       </el-input>
       <li class="con tree-btns">
         <div class="title">集团管理</div>
-        <el-icon color="#154ad8" :size="20" v-if="selectItem?.data?.authAdmin" @click="createGroupDialogVisible = true">
+        <el-icon color="#154ad8" :size="20" v-if="selectItem?.data?.authAdmin" @click="createGroupDialogShow">
           <CirclePlus />
         </el-icon>
       </li>
@@ -45,9 +44,15 @@
         <el-input v-model="formData.code" placeholder="请输入节点编号" clearable style="width: 100%" />
       </el-form-item>
       <el-form-item label="上级节点" style="width: 100%">
-        <el-cascader :props="cascaderProps" :options="cascaderTree" v-model="formData.parentIds" style="width: 100%"
-          placeholder="请选择上级节点" />
+        <el-cascader :props="cascaderProps" :options="cascaderTree" v-model="formData.parentId" style="width: 100%"
+          placeholder="请选择上级节点" @change="parentIdChange"/>
       </el-form-item>
+
+      <el-form-item label="管理角色" style="width: 100%">
+        <el-cascader :props="authorityCascaderProps" :options="authorityTree" v-model="formData.teamAuthId" style="width: 100%"
+          placeholder="请选择管理角色" />
+      </el-form-item>
+
       <el-form-item label="节点简介" style="width: 100%">
         <el-input v-model="formData.teamRemark" :autosize="{ minRows: 5 }" placeholder="请输入节点简介" type="textarea" clearable />
       </el-form-item>
@@ -82,8 +87,20 @@ const cascaderProps = {
   checkStrictly: true,
   // expandTrigger: ExpandTrigger.HOVER,
   value: 'id',
+  emitPath: false,
 }
+// 集团树
 let cascaderTree = ref<OrgTreeModel[]>([])
+
+const authorityCascaderProps = {
+  checkStrictly: true,
+  value: 'id',
+  label: 'name',
+  emitPath: false,
+  children: 'nodes'
+}
+// 角色树
+let authorityTree = ref([])
 
 // 当前选中的集团
 let selectedValue = ref<string>()
@@ -92,8 +109,6 @@ let selectedValue = ref<string>()
 let groups = reactive([])
 let orgTree = ref<OrgTreeModel[]>([])
 
-// 节点ID和对象映射关系
-const parentIdMap: any = {}
 let defaultExpandedKeys = ref([])
 
 const filterText = ref('')
@@ -128,25 +143,10 @@ const getGroupList = () => {
     })
 }
 
-// 获取父节点到根节点的ID列表
-const getParentIds = (node: any, parentIds: any[]): any[] =>{
-  const parentId = node.data.parentId
-  if(parentId && parentId != '0'){
-    parentIds.push(parentId)
-  }
-  const parentNode = parentIdMap[parentId]
-  if(parentNode){
-    parentIds = getParentIds(parentNode, parentIds)
-  }
-  return parentIds;
-}
-
 const nodeClick = (val: any, nodeAttribute?: any, event?: any) => {
   emit('nodeClick', val)
-  let parentIds = getParentIds(val, [val.id]).reverse();
-  formData.value.parentIds = parentIds
+  formData.value.parentId = val.id
 }
-
 
 // 树节点搜索
 const filterNode = (value: string, data: any) => {
@@ -167,44 +167,46 @@ const loadOrgTree = (id?: string)=>{
   }).then((res: any) => {
     orgTree.value = []
     orgTree.value.push(res.data)
-    initIdMap(orgTree.value)
     cascaderTree.value = orgTree.value
     defaultExpandedKeys.value = [res.data.id]
     nodeClick(res.data)
   })
 }
 
-// 初始化ID和对象映射关系
-const initIdMap = (nodes: any[]) => {
-  for(const node of nodes){
-    parentIdMap[node.id] = node
-    if(node.children){
-      initIdMap(node.children)
-    }
-  }
+// 表单上级节点改变时
+const parentIdChange = (value: any)=>{
+  loadAuthorityTree(value)
+}
+
+// 加载职权树
+const loadAuthorityTree = (id: string) => {
+  $services.company.getAuthorityTree({data: {id}}).then((res: any)=>{
+    authorityTree.value = []
+    authorityTree.value.push(res.data)
+  })
 }
 
 let createGroupDialogVisible = ref<boolean>(false)
+const createGroupDialogShow = () => {
+  createGroupDialogVisible.value = true
+  loadAuthorityTree(formData.value.parentId)
+}
+
+
 const createGroupDialogHide = () => {
-  formData.value = { parentIds: formData.value.parentIds }
   createGroupDialogVisible.value = false
 }
 
 const createGroup = ()=>{
-  let parentId = null;
-  const parentIds = formData.value.parentIds;
-  if (parentIds.length > 0) {
-    parentId = parentIds[parentIds.length - 1]
-  }
-  // return
   $services.company.createSubgroup({
     data: {
       id: formData.value.id,
       code: formData.value.code,
       name: formData.value.name,
-      parentId: parentId,
+      parentId: formData.value.parentId,
       teamName: formData.value.name,
-      teamRemark: formData.value.teamRemark
+      teamRemark: formData.value.teamRemark,
+      teamAuthId: formData.value.teamAuthId,
     }
   }).then((res: ResultType) => {
     if (res.success) {

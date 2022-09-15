@@ -34,6 +34,12 @@
     <el-form-item :label="'集团编号'">
       <el-input v-model="formData.code" :placeholder="'请输入集团简介'" clearable />
     </el-form-item>
+
+    <el-form-item label="管理角色" style="width: 100%">
+      <el-cascader :props="authorityCascaderProps" :options="authorityTree" v-model="formData.teamAuthId" style="width: 100%"
+        placeholder="请选择管理角色" />
+    </el-form-item>
+
     <el-form-item :label="'集团简介'">
       <el-input v-model="formData.teamRemark" :placeholder="'请输入集团简介'" :autosize="{ minRows: 5 }" type="textarea" clearable />
     </el-form-item>
@@ -56,6 +62,30 @@
   let selectItem = ref<any>({})
   let dialogVisible = ref<boolean>(false)
   let formData: any = ref({})
+
+  const authorityCascaderProps = {
+    checkStrictly: true,
+    value: 'id',
+    label: 'name',
+    emitPath: false,
+    children: 'nodes'
+  }
+  // 角色树
+  let authorityTree = ref([])
+
+  // 表单上级节点改变时
+  const parentIdChange = (value: any)=>{
+    loadAuthorityTree(value)
+  }
+
+  // 加载职权树
+  const loadAuthorityTree = (id: string) => {
+    $services.company.getAuthorityTree({data: {id}}).then((res: any)=>{
+      authorityTree.value = []
+      authorityTree.value.push(res.data)
+    })
+  }
+
 
   // 获取单位树点击的信息
   const selectItemChange = (data: any) => {
@@ -117,6 +147,7 @@
     }
     formData.value = selectItem.value.data
     dialogVisible.value = true
+    loadAuthorityTree(selectItem.value.data.id)
   }
 
   // 保存

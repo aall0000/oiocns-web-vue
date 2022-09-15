@@ -42,16 +42,14 @@
           </template>
 
           <template #operate="scope">
-            <DiyButton >
-                <template v-slot:opt>
-                  <div class="diy-button" v-show="scope.row.status < 102" @click="cancelOrderDetail(scope.row.id, 220, null)">
-                    取消订单
-                  </div> 
-                  <div class="diy-button" v-show="scope.row.status == 102" @click="reject(scope.row.id)">
-                    退货退款
-                  </div> 
-                </template>
-            </DiyButton>
+
+            <el-button link type="primary" class="diy-button" v-show="scope.row.status < 102" @click="cancelOrderDetail(scope.row.id, 220, null)">
+              取消订单
+            </el-button>
+            <el-button link type="primary" class="diy-button" v-show="scope.row.status == 102" @click="reject(scope.row.id)">
+              退货退款
+            </el-button>
+
           </template>
       </DiyTable>
         </div>
@@ -100,7 +98,7 @@
       class="page-pagination"
       @size-change="(e) => handlePaginationChange(e, 'limit')"
       @current-change="(e) => handlePaginationChange(e, 'current')"
-      
+
       background
       :page-sizes="pageSizes"
       v-model:currentPage="pagination.current"
@@ -166,7 +164,7 @@ const searchValue = ref<string>('')
     }else{
       getTableList('sell')
     }
-    
+
   })
 
   const options = ref<ListItem[]>([])
@@ -722,7 +720,7 @@ const searchValue = ref<string>('')
     margin: 16px;
     border: 0;
     .limit_table_height {
-      
+
     }
     .tables {
       height: 50%;
