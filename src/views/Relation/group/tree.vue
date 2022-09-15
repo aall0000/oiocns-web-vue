@@ -13,7 +13,7 @@
       </el-input>
       <li class="con tree-btns">
         <div class="title">集团管理</div>
-        <el-icon color="#154ad8" :size="20" @click="createGroupDialogVisible = true">
+        <el-icon color="#154ad8" :size="20" v-if="selectItem?.data?.authAdmin" @click="createGroupDialogVisible = true">
           <CirclePlus />
         </el-icon>
       </li>
@@ -73,7 +73,11 @@ const state = reactive({
   options: [],
 })
 let formData = ref<any>({})
-
+const selectItem = ref<any>();
+// 获取单位树点击的信息
+const selectItemChange = (data: any) => {
+  selectItem.value = data;
+};
 const cascaderProps = {
   checkStrictly: true,
   // expandTrigger: ExpandTrigger.HOVER,
@@ -99,7 +103,7 @@ const treeRef = ref<any>()
 const refresh = () => {
   loadOrgTree()
 };
-defineExpose({ refresh });
+defineExpose({ refresh,selectItemChange });
 
 // 查询集团列表
 const getGroupList = () => {

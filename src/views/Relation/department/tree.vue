@@ -8,13 +8,13 @@
         </el-icon>
         <template #dropdown>
           <el-dropdown-menu>
-            <el-dropdown-item @click="deptDialogVisible = true">
+            <el-dropdown-item :disabled=!selectItem?.data?.authAdmin @click="deptDialogVisible = true">
               <el-icon class="el-icon--right">
                 <plus />
               </el-icon>
               新增部门
             </el-dropdown-item>
-            <el-dropdown-item @click="jobDialogVisible = true">
+            <el-dropdown-item :disabled=!selectItem?.data?.authAdmin @click="jobDialogVisible = true">
               <el-icon class="el-icon--right">
                 <plus />
               </el-icon>
@@ -58,8 +58,17 @@
         <el-input v-model="formData.code" placeholder="请输入" clearable style="width: 100%" />
       </el-form-item>
       <el-form-item label="上级节点" style="width: 100%">
-        <el-cascader :props="cascaderProps" :options="cascaderTree" v-model="formData.parentIds" style="width: 100%"
+        <el-cascader :props="cascaderProps"  @change="authChange" :options="cascaderTree"  v-model="formData.parentIds" style="width: 100%"
           placeholder="请选择" />
+      </el-form-item>
+      <el-form-item label="管理角色" style="width: 100%">
+        <el-cascader
+          :props="authProps"
+          :options="authTree"
+          v-model="formData.teamAuthId"
+          style="width: 100%"
+          placeholder="请选择"
+        />
       </el-form-item>
       <el-form-item label="部门简介" style="width: 100%">
         <el-input v-model="formData.remark" :autosize="{ minRows: 5 }" placeholder="请输入" type="textarea" clearable />
@@ -82,8 +91,17 @@
         <el-input v-model="formData.code" placeholder="请输入" clearable style="width: 100%" />
       </el-form-item>
       <el-form-item class="dialog-workGroup" label="上级节点" style="width: 100%">
-        <el-cascader :props="cascaderProps" :options="cascaderTree" v-model="formData.parentIds" style="width: 100%"
+        <el-cascader :props="cascaderProps" @change="authChange" :options="cascaderTree" v-model="formData.parentIds" style="width: 100%"
           placeholder="请选择" />
+      </el-form-item>
+      <el-form-item label="管理的角色" style="width: 100%">
+        <el-cascader
+          :props="authProps"
+          :options="authTree"
+          v-model="formData.teamAuthId"
+          style="width: 100%"
+          placeholder="请选择"
+        />
       </el-form-item>
       <el-form-item label="工作组简介" style="width: 100%">
         <el-input v-model="formData.remark" :autosize="{ minRows: 5 }" placeholder="请输入" type="textarea" clearable />
@@ -104,18 +122,32 @@
   import $services from '@/services'
   import { ElMessage} from 'element-plus';
   import { useRouter } from 'vue-router';
-
+  const selectItem = ref<any>();
+  // 获取单位树点击的信息
+  const selectItemChange = (data: any) => {
+    selectItem.value = data;
+  };
+  defineExpose({ selectItemChange });
 
   const router = useRouter()
   const emit = defineEmits(['nodeClick'])
   let deptDialogVisible = ref<boolean>(false)
   let jobDialogVisible = ref<boolean>(false)
-
+  const authList = ref<any>([]);
+  const authRole = ref<string>('');
   let formData = ref<any>({})
   const cascaderProps = {
     checkStrictly: true,
+    emitPath:false,
     // expandTrigger: ExpandTrigger.HOVER,
     value: 'id',
+  }
+  const authProps = {
+    checkStrictly: true,
+    emitPath:false,
+    value: 'id',
+    label: 'name',
+    children: 'nodes',
   }
   // 节点ID和对象映射关系
   const parentIdMap: any = {}
@@ -137,7 +169,10 @@
       nodeClick(res.data)
     })
   }
-
+  const authChange =(val:any) => {
+    formData.value.teamAuthId = '';
+    loadAuthorityTree(val)
+  }
   // 初始化ID和对象映射关系
   const initIdMap = (nodes: any[]) => {
     for(const node of nodes){
@@ -175,6 +210,7 @@
     let parentIds: any[] = val.data.typeName == '工作组'? [] : [val.id]
     parentIds = getParentIds(val, parentIds).reverse();
     formData.value.parentIds = parentIds
+    loadAuthorityTree(val.data.id)
   }
   // 树节点搜索
   const filterNode = (value: string, data: any) => {
@@ -206,6 +242,7 @@
         code: formData.value.code,
         name: formData.value.name,
         parentId: parentId,
+        teamAuthId:formData.teamAuthId,
         teamName: formData.value.name,
         teamRemark: formData.value.remark
       }
@@ -225,7 +262,6 @@
       }
     })
   }
-
   // 创建工作组
   const createJob  = () => {
     let parentId = null;
@@ -238,6 +274,7 @@
         id: formData.value.id,
         code: formData.value.code,
         name: formData.value.name,
+        teamAuthId:formData.teamAuthId,
         parentId: parentId,
         teamName: formData.value.name,
         teamRemark: formData.value.remark
@@ -267,7 +304,18 @@
   onMounted(() => {
     loadOrgTree()
   })
+  let authTree = ref<any[]>([])
 
+  // 加载职权树
+  const loadAuthorityTree = (id:string) => {
+    console.log('selectItem',selectItem.value)
+    $services.company.getAuthorityTree({data: {id: id}}).then((res: any)=>{
+      authTree.value = []
+      authTree.value.push(res.data)
+      initIdMap(authTree.value)
+      authTree.value = authTree.value
+    })
+  }
 </script>
 
 <style lang="scss">

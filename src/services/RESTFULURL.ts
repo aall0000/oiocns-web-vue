@@ -7,6 +7,7 @@ const market = '/orginone/appstore/market'
 const order = '/orginone/appstore/order'
 const product = '/orginone/appstore/product'
 const appstore = '/orginone/appstore/market'
+const collection = '/orginone/anydata/collection'
 export default {
   // 人员接口
   person: {
@@ -190,7 +191,7 @@ export default {
     searchShare: product + '/search/share', //查询产品分享情况
     searchShareProduct: product + '/search/share/product', //模糊查找分享商品
     searchWebappmenu: product + '/search​/webappmenu', //查询产品资源菜单
-    unpublishMerchandise: product + '​/unpublish​/merchandise', //下架商品
+    unpublishMerchandise: product + '/unpublish', //下架商品
     update: product + '/update', //更新产品
     updateMerchandise: product + '/update/merchandise', //更新商品信息
     updateResource: product + '/update/resource', //更新产品资源
@@ -244,6 +245,12 @@ export default {
     approvalPublish: appstore + '/approval/publish',
     pullTarget: appstore + '/pull/target',
     searchPublishApply: appstore + '/search/publish/apply'
+  },
+  collection: {
+    insert: (collName: string) => collection + '/insert/' + collName,
+    aggregate: (collName: string) => collection + '/aggregate/' + collName,
+    update: (collName: string) => collection + '/update/' + collName,
+    remove: (collName: string) => collection + '/remove/' + collName
   }
   //others
 }

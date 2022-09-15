@@ -107,7 +107,7 @@
           </template>
             <template #operate="scope">
               <el-button
-              v-if="scope.row.id != software"
+                v-if="scope.row.id != software"
                 class="btn"
                 type="primary"
                 link
@@ -115,7 +115,13 @@
                 @click.stop="hadleUserManage(scope.row)"
                 >用户管理</el-button
               >
-              <el-button class="btn" type="primary" link small @click.stop="marketQuit(scope.row)" v-if="scope.row.id != software"
+              <el-button
+                class="btn"
+                type="primary"
+                link
+                small
+                @click.stop="marketQuit(scope.row)"
+                v-if="scope.row.id != software"
                 >删除商店</el-button
               >
             </template>
@@ -203,18 +209,18 @@
       </ul> -->
     </div>
     <el-dialog append-to-body v-model="createDialog" title="创建商店" width="30%" class="">
-      <el-descriptions :model="form"  :column="1" border>
+      <el-descriptions :model="form" :column="1" border>
         <el-descriptions-item label="商店名称">
-          <el-input  v-model="form.name"   />
+          <el-input v-model="form.name" />
         </el-descriptions-item>
-        <el-descriptions-item label="商店编码" >
-          <el-input  v-model="form.code" />
+        <el-descriptions-item label="商店编码">
+          <el-input v-model="form.code" />
         </el-descriptions-item>
-        <el-descriptions-item label="商店简介" >
-          <el-input  v-model="form.remark"  />
+        <el-descriptions-item label="商店简介">
+          <el-input v-model="form.remark" />
         </el-descriptions-item>
-        <el-descriptions-item label="商店是否公开" >
-          <el-select  v-model="form.public" placeholder="是否公开" style="width:100%">
+        <el-descriptions-item label="商店是否公开">
+          <el-select v-model="form.public" placeholder="是否公开" style="width: 100%">
             <el-option v-for="item in options" :label="item.label" :value="item.value" />
           </el-select>
         </el-descriptions-item>
@@ -413,101 +419,99 @@
       })
   }
 
-  const getMyMarketData = () => {
-    $services.market
-      .searchOwn({
-        data: {
-          offset: state.pageMy.current,
-          limit: state.pageMy.pageSize,
-          filter: searchText.value
-        }
-      })
-      .then((res: ResultType) => {
-        if (res.success) {
-          const {result = [],total = 0} = res.data
-          state.myMarket = []
-          result?.forEach((item: { id: string })=>{
-            if(item.id === software.value){
-              state.myMarket.unshift(item)
-            }
-            else{
-              state.myMarket.push(item)
-            }
-
-          })
-
-          state.pageMy.total = total
-          pageContent.value.state.page.total = total
-        }
-      })
-  }
-  // const getJoinMarketData = () => {
-  //   $services.appstore
-  //     .searchJoined({
-  //       data: {
-  //         offset: state.pageJoin.current,
-  //         limit: state.pageJoin.pageSize,
-  //         filter: ''
-  //       }
-  //     })
-  //     .then((res: ResultType) => {
-  //       if (res.code == 200) {
-  //         state.joinMarket = res.data.result ? res.data.result : []
-  //         state.pageJoin.total = res.data.total
-  //       }
-  //     })
-  // }
-  const marketQuit = (item: any) => {
-    ElMessageBox.confirm(`确认退出  ${item.name}?`, '提示', {
-      confirmButtonText: '确认',
-      cancelButtonText: '取消',
-      type: 'warning'
+const getMyMarketData = () => {
+  $services.market
+    .searchOwn({
+      data: {
+        offset: state.pageMy.current,
+        limit: state.pageMy.pageSize,
+        filter: searchText.value
+      }
     })
-      .then(() => {
-        $services.appstore
-          .marketQuit({
-            data: {
-              id: item.id
-            }
-          })
-          .then((res: ResultType) => {
-            if (res.code == 200) {
-              //getJoinMarketData()
-              ElMessage({
-                message: '退出成功',
-                type: 'success'
-              })
-            }
-          })
-      })
-      .catch(() => {})
-  }
-  const hadleClick = (item: any) => {
-    ElMessageBox.confirm(`确认删除  ${item.name}?`, '提示', {
-      confirmButtonText: '确认',
-      cancelButtonText: '取消',
-      type: 'warning'
+    .then((res: ResultType) => {
+      if (res.success) {
+        const { result = [], total = 0 } = res.data
+        state.myMarket = []
+        result?.forEach((item: { id: string }) => {
+          if (item.id === software.value) {
+            state.myMarket.unshift(item)
+          } else {
+            state.myMarket.push(item)
+          }
+        })
+
+        state.pageMy.total = total
+        pageContent.value.state.page.total = total
+      }
     })
-      .then(() => {
-        $services.appstore
-          .marketDel({
-            data: {
-              id: item.id
-            }
-          })
-          .then((res: ResultType) => {
-            if (res.code == 200) {
-              getMyMarketData()
-              ElMessage({
-                message: '删除成功',
-                type: 'success'
-              })
-            }
-          })
-      })
-      .catch(() => {})
-  }
-  const shopcarNum = ref(0)
+}
+// const getJoinMarketData = () => {
+//   $services.appstore
+//     .searchJoined({
+//       data: {
+//         offset: state.pageJoin.current,
+//         limit: state.pageJoin.pageSize,
+//         filter: ''
+//       }
+//     })
+//     .then((res: ResultType) => {
+//       if (res.code == 200) {
+//         state.joinMarket = res.data.result ? res.data.result : []
+//         state.pageJoin.total = res.data.total
+//       }
+//     })
+// }
+const marketQuit = (item: any) => {
+  ElMessageBox.confirm(`确认退出  ${item.name}?`, '提示', {
+    confirmButtonText: '确认',
+    cancelButtonText: '取消',
+    type: 'warning'
+  })
+    .then(() => {
+      $services.appstore
+        .marketQuit({
+          data: {
+            id: item.id
+          }
+        })
+        .then((res: ResultType) => {
+          if (res.code == 200) {
+            //getJoinMarketData()
+            ElMessage({
+              message: '退出成功',
+              type: 'success'
+            })
+          }
+        })
+    })
+    .catch(() => {})
+}
+const hadleClick = (item: any) => {
+  ElMessageBox.confirm(`确认删除  ${item.name}?`, '提示', {
+    confirmButtonText: '确认',
+    cancelButtonText: '取消',
+    type: 'warning'
+  })
+    .then(() => {
+      $services.appstore
+        .marketDel({
+          data: {
+            id: item.id
+          }
+        })
+        .then((res: ResultType) => {
+          if (res.code == 200) {
+            getMyMarketData()
+            ElMessage({
+              message: '删除成功',
+              type: 'success'
+            })
+          }
+        })
+    })
+    .catch(() => {})
+}
+const shopcarNum = ref(0)
 
   const form = reactive({
     name: '',

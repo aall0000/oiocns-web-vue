@@ -6,12 +6,17 @@
     <!-- 右侧展示主体 -->
     <div class="chart-page">
       <!-- 头部 -->
-      <GroupHeaderVue v-if="orgChat.curChat.value!==null" @viewDetail="handleViewDetail" />
+      <GroupHeaderVue v-if="orgChat.curChat.value !== null" @viewDetail="handleViewDetail" />
       <!-- 聊天区域 -->
-      <GroupContent class="chart-content" v-if="orgChat.curChat.value!==null" ref="contentWrapRef" @recallMsg="handleRecallMsg"
-        @handleReWrite="" />
+      <GroupContent
+        class="chart-content"
+        v-if="orgChat.curChat.value !== null"
+        ref="contentWrapRef"
+        @recallMsg="handleRecallMsg"
+        @handleReWrite=""
+      />
       <!-- 输入区域 -->
-      <GroupInputBox class="chart-input" v-show="orgChat.curChat.value!==null" />
+      <GroupInputBox class="chart-input" v-show="orgChat.curChat.value !== null" />
     </div>
     <!-- 详情 -->
     <GroupDetail v-if="isShowDetail" :clearHistoryMsg="clearHistoryMsg" />
@@ -19,93 +24,88 @@
 </template>
 
 <script lang="ts" setup>
-import {
-  onMounted,
-  ref,
-  onBeforeUnmount
-} from 'vue'
-import GroupSideBarVue from './components/groupSideBar.vue'
-import GroupHeaderVue from './components/groupHeader.vue'
-import GroupInputBox from './components/groupInputBox.vue'
-import GroupContent from './components/groupContent.vue'
-import GroupDetail from './components/groupDetail.vue'
-import orgChat from '@/hubs/orgchat'
-const isShowDetail = ref<boolean>(false)
+  import { onMounted, ref, onBeforeUnmount } from 'vue'
+  import GroupSideBarVue from './components/groupSideBar.vue'
+  import GroupHeaderVue from './components/groupHeader.vue'
+  import GroupInputBox from './components/groupInputBox.vue'
+  import GroupContent from './components/groupContent.vue'
+  import GroupDetail from './components/groupDetail.vue'
+  import orgChat from '@/hubs/orgchat'
+  const isShowDetail = ref<boolean>(false)
 
-//内容展示 dom节点
-const contentWrapRef = ref(null)
+  //内容展示 dom节点
+  const contentWrapRef = ref(null)
 
-onMounted(() => {
-  orgChat.subscribed((data:any)=>{
-    contentWrapRef.value.goPageEnd()
-  })
-})
-
-const openChanged = (item:any)=>{
-    contentWrapRef.value.goPageEnd()
-}
-
-// 消息撤回
-const handleRecallMsg = (item: any) => {
-  if (item.fromId === orgChat.userId) {
-    orgChat.recallMsg([item.id]).then(() => {
-      console.log('撤回成功')
+  onMounted(() => {
+    orgChat.subscribed((data: any) => {
+      contentWrapRef.value.goPageEnd()
     })
+  })
+
+  const openChanged = (item: any) => {
+    contentWrapRef.value.goPageEnd()
   }
-}
-onBeforeUnmount(() => {
-  // 离开页面关闭链接
-  orgChat.unSubscribed()
-})
-// 展示详情页
-const handleViewDetail = () => {
-  isShowDetail.value = !isShowDetail.value
-}
 
-//清空历史记录
-const clearHistoryMsg = () => {
-  //TODO
-}
+  // 消息撤回
+  const handleRecallMsg = (item: any) => {
+    if (item.fromId === orgChat.userId) {
+      orgChat.recallMsg([item.id]).then(() => {
+        console.log('撤回成功')
+      })
+    }
+  }
+  onBeforeUnmount(() => {
+    // 离开页面关闭链接
+    orgChat.unSubscribed()
+  })
+  // 展示详情页
+  const handleViewDetail = () => {
+    isShowDetail.value = !isShowDetail.value
+  }
 
+  //清空历史记录
+  const clearHistoryMsg = () => {
+    //TODO
+  }
 </script>
 
 <style lang="scss">
-@import './components/qqface.scss';
+  @import './components/qqface.scss';
 
-.custom-group-silder-menu.el-aside {
-  height: 100%;
-}
+  .custom-group-silder-menu.el-aside {
+    height: 100%;
+  }
 </style>
 <style lang="scss" scoped>
-.cohort-wrap {
-  width: 100%;
-  height: calc(100vh - 60px);
-  display: flex;
-  justify-content: space-between;
-  // background-color: #fff;
-
-  .chart-page {
-    height: 100%;
+  .cohort-wrap {
+    width: 100%;
+    height: calc(100vh - 60px);
     display: flex;
-    flex-direction: column;
     justify-content: space-between;
-    flex: 1;
-    overflow: hidden;
+    // background-color: #fff;
 
-    .chart-content {
-      flex-grow: 1;
-      overflow-y: auto;
-    }
+    .chart-page {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      flex: 1;
+      overflow: hidden;
 
-    .chart-input {
-      height: max-content;
-      min-height: 180px;
-      border-top: 1px solid var(--el-border-color); // #ccc;
+      .chart-content {
+        flex-grow: 1;
+        overflow-y: auto;
+      }
 
-      .el-textarea__inner {
-        color: #fff;
+      .chart-input {
+        height: max-content;
+        min-height: 180px;
+        border-top: 1px solid var(--el-border-color); // #ccc;
+
+        .el-textarea__inner {
+          color: #fff;
+        }
       }
     }
   }
-}
 </style>

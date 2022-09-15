@@ -210,6 +210,11 @@ const searchValue = ref<string>('')
         label: '价格'
       },
       {
+        prop:'marketId',
+        label:"市场名称",
+        formatter: (row:any, column:any) => orgChat.getName(row.marketId)
+      },
+      {
         prop:'sellerId',
         label:"卖方名称",
         formatter: (row:any, column:any) => orgChat.getName(row.sellerId)
@@ -255,6 +260,11 @@ const searchValue = ref<string>('')
       {
         prop: 'caption',
         label: '名称'
+      },
+      {
+        prop:'marketId',
+        label:"市场名称",
+        formatter: (row:any, column:any) => orgChat.getName(row.marketId)
       },
       {
         prop: 'belongId',
@@ -381,6 +391,7 @@ const searchValue = ref<string>('')
             order: { code: any; name: any; status: any,belongId:any }
           }) => {
             // if(!item.merchandise) {item.merchandise = {caption: null, days: null, sellAuth: null, price:null, information: null}}
+            if(!item.order){ item.order = {code: null, name: null, status: null,belongId:null } }
             return {
               ...item,
               code: item.order.code,

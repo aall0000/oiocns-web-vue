@@ -163,12 +163,12 @@
         // white-space: nowrap;
       }
 
-      &-belong{
+      &-belong {
         font-size: 14px;
         color: var(--el-color-info);
       }
     }
-    .app-tag{
+    .app-tag {
       margin-top: 10px;
     }
     .app-card-item-con-line{
@@ -205,7 +205,6 @@
         font-weight: 400;
         color: var(--el-text-color-secondary);
       }
-
     }
     &-footer {
       position: absolute;
