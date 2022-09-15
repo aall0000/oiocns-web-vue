@@ -34,7 +34,7 @@
           ref="leftTree"
           node-key="id"
           :data="cascaderTree"
-          :props="unitProps"
+          :props="{ class: customNodeClass,unitProps }"
           :check-strictly="true"
           :default-expand-all="true"
           show-checkbox
@@ -45,7 +45,7 @@
           v-else
           ref="leftTree"
           :data="cascaderTree"
-          :props="unitProps"
+          :props="{ class: customNodeClass,unitProps }"
           :default-expand-all="true"
           @node-click="handleNodeClick"
           :filter-node-method="filterNode"
@@ -117,6 +117,7 @@
     id: string
     label: string
     data?: any
+    authAdmin:any
     children?: Tree[]
   }
   type createInfo = {
@@ -168,7 +169,7 @@
   const authorityProps = {
     label: 'name',
     children: 'nodes',
-    disabled: 'disabled',
+    disabled: 'authAdmin',
   }
   const unitProps = {
     label: 'label',
@@ -198,6 +199,12 @@
       })
     }
   )
+  const customNodeClass = (data: Tree, node: Node) => {
+    if (!data.authAdmin) {
+      return 'penultimate'
+    }
+    return null
+  }
   watch(
     () => resource.value,
     (newValue, oldValue) => {
@@ -745,7 +752,10 @@
       }
     }
   }
-  const handleNodeClick = (data: Tree, load: boolean, search?: string) => {
+  const handleNodeClick = (data: any, load: boolean, search?: string) => {
+    if(data.authAdmin ===false || data.data.authAdmin ===false){
+      return false
+    }
     if (typeof load == 'object' && typeof search == 'object') {
       searchValue.value = ''
     }
@@ -1001,11 +1011,21 @@
       let orgTree = []
       orgTree.push(res.data)
       initIdMap(orgTree)
-      cascaderTree.value = filter(JSON.parse(JSON.stringify(orgTree)))
+      cascaderTree.value = isAuthAdmin(filter(JSON.parse(JSON.stringify(orgTree))))
     })
+  }
+  const isAuthAdmin = (nodes:any)=>{ //判断是否有操作权限
+    for (const node of nodes) {
+       node.disabled = !node.authAdmin
+      if (node.children) {
+        isAuthAdmin(node.children)
+      }
+    }
+    return nodes
   }
   // 初始化ID和对象映射关系
   const initIdMap = (nodes: any[]) => {
+    console.log('nodes',nodes)
     for (const node of nodes) {
       parentIdMap[node.id] = node
       if (node.children) {

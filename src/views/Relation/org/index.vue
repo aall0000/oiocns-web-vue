@@ -41,30 +41,29 @@
           </el-table-column>
           <el-table-column label="操作" width="150">
             <template #default="{ row }">
-                <div class="cell-box">
-                  <el-dropdown :disabled="row.data.typeName =='工作组'">
-                <el-button link type="primary" size="small" :disabled="row.data.typeName =='工作组'">新增</el-button>
-                <template #dropdown>
-                  <el-dropdown-menu>
-                    <el-dropdown-item @click="create(row, '部门')">
-                      <el-icon class="el-icon--right">
-                        <plus />
-                      </el-icon>
-                      新增部门
-                    </el-dropdown-item>
-                    <el-dropdown-item @click="create(row, '工作组')">
-                      <el-icon class="el-icon--right">
-                        <plus />
-                      </el-icon>
-                      新增工作组
-                    </el-dropdown-item>
-                  </el-dropdown-menu>
-                </template>
-              </el-dropdown>
-              <el-button link type="primary" size="small" @click="edit(row)">编辑</el-button>
-
-                  <el-button link type="danger" size="small"  style="margin-left:0" @click="handleDel(row)" :disabled="row.data.typeName == '公司'">删除</el-button>
-                </div>
+              <div class="cell-box">
+                <el-dropdown :disabled="row.data.typeName =='工作组'">
+                  <el-button link type="primary" size="small" :disabled="row.data.typeName =='工作组' || (row.data.typeName !='工作组'&&!row.data.authAdmin)">新增</el-button>
+                  <template #dropdown>
+                    <el-dropdown-menu>
+                      <el-dropdown-item @click="create(row, '部门')">
+                        <el-icon class="el-icon--right">
+                          <plus />
+                        </el-icon>
+                        新增部门
+                      </el-dropdown-item>
+                      <el-dropdown-item @click="create(row, '工作组')">
+                        <el-icon class="el-icon--right">
+                          <plus />
+                        </el-icon>
+                        新增工作组
+                      </el-dropdown-item>
+                    </el-dropdown-menu>
+                  </template>
+                </el-dropdown>
+                <el-button link type="primary" size="small" :disabled="!row.data.authAdmin" @click="edit(row)">编辑</el-button>
+                <el-button link type="danger" size="small"  style="margin-left:0" @click="handleDel(row)" :disabled="row.data.typeName == '公司' || (row.data.typeName != '公司'&&!row.data.authAdmin)">删除</el-button>
+              </div>
             </template>
           </el-table-column>
         </el-table>

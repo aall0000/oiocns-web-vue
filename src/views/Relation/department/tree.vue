@@ -8,13 +8,13 @@
         </el-icon>
         <template #dropdown>
           <el-dropdown-menu>
-            <el-dropdown-item @click="deptDialogVisible = true">
+            <el-dropdown-item :disabled=!selectItem?.data?.authAdmin @click="deptDialogVisible = true">
               <el-icon class="el-icon--right">
                 <plus />
               </el-icon>
               新增部门
             </el-dropdown-item>
-            <el-dropdown-item @click="jobDialogVisible = true">
+            <el-dropdown-item :disabled=!selectItem?.data?.authAdmin @click="jobDialogVisible = true">
               <el-icon class="el-icon--right">
                 <plus />
               </el-icon>
@@ -104,7 +104,12 @@
   import $services from '@/services'
   import { ElMessage} from 'element-plus';
   import { useRouter } from 'vue-router';
-
+  const selectItem = ref<any>();
+  // 获取单位树点击的信息
+  const selectItemChange = (data: any) => {
+    selectItem.value = data;
+  };
+  defineExpose({ selectItemChange });
 
   const router = useRouter()
   const emit = defineEmits(['nodeClick'])
