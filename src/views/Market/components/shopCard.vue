@@ -67,7 +67,7 @@
 
         <div class="app-card-item-con-footer" v-if="info.id != '355346477339512833'">
           <el-divider v-if="type != 'shopCard'"></el-divider>
-          <div class="app-card-item-con-belong">
+          <div v-if="type == 'market'" class="app-card-item-con-belong" style="margin-top: 5px">
             <p>code:{{ info.code }}</p>
           </div>
           <div class="app-card-item-con-desc">
