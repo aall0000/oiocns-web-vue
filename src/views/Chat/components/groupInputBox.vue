@@ -82,12 +82,12 @@
     if(arrElement.length>0) {
 
       return arrElement.map(n=>{
-        let newN = n
-        if (n.nodeName=="#text") { // 如果是文本
-          newN.textContent.length> 2048? newN.textContent.substring(0,2048) :newN
-          return newN.textContent
+       
+        if (n.nodeName=="#text") { // 如果是文本 
+         const newContent = n.textContent.length> 2048? n.textContent.substring(0,2048) :n.textContent
+          return newContent
         }
-        return newN?.outerHTML
+        return n?.outerHTML
       })
     }
     // return newSpace.innerHTML
