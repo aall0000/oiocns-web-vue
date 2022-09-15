@@ -4,11 +4,11 @@
         <div class="title">{{props.selectItem.label}}</div>
         <div class="box-btns">
           <div v-if="props.selectItem?.data?.typeName == '公司'">
-            <el-button small link type="primary" @click="friendDialog = true">添加成员</el-button>
-            <el-button small link type="primary" @click="viewApplication">查看申请</el-button>
+            <el-button small link type="primary" :disabled=!selectItem?.data?.authAdmin @click="friendDialog = true">添加成员</el-button>
+            <el-button small link type="primary" :disabled=!selectItem?.data?.authAdmin @click="viewApplication">查看申请</el-button>
           </div>
           <div v-if="props.selectItem?.data?.typeName == '部门' || props.selectItem?.data?.typeName == '工作组'">
-            <el-button small link type="primary" @click="showAssignDialog">分配人员</el-button>
+            <el-button small link type="primary" :disabled=!selectItem?.data?.authAdmin @click="showAssignDialog">分配人员</el-button>
           </div>
         </div>
       </div>
@@ -24,10 +24,10 @@
           >
             <template #operate="scope" >
                 <div v-if="props.selectItem?.data?.typeName == '公司'">
-                  <el-button link type="danger" size="small" @click="removeFrom(scope.row)">操作离职</el-button>
+                  <el-button link type="danger" :disabled=!selectItem?.data?.authAdmin size="small" @click="removeFrom(scope.row)">操作离职</el-button>
                 </div>
                 <div v-if="props.selectItem?.data?.typeName == '部门' || props.selectItem?.data?.typeName == '工作组'">
-                  <el-button link type="danger" size="small" @click="removeFrom(scope.row)" >移除成员</el-button>
+                  <el-button link type="danger" :disabled=!selectItem?.data?.authAdmin size="small" @click="removeFrom(scope.row)" >移除成员</el-button>
                 </div>
             </template>
           </DiyTable>
@@ -61,14 +61,20 @@ const tableHead = ref([
   },
   {
     prop: 'name',
-    label: '姓名',
-    width: '240',
+    label: '昵称',
+    width: '200',
     name:'name',
+  },
+  {
+    prop: 'team.name',
+    label: '姓名',
+    width: '200',
+    name:'teamName',
   },
   {
     prop: 'team.code',
     label: '手机号',
-    width: '330',
+    width: '200',
     name:'teamCode',
   },
   {
@@ -335,14 +341,17 @@ watch(props, () => {
     .title {
       text-align: left;
       font-size: 16px;
-      width: 30%;
+      width: 50%;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
       font-weight: bold;
     }
     .box-btns {
       text-align: right;
       padding-right: 14px;
       padding-bottom: 10px;
-      width: 70%;
+      width: 50%;
     }
   }
 

@@ -42,6 +42,7 @@
   import { useRouter, useRoute } from 'vue-router'
   import { ElMessage, ElMessageBox } from 'element-plus'
   import DiyTable from '@/components/diyTable/index.vue'
+  import orgChat from '@/hubs/orgchat'
   const router = useRouter()
   const route = useRoute()
   const diyTable = ref(null)
@@ -59,8 +60,9 @@
               label: '名称'
             },
             {
-              prop: 'belongName',
-              label: '买方名称'
+              prop: 'belongId',
+              label: '买方名称',
+              formatter: (row:any, column:any) => orgChat.getName(row.belongId)
             },
             {
               prop: 'sellAuth',
@@ -179,10 +181,11 @@ const getDialogTableList = async(id:string)=>{
           const { result = [], total = 0 } = res.data
           dialogState.data =  result?.map(
             (item: any) => {
+              if(!item.order){ item.order = {} }
               return {
                 ...item,
                 code: item.order.code,
-                belongName: item.order.belong.name,
+                belongId: item.order.belongId,
               }
             }
           )
@@ -208,9 +211,9 @@ const unpublishFun = (item:any) => {
       })
       .catch(() => {})
   }
-  //下架应用
+  //下架应用-应用所有者
   const unpublishApp = (item:any) => {
-    $services.market
+    $services.product
       .unpublishMerchandise({
         data: {
           id: item.id
@@ -218,6 +221,7 @@ const unpublishFun = (item:any) => {
       })
       .then((res: ResultType) => {
         if (res.code == 200) {
+          getTableList()
           ElMessage({
             message: '下架成功',
             type: 'success'

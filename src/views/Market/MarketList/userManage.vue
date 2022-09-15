@@ -77,6 +77,8 @@
       val.value.forEach((element: any) => {
         arr.push(element.id)
       })
+      console.log(arr);
+
       addFriends(arr)
     } else {
       searchDialog.value = false

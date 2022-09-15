@@ -65,7 +65,7 @@
       </span>
     </template>
   </el-dialog>
-  <SearchGroupPerson  
+  <SearchGroupPerson
   v-if="searchGroupDialog"
   :serachType="2"
   :id="checkId"
@@ -111,7 +111,7 @@ const editCohortDialog = ref(false)
 const getCohorts = async () => {
   const res = await $services.cohort.getJoinedCohorts({ data: { offset: 0, limit: 10000 } })
   const { data, success } = res
-  if (success) {
+  if (success && data && data.result) {
     if(props.type == '管理的'){
       state.cohorts = data.result.filter((d: any) => {
         if(d.identitys && d.identitys.length > 0){
@@ -151,7 +151,8 @@ const getCohorts = async () => {
 
 // 进入会话
 const toChat = (cohort: any)=>{
-  router.push({ path: '/chat' })
+  console.log('哈哈哈',cohort);
+  router.push({ name: 'chat',params:{defaultOpenID:cohort.id} })
 }
 
 // 修改群组信息
