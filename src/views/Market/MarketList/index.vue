@@ -99,11 +99,10 @@
                 :type="scope.row.createUser == workspaceData.id ? '' : 'success'"
                 >{{ scope.row.belongId == workspaceData.id ? '创建的' : '加入的' }}</el-tag
               >
-
-          </template>
+            </template>
             <template #operate="scope">
               <el-button
-              v-if="scope.row.id != '355346477339512833'"
+                v-if="scope.row.id != '355346477339512833'"
                 class="btn"
                 type="primary"
                 link
@@ -111,7 +110,13 @@
                 @click.stop="hadleUserManage(scope.row)"
                 >用户管理</el-button
               >
-              <el-button class="btn" type="primary" link small @click.stop="marketQuit(scope.row)" v-if="scope.row.id != '355346477339512833'"
+              <el-button
+                class="btn"
+                type="primary"
+                link
+                small
+                @click.stop="marketQuit(scope.row)"
+                v-if="scope.row.id != '355346477339512833'"
                 >删除商店</el-button
               >
             </template>
@@ -199,18 +204,18 @@
       </ul> -->
     </div>
     <el-dialog append-to-body v-model="createDialog" title="创建商店" width="30%" class="">
-      <el-descriptions :model="form"  :column="1" border>
+      <el-descriptions :model="form" :column="1" border>
         <el-descriptions-item label="商店名称">
-          <el-input  v-model="form.name"   />
+          <el-input v-model="form.name" />
         </el-descriptions-item>
-        <el-descriptions-item label="商店编码" >
-          <el-input  v-model="form.code" />
+        <el-descriptions-item label="商店编码">
+          <el-input v-model="form.code" />
         </el-descriptions-item>
-        <el-descriptions-item label="商店简介" >
-          <el-input  v-model="form.remark"  />
+        <el-descriptions-item label="商店简介">
+          <el-input v-model="form.remark" />
         </el-descriptions-item>
-        <el-descriptions-item label="商店是否公开" >
-          <el-select  v-model="form.public" placeholder="是否公开" style="width:100%">
+        <el-descriptions-item label="商店是否公开">
+          <el-select v-model="form.public" placeholder="是否公开" style="width: 100%">
             <el-option v-for="item in options" :label="item.label" :value="item.value" />
           </el-select>
         </el-descriptions-item>
@@ -337,45 +342,44 @@
     ]
   })
 
-  const createDialog = ref(false)
+const createDialog = ref(false)
 
-  onMounted(() => {
-    getMyMarketData()
-    //getJoinMarketData()
-    getShopcarNum()
-  })
+onMounted(() => {
+  getMyMarketData()
+  //getJoinMarketData()
+  getShopcarNum()
+})
 
-  const handleCurrentChange = (val: number) => {
+const handleCurrentChange = (val: number) => {
+  getMyMarketData()
+  console.log(val)
+}
+const handleUpdate = (val: any) => {
+  state.pageMy.currentPage = val
 
-    getMyMarketData()
-    console.log(val)
-  }
-  const handleUpdate = (val: any) => {
-    state.pageMy.currentPage = val
-
-    getMyMarketData()
-  }
-  // const handleCurrentJoinChange = (val: number) => {
-  //   state.pageJoin.currentPage = val
-  //   getJoinMarketData()
-  // }
-  const GoPage = (path: string) => {
-    router.push(path)
-  }
+  getMyMarketData()
+}
+// const handleCurrentJoinChange = (val: number) => {
+//   state.pageJoin.currentPage = val
+//   getJoinMarketData()
+// }
+const GoPage = (path: string) => {
+  router.push(path)
+}
   type arrList = {
     id: string
   }
-  const hadleUserManage = (item: { id: number }) => {
-    router.push({ path: '/market/userManage', query: { data: item.id } })
-  }
+const hadleUserManage = (item: { id: number }) => {
+  router.push({ path: '/market/userManage', query: { data: item.id } })
+}
 
-  const gotoApp = (item: { id: string }) => {
-    router.push({ path: '/market/appList', query: { data: item.id } })
-  }
-  const searchList = () => {
-    state.pageMy.currentPage = 1
-    getMyMarketData()
-  }
+const gotoApp = (item: { id: string }) => {
+  router.push({ path: '/market/appList', query: { data: item.id } })
+}
+const searchList = () => {
+  state.pageMy.currentPage = 1
+  getMyMarketData()
+}
   const checksSearch = (val: any) => {
     if (val.value.length > 0) {
       let arr: Array<arrList> = []
@@ -388,117 +392,115 @@
     }
   }
 
-  const getShopcarNum = async () => {
-    await $services.market
-      .searchStaging({
-        data: {
-          id: 0, //商店id （需删除）
-          offset: 0,
-          limit: 20,
-          filter: ''
-        }
-      })
-      .then((res: ResultType) => {
-        var { result = [], total = 0 } = res.data
-        shopcarNum.value = total
-      })
-  }
-
-  const getMyMarketData = () => {
-    $services.market
-      .searchOwn({
-        data: {
-          offset: state.pageMy.current,
-          limit: state.pageMy.pageSize,
-          filter: searchText.value
-        }
-      })
-      .then((res: ResultType) => {
-        if (res.success) {
-          const {result = [],total = 0} = res.data
-          state.myMarket = []
-          result?.forEach((item: { id: string })=>{
-            if(item.id === '355346477339512833'){
-              state.myMarket.unshift(item)
-            }
-            else{
-              state.myMarket.push(item)
-            }
-
-          })
-
-          state.pageMy.total = total
-          pageContent.value.state.page.total = total
-        }
-      })
-  }
-  // const getJoinMarketData = () => {
-  //   $services.appstore
-  //     .searchJoined({
-  //       data: {
-  //         offset: state.pageJoin.current,
-  //         limit: state.pageJoin.pageSize,
-  //         filter: ''
-  //       }
-  //     })
-  //     .then((res: ResultType) => {
-  //       if (res.code == 200) {
-  //         state.joinMarket = res.data.result ? res.data.result : []
-  //         state.pageJoin.total = res.data.total
-  //       }
-  //     })
-  // }
-  const marketQuit = (item: any) => {
-    ElMessageBox.confirm(`确认退出  ${item.name}?`, '提示', {
-      confirmButtonText: '确认',
-      cancelButtonText: '取消',
-      type: 'warning'
+const getShopcarNum = async () => {
+  await $services.market
+    .searchStaging({
+      data: {
+        id: 0, //商店id （需删除）
+        offset: 0,
+        limit: 20,
+        filter: ''
+      }
     })
-      .then(() => {
-        $services.appstore
-          .marketQuit({
-            data: {
-              id: item.id
-            }
-          })
-          .then((res: ResultType) => {
-            if (res.code == 200) {
-              //getJoinMarketData()
-              ElMessage({
-                message: '退出成功',
-                type: 'success'
-              })
-            }
-          })
-      })
-      .catch(() => {})
-  }
-  const hadleClick = (item: any) => {
-    ElMessageBox.confirm(`确认删除  ${item.name}?`, '提示', {
-      confirmButtonText: '确认',
-      cancelButtonText: '取消',
-      type: 'warning'
+    .then((res: ResultType) => {
+      var { result = [], total = 0 } = res.data
+      shopcarNum.value = total
     })
-      .then(() => {
-        $services.appstore
-          .marketDel({
-            data: {
-              id: item.id
-            }
-          })
-          .then((res: ResultType) => {
-            if (res.code == 200) {
-              getMyMarketData()
-              ElMessage({
-                message: '删除成功',
-                type: 'success'
-              })
-            }
-          })
-      })
-      .catch(() => {})
-  }
-  const shopcarNum = ref(0)
+}
+
+const getMyMarketData = () => {
+  $services.market
+    .searchOwn({
+      data: {
+        offset: state.pageMy.current,
+        limit: state.pageMy.pageSize,
+        filter: searchText.value
+      }
+    })
+    .then((res: ResultType) => {
+      if (res.success) {
+        const { result = [], total = 0 } = res.data
+        state.myMarket = []
+        result?.forEach((item: { id: string }) => {
+          if (item.id === '355346477339512833') {
+            state.myMarket.unshift(item)
+          } else {
+            state.myMarket.push(item)
+          }
+        })
+
+        state.pageMy.total = total
+        pageContent.value.state.page.total = total
+      }
+    })
+}
+// const getJoinMarketData = () => {
+//   $services.appstore
+//     .searchJoined({
+//       data: {
+//         offset: state.pageJoin.current,
+//         limit: state.pageJoin.pageSize,
+//         filter: ''
+//       }
+//     })
+//     .then((res: ResultType) => {
+//       if (res.code == 200) {
+//         state.joinMarket = res.data.result ? res.data.result : []
+//         state.pageJoin.total = res.data.total
+//       }
+//     })
+// }
+const marketQuit = (item: any) => {
+  ElMessageBox.confirm(`确认退出  ${item.name}?`, '提示', {
+    confirmButtonText: '确认',
+    cancelButtonText: '取消',
+    type: 'warning'
+  })
+    .then(() => {
+      $services.appstore
+        .marketQuit({
+          data: {
+            id: item.id
+          }
+        })
+        .then((res: ResultType) => {
+          if (res.code == 200) {
+            //getJoinMarketData()
+            ElMessage({
+              message: '退出成功',
+              type: 'success'
+            })
+          }
+        })
+    })
+    .catch(() => {})
+}
+const hadleClick = (item: any) => {
+  ElMessageBox.confirm(`确认删除  ${item.name}?`, '提示', {
+    confirmButtonText: '确认',
+    cancelButtonText: '取消',
+    type: 'warning'
+  })
+    .then(() => {
+      $services.appstore
+        .marketDel({
+          data: {
+            id: item.id
+          }
+        })
+        .then((res: ResultType) => {
+          if (res.code == 200) {
+            getMyMarketData()
+            ElMessage({
+              message: '删除成功',
+              type: 'success'
+            })
+          }
+        })
+    })
+    .catch(() => {})
+}
+const shopcarNum = ref(0)
 
   const form = reactive({
     name: '',
@@ -579,41 +581,41 @@
       .then((res: ResultType) => {
         console.log(res)
 
-        if (res.data.result) {
-          let states = res.data.result
-          let arr: { value: any; label: any }[] = []
-          states.forEach((el: any) => {
-            let obj = {
-              value: el.id,
-              label: el.name
-            }
-            arr.push(obj)
-          })
-          callback(arr)
-        }
-      })
-  }
-  const submit = (data: any) => {
-    $services.appstore
-      .applyJoin({
-        data: {
-          id: data[0]
-        }
-      })
-      .then((res: ResultType) => {
-        if (res.success) {
-          ElMessage({
-            message: '加入成功',
-            type: 'success'
-          })
-          searchDialog.value = false
-          //getJoinMarketData()
-        }
-      })
-  }
-  const closeDialog = (data: { value: boolean }) => {
-    searchDialog.value = false
-  }
+      if (res.data.result) {
+        let states = res.data.result
+        let arr: { value: any; label: any }[] = []
+        states.forEach((el: any) => {
+          let obj = {
+            value: el.id,
+            label: el.name
+          }
+          arr.push(obj)
+        })
+        callback(arr)
+      }
+    })
+}
+const submit = (data: any) => {
+  $services.appstore
+    .applyJoin({
+      data: {
+        id: data[0]
+      }
+    })
+    .then((res: ResultType) => {
+      if (res.success) {
+        ElMessage({
+          message: '加入成功',
+          type: 'success'
+        })
+        searchDialog.value = false
+        //getJoinMarketData()
+      }
+    })
+}
+const closeDialog = (data: { value: boolean }) => {
+  searchDialog.value = false
+}
 </script>
 
 <style lang="scss" scoped>

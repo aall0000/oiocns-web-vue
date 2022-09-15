@@ -16,13 +16,13 @@
           align="center"
            width="150px"
           label-class-name="my-label"
-          class-name="my-content" >{{selectItem?.data?.name}}</el-descriptions-item >
+          class-name="my-content" >{{selectItem?.data?.teamName}}</el-descriptions-item >
         <el-descriptions-item :label="title+'编码'"
           label-align="center"
           align="center"
            width="150px"
           label-class-name="my-label"
-          class-name="my-content">{{selectItem?.data?.teamCode}}</el-descriptions-item>
+          class-name="my-content">{{selectItem?.data?.code}}</el-descriptions-item>
         <el-descriptions-item label="描述"  width="150px" :span="2" label-align="center" align="center">
           <div class="text-remark">
             {{selectItem?.data?.teamRemark}}
