@@ -59,7 +59,7 @@
       </span>
     </template>
   </el-dialog>
-  <SearchGroupPerson  
+  <SearchGroupPerson
   v-if="searchGroupDialog"
   :serachType="2"
   :id="checkId"
@@ -141,7 +141,7 @@ const getCohorts = async () => {
 
 // 进入会话
 const toChat = (cohort: any)=>{
-  router.push({ path: '/chat' })
+  router.push({ name: 'chat',params:{defaultOpenID:cohort.id} })
 }
 
 // 修改群组信息
