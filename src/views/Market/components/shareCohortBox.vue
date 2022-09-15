@@ -39,13 +39,13 @@
           show-checkbox
           @check-change="handleCheckChange"
           :filter-node-method="filterNode"
-          :props="{ class: customNodeClass,unitProps }"
+          :props="{ class: customNodeClass }"
         />
         <el-tree
           v-else
           ref="leftTree"
           :data="cascaderTree"
-          :props="{ class: customNodeClass,unitProps }"
+          :props="{ class: customNodeClass }"
           :default-expand-all="true"
           @node-click="handleNodeClick"
           :filter-node-method="filterNode"
@@ -96,6 +96,7 @@
 </template>
 
 <script setup lang="ts">
+  // @ts-nocheck
   import InfiniteScroll from 'element-plus'
   import { onMounted, ref, reactive, toRefs, watch, nextTick, computed } from 'vue'
   import { ElMessage, ElMessageBox } from 'element-plus'
@@ -515,7 +516,6 @@
   }
   // 左侧树点击事件
   const handleCheckChange = (data: any, checked: boolean, indeterminate: any) => {
-    console.log('点击左侧', data, checked, indeterminate)
     if (checked) {
       if (radio.value == '1') {
         let result = state.departHisData.some((item: any) => {
@@ -561,7 +561,8 @@
     }
   }
   const handleNodeClick = (data: any, load: boolean, search?: string) => {
-    if(data.authAdmin ===false || data.data.authAdmin ===false){
+    console.log('data',data)
+    if(data.authAdmin ===false || data?.data?.authAdmin ===false){
       return false
     }
     if (typeof load == 'object' && typeof search == 'object') {
@@ -735,7 +736,9 @@
       .then((res: any) => {
         let obj = res.data.data
         let arr:any =[]
+        console.log('res.data',res.data)
         res.data.children.forEach((element:any) => {
+          console.log('element',element)
           let obj = element;
           obj.disabled = !element.authAdmin
           arr.push(obj)
@@ -746,6 +749,15 @@
         cascaderTree.value.push(obj)
         getHistoryData()
       })
+  }
+  const isAuthAdmin = (nodes:any)=>{ //判断是否有操作权限
+    for (const node of nodes) {
+      node.disabled = !node.data.authAdmin
+      if (node.children) {
+        isAuthAdmin(node.children)
+      }
+    }
+    return nodes
   }
   // 初始化ID和对象映射关系
   const initIdMap = (nodes: any[]) => {
