@@ -103,10 +103,11 @@
                 :type="scope.row.createUser == workspaceData.id ? '' : 'success'"
                 >{{ scope.row.belongId == workspaceData.id ? '创建的' : '加入的' }}</el-tag
               >
-            </template>
+
+          </template>
             <template #operate="scope">
               <el-button
-              v-if="scope.row.id != software"
+                v-if="scope.row.id != software"
                 class="btn"
                 type="primary"
                 link
@@ -114,7 +115,13 @@
                 @click.stop="hadleUserManage(scope.row)"
                 >用户管理</el-button
               >
-              <el-button class="btn" type="primary" link small @click.stop="marketQuit(scope.row)" v-if="scope.row.id != software"
+              <el-button
+                class="btn"
+                type="primary"
+                link
+                small
+                @click.stop="marketQuit(scope.row)"
+                v-if="scope.row.id != software"
                 >删除商店</el-button
               >
             </template>
@@ -344,7 +351,7 @@
     ]
   })
 
-const createDialog = ref(false)
+  const createDialog = ref(false)
 
   onMounted(() => {
     getMarketInfo()
@@ -360,29 +367,29 @@ const handleCurrentChange = (val: number) => {
 const handleUpdate = (val: any) => {
   state.pageMy.currentPage = val
 
-  getMyMarketData()
-}
-// const handleCurrentJoinChange = (val: number) => {
-//   state.pageJoin.currentPage = val
-//   getJoinMarketData()
-// }
-const GoPage = (path: string) => {
-  router.push(path)
-}
+    getMyMarketData()
+  }
+  // const handleCurrentJoinChange = (val: number) => {
+  //   state.pageJoin.currentPage = val
+  //   getJoinMarketData()
+  // }
+  const GoPage = (path: string) => {
+    router.push(path)
+  }
   type arrList = {
     id: string
   }
-const hadleUserManage = (item: { id: number }) => {
-  router.push({ path: '/market/userManage', query: { data: item.id } })
-}
+  const hadleUserManage = (item: { id: number }) => {
+    router.push({ path: '/market/userManage', query: { data: item.id } })
+  }
 
-const gotoApp = (item: { id: string }) => {
-  router.push({ path: '/market/appList', query: { data: item.id } })
-}
-const searchList = () => {
-  state.pageMy.currentPage = 1
-  getMyMarketData()
-}
+  const gotoApp = (item: { id: string }) => {
+    router.push({ path: '/market/appList', query: { data: item.id } })
+  }
+  const searchList = () => {
+    state.pageMy.currentPage = 1
+    getMyMarketData()
+  }
   const checksSearch = (val: any) => {
     if (val.value.length > 0) {
       let arr: Array<arrList> = []
@@ -395,44 +402,42 @@ const searchList = () => {
     }
   }
 
-const getShopcarNum = async () => {
-  await $services.market
-    .searchStaging({
-      data: {
-        id: 0, //商店id （需删除）
-        offset: 0,
-        limit: 20,
-        filter: ''
-      }
-    })
-    .then((res: ResultType) => {
-      var { result = [], total = 0 } = res.data
-      shopcarNum.value = total
-    })
-}
-
-  const getMyMarketData = () => {
-    $services.market
-      .searchOwn({
+  const getShopcarNum = async () => {
+    await $services.market
+      .searchStaging({
         data: {
-          offset: state.pageMy.current,
-          limit: state.pageMy.pageSize,
-          filter: searchText.value
+          id: 0, //商店id （需删除）
+          offset: 0,
+          limit: 20,
+          filter: ''
         }
       })
       .then((res: ResultType) => {
-        if (res.success) {
-          const {result = [],total = 0} = res.data
-          state.myMarket = []
-          result?.forEach((item: { id: string })=>{
-            if(item.id === software.value){
-              state.myMarket.unshift(item)
-            }
-            else{
-              state.myMarket.push(item)
-            }
+        var { result = [], total = 0 } = res.data
+        shopcarNum.value = total
+      })
+  }
 
-          })
+const getMyMarketData = () => {
+  $services.market
+    .searchOwn({
+      data: {
+        offset: state.pageMy.current,
+        limit: state.pageMy.pageSize,
+        filter: searchText.value
+      }
+    })
+    .then((res: ResultType) => {
+      if (res.success) {
+        const { result = [], total = 0 } = res.data
+        state.myMarket = []
+        result?.forEach((item: { id: string }) => {
+          if (item.id === software.value) {
+            state.myMarket.unshift(item)
+          } else {
+            state.myMarket.push(item)
+          }
+        })
 
         state.pageMy.total = total
         pageContent.value.state.page.total = total
