@@ -190,7 +190,7 @@ export default {
     searchShare: product + '/search/share', //查询产品分享情况
     searchShareProduct: product + '/search/share/product', //模糊查找分享商品
     searchWebappmenu: product + '/search​/webappmenu', //查询产品资源菜单
-    unpublishMerchandise: product + '​/unpublish​/merchandise', //下架商品
+    unpublishMerchandise: product + '/unpublish', //下架商品
     update: product + '/update', //更新产品
     updateMerchandise: product + '/update/merchandise', //更新商品信息
     updateResource: product + '/update/resource', //更新产品资源
