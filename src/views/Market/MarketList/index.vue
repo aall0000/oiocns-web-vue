@@ -88,7 +88,7 @@
               <el-tag
 
                 style="margin-left: 10px"
-                :type="scope.row.createUser == queryInfo.id ? '' : 'success'"
+                :type="scope.row.createUser == workspaceData.id ? '' : 'success'"
                 >{{ scope.row.public == true ? '公开的' : '私有的' }}</el-tag
               >
           </template>
@@ -96,8 +96,8 @@
             <el-tag
             v-if="scope.row.id != '355346477339512833'"
                 style="margin-left: 10px"
-                :type="scope.row.createUser == queryInfo.id ? '' : 'success'"
-                >{{ scope.row.belongId == queryInfo.id ? '创建的' : '加入的' }}</el-tag
+                :type="scope.row.createUser == workspaceData.id ? '' : 'success'"
+                >{{ scope.row.belongId == workspaceData.id ? '创建的' : '加入的' }}</el-tag
               >
 
           </template>
@@ -261,7 +261,7 @@
 
   const router = useRouter()
   const store = useUserStore()
-  const { queryInfo } = storeToRefs(store)
+  const { queryInfo,workspaceData } = storeToRefs(store)
   const handleCurrentMy: any = computed(() => {
     return (state.pageMy.currentPage - 1) * state.pageMy.pageSize
   })

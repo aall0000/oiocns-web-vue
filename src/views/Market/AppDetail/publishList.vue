@@ -211,9 +211,9 @@ const unpublishFun = (item:any) => {
       })
       .catch(() => {})
   }
-  //下架应用
+  //下架应用-应用所有者
   const unpublishApp = (item:any) => {
-    $services.market
+    $services.product
       .unpublishMerchandise({
         data: {
           id: item.id
@@ -221,6 +221,7 @@ const unpublishFun = (item:any) => {
       })
       .then((res: ResultType) => {
         if (res.code == 200) {
+          getTableList()
           ElMessage({
             message: '下架成功',
             type: 'success'

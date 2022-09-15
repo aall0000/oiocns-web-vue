@@ -26,13 +26,13 @@
               info.public ? '公开的' : '私有的'
             }}</el-tag>
             <el-tag v-if="props.type == 'market'&&info.id != '355346477339512833'" style="margin-right:10px">{{
-              info.belongId == queryInfo.id ? '创建的' : '加入的'
+              info.belongId == workspaceData.id ? '创建的' : '加入的'
             }}</el-tag>
             <!-- <el-tag v-if="props.type == 'market'&&info.id == '355346477339512833'" style="margin-right:10px">{{
               info.belongId == queryInfo.id ? '':''
             }}</el-tag> -->
             <el-tag v-if="props.type != 'market' && (info.endTime==undefined||new Date().getTime()<formartDateTime(info?.endTime))" style="margin-right:10px" :type="info.createUser==queryInfo.id?'':'success'">{{
-              info.createUser==queryInfo.id ? '可管理' : '可使用'
+              info.createUser==workspaceData.id ? '可管理' : '可使用'
             }}</el-tag>
             <el-tag v-if="props.type != 'market' && new Date().getTime()>formartDateTime(info?.endTime)" style="margin-right:10px" :type="'danger'">失效</el-tag>
             <el-tag v-if="props.type != 'market'" style="margin-right:10px">{{info.source}}</el-tag>
@@ -77,7 +77,7 @@
   import orgChat from '@/hubs/orgchat'
   // hoverItem--鼠标移入item的id 用于展示按钮区域
   const store = useUserStore()
-  const { queryInfo } = storeToRefs(store)
+  const { queryInfo ,workspaceData} = storeToRefs(store)
 
   const state: { hoverItem: string } = reactive({ hoverItem: '' })
   type shopInfoType = {

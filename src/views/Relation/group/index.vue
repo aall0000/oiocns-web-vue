@@ -28,6 +28,7 @@
   const nodeClick = (selectItem: any)=>{
     info.value.selectItemChange(selectItem);
     body.value.selectItemChange(selectItem);
+    unitTree.value.selectItemChange(selectItem);
     setTimeout(() => {
       if(container.value && infoWrap.value){
         tabHeight.value=container.value.clientHeight - 6 - infoWrap.value.clientHeight
