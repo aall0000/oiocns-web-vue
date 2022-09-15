@@ -63,7 +63,7 @@
       },
       {
         prop: 'groupDescription',
-        label: '集团描述',
+        label: '集团简介',
         width: '330'
       },
       {
