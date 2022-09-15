@@ -58,9 +58,9 @@
                   <el-dropdown-menu >
                     <el-dropdown-item @click.stop="hadleClick(item)"
                       >
-                      <el-button class="btn" type="primary" link small v-if="item.id==workspaceData.id"
+                      <el-button class="btn" type="primary" link small v-if="item.belongId==workspaceData.id"
                         >删除商店</el-button>
-                      <el-button class="btn" type="primary" link small v-if="item.id!=workspaceData.id"
+                      <el-button class="btn" type="primary" link small v-if="item.belongId!=workspaceData.id"
                         >退出商店</el-button>
                       </el-dropdown-item
                     >
