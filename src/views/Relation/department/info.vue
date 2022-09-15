@@ -43,7 +43,7 @@
     <el-form-item :label="title + '描述'">
       <el-input v-model="formData.teamRemark" :placeholder="'请输入' + title + '描述'" :autosize="{ minRows: 5 }" type="textarea" clearable />
     </el-form-item>
-    <el-form-item label="管理的角色" style="width: 100%">
+    <el-form-item label="管理角色" style="width: 100%">
         <el-cascader
           :props="authProps"
           :options="authTree"
@@ -83,7 +83,7 @@
   // 加载职权树
   const loadAuthorityTree = () => {
     console.log('selectItem',selectItem.value)
-    $services.company.getAuthorityTree({data: {id: selectItem.value.data.belongId}}).then((res: any)=>{
+    $services.company.getAuthorityTree({data: {id: selectItem.value.data.id}}).then((res: any)=>{
       authTree.value = []
       authTree.value.push(res.data)
       initIdMap(authTree.value)

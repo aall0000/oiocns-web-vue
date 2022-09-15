@@ -8,7 +8,7 @@
         </el-icon>
         <template #dropdown>
           <el-dropdown-menu>
-            <el-dropdown-item :disabled=!selectItem?.data?.authAdmin @click="showDep">
+            <el-dropdown-item :disabled=!selectItem?.data?.authAdmin @click="deptDialogVisible = true">
               <el-icon class="el-icon--right">
                 <plus />
               </el-icon>
@@ -262,10 +262,6 @@
       }
     })
   }
-  const showDep= ()=>{
-    deptDialogVisible.value = true;
-    loadAuthorityTree(selectItem.value.data.id)
-  }
   // 创建工作组
   const createJob  = () => {
     let parentId = null;
@@ -311,9 +307,9 @@
   let authTree = ref<any[]>([])
 
   // 加载职权树
-  const loadAuthorityTree = (belongId:string) => {
+  const loadAuthorityTree = (id:string) => {
     console.log('selectItem',selectItem.value)
-    $services.company.getAuthorityTree({data: {id: belongId}}).then((res: any)=>{
+    $services.company.getAuthorityTree({data: {id: id}}).then((res: any)=>{
       authTree.value = []
       authTree.value.push(res.data)
       initIdMap(authTree.value)
