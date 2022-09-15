@@ -1,5 +1,6 @@
 
 import * as signalR from '@microsoft/signalr'
+import $services from '@/services'
 
 // 消息服务
 // 创建链接
@@ -17,6 +18,10 @@ type anyStoreType = {
     get: (key: string, domain: string) => Promise<ResultType>,
     set: (methodsName: string, data: any, domain: string) => Promise<ResultType> // 更新数据
     delete: (key: string, domain: string) => Promise<ResultType>, // 删除数据
+    insert: (collName: string, data: any, domain: string) => Promise<ResultType>, // 插入集合数据
+    remove: (collName: string, match: any, domain: string) => Promise<ResultType>, // 移除匹配数据
+    update: (collName: string, update: any, domain: string) => Promise<ResultType>, // 更新匹配数据
+    aggregate: (collName: string, options: any, domain: string) => Promise<ResultType>, // 通过管道查询集合数据
     unSubscribed: (key: string, domain: string) => void // 取消订阅
     _updated: (key: string, data: any) => void // 订阅时，当数据发生更变时通知，不对外使用
     _resubscribed: () => void
@@ -103,6 +108,38 @@ const anyStore: anyStoreType = {
             return await anyStore._connection.invoke<ResultType>("Delete", key, domain)
         }
         return { success: false, data: {}, code: 404, msg: "" }
+    },
+    insert: async (collName: string, data: any, domain: string) => {
+        return $services.collection.insert(collName, {
+            data: data,
+            params: {
+                shareDomain: domain
+            }
+        })
+    },
+    update: async (collName: string, update: any, domain: string) => {
+        return $services.collection.update(collName, {
+            data: update,
+            params: {
+                shareDomain: domain
+            }
+        })
+    },
+    remove: async (collName: string, match: any, domain: string) => {
+        return $services.collection.remove(collName, {
+            data: match,
+            params: {
+                shareDomain: domain
+            }
+        })
+    },
+    aggregate: async (collName: string, options: any, domain: string) => {
+        return $services.collection.aggregate(collName, {
+            data: options,
+            params: {
+                shareDomain: domain
+            }
+        })
     },
     unSubscribed: (key: string, domain: string) => {
         if (!anyStore._subscribedKeys[key]) return

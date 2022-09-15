@@ -16,10 +16,10 @@
             >商店列表</el-button
           >
           <el-button small link type="primary" @click.stop="GoPage('/market/order/buy')"
-            >我买入的</el-button
+            >采购订单</el-button
           >
           <el-button small link type="primary" @click.stop="GoPage('/market/order/sell')"
-            >我卖出的</el-button
+            >售卖订单</el-button
           >
           <el-badge :value="shopcarNum" style="padding-left: 10px">
             <el-button small link type="primary" @click.stop="GoPage('/market/shopCar')"
@@ -109,7 +109,7 @@
                     </div>
                     <el-dropdown-item @click="deleteApp(item)">移除应用</el-dropdown-item>
                     <!-- <el-dropdown-item  @click="GoPage('/market/appDetail')">应用详情</el-dropdown-item> -->
-                    <el-dropdown-item @click="GoPageWithQuery('/market/publishList', item)"
+                    <el-dropdown-item @click="GoPageWithQuery('/market/publishList', {id:item.id})"
                       >应用上架列表</el-dropdown-item
                     >
                   </el-dropdown-menu>
@@ -696,6 +696,7 @@
           flex-wrap: wrap;
           height: calc(100% - 50px);
           align-content:flex-start;
+          overflow-y: auto;
         }
         .tab-card{
           height: 100%;

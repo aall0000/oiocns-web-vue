@@ -4,10 +4,10 @@
       <div class="title">{{ props.selectItem.label }}</div>
       <div class="box-btns">
         <div v-if="props.selectItem?.data?.typeName == '集团'">
-          <el-button small link type="primary" @click="pullCompanysDialog = true"
+          <el-button small link type="primary" :disabled=!selectItem?.data?.authAdmin @click="pullCompanysDialog = true"
             >添加单位</el-button
           >
-          <el-button small link type="primary" @click="viewApplication">查看申请</el-button>
+          <el-button small link type="primary" :disabled=!selectItem?.data?.authAdmin @click="viewApplication">查看申请</el-button>
         </div>
         <div
           v-if="
@@ -15,7 +15,7 @@
             props.selectItem?.data?.typeName == '工作组'
           "
         >
-          <el-button small link type="primary" @click="showAssignDialog">分配单位</el-button>
+          <el-button small link type="primary" :disabled=!selectItem?.data?.authAdmin @click="showAssignDialog">分配单位</el-button>
         </div>
       </div>
     </div>
@@ -34,7 +34,7 @@
               link
               type="danger"
               size="small"
-              :disabled="scope.row.id == selectItem.data?.belongId"
+              :disabled="scope.row.id == selectItem.data?.belongId||(scope.row.id != selectItem.data?.belongId&&!selectItem?.data?.authAdmin)"
               @click="removeFrom(scope.row)"
               >移除单位</el-button
             >
@@ -296,7 +296,10 @@
       .title {
         text-align: left;
         font-size: 16px;
-        width: 30%;
+        width: 50%;
+        white-space:nowrap;
+        overflow:hidden;
+        text-overflow:ellipsis;
         font-weight: bold;
       }
       .box-btns {

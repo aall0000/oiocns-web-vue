@@ -147,13 +147,14 @@ requestInstance.interceptors.response.use(axiosResponse.success, axiosResponse.e
  * @param timeout
  * @param prefix 用来拼接url地址
  * @param data
+ * @param params
  * @param headers
  * @param dataType
  * @returns {Promise.<T>}
  */
 export default function request(
   url,
-  { method = 'post', timeout = TIMEOUT, prefix = '', data = {}, headers = {}, dataType = 'json' }
+  { method = 'post', timeout = TIMEOUT, prefix = '', data = {}, params = {}, headers = {}, dataType = 'json' }
 ) {
   const baseURL = autoMatchBaseUrl(prefix)
 
@@ -166,7 +167,7 @@ export default function request(
     baseURL,
     url,
     method,
-    params: data,
+    params: params,
     data,
     timeout,
     headers: formatHeaders,
@@ -188,8 +189,6 @@ export default function request(
   if (method === 'get') {
     defaultConfig.data = {}
   } else {
-    defaultConfig.params = {}
-
     const contentType = formatHeaders['Content-Type']
 
     if (typeof contentType !== 'undefined') {

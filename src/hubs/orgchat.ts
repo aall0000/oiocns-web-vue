@@ -1,10 +1,8 @@
 import * as signalR from '@microsoft/signalr'
-import { ElMessage } from 'element-plus'
+import { ElNotification } from 'element-plus'
 import { ref, Ref } from 'vue'
 import anyStore from '@/utils/anystore'
-
-
-
+const hisMsgCollName = "chat-message"
 // 消息服务
 // 创建链接
 
@@ -297,11 +295,12 @@ const orgChat: orgChatType = {
             }
         }, "user")
     },
-    _recvMsg: (data: any) => {
+    _recvMsg: (data: any) => { // 接收到新消息的回调 
         orgChat._handleMsg(data)
-        if (orgChat._callBack) {
+      
+        if (orgChat._callBack) { // 如果有回调，说明在消息聊天页面，执行相关回调
             orgChat._callBack.call(orgChat._callBack, data)
-        } else {
+        } else { // 没有回调 则说明不在聊天界面，弹出消息提醒
             if (orgChat.chats.value.length < 1) {
                 setTimeout(() => {
                     orgChat._recvMsg(data)
@@ -309,15 +308,24 @@ const orgChat: orgChatType = {
             } else {
                 let from = orgChat.nameMap[data.fromId] || ''
                 let to = orgChat.nameMap[data.toId] || ''
+                const noReadCout = orgChat.getNoRead()
                 if (to.startsWith('我')) {
                     to = "你"
                 }
-                ElMessage({
-                    grouping: true,
-                    type: 'success',
+                ElNotification.closeAll()
+                ElNotification({
                     showClose: true,
                     dangerouslyUseHTMLString: true,
-                    message: `[${from}=>${to}]: ${data.msgBody}`
+                    
+                    message:  `<div style="position:relative;">
+                    <span style="color: var(--el-text-color-secondary);margin-right:4px;">最新消息</span> ${noReadCout ? `<div class="el-badge"><sup class="el-badge__content el-badge__content--danger">${orgChat.getNoRead()}</sup></div>`:'' }
+                    <div style="overflow: hidden;
+                    text-overflow: ellipsis;
+                    display: -webkit-box;
+                    word-break: break-all;
+                    -webkit-line-clamp: 1;
+                    -webkit-box-orient: vertical;
+                ">${from}: ${data.msgBody?.includes('img') ? "[图片]" : data.msgBody}</div><div>`
                 })
             }
         }
@@ -335,6 +343,7 @@ const orgChat: orgChatType = {
         }
         if (data.spaceId === data.fromId) {
             data.spaceId = orgChat.userId.value
+            anyStore.insert(hisMsgCollName, data, "user")
         }
         orgChat.chats.value.forEach((item: ImMsgType) => {
             if (item.id === data.spaceId) {

@@ -34,18 +34,18 @@
           ref="leftTree"
           node-key="id"
           :data="cascaderTree"
-          :props="unitProps"
           :check-strictly="true"
           :default-expand-all="true"
           show-checkbox
           @check-change="handleCheckChange"
           :filter-node-method="filterNode"
+          :props="{ class: customNodeClass,unitProps }"
         />
         <el-tree
           v-else
           ref="leftTree"
           :data="cascaderTree"
-          :props="unitProps"
+          :props="{ class: customNodeClass,unitProps }"
           :default-expand-all="true"
           @node-click="handleNodeClick"
           :filter-node-method="filterNode"
@@ -107,6 +107,7 @@
     id: string
     label: string
     data?: any
+    authAdmin:any
     children?: Tree[]
   }
   type createInfo = {
@@ -154,7 +155,8 @@
   }
   const unitProps = {
     label: 'label',
-    children: 'children'
+    children: 'children',
+    disabled: 'disabled',
   }
   const page = reactive({
     currentPage: 1,
@@ -163,6 +165,13 @@
   const handleCurrent: any = computed(() => {
     return (page.currentPage - 1) * page.pageSize
   })
+  const customNodeClass = (data: Tree, node: Node) => {
+    if (!data.authAdmin) {
+      return 'penultimate'
+    }
+    return null
+  }
+
   watch(
     () => radio.value,
     (newValue, oldValue) => {
@@ -269,7 +278,7 @@
             }
           })
           .then((res: ResultType) => {
-            state.departHisData = res.data.result ? res.data.result : []
+            state.departHisData = res?.data?.result ? res.data.result : []
             leftTree.value.setCheckedKeys([])
             let arr: any[] = []
             state.departHisData.forEach((el) => {
@@ -322,7 +331,7 @@
             }
           })
           .then((res: ResultType) => {
-            state.departHisData = res.data.result ? res.data.result : []
+            state.departHisData = res?.data?.result ? res.data.result : []
             let arr: any[] = []
             state.departHisData.forEach((el) => {
               arr.push(el.id)
@@ -342,7 +351,7 @@
             }
           })
           .then((res: ResultType) => {
-            state.authorHisData = res.data.result ? res.data.result : []
+            state.authorHisData = res?.data?.result ? res.data.result : []
             state.authorData = JSON.parse(JSON.stringify(state.authorHisData))
             let arr: any[] = []
             state.authorData.forEach((el) => {
@@ -552,6 +561,9 @@
     }
   }
   const handleNodeClick = (data: any, load: boolean, search?: string) => {
+    if(data.authAdmin ===false || data.data.authAdmin ===false){
+      return false
+    }
     if (typeof load == 'object' && typeof search == 'object') {
       searchValue.value = ''
     }
@@ -722,9 +734,15 @@
       })
       .then((res: any) => {
         let obj = res.data.data
-        let children = res.data.children
+        let arr:any =[]
+        res.data.children.forEach((element:any) => {
+          let obj = element;
+          obj.disabled = !element.authAdmin
+          arr.push(obj)
+        });
         obj.label = obj.name
-        obj.children = children
+        obj.children = arr
+        obj.disabled = !obj.authAdmin
         cascaderTree.value.push(obj)
         getHistoryData()
       })
@@ -747,7 +765,11 @@
     return nodes
   }
 </script>
-
+<style>
+  .penultimate > .el-tree-node__content {
+    color: var(--el-text-color-disabled);
+  }
+</style>
 <style lang="scss" scoped>
   .footer-btn {
     margin-right: 10px;
