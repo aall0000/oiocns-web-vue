@@ -115,7 +115,7 @@
         <el-cascader
           :props="cascaderProps"
           :options="cascaderTree"
-          v-model="formData.parentIds"
+          v-model="formData.parentId"
           style="width: 100%"
           placeholder="请选择"
         />
@@ -163,7 +163,7 @@
         <el-cascader
           :props="cascaderProps"
           :options="cascaderTree"
-          v-model="formData.parentIds"
+          v-model="formData.parentId"
           style="width: 100%"
           placeholder="请选择"
         />
@@ -207,10 +207,8 @@
     value: 'id',
     label: 'name',
     children: 'nodes',
+    emitPath: false,
   }
-
-  // 节点ID和对象映射关系
-  const parentIdMap: any = {}
 
   let authorityTree = ref<any[]>([])
   let cascaderTree = ref<any[]>([])
@@ -220,31 +218,8 @@
     $services.company.getAuthorityTree({data: {id: belongId.value}}).then((res: any)=>{
       authorityTree.value = []
       authorityTree.value.push(res.data)
-      initIdMap(authorityTree.value)
       cascaderTree.value = authorityTree.value
     })
-  }
-
-  // 初始化ID和对象映射关系
-  const initIdMap = (nodes: any[]) => {
-    for(const node of nodes){
-      parentIdMap[node.id] = node
-      if(node.nodes){
-        initIdMap(node.nodes)
-      }
-    }
-  }
-  // 获取父节点到根节点的ID列表
-  const getParentIds = (node: any, parentIds: any[]): any[] =>{
-    const parentId = node.parentId
-    if(parentId && parentId != '0'){
-      parentIds.push(parentId)
-    }
-    const parentNode = parentIdMap[parentId]
-    if(parentNode){
-      parentIds = getParentIds(parentNode, parentIds)
-    }
-    return parentIds;
   }
 
 
@@ -257,19 +232,15 @@
   const create = (row: any) =>{
     createDialogVisible.value = true;
     formData.value.public = true;
-    let parentIds: any[] = [row.id]
-    parentIds = getParentIds(row, parentIds).reverse();
-    formData.value.parentIds = parentIds
+    formData.value.parentId = row.id
   }
 
   // 编辑
   const edit = (row: any) =>{
     editDialogVisible.value = true;
-    const parentIds = getParentIds(row, []).reverse();
-    formData.value.parentIds = parentIds
+    formData.value.parentId = row.id
     formData.value = {...formData.value, ...row}
   }
-
 
   // 删除行
   const handleDel = async (row: any) =>{
@@ -317,27 +288,21 @@
 
   }
 
-
   // 关闭弹窗清空
   const dialogHide = () => {
-    formData.value = {parentIds: formData.value.parentIds}
+    formData.value.parentId = {parentId: formData.value.parentId}
     createDialogVisible.value = false
     editDialogVisible.value = false
   }
 
   // 创建组织员工职权
   const createAuth = () => {
-    let parentId = null;
-    const parentIds = formData.value.parentIds;
-    if (parentIds.length > 0) {
-      parentId = parentIds[parentIds.length - 1]
-    }
     $services.company.createAuthority({
       data: {
         id: formData.value.id,
         code: formData.value.code,
         name: formData.value.name,
-        parentId: parentId,
+        parentId: formData.value.parentId,
         public: formData.value.public,
         remark: formData.value.remark,
         belongId: belongId.value,
@@ -361,12 +326,6 @@
 
   // 编辑职权
   const editAuth = ()=>{
-    let parentId = null;
-    const parentIds = formData.value.parentIds;
-    if (parentIds.length > 0) {
-      parentId = parentIds[parentIds.length - 1]
-    }
-    formData.value.parentId = parentId
     $services.company.updateAuthority({
       data: formData.value
     }).then((res: ResultType) => {
@@ -392,7 +351,6 @@
   onMounted(() => {
     belongId.value = router.currentRoute.value.query?.belongId
     org.value = router.currentRoute.value.query
-    console.log(org.value)
     mainHeight.value = document.documentElement.clientHeight-70-cardHeight.value.clientHeight;
     tableHeight.value=document.documentElement.clientHeight-160-cardHeight.value.clientHeight;
     loadAuthorityTree()
