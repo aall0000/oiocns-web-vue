@@ -167,7 +167,7 @@
     return (page.currentPage - 1) * page.pageSize
   })
   const customNodeClass = (data: Tree, node: Node) => {
-    if (!data.authAdmin) {
+    if (data.authAdmin === false || data?.data?.authAdmin === false) {
       return 'penultimate'
     }
     return null
@@ -736,11 +736,9 @@
       .then((res: any) => {
         let obj = res.data.data
         let arr:any =[]
-        console.log('res.data',res.data)
         res.data.children.forEach((element:any) => {
-          console.log('element',element)
           let obj = element;
-          obj.disabled = !element.authAdmin
+          obj.disabled = !element.data.authAdmin
           arr.push(obj)
         });
         obj.label = obj.name

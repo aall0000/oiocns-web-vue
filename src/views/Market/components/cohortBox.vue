@@ -201,7 +201,7 @@
     }
   )
   const customNodeClass = (data: Tree, node: Node) => {
-    if (!data.data.authAdmin) {
+    if (data.authAdmin === false || data?.data?.authAdmin === false) {
       return 'penultimate'
     }
     return null
@@ -755,7 +755,7 @@
     }
   }
   const handleNodeClick = (data: any, load: boolean, search?: string) => {
-    if(data.authAdmin ===false || data.data.authAdmin ===false){
+    if(data.authAdmin ===false || data?.data?.authAdmin ===false){
       return false
     }
     if (typeof load == 'object' && typeof search == 'object') {
