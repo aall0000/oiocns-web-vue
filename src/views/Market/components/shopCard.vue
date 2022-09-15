@@ -46,21 +46,21 @@
         <slot v-else name="content"></slot>
       </div>
       <div>
-      <slot name="footer"></slot>
-      <div class="app-card-item-con-line">
-        <el-divider style="margin: 16px 0" v-if="type!='shopCard'&&info.id != softwareId"></el-divider>
-      </div>
-        <div class="app-card-item-con-footer" v-if="info.id != softwareId">
+        <slot name="footer"></slot>
 
-            <div class="app-card-item-con-desc" >
-              <p> 归属:{{ orgChat.getName(info.belongId) }}</p>
-              <p>创建:{{ orgChat.getName(info.createUser) }}</p>
-            </div>
-
-            <div v-if="props.type != 'market'" class="app-card-item-con-version">
-             版本:0.0.1
-            </div>
-        </div>
+        <!-- <div class="app-card-item-con-footer" v-if="info.id != '355346477339512833'">
+          <el-divider v-if="type != 'shopCard'"></el-divider>
+          <div v-if="type == 'market'" class="app-card-item-con-belong" style="margin-top: 5px">
+            <p>code:{{ info.code }}</p>
+          </div>
+          <div class="app-card-item-con-desc">
+            <p> 归属:{{ orgChat.getName(info.belongId) }}</p>
+          </div>
+          <div class="app-card-item-con-belong">
+            <p>创建:{{ orgChat.getName(info.createUser) }}</p>
+          </div>
+          <div v-if="props.type != 'market'" class="app-card-item-con-version"> 版本:0.0.1 </div>
+        </div> -->
       </div>
     </div>
 
@@ -111,8 +111,9 @@
 
   .app-card-rightIcon {
     position: absolute;
-    right: 10px;
-    top: 10px;
+    right: 20px;
+    top: 20px;
+    cursor: pointer;
   }
   .app-card-rightTriangle {
     position: absolute;

@@ -1,5 +1,5 @@
 <template>
-  <div class="market-layout" style="height:calc(100% - 56px)">
+  <div class="market-layout" style="height: calc(100% - 56px)">
     <div class="market-content box" style="height: 100%">
       <ul class="box-ul">
         <li class="app-card" v-if="dataList?.length !== 0">
@@ -7,33 +7,38 @@
            >
             <template #rightIcon>
               <el-dropdown trigger="click" placement="left-start">
-                <el-icon :size="18">
+                <el-icon :size="18" >
                   <Operation />
                 </el-icon>
                 <template #dropdown>
                   <el-dropdown-menu>
                     <el-dropdown-item @click="handleCardInfo(item)">详情</el-dropdown-item>
                     <el-dropdown-item @click="joinStaging(item)">加入购物车</el-dropdown-item>
-                    <el-dropdown-item @click="buyThings(item)">购买</el-dropdown-item>
-                    <el-dropdown-item @click="unpublishFun(item)" v-if="type == 'manage'">下架</el-dropdown-item>
+                    <el-dropdown-item @click="unpublishFun(item)" v-if="type == 'manage'"
+                      >下架</el-dropdown-item
+                    >
                   </el-dropdown-menu>
                 </template>
               </el-dropdown>
             </template>
+
             <template #content>
               <div class="shopCar-box">
                 <div class="app-con-title">{{ item.caption }} </div>
                 <!-- <div class="app-con-info" v-if="item.sellAuth !== '所属权'">使用期限：{{ item.days }}天</div> -->
-                <div class="app-con-info">单价：
+                <div class="app-con-info"
+                  >单价：
                   <span style="color: var(--el-color-warning)"> ￥ </span>
                   <strong style="color: var(--el-color-warning); font-size: 16px">{{
-                  item.price || '0.00'
+                    item.price || '0.00'
                   }}</strong>
                 </div>
 
-                <div class="app-con-info">售卖权属：{{ item.sellAuth }}
-                  <el-tag size="small" v-if="item.sellAuth !== '所属权'&&item?.days">
-                    使用期：{{ item.sellAuth !== '所属权' ? item.days + '天' : '无期限' }}</el-tag>
+                <div class="app-con-info"
+                  >售卖权属：{{ item.sellAuth }}
+                  <el-tag size="small" v-if="item.sellAuth !== '所属权' && item?.days">
+                    使用期：{{ item.sellAuth !== '所属权' ? item.days + '天' : '无期限' }}</el-tag
+                  >
                 </div>
                 <!-- <div class="app-con-info">上架时间：{{ item.createTime.substring(0, 11) }}</div> -->
               </div>
@@ -58,7 +63,7 @@
                 :isSquare="false" />
             </template>
             <!-- <template #footer> -->
-            <el-button link @click="createOrder(item)">立即购买</el-button>
+            <!-- <el-button link @click="createOrder(item)">立即购买</el-button> -->
             <!-- <div v-if="type == 'shop'">
               <el-button link @click="joinStaging(item)">加入购物车</el-button>
               <el-divider direction="vertical" />
@@ -79,7 +84,11 @@
     </div>
   </div>
   <template v-for="item in state.dialogShow" :key="item.key">
-    <AppInfoDialog v-if="item.key == 'info' && item.value" :dialogShow="item" @closeDialog="closeDialog">
+    <AppInfoDialog
+      v-if="item.key == 'info' && item.value"
+      :dialogShow="item"
+      @closeDialog="closeDialog"
+    >
     </AppInfoDialog>
   </template>
 </template>
@@ -104,17 +113,17 @@ type AppType = {
   caption:string
   createTime:string
   createUser: string
-  days:string
-  id:string
-  information:string
-  marketId:string
-  price:number
-  productId:string
-  sellAuth:string
-  status:number
-  updateTime:string
-  updateUser:string
-  version:string
+  days: string
+  id: string
+  information: string
+  marketId: string
+  price: number
+  productId: string
+  sellAuth: string
+  status: number
+  updateTime: string
+  updateUser: string
+  version: string
 }
 const props = withDefaults(defineProps<Props>(), { dataList: [], type: 'manage' })
 const handleCurrent: any = computed(() => {
@@ -138,34 +147,31 @@ const state = reactive({
   ]
 })
 
-const buyThings = (item:AppType) =>{
-    ElMessageBox.confirm('此操作将生成交易订单。是否确认?', '确认订单', {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      type: 'success'
-    }).then(() => {
-      setTimeout(
-        async () => {
-          await $services.order
-            .create({
-              data: {
-                code: new Date().getTime().toString().substring(0, 13),
-                name:item.caption,
-                merchandiseId: item.id
-              }
+const buyThings = (item: AppType) => {
+  ElMessageBox.confirm('此操作将生成交易订单。是否确认?', '确认订单', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'success'
+  }).then(() => {
+    setTimeout(async () => {
+      await $services.order
+        .create({
+          data: {
+            code: new Date().getTime().toString().substring(0, 13),
+            name: item.caption,
+            merchandiseId: item.id
+          }
+        })
+        .then((res: ResultType) => {
+          if (res.code == 200) {
+            ElMessage({
+              message: '创建订单成功',
+              type: 'success'
             })
-            .then((res: ResultType) => {
-              if (res.code == 200) {
-                ElMessage({
-                  message: '创建订单成功',
-                  type: 'success'
-                })
-              }
-            })
-        },
-        1
-      )
-    })
+          }
+        })
+    }, 1)
+  })
 }
 
 const moreOperations = () => {
@@ -296,7 +302,7 @@ const unpublishFun = (item: any) => {
     .then(() => {
       unpublishApp(item)
     })
-    .catch(() => { })
+    .catch(() => {})
 }
 //下架应用
 const unpublishApp = (item: any) => {
@@ -388,7 +394,7 @@ align-items: flex-end;
 }
 
 .box {
-  .box-ul+.box-ul {
+  .box-ul + .box-ul {
     margin-top: 16px;
   }
 
@@ -405,7 +411,7 @@ align-items: flex-end;
     .app-card {
       display: flex;
       flex-wrap: wrap;
-      align-content:flex-start;
+      align-content: flex-start;
       height: calc(100% - 60px);
     }
   }
