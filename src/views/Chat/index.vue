@@ -1,7 +1,7 @@
 <template>
   <div class="cohort-wrap">
     <el-aside class="custom-group-silder-menu" width="260px">
-      <GroupSideBarVue :clearHistoryMsg="clearHistoryMsg" @openChanged="openChanged" :openId="defaultOpenID" />
+      <GroupSideBarVue :clearHistoryMsg="clearHistoryMsg" @openChanged="openChanged" />
     </el-aside>
     <!-- 右侧展示主体 -->
     <div class="chart-page">
@@ -25,7 +25,6 @@
 
 <script lang="ts" setup>
   import { onMounted, ref, onBeforeUnmount } from 'vue'
-  import { useRoute } from 'vue-router'
   import GroupSideBarVue from './components/groupSideBar.vue'
   import GroupHeaderVue from './components/groupHeader.vue'
   import GroupInputBox from './components/groupInputBox.vue'
@@ -33,8 +32,6 @@
   import GroupDetail from './components/groupDetail.vue'
   import orgChat from '@/hubs/orgchat'
   const isShowDetail = ref<boolean>(false)
-  console.log('路由', useRoute().params)
-  const defaultOpenID:string = useRoute().params?.defaultOpenID as string || ''
 
   //内容展示 dom节点
   const contentWrapRef = ref(null)

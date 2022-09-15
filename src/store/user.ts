@@ -57,30 +57,30 @@ export const useUserStore = defineStore({
   actions: {
     async updateUserInfo(data: { username: string; password: string }) {
       // 获取用户登录信息
-      const res:ResultType = await $services.person.login({
-          data: {
-            account: data.username,
-            password: data.password
-          }
-        })
-
-        if (res.code == 200) {
-          this.userInfo = res.data
-          this.userToken = res.data.accessToken
-          this.workspaceData = {
-            id: res.data.workspaceId,
-            name: res.data.workspaceName
-          }
-          this.userCompanys = [this.workspaceData]
-          this.getQueryInfo()
-          return this.workspaceData
-        } else {
-          ElMessage({
-            message: res.msg,
-            type: 'warning'
-          })
-          return null
+      const res: ResultType = await $services.person.login({
+        data: {
+          account: data.username,
+          password: data.password
         }
+      })
+
+      if (res.code == 200) {
+        this.userInfo = res.data
+        this.userToken = res.data.accessToken
+        this.workspaceData = {
+          id: res.data.workspaceId,
+          name: res.data.workspaceName
+        }
+        this.userCompanys = [this.workspaceData]
+        this.getQueryInfo()
+        return this.workspaceData
+      } else {
+        ElMessage({
+          message: res.msg,
+          type: 'warning'
+        })
+        return null
+      }
     },
     getQueryInfo(token: string) {
       if (token) {
@@ -119,14 +119,19 @@ export const useUserStore = defineStore({
             // } else {
             //   this.userCompanys = res.data.result ? res.data.result : []
             // }
-            if(!res.data.result){
+            if (!res.data.result) {
+              console.log(workspaceId, this.userInfo)
+              this.getWorkspaceData(workspaceId)
               return
             }
-            this.userCompanys = [{
-              id: this.userInfo.workspaceId,
-              name: this.userInfo.workspaceName,
-              type:1
-            }, ...(res.data.result || [])]
+            this.userCompanys = [
+              {
+                id: this.userInfo.workspaceId,
+                name: this.userInfo.workspaceName,
+                type: 1
+              },
+              ...(res.data.result || [])
+            ]
             this.copyCompanys = JSON.parse(JSON.stringify(this.userCompanys))
             if (workspaceId) {
               this.getWorkspaceData(workspaceId)
@@ -168,20 +173,19 @@ export const useUserStore = defineStore({
     async getWorkspaceData(id: string) {
       await this.copyCompanys.forEach((el: any, index: number) => {
         if (id == el.id) {
-          let obj={}
-          if(el.type === 1){
+          let obj = {}
+          if (el.type === 1) {
             obj = {
               id: el.id,
               name: el.team ? el.team.name : el.name,
-              type:1
+              type: 1
             }
-          }
-          else{
+          } else {
             obj = {
               id: el.id,
               name: el.team ? el.team.name : el.name,
-              type:2,
-              authId:el.team.authId
+              type: 2,
+              authId: el.team.authId
             }
           }
 

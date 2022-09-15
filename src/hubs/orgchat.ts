@@ -35,6 +35,7 @@ type orgChatType = {
     _recvMsg: (data: any) => void // 订阅时，当数据发生更变时通知，不对外使用
     _handleMsg: (data: any) => void // 处理消息
     _cacheChats: () => void //缓存会话
+    _cacheMsg: (sessionId: string, data: any) => void //缓存消息
 }
 const orgChat: orgChatType = {
     _connection: null,
@@ -171,11 +172,24 @@ const orgChat: orgChatType = {
                 groups.forEach((item: ImMsgType) => {
                     item.chats.forEach((chat: ImMsgChildType) => {
                         chat.spaceId = item.id
-                        chat.totalMsg = 10000
-                        chat.personNum = 10000
+                        orgChat.chats.value.forEach((i:ImMsgType)=>{
+                            if(i.id === item.id){
+                                i.chats.forEach((c: ImMsgChildType)=>{
+                                    if(c.id === chat.id){
+                                        debugger
+                                        chat.msgBody = c.msgBody
+                                        chat.msgTime = c.msgTime
+                                        chat.msgType = c.msgType
+                                    }
+                                })
+                            }
+                        })
                         chat.showTxt = chat.msgBody?.includes('img') ? "[图片]" : chat.msgBody
                         let typeName = chat.typeName == '人员' ? '' : `[${chat.typeName}]`
                         orgChat.nameMap[chat.id] = `${chat.name}${typeName}`
+                    })
+                    item.chats = item.chats.sort((a,b)=>{
+                        return new Date(b.msgTime).getTime() - new Date(a.msgTime).getTime()
                     })
                 })
                 orgChat.chats.value = [...groups]
@@ -213,8 +227,6 @@ const orgChat: orgChatType = {
             await orgChat.getHistoryMsg()
             if (chat.typeName !== "人员") {
                 await orgChat.getPersons(true)
-            } else {
-                orgChat.curChat.value.personNum = 0
             }
             orgChat.openChats.push(orgChat.curChat.value)
         }
@@ -224,11 +236,10 @@ const orgChat: orgChatType = {
         if (reset) {
             orgChat.qunPersons.value = []
         }
-        if (orgChat.isConnected() && orgChat.curChat &&
-            orgChat.curChat.value.personNum > orgChat.qunPersons.value.length) {
+        if (orgChat.isConnected() && orgChat.curChat) {
             let res = await orgChat._connection.invoke("GetPersons", {
                 cohortId: orgChat.curChat.value.id,
-                limit: 10,
+                limit: 15,
                 offset: orgChat.qunPersons.value.length
             })
             if (res.success) {
@@ -250,28 +261,49 @@ const orgChat: orgChatType = {
         return { success: false, data: {}, code: 404, msg: "" }
     },
     getHistoryMsg: async () => {
-        if (orgChat.isConnected() && orgChat.curChat) {
-            let funcName = 'QueryFriendMsg'
-            let idName = 'friendId'
-            if (orgChat.curChat.value.typeName != '人员') {
-                funcName = 'QueryCohortMsg'
-                idName = 'cohortId'
-            }
-            let res = await orgChat._connection.invoke(funcName, {
-                limit: 15,
-                [idName]: orgChat.curChat.value.id,
-                offset: orgChat.curMsgs.value.length,
-                spaceId: orgChat.curChat.value.spaceId
-            })
-            if (res.success) {
-                orgChat.curChat.value.totalMsg = res.data.total
-                if (res.data.result) {
-                    res.data.result.forEach((item: any) => {
+        if(orgChat.curChat){
+            if(orgChat.curChat.value.spaceId === orgChat.userId.value){
+                let res = await anyStore.aggregate(hisMsgCollName, {
+                    match: {
+                        sessionId: orgChat.curChat.value.id
+                    },
+                    sort: {
+                        createTime: -1
+                    },
+                    skip: orgChat.curMsgs.value.length,
+                    limit: 15
+                }, "user")
+                if (res.success && Array.isArray(res.data)) {
+                    res.data.forEach((item: any) => {
+                        item.id = item.chatId
                         orgChat.curMsgs.value.unshift(item)
                     })
                 }
+                return res
+            }else{
+                if (orgChat.isConnected() && orgChat.curChat) {
+                    let funcName = 'QueryFriendMsg'
+                    let idName = 'friendId'
+                    if (orgChat.curChat.value.typeName != '人员') {
+                        funcName = 'QueryCohortMsg'
+                        idName = 'cohortId'
+                    }
+                    let res = await orgChat._connection.invoke(funcName, {
+                        limit: 15,
+                        [idName]: orgChat.curChat.value.id,
+                        offset: orgChat.curMsgs.value.length,
+                        spaceId: orgChat.curChat.value.spaceId
+                    })
+                    if (res.success) {
+                        if (res.data.result) {
+                            res.data.result.forEach((item: any) => {
+                                orgChat.curMsgs.value.unshift(item)
+                            })
+                        }
+                    }
+                    return res
+                }
             }
-            return res
         }
         return { success: false, data: {}, code: 404, msg: "" }
     },
@@ -318,7 +350,9 @@ const orgChat: orgChatType = {
                     dangerouslyUseHTMLString: true,
                     
                     message:  `<div style="position:relative;">
-                    <span style="color: var(--el-text-color-secondary);margin-right:4px;">最新消息</span> ${noReadCout ? `<div class="el-badge"><sup class="el-badge__content el-badge__content--danger">${orgChat.getNoRead()}</sup></div>`:'' }
+                    <span style="color: var(--el-text-color-secondary);margin-right:4px;">最新消息</span> 
+                    ${noReadCout ? `<div class="el-badge">
+                    <sup class="el-badge__content el-badge__content--danger">${orgChat.getNoRead()}</sup></div>`:'' }
                     <div style="overflow: hidden;
                     text-overflow: ellipsis;
                     display: -webkit-box;
@@ -343,7 +377,6 @@ const orgChat: orgChatType = {
         }
         if (data.spaceId === data.fromId) {
             data.spaceId = orgChat.userId.value
-            anyStore.insert(hisMsgCollName, data, "user")
         }
         orgChat.chats.value.forEach((item: ImMsgType) => {
             if (item.id === data.spaceId) {
@@ -356,9 +389,12 @@ const orgChat: orgChatType = {
                         sessionId = data.fromId
                     }
                     if (sessionId == chat.id) {
+                        if(chat.spaceId === orgChat.userId.value){
+                            orgChat._cacheMsg(sessionId, data)
+                        }
                         chat.msgBody = data.msgBody
-                        chat.msgTime = data.msgTime
-                        chat.msgBody = data.msgType
+                        chat.msgType = data.msgType
+                        chat.msgTime = data.createTime
                         if (chat.msgType != "recall") {
                             chat.showTxt = data.msgBody?.includes('img') ? "[图片]" : data.msgBody
                         } else {
@@ -390,5 +426,31 @@ const orgChat: orgChatType = {
         })
         orgChat._cacheChats()
     },
+    _cacheMsg: (sessionId: string, data: any)=>{
+        if(data.msgType === "recall"){
+            anyStore.update(hisMsgCollName, {
+                match: {
+                    chatId: data.id
+                },
+                update: {
+                    _set_:{
+                        msgBody: data.msgBody,
+                        msgType: data.msgType,
+                    }
+                },
+                options: {}
+            }, "user")
+        }else{
+            anyStore.insert(hisMsgCollName, {
+                chatId: data.id,
+                toId: data.toId,
+                fromId: data.fromId,
+                msgType: data.msgType,
+                msgBody: data.msgBody,
+                sessionId: sessionId,
+                createTime: data.createTime
+            }, "user")
+        }
+    }
 }
 export default orgChat

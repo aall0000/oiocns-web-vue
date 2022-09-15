@@ -117,7 +117,8 @@
   import HeadImg from '@/components/headImg.vue'
   import orgChat from '@/hubs/orgchat'
   import { Refresh } from '@element-plus/icons-vue'
-  const props = defineProps<{ openId?: string }>()
+  import { useRoute } from 'vue-router'
+  const routerParams = useRoute().params
 
   const emit = defineEmits(['openChanged'])
   // 会话列表搜索关键字
@@ -153,13 +154,17 @@
 
     // 首次进入页面默认打开第一个分组
     if (!isMounted.value && openIdArr.value.length === 0 && showInfoArr.length > 0) {
-      openIdArr.value.push(showInfoArr[0].id)
-      isMounted.value = true
       // 当从关系-群组 进入会话携带id 则进入对应聊天室
-      if (props.openId) {
-        const aimItem= showInfoArr[0].chats.find(item=>item.id==props.openId)
-        aimItem&&openChanged(aimItem)
+      if (routerParams.defaultOpenID) {
+        openIdArr.value.push(routerParams.spaceId as string)
+        const aimItem = showInfoArr
+          .find((item) => item.id == routerParams.spaceId)
+          ?.chats.find((item) => item.id == routerParams.defaultOpenID)
+        aimItem && openChanged(aimItem)
+      } else {
+        openIdArr.value.push(showInfoArr[0].id)
       }
+      isMounted.value = true
     }
 
     return showInfoArr
@@ -194,23 +199,21 @@
     mousePosition.isShowContext = true
     mousePosition.selectedItem = item
   }
-  // 页面加载完毕，点击其他位置则隐藏菜单
-  onMounted(() => {
-    window.addEventListener('click', () => {
-      mousePosition.isShowContext = false
-    })
-    window.addEventListener('contextmenu', () => {
-      mousePosition.isShowContext = false
-    })
-  })
+  // 关闭右侧点击出现的弹框
+const closecontextmenu = ()=> {
+  mousePosition.isShowContext = false
+}
+// 页面加载完毕，点击其他位置则隐藏菜单
+onMounted(() => {
+  window.addEventListener('click',closecontextmenu)
+  window.addEventListener('contextmenu', closecontextmenu)
+})
 
-  // 页面卸载前给他删了
-  onBeforeUnmount(() => {
-    window.removeEventListener('click', () => {})
-    window.removeEventListener('contextmenu', () => {
-      mousePosition.isShowContext = false
-    })
-  })
+// 页面卸载前给他删了
+onBeforeUnmount(() => {
+  window.removeEventListener('click', closecontextmenu)
+  window.removeEventListener('contextmenu', closecontextmenu)
+})
 
   type MenuItemType = { value: number; label: string }
   const menuList: MenuItemType[] = [

@@ -16,13 +16,13 @@
           align="center"
            width="150px"
           label-class-name="my-label"
-          class-name="my-content" >{{selectItem?.data?.name}}</el-descriptions-item >
+          class-name="my-content" >{{selectItem?.data?.teamName}}</el-descriptions-item >
         <el-descriptions-item :label="title+'编码'"
           label-align="center"
           align="center"
            width="150px"
           label-class-name="my-label"
-          class-name="my-content">{{selectItem?.data?.teamCode}}</el-descriptions-item>
+          class-name="my-content">{{selectItem?.data?.code}}</el-descriptions-item>
         <el-descriptions-item label="描述"  width="150px" :span="2" label-align="center" align="center">
           <div class="text-remark">
             {{selectItem?.data?.teamRemark}}
@@ -43,6 +43,15 @@
     <el-form-item :label="title + '描述'">
       <el-input v-model="formData.teamRemark" :placeholder="'请输入' + title + '描述'" :autosize="{ minRows: 5 }" type="textarea" clearable />
     </el-form-item>
+    <el-form-item label="管理角色" style="width: 100%">
+        <el-cascader
+          :props="authProps"
+          :options="authTree"
+          v-model="formData.teamAuthId"
+          style="width: 100%"
+          placeholder="请选择"
+        />
+      </el-form-item>
     <template #footer>
       <span class="dialog-footer">
         <el-button @click="dialogVisible = false">取消</el-button>
@@ -61,7 +70,47 @@
   let selectItem = ref<any>({})
   let dialogVisible = ref<boolean>(false)
   let formData: any = ref({})
-
+  const authProps = {
+    checkStrictly: true,
+    emitPath:false,
+    value: 'id',
+    label: 'name',
+    children: 'nodes',
+  }
+  let authTree = ref<any[]>([])
+  // 节点ID和对象映射关系
+  const parentIdMap: any = {}
+  // 加载职权树
+  const loadAuthorityTree = () => {
+    console.log('selectItem',selectItem.value)
+    $services.company.getAuthorityTree({data: {id: selectItem.value.data.id}}).then((res: any)=>{
+      authTree.value = []
+      authTree.value.push(res.data)
+      initIdMap(authTree.value)
+      authTree.value = authTree.value
+    })
+  }
+  // 初始化ID和对象映射关系
+  const initIdMap = (nodes: any[]) => {
+    for(const node of nodes){
+      parentIdMap[node.id] = node
+      if(node.children){
+        initIdMap(node.children)
+      }
+    }
+  }
+  // 获取父节点到根节点的ID列表
+  const getParentIds = (node: any, parentIds: any[]): any[] =>{
+    const parentId = node.data.parentId
+    if(parentId && parentId != '0'){
+      parentIds.push(parentId)
+    }
+    const parentNode = parentIdMap[parentId]
+    if(parentNode){
+      parentIds = getParentIds(parentNode, parentIds)
+    }
+    return parentIds;
+  }
   // 获取单位树点击的信息
   const selectItemChange = (data: any) => {
     selectItem.value = data;
@@ -77,6 +126,7 @@
 
 
   watch(selectItem, () => {
+    loadAuthorityTree()
   });
 
 
