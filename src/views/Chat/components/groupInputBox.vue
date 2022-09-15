@@ -60,38 +60,37 @@
 
   // 提交聊天内容
   const submit = async () => {
-    let text = ""
-    let content = document.getElementById('insterHtml')
-    if(content.children.length > 0){
-      reCreatChatContent(document.getElementById('insterHtml').children)
-    }else{
-      text = content.innerText
-    }
+    const inputContent = document.getElementById('insterHtml').childNodes
+    const text = inputContent.length>0? reCreatChatContent(document.getElementById('insterHtml').childNodes) : [ document.getElementById('insterHtml').innerHTML]
+
     const params = {
       toId: orgChat.curChat.value.id,
       spaceId: orgChat.curChat.value.spaceId,
       msgType: 'text',
-      msgBody: text.toString()
+      msgBody: text.join('')
     }
     if (text?.length > 0) {
       await orgChat.sendMsg(params)
     }
-    content.innerHTML = ''
+    document.getElementById('insterHtml').innerHTML = ''
   }
   // 解析聊天内容
-  const reCreatChatContent = (elementChild: any[]|HTMLCollection)=>{
-    console.log(elementChild)
+  const reCreatChatContent = (elementChild: NodeList|any[]): Array<string>  =>{
+    // console.log(elementChild)
     const  arrElement = Array.from(elementChild)
     // const newSpace  = document.createDocumentFragment()
     if(arrElement.length>0) {
 
       return arrElement.map(n=>{
-        const  newN = n
-        const conent = n.innerHTML ? n.innerHTML.replaceAll('&nbsp;', '').substring(0,2048) : n.innerHTML
-        newN.innerHTML  = conent
-        return newN.outerHTML
+       
+        if (n.nodeName=="#text") { // 如果是文本 
+         const newContent = n.textContent.length> 2048? n.textContent.substring(0,2048) :n.textContent
+          return newContent
+        }
+        return n?.outerHTML
       })
     }
+   
     // return newSpace.innerHTML
   }
 

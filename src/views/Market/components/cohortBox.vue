@@ -170,7 +170,7 @@
   const authorityProps = {
     label: 'name',
     children: 'nodes',
-    disabled: 'authAdmin',
+    disabled: 'disabled',
   }
   const unitProps = {
     label: 'label',
@@ -780,6 +780,7 @@
             let arr: any[] = []
             arr.push(res.data)
             handleTreeData(arr)
+            console.log('arrrrrrr',arr)
             state.centerTree = arr
             if (state.authorData.length > 0) {
               let arr: any[] = []
