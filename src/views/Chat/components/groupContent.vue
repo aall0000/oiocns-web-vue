@@ -157,22 +157,20 @@ const handleContextChange = (item: MenuItemType) => {
       break
   }
 }
+// 关闭右侧点击出现的弹框
+const closecontextmenu = ()=> {
+  mousePosition.isShowContext = false
+}
 // 页面加载完毕，点击其他位置则隐藏菜单
 onMounted(() => {
-  window.addEventListener('click', () => {
-    mousePosition.isShowContext = false
-  })
-  window.addEventListener('contextmenu', () => {
-    mousePosition.isShowContext = false
-  })
+  window.addEventListener('click',closecontextmenu)
+  window.addEventListener('contextmenu', closecontextmenu)
 })
 
 // 页面卸载前给他删了
 onBeforeUnmount(() => {
-  window.removeEventListener('click', () => { })
-  window.removeEventListener('contextmenu', () => {
-    mousePosition.isShowContext = false
-  })
+  window.removeEventListener('click', closecontextmenu)
+  window.removeEventListener('contextmenu', closecontextmenu)
 })
 // 暴露子组件方法
 defineExpose({
