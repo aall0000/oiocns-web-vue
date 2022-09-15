@@ -19,14 +19,28 @@
           <Register @gotoPrev="gotoPrev" @registerUser="registerUser"></Register>
         </el-carousel-item>
       </el-carousel> -->
-      <Login v-show="stept=='first'" @register="register" @userLogin="userLogin" :btnLoading="btnLoading"></Login>
+      <Login v-show="stept=='first'" @register="register" @userLogin="userLogin" @forgetPassword="forgetPassword" :btnLoading="btnLoading"></Login>
       <UserInfo v-show="stept=='second'" @gotoPrev="gotoPrev" @gotoNext="gotoNext"></UserInfo>
       <Register v-show="stept=='third'" @gotoPrev="gotoPrev" @registerUser="registerUser"></Register>
+      <Forget v-show="stept=='fourth'" @gotoPrev="gotoPrev" @resetPWD="resetPWD"></Forget>
     </div>
     <div class="baseLayout_btmText">
       Copyright 2021 资产云开放协同创新中⼼ 主办单位：浙江省财政厅
     </div>
   </div>
+  <el-dialog
+    v-model="dialogVisible"
+    width="30%"
+    center
+  >
+    <div class="dialogText">请妥善保管好您的助记词，这会在您忘记密码和身份认证的时候使用</div>
+    <span class="dialogPrivate">{{state.registerValue.privateKey}}</span>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="dialogVisible = false">关闭</el-button>
+      </span>
+    </template>
+  </el-dialog>
 </template>
 
 <script lang="ts" setup>
@@ -34,6 +48,7 @@
   import Login from './components/login.vue'
   import Register from './components/register.vue'
   import UserInfo from './components/userInfo.vue'
+  import Forget from './components/forget.vue'
   import $services from '@/services'
   import { reactive, ref, onMounted } from 'vue'
   import { useUserStore } from '@/store/user'
@@ -41,12 +56,25 @@
   import { useAnyData } from '@/store/anydata'
   import { useRouter } from 'vue-router'
   import { ElMessage } from 'element-plus'
+import { dataType } from 'element-plus/es/components/table-v2/src/common'
 
+  const dialogVisible = ref<boolean>(false)
   const carousel = ref<any>()
   const store = useUserStore()
   const marketStore = useMarketStore()
   const router = useRouter()
   const stept = ref<string>('first')
+  const state = reactive({
+    registerValue:{
+      privateKey:''
+    }
+  })
+  type Form = {
+    account:string
+    importValue:string
+    password:string
+    password2:string
+  }
   let btnLoading = ref(false)
 
   onMounted(() => {
@@ -55,9 +83,34 @@
   })
 
   let registerData = reactive<Object>({})
+
+  const resetPWD = (data: Form) =>{
+    console.log(data);
+    $services.person
+      .reset({
+        data: data
+      })
+      .then((res: ResultType) => {
+        if (res.code == 200) {
+          ElMessage({
+            message: '密码修改成功',
+            type: 'success'
+          })
+          stept.value = 'first'
+        }
+      }).catch((err:any)=>{
+        ElMessage({
+            message: '填写的信息有错误 请检查所填信息',
+            type: 'error'
+          })
+      })
+  }
   const register = () => {
     stept.value = 'second'
     // carousel.value?.setActiveItem('second')
+  }
+  const forgetPassword = () =>{
+    stept.value = 'fourth'
   }
   const gotoNext = (data: object) => {
     stept.value = 'third'
@@ -76,7 +129,6 @@
       btnLoading.value = false
       if (data.remind) {
         setCookie(data.username, data.password, 7)
-        marketStore.SearchAllMarket()
       } else {
         setCookie('', '', -1)
       }
@@ -100,7 +152,9 @@
             message: '注册成功',
             type: 'success'
           })
-          carousel.value?.setActiveItem('first')
+          stept.value = 'first'
+          dialogVisible.value = true
+          state.registerValue = res.data
         } else {
           ElMessage({
             message: res.msg,
@@ -121,8 +175,21 @@
 </script>
 
 <style lang="scss" scoped>
+  :deep(.el-dialog__body){
+    display:flex;
+    flex-direction: column;
+  }
   :deep(.el-carousel__container) {
     height: 100%;
+  }
+  .dialogText{
+    font-size: 16px;
+    margin-bottom: 40px
+  }
+  .dialogPrivate{
+    font-size: 20px;
+    text-align: center;
+    color: rgb(35, 72, 211);
   }
   .baseLayout {
     width: 100%;

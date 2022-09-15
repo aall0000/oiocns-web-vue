@@ -407,7 +407,8 @@
             state.departHisData.forEach((el) => {
               arr.push(el.id)
             })
-            leftTree.value.setCheckedKeys(arr, true)
+            setTimeout(()=>{leftTree.value.setCheckedKeys(arr, true)},300)
+              
           })
         break
       case '2':

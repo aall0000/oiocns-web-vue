@@ -42,7 +42,6 @@
             <div style="height: 500px">
               <el-input placeholder="搜索" v-model="searchValue" prefix-icon="Search" />
               <CanUseApp
-                ref="canUseRef"
                 @AppChange="onAppClick"
                 @onCanUseAppIdChange="hadleCanUseAppChange"
               />
@@ -60,7 +59,6 @@
       </li>
     </ul>
   </div>
-  {{ showMenu }}
 </template>
 
 <script lang="ts" setup>
@@ -75,7 +73,6 @@
   const commonStore = useCommonStore()
   const activeRouter = ref<string>('')
   const searchValue = ref<string>('')
-  const canUseRef = ref<any>()
   type StateType = {
     mainMenus: MenuItemType[]
     clickMenu: Array<MenuItemType>
@@ -250,7 +247,7 @@
       text-align: center;
 
       &:hover {
-        background-color: rgb(248, 247, 249);
+        background-color: #f8f7f9;
       }
     }
 
@@ -260,7 +257,7 @@
       text-align: center;
 
       &:hover {
-        background-color: rgb(248, 247, 249);
+        background-color: #f8f7f9;
       }
     }
   }

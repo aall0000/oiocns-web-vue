@@ -120,10 +120,10 @@ import payView from '@/components/pay/pay.vue'
 import payList from '@/components/pay/list.vue'
 import DiyButton from '@/components/diyButton/index.vue'
 import { ElTable } from 'element-plus'
-import { useMarketStore } from '@/store/market'
+import orgChat from '@/hubs/orgchat'
 import moment from 'moment'
 import { useRoute, useRouter } from 'vue-router'
-const store = useMarketStore()
+
 const router = useRouter()
   const route = useRoute()
 // 表格分页数据
@@ -212,9 +212,14 @@ const searchValue = ref<string>('')
         label: '价格'
       },
       {
+        prop:'marketId',
+        label:"市场名称",
+        formatter: (row:any, column:any) => orgChat.getName(row.marketId)
+      },
+      {
         prop:'sellerId',
         label:"卖方名称",
-        formatter: (row:any, column:any) => store.getMarketName(row.sellerId)
+        formatter: (row:any, column:any) => orgChat.getName(row.sellerId)
       },
       {
         prop: 'status',
@@ -259,8 +264,14 @@ const searchValue = ref<string>('')
         label: '名称'
       },
       {
-        prop: 'belongName',
-        label: '买方名称'
+        prop:'marketId',
+        label:"市场名称",
+        formatter: (row:any, column:any) => orgChat.getName(row.marketId)
+      },
+      {
+        prop: 'belongId',
+        label: '买方名称',
+        formatter: (row:any, column:any) => orgChat.getName(row.belongId)
       },
       {
         prop: 'sellAuth',
@@ -379,13 +390,14 @@ const searchValue = ref<string>('')
         state.orderList = result?.map(
           (item: {
             merchandise: { caption: any; days: any; sellAuth: any; price: any; information: any }
-            order: { code: any; name: any; status: any,belong:any }
+            order: { code: any; name: any; status: any,belongId:any }
           }) => {
             // if(!item.merchandise) {item.merchandise = {caption: null, days: null, sellAuth: null, price:null, information: null}}
+            if(!item.order){ item.order = {code: null, name: null, status: null,belongId:null } }
             return {
               ...item,
               code: item.order.code,
-              belongName: item.order.belong.name,
+              belongId: item.order.belongId,
             }
           }
         )
