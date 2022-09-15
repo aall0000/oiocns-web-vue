@@ -264,6 +264,7 @@ const orgChat: orgChatType = {
                 }, "user")
                 if (res.success && Array.isArray(res.data)) {
                     res.data.forEach((item: any) => {
+                        item.id = item.chatId
                         orgChat.curMsgs.value.unshift(item)
                     })
                 }
