@@ -176,6 +176,7 @@ const orgChat: orgChatType = {
                             if(i.id === item.id){
                                 i.chats.forEach((c: ImMsgChildType)=>{
                                     if(c.id === chat.id){
+                                        debugger
                                         chat.msgBody = c.msgBody
                                         chat.msgTime = c.msgTime
                                         chat.msgType = c.msgType
@@ -349,7 +350,9 @@ const orgChat: orgChatType = {
                     dangerouslyUseHTMLString: true,
                     
                     message:  `<div style="position:relative;">
-                    <span style="color: var(--el-text-color-secondary);margin-right:4px;">最新消息</span> ${noReadCout ? `<div class="el-badge"><sup class="el-badge__content el-badge__content--danger">${orgChat.getNoRead()}</sup></div>`:'' }
+                    <span style="color: var(--el-text-color-secondary);margin-right:4px;">最新消息</span> 
+                    ${noReadCout ? `<div class="el-badge">
+                    <sup class="el-badge__content el-badge__content--danger">${orgChat.getNoRead()}</sup></div>`:'' }
                     <div style="overflow: hidden;
                     text-overflow: ellipsis;
                     display: -webkit-box;
@@ -390,7 +393,7 @@ const orgChat: orgChatType = {
                             orgChat._cacheMsg(sessionId, data)
                         }
                         chat.msgBody = data.msgBody
-                        chat.msgBody = data.msgType
+                        chat.msgType = data.msgType
                         chat.msgTime = data.createTime
                         if (chat.msgType != "recall") {
                             chat.showTxt = data.msgBody?.includes('img') ? "[图片]" : data.msgBody
