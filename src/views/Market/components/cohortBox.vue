@@ -200,7 +200,7 @@
     }
   )
   const customNodeClass = (data: Tree, node: Node) => {
-    if (!data.authAdmin) {
+    if (!data.data.authAdmin) {
       return 'penultimate'
     }
     return null
@@ -1017,7 +1017,7 @@
   }
   const isAuthAdmin = (nodes:any)=>{ //判断是否有操作权限
     for (const node of nodes) {
-       node.disabled = !node.authAdmin
+      node.disabled = !node.data.authAdmin
       if (node.children) {
         isAuthAdmin(node.children)
       }
@@ -1026,7 +1026,6 @@
   }
   // 初始化ID和对象映射关系
   const initIdMap = (nodes: any[]) => {
-    console.log('nodes',nodes)
     for (const node of nodes) {
       parentIdMap[node.id] = node
       if (node.children) {
