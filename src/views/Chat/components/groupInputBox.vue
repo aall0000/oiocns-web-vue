@@ -52,7 +52,7 @@
   import { ElMessage } from 'element-plus'
   import { onMounted, ref } from 'vue'
   import orgChat from '@/hubs/orgchat'
-  
+
   const inputRef = ref(null)
   const faceBtnRef = ref(null)
 
@@ -60,12 +60,12 @@
 
   // 提交聊天内容
   const submit = async () => {
-    
+
     const text = reCreatChatContent(document.getElementById('insterHtml').children)//.innerHTML
-   
-    
+
+
     // let text = value.indexOf('span') > -1 ? value :
-    
+
     // value.replaceAll('&nbsp;', '').substring(0,2048)
     const params = {
       toId: orgChat.curChat.value.id,
@@ -200,7 +200,7 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    
+
     background-color: var(--el-bg-color-overlay);
     .icons-box {
       height: 34px;
