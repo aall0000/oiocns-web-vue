@@ -60,6 +60,9 @@ const orgChat: orgChatType = {
         // 初始化
         orgChat._connection = new signalR.HubConnectionBuilder().withUrl('/orginone/orgchat/msghub').build()
         orgChat._connection.on("RecvMsg", orgChat._recvMsg)
+        orgChat._connection.on("ChatRefresh", async(data:any)=>{
+            await orgChat.getChats()
+        })
         orgChat._connection.onclose((error) => {
             if (!orgChat._stoped) {
                 console.log('链接已断开,2秒后重连', error)
@@ -176,7 +179,6 @@ const orgChat: orgChatType = {
                             if(i.id === item.id){
                                 i.chats.forEach((c: ImMsgChildType)=>{
                                     if(c.id === chat.id){
-                                        debugger
                                         chat.msgBody = c.msgBody
                                         chat.msgTime = c.msgTime
                                         chat.msgType = c.msgType
