@@ -296,7 +296,10 @@
       .title {
         text-align: left;
         font-size: 16px;
-        width: 30%;
+        width: 50%;
+        white-space:nowrap;
+        overflow:hidden;
+        text-overflow:ellipsis;
         font-weight: bold;
       }
       .box-btns {
