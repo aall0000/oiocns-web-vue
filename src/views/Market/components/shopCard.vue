@@ -26,7 +26,8 @@
               v-if="props.type == 'market'"
               style="margin-right: 10px"
               :type="info.public ? 'success' : 'danger'"
-              >{{ info.public ? '公开的' : '私有的' }}</el-tag
+              v-show="!info.public"
+              >{{ info.public ? '公开' : '私有' }}</el-tag
             >
             <el-tag
               v-if="props.type == 'market' && info.id != '355346477339512833'"
@@ -65,7 +66,7 @@
       <div>
         <slot name="footer"></slot>
 
-        <div class="app-card-item-con-footer" v-if="info.id != '355346477339512833'">
+        <!-- <div class="app-card-item-con-footer" v-if="info.id != '355346477339512833'">
           <el-divider v-if="type != 'shopCard'"></el-divider>
           <div v-if="type == 'market'" class="app-card-item-con-belong" style="margin-top: 5px">
             <p>code:{{ info.code }}</p>
@@ -77,7 +78,7 @@
             <p>创建:{{ orgChat.getName(info.createUser) }}</p>
           </div>
           <div v-if="props.type != 'market'" class="app-card-item-con-version"> 版本:0.0.1 </div>
-        </div>
+        </div> -->
       </div>
     </div>
 
@@ -130,8 +131,9 @@
   }
   .app-card-rightIcon {
     position: absolute;
-    right: 10px;
-    top: 10px;
+    right: 20px;
+    top: 20px;
+    cursor: pointer;
   }
   .app-card-rightTriangle {
     position: absolute;
