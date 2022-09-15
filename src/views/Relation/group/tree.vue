@@ -13,7 +13,7 @@
       </el-input>
       <li class="con tree-btns">
         <div class="title">集团管理</div>
-        <el-icon color="#154ad8" :size="20" v-if="!selectItem?.data?.authAdmin" @click="createGroupDialogVisible = true">
+        <el-icon color="#154ad8" :size="20" v-if="selectItem?.data?.authAdmin" @click="createGroupDialogVisible = true">
           <CirclePlus />
         </el-icon>
       </li>

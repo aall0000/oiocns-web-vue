@@ -34,7 +34,7 @@
           ref="leftTree"
           node-key="id"
           :data="cascaderTree"
-          :props="{ class: customNodeClass,unitProps }"
+          :props="{ class: customNodeClass }"
           :check-strictly="true"
           :default-expand-all="true"
           show-checkbox
@@ -45,7 +45,7 @@
           v-else
           ref="leftTree"
           :data="cascaderTree"
-          :props="{ class: customNodeClass,unitProps }"
+          :props="{ class: customNodeClass }"
           :default-expand-all="true"
           @node-click="handleNodeClick"
           :filter-node-method="filterNode"
@@ -106,6 +106,7 @@
 </template>
 
 <script setup lang="ts">
+  // @ts-nocheck
   import InfiniteScroll from 'element-plus'
   import { onMounted, ref, reactive, toRefs, watch, nextTick, computed } from 'vue'
   import { ElMessage, ElMessageBox } from 'element-plus'
