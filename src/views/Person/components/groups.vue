@@ -82,7 +82,7 @@ import orgChat from '@/hubs/orgchat'
     },
     {
       prop: 'remark',
-      label: '集团描述',
+      label: '集团简介',
       name: 'remark'
     },
     {
@@ -231,6 +231,7 @@ import orgChat from '@/hubs/orgchat'
         if(name && name.length > 0){
           item.createUser = name
         }
+        item.remark = item.team.remark
       })
       tableData.value = data.result
       pageStore.total = data.total
