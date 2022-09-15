@@ -33,46 +33,51 @@
         </div>
 
         <li class="app-card" v-show="showType === 'card'">
-          <ShopCard
-            v-if="state.myMarket.length !== 0"
-            v-for="item in state.myMarket"
-            :info="item"
-            :key="item.id"
-            :overId="item.id"
-            type="market"
-            @click="GoPageWithQuery('/market/appList', { data: item.id, type: 'manage' })"
-          >
-            <template #icon
-              ><HeadImg
-                :name="item.name"
-                :url="item.icon || storeImg"
-                :imgWidth="48"
-                :limit="1"
-                :isSquare="false"
-            /></template>
-            <template #rightIcon>
-              <el-dropdown trigger="click" placement="left-start" v-if="item.id != '355346477339512833'">
-                <el-icon :size="18"><Operation /></el-icon>
-                <template #dropdown>
-                  <el-dropdown-menu >
-                    <el-dropdown-item @click.stop="hadleClick(item)"
-                      ><el-button class="btn" type="primary" link small
-                        >删除商店</el-button
-                      ></el-dropdown-item
-                    >
-                    <el-dropdown-item @click.stop="hadleUserManage(item)"
-                      ><el-button class="btn" link small >用户管理</el-button></el-dropdown-item
-                    >
-                  </el-dropdown-menu>
-                </template>
-              </el-dropdown>
-            </template>
-            <!-- <template #rightTriangle
+          <template v-if="state.myMarket.length !== 0">
+            <ShopCard
+              v-for="item in state.myMarket"
+              :info="item"
+              :key="item.id"
+              :overId="item.id"
+              type="market"
+              @click="GoPageWithQuery('/market/appList', { data: item.id, type: 'manage' })"
+            >
+              <template #icon
+                ><HeadImg
+                  :name="item.name"
+                  :url="item.icon || storeImg"
+                  :imgWidth="48"
+                  :limit="1"
+                  :isSquare="false"
+              /></template>
+              <template #rightIcon>
+                <el-dropdown
+                  trigger="click"
+                  placement="left-start"
+                  v-if="item.id != '355346477339512833'"
+                >
+                  <el-icon :size="18"><Operation /></el-icon>
+                  <template #dropdown>
+                    <el-dropdown-menu>
+                      <el-dropdown-item @click.stop="hadleClick(item)"
+                        ><el-button class="btn" type="primary" link small
+                          >删除商店</el-button
+                        ></el-dropdown-item
+                      >
+                      <el-dropdown-item @click.stop="hadleUserManage(item)"
+                        ><el-button class="btn" link small>用户管理</el-button></el-dropdown-item
+                      >
+                    </el-dropdown-menu>
+                  </template>
+                </el-dropdown>
+              </template>
+              <!-- <template #rightTriangle
               ><div :class="item.public ? 'triangle-public' : 'triangle-'">{{
                 item.public ? '公' : ''
               }}</div></template
             > -->
-          </ShopCard>
+            </ShopCard>
+          </template>
         </li>
         <li v-show="showType === 'list'">
           <DiyTable
@@ -82,28 +87,24 @@
             :tableData="state.myMarket"
             :tableHead="state.tableHead"
           >
-
-          <template #isPublic="scope">
-
+            <template #isPublic="scope">
               <el-tag
-
                 style="margin-left: 10px"
                 :type="scope.row.createUser == queryInfo.id ? '' : 'success'"
                 >{{ scope.row.public == true ? '公开的' : '私有的' }}</el-tag
               >
-          </template>
-          <template #tag="scope">
-            <el-tag
-            v-if="scope.row.id != '355346477339512833'"
+            </template>
+            <template #tag="scope">
+              <el-tag
+                v-if="scope.row.id != '355346477339512833'"
                 style="margin-left: 10px"
                 :type="scope.row.createUser == queryInfo.id ? '' : 'success'"
                 >{{ scope.row.belongId == queryInfo.id ? '创建的' : '加入的' }}</el-tag
               >
-
-          </template>
+            </template>
             <template #operate="scope">
               <el-button
-              v-if="scope.row.id != '355346477339512833'"
+                v-if="scope.row.id != '355346477339512833'"
                 class="btn"
                 type="primary"
                 link
@@ -111,7 +112,13 @@
                 @click.stop="hadleUserManage(scope.row)"
                 >用户管理</el-button
               >
-              <el-button class="btn" type="primary" link small @click.stop="marketQuit(scope.row)" v-if="scope.row.id != '355346477339512833'"
+              <el-button
+                class="btn"
+                type="primary"
+                link
+                small
+                @click.stop="marketQuit(scope.row)"
+                v-if="scope.row.id != '355346477339512833'"
                 >删除商店</el-button
               >
             </template>
@@ -199,18 +206,18 @@
       </ul> -->
     </div>
     <el-dialog append-to-body v-model="createDialog" title="创建商店" width="30%" class="">
-      <el-descriptions :model="form"  :column="1" border>
+      <el-descriptions :model="form" :column="1" border>
         <el-descriptions-item label="商店名称">
-          <el-input  v-model="form.name"   />
+          <el-input v-model="form.name" />
         </el-descriptions-item>
-        <el-descriptions-item label="商店编码" >
-          <el-input  v-model="form.code" />
+        <el-descriptions-item label="商店编码">
+          <el-input v-model="form.code" />
         </el-descriptions-item>
-        <el-descriptions-item label="商店简介" >
-          <el-input  v-model="form.remark"  />
+        <el-descriptions-item label="商店简介">
+          <el-input v-model="form.remark" />
         </el-descriptions-item>
-        <el-descriptions-item label="商店是否公开" >
-          <el-select  v-model="form.public" placeholder="是否公开" style="width:100%">
+        <el-descriptions-item label="商店是否公开">
+          <el-select v-model="form.public" placeholder="是否公开" style="width: 100%">
             <el-option v-for="item in options" :label="item.label" :value="item.value" />
           </el-select>
         </el-descriptions-item>
@@ -235,455 +242,446 @@
 </template>
 
 <script setup lang="ts">
-  import { reactive, onMounted, computed, ref } from 'vue'
-  import diySearch from '@/components/diySearch/index.vue'
-  import ShopCard from '../components/shopCard.vue'
-  import ShopCardBadge from '../components/shopCardBadge.vue'
-  import { useRouter } from 'vue-router'
-  import $services from '@/services'
-  import { ElMessage, ElMessageBox } from 'element-plus'
-  import MarketCreate from '../components/marketCreate.vue'
-  import { useUserStore } from '@/store/user'
-  import storeImg from '@/assets/img/app_icon.png'
-  import Pagination from '@/components/pagination/index.vue'
-  import { storeToRefs } from 'pinia'
+import { reactive, onMounted, computed, ref } from 'vue'
+import diySearch from '@/components/diySearch/index.vue'
+import ShopCard from '../components/shopCard.vue'
+import ShopCardBadge from '../components/shopCardBadge.vue'
+import { useRouter } from 'vue-router'
+import $services from '@/services'
+import { ElMessage, ElMessageBox } from 'element-plus'
+import MarketCreate from '../components/marketCreate.vue'
+import { useUserStore } from '@/store/user'
+import storeImg from '@/assets/img/app_icon.png'
+import Pagination from '@/components/pagination/index.vue'
+import { storeToRefs } from 'pinia'
 
-
-  const router = useRouter()
-  const store = useUserStore()
-  const { queryInfo } = storeToRefs(store)
-  const handleCurrentMy: any = computed(() => {
-    return (state.pageMy.currentPage - 1) * state.pageMy.pageSize
-  })
-  const handleCurrentJoin: any = computed(() => {
-    return (state.pageJoin.currentPage - 1) * state.pageJoin.pageSize
-  })
-  const GoPageWithQuery = (path: string, query: any) => {
-    router.push({ path, query })
-  }
-  const pageContent = ref(null)
-  const showType = ref('card')
-  const add: string = '创建商店'
-  const add1: string = '加入商店'
-  const searchText = ref<string>('')
-  const state = reactive({
-    myMarket: [],
-    joinMarket: [],
-    pageMy: {
-      total: 0, // 总条数
-      currentPage: 1, // 当前页
-      current: handleCurrentMy,
-      pageSize: 12, // 每页条数
-      layout: 'total, prev, pager, next'
-    },
-    pageJoin: {
-      total: 0, // 总条数
-      currentPage: 1, // 当前页
-      current: handleCurrentJoin,
-      pageSize: 12, // 每页条数
-      layout: 'total, prev, pager, next'
-    },
-    addDialog: {
-      value: false
-    },
-    tableHead: [
-      {
-        prop: 'name',
-        label: '商店名称',
-      },
-      {
-        prop: 'code',
-        label: '商店编码',
-      },
-      {
-        type: 'slot',
-        prop: 'isPublic',
-        name: 'isPublic',
-        label: '是否公开',
-      },
-      {
-        type: 'slot',
-        prop: 'tag',
-        name: 'tag',
-        label: '应用权属',
-      },
-      {
-        prop: 'remark',
-        label: '商店简介',
-
-      },
-      {
-        prop: 'createTime',
-        label: '创建时间',
-      },
-      {
-        type: 'slot',
-        label: '操作',
-        fixed: 'right',
-        align: 'center',
-        width: '200',
-        name: 'operate'
-      }
-    ]
-  })
-
-  const createDialog = ref(false)
-
-  onMounted(() => {
-    getMyMarketData()
-    //getJoinMarketData()
-    getShopcarNum()
-  })
-
-  const handleCurrentChange = (val: number) => {
-
-    getMyMarketData()
-    console.log(val)
-  }
-  const handleUpdate = (val: any) => {
-    state.pageMy.currentPage = val
-
-    getMyMarketData()
-  }
-  // const handleCurrentJoinChange = (val: number) => {
-  //   state.pageJoin.currentPage = val
-  //   getJoinMarketData()
-  // }
-  const GoPage = (path: string) => {
-    router.push(path)
-  }
-
-  const hadleUserManage = (item: { id: number }) => {
-    router.push({ path: '/market/userManage', query: { data: item.id } })
-  }
-
-  const gotoApp = (item: { id: string }) => {
-    router.push({ path: '/market/appList', query: { data: item.id } })
-  }
-  const searchList = () => {
-    state.pageMy.currentPage = 1
-    getMyMarketData()
-  }
-  const getShopcarNum = async () => {
-    await $services.market
-      .searchStaging({
-        data: {
-          id: 0, //商店id （需删除）
-          offset: 0,
-          limit: 20,
-          filter: ''
-        }
-      })
-      .then((res: ResultType) => {
-        var { result = [], total = 0 } = res.data
-        shopcarNum.value = total
-      })
-  }
-
-  const getMyMarketData = () => {
-    $services.market
-      .searchOwn({
-        data: {
-          offset: state.pageMy.current,
-          limit: state.pageMy.pageSize,
-          filter: searchText.value
-        }
-      })
-      .then((res: ResultType) => {
-        if (res.success) {
-          const {result = [],total = 0} = res.data
-          state.myMarket = []
-          result?.forEach((item: { id: string })=>{
-            if(item.id === '355346477339512833'){
-              state.myMarket.unshift(item)
-            }
-            else{
-              state.myMarket.push(item)
-            }
-
-          })
-
-          state.pageMy.total = total
-          pageContent.value.state.page.total = total
-        }
-      })
-  }
-  // const getJoinMarketData = () => {
-  //   $services.appstore
-  //     .searchJoined({
-  //       data: {
-  //         offset: state.pageJoin.current,
-  //         limit: state.pageJoin.pageSize,
-  //         filter: ''
-  //       }
-  //     })
-  //     .then((res: ResultType) => {
-  //       if (res.code == 200) {
-  //         state.joinMarket = res.data.result ? res.data.result : []
-  //         state.pageJoin.total = res.data.total
-  //       }
-  //     })
-  // }
-  const marketQuit = (item: any) => {
-    ElMessageBox.confirm(`确认退出  ${item.name}?`, '提示', {
-      confirmButtonText: '确认',
-      cancelButtonText: '取消',
-      type: 'warning'
-    })
-      .then(() => {
-        $services.appstore
-          .marketQuit({
-            data: {
-              id: item.id
-            }
-          })
-          .then((res: ResultType) => {
-            if (res.code == 200) {
-              //getJoinMarketData()
-              ElMessage({
-                message: '退出成功',
-                type: 'success'
-              })
-            }
-          })
-      })
-      .catch(() => {})
-  }
-  const hadleClick = (item: any) => {
-    ElMessageBox.confirm(`确认删除  ${item.name}?`, '提示', {
-      confirmButtonText: '确认',
-      cancelButtonText: '取消',
-      type: 'warning'
-    })
-      .then(() => {
-        $services.appstore
-          .marketDel({
-            data: {
-              id: item.id
-            }
-          })
-          .then((res: ResultType) => {
-            if (res.code == 200) {
-              getMyMarketData()
-              ElMessage({
-                message: '删除成功',
-                type: 'success'
-              })
-            }
-          })
-      })
-      .catch(() => {})
-  }
-  const shopcarNum = ref(0)
-
-  const form = reactive({
-    name: '',
-    code: '',
-    samrId: '',
-    remark: '',
-    authId: '',
-    public: true
-  })
-  const options = [
+const router = useRouter()
+const store = useUserStore()
+const { queryInfo } = storeToRefs(store)
+const handleCurrentMy: any = computed(() => {
+  return (state.pageMy.currentPage - 1) * state.pageMy.pageSize
+})
+const handleCurrentJoin: any = computed(() => {
+  return (state.pageJoin.currentPage - 1) * state.pageJoin.pageSize
+})
+const GoPageWithQuery = (path: string, query: any) => {
+  router.push({ path, query })
+}
+const pageContent = ref(null)
+const showType = ref('card')
+const add: string = '创建商店'
+const add1: string = '加入商店'
+const searchText = ref<string>('')
+const state = reactive({
+  myMarket: [],
+  joinMarket: [],
+  pageMy: {
+    total: 0, // 总条数
+    currentPage: 1, // 当前页
+    current: handleCurrentMy,
+    pageSize: 12, // 每页条数
+    layout: 'total, prev, pager, next'
+  },
+  pageJoin: {
+    total: 0, // 总条数
+    currentPage: 1, // 当前页
+    current: handleCurrentJoin,
+    pageSize: 12, // 每页条数
+    layout: 'total, prev, pager, next'
+  },
+  addDialog: {
+    value: false
+  },
+  tableHead: [
     {
-      value: true,
-      label: '是'
+      prop: 'name',
+      label: '商店名称'
     },
     {
-      value: false,
-      label: '否'
+      prop: 'code',
+      label: '商店编码'
+    },
+    {
+      type: 'slot',
+      prop: 'isPublic',
+      name: 'isPublic',
+      label: '是否公开'
+    },
+    {
+      type: 'slot',
+      prop: 'tag',
+      name: 'tag',
+      label: '应用权属'
+    },
+    {
+      prop: 'remark',
+      label: '商店简介'
+    },
+    {
+      prop: 'createTime',
+      label: '创建时间'
+    },
+    {
+      type: 'slot',
+      label: '操作',
+      fixed: 'right',
+      align: 'center',
+      width: '200',
+      name: 'operate'
     }
   ]
-  //创建商店
-  const create = () => {
-    if (store.workspaceData.type === 1) {
-      $services.appstore
-        .create({
-          data: {
-            name: form.name,
-            code: form.code,
-            samrId: store.queryInfo.id,
-            authId: store.queryInfo.team.authId,
-            remark: form.remark,
-            public: form.public
-          }
-        })
-        .then((res: ResultType) => {
-          if (res.success) {
-            ElMessage({
-              message: '创建成功',
-              type: 'success'
-            })
-          }
-          createDialog.value = false
-          getMyMarketData()
-        })
-    }
-    if (store.workspaceData.type === 2) {
-      $services.appstore
-        .create({
-          data: {
-            name: form.name,
-            code: form.code,
-            samrId: store.queryInfo.id,
-            remark: form.remark,
-            authId: store.workspaceData.authId,
-            public: form.public
-          }
-        })
-        .then((res: ResultType) => {
-          if (res.success) {
-            ElMessage({
-              message: '创建成功',
-              type: 'success'
-            })
-          }
-          createDialog.value = false
-          getMyMarketData()
-        })
-    }
-  }
-  const remoteMethod = (query: string, callback: any) => {
-    $services.appstore
-      .searchAll({
-        data: {
-          offset: 0,
-          limit: 100,
-          filter: query
-        }
-      })
-      .then((res: ResultType) => {
-        console.log(res)
+})
 
-        if (res.data.result) {
-          let states = res.data.result
-          let arr: { value: any; label: any }[] = []
-          states.forEach((el: any) => {
-            let obj = {
-              value: el.id,
-              label: el.name
-            }
-            arr.push(obj)
-          })
-          callback(arr)
-        }
-      })
+const createDialog = ref(false)
+
+onMounted(() => {
+  getMyMarketData()
+  //getJoinMarketData()
+  getShopcarNum()
+})
+
+const handleCurrentChange = (val: number) => {
+  getMyMarketData()
+  console.log(val)
+}
+const handleUpdate = (val: any) => {
+  state.pageMy.currentPage = val
+
+  getMyMarketData()
+}
+// const handleCurrentJoinChange = (val: number) => {
+//   state.pageJoin.currentPage = val
+//   getJoinMarketData()
+// }
+const GoPage = (path: string) => {
+  router.push(path)
+}
+
+const hadleUserManage = (item: { id: number }) => {
+  router.push({ path: '/market/userManage', query: { data: item.id } })
+}
+
+const gotoApp = (item: { id: string }) => {
+  router.push({ path: '/market/appList', query: { data: item.id } })
+}
+const searchList = () => {
+  state.pageMy.currentPage = 1
+  getMyMarketData()
+}
+const getShopcarNum = async () => {
+  await $services.market
+    .searchStaging({
+      data: {
+        id: 0, //商店id （需删除）
+        offset: 0,
+        limit: 20,
+        filter: ''
+      }
+    })
+    .then((res: ResultType) => {
+      var { result = [], total = 0 } = res.data
+      shopcarNum.value = total
+    })
+}
+
+const getMyMarketData = () => {
+  $services.market
+    .searchOwn({
+      data: {
+        offset: state.pageMy.current,
+        limit: state.pageMy.pageSize,
+        filter: searchText.value
+      }
+    })
+    .then((res: ResultType) => {
+      if (res.success) {
+        const { result = [], total = 0 } = res.data
+        state.myMarket = []
+        result?.forEach((item: { id: string }) => {
+          if (item.id === '355346477339512833') {
+            state.myMarket.unshift(item)
+          } else {
+            state.myMarket.push(item)
+          }
+        })
+
+        state.pageMy.total = total
+        pageContent.value.state.page.total = total
+      }
+    })
+}
+// const getJoinMarketData = () => {
+//   $services.appstore
+//     .searchJoined({
+//       data: {
+//         offset: state.pageJoin.current,
+//         limit: state.pageJoin.pageSize,
+//         filter: ''
+//       }
+//     })
+//     .then((res: ResultType) => {
+//       if (res.code == 200) {
+//         state.joinMarket = res.data.result ? res.data.result : []
+//         state.pageJoin.total = res.data.total
+//       }
+//     })
+// }
+const marketQuit = (item: any) => {
+  ElMessageBox.confirm(`确认退出  ${item.name}?`, '提示', {
+    confirmButtonText: '确认',
+    cancelButtonText: '取消',
+    type: 'warning'
+  })
+    .then(() => {
+      $services.appstore
+        .marketQuit({
+          data: {
+            id: item.id
+          }
+        })
+        .then((res: ResultType) => {
+          if (res.code == 200) {
+            //getJoinMarketData()
+            ElMessage({
+              message: '退出成功',
+              type: 'success'
+            })
+          }
+        })
+    })
+    .catch(() => {})
+}
+const hadleClick = (item: any) => {
+  ElMessageBox.confirm(`确认删除  ${item.name}?`, '提示', {
+    confirmButtonText: '确认',
+    cancelButtonText: '取消',
+    type: 'warning'
+  })
+    .then(() => {
+      $services.appstore
+        .marketDel({
+          data: {
+            id: item.id
+          }
+        })
+        .then((res: ResultType) => {
+          if (res.code == 200) {
+            getMyMarketData()
+            ElMessage({
+              message: '删除成功',
+              type: 'success'
+            })
+          }
+        })
+    })
+    .catch(() => {})
+}
+const shopcarNum = ref(0)
+
+const form = reactive({
+  name: '',
+  code: '',
+  samrId: '',
+  remark: '',
+  authId: '',
+  public: true
+})
+const options = [
+  {
+    value: true,
+    label: '是'
+  },
+  {
+    value: false,
+    label: '否'
   }
-  const submit = (data: any) => {
+]
+//创建商店
+const create = () => {
+  if (store.workspaceData.type === 1) {
     $services.appstore
-      .applyJoin({
+      .create({
         data: {
-          id: data
+          name: form.name,
+          code: form.code,
+          samrId: store.queryInfo.id,
+          authId: store.queryInfo.team.authId,
+          remark: form.remark,
+          public: form.public
         }
       })
       .then((res: ResultType) => {
         if (res.success) {
           ElMessage({
-            message: '加入成功',
+            message: '创建成功',
             type: 'success'
           })
-          state.addDialog.value = false
-          //getJoinMarketData()
         }
+        createDialog.value = false
+        getMyMarketData()
       })
   }
-  const closeDialog = (data: { value: boolean }) => {
-    state.addDialog.value = false
+  if (store.workspaceData.type === 2) {
+    $services.appstore
+      .create({
+        data: {
+          name: form.name,
+          code: form.code,
+          samrId: store.queryInfo.id,
+          remark: form.remark,
+          authId: store.workspaceData.authId,
+          public: form.public
+        }
+      })
+      .then((res: ResultType) => {
+        if (res.success) {
+          ElMessage({
+            message: '创建成功',
+            type: 'success'
+          })
+        }
+        createDialog.value = false
+        getMyMarketData()
+      })
   }
+}
+const remoteMethod = (query: string, callback: any) => {
+  $services.appstore
+    .searchAll({
+      data: {
+        offset: 0,
+        limit: 100,
+        filter: query
+      }
+    })
+    .then((res: ResultType) => {
+      console.log(res)
+
+      if (res.data.result) {
+        let states = res.data.result
+        let arr: { value: any; label: any }[] = []
+        states.forEach((el: any) => {
+          let obj = {
+            value: el.id,
+            label: el.name
+          }
+          arr.push(obj)
+        })
+        callback(arr)
+      }
+    })
+}
+const submit = (data: any) => {
+  $services.appstore
+    .applyJoin({
+      data: {
+        id: data
+      }
+    })
+    .then((res: ResultType) => {
+      if (res.success) {
+        ElMessage({
+          message: '加入成功',
+          type: 'success'
+        })
+        state.addDialog.value = false
+        //getJoinMarketData()
+      }
+    })
+}
+const closeDialog = (data: { value: boolean }) => {
+  state.addDialog.value = false
+}
 </script>
 
 <style lang="scss" scoped>
-  .triangle-private {
-    margin-right: 0px;
-    margin-top: 0px;
-    width: 40px;
-    height: 40px;
-    background-color: rgb(255, 0, 0, 0.5);
-    clip-path: polygon(0 0, 100% 100%, 100% 0%);
-    font-size: 18px;
-    color: #fff;
-    text-align: right;
+.triangle-private {
+  margin-right: 0px;
+  margin-top: 0px;
+  width: 40px;
+  height: 40px;
+  background-color: rgb(255, 0, 0, 0.5);
+  clip-path: polygon(0 0, 100% 100%, 100% 0%);
+  font-size: 18px;
+  color: #fff;
+  text-align: right;
+}
+
+.triangle-public {
+  margin-right: 0px;
+  margin-top: 0px;
+  width: 40px;
+  height: 40px;
+  background-color: rgb(0, 238, 255, 0.5);
+  clip-path: polygon(0 0, 100% 100%, 100% 0%);
+  font-size: 18px;
+  color: #fff;
+  text-align: right;
+}
+
+.market-layout {
+  width: 100%;
+  height: 100%;
+  min-width: 1000px;
+
+  .market-head {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    height: 60px;
+    padding: 0 20px;
+  }
+  .market-content {
+    padding: 16px;
+    // margin-top: 4px;
+    height: calc(100vh - 108px);
+    overflow-y: auto;
   }
 
-  .triangle-public {
-    margin-right: 0px;
-    margin-top: 0px;
-    width: 40px;
-    height: 40px;
-    background-color: rgb(0, 238, 255, 0.5);
-    clip-path: polygon(0 0, 100% 100%, 100% 0%);
-    font-size: 18px;
-    color: #fff;
-    text-align: right;
-  }
-
-  .market-layout {
-    width: 100%;
-    height: 100%;
-    min-width: 1000px;
-
-    .market-head {
+  .box {
+    .box-ul {
+      height: 100%;
       display: flex;
-      justify-content: flex-end;
-      align-items: center;
-      height: 60px;
-      padding: 0 20px;
+      flex-direction: column;
+      flex: 1;
     }
-    .market-content {
-
-      padding: 16px;
-      // margin-top: 4px;
-      height: calc(100vh - 108px);
-      overflow-y: auto;
+    .box-ul + .box-ul {
+      margin-top: 10px;
     }
+    &-ul {
+      background-color: var(--el-bg-color);
+      padding: 10px 24px;
 
-
-    .box {
-      .box-ul{
-        height: 100%;
+      &-title {
+        font-weight: bold;
+        padding: 8px 0;
+      }
+      .getApp-radio {
         display: flex;
-        flex-direction: column;
-        flex: 1;
-      }
-      .box-ul + .box-ul {
-        margin-top: 10px;
-      }
-      &-ul {
-        background-color: var(--el-bg-color);
-        padding: 10px 24px;
-
-        &-title {
-          font-weight: bold;
-          padding: 8px 0;
-        }
-        .getApp-radio {
+        width: 100%;
+        justify-content: space-between;
+        margin-bottom: 20px;
+        .box-ul-title {
+          width: 50%;
           display: flex;
-          width: 100%;
-          justify-content: space-between;
-          margin-bottom: 20px;
-          .box-ul-title {
-            width: 50%;
-            display: flex;
-            justify-content: flex-start;
-          }
-          .search {
-            width: 200px;
-            display: flex;
-            justify-content: flex-start;
-          }
+          justify-content: flex-start;
         }
-        .page-flex {
-
-          position: absolute;
-          right: 40px;
-          bottom: 36px;
-        }
-        .app-card {
+        .search {
+          width: 200px;
           display: flex;
-          flex-wrap: wrap;
-
+          justify-content: flex-start;
         }
+      }
+      .page-flex {
+        position: absolute;
+        right: 40px;
+        bottom: 36px;
+      }
+      .app-card {
+        display: flex;
+        flex-wrap: wrap;
       }
     }
   }
+}
 </style>
