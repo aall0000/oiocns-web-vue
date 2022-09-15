@@ -34,13 +34,10 @@
             <el-tag v-if="props.type != 'market' && (info.endTime==undefined||new Date().getTime()<formartDateTime(info?.endTime))" style="margin-right:10px" :type="info.createUser==queryInfo.id?'success':''">{{
               info.createUser==queryInfo.id ? '可管理' : '可使用'
             }}</el-tag>
-            <el-tag v-if="props.type != 'market' && new Date().getTime()>formartDateTime(info?.endTime)" style="margin-right:10px" :type="'danger'">失效</el-tag>
-            <el-tag v-if="props.type != 'market'" style="margin-right:10px">{{info.source}}</el-tag>
           </div>
           <!-- <div class="app-card-item-con">
             {{ info.remark }}
           </div> -->
-
         </div>
 
         <slot v-else name="content"></slot>
@@ -84,12 +81,13 @@
     key?: string
     info: ProductType
     type?: string
-    createUser?:string
+    createUser?: string
+    code?: string
     overId?: string //当前鼠标移入id
     cardContent?: boolean // 卡片内容是否自定义
     softwareId?:string
   }
-  const systemTime = ref<number>();
+  const systemTime = ref<number>()
   const props = defineProps<shopInfoType>()
   const { info } = props
   const emit = defineEmits(['handleMouseOver'])
@@ -97,18 +95,20 @@
     // emit('handleMouseOver', selectId)
     state.hoverItem = selectId || ''
   }
-  const formartDateTime = (dateStr:any)=>{
-    if(dateStr){
-      var timestamp = new Date(dateStr).getTime();
+  const formartDateTime = (dateStr: any) => {
+    if (dateStr) {
+      var timestamp = new Date(dateStr).getTime()
       return timestamp
-    }else{
-      return new Date().getTime()+1000
+    } else {
+      return new Date().getTime() + 1000
     }
   }
 </script>
 
 <style lang="scss" scoped>
-
+  .el-divider--horizontal {
+    margin: unset;
+  }
   .app-card-rightIcon {
     position: absolute;
     right: 10px;
@@ -121,10 +121,10 @@
   }
   @media not screen and (min-width: 1300px) {
     /* styles */
-    .app-card-item{
+    .app-card-item {
       width: calc(33% - 15px) !important;
     }
-}
+  }
   .app-card-item {
     position: relative;
 
@@ -163,12 +163,12 @@
         // white-space: nowrap;
       }
 
-      &-belong{
+      &-belong {
         font-size: 14px;
         color: var(--el-color-info);
       }
     }
-    .app-tag{
+    .app-tag {
       margin-top: 10px;
     }
     .app-card-item-con-line{
@@ -205,7 +205,6 @@
         font-weight: 400;
         color: var(--el-text-color-secondary);
       }
-
     }
     &-footer {
       position: absolute;

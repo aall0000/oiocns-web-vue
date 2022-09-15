@@ -28,6 +28,7 @@
           ref="appCard"
           :dataList="state.myAppList"
           :type="route.query.type"
+          @handleUpdate="getData()"
         ></AppCard>
         <div class="page-flex" v-show="switchValue === 'card'">
           <Pagination ref="pageContent" @handleUpdate="handleUpdate"></Pagination>

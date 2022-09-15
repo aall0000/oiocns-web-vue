@@ -3,7 +3,7 @@
       <div class="header">
         <div class="title">{{selectItem.label}}</div>
         <div class="box-btns">
-          <el-button small link type="primary" @click="dialogVisible = true">添加身份</el-button>
+          <el-button small link type="primary" :disabled=selectItem.data.authAdmin @click="dialogVisible = true">添加身份</el-button>
         </div>
       </div>
 
