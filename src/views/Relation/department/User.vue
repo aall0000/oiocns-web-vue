@@ -3,7 +3,7 @@
       <div class="header">
         <div class="title">{{props.selectItem.label}}</div>
         <div class="box-btns">
-          <div v-if="props.selectItem?.data?.typeName == '公司'">
+          <div v-if="props.selectItem?.data?.typeName == '单位'">
             <el-button small link type="primary" :disabled=!selectItem?.data?.authAdmin @click="friendDialog = true">添加成员</el-button>
             <el-button small link type="primary" :disabled=!selectItem?.data?.authAdmin @click="viewApplication">查看申请</el-button>
           </div>
@@ -23,7 +23,7 @@
             :tableHead="tableHead"
           >
             <template #operate="scope" >
-                <div v-if="props.selectItem?.data?.typeName == '公司'">
+                <div v-if="props.selectItem?.data?.typeName == '单位'">
                   <el-button link type="danger" :disabled=!selectItem?.data?.authAdmin size="small" @click="removeFrom(scope.row)">操作离职</el-button>
                 </div>
                 <div v-if="props.selectItem?.data?.typeName == '部门' || props.selectItem?.data?.typeName == '工作组'">
@@ -128,7 +128,7 @@ const getUsers = ()=>{
   const data = props.selectItem?.data
   if(data){
     let url = '';
-    if(data.typeName == '公司'){
+    if(data.typeName == '单位'){
       url = 'getPersons'
       company.value = JSON.parse(JSON.stringify(data))
     } else if(data.typeName == '部门'){
@@ -218,7 +218,7 @@ const viewApplication = (row: any) => {
 const removeFrom = (row: any) =>{
   let url: string;
   let title: string;
-  if(props.selectItem?.data?.typeName == '公司'){
+  if(props.selectItem?.data?.typeName == '单位'){
     url = 'removeFromCompany'
     title = `操作离职，将删除 ${row.name} 在单位的信息，确定操作吗？`
   } else if(props.selectItem?.data?.typeName == '部门'){

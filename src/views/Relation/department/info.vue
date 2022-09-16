@@ -115,7 +115,7 @@
   const selectItemChange = (data: any) => {
     selectItem.value = data;
     const obj = data.data;
-    if(obj.typeName == '公司'){
+    if(obj.typeName == '单位'){
       title.value = '单位'
     } else {
       title.value = obj.typeName
@@ -144,7 +144,7 @@
   const update = ()=>{
     const data = {...formData.value, ...selectItem.value.data};
     let url = null;
-    if(data.typeName == '公司'){
+    if(data.typeName == '单位'){
       url = 'update'
     } else if(data.typeName == '部门'){
       url = 'updateDepartment'
