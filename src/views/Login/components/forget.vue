@@ -32,7 +32,7 @@
       <el-form-item prop="privateKey">
         <el-input
           size="large"
-          placeholder="请输入助记词"
+          placeholder="请输入注册时保存的私钥"
           v-model="ruleForm.privateKey"
           autocomplete="off"
         />
