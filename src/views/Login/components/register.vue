@@ -46,8 +46,7 @@ export default defineComponent({
     const ruleForm = reactive({
       password: '',
       account: '',
-      password2: '',
-      importValue: ''
+      password2: ''
     })
     const gotoPrev = () => {
       context.emit('gotoPrev')
@@ -82,16 +81,10 @@ export default defineComponent({
         }
       }
     }
-    const validatePass4 = (rule: any, value: any, callback: any) => {
-      if (value === '') {
-        callback(new Error('请输入助记词'))
-      }
-    }
     const rules = reactive({
       phone: [{ validator: validatePass, trigger: 'blur' }],
       password: [{ validator: validatePass2, trigger: 'blur' }],
-      password2: [{ validator: validatePass3, trigger: 'blur' }],
-      importValue: [{ validator: validatePass4, trigger: 'blur' }]
+      password2: [{ validator: validatePass3, trigger: 'blur' }]
     })
     const submitForm = (formEl: FormInstance | undefined) => {
       if (!formEl) return
