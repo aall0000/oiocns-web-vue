@@ -31,7 +31,7 @@ export const useUserStore = defineStore({
       userCompanys: [], // 获取用户组织列表 分页
       copyCompanys: [],
       userToken: '',
-      workspaceData: {}, // 当前选中的公司
+      workspaceData: {}, // 当前选中的单位
       userNameMap: new Map(),
       userUnitInfo: {} as UnitInfoType //所在单位信息
     }

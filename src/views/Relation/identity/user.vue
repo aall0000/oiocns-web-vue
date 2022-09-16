@@ -186,7 +186,7 @@ const removeFrom = (row: any) => {
     })
 }
 
-// 加载公司所有用户
+// 加载单位所有用户
 const getOrgUsers = (filter?: string) => {
   let data = {
     id: selectItem.value.belongId,

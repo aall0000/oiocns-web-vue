@@ -10,7 +10,7 @@
           <el-input v-model="formModel.name" />
         </el-form-item>
         <!-- <el-form-item label="单位类型">
-          <el-select class="select" v-model="formModel.type" placeholder="股份有限公司">
+          <el-select class="select" v-model="formModel.type" placeholder="股份有限单位">
             <el-option
               v-for="item in options2"
               :key="item.value"

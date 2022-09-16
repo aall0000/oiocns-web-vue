@@ -62,7 +62,7 @@
                   </template>
                 </el-dropdown>
                 <el-button link type="primary" size="small" :disabled="!row.data.authAdmin" @click="edit(row)">编辑</el-button>
-                <el-button link type="danger" size="small"  style="margin-left:0" @click="handleDel(row)" :disabled="row.data.typeName == '公司' || (row.data.typeName != '公司'&&!row.data.authAdmin)">删除</el-button>
+                <el-button link type="danger" size="small"  style="margin-left:0" @click="handleDel(row)" :disabled="row.data.typeName == '单位' || (row.data.typeName != '单位'&&!row.data.authAdmin)">删除</el-button>
               </div>
             </template>
           </el-table-column>
