@@ -76,13 +76,14 @@ const anyStore: anyStoreType = {
     },
     // 订阅数据 key: 订阅数据的key  callback 数据发生变化时的回调
     subscribed: async (key: string, domain: string, callback: (data: any) => void) => {
-        if (!anyStore._subscribedKeys[key]) {
+        let fullKey = key + '|' + domain
+        if (!anyStore._subscribedKeys[fullKey]) {
             if (!anyStore.isConnected()) {
                 setTimeout(() => {
                     anyStore.subscribed(key, domain, callback)
                 }, 1000)
             } else {
-                anyStore._subscribedKeys[key] = callback
+                anyStore._subscribedKeys[fullKey] = callback
                 let res = await anyStore._connection.invoke("Subscribed", key, domain)
                 if (res.success) {
                     console.log("已订阅===", key)
@@ -142,27 +143,34 @@ const anyStore: anyStoreType = {
         })
     },
     unSubscribed: (key: string, domain: string) => {
-        if (!anyStore._subscribedKeys[key]) return
-        delete anyStore._subscribedKeys[key]
+        let fullKey = key + '|' + domain
+        if (!anyStore._subscribedKeys[fullKey]) return
         anyStore.isConnected() && anyStore._connection.invoke("UnSubscribed", key, domain).then(() => {
             console.log("取消订阅===", key)
+            delete anyStore._subscribedKeys[fullKey]
         })
     },
     // 收到数据更新的消息，本地可回调 （私有方法）
     _updated: (key: string, data: any) => {
         // 当数据发生变化时，更新本地数据
         console.log('数据发生变化了', key, data)
-        const callback: (data: any) => void = anyStore._subscribedKeys[key]
-        if (callback) {
-            callback.call(callback, data)
-        }
+        Object.keys(anyStore._subscribedKeys).forEach(fullKey=>{
+            if(fullKey.split('|')[0] === key){
+                const callback: (data: any) => void = anyStore._subscribedKeys[fullKey]
+                if (callback) {
+                    callback.call(callback, data)
+                }
+            }
+        })
     },
     _resubscribed: () => {
         if (anyStore.isConnected()) {
-            Object.keys(anyStore._subscribedKeys).forEach(async key => {
-                const { data, state: success } = await anyStore._connection.invoke("Subscribed", key)
+            Object.keys(anyStore._subscribedKeys).forEach(async fullKey => {
+                let key = fullKey.split('|')[0]
+                let domain = fullKey.split('|')[1]
+                const { data, state: success } = await anyStore._connection.invoke("Subscribed", key, domain)
                 if (success) {
-                    anyStore._subscribedKeys[key].call(anyStore._subscribedKeys[key], data)
+                    anyStore._subscribedKeys[fullKey].call(anyStore._subscribedKeys[fullKey], data)
                 }
             })
         }
