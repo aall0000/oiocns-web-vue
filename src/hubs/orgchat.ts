@@ -144,7 +144,7 @@ const orgChat: orgChatType = {
         debugger
         let name = orgChat.nameMap[id] || ''
         if(name === '' && orgChat.isConnected()){
-            orgChat._connection.invoke("GetName", parseInt(id)).then((res)=>{
+            orgChat._connection.invoke("GetName", id).then((res)=>{
                 if(res.success){
                     orgChat.nameMap[id] = res.data
                     orgChat._cacheChats()
@@ -362,7 +362,7 @@ const orgChat: orgChatType = {
                     word-break: break-all;
                     -webkit-line-clamp: 1;
                     -webkit-box-orient: vertical;
-                ">${from}: ${data.msgBody?.includes('img') ? "[图片]" : data.msgBody}</div><div>`
+                ">${from}->${to}: ${data.msgBody?.includes('img') ? "[图片]" : data.msgBody}</div><div>`
                 })
             }
         }

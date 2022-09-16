@@ -2,96 +2,84 @@
   <div class="market-layout" style="height: calc(100% - 56px)">
     <div class="market-content box" style="height: 100%">
       <ul class="box-ul">
-        <li class="app-card" v-if="dataList?.length !== 0">
-          <ShopCard v-for="item in dataList" :info="item.id" :key="item.id" :cardContent="true"
-           >
-            <template #rightIcon>
-              <el-dropdown trigger="click" placement="left-start">
-                <el-icon :size="18" >
-                  <Operation />
-                </el-icon>
-                <template #dropdown>
-                  <el-dropdown-menu>
-                    <el-dropdown-item @click="handleCardInfo(item)">详情</el-dropdown-item>
-                    <el-dropdown-item @click="joinStaging(item)">加入购物车</el-dropdown-item>
-                    <el-dropdown-item @click="buyThings(item)"> 购买 </el-dropdown-item>
-                    <el-dropdown-item @click="unpublishFun(item)" v-if="type == 'manage'"
-                      >下架</el-dropdown-item
-                    >
-                  </el-dropdown-menu>
-                </template>
-              </el-dropdown>
-            </template>
+        <template v-if="dataList.length !== 0">
 
-            <template #content>
-              <div class="shopCar-box">
-                <div class="app-con-title">{{ item.caption }} </div>
-                <!-- <div class="app-con-info" v-if="item.sellAuth !== '所属权'">使用期限：{{ item.days }}天</div> -->
-                <div class="app-con-info"
-                  >单价：
-                  <span style="color: var(--el-color-warning)"> ￥ </span>
-                  <strong style="color: var(--el-color-warning); font-size: 16px">{{
+          <li class="app-card">
+            <ShopCard v-for="item in dataList" :info="item.id" :key="item.id" :cardContent="true">
+              <template #icon>
+                <HeadImg :name="item.name" :url="item.icon || merchandiseImg" :imgWidth="48" :limit="1"
+                  :isSquare="false" />
+              </template>
+              <template #rightIcon>
+                <el-dropdown trigger="click" placement="left-start">
+                  <el-icon :size="18">
+                    <Operation />
+                  </el-icon>
+                  <template #dropdown>
+                    <el-dropdown-menu>
+                      <el-dropdown-item @click="buyThings(item)"> 立即购买 </el-dropdown-item>
+                      <el-dropdown-item @click="joinStaging(item)">加入购物车</el-dropdown-item>
+                      <el-dropdown-item @click="handleCardInfo(item)">查看详情</el-dropdown-item>
+                      <el-dropdown-item @click="unpublishFun(item)" v-if="type == 'manage'">下架</el-dropdown-item>
+                    </el-dropdown-menu>
+                  </template>
+                </el-dropdown>
+              </template>
+
+              <template #content>
+                <div class="shopCar-box">
+                  <div class="app-con-title">{{ item.caption }} </div>
+                  <!-- <div class="app-con-info" v-if="item.sellAuth !== '所属权'">使用期限：{{ item.days }}天</div> -->
+                  <div class="app-con-info">单价：
+                    <span style="color: var(--el-color-warning)"> ￥ </span>
+                    <strong style="color: var(--el-color-warning); font-size: 16px">{{
                     item.price || '0.00'
-                  }}</strong>
-                </div>
+                    }}</strong>
+                  </div>
 
-                <div class="app-con-info"
-                  >售卖权属：{{ item.sellAuth }}
-                  <el-tag size="small" v-if="item.sellAuth !== '所属权' && item?.days">
-                    使用期：{{ item.sellAuth !== '所属权' ? item.days + '天' : '无期限' }}</el-tag
-                  >
+                  <div class="app-con-info">
+                    售卖权属：{{ item.sellAuth }}
+                    <el-tag size="small" v-if="item.sellAuth !== '所属权' && item.days">
+                      使用期：{{ item.sellAuth !== '所属权' ? item.days + '天' : '无期限' }}</el-tag>
+                  </div>
+                  <!-- <div class="app-con-info">上架时间：{{ item.createTime.substring(0, 11) }}</div> -->
                 </div>
-                <!-- <div class="app-con-info">上架时间：{{ item.createTime.substring(0, 11) }}</div> -->
+              </template>
+              <template #footer v-if="item.id != '355346477339512833'">
+                <el-divider style="margin: 16px 0"></el-divider>
+                <div class="app-card-item-con-belong">
+                  <span>归属: {{ orgChat.getName(item.belongId) || '未知' }}</span>
+
+                  <span>版本： 0.0.1</span>
+                </div>
+              </template>
+
+
+              <!-- <template #footer> -->
+              <!-- <el-button link @click="createOrder(item)">立即购买</el-button> -->
+              <!-- <div v-if="type == 'shop'">
+                <el-button link @click="joinStaging(item)">加入购物车</el-button>
+                <el-divider direction="vertical" />
+                <el-button link @click="createOrder(item)">立即购买</el-button>
               </div>
-            </template>
-            <template #footer>
-              <el-divider style="margin: 16px 0"></el-divider>
-              <div class="app-card-item-con-footer" v-if="item.id != '355346477339512833'">
-
-                <div class="app-card-item-con-desc" >
-                  <p>详情：{{ item.information || '暂无' }}</p>
-                  <p>发起人: {{ orgChat.getName(item.createUser) }}</p>
-                </div>
-
-                <div v-if="props.type != 'market'" class="app-card-item-con-version">
-                版本:0.0.1
-                </div>
-              </div>
-            </template>
-
-            <template #icon>
-              <HeadImg :name="item.name" :url="item.icon || merchandiseImg" :imgWidth="48" :limit="1"
-                :isSquare="false" />
-            </template>
-            <!-- <template #footer> -->
-            <!-- <el-button link @click="createOrder(item)">立即购买</el-button> -->
-            <!-- <div v-if="type == 'shop'">
-              <el-button link @click="joinStaging(item)">加入购物车</el-button>
-              <el-divider direction="vertical" />
-              <el-button link @click="createOrder(item)">立即购买</el-button>
-            </div>
-            <div v-else>
-              <el-button
-                style="color: aliceblue; font-weight: bold; background-color: orange; width: 100px"
-                round
-                @click="unpublishFun(item)"
-                >下架</el-button
-              >
-            </div> -->
-          </ShopCard>
-        </li>
+              <div v-else>
+                <el-button
+                  style="color: aliceblue; font-weight: bold; background-color: orange; width: 100px"
+                  round
+                  @click="unpublishFun(item)"
+                  >下架</el-button
+                >
+              </div> -->
+            </ShopCard>
+          </li>
+        </template>
         <div v-else>暂无数据</div>
       </ul>
     </div>
+    <AppInfoDialog v-if="state.dialogShow[0].value" :dialogShow="state.dialogShow[0]" @closeDialog="closeDialog"> </AppInfoDialog>
   </div>
-  <template v-for="item in state.dialogShow" :key="item.key">
-    <AppInfoDialog
-      v-if="item.key == 'info' && item.value"
-      :dialogShow="item"
-      @closeDialog="closeDialog"
-    >
-    </AppInfoDialog>
-  </template>
+  <!-- <template v-for="item in state.dialogShow" :key="item.key"> -->
+  <!-- </template> -->
 </template>
 
 <script setup lang="ts">
@@ -111,8 +99,8 @@ type Props = {
   type?: any
 }
 type AppType = {
-  caption:string
-  createTime:string
+  caption: string
+  createTime: string
   createUser: string
   days: string
   id: string
@@ -303,7 +291,7 @@ const unpublishFun = (item: any) => {
     .then(() => {
       unpublishApp(item)
     })
-    .catch(() => {})
+    .catch(() => { })
 }
 //下架应用
 const unpublishApp = (item: any) => {
@@ -348,18 +336,19 @@ defineExpose({
   line-height: 1.8;
 }
 
-.app-card-item-con-footer{
+.app-card-item-con-footer {
 
-display: flex;
-width: 100%;
-align-items: flex-end;
+  display: flex;
+  width: 100%;
+  align-items: flex-end;
 
 
   .app-card-item-con-desc {
     width: 50%;
     justify-content: flex-start;
     padding: 0px;
-    p{
+
+    p {
       font-size: 12px;
       font-weight: 400;
       color: var(--el-text-color-secondary);
@@ -371,16 +360,17 @@ align-items: flex-end;
 
     }
   }
-  .app-card-item-con-version{
-    display: flex;
-    width: 50%;
-    justify-content: flex-end;
-    font-size: 12px;
-    font-weight: 400;
-    color: var(--el-text-color-secondary);
-  }
-
 }
+
+.app-card-item-con-belong {
+  // margin-top: 10px;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--el-text-color-secondary);
+  display: flex;
+  justify-content: space-between;
+}
+
 
 // :deep(.el-card__body) {
 //   padding: 0;
@@ -395,7 +385,7 @@ align-items: flex-end;
 }
 
 .box {
-  .box-ul + .box-ul {
+  .box-ul+.box-ul {
     margin-top: 16px;
   }
 

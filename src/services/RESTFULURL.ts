@@ -95,8 +95,8 @@ export default {
     getJobPersons: company + '/get/job/persons', //查询岗位员工
     getJobs: company + '/get/jobs', //查询岗位
     getJoinGroupApply: company + '/get/join/group/apply', //查询加入集团申请
-    getJoinedCompany: company + '/get/joined/companys', //查询加入的公司
-    getPersons: company + '/get/persons', //查询公司员工
+    getJoinedCompany: company + '/get/joined/companys', //查询加入的单位
+    getPersons: company + '/get/persons', //查询单位员工
     getSubAuthorities: company + '/get/subauthoritys', //查询子职权
     getSubgroupCompanies: company + '/get/subgroup/companys', //查询子集团单位
     getSubgroups: company + '/get/subgroups', //查询子集团

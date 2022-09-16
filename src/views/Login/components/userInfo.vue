@@ -43,91 +43,95 @@
 </template>
 
 <script lang="ts" setup>
-import { reactive, ref } from 'vue'
-import type { FormInstance } from 'element-plus'
-const emit = defineEmits(['gotoPrev', 'gotoNext'])
-const ruleFormRef = ref<FormInstance>()
-const ruleForm = reactive({
-  phone: '',
-  nickName: '',
-  name: '',
-  motto: ''
-})
-
-const gotoPrev = () => {
-  emit('gotoPrev')
-}
-const validatePass = (rule: any, value: any, callback: any) => {
-  if (value === '') {
-    callback(new Error('请输入昵称'))
-  } else {
-    callback()
-  }
-}
-const validatePass2 = (rule: any, value: any, callback: any) => {
-  if (value === '') {
-    callback(new Error('请输入真实姓名'))
-  } else {
-    callback()
-  }
-}
-const validatePass3 = (rule: any, value: any, callback: any) => {
-  if (value === '') {
-    callback(new Error('请输入座右铭'))
-  } else {
-    callback()
-  }
-}
-const validatePass4 = (rule: any, value: any, callback: any) => {
-  const phoneReg = /^1[3|4|5|7|8|9][0-9]{9}$/
-  if (value === '') {
-    callback(new Error('请输入手机号'))
-  } else {
-    if (ruleForm.phone !== '') {
-      if (phoneReg.test(value)) {
-        callback()
-      } else {
-        callback(new Error('手机号格式不正确'))
-      }
-    }
-    callback()
-  }
-}
-const rules = reactive({
-  phone: [{ validator: validatePass4, trigger: 'blur' }],
-  nickName: [{ validator: validatePass, trigger: 'blur' }],
-  name: [{ validator: validatePass2, trigger: 'blur' }],
-  motto: [{ validator: validatePass3, trigger: 'blur' }]
-})
-const submitForm = (formEl: FormInstance | undefined) => {
-  if (!formEl) return
-  formEl.validate((valid) => {
-    if (valid) {
-      emit('gotoNext', ruleForm)
-    } else {
-      return false
-    }
+  import { reactive, ref } from 'vue'
+  import type { FormInstance } from 'element-plus'
+  const emit = defineEmits(['gotoPrev', 'gotoNext'])
+  const ruleFormRef = ref<FormInstance>()
+  const ruleForm = reactive({
+    phone: '',
+    nickName: '',
+    name: '',
+    motto: ''
   })
-}
+
+  const gotoPrev = () => {
+    emit('gotoPrev')
+  }
+  const validatePass = (rule: any, value: any, callback: any) => {
+    if (value === '') {
+      callback(new Error('请输入昵称'))
+    } else if (/^[\u4e00-\u9fa5]+$/i.test(value)) {
+      callback()
+    } else if (/^[a-zA-Z]+$/.test(value)) {
+      callback()
+    } else {
+      callback(new Error('请输入正确的中文或英文昵称'))
+    }
+  }
+  const validatePass2 = (rule: any, value: any, callback: any) => {
+    if (value === '') {
+      callback(new Error('请输入真实姓名'))
+    } else {
+      callback()
+    }
+  }
+  const validatePass3 = (rule: any, value: any, callback: any) => {
+    if (value === '') {
+      callback(new Error('请输入座右铭'))
+    } else {
+      callback()
+    }
+  }
+  const validatePass4 = (rule: any, value: any, callback: any) => {
+    const phoneReg = /^1[3|4|5|7|8|9][0-9]{9}$/
+    if (value === '') {
+      callback(new Error('请输入手机号'))
+    } else {
+      if (ruleForm.phone !== '') {
+        if (phoneReg.test(value)) {
+          callback()
+        } else {
+          callback(new Error('手机号格式不正确'))
+        }
+      }
+      callback()
+    }
+  }
+  const rules = reactive({
+    phone: [{ validator: validatePass4, trigger: 'blur' }],
+    nickName: [{ validator: validatePass, trigger: 'blur' }],
+    name: [{ validator: validatePass2, trigger: 'blur' }],
+    motto: [{ validator: validatePass3, trigger: 'blur' }]
+  })
+  const submitForm = (formEl: FormInstance | undefined) => {
+    if (!formEl) return
+    formEl.validate((valid) => {
+      if (valid) {
+        emit('gotoNext', ruleForm)
+      } else {
+        return false
+      }
+    })
+  }
 </script>
 
 <style lang="scss" scoped>
-.title {
-  color: rgb(35, 72, 211);
-  margin-bottom: 20px;
-}
-.loginBtn {
-  background: rgb(62, 94, 216);
-  height: 40px;
-  width: 100%;
-}
-.textBox {
-  margin-top: 20px;
-  width: 100%;
-  text-align: center;
-}
-.loginText {
-  color: rgb(35, 72, 211);
-  cursor: pointer;
-}
+  .title {
+    color: rgb(35, 72, 211);
+    margin-bottom: 20px;
+  }
+  .loginBtn {
+    background: rgb(62, 94, 216);
+    height: 40px;
+    width: 100%;
+  }
+  .textBox {
+    margin-top: 20px;
+    width: 100%;
+    text-align: center;
+  }
+  .loginText {
+    color: rgb(35, 72, 211);
+    cursor: pointer;
+  }
 </style>

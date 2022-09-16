@@ -48,10 +48,10 @@
       <div>
         <slot name="footer"></slot>
 
-        <div class="app-card-item-con-line" v-if="props.type != 'market'">
+        <!-- <div class="app-card-item-con-line" v-if="props.type != 'market'">
         <el-divider style="margin: 16px 0" v-if="type!='shopCard'&&info.id != softwareId"></el-divider>
-      </div>
-        <div class="app-card-item-con-footer" v-if="info.id != softwareId&&props.type != 'market'">
+      </div> -->
+        <!-- <div class="app-card-item-con-footer" v-if="info.id != softwareId&&props.type != 'market'">
 
             <div class="app-card-item-con-desc" >
               <p> 归属:{{ orgChat.getName(info.belongId) }}</p>
@@ -61,7 +61,7 @@
             <div v-if="props.type != 'market'" class="app-card-item-con-version">
              版本:0.0.1
             </div>
-        </div>
+        </div> -->
       </div>
     </div>
 
