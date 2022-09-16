@@ -18,10 +18,10 @@
       <el-tabs v-model="activeName" @tab-click="handleClick">
         <el-tab-pane label="管理的" name="管理的"> </el-tab-pane>
         <el-tab-pane label="加入的" name="加入的"> </el-tab-pane>
-        <div v-show="mode === 'list'">
+        <div v-if="mode === 'list'">
           <List :type="activeName" />
         </div>
-        <div v-show="mode === 'card'">
+        <div v-if="mode === 'card'">
           <Card :type="activeName" />
         </div>
       </el-tabs>
@@ -96,6 +96,11 @@
           type: 'success'
         })
         createCohortDialog.value = false
+        let oldModel = mode.value;
+        mode.value = '';
+        setTimeout(() => {
+          mode.value = oldModel
+        }, 100);
       }
     })
   }
