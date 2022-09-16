@@ -65,7 +65,7 @@
   import $services from '@/services'
   import AppCard from './components/appCard.vue'
   import DiyTable from '@/components/diyTable/index.vue'
-  import TheTableButton from './components/theTableButton2.vue'
+  import TheTableButton from './components/applicationListButton.vue'
   import MarketCard from '@/components/marketCard/index.vue'
 
   const router = useRouter()
