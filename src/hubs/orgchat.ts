@@ -182,11 +182,11 @@ const orgChat: orgChatType = {
                                         chat.msgBody = c.msgBody
                                         chat.msgTime = c.msgTime
                                         chat.msgType = c.msgType
+                                        chat.showTxt = c.showTxt
                                     }
                                 })
                             }
                         })
-                        chat.showTxt = chat.msgBody?.includes('img') ? "[图片]" : chat.msgBody
                         let typeName = chat.typeName == '人员' ? '' : `[${chat.typeName}]`
                         orgChat.nameMap[chat.id] = `${chat.name}${typeName}`
                     })
