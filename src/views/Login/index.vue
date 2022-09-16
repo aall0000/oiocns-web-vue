@@ -31,6 +31,7 @@
         v-show="stept == 'third'"
         @gotoPrev="gotoPrev"
         @registerUser="registerUser"
+        @gotoBack="register"
       ></Register>
       <Forget v-show="stept == 'fourth'" @gotoPrev="gotoPrev" @resetPWD="resetPWD"></Forget>
     </div>
@@ -38,10 +39,9 @@
       Copyright 2021 资产云开放协同创新中⼼ 主办单位：浙江省财政厅
     </div>
   </div>
-  <el-dialog v-model="dialogVisible" width="30%" center
-  >
+  <el-dialog v-model="dialogVisible" width="30%" center>
     <div class="dialogText">请妥善保管下面私钥,请勿告诉他人,该私钥可以为你重置密码,加解密数据.</div>
-    <span class="dialogPrivate">{{state.registerValue.privateKey}}</span>
+    <span class="dialogPrivate">{{ state.registerValue.privateKey }}</span>
     <template #footer>
       <span class="dialog-footer">
         <el-button @click="dialogVisible = false">关闭</el-button>
@@ -185,7 +185,7 @@
     font-size: 16px;
     margin-bottom: 40px;
   }
-  .dialogPrivate{
+  .dialogPrivate {
     font-size: 26px;
     text-align: center;
     color: rgb(35, 72, 211);

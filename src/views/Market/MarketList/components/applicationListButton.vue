@@ -138,6 +138,7 @@
       })
       .then((res: ResultType) => {
         if (res.code == 200) {
+          emit('update')
           ElMessage({
             message: '下架成功',
             type: 'success'

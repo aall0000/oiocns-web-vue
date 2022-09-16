@@ -32,7 +32,8 @@
     </el-form>
     <el-button class="loginBtn" type="primary" @click="submitForm(ruleFormRef)">注 册</el-button>
     <div class="textBox">
-      <span>已有账户？</span><span class="loginText" @click="gotoPrev">立即登录</span>
+      <div class="loginText" @click="gotoBack"> 返回 </div>
+      <div> <span>已有账户？</span><span class="loginText" @click="gotoPrev">立即登录</span> </div>
     </div>
   </div>
 </template>
@@ -48,6 +49,9 @@
         account: '',
         password2: ''
       })
+      const gotoBack = () => {
+        context.emit('gotoBack')
+      }
       const gotoPrev = () => {
         context.emit('gotoPrev')
       }
@@ -100,6 +104,7 @@
         submitForm,
         rules,
         gotoPrev,
+        gotoBack,
         ruleFormRef,
         ruleForm
       }
@@ -120,7 +125,8 @@
   .textBox {
     margin-top: 20px;
     width: 100%;
-    text-align: center;
+    display: flex;
+    justify-content: space-between;
   }
   .loginText {
     color: rgb(35, 72, 211);

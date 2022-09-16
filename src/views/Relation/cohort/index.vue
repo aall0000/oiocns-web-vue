@@ -37,13 +37,19 @@
   </el-card>
 
   <el-dialog v-model="createCohortDialog" title="创建群组" width="35%">
-    <el-form-item label="群组名称">
+    <el-form
+    ref="ruleFormRef"
+    :model="formData"
+    :rules="rules"
+    class="demo-ruleForm"
+  >
+    <el-form-item label="群组名称" prop="name">
       <el-input v-model="formData.name" placeholder="请输入群组名称" clearable />
     </el-form-item>
-    <el-form-item label="群组编号">
+    <el-form-item label="群组编号" prop="code">
       <el-input v-model="formData.code" placeholder="请输入群组编号" clearable />
     </el-form-item>
-    <el-form-item label="群组简介">
+    <el-form-item label="群组简介" prop="teamRemark">
       <el-input
         v-model="formData.teamRemark"
         placeholder="请输入群组简介"
@@ -52,10 +58,11 @@
         :rows="4"
       />
     </el-form-item>
+    </el-form>
     <template #footer>
       <span class="dialog-footer">
         <el-button @click="createCohortDialog = false">取消</el-button>
-        <el-button type="primary" @click="createCohort">确认</el-button>
+        <el-button type="primary" @click="createCohort(ruleFormRef)">确认</el-button>
       </span>
     </template>
   </el-dialog>
@@ -69,40 +76,76 @@
 </template>
 
 <script lang="ts" setup>
-  import { onMounted, ref } from 'vue'
+  import { onMounted, ref,reactive } from 'vue'
   import List from './list.vue'
   import Card from './card.vue'
   import $services from '@/services'
   import { ElMessage, TabsPaneContext } from 'element-plus'
   import { Plus, CirclePlus } from '@element-plus/icons-vue'
   import SearchCohort from '@/components/searchs/index.vue'
-
+  import type { FormInstance,FormRules } from 'element-plus'
   const mode = ref('card')
   const activeName = ref('管理的')
+  const ruleFormRef = ref<FormInstance>()
 
   const createCohortDialog = ref(false)
-  const formData = ref<any>({})
+  const formData = ref<any>({
+    name:'',
+    code:'',
+    teamRemark:''
+  })
 
   const searchDialog = ref<boolean>(false)
 
   const handleClick = (tab: TabsPaneContext, event: Event) => {}
 
+  const rules = reactive<FormRules>({
+    name: [
+      { 
+        required: true, 
+        message: '请输入群组名称',
+        trigger: 'blur' 
+      },
+    ],
+    code: [
+      {
+        required: true,
+        message: '请输入群组编号',
+        trigger: 'blur',
+      },
+    ],
+    teamRemark: [
+      {
+        required: true,
+        message: '请输入群组简介',
+        trigger: 'blur',
+      },
+    ],
+   
+  })
   // 创建群组
-  const createCohort = () => {
-    $services.cohort.create({ data: formData.value }).then((res: ResultType) => {
-      if (res.code == 200) {
-        ElMessage({
-          message: '创建成功',
-          type: 'success'
+  const createCohort = (formEl: FormInstance | undefined) => {
+    formEl.validate((valid) => {
+      if (valid) {
+        $services.cohort.create({ data: formData.value }).then((res: ResultType) => {
+          if (res.code == 200) {
+            ElMessage({
+              message: '创建成功',
+              type: 'success'
+            })
+            createCohortDialog.value = false
+            let oldModel = mode.value;
+            mode.value = '';
+            setTimeout(() => {
+              mode.value = oldModel
+            }, 100);
+          }
         })
-        createCohortDialog.value = false
-        let oldModel = mode.value;
-        mode.value = '';
-        setTimeout(() => {
-          mode.value = oldModel
-        }, 100);
+      } else {
+        return false
       }
     })
+    
   }
 
   const checksSearch = (val: any) => {
