@@ -60,19 +60,23 @@
   const validatePass = (rule: any, value: any, callback: any) => {
     if (value === '') {
       callback(new Error('请输入昵称'))
-    } else if (/^[\u4e00-\u9fa5]+$/i.test(value)) {
+    } else if (/^[\u4e00-\u9fa5]+$/i.test(value) && value.length > 2) {
       callback()
-    } else if (/^[a-zA-Z]+$/.test(value)) {
+    } else if (/^[a-zA-Z]+$/.test(value) && value.length > 4) {
       callback()
     } else {
-      callback(new Error('请输入正确的中文或英文昵称'))
+      callback('请输入正确的中文或英文')
     }
   }
   const validatePass2 = (rule: any, value: any, callback: any) => {
     if (value === '') {
       callback(new Error('请输入真实姓名'))
-    } else {
+    } else if (/^[\u4e00-\u9fa5]+$/i.test(value) && value.length > 2) {
       callback()
+    } else if (/^[a-zA-Z]+$/.test(value) && value.length > 4) {
+      callback()
+    } else {
+      callback('请输入正确的中文或英文')
     }
   }
   const validatePass3 = (rule: any, value: any, callback: any) => {
