@@ -2,7 +2,7 @@
   <div>
     <div class="title">填写个人信息</div>
     <el-form ref="ruleFormRef" :rules="rules" :model="ruleForm" status-icon class="demo-ruleForm">
-      <el-form-item prop="phone">
+      <el-form-item label=" " prop="phone">
         <el-input
           size="large"
           v-model="ruleForm.phone"
@@ -10,7 +10,7 @@
           placeholder="请输入电话号码"
         />
       </el-form-item>
-      <el-form-item prop="nickName">
+      <el-form-item label=" " prop="nickName">
         <el-input
           size="large"
           v-model="ruleForm.nickName"
@@ -18,7 +18,7 @@
           placeholder="请输入昵称"
         />
       </el-form-item>
-      <el-form-item prop="name">
+      <el-form-item label=" " prop="name">
         <el-input
           size="large"
           placeholder="请输入真实姓名"
@@ -26,7 +26,7 @@
           autocomplete="off"
         />
       </el-form-item>
-      <el-form-item prop="motto">
+      <el-form-item label=" " prop="motto">
         <el-input
           size="large"
           placeholder="请输入座右铭"
@@ -102,10 +102,10 @@
     }
   }
   const rules = reactive({
-    phone: [{ validator: validatePass4, trigger: 'blur' }],
-    nickName: [{ validator: validatePass, trigger: 'blur' }],
-    name: [{ validator: validatePass2, trigger: 'blur' }],
-    motto: [{ validator: validatePass3, trigger: 'blur' }]
+    phone: [{ validator: validatePass4, required: true, trigger: 'blur' }],
+    nickName: [{ validator: validatePass, required: true, trigger: 'blur' }],
+    name: [{ validator: validatePass2, required: true, trigger: 'blur' }],
+    motto: [{ validator: validatePass3, required: true, trigger: 'blur' }]
   })
   const submitForm = (formEl: FormInstance | undefined) => {
     if (!formEl) return
