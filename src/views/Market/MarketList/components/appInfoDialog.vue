@@ -1,43 +1,46 @@
 <template>
-  <el-dialog append-to-body v-model="dialogShow.value" title="应用详情" width="30%">
-    <el-descriptions class="margin-top" :column="1" border>
-      <el-descriptions-item>
+  <el-dialog append-to-body v-model="dialogShow.value" title="应用详情" width="40%" >
+    <el-descriptions class="margin-top" label-align="right" :column="2" border>
+      <el-descriptions-item :span="2">
         <template #label>
-          <div class="cell-item"> 应用名称 </div>
+          <div > 应用名称 </div>
         </template>
         {{ dialogShow.sendData.caption }}
       </el-descriptions-item>
-      <el-descriptions-item>
+      <el-descriptions-item :span="1">
         <template #label>
-          <div class="cell-item"> 售卖价格 </div>
+          <div > 售卖价格 </div>
         </template>
-        {{ dialogShow.sendData.price??'--' }}
+        {{ dialogShow.sendData.price??'--' }} 元
       </el-descriptions-item>
-      <el-descriptions-item>
+      <el-descriptions-item :span="1">
         <template #label>
-          <div class="cell-item"> 售卖权属 </div>
+          <div > 售卖权属 </div>
         </template>
         {{ dialogShow.sendData.sellAuth??'--' }}
       </el-descriptions-item>
-      <el-descriptions-item>
+      <el-descriptions-item :span="1">
         <template #label>
-          <div class="cell-item"> 使用期限 </div>
+          <div > 使用期限 </div>
         </template>
-        {{ dialogShow.sendData.days??'--' }}
+        {{ dialogShow.sendData.days??'--' }} 天
       </el-descriptions-item>
-      <el-descriptions-item>
+      <el-descriptions-item :span="1">
         <template #label>
-          <div class="cell-item"> 应用描述 </div>
-        </template>
-        {{ dialogShow.sendData.information }}
-      </el-descriptions-item>
-      <el-descriptions-item>
-        <template #label>
-          <div class="cell-item"> 创建时间 </div>
+          <div > 创建时间 </div>
         </template>
         {{ dialogShow.sendData.createTime }}
       </el-descriptions-item>
-    </el-descriptions>
+      <el-descriptions-item :span="2">
+        <template #label>
+          <div > 应用描述 </div>
+        </template>
+        {{ dialogShow.sendData.information }}
+      </el-descriptions-item>
+      
+      </el-descriptions>
+
+    
 
     <template #footer>
       <span class="dialog-footer">
@@ -66,10 +69,10 @@
 </script>
 
 <style lang="scss" scoped>
-  :deep(.el-descriptions__content) {
-    display: -webkit-box;
-    -webkit-box-orient: vertical; /*设置方向*/
-    -webkit-line-clamp: 3; /*设置超过为省略号的行数*/
-    overflow: hidden;
-  }
+  // :deep(.el-descriptions__content) {
+  //   display: -webkit-box;
+  //   -webkit-box-orient: vertical; /*设置方向*/
+  //   -webkit-line-clamp: 3; /*设置超过为省略号的行数*/
+  //   overflow: hidden;
+  // }
 </style>

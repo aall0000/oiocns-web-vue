@@ -39,7 +39,7 @@
     "@yzfe/svgicon-loader": "^1.0.1",
     "@yzfe/vue-cli-plugin-svgicon": "~1.0.1",
     "axios": "^0.27.2",
-    "element-plus": "^2.2.10",
+    "element-plus": "^2.2.16",
     "eslint": "^7.12.1",
     "eslint-config-airbnb-base": "14.2.1",
     "eslint-config-standard": "^17.0.0",

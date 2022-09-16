@@ -47,6 +47,7 @@
             <template #icon>
               <HeadImg :name="item.name" :url="item.icon || appImg" :imgWidth="48" :limit="1" :isSquare="false" />
             </template>
+
             <template #rightIcon>
               <el-dropdown trigger="click" @command="(value:any) => handleCommand('own', value, item)"
                 placement="left-start">
@@ -80,21 +81,23 @@
               </el-dropdown>
             </template>
 
-            <template #footer>
-              <el-descriptions size="small" :column="1" style="padding-left: 58px;">
-                <el-descriptions-item label="简介：">{{ item?.remark || '暂无' }}</el-descriptions-item>
-              </el-descriptions>
-              <el-divider style="margin: 6px 0 16px 0"></el-divider>
-              <div class="app-card-item-con-belong">
-                <span>归属: {{ orgChat.getName(item.belongId) || '未知' }}</span>
-
-                <span>版本： 0.0.1</span>
-              </div>
-              <!-- <div class="app-card-item-con-desc"
-                ><p>详情：{{ item.merchandise.information || '暂无'}}</p></div
-              > -->
-
+            <template #description>
+              <span>归属: {{ orgChat.getName(item.belongId) || '未知' }}</span>
+              <el-divider direction="vertical"></el-divider>
+              <span>版本： 0.0.1</span>
             </template>
+
+            <template #body>
+              <el-tooltip trigger="click" effect="customized">
+                <template #content>
+                  <div style="max-width: 280px;">
+                    {{item?.remark || '暂无'}}
+                  </div>
+                </template>
+                <p class="app-card-item-con-desc">简介: {{ item?.remark || '暂无' }}</p>
+              </el-tooltip>
+            </template>
+
           </ShopCard>
         </li>
         <li class="tab-card" v-show="mode === 'list'">
@@ -104,18 +107,16 @@
               {{ scope.row.name }}
             </template>
             <template #tag="scope">
-              <el-tag v-if="
-                scope.row.endTime == undefined ||
-                new Date().getTime() < formartDateTime(scope.row?.endTime)
-              " style="margin-left: 10px" :type="scope.row.createUser == queryInfo.id ? '' : 'success'">{{
-              scope.row.createUser == queryInfo.id ? '可管理' : '可使用' }}</el-tag>
+              <el-tag
+                v-if=" scope.row.endTime == undefined ||  new Date().getTime() < formartDateTime(scope.row?.endTime) "
+                style="margin-left: 10px" :type="scope.row.createUser == queryInfo.id ? '' : 'success'">
+                {{ scope.row.createUser == queryInfo.id ? '可管理' : '可使用' }}</el-tag>
               <el-tag v-if="new Date().getTime() > formartDateTime(scope.row?.endTime)" style="margin-left: 10px"
                 :type="'danger'">失效</el-tag>
               <el-tag style="margin-left: 10px">{{ scope.row.source }}</el-tag>
             </template>
             <template #operate="scope">
-              <el-button v-if="
-                scope.row.authority == '所属权' && scope.row.belongId == store.workspaceData.id
+              <el-button v-if=" scope.row.authority == '所属权' && scope.row.belongId == store.workspaceData.id
               " link type="primary" @click="publishVisible = true">上架</el-button>
               <el-button link type="primary" v-if="scope.row.belongId == store.workspaceData.id"
                 @click="openShareDialog">分享</el-button>
@@ -480,6 +481,17 @@ const formartDateTime = (dateStr: any) => {
 </script>
 
 <style>
+.el-popper.is-customized {
+  /* Set padding to ensure the height is 32px */
+  padding: 6px 12px;
+  background: var(--el-color-primary-light-9);
+}
+
+.el-popper.is-customized .el-popper__arrow::before {
+  background: var(--el-color-primary-light-9);
+  right: 0;
+}
+
 .group-dialog>.el-dialog__body {
   padding: 10px 20px;
   height: 100px;
@@ -511,15 +523,6 @@ const formartDateTime = (dateStr: any) => {
   height: 64px;
   width: 100%;
   overflow: hidden;
-}
-
-.app-card-item-con-belong {
-  // margin-top: 10px;
-  font-size: 12px;
-  font-weight: 400;
-  color: var(--el-text-color-secondary);
-  display: flex;
-  justify-content: space-between;
 }
 
 .menuRight {
@@ -587,6 +590,26 @@ const formartDateTime = (dateStr: any) => {
     display: flex;
     align-items: center;
     justify-content: center;
+  }
+
+  .app-card-item-con-desc {
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--el-text-color-regular);
+    line-height: 1.8;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-inline-box; //将对象作为弹性伸缩盒子模型显示。
+    -webkit-box-orient: vertical; // 从上到下垂直排列子元素
+    -webkit-line-clamp: 2; //显示的行数
+
+  }
+
+  // body内每行 高度
+  .card-body-cell {
+    overflow: hidden;
+    text-overflow: ellipsis;
+
   }
 
   .button {

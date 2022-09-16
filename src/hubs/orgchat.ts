@@ -47,7 +47,7 @@ const orgChat: orgChatType = {
     lastMsg: null,
     curChat: ref<ImMsgChildType>(null),
     qunPersons: ref<any[]>([]),
-    nameMap: {},
+    nameMap: sessionStorage.getItem('nameMap')? JSON.parse(sessionStorage.getItem('nameMap')) : {},
     openChats: [],
     curMsgs: ref<any[]>([]),
     start: (accessToken: string, userId: string, spaceId: string) => {
@@ -86,6 +86,7 @@ const orgChat: orgChatType = {
                 }
                 if (data.nameMap) {
                     orgChat.nameMap = data.nameMap
+                    sessionStorage.setItem('nameMap', JSON.stringify(data.nameMap))
                 }
                 if (data.openChats) {
                     orgChat.openChats = data.openChats
