@@ -28,7 +28,7 @@
           <DiyTable
         ref="diyTableDetail"
         :tableData="props.row.details"
-        :tableHead="state.tableHeadSellDetail"
+        :tableHead="state.tableHeadBuyDetail"
         :options="{ noPage: true }"
       >
 
@@ -43,10 +43,10 @@
 
           <template #operate="scope">
 
-            <el-button link type="primary" class="diy-button" v-show="scope.row.status < 102" @click="cancelOrderDetail(scope.row.id, 220, null)">
+            <el-button link small type="primary" class="btn" v-show="scope.row.status < 102" @click="cancelOrderDetail(scope.row.id, 220, null)">
               取消订单
             </el-button>
-            <el-button link type="primary" class="diy-button" v-show="scope.row.status == 102" @click="reject(scope.row.id)">
+            <el-button link small type="primary" class="btn" v-show="scope.row.status == 102" @click="reject(scope.row.id)">
               退货退款
             </el-button>
 
@@ -77,18 +77,12 @@
           </template>
 
           <template #operate="scope">
-            <DiyButton>
-              <template v-slot:opt>
-                <div class="diy-button" v-show="scope.row.status < 102" @click="cancelOrderDetail(scope.row.id, 221, null)"> 取消订单 </div>
-                <div
-                  class="diy-button"
-                  v-show="scope.row.status < 102 && scope.row.merchandise"
-                  @click="delivery(scope.row.id)"
-                >
-                  确认交付
-                </div>
-              </template>
-            </DiyButton>
+            <el-button link  small type="primary" class="btn" v-show="scope.row.status < 102" @click="cancelOrderDetail(scope.row.id, 221, null)">
+              取消订单
+            </el-button>
+            <el-button link small type="primary" class="btn"  v-show="scope.row.status < 102 && scope.row.merchandise" @click="delivery(scope.row.id)">
+              确认交付
+            </el-button>
           </template>
       </DiyTable>
       <payView v-if="payDialog.show" :order="payDialog.data" @close="closePay"></payView>
@@ -191,7 +185,7 @@ const searchValue = ref<string>('')
         label: '创建时间'
       },
 
-  ],tableHeadSellDetail:[
+  ],tableHeadBuyDetail:[
 
       {
         prop: 'caption',
@@ -227,7 +221,8 @@ const searchValue = ref<string>('')
       },
       {
         prop: 'createTime',
-        label: '创建时间'
+        label: '创建时间',
+        minWidth: '100',
       },
       {
         type: 'slot',
@@ -250,7 +245,7 @@ const searchValue = ref<string>('')
         label: '操作',
         fixed: 'right',
         align: 'center',
-        width: '120',
+        minWidth: '120',
         name: 'operate'
       }
   ],tableHeadSell: [
@@ -292,7 +287,8 @@ const searchValue = ref<string>('')
       },
       {
         prop: 'createTime',
-        label: '创建时间'
+        label: '创建时间',
+        minWidth: '120',
       },
       {
         type: 'slot',
@@ -315,7 +311,7 @@ const searchValue = ref<string>('')
         label: '操作',
         fixed: 'right',
         align: 'center',
-        width: '120',
+        minWidth: '120',
         name: 'operate'
       }
     ] })
@@ -889,18 +885,7 @@ const searchValue = ref<string>('')
     background-color: #edf2fc;
     cursor: no-drop;
   }
-  .diy-button {
-    height: 30px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
 
-    &:hover {
-      background: rgba(235, 238, 245, 1);
-      border-radius: 4px;
-    }
-  }
   @media screen and (max-width: 1280px) {
     .diy-table__header {
       display: flex;

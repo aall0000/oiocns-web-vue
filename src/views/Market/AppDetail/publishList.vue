@@ -78,7 +78,8 @@
             },
             {
               prop: 'createTime',
-              label: '创建时间'
+              label: '创建时间',
+              minWidth: '120'
             },
           ],
     currentPage: 1,
