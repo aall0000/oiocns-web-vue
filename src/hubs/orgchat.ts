@@ -141,7 +141,6 @@ const orgChat: orgChatType = {
         orgChat.lastMsg = null
     },
     getName: (id: string) => {
-        debugger
         let name = orgChat.nameMap[id] || ''
         if(name === '' && orgChat.isConnected()){
             orgChat._connection.invoke("GetName", id).then((res)=>{
