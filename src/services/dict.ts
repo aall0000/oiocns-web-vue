@@ -5,7 +5,7 @@ const dict: { [key: string]: any }  = {
       {name: '否', code: 0}
     ],
     OrderStatus:[
-        {name: '待卖方确认', code: 1},
+        {name: '待交付', code: 1},
         //包含第三方监管和卖方的审核状态
         {name: '审核通过', code: 100},
         {name: '已付款', code: 101},
