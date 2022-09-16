@@ -28,7 +28,7 @@ type orgChatType = {
     recallMsg: (ids: [string]) => Promise<ResultType>, //撤回消息
     setCurrent: (chat: ImMsgChildType) => void, //设置当前会话
     getPersons: (reset: boolean) => Promise<ResultType>, //获取组织人员
-    getHistoryMsg: () => Promise<ResultType>, //获取历史消息
+    getHistoryMsg: () => Promise<number>, //获取历史消息
     isConnected: () => boolean //  判断该链接的状态是否为connected
     subscribed: (callback: (data: any) => void) => void // 订阅数据
     unSubscribed: () => void // 取消订阅
@@ -280,8 +280,8 @@ const orgChat: orgChatType = {
                         item.id = item.chatId
                         orgChat.curMsgs.value.unshift(item)
                     })
+                    return res.data.length
                 }
-                return res
             }else{
                 if (orgChat.isConnected() && orgChat.curChat) {
                     let funcName = 'QueryFriendMsg'
@@ -301,13 +301,13 @@ const orgChat: orgChatType = {
                             res.data.result.forEach((item: any) => {
                                 orgChat.curMsgs.value.unshift(item)
                             })
+                            return res.data.result.length
                         }
                     }
-                    return res
                 }
             }
         }
-        return { success: false, data: {}, code: 404, msg: "" }
+        return 0
     },
     // 订阅数据 key: 订阅数据的key  callback 数据发生变化时的回调
     subscribed: async (callback: (data: any) => void) => {
