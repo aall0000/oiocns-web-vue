@@ -48,7 +48,7 @@
               <template #footer v-if="item.id != '355346477339512833'">
                 <el-divider style="margin: 16px 0"></el-divider>
                 <div class="app-card-item-con-belong">
-                  <span>归属: {{ orgChat.getName(item.belongId) || '未知' }}</span>
+                  <span>归属: {{ orgChat.getName(item.product.belongId) || '未知' }}</span>
 
                   <span>版本： 0.0.1</span>
                 </div>
