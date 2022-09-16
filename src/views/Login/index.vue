@@ -19,19 +19,26 @@
           <Register @gotoPrev="gotoPrev" @registerUser="registerUser"></Register>
         </el-carousel-item>
       </el-carousel> -->
-      <Login v-show="stept=='first'" @register="register" @userLogin="userLogin" @forgetPassword="forgetPassword" :btnLoading="btnLoading"></Login>
-      <UserInfo v-show="stept=='second'" @gotoPrev="gotoPrev" @gotoNext="gotoNext"></UserInfo>
-      <Register v-show="stept=='third'" @gotoPrev="gotoPrev" @registerUser="registerUser"></Register>
-      <Forget v-show="stept=='fourth'" @gotoPrev="gotoPrev" @resetPWD="resetPWD"></Forget>
+      <Login
+        v-show="stept == 'first'"
+        @register="register"
+        @userLogin="userLogin"
+        @forgetPassword="forgetPassword"
+        :btnLoading="btnLoading"
+      ></Login>
+      <UserInfo v-show="stept == 'second'" @gotoPrev="gotoPrev" @gotoNext="gotoNext"></UserInfo>
+      <Register
+        v-show="stept == 'third'"
+        @gotoPrev="gotoPrev"
+        @registerUser="registerUser"
+      ></Register>
+      <Forget v-show="stept == 'fourth'" @gotoPrev="gotoPrev" @resetPWD="resetPWD"></Forget>
     </div>
     <div class="baseLayout_btmText">
       Copyright 2021 资产云开放协同创新中⼼ 主办单位：浙江省财政厅
     </div>
   </div>
-  <el-dialog
-    v-model="dialogVisible"
-    width="30%"
-    center
+  <el-dialog v-model="dialogVisible" width="30%" center
   >
     <div class="dialogText">请妥善保管下面私钥,请勿告诉他人,该私钥可以为你重置密码,加解密数据.</div>
     <span class="dialogPrivate">{{state.registerValue.privateKey}}</span>
@@ -52,11 +59,11 @@
   import $services from '@/services'
   import { reactive, ref, onMounted } from 'vue'
   import { useUserStore } from '@/store/user'
-  import {useMarketStore} from '@/store/market'
+  import { useMarketStore } from '@/store/market'
   import { useAnyData } from '@/store/anydata'
   import { useRouter } from 'vue-router'
   import { ElMessage } from 'element-plus'
-import { dataType } from 'element-plus/es/components/table-v2/src/common'
+  import { dataType } from 'element-plus/es/components/table-v2/src/common'
 
   const dialogVisible = ref<boolean>(false)
   const carousel = ref<any>()
@@ -65,15 +72,15 @@ import { dataType } from 'element-plus/es/components/table-v2/src/common'
   const router = useRouter()
   const stept = ref<string>('first')
   const state = reactive({
-    registerValue:{
-      privateKey:''
+    registerValue: {
+      privateKey: ''
     }
   })
   type Form = {
-    account:string
-    importValue:string
-    password:string
-    password2:string
+    account: string
+    importValue: string
+    password: string
+    password2: string
   }
   let btnLoading = ref(false)
 
@@ -84,8 +91,8 @@ import { dataType } from 'element-plus/es/components/table-v2/src/common'
 
   let registerData = reactive<Object>({})
 
-  const resetPWD = (data: Form) =>{
-    console.log(data);
+  const resetPWD = (data: Form) => {
+    console.log(data)
     $services.person
       .reset({
         data: data
@@ -98,18 +105,19 @@ import { dataType } from 'element-plus/es/components/table-v2/src/common'
           })
           stept.value = 'first'
         }
-      }).catch((err:any)=>{
+      })
+      .catch((err: any) => {
         ElMessage({
-            message: '填写的信息有错误 请检查所填信息',
-            type: 'error'
-          })
+          message: '填写的信息有错误 请检查所填信息',
+          type: 'error'
+        })
       })
   }
   const register = () => {
     stept.value = 'second'
     // carousel.value?.setActiveItem('second')
   }
-  const forgetPassword = () =>{
+  const forgetPassword = () => {
     stept.value = 'fourth'
   }
   const gotoNext = (data: object) => {
@@ -125,7 +133,6 @@ import { dataType } from 'element-plus/es/components/table-v2/src/common'
   const userLogin = (data: { password: string; username: string; remind: boolean }) => {
     btnLoading.value = true
     store.updateUserInfo(data).then((res) => {
-      
       btnLoading.value = false
       if (data.remind) {
         setCookie(data.username, data.password, 7)
@@ -135,9 +142,6 @@ import { dataType } from 'element-plus/es/components/table-v2/src/common'
 
       router.push({ path: 'workHome' })
     })
-
-
-
   }
   const registerUser = (data: any) => {
     registerData = { ...registerData, ...data }
@@ -155,11 +159,6 @@ import { dataType } from 'element-plus/es/components/table-v2/src/common'
           stept.value = 'first'
           dialogVisible.value = true
           state.registerValue = res.data
-        } else {
-          ElMessage({
-            message: res.msg,
-            type: 'warning'
-          })
         }
       })
   }
@@ -175,16 +174,16 @@ import { dataType } from 'element-plus/es/components/table-v2/src/common'
 </script>
 
 <style lang="scss" scoped>
-  :deep(.el-dialog__body){
-    display:flex;
+  :deep(.el-dialog__body) {
+    display: flex;
     flex-direction: column;
   }
   :deep(.el-carousel__container) {
     height: 100%;
   }
-  .dialogText{
+  .dialogText {
     font-size: 16px;
-    margin-bottom: 40px
+    margin-bottom: 40px;
   }
   .dialogPrivate{
     font-size: 26px;

@@ -1,51 +1,51 @@
 <template>
-    <div>
-      <div class="title">忘记密码</div>
-      <el-form ref="ruleFormRef" :rules="rules" :model="ruleForm" status-icon class="demo-ruleForm">
-        <el-form-item prop="phone">
-          <el-input
-            size="large"
-            v-model="ruleForm.account"
-            autocomplete="off"
-            placeholder="请输入账户"
-            oninput="value=value.replace(/[\u4E00-\u9FA5]/g,'')"
-          />
-        </el-form-item>
-        <el-form-item prop="password">
-          <el-input
-            size="large"
-            placeholder="请输入新密码(以大小写字母和数字符号组合的6-15位新密码)"
-            v-model="ruleForm.password"
-            type="password"
-            autocomplete="off"
-          />
-        </el-form-item>
-        <el-form-item prop="password2">
-          <el-input
-            size="large"
-            placeholder="请再次输入密码"
-            v-model="ruleForm.password2"
-            type="password"
-            autocomplete="off"
-          />
-        </el-form-item>
-        <el-form-item prop="privateKey">
-          <el-input
-            size="large"
-            placeholder="请输入助记词"
-            v-model="ruleForm.privateKey"
-            autocomplete="off"
-          />
-        </el-form-item>
-      </el-form>
-      <el-button class="loginBtn" type="primary" @click="submitForm(ruleFormRef)">提 交</el-button>
-      <div class="textBox">
-        <span class="loginText" @click="gotoPrev">返回登录</span>
-      </div>
+  <div>
+    <div class="title">忘记密码</div>
+    <el-form ref="ruleFormRef" :rules="rules" :model="ruleForm" status-icon class="demo-ruleForm">
+      <el-form-item prop="phone">
+        <el-input
+          size="large"
+          v-model="ruleForm.account"
+          autocomplete="off"
+          placeholder="请输入账户"
+          oninput="value=value.replace(/[\u4E00-\u9FA5]/g,'')"
+        />
+      </el-form-item>
+      <el-form-item prop="password">
+        <el-input
+          size="large"
+          placeholder="请输入密码(包含大小写字母和数字符号组合的6-15位密码)"
+          v-model="ruleForm.password"
+          type="password"
+          autocomplete="off"
+        />
+      </el-form-item>
+      <el-form-item prop="password2">
+        <el-input
+          size="large"
+          placeholder="请再次输入密码"
+          v-model="ruleForm.password2"
+          type="password"
+          autocomplete="off"
+        />
+      </el-form-item>
+      <el-form-item prop="privateKey">
+        <el-input
+          size="large"
+          placeholder="请输入助记词"
+          v-model="ruleForm.privateKey"
+          autocomplete="off"
+        />
+      </el-form-item>
+    </el-form>
+    <el-button class="loginBtn" type="primary" @click="submitForm(ruleFormRef)">提 交</el-button>
+    <div class="textBox">
+      <span class="loginText" @click="gotoPrev">返回登录</span>
     </div>
-  </template>
-  
-  <script lang="ts">
+  </div>
+</template>
+
+<script lang="ts">
   import { defineComponent, reactive, ref } from 'vue'
   import type { FormInstance } from 'element-plus'
   export default defineComponent({
@@ -55,7 +55,7 @@
         password: '',
         account: '',
         password2: '',
-        privateKey: '',
+        privateKey: ''
       })
       const gotoPrev = () => {
         context.emit('gotoPrev')
@@ -93,7 +93,7 @@
       const validatePass4 = (rule: any, value: any, callback: any) => {
         if (value === '') {
           callback(new Error('请输入助记词'))
-        }else{
+        } else {
           callback()
         }
       }
@@ -122,9 +122,9 @@
       }
     }
   })
-  </script>
-  
-  <style lang="scss" scoped>
+</script>
+
+<style lang="scss" scoped>
   .title {
     color: rgb(35, 72, 211);
     margin-bottom: 20px;
@@ -143,4 +143,4 @@
     color: rgb(35, 72, 211);
     cursor: pointer;
   }
-  </style>
+</style>
