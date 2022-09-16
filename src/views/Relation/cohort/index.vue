@@ -62,7 +62,7 @@
     <template #footer>
       <span class="dialog-footer">
         <el-button @click="createCohortDialog = false">取消</el-button>
-        <el-button type="primary" @click="createCohort">确认</el-button>
+        <el-button type="primary" @click="createCohort(ruleFormRef)">确认</el-button>
       </span>
     </template>
   </el-dialog>
@@ -83,9 +83,10 @@
   import { ElMessage, TabsPaneContext } from 'element-plus'
   import { Plus, CirclePlus } from '@element-plus/icons-vue'
   import SearchCohort from '@/components/searchs/index.vue'
-  import type { FormRules } from 'element-plus'
+  import type { FormInstance,FormRules } from 'element-plus'
   const mode = ref('card')
   const activeName = ref('管理的')
+  const ruleFormRef = ref<FormInstance>()
 
   const createCohortDialog = ref(false)
   const formData = ref<any>({
@@ -123,21 +124,28 @@
    
   })
   // 创建群组
-  const createCohort = () => {
-    $services.cohort.create({ data: formData.value }).then((res: ResultType) => {
-      if (res.code == 200) {
-        ElMessage({
-          message: '创建成功',
-          type: 'success'
+  const createCohort = (formEl: FormInstance | undefined) => {
+    formEl.validate((valid) => {
+      if (valid) {
+        $services.cohort.create({ data: formData.value }).then((res: ResultType) => {
+          if (res.code == 200) {
+            ElMessage({
+              message: '创建成功',
+              type: 'success'
+            })
+            createCohortDialog.value = false
+            let oldModel = mode.value;
+            mode.value = '';
+            setTimeout(() => {
+              mode.value = oldModel
+            }, 100);
+          }
         })
-        createCohortDialog.value = false
-        let oldModel = mode.value;
-        mode.value = '';
-        setTimeout(() => {
-          mode.value = oldModel
-        }, 100);
+      } else {
+        return false
       }
     })
+    
   }
 
   const checksSearch = (val: any) => {
