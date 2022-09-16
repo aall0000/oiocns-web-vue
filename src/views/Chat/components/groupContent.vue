@@ -90,9 +90,10 @@ const showChatTime = (chatDate: moment.MomentInput) => {
 const scrollTop = debounce(async() => {
   let scroll = nodeRef.value.scrollTop
   if (scroll < 10) {
+    let beforeHeight = nodeRef.value.scrollHeight
     let count = await orgChat.getHistoryMsg()
     if(count > 0){
-      nodeRef.value.scrollTop = count * 55
+        nodeRef.value.scrollTop = nodeRef.value.scrollHeight - beforeHeight
     }
   }
 }, 200)
