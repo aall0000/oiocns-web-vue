@@ -143,7 +143,7 @@ const orgChat: orgChatType = {
     getName: (id: string) => {
         let name = orgChat.nameMap[id] || ''
         if(name === '' && orgChat.isConnected()){
-            orgChat._connection.invoke("GetName", parseInt(id)).then((res)=>{
+            orgChat._connection.invoke("GetName", id).then((res)=>{
                 if(res.success){
                     orgChat.nameMap[id] = res.data
                     orgChat._cacheChats()
