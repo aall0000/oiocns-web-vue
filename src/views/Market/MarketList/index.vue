@@ -384,15 +384,7 @@
       .then((res: ResultType) => {
         if (res.success) {
           const { result = [], total = 0 } = res.data
-          state.myMarket = []
-          result?.forEach((item: { id: string }) => {
-            if (item.id === software.value) {
-              state.myMarket.unshift(item)
-            } else {
-              state.myMarket.push(item)
-            }
-          })
-
+          state.myMarket = result
           state.pageMy.total = total
           pageContent.value.state.page.total = total
         }
