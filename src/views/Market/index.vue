@@ -62,9 +62,9 @@
                           item.belongId == store.workspaceData.id &&
                           action.label == '上架'
                         " :command="action.value">{{ action.label }}</el-dropdown-item>
-                        <el-dropdown-item v-if="item.belongId == store.workspaceData.id && action.label == '分享'"
+                        <el-dropdown-item v-if="item.belongId == store.workspaceData.id && action.label == '共享'"
                           :command="action.value">{{ action.label }}</el-dropdown-item>
-                        <el-dropdown-item v-if="store.workspaceData.type == 2 && action.label == '分发'"
+                        <el-dropdown-item v-if="store.workspaceData.type == 2 && action.label == '分配'"
                           :command="action.value">{{ action.label }}</el-dropdown-item>
                       </div>
                       <el-dropdown-item v-if="action.label == '详情'" :command="action.value">{{
@@ -118,8 +118,8 @@
                 scope.row.authority == '所属权' && scope.row.belongId == store.workspaceData.id
               " link type="primary" @click="publishVisible = true">上架</el-button>
               <el-button link type="primary" v-if="scope.row.belongId == store.workspaceData.id"
-                @click="openShareDialog">分享</el-button>
-              <el-button link type="primary" v-if="store.workspaceData.type == 2" @click="cohortVisible = true">分发
+                @click="openShareDialog">共享</el-button>
+              <el-button link type="primary" v-if="store.workspaceData.type == 2" @click="cohortVisible = true">分配
               </el-button>
               <el-button link type="primary" @click="GoPage(`/market/detail/${selectProductItem.id}`)">
                 详情
@@ -145,11 +145,11 @@
       </template>
     </putaway-comp>
   </el-dialog>
-  <el-dialog v-if="cohortVisible" v-model="cohortVisible" custom-class="share-dialog" title="应用分发" width="1000px"
+  <el-dialog v-if="cohortVisible" v-model="cohortVisible" custom-class="share-dialog" title="应用分配" width="1000px"
     draggable :close-on-click-modal="false">
     <Cohort @closeDialog="cohortVisible = false" :info="selectProductItem"></Cohort>
   </el-dialog>
-  <el-dialog v-if="shareVisible" v-model="shareVisible" custom-class="share-dialog" title="应用分享" width="1000px"
+  <el-dialog v-if="shareVisible" v-model="shareVisible" custom-class="share-dialog" title="应用共享" width="1000px"
     draggable :close-on-click-modal="false">
     <ShareCohort v-if="store.workspaceData.type == 2" @closeDialog="shareVisible = false" :info="selectProductItem">
     </ShareCohort>
@@ -202,9 +202,9 @@ const { queryInfo } = storeToRefs(store)
 let groups = reactive([])
 // 当前选中的集团
 let selectedValue = ref<string>('')
-// 集团分享
+// 集团共享
 const groupVisible = ref<boolean>(false)
-// 分享功能
+// 共享功能
 const cohortVisible = ref<boolean>(false)
 
 const shareVisible = ref<boolean>(false)
@@ -335,7 +335,7 @@ const getShopcarNum = async () => {
       shopcarNum.value = total
     })
 }
-// 关闭分享弹窗
+// 关闭共享弹窗
 // const closeDialog = () => {
 //   shareVisible.value = false
 // }
@@ -422,7 +422,7 @@ const openShareDialog = () => {
 const groupId = ref('')
 const groupName = ref('')
 const appInfo = ref('')
-// 跳转到group分享界面
+// 跳转到group共享界面
 const shareGroup = () => {
   if (selectedValue.value) {
     groupId.value = selectedValue.value
@@ -437,7 +437,7 @@ const shareGroup = () => {
     })
   }
 }
-// 跳转到unit分享界面
+// 跳转到unit共享界面
 // const shareUnit = () => {
 //   if (selectedValue.value) {
 //     groupId.value = selectedValue.value
@@ -454,7 +454,7 @@ const shareGroup = () => {
 //     })
 //   }
 // }
-// 按群组分享
+// 按群组共享
 const shareCohort = () => { }
 
 // 上架应用功能

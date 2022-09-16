@@ -193,7 +193,7 @@
   import { ElMessage, ElMessageBox } from 'element-plus';
   import { useRouter } from 'vue-router';
 
-  // 1. 组织职权； 2. 个人职权；3. 群组职权  Todo
+  // 1. 组织角色； 2. 个人角色；3. 群组角色  Todo
   const router = useRouter()
   let createDialogVisible = ref<boolean>(false)
   let editDialogVisible = ref<boolean>(false)
@@ -213,7 +213,7 @@
   let authorityTree = ref<any[]>([])
   let cascaderTree = ref<any[]>([])
 
-  // 加载职权树
+  // 加载角色树
   const loadAuthorityTree = () => {
     $services.company.getAuthorityTree({data: {id: belongId.value}}).then((res: any)=>{
       authorityTree.value = []
@@ -261,7 +261,7 @@
     })
   }
 
-  // 删除组织职权
+  // 删除组织角色
   const deleteCompanyAuthority = async (row: any)=>{
     const { success } = await $services.company.deleteAuthority({data: {id: row.id}})
     if (success) {
@@ -278,12 +278,12 @@
     }
   }
 
-  // 删除群组职权
+  // 删除群组角色
   const deleteCohortAuthority = (row: any)=>{
 
   }
 
-  // 删除个人职权
+  // 删除个人角色
   const deletePersonAuthority = (row: any)=>{
 
   }
@@ -295,7 +295,7 @@
     editDialogVisible.value = false
   }
 
-  // 创建组织员工职权
+  // 创建组织员工角色
   const createAuth = () => {
     $services.company.createAuthority({
       data: {
@@ -324,7 +324,7 @@
     })
   }
 
-  // 编辑职权
+  // 编辑角色
   const editAuth = ()=>{
     $services.company.updateAuthority({
       data: formData.value

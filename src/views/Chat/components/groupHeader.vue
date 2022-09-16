@@ -30,11 +30,11 @@
   </div>
 
   <el-dialog customClass="QrDialog" v-model="dialogVisible" title="邀请好友" width="30%">
-    <p>方式一：分享二维码，邀请好友</p>
+    <p>方式一：共享二维码，邀请好友</p>
     <div class="QrDiv" :key="orgChat.curChat.value.id">
       <QrCodeCustom :qrText="orgChat.curChat.value?.name" />
     </div>
-    <p>方式二：分享链接，邀请好友</p>
+    <p>方式二：共享链接，邀请好友</p>
     <div class="share-link">展示链接...</div>
     <template #footer>
       <span>

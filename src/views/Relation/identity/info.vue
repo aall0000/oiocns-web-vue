@@ -1,7 +1,7 @@
 <template>
   <div class="info">
     <div class="header">
-      <div class="title">身份信息</div>
+      <div class="title">岗位信息</div>
       <div class="box-btns">
         <el-button small link type="primary" @click="handleUpdate">编辑</el-button>
         <el-button small link type="primary" @click="handleDelete">删除</el-button>
@@ -80,14 +80,14 @@
   watch(selectItem, () => {
   });
 
-  // 删除身份信息
+  // 删除岗位信息
   const handleDelete = ()=>{
     if(!selectItem.value.id){
-      ElMessage.warning('请左侧选择身份')
+      ElMessage.warning('请左侧选择岗位')
       return
     }
     ElMessageBox.confirm(
-      `确定删除 ${selectItem.value.name} 身份吗？`,
+      `确定删除 ${selectItem.value.name} 岗位吗？`,
       '警告',
       {
         confirmButtonText: '确定',
@@ -118,7 +118,7 @@
   // 修改信息
   const handleUpdate = ()=> {
     if(!selectItem.value.id){
-      ElMessage.warning('请左侧选择身份')
+      ElMessage.warning('请左侧选择岗位')
       return
     }
     formData.value = selectItem.value
@@ -161,7 +161,7 @@
     children: 'nodes',
   }
 
-  // 加载职权树
+  // 加载角色树
   const loadAuthorityTree = () => {
     $services.company.getAuthorityTree({data: {id: belongId.value}}).then((res: any)=>{
       authorityTree.value = []

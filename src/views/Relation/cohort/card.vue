@@ -15,7 +15,7 @@
                     <el-dropdown-item v-if="props.type == '管理的'" @click="edit(cohort)"><el-icon><Edit /></el-icon>修改群组</el-dropdown-item>
                     <el-dropdown-item @click="invite(cohort)"><el-icon><User /></el-icon>邀请成员</el-dropdown-item>
                     <el-dropdown-item v-if="props.type == '管理的'" @click="toAuth(cohort)"><el-icon><Edit /></el-icon>角色管理</el-dropdown-item>
-                    <el-dropdown-item v-if="props.type == '管理的'" @click="toIndentity(cohort)"><el-icon><Avatar /></el-icon>身份管理</el-dropdown-item>
+                    <el-dropdown-item v-if="props.type == '管理的'" @click="toIndentity(cohort)"><el-icon><Avatar /></el-icon>岗位管理</el-dropdown-item>
                     <el-dropdown-item v-if="props.type == '管理的' && workspaceData.type !=2" @click="moveAuth(cohort)"><el-icon><Switch /></el-icon>转移权限</el-dropdown-item>
                     <el-dropdown-item v-if="props.type == '加入的'" @click="exit(cohort)"><el-icon><Remove /></el-icon>退出群聊</el-dropdown-item>
                     <el-dropdown-item v-if="props.type == '管理的'" @click="deleteCohort(cohort)"><el-icon><Delete /></el-icon>解散群组</el-dropdown-item>
@@ -248,7 +248,7 @@ const invite = (cohort: any)=>{
   searchDialog.value = true
 }
 
-// 角色(职权)管理
+// 角色(角色)管理
 const toAuth = (cohort: any)=>{
   router.push({
     path: '/relation/authority',
@@ -262,7 +262,7 @@ const toAuth = (cohort: any)=>{
   })
 }
 
-// 身份管理
+// 岗位管理
 const toIndentity = (cohort: any)=>{
   router.push({
     path: '/relation/identity',

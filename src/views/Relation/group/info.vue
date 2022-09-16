@@ -6,7 +6,7 @@
         <el-button small link type="primary" :disabled=!selectItem?.data?.authAdmin @click="handleUpdate">编辑</el-button>
         <el-button small link type="primary" :disabled=!selectItem?.data?.authAdmin @click="handleDelete">删除</el-button>
         <el-button small link type="primary" :disabled=!selectItem?.data?.authAdmin @click="toAuth">角色管理</el-button>
-        <el-button small link type="primary" :disabled=!selectItem?.data?.authAdmin @click="toIdentity">身份管理</el-button>
+        <el-button small link type="primary" :disabled=!selectItem?.data?.authAdmin @click="toIdentity">岗位管理</el-button>
       </div>
     </div>
     <div class="tab-list">
@@ -78,7 +78,7 @@
     loadAuthorityTree(value)
   }
 
-  // 加载职权树
+  // 加载角色树
   const loadAuthorityTree = (id: string) => {
     $services.company.getAuthorityTree({data: {id}}).then((res: any)=>{
       authorityTree.value = []
@@ -183,7 +183,7 @@
       }
     })
   }
-  // 跳转至身份管理页面
+  // 跳转至岗位管理页面
   const toIdentity = ()=>{
     router.push({
       path: '/relation/identity',

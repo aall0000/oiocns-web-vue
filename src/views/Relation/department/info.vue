@@ -5,7 +5,7 @@
       <div class="box-btns">
         <el-button small link type="primary" :disabled=!selectItem?.data?.authAdmin @click="handleUpdate">编辑</el-button>
         <el-button small link type="primary" :disabled=!selectItem?.data?.authAdmin @click="toAuth">角色管理</el-button>
-        <el-button small link type="primary" :disabled=!selectItem?.data?.authAdmin @click="toIdentity">身份管理</el-button>
+        <el-button small link type="primary" :disabled=!selectItem?.data?.authAdmin @click="toIdentity">岗位管理</el-button>
       </div>
     </div>
     <div class="tab-list">
@@ -80,7 +80,7 @@
   let authTree = ref<any[]>([])
   // 节点ID和对象映射关系
   const parentIdMap: any = {}
-  // 加载职权树
+  // 加载角色树
   const loadAuthorityTree = () => {
     console.log('selectItem',selectItem.value)
     $services.company.getAuthorityTree({data: {id: selectItem.value.data.id}}).then((res: any)=>{
@@ -174,7 +174,7 @@
       }
     })
   }
-  // 跳转至身份管理页面
+  // 跳转至岗位管理页面
   const toIdentity = ()=>{
     let persons = 'getPersons'
     switch(selectItem.value.data.typeName){
