@@ -402,6 +402,9 @@ const orgChat: orgChatType = {
                         } else {
                             chat.showTxt = data.showTxt
                         }
+                        if(chat.typeName !== "人员"){
+                            chat.showTxt = orgChat.nameMap[data.fromId] + ": " + chat.showTxt
+                        }
                         if (orgChat.curChat.value && orgChat.curChat.value.id === chat.id &&
                             orgChat.curChat.value.spaceId === chat.spaceId) {
                             orgChat.curMsgs.value.push(data)
