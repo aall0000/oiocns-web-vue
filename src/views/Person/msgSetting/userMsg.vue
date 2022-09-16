@@ -17,7 +17,7 @@
             <el-input v-model="formModel.nickName" />
           </el-form-item>
           <el-form-item label="账号">
-            <el-input v-model="formModel.account" :disabled='true'/>
+            <el-input v-model="formModel.account" :disabled="true" />
           </el-form-item>
           <el-form-item label="真实姓名">
             <el-input v-model="formModel.realName" />
@@ -55,45 +55,39 @@
       </div>
     </div>
   </div>
-  <el-dialog
-    v-model="dialogVisible"
-    title="修改密码"
-    width="40%"
-  >
-      <el-form ref="ruleFormRef" :rules="rules" :model="ruleForm" status-icon class="demo-ruleForm">
-        <el-form-item prop="password">
-          <el-input
-            size="large"
-            placeholder="请输入新密码(以大小写字母和数字符号组合的6-15位新密码)"
-            v-model="ruleForm.password"
-            type="password"
-            autocomplete="off"
-          />
-        </el-form-item>
-        <el-form-item prop="password2">
-          <el-input
-            size="large"
-            placeholder="请再次输入密码"
-            v-model="ruleForm.password2"
-            type="password"
-            autocomplete="off"
-          />
-        </el-form-item>
-        <el-form-item prop="privateKey">
-          <el-input
-            size="large"
-            placeholder="请输入助记词"
-            v-model="ruleForm.privateKey"
-            autocomplete="off"
-          />
-        </el-form-item>
-      </el-form>
+  <el-dialog v-model="dialogVisible" title="修改密码" width="40%">
+    <el-form ref="ruleFormRef" :rules="rules" :model="ruleForm" status-icon class="demo-ruleForm">
+      <el-form-item prop="password">
+        <el-input
+          size="large"
+          placeholder="请输入密码(包含大小写字母和数字符号组合的6-15位密码)"
+          v-model="ruleForm.password"
+          type="password"
+          autocomplete="off"
+        />
+      </el-form-item>
+      <el-form-item prop="password2">
+        <el-input
+          size="large"
+          placeholder="请再次输入密码"
+          v-model="ruleForm.password2"
+          type="password"
+          autocomplete="off"
+        />
+      </el-form-item>
+      <el-form-item prop="privateKey">
+        <el-input
+          size="large"
+          placeholder="请输入助记词"
+          v-model="ruleForm.privateKey"
+          autocomplete="off"
+        />
+      </el-form-item>
+    </el-form>
     <template #footer>
       <span class="dialog-footer">
         <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="changePWD"
-          >确认</el-button
-        >
+        <el-button type="primary" @click="changePWD">确认</el-button>
       </span>
     </template>
   </el-dialog>
@@ -118,46 +112,46 @@
   })
   const dialogVisible = ref<boolean>(false)
   const ruleForm = reactive({
-      password: '',
-      password2: '',
-      privateKey: '',
+    password: '',
+    password2: '',
+    privateKey: ''
   })
   const validatePass1 = (rule: any, value: any, callback: any) => {
-        if (value === '') {
-          callback(new Error('请输入密码'))
-        } else {
-          if (ruleForm.password !== '') {
-            if (value.length < 6 || value.length > 15) {
-              callback(new Error('密码长度不正确'))
-            }
-          }
-          callback()
+    if (value === '') {
+      callback(new Error('请输入密码'))
+    } else {
+      if (ruleForm.password !== '') {
+        if (value.length < 6 || value.length > 15) {
+          callback(new Error('密码长度不正确'))
         }
       }
-      const validatePass2 = (rule: any, value: any, callback: any) => {
-        if (value === '') {
-          callback(new Error('请再次输入密码'))
-        } else {
-          if (ruleForm.password2 !== '' && ruleForm.password == ruleForm.password2) {
-            callback()
-          } else {
-            callback(new Error('与原密码不一致'))
-          }
-        }
+      callback()
+    }
+  }
+  const validatePass2 = (rule: any, value: any, callback: any) => {
+    if (value === '') {
+      callback(new Error('请再次输入密码'))
+    } else {
+      if (ruleForm.password2 !== '' && ruleForm.password == ruleForm.password2) {
+        callback()
+      } else {
+        callback(new Error('与原密码不一致'))
       }
-      const validatePass3 = (rule: any, value: any, callback: any) => {
-        if (value === '') {
-          callback(new Error('请输入助记词'))
-        }else{
-          callback()
-        }
-      }
+    }
+  }
+  const validatePass3 = (rule: any, value: any, callback: any) => {
+    if (value === '') {
+      callback(new Error('请输入助记词'))
+    } else {
+      callback()
+    }
+  }
   const rules = reactive({
     password: [{ validator: validatePass1, trigger: 'blur' }],
     password2: [{ validator: validatePass2, trigger: 'blur' }],
     privateKey: [{ validator: validatePass3, trigger: 'blur' }]
   })
-  
+
   onBeforeMount(() => {
     fetchRequest()
   })
@@ -177,7 +171,7 @@
         }
       })
   }
-  const changePWD = () =>{
+  const changePWD = () => {
     $services.person
       .reset({
         data: {
@@ -194,54 +188,50 @@
           })
           dialogVisible.value = false
         }
-      }).catch((err:any)=>{
+      })
+      .catch((err: any) => {
         ElMessage({
-            message: '填写的信息有错误 请检查所填信息',
-            type: 'error'
-          })
+          message: '填写的信息有错误 请检查所填信息',
+          type: 'error'
+        })
       })
   }
-  const updatePassword = () =>{
+  const updatePassword = () => {
     dialogVisible.value = true
   }
   const update = () => {
-    ElMessageBox.confirm(
-    '确定修改信息吗？',
-    '提示',
-    {
+    ElMessageBox.confirm('确定修改信息吗？', '提示', {
       confirmButtonText: '确定',
       cancelButtonText: '取消',
       type: 'warning'
-    }
-  ).then(() => {
+    }).then(() => {
       $services.person
-      .update({
-        data: {
-          id: store.queryInfo.id,
-          name: formModel.nickName,
-          code: formModel.account,
-          thingId: store.queryInfo.thingId,
-          teamName: formModel.realName,
-          teamCode: formModel.phone,
-          teamRemark: formModel.motto,
-          teamAuthId: store.queryInfo.team.authId
-        }
-      })
-      .then((res: ResultType) => {
-        if (res.success) {
-          ElMessage({
-            message: '更新成功',
-            type: 'success'
-          })
-        } else {
-          ElMessage({
-            message: res.msg,
-            type: 'warning'
-          })
-        }
-      })
-  })
-    
+        .update({
+          data: {
+            id: store.queryInfo.id,
+            name: formModel.nickName,
+            code: formModel.account,
+            thingId: store.queryInfo.thingId,
+            teamName: formModel.realName,
+            teamCode: formModel.phone,
+            teamRemark: formModel.motto,
+            teamAuthId: store.queryInfo.team.authId
+          }
+        })
+        .then((res: ResultType) => {
+          if (res.success) {
+            ElMessage({
+              message: '更新成功',
+              type: 'success'
+            })
+          } else {
+            ElMessage({
+              message: res.msg,
+              type: 'warning'
+            })
+          }
+        })
+    })
   }
 
   // const options = regionData
