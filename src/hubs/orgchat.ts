@@ -286,7 +286,7 @@ const orgChat: orgChatType = {
                         createTime: -1
                     },
                     skip: orgChat.curMsgs.value.length,
-                    limit: 15
+                    limit: 30
                 }, "user")
                 if (res.success && Array.isArray(res.data)) {
                     res.data.forEach((item: any) => {
@@ -304,7 +304,7 @@ const orgChat: orgChatType = {
                         idName = 'cohortId'
                     }
                     let res = await orgChat._connection.invoke(funcName, {
-                        limit: 15,
+                        limit: 30,
                         [idName]: orgChat.curChat.value.id,
                         offset: orgChat.curMsgs.value.length,
                         spaceId: orgChat.curChat.value.spaceId
