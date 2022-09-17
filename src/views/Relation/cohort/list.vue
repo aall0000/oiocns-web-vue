@@ -6,7 +6,17 @@
         <el-table-column prop="name" label="群组名称" width="240" />
         <el-table-column prop="code" label="群组编号"  width="200"/>
         <el-table-column prop="team.remark" label="群组简介" min-width="200"/>
-        <el-table-column prop="persons" label="群组成员" width="300">
+        <el-table-column prop="belongId" label="归属" min-width="200">
+          <template #default="scope">
+            <div>{{orgChat.getName(scope.row.belongId)}}</div>
+          </template>
+        </el-table-column>
+        <el-table-column prop="identitys" label="我的群身份" min-width="200">
+          <template #default="scope">
+            <div>{{orgChat.parseIdentitys(scope.row.identitys)}}</div>
+          </template>
+        </el-table-column>
+        <el-table-column prop="persons" label="群组成员" width="200">
           <template #default="scope">
             <div v-for="(person, index) in scope.row.persons" class="avatar-container" :title="person.name">
               <el-avatar class="avatar" :size="24" >
@@ -17,6 +27,12 @@
             </div>
           </template>
         </el-table-column>
+        <el-table-column prop="createUser" label="创建人" min-width="100">
+          <template #default="scope">
+            <div>{{orgChat.getName(scope.row.createUser)}}</div>
+          </template>
+        </el-table-column>
+        <el-table-column prop="createTime" label="创建时间" min-width="200"/>
         <el-table-column prop="name" label="操作"  width="240">
           <template #default="scope">
             <el-button link type="primary" @click="toChat(scope.row)">进入会话</el-button>
@@ -74,6 +90,7 @@ import { useUserStore } from '@/store/user'
 import { useRouter } from 'vue-router';
 import SearchUser from '@/components/searchs/index.vue'
 import { ElMessage, ElMessageBox } from 'element-plus';
+import orgChat from '@/hubs/orgchat'
 
 const { queryInfo,workspaceData } = useUserStore()
 const router = useRouter()

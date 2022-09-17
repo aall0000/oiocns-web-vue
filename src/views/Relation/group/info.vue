@@ -11,17 +11,22 @@
     </div>
     <div class="tab-list">
       <el-descriptions :column="2" border>
-        <el-descriptions-item  width="150px" :label="'集团名称'" label-align="center" align="center" label-class-name="my-label"
-          class-name="my-content" >{{selectItem?.data?.name}}</el-descriptions-item >
-        <el-descriptions-item  width="150px" :label="'集团编码'"
-          label-align="center"
-          align="center"
-          label-class-name="my-label"
-          class-name="my-content">{{selectItem?.data?.teamCode}}</el-descriptions-item>
+        <el-descriptions-item width="150px" :label="'集团名称'" label-align="center" align="center"
+          label-class-name="my-label" class-name="my-content">{{selectItem?.data?.name}}</el-descriptions-item>
+        <el-descriptions-item width="150px" :label="'集团编码'" label-align="center" align="center"
+          label-class-name="my-label" class-name="my-content">{{selectItem?.data?.teamCode}}</el-descriptions-item>
+        <el-descriptions-item :label="'我的岗位'" label-align="center" align="center" width="150px"
+          label-class-name="my-label" class-name="my-content">{{orgChat.parseIdentitys(selectItem?.data?.identitys)}}</el-descriptions-item>
+        <el-descriptions-item :label="'团队编码'" label-align="center" align="center" width="150px"
+          label-class-name="my-label" class-name="my-content">{{selectItem?.data?.teamCode}}</el-descriptions-item>
+        <el-descriptions-item :label="'创建人'" label-align="center" align="center" width="150px"
+          label-class-name="my-label" class-name="my-content">{{orgChat.getName(selectItem?.data?.createUser)}}</el-descriptions-item>
+        <el-descriptions-item :label="'创建时间'" label-align="center" align="center" width="150px"
+          label-class-name="my-label" class-name="my-content">{{selectItem?.data?.createTime}}</el-descriptions-item>
         <el-descriptions-item label="描述" :span="2" label-align="center" align="center">
-        <div class="text-remark">
+          <div class="text-remark">
             {{selectItem?.data?.teamRemark}}
-        </div>
+          </div>
         </el-descriptions-item>
       </el-descriptions>
     </div>
@@ -36,12 +41,13 @@
     </el-form-item>
 
     <el-form-item label="管理角色" style="width: 100%">
-      <el-cascader :props="authorityCascaderProps" :options="authorityTree" v-model="formData.teamAuthId" style="width: 100%"
-        placeholder="请选择管理角色" />
+      <el-cascader :props="authorityCascaderProps" :options="authorityTree" v-model="formData.teamAuthId"
+        style="width: 100%" placeholder="请选择管理角色" />
     </el-form-item>
 
     <el-form-item :label="'集团简介'">
-      <el-input v-model="formData.teamRemark" :placeholder="'请输入集团简介'" :autosize="{ minRows: 5 }" type="textarea" clearable />
+      <el-input v-model="formData.teamRemark" :placeholder="'请输入集团简介'" :autosize="{ minRows: 5 }" type="textarea"
+        clearable />
     </el-form-item>
     <template #footer>
       <span class="dialog-footer">
@@ -52,182 +58,188 @@
   </el-dialog>
 </template>
 <script lang="ts" setup>
-  import $services from '@/services'
-  import { ref, watch } from 'vue'
-  import { ElMessage, ElMessageBox } from 'element-plus'
-  import router from '@/router';
+import $services from '@/services'
+import { ref, watch } from 'vue'
+import { ElMessage, ElMessageBox } from 'element-plus'
+import router from '@/router';
+import orgChat from '@/hubs/orgchat';
 
-  const emit = defineEmits(['refresh'])
+const emit = defineEmits(['refresh'])
 
-  let selectItem = ref<any>({})
-  let dialogVisible = ref<boolean>(false)
-  let formData: any = ref({})
+let selectItem = ref<any>({})
+let dialogVisible = ref<boolean>(false)
+let formData: any = ref({})
 
-  const authorityCascaderProps = {
-    checkStrictly: true,
-    value: 'id',
-    label: 'name',
-    emitPath: false,
-    children: 'nodes'
+const authorityCascaderProps = {
+  checkStrictly: true,
+  value: 'id',
+  label: 'name',
+  emitPath: false,
+  children: 'nodes'
+}
+// 角色树
+let authorityTree = ref([])
+
+// 表单上级节点改变时
+const parentIdChange = (value: any) => {
+  loadAuthorityTree(value)
+}
+
+// 加载角色树
+const loadAuthorityTree = (id: string) => {
+  $services.company.getAuthorityTree({ data: { id } }).then((res: any) => {
+    authorityTree.value = []
+    authorityTree.value.push(res.data)
+  })
+}
+
+
+// 获取单位树点击的信息
+const selectItemChange = (data: any) => {
+  selectItem.value = data;
+};
+defineExpose({ selectItemChange });
+
+
+watch(selectItem, () => {
+});
+
+// 删除集团信息
+const handleDelete = () => {
+  if (!selectItem.value.id) {
+    ElMessage.warning('请左侧选择集团')
+    return
   }
-  // 角色树
-  let authorityTree = ref([])
-
-  // 表单上级节点改变时
-  const parentIdChange = (value: any)=>{
-    loadAuthorityTree(value)
+  const data = selectItem.value.data
+  let url: string = null;
+  if (data.typeName == '集团') {
+    url = 'deleteGroup'
+  } else if (data.typeName == '子集团') {
+    url = 'deleteSubgroup'
   }
-
-  // 加载角色树
-  const loadAuthorityTree = (id: string) => {
-    $services.company.getAuthorityTree({data: {id}}).then((res: any)=>{
-      authorityTree.value = []
-      authorityTree.value.push(res.data)
-    })
-  }
-
-
-  // 获取单位树点击的信息
-  const selectItemChange = (data: any) => {
-    selectItem.value = data;
-  };
-  defineExpose({ selectItemChange });
-
-
-  watch(selectItem, () => {
-  });
-
-  // 删除集团信息
-  const handleDelete = ()=>{
-    if(!selectItem.value.id){
-      ElMessage.warning('请左侧选择集团')
-      return
+  ElMessageBox.confirm(
+    `确定删除 ${data.name} ${data.typeName}吗？`,
+    '警告',
+    {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
     }
-    const data = selectItem.value.data
-    let url: string = null;
-    if(data.typeName == '集团'){
-      url = 'deleteGroup'
-    } else if(data.typeName == '子集团'){
-      url = 'deleteSubgroup'
-    }
-    ElMessageBox.confirm(
-      `确定删除 ${data.name} ${data.typeName}吗？`,
-      '警告',
-      {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
+  ).then(() => {
+    $services.company[url]({
+      data: {
+        id: data.id,
       }
-    ).then(() => {
-      $services.company[url]({
-        data: {
-          id: data.id,
-        }
-      }).then((res: ResultType) => {
-        selectItem.value = {}
-        if (res.success) {
-          ElMessage({
-            message: '操作成功',
-            type: 'success'
-          })
-          emit('refresh')
-        }
-      })
+    }).then((res: ResultType) => {
+      selectItem.value = {}
+      if (res.success) {
+        ElMessage({
+          message: '操作成功',
+          type: 'success'
+        })
+        emit('refresh')
+      }
     })
+  })
     .catch(() => {
       console.log('取消移除!')
     })
-  }
+}
 
-  // 修改信息
-  const handleUpdate = ()=> {
-    if(!selectItem.value.id){
-      ElMessage.warning('请左侧选择部门或者工作组！')
-      return
+// 修改信息
+const handleUpdate = () => {
+  if (!selectItem.value.id) {
+    ElMessage.warning('请左侧选择部门或者工作组！')
+    return
+  }
+  formData.value = selectItem.value.data
+  dialogVisible.value = true
+  loadAuthorityTree(selectItem.value.data.id)
+}
+
+// 保存
+const update = () => {
+  const data = { ...formData.value, ...selectItem.value.data };
+  let url = null;
+  if (data.typeName == '集团') {
+    url = 'updateGroup'
+  } else if (data.typeName == '子集团') {
+    url = 'updateSubGroup'
+  }
+  $services.company[url]({
+    data
+  }).then((res: ResultType) => {
+    if (res.code == 200 && res.success) {
+      dialogVisible.value = false
+      ElMessage.success('信息修改成功!')
+      selectItem.value.data = data
     }
-    formData.value = selectItem.value.data
-    dialogVisible.value = true
-    loadAuthorityTree(selectItem.value.data.id)
-  }
+  })
+}
 
-  // 保存
-  const update = ()=>{
-    const data = {...formData.value, ...selectItem.value.data};
-    let url = null;
-    if(data.typeName == '集团'){
-      url = 'updateGroup'
-    } else if(data.typeName == '子集团'){
-      url = 'updateSubGroup'
+// 跳转至角色管理页面
+const toAuth = () => {
+  router.push({
+    path: '/relation/authority',
+    query: {
+      title: '集团',
+      belongId: selectItem.value.id,
+      name: selectItem.value.label,
+      code: selectItem.value.data.code,
+      teamRemark: selectItem.value.data.teamRemark
     }
-    $services.company[url]({
-      data
-    }).then((res: ResultType) => {
-      if (res.code == 200 && res.success) {
-        dialogVisible.value = false
-        ElMessage.success('信息修改成功!')
-        selectItem.value.data = data
-      }
-    })
-  }
-
-  // 跳转至角色管理页面
-  const toAuth = ()=>{
-    router.push({
-      path: '/relation/authority',
-      query: {
-        title: '集团',
-        belongId: selectItem.value.id,
-        name: selectItem.value.label,
-        code: selectItem.value.data.code,
-        teamRemark: selectItem.value.data.teamRemark
-      }
-    })
-  }
-  // 跳转至岗位管理页面
-  const toIdentity = ()=>{
-    router.push({
-      path: '/relation/identity',
-      query: {
-        belongId: selectItem.value.id,
-        name: selectItem.value.label,
-        module: 'company',
-        persons: 'getPersons',
-      }
-    })
-  }
+  })
+}
+// 跳转至岗位管理页面
+const toIdentity = () => {
+  router.push({
+    path: '/relation/identity',
+    query: {
+      belongId: selectItem.value.id,
+      name: selectItem.value.label,
+      module: 'company',
+      persons: 'getPersons',
+    }
+  })
+}
 </script>
 
 <style lang="scss" scoped>
-  .info {
-    height: 100%;
-    width: 100%;
-    background-color: var(--el-bg-color-overlay);
+.info {
+  height: 100%;
+  width: 100%;
+  background-color: var(--el-bg-color-overlay);
+}
+
+.header {
+  display: flex;
+  padding: 10px 20px;
+  padding-top: 16px;
+  box-sizing: border-box;
+
+  .title {
+    text-align: left;
+    font-size: 16px;
+    width: 30%;
+    font-weight: bold;
   }
-  .header {
-    display: flex;
-    padding: 10px  20px;
-    padding-top: 16px;
-    box-sizing: border-box;
-    .title {
-      text-align: left;
-      font-size: 16px;
-      width: 30%;
-      font-weight: bold;
-    }
-    .box-btns {
-      text-align: right;
-      padding-right: 14px;
-      padding-bottom: 10px;
-      width: 70%;
-    }
+
+  .box-btns {
+    text-align: right;
+    padding-right: 14px;
+    padding-bottom: 10px;
+    width: 70%;
   }
-  .tab-list {
-    padding: 0px 20px 20px;
-    padding-top: 2px;
-    box-sizing: border-box;
-  }
-  .text-remark{
-    max-height: 60px;
-    overflow-y: auto;
-  }
+}
+
+.tab-list {
+  padding: 0px 20px 20px;
+  padding-top: 2px;
+  box-sizing: border-box;
+}
+
+.text-remark {
+  max-height: 60px;
+  overflow-y: auto;
+}
 </style>
