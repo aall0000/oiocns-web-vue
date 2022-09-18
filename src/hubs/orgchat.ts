@@ -5,7 +5,7 @@ import anyStore from '@/utils/anystore'
 import notify from '@/utils/notify'
 const hisMsgCollName = "chat-message"
 
-  
+
 // 消息服务
 // 创建链接
 
@@ -29,7 +29,8 @@ type orgChatType = {
     parseIdentitys: (identitys: any[]) => string, //将身份解析成名称
     getChats: () => Promise<ResultType>, //获取会话列表
     sendMsg: (data: any) => Promise<ResultType>, //发送消息
-    recallMsg: (ids: [string]) => Promise<ResultType>, //撤回消息
+    recallMsg: (msg: any) => Promise<ResultType>, //撤回消息
+    deleteMsg: (msg: any) => void, //删除消息
     setCurrent: (chat: ImMsgChildType) => void, //设置当前会话
     getPersons: (reset: boolean) => Promise<ResultType>, //获取组织人员
     getHistoryMsg: () => Promise<number>, //获取历史消息
@@ -172,7 +173,7 @@ const orgChat: orgChatType = {
         return sum.toString()
     },
     parseIdentitys: (identitys: any[]) => {
-        if(Array.isArray(identitys)){
+        if (Array.isArray(identitys)) {
             return identitys.map((item) => {
                 if (item.name.indexOf('-') > -1) {
                     let names = item.name.split('-')
@@ -223,11 +224,22 @@ const orgChat: orgChatType = {
         }
         return { success: false, data: {}, code: 404, msg: "" }
     },
-    recallMsg: async (ids: [string]) => {
+    recallMsg: async (msg: any) => {
         if (orgChat.isConnected()) {
-            return await orgChat._connection.invoke("RecallMsg", { ids: ids })
+            return await orgChat._connection.invoke("RecallMsg", msg)
         }
         return { success: false, data: {}, code: 404, msg: "" }
+    },
+    deleteMsg: async (msg: any) => {
+        anyStore.remove(hisMsgCollName, {
+            chatId: msg.chatId
+        }, "user").then((res:ResultType)=>{
+            if(res.data === 1 && orgChat.curMsgs.value.length > 0){
+                orgChat.curMsgs.value = orgChat.curMsgs.value.filter(item=>{
+                    return item.chatId != msg.chatId
+                })
+            }
+        })
     },
     setCurrent: async (chat: ImMsgChildType) => {
         if (orgChat.curChat.value) {
@@ -257,7 +269,7 @@ const orgChat: orgChatType = {
         if (orgChat.isConnected() && orgChat.curChat) {
             let res = await orgChat._connection.invoke("GetPersons", {
                 cohortId: orgChat.curChat.value.id,
-                limit: 15,
+                limit: 1000,
                 offset: orgChat.qunPersons.value.length
             })
             if (res.success) {
@@ -383,10 +395,10 @@ const orgChat: orgChatType = {
         }
     },
     _handleMsg: (data: any) => {
-        if(!orgChat.chats.value || orgChat.chats.value.length < 1){
-            setTimeout(()=>{
+        if (!orgChat.chats.value || orgChat.chats.value.length < 1) {
+            setTimeout(() => {
                 orgChat._handleMsg(data)
-            },1000)
+            }, 1000)
         }
         if (data.msgType === "recall") {
             data.showTxt = "撤回了一条消息"
@@ -472,6 +484,7 @@ const orgChat: orgChatType = {
             anyStore.insert(hisMsgCollName, {
                 chatId: data.id,
                 toId: data.toId,
+                spaceId: data.spaceId,
                 fromId: data.fromId,
                 msgType: data.msgType,
                 msgBody: data.msgBody,
