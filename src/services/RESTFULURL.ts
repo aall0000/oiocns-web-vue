@@ -160,7 +160,11 @@ export default {
     searchMerchandiseSellList: order + '/search/merchandise/sell/list', //卖方查询指定商品售卖订单列表
     searchPayList: order + '/search​/pay/list', //查询订单支付信息
     searchSellList: order + '/search/sell/list', //卖方查询售卖订单列表
-    udpate: order + '/update' //更新订单
+    udpate: order + '/update', //更新订单
+    updateDetail: order + '/update/detail', //更新订单详情
+    cancel: order + '/cancel', //取消订单
+    cancelBuy: order + '/cancel/buy/detail', //买方取消订单指定详情项
+    cancelSell: order + '/cancel/sell/detail', //卖方取消订单指定详情项
   },
   product: {
     createResource: product + '/create/resource', //创建产品资源
