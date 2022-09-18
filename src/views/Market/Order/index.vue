@@ -256,51 +256,59 @@ const searchValue = ref<string>('')
   ],tableHeadSell: [
       {
         prop: 'code',
-        label: '订单号'
+        label: '订单号',
+        minWidth: '120'
       },
       {
         prop: 'caption',
-        label: '名称'
+        label: '名称',
+        minWidth: '120'
       },
       {
         prop:'marketId',
         label:"市场名称",
+        minWidth: '120',
         formatter: (row:any, column:any) => {return row.marketId? orgChat.getName(row.marketId) :null} 
       },
       {
         prop: 'belongId',
         label: '买方名称',
+        minWidth: '120',
         formatter: (row:any, column:any) => orgChat.getName(row.belongId)
       },
       {
         prop: 'sellAuth',
-        label: '售卖权属'
+        label: '售卖权属',
+        minWidth: '120'
       },
       {
         prop: 'days',
         label: '使用期限',
+        minWidth: '120',
         formatter: (row:any, column:any) => {return row.days || '永久'}
       },
       {
         prop: 'price',
-        label: '价格'
+        label: '价格',
+        minWidth: '100'
       },
       {
         prop: 'status',
         label: '状态',
+        minWidth: '120',
         formatter: (row:any, column:any) => renderDict(row, column, 'OrderStatus')
       },
       {
         prop: 'createTime',
         label: '创建时间',
-        minWidth: '120',
+        minWidth: '200',
       },
       {
         type: 'slot',
         label: '支付记录',
         fixed: 'right',
         align: 'center',
-        width: '150',
+        minWidth: '150',
         name: 'paylist'
       },
       {
@@ -308,7 +316,7 @@ const searchValue = ref<string>('')
         label: '商品状态',
         fixed: 'right',
         align: 'center',
-        width: '150',
+        minWidth: '150',
         name: 'merchandiseStatus'
       },
       {
@@ -316,7 +324,7 @@ const searchValue = ref<string>('')
         label: '操作',
         fixed: 'right',
         align: 'center',
-        minWidth: '120',
+        minWidth: '200',
         name: 'operate'
       }
     ] })
