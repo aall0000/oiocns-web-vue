@@ -271,7 +271,7 @@
   })
   let authTree = ref<any[]>([])
 
-  // 加载职权树
+  // 加载角色树
   const loadAuthorityTree = (id:string) => {
     $services.company.getAuthorityTree({data: {id: id}}).then((res: any)=>{
       authTree.value = []

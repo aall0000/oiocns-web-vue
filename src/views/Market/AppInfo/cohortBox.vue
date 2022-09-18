@@ -20,7 +20,7 @@
       <el-descriptions style="margin-top: 10px" class="margin-top" :column="1" border>
         <el-descriptions-item>
           <template #label>
-            <div class="cell-item"> 按部门分发记录 </div>
+            <div class="cell-item"> 按部门分配记录 </div>
           </template>
           <template  v-if="state.departData.length>0" >
             <div style="margin-right: 10px" v-for="item in state.departData" :key="item.id"
@@ -33,7 +33,7 @@
         </el-descriptions-item>
         <el-descriptions-item>
           <template #label>
-            <div class="cell-item"> 按职权分发记录 </div>
+            <div class="cell-item"> 按角色分配记录 </div>
           </template>
           <template v-if="state.authorData.length > 0">
             <div style="margin-right: 10px" v-for="item in state.authorData" :key="item.id"
@@ -46,7 +46,7 @@
         </el-descriptions-item>
         <el-descriptions-item>
           <template #label>
-            <div class="cell-item"> 按人员分发记录 </div>
+            <div class="cell-item"> 按人员分配记录 </div>
           </template>
           <template v-if="state.personsData.length > 0">
             <div style="margin-right: 10px" v-for="item in state.personsData" :key="item.id"
@@ -59,7 +59,7 @@
         </el-descriptions-item>
         <el-descriptions-item>
           <template #label>
-            <div class="cell-item"> 按身份分发记录 </div>
+            <div class="cell-item"> 按岗位分配记录 </div>
           </template>
           <template v-if="state.identitysData.length > 0">
             <div style="margin-right: 10px" v-for="item in state.identitysData" :key="item.id"
@@ -76,7 +76,7 @@
         v-if="shareVisible"
         v-model="shareVisible"
         custom-class="share-dialog"
-        title="应用分发"
+        title="应用分配"
         width="1000px"
         draggable
         :close-on-click-modal="false"
@@ -102,10 +102,10 @@
       options: [],
       groupShare: [],
       unitShare: [],
-      departData: [], // 集团分发右侧数据
-      authorData: [], // 职权右侧数据
+      departData: [], // 集团分配右侧数据
+      authorData: [], // 角色右侧数据
       personsData: [], // 人员右侧数据
-      identitysData: [], //身份右侧数据
+      identitysData: [], //岗位右侧数据
     })
     type createInfo = {
       info: {

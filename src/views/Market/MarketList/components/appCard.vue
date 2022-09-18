@@ -3,9 +3,8 @@
     <div class="market-content box" style="height: 100%">
       <ul class="box-ul">
         <template v-if="dataList.length !== 0">
-
           <li class="app-card">
-            <ShopCard v-for="item in dataList" :info="item.id" :key="item.id" :cardContent="true">
+            <ShopCard v-for="item in dataList" :info="item.id" :key="item.id" :cardContent="true" >
               <template #icon>
                 <HeadImg :name="item.name" :url="item.icon || merchandiseImg" :imgWidth="48" :limit="1"
                   :isSquare="false" />
@@ -30,7 +29,7 @@
                 <div class="shopCar-box">
                   <div class="app-con-title">{{ item.caption }} </div>
                   <!-- <div class="app-con-info" v-if="item.sellAuth !== '所属权'">使用期限：{{ item.days }}天</div> -->
-                  <div class="app-con-info">单价：
+                  <div class="app-con-info">价格：
                     <span style="color: var(--el-color-warning)"> ￥ </span>
                     <strong style="color: var(--el-color-warning); font-size: 16px">{{
                     item.price || '0.00'
@@ -40,15 +39,15 @@
                   <div class="app-con-info">
                     售卖权属：{{ item.sellAuth }}
                     <el-tag size="small" v-if="item.sellAuth !== '所属权' && item.days">
-                      使用期：{{ item.sellAuth !== '所属权' ? item.days + '天' : '无期限' }}</el-tag>
+                      使用期：{{ item.days + '天'}}</el-tag>
                   </div>
                   <!-- <div class="app-con-info">上架时间：{{ item.createTime.substring(0, 11) }}</div> -->
                 </div>
               </template>
-              <template #footer v-if="item.id != '355346477339512833'">
+              <template #footer v-if="item.product.belongId">
                 <el-divider style="margin: 16px 0"></el-divider>
                 <div class="app-card-item-con-belong">
-                  <span>归属: {{ orgChat.getName(item.belongId) || '未知' }}</span>
+                  <span>归属: {{ orgChat.getName(item.product.belongId) || '未知' }}</span>
 
                   <span>版本： 0.0.1</span>
                 </div>
@@ -76,7 +75,8 @@
         <div v-else>暂无数据</div>
       </ul>
     </div>
-    <AppInfoDialog v-if="state.dialogShow[0].value" :dialogShow="state.dialogShow[0]" @closeDialog="closeDialog"> </AppInfoDialog>
+    <AppInfoDialog v-if="state.dialogShow[0].value" :dialogShow="state.dialogShow[0]" @closeDialog="closeDialog">
+    </AppInfoDialog>
   </div>
   <!-- <template v-for="item in state.dialogShow" :key="item.key"> -->
   <!-- </template> -->
@@ -337,11 +337,9 @@ defineExpose({
 }
 
 .app-card-item-con-footer {
-
   display: flex;
   width: 100%;
   align-items: flex-end;
-
 
   .app-card-item-con-desc {
     width: 50%;
@@ -357,7 +355,6 @@ defineExpose({
       word-break: break-all;
       -webkit-line-clamp: 1;
       -webkit-box-orient: vertical;
-
     }
   }
 }
@@ -370,7 +367,6 @@ defineExpose({
   display: flex;
   justify-content: space-between;
 }
-
 
 // :deep(.el-card__body) {
 //   padding: 0;

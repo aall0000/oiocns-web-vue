@@ -8,17 +8,53 @@
             <div class="card-header">
               <span>{{cohort.name}}</span>
               <el-dropdown>
-                <el-button class="button" text><el-icon><MoreFilled /></el-icon></el-button>
+                <el-button class="button" text>
+                  <el-icon>
+                    <MoreFilled />
+                  </el-icon>
+                </el-button>
                 <template #dropdown>
                   <el-dropdown-menu>
-                    <el-dropdown-item @click="toChat(cohort)"><el-icon><ChatRound /></el-icon>进入会话</el-dropdown-item>
-                    <el-dropdown-item v-if="props.type == '管理的'" @click="edit(cohort)"><el-icon><Edit /></el-icon>修改群组</el-dropdown-item>
-                    <el-dropdown-item @click="invite(cohort)"><el-icon><User /></el-icon>邀请成员</el-dropdown-item>
-                    <el-dropdown-item v-if="props.type == '管理的'" @click="toAuth(cohort)"><el-icon><Edit /></el-icon>角色管理</el-dropdown-item>
-                    <el-dropdown-item v-if="props.type == '管理的'" @click="toIndentity(cohort)"><el-icon><Avatar /></el-icon>身份管理</el-dropdown-item>
-                    <el-dropdown-item v-if="props.type == '管理的' && workspaceData.type !=2" @click="moveAuth(cohort)"><el-icon><Switch /></el-icon>转移权限</el-dropdown-item>
-                    <el-dropdown-item v-if="props.type == '加入的'" @click="exit(cohort)"><el-icon><Remove /></el-icon>退出群聊</el-dropdown-item>
-                    <el-dropdown-item v-if="props.type == '管理的'" @click="deleteCohort(cohort)"><el-icon><Delete /></el-icon>解散群组</el-dropdown-item>
+                    <el-dropdown-item @click="toChat(cohort)">
+                      <el-icon>
+                        <ChatRound />
+                      </el-icon>进入会话
+                    </el-dropdown-item>
+                    <el-dropdown-item v-if="props.type == '管理的'" @click="edit(cohort)">
+                      <el-icon>
+                        <Edit />
+                      </el-icon>修改群组
+                    </el-dropdown-item>
+                    <el-dropdown-item @click="invite(cohort)">
+                      <el-icon>
+                        <User />
+                      </el-icon>邀请成员
+                    </el-dropdown-item>
+                    <el-dropdown-item v-if="props.type == '管理的'" @click="toAuth(cohort)">
+                      <el-icon>
+                        <Edit />
+                      </el-icon>角色管理
+                    </el-dropdown-item>
+                    <el-dropdown-item v-if="props.type == '管理的'" @click="toIndentity(cohort)">
+                      <el-icon>
+                        <Avatar />
+                      </el-icon>岗位管理
+                    </el-dropdown-item>
+                    <el-dropdown-item v-if="props.type == '管理的' && workspaceData.type !=2" @click="moveAuth(cohort)">
+                      <el-icon>
+                        <Switch />
+                      </el-icon>转移权限
+                    </el-dropdown-item>
+                    <el-dropdown-item v-if="props.type == '加入的'" @click="exit(cohort)">
+                      <el-icon>
+                        <Remove />
+                      </el-icon>退出群聊
+                    </el-dropdown-item>
+                    <el-dropdown-item v-if="props.type == '管理的'" @click="deleteCohort(cohort)">
+                      <el-icon>
+                        <Delete />
+                      </el-icon>解散群组
+                    </el-dropdown-item>
                   </el-dropdown-menu>
                 </template>
               </el-dropdown>
@@ -26,14 +62,16 @@
           </template>
           <div class="row-text">归属:{{orgChat.getName(cohort.belongId)}}</div>
           <div class="content">{{cohort.code}}</div>
-          <div class="description">{{cohort.team?.remark}}</div>
-
+          <div class="row-text">创建人:{{orgChat.getName(cohort.createUser)}}</div>
+          <div class="row-text">创建时间:{{cohort.createTime}}</div>
+          <div class="row-text">我的群身份:{{orgChat.parseIdentitys(cohort.identitys) }} </div>
+          <div class="description">简介:{{cohort.team?.remark}}</div>
           <el-divider />
 
           <!-- 无头像，暂时名字替代, Todo -->
           <div class="foot">
             <div v-for="(person, index) in cohort.persons" class="avatar-container" :title="person.name">
-              <el-avatar class="avatar" :size="24" >
+              <el-avatar class="avatar" :size="24">
                 <template #default>
                   <div class="exceedCount">{{person.name.substring(0, 1)}}</div>
                 </template>
@@ -46,7 +84,7 @@
   </div>
 
   <!-- 邀请成员加入群 -->
-  <SearchUser v-if="searchDialog" :serachType="1" @closeDialog="searchDialog = false"  @checksSearch='checksSearch'/>
+  <SearchUser v-if="searchDialog" :serachType="1" @closeDialog="searchDialog = false" @checksSearch='checksSearch' />
 
   <el-dialog v-model="editCohortDialog" title="创建群组" width="35%">
     <el-form-item label="群组名称">
@@ -60,17 +98,13 @@
     </el-form-item>
     <template #footer>
       <span class="dialog-footer">
-        <el-button  @click="editCohortDialog = false">取消</el-button>
+        <el-button @click="editCohortDialog = false">取消</el-button>
         <el-button type="primary" @click="update">确认</el-button>
       </span>
     </template>
   </el-dialog>
-  <SearchGroupPerson
-  v-if="searchGroupDialog"
-  :serachType="2"
-  :id="checkId"
-  @closeDialog="searchGroupDialog = false"
-  @checksGroupSearch="checksGroupSearch" />
+  <SearchGroupPerson v-if="searchGroupDialog" :serachType="2" :id="checkId" @closeDialog="searchGroupDialog = false"
+    @checksGroupSearch="checksGroupSearch" />
 </template>
 
 <script lang="ts" setup>
@@ -84,8 +118,9 @@ import { Service } from '@element-plus/icons-vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import orgChat from '@/hubs/orgchat'
 import Pagination from '@/components/pagination/index.vue'
+import { identity } from 'lodash';
 
-const { queryInfo,workspaceData } = useUserStore()
+const { queryInfo, workspaceData } = useUserStore()
 const router = useRouter()
 
 const searchGroupDialog = ref<boolean>(false)
@@ -112,22 +147,22 @@ const getCohorts = async () => {
   const res = await $services.cohort.getJoinedCohorts({ data: { offset: 0, limit: 10000 } })
   const { data, success } = res
   if (success && data && data.result) {
-    if(props.type == '管理的'){
+    if (props.type == '管理的') {
       state.cohorts = data.result.filter((d: any) => {
-        if(d.identitys && d.identitys.length > 0){
-          for(let i of d.identitys){
-            if(i.authId === d.team.authId){
+        if (d.identitys && d.identitys.length > 0) {
+          for (let i of d.identitys) {
+            if (i.authId === d.team.authId) {
               return true
             }
           }
         }
         return false
       })
-    } else if(props.type == '加入的'){
+    } else if (props.type == '加入的') {
       state.cohorts = data.result.filter((d: any) => {
-        if(d.identitys && d.identitys.length > 0){
-          for(let i of d.identitys){
-            if(i.authId === d.team.authId){
+        if (d.identitys && d.identitys.length > 0) {
+          for (let i of d.identitys) {
+            if (i.authId === d.team.authId) {
               return false
             }
           }
@@ -135,10 +170,10 @@ const getCohorts = async () => {
         return true
       })
     }
-    for(const c of state.cohorts ){
+    for (const c of state.cohorts) {
       // 获取群组成员
       $services.cohort.getPersons({ data: { id: c.id, offset: 0, limit: 100 } }).then((res: any) => {
-        if(res.success){
+        if (res.success) {
           c.persons = res.data.result;
         } else {
           c.persons = []
@@ -150,26 +185,26 @@ const getCohorts = async () => {
 }
 
 // 进入会话
-const toChat = (cohort: any)=>{
+const toChat = (cohort: any) => {
   // console.log('选择群组信息',cohort);
-  router.push({ name: 'chat',params:{defaultOpenID:cohort.id,spaceId:cohort.belongId} })
+  router.push({ name: 'chat', params: { defaultOpenID: cohort.id, spaceId: cohort.belongId } })
 }
 
 // 修改群组信息
-const edit = (cohort: any)=>{
+const edit = (cohort: any) => {
   editCohortDialog.value = true
   curCohort.value = cohort
   formData.value = { name: cohort.name, code: cohort.code, remark: cohort.team?.remark }
 }
 //权限转移
-const checksGroupSearch = (val:any)=>{
+const checksGroupSearch = (val: any) => {
   if (val.value.length > 0) {
     updateBelong(val.value[0].id)
   } else {
     searchGroupDialog.value = false
   }
 }
-const updateBelong = (belongId?:string)=>{
+const updateBelong = (belongId?: string) => {
   const data = {
     id: curCohort.value.id,
     name: curCohort.value.name,
@@ -182,19 +217,19 @@ const updateBelong = (belongId?:string)=>{
     teamAuthId: curCohort.value.team.authId,
   }
   $services.cohort.update({
-      data
-    }).then((res: ResultType) => {
-      if (res.success) {
-        ElMessage({
-          message: '转让成功',
-          type: 'success'
-        })
-        searchGroupDialog.value = false;
-        getCohorts()
-      }
-    })
+    data
+  }).then((res: ResultType) => {
+    if (res.success) {
+      ElMessage({
+        message: '转让成功',
+        type: 'success'
+      })
+      searchGroupDialog.value = false;
+      getCohorts()
+    }
+  })
 }
-const update = ()=>{
+const update = () => {
   const data = {
     id: curCohort.value.id,
     name: formData.value.name,
@@ -207,29 +242,29 @@ const update = ()=>{
     teamAuthId: curCohort.value.team.authId,
   }
   $services.cohort.update({
-      data
-    }).then((res: ResultType) => {
-      if (res.success) {
-        ElMessage({
-          message: '修改成功',
-          type: 'success'
-        })
-        editCohortDialog.value = false
-        getCohorts()
-      }
-    })
+    data
+  }).then((res: ResultType) => {
+    if (res.success) {
+      ElMessage({
+        message: '修改成功',
+        type: 'success'
+      })
+      editCohortDialog.value = false
+      getCohorts()
+    }
+  })
 }
 
 
 
 // 选择人员后的回调
-const checksSearch = (res: any)=>{
-  if(res.value.length > 0){
+const checksSearch = (res: any) => {
+  if (res.value.length > 0) {
     const targetIds = res.value.map((v: any) => v.id);
     $services.cohort.pullPerson({
-      data: { id: curCohort.value.id, targetIds}
-    }).then((res: any) =>{
-      if(res.success){
+      data: { id: curCohort.value.id, targetIds }
+    }).then((res: any) => {
+      if (res.success) {
         ElMessage.success('邀请人员成功！')
         getCohorts()
       } else {
@@ -243,13 +278,13 @@ const checksSearch = (res: any)=>{
 }
 
 // 邀请成员
-const invite = (cohort: any)=>{
+const invite = (cohort: any) => {
   curCohort.value = cohort
   searchDialog.value = true
 }
 
-// 角色(职权)管理
-const toAuth = (cohort: any)=>{
+// 角色(角色)管理
+const toAuth = (cohort: any) => {
   router.push({
     path: '/relation/authority',
     query: {
@@ -262,28 +297,28 @@ const toAuth = (cohort: any)=>{
   })
 }
 
-// 身份管理
-const toIndentity = (cohort: any)=>{
+// 岗位管理
+const toIndentity = (cohort: any) => {
   router.push({
     path: '/relation/identity',
     query: {
-      belongId:  cohort.id,
+      belongId: cohort.id,
       name: cohort.name,
       module: 'cohort',
       persons: 'getPersons',
     }
   })
 }
-const checkId=ref<string>('');
+const checkId = ref<string>('');
 // 转移权限
-const moveAuth = (cohort: any)=>{
+const moveAuth = (cohort: any) => {
   curCohort.value = cohort
   searchGroupDialog.value = true;
   checkId.value = cohort.id
 }
 
 // 退出群聊
-const exit = (cohort: any)=>{
+const exit = (cohort: any) => {
   ElMessageBox.confirm(
     `确定退出 ${cohort.name} 群组吗？`,
     '警告',
@@ -310,7 +345,7 @@ const exit = (cohort: any)=>{
 }
 
 // 删除群聊
-const deleteCohort = (cohort: any)=>{
+const deleteCohort = (cohort: any) => {
   ElMessageBox.confirm(
     `确定解散 ${cohort.name} 群组吗？`,
     '警告',
@@ -347,7 +382,7 @@ watch(props, () => {
 });
 </script>
 <style lang="scss" scoped>
-.container{
+.container {
   height: calc(100vh - 230px);
   width: 100%;
   position: relative;
@@ -355,7 +390,7 @@ watch(props, () => {
   overflow-x: hidden;
 }
 
-.box-card{
+.box-card {
   margin-bottom: 20px;
 }
 
@@ -366,23 +401,28 @@ watch(props, () => {
   font-size: 18px;
 }
 
-.content{
+.content {
   font-size: 16px;
   margin-bottom: 8px;
 }
-.description{
+
+.description {
   font-size: 12px;
 }
-.row-text{
+
+.row-text {
   font-size: 14px;
   margin-bottom: 6px;
 }
-.avatar-container{
+
+.avatar-container {
   display: inline-block;
-  .avatar{
+
+  .avatar {
     margin-left: -8px;
     cursor: pointer;
-    .exceedCount{
+
+    .exceedCount {
       padding-top: 0px;
     }
   }
@@ -391,5 +431,4 @@ watch(props, () => {
 .foot {
   display: flex;
 }
-
 </style>

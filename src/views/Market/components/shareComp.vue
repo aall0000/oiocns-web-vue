@@ -14,8 +14,8 @@
     </el-card>
     <el-card class="share-box">
       <el-tabs v-model="activeName" class="demo-tabs" @tab-click="handleClick">
-        <el-tab-pane label="按集团分享" name="first"></el-tab-pane>
-        <!-- <el-tab-pane label="按职权分享" name="second"></el-tab-pane> -->
+        <el-tab-pane label="按集团共享" name="first"></el-tab-pane>
+        <!-- <el-tab-pane label="按角色共享" name="second"></el-tab-pane> -->
       </el-tabs>
     </el-card>
   </div>

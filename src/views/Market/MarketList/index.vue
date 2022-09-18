@@ -4,12 +4,7 @@
       <template #right>
         <el-button link type="primary" @click="createDialog = true">创建商店</el-button>
         <el-button link type="primary" @click="searchDialog = true">加入商店</el-button>
-        <el-button
-          link
-          type="primary"
-          @click="GoPage('/market/userApply')"
-          style="margin-right: 10px"
-          >我的加入申请
+        <el-button link type="primary" @click="GoPage('/market/userApply')" style="margin-right: 10px">我的加入申请
         </el-button>
 
         <el-radio-group v-model="showType" size="small" class="button">
@@ -38,41 +33,24 @@
 
         <li class="app-card" v-show="showType === 'card'">
           <template v-if="state.myMarket.length !== 0">
-            <ShopCard
-              v-for="item in state.myMarket"
-              :info="item"
-              :key="item.id"
-              :overId="item.id"
-              :softwareId = software
-              type="market"
-              @click="GoPageWithQuery('/market/appList', { data: item.id, type: 'manage' })"
-            >
+            <ShopCard v-for="item in state.myMarket" :info="item" :key="item.id" :overId="item.id"
+              :softwareId="software" type="market"
+              @click="GoPageWithQuery('/market/appList', { data: item.id, type: 'manage' })">
               <template #icon>
-
-                <HeadImg
-                  :name="item.name"
-                  :url="item.icon || storeImg"
-                  :imgWidth="32"
-                  :limit="1"
-                  :isSquare="true"
-                />
+                <HeadImg :name="item.name" :url="item.icon || storeImg" :imgWidth="48" :limit="1" :isSquare="true" />
               </template>
               <template #rightIcon>
-                <el-dropdown
-                  trigger="click"
-                  placement="left-start"
-                  v-if="item.id != software"
-                >
+                <el-dropdown trigger="click" placement="left-start" v-if="item.id != software">
                   <el-icon :size="18">
                     <Operation />
                   </el-icon>
                   <template #dropdown>
                     <el-dropdown-menu>
                       <el-dropdown-item @click.stop="hadleClick(item)">
-                        <el-button class="btn" type="primary" link small v-if="item.belongId==workspaceData.id"
-                        >删除商店</el-button>
-                        <el-button class="btn" type="primary" link small v-if="item.belongId!=workspaceData.id"
-                        >退出商店</el-button>
+                        <el-button class="btn" type="primary" link small v-if="item.belongId == workspaceData.id">删除商店
+                        </el-button>
+                        <el-button class="btn" type="primary" link small v-if="item.belongId != workspaceData.id">退出商店
+                        </el-button>
                       </el-dropdown-item>
                       <el-dropdown-item @click.stop="hadleUserManage(item)">
                         <el-button class="btn" link small>用户管理</el-button>
@@ -81,65 +59,44 @@
                   </template>
                 </el-dropdown>
               </template>
-              <template #footer>
-                <el-divider style="margin: 16px 0"></el-divider>
-                <el-descriptions size="small" :column="1">
-                  <el-descriptions-item label="简介：">{{
-                    item?.remark || '暂无'
-                  }}</el-descriptions-item>
-                </el-descriptions>
+              <!-- 标题下一行的内容 -->
+              <template #description>
+                <span>归属: {{ orgChat.getName(item.belongId) || '-' }}</span>
               </template>
-              <!-- <template #rightTriangle
-                ><div :class="item.public ? 'triangle-public' : 'triangle-'">{{
-                  item.public ? '公' : ''
-                }}</div></template
-              > -->
+            
+
+            <template #body>
+              <el-tooltip trigger="click" effect="customized">
+                <template #content>
+                  <div style="max-width: 280px;">
+                    {{item?.remark }}
+                  </div>
+                </template>
+                <p class="app-card-item-con-desc">简介: {{ item?.remark || '暂无' }}</p>
+              </el-tooltip>
+            </template>
+
             </ShopCard>
           </template>
         </li>
         <li v-show="showType === 'list'">
-          <DiyTable
-            ref="diyTable"
-            :options="{ noPage: true, order: true }"
-            :hasTitle="true"
-            :tableData="state.myMarket"
-            :tableHead="state.tableHead"
-          >
+          <DiyTable ref="diyTable" :options="{ noPage: true, order: true }" :hasTitle="true" :tableData="state.myMarket"
+            :tableHead="state.tableHead">
             <template #isPublic="scope">
-              <el-tag
-                style="margin-left: 10px"
-                :type="scope.row.public == true ? 'success' : ''"
-                >{{ scope.row.public == true ? '公开的' : '私有的' }}</el-tag
-              >
-          </template>
-          <template #tag="scope">
-            <el-tag
-            v-if="scope.row.id != software"
-                style="margin-left: 10px"
-                :type="scope.row.createUser == workspaceData.id ? '' : 'success'"
-                >{{ scope.row.belongId == workspaceData.id ? '创建的' : '加入的' }}</el-tag
-              >
-
-          </template>
+              <el-tag style="margin-left: 10px" :type="scope.row.public == true ? 'success' : ''">{{
+              scope.row.public == true ? '公开的' : '私有的'
+              }}</el-tag>
+            </template>
+            <template #tag="scope">
+              <el-tag v-if="scope.row.id != software" style="margin-left: 10px"
+                :type="scope.row.createUser == workspaceData.id ? '' : 'success'">{{ scope.row.belongId ==
+                workspaceData.id ? '创建的' : '加入的' }}</el-tag>
+            </template>
             <template #operate="scope">
-              <el-button
-                v-if="scope.row.id != software"
-                class="btn"
-                type="primary"
-                link
-                small
-                @click.stop="hadleUserManage(scope.row)"
-                >用户管理</el-button
-              >
-              <el-button
-                class="btn"
-                type="primary"
-                link
-                small
-                @click.stop="marketQuit(scope.row)"
-                v-if="scope.row.id != software"
-                >删除商店</el-button
-              >
+              <el-button v-if="scope.row.id != software" class="btn" type="primary" link small
+                @click.stop="hadleUserManage(scope.row)">用户管理</el-button>
+              <el-button class="btn" type="primary" link small @click.stop="marketQuit(scope.row)"
+                v-if="scope.row.id != software">删除商店</el-button>
             </template>
           </DiyTable>
         </li>
@@ -161,12 +118,7 @@
           <el-input v-model="form.remark" />
         </el-descriptions-item>
         <el-descriptions-item label="商店是否公开">
-          <el-switch
-            v-model="form.public"
-            active-text="是"
-            inactive-text="否"
-            inline-prompt
-          ></el-switch>
+          <el-switch v-model="form.public" active-text="是" inactive-text="否" inline-prompt></el-switch>
           <!-- <el-select v-model="form.public" placeholder="是否公开" style="width: 100%">
             <el-option v-for="item in options" :label="item.label" :value="item.value" :key="item.label"/>
           </el-select> -->
@@ -189,16 +141,12 @@
       @closeDialog="closeDialog"
     ></diySearch> -->
 
-    <searchMarket
-      v-if="searchDialog"
-      @closeDialog="closeDialog"
-      :serachType="7"
-      @checksSearch="checksSearch"
-    />
+    <searchMarket v-if="searchDialog" @closeDialog="closeDialog" :serachType="7" @checksSearch="checksSearch" />
   </div>
 </template>
 
 <script setup lang="ts">
+import orgChat from '@/hubs/orgchat'
 import { reactive, onMounted, computed, ref } from 'vue'
 import diySearch from '@/components/diySearch/index.vue'
 import ShopCard from '../components/shopCard.vue'
@@ -226,7 +174,11 @@ const handleCurrentJoin: any = computed(() => {
   return (state.pageJoin.currentPage - 1) * state.pageJoin.pageSize
 })
 const GoPageWithQuery = (path: string, query: any) => {
-  router.push({ path, query })
+  if (query.data == software.value) {
+    router.push({ path: '/market/softShare', query })
+  } else {
+    router.push({ path, query })
+  }
 }
 const pageContent = ref(null)
 const showType = ref('card')
@@ -235,8 +187,8 @@ const add1: string = '加入商店'
 const searchText = ref<string>('')
 const software = ref<string>('')
 const state = reactive({
-  softShareInfo:{
-    id: ""
+  softShareInfo: {
+    id: ''
   },
   myMarket: [],
   joinMarket: [],
@@ -297,14 +249,14 @@ const state = reactive({
   ]
 })
 
-  const createDialog = ref(false)
+const createDialog = ref(false)
 
-  onMounted(() => {
-    getMarketInfo()
-    getMyMarketData()
-    //getJoinMarketData()
-    getShopcarNum()
-  })
+onMounted(() => {
+  getMarketInfo()
+  getMyMarketData()
+  //getJoinMarketData()
+  getShopcarNum()
+})
 
 const handleCurrentChange = (val: number) => {
   getMyMarketData()
@@ -348,21 +300,21 @@ const checksSearch = (val: any) => {
   }
 }
 
-  const getShopcarNum = async () => {
-    await $services.market
-      .searchStaging({
-        data: {
-          id: 0, //商店id （需删除）
-          offset: 0,
-          limit: 20,
-          filter: ''
-        }
-      })
-      .then((res: ResultType) => {
-        var { result = [], total = 0 } = res.data
-        shopcarNum.value = total
-      })
-  }
+const getShopcarNum = async () => {
+  await $services.market
+    .searchStaging({
+      data: {
+        id: 0, //商店id （需删除）
+        offset: 0,
+        limit: 20,
+        filter: ''
+      }
+    })
+    .then((res: ResultType) => {
+      var { result = [], total = 0 } = res.data
+      shopcarNum.value = total
+    })
+}
 
 const getMyMarketData = () => {
   $services.market
@@ -376,15 +328,7 @@ const getMyMarketData = () => {
     .then((res: ResultType) => {
       if (res.success) {
         const { result = [], total = 0 } = res.data
-        state.myMarket = []
-        result?.forEach((item: { id: string }) => {
-          if (item.id === software.value) {
-            state.myMarket.unshift(item)
-          } else {
-            state.myMarket.push(item)
-          }
-        })
-
+        state.myMarket = result
         state.pageMy.total = total
         pageContent.value.state.page.total = total
       }
@@ -429,7 +373,7 @@ const marketQuit = (item: any) => {
           }
         })
     })
-    .catch(() => {})
+    .catch(() => { })
 }
 const hadleClick = (item: any) => {
   ElMessageBox.confirm(`确认删除  ${item.name}?`, '提示', {
@@ -454,7 +398,7 @@ const hadleClick = (item: any) => {
           }
         })
     })
-    .catch(() => {})
+    .catch(() => { })
 }
 const shopcarNum = ref(0)
 
@@ -485,7 +429,9 @@ const create = () => {
         code: form.code,
         samrId: store.queryInfo.id,
         authId:
-          store.workspaceData.type === 2 ? store.workspaceData.authId : store.queryInfo.team.authId, // 空间为组织单位时取组织单位 的authId
+          store.workspaceData.type === 2
+            ? store.workspaceData.authId
+            : store.queryInfo.team.authId, // 空间为组织单位时取组织单位 的authId
         remark: form.remark,
         public: form.public
       }
@@ -513,49 +459,49 @@ const remoteMethod = (query: string, callback: any) => {
     .then((res: ResultType) => {
       console.log(res)
 
-        if (res.data.result) {
-          let states = res.data.result
-          let arr: { value: any; label: any }[] = []
-          states.forEach((el: any) => {
-            let obj = {
-              value: el.id,
-              label: el.name
-            }
-            arr.push(obj)
-          })
-          callback(arr)
-        }
-      })
-  }
-  const submit = (data: any) => {
-    $services.appstore
-      .applyJoin({
-        data: {
-          id: data[0]
-        }
-      })
-      .then((res: ResultType) => {
-        if (res.success) {
-          ElMessage({
-            message: '加入成功',
-            type: 'success'
-          })
-          searchDialog.value = false
-          //getJoinMarketData()
-        }
-      })
-  }
-  const closeDialog = (data: { value: boolean }) => {
-    searchDialog.value = false
-  }
-   // 获取共享仓库信息
-  const getMarketInfo = () => {
-    $services.market.getSoftShareInfo().then((res: ResultType) => {
-      if (res.code == 200) {
-        state.softShareInfo = res?.data || {}
-        software.value = state.softShareInfo.id
+      if (res.data.result) {
+        let states = res.data.result
+        let arr: { value: any; label: any }[] = []
+        states.forEach((el: any) => {
+          let obj = {
+            value: el.id,
+            label: el.name
+          }
+          arr.push(obj)
+        })
+        callback(arr)
       }
     })
+}
+const submit = (data: any) => {
+  $services.appstore
+    .applyJoin({
+      data: {
+        id: data[0]
+      }
+    })
+    .then((res: ResultType) => {
+      if (res.success) {
+        ElMessage({
+          message: '加入成功',
+          type: 'success'
+        })
+        searchDialog.value = false
+        //getJoinMarketData()
+      }
+    })
+}
+const closeDialog = (data: { value: boolean }) => {
+  searchDialog.value = false
+}
+// 获取共享仓库信息
+const getMarketInfo = () => {
+  $services.market.getSoftShareInfo().then((res: ResultType) => {
+    if (res.code == 200) {
+      state.softShareInfo = res?.data || {}
+      software.value = state.softShareInfo.id
+    }
+  })
 }
 </script>
 
@@ -603,7 +549,18 @@ const remoteMethod = (query: string, callback: any) => {
     height: calc(100vh - 108px);
     overflow-y: auto;
   }
+  .app-card-item-con-desc {
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--el-text-color-regular);
+    line-height: 1.8;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-inline-box; //将对象作为弹性伸缩盒子模型显示。
+    -webkit-box-orient: vertical; // 从上到下垂直排列子元素
+    -webkit-line-clamp: 2; //显示的行数
 
+  }
   .box {
     .box-ul {
       height: 100%;
@@ -612,7 +569,7 @@ const remoteMethod = (query: string, callback: any) => {
       flex: 1;
     }
 
-    .box-ul + .box-ul {
+    .box-ul+.box-ul {
       margin-top: 10px;
     }
 

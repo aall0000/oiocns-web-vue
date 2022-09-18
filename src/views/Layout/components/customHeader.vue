@@ -283,13 +283,13 @@
           id: data.id
         }
       })
-      .then((res: ResultType) => {
+      .then(async (res: ResultType) => {
         if (res.code == 200) {
           sessionStorage.setItem('TOKEN', res.data.accessToken)
-          store.getQueryInfo(res.data.accessToken)
+          await store.getQueryInfo(res.data.accessToken)
           current.value = 0
           store.createUnit(res.data).then(() => {
-            location.reload()
+            location.href = "/"
           })
         } else {
           ElMessage({
@@ -306,13 +306,12 @@
           id: data.id
         }
       })
-      .then((res: ResultType) => {
+      .then(async (res: ResultType) => {
         if (res.code == 200) {
           sessionStorage.setItem('TOKEN', res.data.accessToken)
-
-          store.getQueryInfo(res.data.accessToken)
+          await store.getQueryInfo(res.data.accessToken)
           store.getWorkspaceData(res.data.workspaceId).then(() => {
-            location.reload()
+            location.href = "/"
           })
         } else {
           ElMessage({
@@ -334,6 +333,8 @@
   const exitLogin = () => {
     sessionStorage.clear()
     store.resetState()
+    orgChat.unSubscribed()
+    orgChat.stop()
     router.push('/login')
   }
 </script>

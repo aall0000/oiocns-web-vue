@@ -94,11 +94,11 @@
           <el-button type="primary" @click="onSubmit" v-if="!isDetailPage">注册</el-button>
         </div>
       </el-tab-pane>
-      <el-tab-pane v-if="isDetailPage" label="分享信息" name="1">
+      <el-tab-pane v-if="isDetailPage" label="共享信息" name="1">
         <ShareGroup v-if="!isPerson" :info="resources.info"></ShareGroup>
         <SharePerson v-else :info="resources.info"></SharePerson>
       </el-tab-pane>
-      <el-tab-pane v-if="isDetailPage && !isPerson" label="分发信息" name="2">
+      <el-tab-pane v-if="isDetailPage && !isPerson" label="分配信息" name="2">
         <CohortBox :info="resources.info"></CohortBox>
       </el-tab-pane>
     </el-tabs>

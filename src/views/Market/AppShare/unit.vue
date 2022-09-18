@@ -7,7 +7,7 @@
     <DiyTable class="diytable" ref="diyTable" :tableData="tableData" :tableHead="tableHead">
       <template #operate="scope">
         <el-button link type="danger" size="small" @click="cancelShare(scope.row.id)"
-          >取消分享</el-button
+          >取消共享</el-button
         >
       </template>
     </DiyTable>
@@ -74,7 +74,7 @@
   type arrList = {
     id: string
   }
-  //确定分享
+  //确定共享
   const checksSearch = (val: any) => {
     let selectId: any[] = []
     val.value.forEach((el: { id: any }) => {
@@ -91,7 +91,7 @@
       .then((res: ResultType) => {
         if (res.success) {
           ElMessage({
-            message: '分享成功',
+            message: '共享成功',
             type: 'success'
           })
           getShareHistory()
@@ -99,7 +99,7 @@
         pullCompanysDialog.value = false
       })
   }
-  //取消分享
+  //取消共享
   const cancelShare = (id: string) => {
     $services.product
       .deleteUnitShare({
@@ -112,7 +112,7 @@
       .then((res: ResultType) => {
         if (res.success) {
           ElMessage({
-            message: '取消分享成功',
+            message: '取消共享成功',
             type: 'success'
           })
           getShareHistory()
@@ -120,7 +120,7 @@
         pullCompanysDialog.value = false
       })
   }
-  //分享单位
+  //共享单位
 
   const getShareHistory = () => {
     $services.product

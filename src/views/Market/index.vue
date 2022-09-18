@@ -47,6 +47,7 @@
             <template #icon>
               <HeadImg :name="item.name" :url="item.icon || appImg" :imgWidth="48" :limit="1" :isSquare="false" />
             </template>
+
             <template #rightIcon>
               <el-dropdown trigger="click" @command="(value:any) => handleCommand('own', value, item)"
                 placement="left-start">
@@ -62,9 +63,9 @@
                           item.belongId == store.workspaceData.id &&
                           action.label == '上架'
                         " :command="action.value">{{ action.label }}</el-dropdown-item>
-                        <el-dropdown-item v-if="item.belongId == store.workspaceData.id && action.label == '分享'"
+                        <el-dropdown-item v-if="item.belongId == store.workspaceData.id && action.label == '共享'"
                           :command="action.value">{{ action.label }}</el-dropdown-item>
-                        <el-dropdown-item v-if="store.workspaceData.type == 2 && action.label == '分发'"
+                        <el-dropdown-item v-if="store.workspaceData.type == 2 && action.label == '分配'"
                           :command="action.value">{{ action.label }}</el-dropdown-item>
                       </div>
                       <el-dropdown-item v-if="action.label == '详情'" :command="action.value">{{
@@ -80,21 +81,23 @@
               </el-dropdown>
             </template>
 
-            <template #footer>
-              <el-descriptions size="small" :column="1" style="padding-left: 58px;">
-                <el-descriptions-item label="简介：">{{ item?.remark || '暂无' }}</el-descriptions-item>
-              </el-descriptions>
-              <el-divider style="margin: 6px 0 16px 0"></el-divider>
-              <div class="app-card-item-con-belong">
-                <span>归属: {{ orgChat.getName(item.belongId) || '未知' }}</span>
-
-                <span>版本： 0.0.1</span>
-              </div>
-              <!-- <div class="app-card-item-con-desc"
-                ><p>详情：{{ item.merchandise.information || '暂无'}}</p></div
-              > -->
-
+            <template #description>
+              <span>归属: {{ orgChat.getName(item.belongId) || '未知' }}</span>
+              <el-divider direction="vertical"></el-divider>
+              <span>版本： 0.0.1</span>
             </template>
+
+            <template #body>
+              <el-tooltip trigger="click" effect="customized">
+                <template #content>
+                  <div style="max-width: 280px;">
+                    {{item?.remark || '暂无'}}
+                  </div>
+                </template>
+                <p class="app-card-item-con-desc">简介: {{ item?.remark || '暂无' }}</p>
+              </el-tooltip>
+            </template>
+
           </ShopCard>
         </li>
         <li class="tab-card" v-show="mode === 'list'">
@@ -104,22 +107,20 @@
               {{ scope.row.name }}
             </template>
             <template #tag="scope">
-              <el-tag v-if="
-                scope.row.endTime == undefined ||
-                new Date().getTime() < formartDateTime(scope.row?.endTime)
-              " style="margin-left: 10px" :type="scope.row.createUser == queryInfo.id ? '' : 'success'">{{
-              scope.row.createUser == queryInfo.id ? '可管理' : '可使用' }}</el-tag>
+              <el-tag
+                v-if=" scope.row.endTime == undefined ||  new Date().getTime() < formartDateTime(scope.row?.endTime) "
+                style="margin-left: 10px" :type="scope.row.createUser == queryInfo.id ? '' : 'success'">
+                {{ scope.row.createUser == queryInfo.id ? '可管理' : '可使用' }}</el-tag>
               <el-tag v-if="new Date().getTime() > formartDateTime(scope.row?.endTime)" style="margin-left: 10px"
                 :type="'danger'">失效</el-tag>
               <el-tag style="margin-left: 10px">{{ scope.row.source }}</el-tag>
             </template>
             <template #operate="scope">
-              <el-button v-if="
-                scope.row.authority == '所属权' && scope.row.belongId == store.workspaceData.id
+              <el-button v-if=" scope.row.authority == '所属权' && scope.row.belongId == store.workspaceData.id
               " link type="primary" @click="publishVisible = true">上架</el-button>
               <el-button link type="primary" v-if="scope.row.belongId == store.workspaceData.id"
-                @click="openShareDialog">分享</el-button>
-              <el-button link type="primary" v-if="store.workspaceData.type == 2" @click="cohortVisible = true">分发
+                @click="openShareDialog">共享</el-button>
+              <el-button link type="primary" v-if="store.workspaceData.type == 2" @click="cohortVisible = true">分配
               </el-button>
               <el-button link type="primary" @click="GoPage(`/market/detail/${selectProductItem.id}`)">
                 详情
@@ -145,11 +146,11 @@
       </template>
     </putaway-comp>
   </el-dialog>
-  <el-dialog v-if="cohortVisible" v-model="cohortVisible" custom-class="share-dialog" title="应用分发" width="1000px"
+  <el-dialog v-if="cohortVisible" v-model="cohortVisible" custom-class="share-dialog" title="应用分配" width="1000px"
     draggable :close-on-click-modal="false">
     <Cohort @closeDialog="cohortVisible = false" :info="selectProductItem"></Cohort>
   </el-dialog>
-  <el-dialog v-if="shareVisible" v-model="shareVisible" custom-class="share-dialog" title="应用分享" width="1000px"
+  <el-dialog v-if="shareVisible" v-model="shareVisible" custom-class="share-dialog" title="应用共享" width="1000px"
     draggable :close-on-click-modal="false">
     <ShareCohort v-if="store.workspaceData.type == 2" @closeDialog="shareVisible = false" :info="selectProductItem">
     </ShareCohort>
@@ -202,9 +203,9 @@ const { queryInfo } = storeToRefs(store)
 let groups = reactive([])
 // 当前选中的集团
 let selectedValue = ref<string>('')
-// 集团分享
+// 集团共享
 const groupVisible = ref<boolean>(false)
-// 分享功能
+// 共享功能
 const cohortVisible = ref<boolean>(false)
 
 const shareVisible = ref<boolean>(false)
@@ -335,7 +336,7 @@ const getShopcarNum = async () => {
       shopcarNum.value = total
     })
 }
-// 关闭分享弹窗
+// 关闭共享弹窗
 // const closeDialog = () => {
 //   shareVisible.value = false
 // }
@@ -422,7 +423,7 @@ const openShareDialog = () => {
 const groupId = ref('')
 const groupName = ref('')
 const appInfo = ref('')
-// 跳转到group分享界面
+// 跳转到group共享界面
 const shareGroup = () => {
   if (selectedValue.value) {
     groupId.value = selectedValue.value
@@ -437,7 +438,7 @@ const shareGroup = () => {
     })
   }
 }
-// 跳转到unit分享界面
+// 跳转到unit共享界面
 // const shareUnit = () => {
 //   if (selectedValue.value) {
 //     groupId.value = selectedValue.value
@@ -454,7 +455,7 @@ const shareGroup = () => {
 //     })
 //   }
 // }
-// 按群组分享
+// 按群组共享
 const shareCohort = () => { }
 
 // 上架应用功能
@@ -480,6 +481,17 @@ const formartDateTime = (dateStr: any) => {
 </script>
 
 <style>
+.el-popper.is-customized {
+  /* Set padding to ensure the height is 32px */
+  padding: 6px 12px;
+  background: var(--el-color-primary-light-9);
+}
+
+.el-popper.is-customized .el-popper__arrow::before {
+  background: var(--el-color-primary-light-9);
+  right: 0;
+}
+
 .group-dialog>.el-dialog__body {
   padding: 10px 20px;
   height: 100px;
@@ -511,15 +523,6 @@ const formartDateTime = (dateStr: any) => {
   height: 64px;
   width: 100%;
   overflow: hidden;
-}
-
-.app-card-item-con-belong {
-  // margin-top: 10px;
-  font-size: 12px;
-  font-weight: 400;
-  color: var(--el-text-color-secondary);
-  display: flex;
-  justify-content: space-between;
 }
 
 .menuRight {
@@ -576,10 +579,10 @@ const formartDateTime = (dateStr: any) => {
 
   .market-content {
     position: absolute;
-    padding: 16px 16px 0;
+    padding: 2px 2px 0;
     // margin-top: 4px;
     width: 100%;
-    height: calc(100% - 76px);
+    height: calc(100% - 60px);
     overflow-y: auto;
   }
 
@@ -587,6 +590,26 @@ const formartDateTime = (dateStr: any) => {
     display: flex;
     align-items: center;
     justify-content: center;
+  }
+
+  .app-card-item-con-desc {
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--el-text-color-regular);
+    line-height: 1.8;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-inline-box; //将对象作为弹性伸缩盒子模型显示。
+    -webkit-box-orient: vertical; // 从上到下垂直排列子元素
+    -webkit-line-clamp: 2; //显示的行数
+
+  }
+
+  // body内每行 高度
+  .card-body-cell {
+    overflow: hidden;
+    text-overflow: ellipsis;
+
   }
 
   .button {
