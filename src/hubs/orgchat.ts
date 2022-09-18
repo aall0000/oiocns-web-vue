@@ -353,7 +353,6 @@ const orgChat: orgChatType = {
                     orgChat._recvMsg(data)
                 }, 1000);
             } else {
-                let from = orgChat.nameMap[data.fromId] || ''
                 let to = orgChat.nameMap[data.toId] || ''
                 const noReadCout = orgChat.getNoRead()
                 if (to.startsWith('我')) {
@@ -363,9 +362,10 @@ const orgChat: orgChatType = {
                 ElNotification({
                     showClose: true,
                     dangerouslyUseHTMLString: true,
-
+                    offset: 30,
+                    duration: 2500,
                     message: `<div style="position:relative;">
-                    <span style="color: var(--el-text-color-secondary);margin-right:4px;">最新消息</span> 
+                    <span style="color: var(--el-text-color-secondary);margin-right:4px;">{${to}}有最新消息</span> 
                     ${noReadCout ? `<div class="el-badge">
                     <sup class="el-badge__content el-badge__content--danger">${orgChat.getNoRead()}</sup></div>` : ''}
                     <div style="overflow: hidden;
@@ -374,7 +374,7 @@ const orgChat: orgChatType = {
                     word-break: break-all;
                     -webkit-line-clamp: 1;
                     -webkit-box-orient: vertical;
-                ">${from}->${to}: ${data.msgBody?.includes('img') ? "[图片]" : data.msgBody}</div><div>`
+                    ">${data.showTxt}</div><div>`
                 })
             }
         }
@@ -423,6 +423,7 @@ const orgChat: orgChatType = {
                         if (chat.typeName !== "人员") {
                             chat.showTxt = orgChat.nameMap[data.fromId] + ": " + chat.showTxt
                         }
+                        data.showTxt = chat.showTxt
                         if (orgChat.curChat.value && orgChat.curChat.value.id === chat.id &&
                             orgChat.curChat.value.spaceId === chat.spaceId) {
                             orgChat.curMsgs.value.push(data)
