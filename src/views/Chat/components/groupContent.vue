@@ -29,7 +29,7 @@
             </div>
           </template>
           <div class="flex justify-space-between mb-2 flex-wrap gap-2">
-            <el-button type="warning" v-on:click="deleteMsg(item)" text v-if="item.spaceId === orgChat.userId.value">删除
+            <el-button type="warning" v-on:click="deleteMsg(item)" text v-if="canDelete(item)">删除
             </el-button>
           </div>
         </el-popover>
@@ -49,7 +49,7 @@
           </template>
           <div class="flex justify-space-between mb-3 flex-wrap gap-3">
             <el-button type="primary" v-on:click="recallMsg(item)" text>撤回</el-button>
-            <el-button type="warning" v-on:click="deleteMsg(item)" text v-if="item.spaceId === orgChat.userId.value">删除
+            <el-button type="warning" v-on:click="deleteMsg(item)" text v-if="canDelete(item)">删除
             </el-button>
           </div>
         </el-popover>
@@ -91,6 +91,13 @@ const editShow = (item: any) => {
     curShow.value.edit = false
   }
   curShow.value = item
+}
+
+const canDelete = (item: any)=>{
+  if(item.chatId){
+    return true
+  }
+  return item.spaceId === orgChat.userId.value
 }
 
 const recallMsg = (item: any) => {
