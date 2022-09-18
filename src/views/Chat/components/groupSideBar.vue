@@ -42,7 +42,7 @@
               <div class="group-con-show" @click="openChanged(child)">
                 <el-tooltip
                   class="box-item"
-                  :disabled="child.name.length < 7"
+                  :disabled="child.name.length < 10"
                   :content="child.name"
                   placement="right-start"
                 >
@@ -77,7 +77,7 @@
             <div class="group-con-show" @click="openChanged(child)">
               <el-tooltip
                 class="box-item"
-                :disabled="child.name.length < 7"
+                :disabled="child.name.length < 10"
                 :content="child.name"
                 placement="right-start"
               >
@@ -370,7 +370,7 @@ onBeforeUnmount(() => {
           &-label {
             font-size: 14px;
             font-weight: bold;
-            max-width: 100px;
+            max-width: 140px;
             text-overflow: ellipsis;
             overflow: hidden;
             white-space: nowrap;
@@ -383,7 +383,7 @@ onBeforeUnmount(() => {
         }
 
         &-msg {
-          max-width: 140px;
+          max-width: 180px;
           text-overflow: ellipsis;
           max-height: 24px;
           overflow: hidden;
