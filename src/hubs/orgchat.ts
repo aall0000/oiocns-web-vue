@@ -231,6 +231,9 @@ const orgChat: orgChatType = {
         return { success: false, data: {}, code: 404, msg: "" }
     },
     deleteMsg: async (msg: any) => {
+        if(!msg.chatId){
+            msg.chatId = msg.id
+        }
         anyStore.remove(hisMsgCollName, {
             chatId: msg.chatId
         }, "user").then((res:ResultType)=>{
