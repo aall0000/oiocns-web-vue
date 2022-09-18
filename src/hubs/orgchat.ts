@@ -66,11 +66,11 @@ const orgChat: orgChatType = {
         })
         orgChat._connection.onclose((error) => {
             if (!orgChat._stoped) {
-                console.log('链接已断开,2秒后重连', error)
+                console.log('链接已断开,5秒后重连', error)
                 setTimeout(() => {
                     orgChat._connection = null
                     orgChat.start(accessToken, userId, spaceId)
-                }, 2000)
+                }, 5000)
             }
         })
         orgChat._connection.start().then(async () => {
@@ -108,13 +108,13 @@ const orgChat: orgChatType = {
                 if (orgChat.chats.value.length < 1) {
                     await orgChat.getChats()
                 }
-            }, 500)
+            }, 2000)
         }).catch((error: any) => {
-            console.log('链接出错,30秒后重连', error)
+            console.log('链接出错,5秒后重连', error)
             setTimeout(() => {
                 orgChat._connection = null
                 orgChat.start(accessToken, userId, spaceId)
-            }, 2000)
+            }, 5000)
         }) // 开启链接
     },
     isConnected: () => {
@@ -380,6 +380,11 @@ const orgChat: orgChatType = {
         }
     },
     _handleMsg: (data: any) => {
+        if(!orgChat.chats.value || orgChat.chats.value.length < 1){
+            setTimeout(()=>{
+                orgChat._handleMsg(data)
+            },1000)
+        }
         if (data.msgType === "recall") {
             data.showTxt = "撤回了一条消息"
             orgChat.curMsgs.value.forEach((item: any) => {

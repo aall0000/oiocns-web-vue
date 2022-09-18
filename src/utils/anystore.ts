@@ -42,22 +42,22 @@ const anyStore: anyStoreType = {
         anyStore._connection.on("Updated", anyStore._updated)
         anyStore._connection.onclose((error) => {
             if (!anyStore._stoped) {
-                console.log('链接已断开,30秒后重连', error)
+                console.log('链接已断开,5秒后重连', error)
                 setTimeout(() => {
                     anyStore._connection = null
                     anyStore.start(accessToken, userId, spaceId)
-                }, 30000);
+                }, 5000);
             }
         })
         anyStore._connection.start().then(async () => {
             await anyStore._connection.invoke("TokenAuth", accessToken, "user")
             anyStore._resubscribed()
         }).catch((error: any) => {
-            console.log('链接出错,30秒后重连', error)
+            console.log('链接出错,5秒后重连', error)
             setTimeout(() => {
                 anyStore._connection = null
                 anyStore.start(accessToken, userId, spaceId)
-            }, 30000);
+            }, 5000);
         })// 开启链接
     },
     isConnected: () => {
@@ -81,7 +81,7 @@ const anyStore: anyStoreType = {
             if (!anyStore.isConnected()) {
                 setTimeout(() => {
                     anyStore.subscribed(key, domain, callback)
-                }, 1000)
+                }, 500)
             } else {
                 anyStore._subscribedKeys[fullKey] = callback
                 let res = await anyStore._connection.invoke("Subscribed", key, domain)

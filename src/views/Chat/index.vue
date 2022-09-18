@@ -1,6 +1,6 @@
 <template>
   <div class="cohort-wrap">
-    <el-aside class="custom-group-silder-menu" width="260px">
+    <el-aside class="custom-group-silder-menu" width="300px">
       <GroupSideBarVue :clearHistoryMsg="clearHistoryMsg" @openChanged="openChanged" />
     </el-aside>
     <!-- 右侧展示主体 -->
