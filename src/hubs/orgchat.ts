@@ -2,7 +2,10 @@ import * as signalR from '@microsoft/signalr'
 import { ElNotification } from 'element-plus'
 import { ref, Ref } from 'vue'
 import anyStore from '@/utils/anystore'
+import notify from '@/utils/notify'
 const hisMsgCollName = "chat-message"
+
+  
 // 消息服务
 // 创建链接
 
@@ -365,7 +368,7 @@ const orgChat: orgChatType = {
                     offset: 30,
                     duration: 2500,
                     message: `<div style="position:relative;">
-                    <span style="color: var(--el-text-color-secondary);margin-right:4px;">{${to}}有最新消息</span> 
+                    <span style="color: var(--el-text-color-secondary);margin-right:4px;">${to}有最新消息</span> 
                     ${noReadCout ? `<div class="el-badge">
                     <sup class="el-badge__content el-badge__content--danger">${orgChat.getNoRead()}</sup></div>` : ''}
                     <div style="overflow: hidden;
@@ -433,6 +436,7 @@ const orgChat: orgChatType = {
                                 return i.id === chat.id && i.spaceId === chat.spaceId
                             }).length > 0
                             if (!opened) {
+                                notify.player();
                                 chat.noRead = (chat.noRead || 0) + 1
                             }
                             newChats.push(chat)

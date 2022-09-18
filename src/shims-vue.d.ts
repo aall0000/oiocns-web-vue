@@ -17,3 +17,4 @@ declare module '*.svg' {
 }
 declare module 'vue-grid-layout';
 declare module 'qrcode';
+declare module '@wcjiang/notify';
