@@ -34,6 +34,7 @@
           @handleUpdate="handleUpdate"
           @shopcarNumChange="getShopcarNum"
         ></AppCard>
+        
         <Pagination
           v-if="modeType === 'card'"
           ref="pageContent"
@@ -235,10 +236,13 @@
     //   left: 16px;
     //   bottom: 0px;
     // }
+    :deep(.el-card__body){
+      height: 100%;
+    }
     &-container {
       position: relative;
       width: 100%;
-      height: calc(100% - 60px);
+      height: calc(100%);
       background-color: var(--el-bg-color-overlay);
       overflow: auto;
       display: flex;
