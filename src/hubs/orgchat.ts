@@ -228,7 +228,7 @@ const orgChat: orgChatType = {
         if (orgChat.isConnected()) {
             return await orgChat._connection.invoke("RecallMsg", msg)
         }
-        return { success: false, data: {}, code: 404, msg: "" }
+        return { success: false, data: 0, code: 404, msg: "" }
     },
     deleteMsg: async (msg: any) => {
         if(!msg.chatId){
@@ -407,9 +407,15 @@ const orgChat: orgChatType = {
             data.showTxt = "撤回了一条消息"
             orgChat.curMsgs.value.forEach((item: any) => {
                 if (item.id === data.id) {
+                    item.showTxt = data.showTxt
                     item.msgBody = data.msgBody
                     item.msgType = "recall"
                     item.createTime = data.createTime
+                    if(data.fromId === orgChat.userId.value){
+                        item.allowEdit = true
+                    }else{
+                        delete item.allowEdit
+                    }
                 }
             })
         }
@@ -444,7 +450,9 @@ const orgChat: orgChatType = {
                         data.showTxt = chat.showTxt
                         if (orgChat.curChat.value && orgChat.curChat.value.id === chat.id &&
                             orgChat.curChat.value.spaceId === chat.spaceId) {
-                            orgChat.curMsgs.value.push(data)
+                            if(data.msgType !== "recall"){
+                                orgChat.curMsgs.value.push(data)
+                            }
                             newChats.unshift(chat)
                         } else {
                             let opened = orgChat.openChats.filter(i => {

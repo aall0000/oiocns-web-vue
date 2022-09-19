@@ -9,13 +9,10 @@
       <GroupHeaderVue v-if="orgChat.curChat.value !== null" @viewDetail="handleViewDetail" />
       <!-- 聊天区域 -->
       <GroupContent
-        class="chart-content"
-        v-if="orgChat.curChat.value !== null"
-        ref="contentWrapRef"
-        @handleReWrite=""
+        class="chart-content"  v-if="orgChat.curChat.value !== null" ref="contentWrapRef" @handleReWrite="reWrite"
       />
       <!-- 输入区域 -->
-      <GroupInputBox class="chart-input" v-show="orgChat.curChat.value !== null" />
+      <GroupInputBox ref="inputBox" class="chart-input" v-show="orgChat.curChat.value !== null" />
     </div>
     <!-- 详情 -->
     <GroupDetail v-if="isShowDetail" :clearHistoryMsg="clearHistoryMsg" />
@@ -34,6 +31,7 @@
 
   //内容展示 dom节点
   const contentWrapRef = ref(null)
+  const inputBox = ref(null)
 
   onMounted(() => {
     orgChat.subscribed((data: any) => {
@@ -43,6 +41,10 @@
 
   const openChanged = (item: any) => {
     contentWrapRef.value.goPageEnd()
+  }
+
+  const reWrite = (str: string)=>{
+    inputBox.value.reWrite(str)
   }
 
   onBeforeUnmount(() => {
