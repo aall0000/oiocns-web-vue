@@ -641,8 +641,6 @@
   }
   const handleTabClick = (id: string) => {
     resource.value = id
-    cascaderTree.value = []
-    getCompanyTree(true)
   }
   const delContentAuth = (item: any) => {
     if (radio.value == '2') {
@@ -730,7 +728,7 @@
   // 节点ID和对象映射关系
   const parentIdMap: any = {}
   let cascaderTree = ref<OrgTreeModel[]>([])
-  const getCompanyTree = (val?: boolean) => {
+  const getCompanyTree = () => {
     API.company
       .getGroupTree({
         data: { id: resource.value }
@@ -747,9 +745,7 @@
         obj.children = arr
         obj.disabled = !obj.authAdmin
         cascaderTree.value.push(obj)
-        if (!val) {
-          getHistoryData()
-        }
+        getHistoryData()
       })
   }
   const isAuthAdmin = (nodes: any) => {
