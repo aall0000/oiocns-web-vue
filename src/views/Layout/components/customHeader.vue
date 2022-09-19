@@ -181,11 +181,11 @@
     }
   })
 
-  const load = () => {
+  const load = async () => {
     let currentPage = 0
     current.value = current.value + 1
     currentPage = (current.value - 1) * 10 + 1
-    store.getCompanyList(currentPage, workspaceData.id, true)
+    await store.getCompanyList(currentPage, workspaceData.id, true)
   }
   const dialogShow = reactive([
     {
@@ -241,10 +241,10 @@
       })
   }
 
-  const onClickUnit = () => {
+  const onClickUnit = async () => {
     btnType.value = !btnType.value
     if (!store.userCompanys || store.userCompanys.length == 0) {
-      store.getCompanyList(0, workspaceData.id, false)
+      await store.getCompanyList(0, workspaceData.id, false)
     }
   }
   const handleClose = () => {
@@ -269,10 +269,10 @@
       }
     })
   }
-  const onClickDrop = () => {
+  const onClickDrop = async () => {
     if (store.userCompanys.length == 0) {
       current.value = 0
-      store.getCompanyList(current.value, workspaceData.id, false)
+      await store.getCompanyList(current.value, workspaceData.id, false)
     }
   }
 

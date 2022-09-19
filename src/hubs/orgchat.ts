@@ -257,7 +257,7 @@ const orgChat: orgChatType = {
         if (orgChat.isConnected() && orgChat.curChat) {
             let res = await orgChat._connection.invoke("GetPersons", {
                 cohortId: orgChat.curChat.value.id,
-                limit: 15,
+                limit: 1000,
                 offset: orgChat.qunPersons.value.length
             })
             if (res.success) {
