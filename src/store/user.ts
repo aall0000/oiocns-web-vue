@@ -63,18 +63,17 @@ export const useUserStore = defineStore({
           password: data.password
         }
       })
-      if(res.success){
+      if (res.success) {
         this.userInfo = res.data
         this.userToken = res.data.accessToken
         this.workspaceData = {
           id: res.data.workspaceId,
           name: res.data.workspaceName
         }
-        this.userCompanys = [this.workspaceData]
+        // this.userCompanys = [this.workspaceData]
         await this.getQueryInfo(this.userToken)
         return this.workspaceData
-      }
-      else {
+      } else {
         ElMessage({
           message: res.msg,
           type: 'warning'
@@ -87,10 +86,10 @@ export const useUserStore = defineStore({
         this.userToken = token
       }
       //获取用户详细信息
-      let res:ResultType = await $services.person.queryInfo()
-      if(res.success){
+      let res: ResultType = await $services.person.queryInfo()
+      if (res.success) {
         this.queryInfo = res.data
-      }else {
+      } else {
         ElMessage({
           message: res.msg,
           type: 'warning'
@@ -192,7 +191,7 @@ export const useUserStore = defineStore({
     resetState() {
       // this.userInfo = null
       // this.queryInfo = null
-      // this.userCompanys = null
+      this.userCompanys = []
       // this.copyCompanys = null
       this.userToken = ''
       // this.workspaceData = null
