@@ -400,7 +400,7 @@ defineExpose({
       flex-wrap: wrap;
       align-content: flex-start;
       height: calc(100vh - 310px);
-      overflow-y: scroll;
+      overflow-y: auto;
       // height: calc(100% - 60px);
     }
   }
