@@ -289,7 +289,7 @@
           await store.getQueryInfo(res.data.accessToken)
           current.value = 0
           store.createUnit(res.data).then(() => {
-            location.href = "/"
+            location.href = '/'
           })
         } else {
           ElMessage({
@@ -311,7 +311,7 @@
           sessionStorage.setItem('TOKEN', res.data.accessToken)
           await store.getQueryInfo(res.data.accessToken)
           store.getWorkspaceData(res.data.workspaceId).then(() => {
-            location.href = "/"
+            location.href = '/'
           })
         } else {
           ElMessage({

@@ -100,14 +100,12 @@
   }
   type createInfo = {
     info: {
-      id:string
+      id: string
     }
   }
   const store = useUserStore()
   const searchValue = ref('')
   const searchLeftValue = ref('')
-  const activeName = ref(0)
-  const tabs = ref([])
   const radio = ref('1')
   const leftTree = ref(null)
   const centerTree = ref(null)
@@ -131,14 +129,10 @@
     departHisData: [], // 集团分配历史数据
     centerTree: [], // 角色分配中间树形
     authorHisData: [], // 角色历史数据
-    authorData: [], // 角色右侧数据
-    personsHisData: [], // 人员历史数据
-    personsData: [], // 人员右侧数据
-    identitysData: [], //岗位右侧数据
-    identitysHisData: [] // 岗位历史数据
+    authorData: [] // 角色右侧数据
   })
+
   let cascaderTree = ref<any[]>([])
-  let personTree = ref<any[]>([])
   const authorityProps = {
     label: 'name',
     children: 'nodes'
@@ -151,9 +145,11 @@
     currentPage: 1,
     pageSize: 20
   })
+
   const handleCurrent: any = computed(() => {
     return (page.currentPage - 1) * page.pageSize
   })
+
   watch(
     () => radio.value,
     (newValue, oldValue) => {
@@ -169,10 +165,6 @@
           leftTree.value.setCheckedKeys(arr, true)
         } else if (newValue == '2' && state.authorData.length == 0) {
           getHistoryData()
-        } else if (newValue == '3' && state.personsData.length == 0) {
-          getHistoryData()
-        } else if (newValue == '4' && state.identitysData.length == 0) {
-          getHistoryData()
         }
       })
     },
@@ -183,8 +175,6 @@
     (newValue, oldValue) => {
       state.authorData = []
       state.departData = []
-      state.personsData = []
-      state.identitysData = []
       if (radio.value == '1') {
         leftTree.value.setCheckedKeys([])
       }
@@ -213,62 +203,26 @@
     emit('closeDialog')
   }
 
-  // 获取部门历史数据
-  const getOrgHistoryData = () => {}
-
-  // 获取历史数据（提交表单后）
-  const getNewHistoryData = () => {
-    switch (radio.value) {
-      case '1':
-        API.product
-          .searchGroupShare({
-            data: {
-              id: props.info.id,
-              offset: 0,
-              limit: 1000,
-              filter: '',
-              teamId: store.queryInfo.team.id
-            }
-          })
-          .then((res: ResultType) => {
-            state.departHisData = res.data.result ? res.data.result : []
-            leftTree.value.setCheckedKeys([])
-            let arr: any[] = []
-            state.departHisData.forEach((el) => {
-              el.type = 'has'
-              arr.push(el.id)
-            })
-            state.departData = state.departHisData
-            leftTree.value.setCheckedKeys(arr, true)
-          })
-        break
-      case '2':
-        API.product
-          .searchUnitShare({
-            data: {
-              id: props.info.id,
-              offset: 0,
-              limit: 1000,
-              filter: '',
-              teamId: store.queryInfo.team.id
-            }
-          })
-          .then((res: ResultType) => {
-            state.authorHisData = res.data.result ? res.data.result : []
-            centerTree.value.setCheckedKeys([])
-            let arr: any[] = []
-            state.authorHisData.forEach((el) => {
-              el.type = 'has'
-              arr.push(el.id)
-            })
-            state.authorData = state.authorHisData
-            centerTree.value.setCheckedKeys(arr, true)
-          })
-        break
-      default:
-        break
-    }
+  //获取左侧树形
+  const getCompanyTree = () => {
+    API.cohort
+      .getJoinedCohorts({
+        data: { offset: 0, limit: 10000, filter: '' }
+      })
+      .then((res: ResultType) => {
+        cascaderTree.value = res.data?.result ?? []
+        let obj = {
+          id: store.queryInfo.id,
+          name: '我的好友',
+          label: '我的好友',
+          parentId: '0',
+          data: {}
+        }
+        cascaderTree.value.unshift(obj)
+        getHistoryData()
+      })
   }
+
   // 获取历史数据
   const getHistoryData = () => {
     switch (radio.value) {
@@ -405,23 +359,12 @@
   const centerAuthorClick = (data: any, checked: boolean, indeterminate: any) => {
     console.log('点击中间', data, checked, indeterminate)
     if (checked) {
-      if (radio.value == '2') {
-        handleBoxClick(state.authorHisData, state.authorData, data)
-      } else if (radio.value == '3') {
-        handleBoxClick(state.personsHisData, state.personsData, data)
-      } else {
-        handleBoxClick(state.identitysHisData, state.identitysData, data)
-      }
+      handleBoxClick(state.authorHisData, state.authorData, data)
     } else {
-      if (radio.value == '2') {
-        handleBoxCancelClick(state.authorHisData, state.authorData, data)
-      } else if (radio.value == '3') {
-        handleBoxCancelClick(state.personsHisData, state.personsData, data)
-      } else {
-        handleBoxCancelClick(state.identitysHisData, state.identitysData, data)
-      }
+      handleBoxCancelClick(state.authorHisData, state.authorData, data)
     }
   }
+  // 中间树形点击取消事件
   const handleBoxCancelClick = (hisData: any, dataList: any, data: any) => {
     let result = hisData.some((item: any) => {
       return item.id == data.id
@@ -437,6 +380,7 @@
       }
     })
   }
+  //中间树形勾选事件
   const handleBoxClick = (hisData: any, dataList: any, data: any) => {
     let result = hisData.some((item: any) => {
       return item.id == data.id
@@ -510,6 +454,8 @@
       }
     }
   }
+
+  // 获取中间树形数据
   const handleNodeClick = (data: any, load: boolean, search?: string) => {
     if (typeof load == 'object' && typeof search == 'object') {
       searchValue.value = ''
@@ -535,16 +481,6 @@
           } else {
             state.centerTree = res.data.result ? res.data.result : []
           }
-
-          if (state.personsData.length > 0) {
-            let arr: any[] = []
-            state.personsData.forEach((el) => {
-              if (el.type == 'add' || el.type == 'has') {
-                arr.push(el.id)
-              }
-            })
-            centerTree.value.setCheckedKeys(arr, true)
-          }
         })
     } else {
       API.cohort
@@ -562,31 +498,11 @@
           } else {
             state.centerTree = res.data.result ? res.data.result : []
           }
-
-          if (state.personsData.length > 0) {
-            let arr: any[] = []
-            state.personsData.forEach((el) => {
-              if (el.type == 'add' || el.type == 'has') {
-                arr.push(el.id)
-              }
-            })
-            centerTree.value.setCheckedKeys(arr, true)
-          }
         })
     }
   }
-  const handleTreeData = (item: any) => {
-    for (let i = 0; i < item.length; i++) {
-      if (item[i].nodes) {
-        handleTreeData(item[i].nodes)
-      } else {
-        item[i].nodes = []
-      }
-    }
-  }
-  const handleTabClick = (id: string) => {
-    resource.value = id
-  }
+
+  // raido = 2 时点击取消图标事件
   const delContentAuth = (item: any) => {
     if (radio.value == '2') {
       if (item.type == 'del') {
@@ -608,48 +524,10 @@
           }
         })
       }
-    } else if (radio.value == '3') {
-      if (item.type == 'del') {
-        return
-      } else if (item.type == 'add') {
-        state.personsData.forEach((el, index) => {
-          if (el.id == item.id) {
-            state.personsData.splice(index, 1)
-            centerTree.value.setChecked(item.id, false)
-          }
-        })
-      } else {
-        state.personsData.forEach((el, index) => {
-          if (el.id == item.id) {
-            el.type = 'del'
-            if (state.centerTree.length !== 0) {
-              centerTree.value.setChecked(el.id, false)
-            }
-          }
-        })
-      }
-    } else {
-      if (item.type == 'del') {
-        return
-      } else if (item.type == 'add') {
-        state.identitysData.forEach((el, index) => {
-          if (el.id == item.id) {
-            state.identitysData.splice(index, 1)
-            centerTree.value.setChecked(item.id, false)
-          }
-        })
-      } else {
-        state.identitysData.forEach((el, index) => {
-          if (el.id == item.id) {
-            el.type = 'del'
-            if (state.centerTree.length !== 0) {
-              centerTree.value.setChecked(el.id, false)
-            }
-          }
-        })
-      }
     }
   }
+
+  // radio = 1 时点击图标取消事件
   const delContent = (item: any) => {
     if (item.type == 'del') {
       return
@@ -668,25 +546,6 @@
         }
       })
     }
-  }
-
-  const getCompanyTree = () => {
-    API.cohort
-      .getJoinedCohorts({
-        data: { offset: 0, limit: 10000, filter: '' }
-      })
-      .then((res: ResultType) => {
-        cascaderTree.value = res.data?.result ?? []
-        let obj = {
-          id: store.queryInfo.id,
-          name: '我的好友',
-          label: '我的好友',
-          parentId: '0',
-          data: {}
-        }
-        cascaderTree.value.unshift(obj)
-        getHistoryData()
-      })
   }
 </script>
 

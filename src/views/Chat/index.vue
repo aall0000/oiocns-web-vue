@@ -12,7 +12,6 @@
         class="chart-content"
         v-if="orgChat.curChat.value !== null"
         ref="contentWrapRef"
-        @recallMsg="handleRecallMsg"
         @handleReWrite=""
       />
       <!-- 输入区域 -->
@@ -46,14 +45,6 @@
     contentWrapRef.value.goPageEnd()
   }
 
-  // 消息撤回
-  const handleRecallMsg = (item: any) => {
-    if (item.fromId === orgChat.userId) {
-      orgChat.recallMsg([item.id]).then(() => {
-        console.log('撤回成功')
-      })
-    }
-  }
   onBeforeUnmount(() => {
     // 离开页面关闭链接
     orgChat.unSubscribed()
