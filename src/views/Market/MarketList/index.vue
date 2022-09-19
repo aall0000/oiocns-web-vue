@@ -74,11 +74,11 @@
               <template #body>
                 <el-tooltip trigger="click" effect="customized" @click.stop>
                   <template #content>
-                    <div style="max-width: 280px;">
+                    <div style="max-width: 280px;" >
                       {{item?.remark }}
                     </div>
                   </template>
-                  <p class="app-card-item-con-desc">简介: {{ item?.remark || '暂无' }}</p>
+                  <p class="app-card-item-con-desc" @click.stop>简介: {{ item?.remark || '暂无' }}</p>
                 </el-tooltip>
               </template>
 
