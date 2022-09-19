@@ -84,7 +84,7 @@
   import { Plus, CirclePlus } from '@element-plus/icons-vue'
   import SearchCohort from '@/components/searchs/index.vue'
   import type { FormInstance,FormRules } from 'element-plus'
-  const mode = ref('card')
+  const mode = ref('list')
   const activeName = ref('管理的')
   const ruleFormRef = ref<FormInstance>()
 

@@ -2,7 +2,10 @@ import * as signalR from '@microsoft/signalr'
 import { ElNotification } from 'element-plus'
 import { ref, Ref } from 'vue'
 import anyStore from '@/utils/anystore'
+import notify from '@/utils/notify'
 const hisMsgCollName = "chat-message"
+
+
 // 消息服务
 // 创建链接
 
@@ -26,7 +29,8 @@ type orgChatType = {
     parseIdentitys: (identitys: any[]) => string, //将身份解析成名称
     getChats: () => Promise<ResultType>, //获取会话列表
     sendMsg: (data: any) => Promise<ResultType>, //发送消息
-    recallMsg: (ids: [string]) => Promise<ResultType>, //撤回消息
+    recallMsg: (msg: any) => Promise<ResultType>, //撤回消息
+    deleteMsg: (msg: any) => void, //删除消息
     setCurrent: (chat: ImMsgChildType) => void, //设置当前会话
     getPersons: (reset: boolean) => Promise<ResultType>, //获取组织人员
     getHistoryMsg: () => Promise<number>, //获取历史消息
@@ -66,11 +70,11 @@ const orgChat: orgChatType = {
         })
         orgChat._connection.onclose((error) => {
             if (!orgChat._stoped) {
-                console.log('链接已断开,2秒后重连', error)
+                console.log('链接已断开,5秒后重连', error)
                 setTimeout(() => {
                     orgChat._connection = null
                     orgChat.start(accessToken, userId, spaceId)
-                }, 2000)
+                }, 5000)
             }
         })
         orgChat._connection.start().then(async () => {
@@ -108,13 +112,13 @@ const orgChat: orgChatType = {
                 if (orgChat.chats.value.length < 1) {
                     await orgChat.getChats()
                 }
-            }, 500)
+            }, 2000)
         }).catch((error: any) => {
-            console.log('链接出错,30秒后重连', error)
+            console.log('链接出错,5秒后重连', error)
             setTimeout(() => {
                 orgChat._connection = null
                 orgChat.start(accessToken, userId, spaceId)
-            }, 2000)
+            }, 5000)
         }) // 开启链接
     },
     isConnected: () => {
@@ -169,7 +173,7 @@ const orgChat: orgChatType = {
         return sum.toString()
     },
     parseIdentitys: (identitys: any[]) => {
-        if(Array.isArray(identitys)){
+        if (Array.isArray(identitys)) {
             return identitys.map((item) => {
                 if (item.name.indexOf('-') > -1) {
                     let names = item.name.split('-')
@@ -220,11 +224,25 @@ const orgChat: orgChatType = {
         }
         return { success: false, data: {}, code: 404, msg: "" }
     },
-    recallMsg: async (ids: [string]) => {
+    recallMsg: async (msg: any) => {
         if (orgChat.isConnected()) {
-            return await orgChat._connection.invoke("RecallMsg", { ids: ids })
+            return await orgChat._connection.invoke("RecallMsg", msg)
         }
         return { success: false, data: {}, code: 404, msg: "" }
+    },
+    deleteMsg: async (msg: any) => {
+        if(!msg.chatId){
+            msg.chatId = msg.id
+        }
+        anyStore.remove(hisMsgCollName, {
+            chatId: msg.chatId
+        }, "user").then((res:ResultType)=>{
+            if(res.data === 1 && orgChat.curMsgs.value.length > 0){
+                orgChat.curMsgs.value = orgChat.curMsgs.value.filter(item=>{
+                    return item.chatId != msg.chatId
+                })
+            }
+        })
     },
     setCurrent: async (chat: ImMsgChildType) => {
         if (orgChat.curChat.value) {
@@ -254,7 +272,7 @@ const orgChat: orgChatType = {
         if (orgChat.isConnected() && orgChat.curChat) {
             let res = await orgChat._connection.invoke("GetPersons", {
                 cohortId: orgChat.curChat.value.id,
-                limit: 15,
+                limit: 1000,
                 offset: orgChat.qunPersons.value.length
             })
             if (res.success) {
@@ -286,7 +304,7 @@ const orgChat: orgChatType = {
                         createTime: -1
                     },
                     skip: orgChat.curMsgs.value.length,
-                    limit: 15
+                    limit: 30
                 }, "user")
                 if (res.success && Array.isArray(res.data)) {
                     res.data.forEach((item: any) => {
@@ -304,7 +322,7 @@ const orgChat: orgChatType = {
                         idName = 'cohortId'
                     }
                     let res = await orgChat._connection.invoke(funcName, {
-                        limit: 15,
+                        limit: 30,
                         [idName]: orgChat.curChat.value.id,
                         offset: orgChat.curMsgs.value.length,
                         spaceId: orgChat.curChat.value.spaceId
@@ -353,7 +371,6 @@ const orgChat: orgChatType = {
                     orgChat._recvMsg(data)
                 }, 1000);
             } else {
-                let from = orgChat.nameMap[data.fromId] || ''
                 let to = orgChat.nameMap[data.toId] || ''
                 const noReadCout = orgChat.getNoRead()
                 if (to.startsWith('我')) {
@@ -363,9 +380,10 @@ const orgChat: orgChatType = {
                 ElNotification({
                     showClose: true,
                     dangerouslyUseHTMLString: true,
-
+                    offset: 30,
+                    duration: 2500,
                     message: `<div style="position:relative;">
-                    <span style="color: var(--el-text-color-secondary);margin-right:4px;">最新消息</span> 
+                    <span style="color: var(--el-text-color-secondary);margin-right:4px;">${to}有最新消息</span> 
                     ${noReadCout ? `<div class="el-badge">
                     <sup class="el-badge__content el-badge__content--danger">${orgChat.getNoRead()}</sup></div>` : ''}
                     <div style="overflow: hidden;
@@ -374,12 +392,17 @@ const orgChat: orgChatType = {
                     word-break: break-all;
                     -webkit-line-clamp: 1;
                     -webkit-box-orient: vertical;
-                ">${from}->${to}: ${data.msgBody?.includes('img') ? "[图片]" : data.msgBody}</div><div>`
+                    ">${data.showTxt}</div><div>`
                 })
             }
         }
     },
     _handleMsg: (data: any) => {
+        if (!orgChat.chats.value || orgChat.chats.value.length < 1) {
+            setTimeout(() => {
+                orgChat._handleMsg(data)
+            }, 1000)
+        }
         if (data.msgType === "recall") {
             data.showTxt = "撤回了一条消息"
             orgChat.curMsgs.value.forEach((item: any) => {
@@ -418,6 +441,7 @@ const orgChat: orgChatType = {
                         if (chat.typeName !== "人员") {
                             chat.showTxt = orgChat.nameMap[data.fromId] + ": " + chat.showTxt
                         }
+                        data.showTxt = chat.showTxt
                         if (orgChat.curChat.value && orgChat.curChat.value.id === chat.id &&
                             orgChat.curChat.value.spaceId === chat.spaceId) {
                             orgChat.curMsgs.value.push(data)
@@ -427,6 +451,7 @@ const orgChat: orgChatType = {
                                 return i.id === chat.id && i.spaceId === chat.spaceId
                             }).length > 0
                             if (!opened) {
+                                notify.player();
                                 chat.noRead = (chat.noRead || 0) + 1
                             }
                             newChats.push(chat)
@@ -462,6 +487,7 @@ const orgChat: orgChatType = {
             anyStore.insert(hisMsgCollName, {
                 chatId: data.id,
                 toId: data.toId,
+                spaceId: data.spaceId,
                 fromId: data.fromId,
                 msgType: data.msgType,
                 msgBody: data.msgBody,

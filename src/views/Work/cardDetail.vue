@@ -29,7 +29,6 @@
           class="diytable"
           ref="diyTable"
           :hasTableHead="false"
-          @handleUpdate="handleUpdate"
           :tableData="tableData"
           :tableHead="tableHead"
         >

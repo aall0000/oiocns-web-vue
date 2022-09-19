@@ -579,10 +579,10 @@ const formartDateTime = (dateStr: any) => {
 
   .market-content {
     position: absolute;
-    padding: 16px 16px 0;
+    padding: 2px 2px 0;
     // margin-top: 4px;
     width: 100%;
-    height: calc(100% - 76px);
+    height: calc(100% - 60px);
     overflow-y: auto;
   }
 

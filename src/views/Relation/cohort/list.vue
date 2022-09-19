@@ -355,7 +355,7 @@ watch(props, () => {
 </script>
 <style lang="scss" scoped>
 .container{
-  background: #f0f2f5;
+  // background-color: var(--el-bg-color);
   // padding: 5px;
   width: 100%;
   height: 100%;

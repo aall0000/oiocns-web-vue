@@ -194,4 +194,7 @@
       }
     }
   }
+  .tab-list{
+    height: 80vh;
+  }
 </style>
