@@ -20,7 +20,7 @@
     <el-descriptions style="margin-top: 10px" class="margin-top" :column="1" border>
       <el-descriptions-item>
         <template #label>
-          <div class="cell-item"> 集团分享记录 </div>
+          <div class="cell-item"> 集团共享记录 </div>
         </template>
         <template  v-if="state.groupShare.length>0" >
           <div style="margin-right: 10px" v-for="item in state.groupShare" :key="item.id"
@@ -33,7 +33,7 @@
       </el-descriptions-item>
       <el-descriptions-item>
         <template #label>
-          <div class="cell-item"> 单位分享记录 </div>
+          <div class="cell-item"> 单位共享记录 </div>
         </template>
         <template v-if="state.unitShare.length > 0">
           <div style="margin-right: 10px" v-for="item in state.unitShare" :key="item.id"
@@ -49,7 +49,7 @@
       v-if="shareVisible"
       v-model="shareVisible"
       custom-class="share-dialog"
-      title="应用分享"
+      title="应用共享"
       width="1000px"
       draggable
       :close-on-click-modal="false"

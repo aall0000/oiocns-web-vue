@@ -13,7 +13,7 @@
       </div>
     </div>
     <div class="cohortLayout-header" style="margin-top: 10px">
-      <div class="cohortLayout-header-text">请选择分享方式：</div>
+      <div class="cohortLayout-header-text">请选择共享方式：</div>
       <div class="cohortLayout-header-tabs">
         <el-radio-group v-model="radio">
           <el-radio v-for="item in state.way" :key="item.id" :label="item.id">{{
@@ -132,23 +132,23 @@
     way: [
       {
         id: '1',
-        label: '按集团分享'
+        label: '按集团共享'
       },
       {
         id: '2',
-        label: '按单位分享'
+        label: '按单位共享'
       }
     ],
     options: [], // 集团列表
-    departData: [], // 集团分发右侧数据
-    departHisData: [], // 集团分发历史数据
-    centerTree: [], // 职权分发中间树形
-    authorHisData: [], // 职权历史数据
-    authorData: [], // 职权右侧数据
+    departData: [], // 集团分配右侧数据
+    departHisData: [], // 集团分配历史数据
+    centerTree: [], // 角色分配中间树形
+    authorHisData: [], // 角色历史数据
+    authorData: [], // 角色右侧数据
     personsHisData: [], // 人员历史数据
     personsData: [], // 人员右侧数据
-    identitysData: [], //身份右侧数据
-    identitysHisData: [] // 身份历史数据
+    identitysData: [], //岗位右侧数据
+    identitysHisData: [] // 岗位历史数据
   })
   const authorityProps = {
     label: 'name',
@@ -440,7 +440,7 @@
     Promise.all([promise1, promise2, promise3, promise4]).then((res) => {
       ElMessage({
         type: 'success',
-        message: '分享成功'
+        message: '共享成功'
       })
       closeDialog()
     })

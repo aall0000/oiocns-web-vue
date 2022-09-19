@@ -80,11 +80,11 @@ export const actionOptionsOfOwn: Array<OptionType> = [
     value: 'putaway'
   },
   {
-    label: '分享',
+    label: '共享',
     value: 'share'
   },
   {
-    label: '分发',
+    label: '分配',
     value: 'distribution'
   },
   {
@@ -99,11 +99,11 @@ export const actionOptionsOfOther = [
     value: 'unsubscribe'
   },
   {
-    label: '分享',
+    label: '共享',
     value: 'share'
   },
   {
-    label: '分发',
+    label: '分配',
     value: 'distribution'
   }
 ]

@@ -13,7 +13,7 @@
       </div>
     </div>
     <div class="cohortLayout-header" style="margin-top: 10px">
-      <div class="cohortLayout-header-text">请选择分发方式：</div>
+      <div class="cohortLayout-header-text">请选择分配方式：</div>
       <div class="cohortLayout-header-tabs">
         <el-radio-group v-model="radio">
           <el-radio v-for="item in state.way" :key="item.id" :label="item.id">{{
@@ -142,30 +142,30 @@
     way: [
       {
         id: '1',
-        label: '按部门分发'
+        label: '按部门分配'
       },
       {
         id: '2',
-        label: '按职权分发'
+        label: '按角色分配'
       },
       {
         id: '3',
-        label: '按人员分发'
+        label: '按人员分配'
       },
       {
         id: '4',
-        label: '按身份分发'
+        label: '按岗位分配'
       }
     ],
-    departData: [], // 集团分发右侧数据
-    departHisData: [], // 集团分发历史数据
-    centerTree: [], // 职权分发中间树形
-    authorHisData: [], // 职权历史数据
-    authorData: [], // 职权右侧数据
+    departData: [], // 集团分配右侧数据
+    departHisData: [], // 集团分配历史数据
+    centerTree: [], // 角色分配中间树形
+    authorHisData: [], // 角色历史数据
+    authorData: [], // 角色右侧数据
     personsHisData: [], // 人员历史数据
     personsData: [], // 人员右侧数据
-    identitysData: [], //身份右侧数据
-    identitysHisData: [] // 身份历史数据
+    identitysData: [], //岗位右侧数据
+    identitysHisData: [] // 岗位历史数据
   })
   const authorityProps = {
     label: 'name',
@@ -610,7 +610,7 @@
       })
     }
     Promise.all([promise1, promise2, promise3, promise4]).then((res) => {
-        ElMessageBox.confirm('分发成功，是否继续分发？', {
+        ElMessageBox.confirm('分配成功，是否继续分配？', {
           confirmButtonText: '继续',
           cancelButtonText: '取消',
           type: 'warning'

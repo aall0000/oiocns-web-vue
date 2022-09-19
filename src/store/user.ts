@@ -63,8 +63,7 @@ export const useUserStore = defineStore({
           password: data.password
         }
       })
-
-      if (res.code == 200) {
+      if(res.success){
         this.userInfo = res.data
         this.userToken = res.data.accessToken
         this.workspaceData = {
@@ -72,9 +71,10 @@ export const useUserStore = defineStore({
           name: res.data.workspaceName
         }
         this.userCompanys = [this.workspaceData]
-        this.getQueryInfo()
+        await this.getQueryInfo(this.userToken)
         return this.workspaceData
-      } else {
+      }
+      else {
         ElMessage({
           message: res.msg,
           type: 'warning'
@@ -82,26 +82,20 @@ export const useUserStore = defineStore({
         return null
       }
     },
-    getQueryInfo(token: string) {
+    async getQueryInfo(token: string) {
       if (token) {
         this.userToken = token
       }
       //获取用户详细信息
-      $services.person.queryInfo().then((res: ResultType) => {
-        if (res.code == 200) {
-          this.queryInfo = res.data
-          if (!token) {
-            this.getCompanyList(0)
-          }
-          console.log('搜索', res.data)
-          this.setUserNameMap(res.data.id, res.data.name)
-        } else {
-          ElMessage({
-            message: res.msg,
-            type: 'warning'
-          })
-        }
-      })
+      let res:ResultType = await $services.person.queryInfo()
+      if(res.success){
+        this.queryInfo = res.data
+      }else {
+        ElMessage({
+          message: res.msg,
+          type: 'warning'
+        })
+      }
     },
     async getCompanyList(current: number, workspaceId: string, lazyLoad: boolean) {
       await $services.company

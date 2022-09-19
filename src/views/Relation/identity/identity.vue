@@ -2,11 +2,11 @@
   <div class="container">
     <el-card class="wrap">
       <div>
-        <div class="title">{{router.currentRoute.value.query?.name}}身份</div>
+        <div class="title">{{router.currentRoute.value.query?.name}}岗位</div>
       </div>
 
       <div class="search-wrap">
-        <el-input class="search" placeholder="搜索身份">
+        <el-input class="search" placeholder="搜索岗位">
           <template #suffix>
             <el-icon class="el-input__icon">
               <search />
@@ -32,12 +32,12 @@
     </el-card>
 
 
-    <el-dialog v-model="createIdntityDialog" title="请录入身份信息" width="40%" center append-to-body @close="dialogHide">
+    <el-dialog v-model="createIdntityDialog" title="请录入岗位信息" width="40%" center append-to-body @close="dialogHide">
       <div>
-        <el-form-item label="身份名称" style="width: 100%">
+        <el-form-item label="岗位名称" style="width: 100%">
           <el-input v-model="formData.name" placeholder="请输入" clearable style="width: 100%" />
         </el-form-item>
-        <el-form-item label="身份编号" style="width: 100%">
+        <el-form-item label="岗位编号" style="width: 100%">
           <el-input v-model="formData.code" placeholder="请输入" clearable style="width: 100%" />
         </el-form-item>
         <el-form-item label="所属角色" style="width: 100%">
@@ -49,7 +49,7 @@
           placeholder="请选择"
         />
         </el-form-item>
-        <el-form-item label="身份简介" style="width: 100%">
+        <el-form-item label="岗位简介" style="width: 100%">
           <el-input v-model="formData.remark" :autosize="{ minRows: 5 }" placeholder="请输入" type="textarea" clearable />
         </el-form-item>
       </div>
@@ -76,7 +76,7 @@
   const belongId = ref<any>('')
   const module = ref<any>('company')
   const persons = ref<any>('getPersons')
-  // 身份列表
+  // 岗位列表
   const identityList = reactive({list:[]})
 
   // 刷新
@@ -91,7 +91,7 @@
     val.belongId = belongId.value
     emit('itemClick', val)
   }
-  // 加载身份
+  // 加载岗位
   const loadIdentities = ()=>{
     $services.cohort.getIdentitys({
       data: {
@@ -140,7 +140,7 @@
     children: 'nodes',
   }
 
-  // 加载职权树
+  // 加载角色树
   const loadAuthorityTree = () => {
     $services.company.getAuthorityTree({data: {id: belongId.value}}).then((res: any)=>{
       authorityTree.value = []

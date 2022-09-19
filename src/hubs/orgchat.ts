@@ -23,12 +23,13 @@ type orgChatType = {
     stop: () => void, // 关闭链接
     getName: (id: string) => string, //获取名称
     getNoRead: () => string, //获取未读数量
+    parseIdentitys: (identitys: any[]) => string, //将身份解析成名称
     getChats: () => Promise<ResultType>, //获取会话列表
     sendMsg: (data: any) => Promise<ResultType>, //发送消息
     recallMsg: (ids: [string]) => Promise<ResultType>, //撤回消息
     setCurrent: (chat: ImMsgChildType) => void, //设置当前会话
     getPersons: (reset: boolean) => Promise<ResultType>, //获取组织人员
-    getHistoryMsg: () => Promise<ResultType>, //获取历史消息
+    getHistoryMsg: () => Promise<number>, //获取历史消息
     isConnected: () => boolean //  判断该链接的状态是否为connected
     subscribed: (callback: (data: any) => void) => void // 订阅数据
     unSubscribed: () => void // 取消订阅
@@ -60,7 +61,7 @@ const orgChat: orgChatType = {
         // 初始化
         orgChat._connection = new signalR.HubConnectionBuilder().withUrl('/orginone/orgchat/msghub').build()
         orgChat._connection.on("RecvMsg", orgChat._recvMsg)
-        orgChat._connection.on("ChatRefresh", async(data:any)=>{
+        orgChat._connection.on("ChatRefresh", async (data: any) => {
             await orgChat.getChats()
         })
         orgChat._connection.onclose((error) => {
@@ -76,10 +77,10 @@ const orgChat: orgChatType = {
             await anyStore.subscribed("orgChat", "user", async (data) => {
                 if (data.chats) {
                     orgChat.chats.value = []
-                    data.chats.forEach((item:ImMsgType)=>{
-                        if(item.id === orgChat.spaceId.value){
+                    data.chats.forEach((item: ImMsgType) => {
+                        if (item.id === orgChat.spaceId.value) {
                             orgChat.chats.value.unshift(item)
-                        }else{
+                        } else {
                             orgChat.chats.value.push(item)
                         }
                     })
@@ -142,9 +143,9 @@ const orgChat: orgChatType = {
     },
     getName: (id: string) => {
         let name = orgChat.nameMap[id] || ''
-        if(name === '' && orgChat.isConnected()){
-            orgChat._connection.invoke("GetName", id).then((res)=>{
-                if(res.success){
+        if (name === '' && orgChat.isConnected()) {
+            orgChat._connection.invoke("GetName", id).then((res) => {
+                if (res.success) {
                     orgChat.nameMap[id] = res.data
                     orgChat._cacheChats()
                 }
@@ -167,6 +168,18 @@ const orgChat: orgChatType = {
         }
         return sum.toString()
     },
+    parseIdentitys: (identitys: any[]) => {
+        if(Array.isArray(identitys)){
+            return identitys.map((item) => {
+                if (item.name.indexOf('-') > -1) {
+                    let names = item.name.split('-')
+                    return names[names.length - 1]
+                }
+                return item.name
+            }).join(';')
+        }
+        return '暂无岗位'
+    },
     getChats: async () => {
         if (orgChat.isConnected()) {
             let res = await orgChat._connection.invoke("GetChats")
@@ -175,22 +188,22 @@ const orgChat: orgChatType = {
                 groups.forEach((item: ImMsgType) => {
                     item.chats.forEach((chat: ImMsgChildType) => {
                         chat.spaceId = item.id
-                        orgChat.chats.value.forEach((i:ImMsgType)=>{
-                            if(i.id === item.id){
-                                i.chats.forEach((c: ImMsgChildType)=>{
-                                    if(c.id === chat.id){
+                        orgChat.chats.value.forEach((i: ImMsgType) => {
+                            if (i.id === item.id) {
+                                i.chats.forEach((c: ImMsgChildType) => {
+                                    if (c.id === chat.id) {
                                         chat.msgBody = c.msgBody
                                         chat.msgTime = c.msgTime
                                         chat.msgType = c.msgType
+                                        chat.showTxt = c.showTxt
                                     }
                                 })
                             }
                         })
-                        chat.showTxt = chat.msgBody?.includes('img') ? "[图片]" : chat.msgBody
                         let typeName = chat.typeName == '人员' ? '' : `[${chat.typeName}]`
                         orgChat.nameMap[chat.id] = `${chat.name}${typeName}`
                     })
-                    item.chats = item.chats.sort((a,b)=>{
+                    item.chats = item.chats.sort((a, b) => {
                         return new Date(b.msgTime).getTime() - new Date(a.msgTime).getTime()
                     })
                 })
@@ -263,8 +276,8 @@ const orgChat: orgChatType = {
         return { success: false, data: {}, code: 404, msg: "" }
     },
     getHistoryMsg: async () => {
-        if(orgChat.curChat){
-            if(orgChat.curChat.value.spaceId === orgChat.userId.value){
+        if (orgChat.curChat) {
+            if (orgChat.curChat.value.spaceId === orgChat.userId.value) {
                 let res = await anyStore.aggregate(hisMsgCollName, {
                     match: {
                         sessionId: orgChat.curChat.value.id
@@ -280,9 +293,9 @@ const orgChat: orgChatType = {
                         item.id = item.chatId
                         orgChat.curMsgs.value.unshift(item)
                     })
+                    return res.data.length
                 }
-                return res
-            }else{
+            } else {
                 if (orgChat.isConnected() && orgChat.curChat) {
                     let funcName = 'QueryFriendMsg'
                     let idName = 'friendId'
@@ -301,13 +314,13 @@ const orgChat: orgChatType = {
                             res.data.result.forEach((item: any) => {
                                 orgChat.curMsgs.value.unshift(item)
                             })
+                            return res.data.result.length
                         }
                     }
-                    return res
                 }
             }
         }
-        return { success: false, data: {}, code: 404, msg: "" }
+        return 0
     },
     // 订阅数据 key: 订阅数据的key  callback 数据发生变化时的回调
     subscribed: async (callback: (data: any) => void) => {
@@ -331,7 +344,7 @@ const orgChat: orgChatType = {
     },
     _recvMsg: (data: any) => { // 接收到新消息的回调 
         orgChat._handleMsg(data)
-      
+
         if (orgChat._callBack) { // 如果有回调，说明在消息聊天页面，执行相关回调
             orgChat._callBack.call(orgChat._callBack, data)
         } else { // 没有回调 则说明不在聊天界面，弹出消息提醒
@@ -350,11 +363,11 @@ const orgChat: orgChatType = {
                 ElNotification({
                     showClose: true,
                     dangerouslyUseHTMLString: true,
-                    
-                    message:  `<div style="position:relative;">
+
+                    message: `<div style="position:relative;">
                     <span style="color: var(--el-text-color-secondary);margin-right:4px;">最新消息</span> 
                     ${noReadCout ? `<div class="el-badge">
-                    <sup class="el-badge__content el-badge__content--danger">${orgChat.getNoRead()}</sup></div>`:'' }
+                    <sup class="el-badge__content el-badge__content--danger">${orgChat.getNoRead()}</sup></div>` : ''}
                     <div style="overflow: hidden;
                     text-overflow: ellipsis;
                     display: -webkit-box;
@@ -391,7 +404,7 @@ const orgChat: orgChatType = {
                         sessionId = data.fromId
                     }
                     if (sessionId == chat.id) {
-                        if(chat.spaceId === orgChat.userId.value){
+                        if (chat.spaceId === orgChat.userId.value) {
                             orgChat._cacheMsg(sessionId, data)
                         }
                         chat.msgBody = data.msgBody
@@ -401,6 +414,9 @@ const orgChat: orgChatType = {
                             chat.showTxt = data.msgBody?.includes('img') ? "[图片]" : data.msgBody
                         } else {
                             chat.showTxt = data.showTxt
+                        }
+                        if (chat.typeName !== "人员") {
+                            chat.showTxt = orgChat.nameMap[data.fromId] + ": " + chat.showTxt
                         }
                         if (orgChat.curChat.value && orgChat.curChat.value.id === chat.id &&
                             orgChat.curChat.value.spaceId === chat.spaceId) {
@@ -428,21 +444,21 @@ const orgChat: orgChatType = {
         })
         orgChat._cacheChats()
     },
-    _cacheMsg: (sessionId: string, data: any)=>{
-        if(data.msgType === "recall"){
+    _cacheMsg: (sessionId: string, data: any) => {
+        if (data.msgType === "recall") {
             anyStore.update(hisMsgCollName, {
                 match: {
                     chatId: data.id
                 },
                 update: {
-                    _set_:{
+                    _set_: {
                         msgBody: data.msgBody,
                         msgType: data.msgType,
                     }
                 },
                 options: {}
             }, "user")
-        }else{
+        } else {
             anyStore.insert(hisMsgCollName, {
                 chatId: data.id,
                 toId: data.toId,

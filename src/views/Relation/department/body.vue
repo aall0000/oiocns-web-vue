@@ -4,7 +4,7 @@
       <el-tab-pane label="人员列表" name="user">
       </el-tab-pane>
       <User :selectItem="selectItem"></User>
-      <!-- <el-tab-pane label="身份列表" name="identity">
+      <!-- <el-tab-pane label="岗位列表" name="identity">
         <Identity :selectItem="selectItem"></Identity>
       </el-tab-pane> -->
     </el-tabs>

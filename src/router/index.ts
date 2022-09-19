@@ -125,7 +125,7 @@ const mainRouter: RouteRecordRaw[] = [
         name: 'identity',
         component: () => import('@/views/Relation/identity/index.vue'),
         meta: {
-          title: '身份管理'
+          title: '岗位管理'
         }
       }
     ]
@@ -237,7 +237,7 @@ const mainRouter: RouteRecordRaw[] = [
         name: 'marketGroup',
         component: () => import('@/views/Market/AppShare/group.vue'),
         meta: {
-          title: '分享集团'
+          title: '共享集团'
         }
       },
       {
@@ -245,7 +245,7 @@ const mainRouter: RouteRecordRaw[] = [
         name: 'marketUnit',
         component: () => import('@/views/Market/AppShare/unit.vue'),
         meta: {
-          title: '分享单位'
+          title: '共享单位'
         }
       },
       {

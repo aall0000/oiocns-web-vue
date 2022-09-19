@@ -3,7 +3,7 @@
     <div class="header">
       <div class="title">{{selectItem.name}}</div>
       <div class="box-btns">
-        <el-button small link type="primary" @click="showGiveDialog">指派身份</el-button>
+        <el-button small link type="primary" @click="showGiveDialog">指派岗位</el-button>
       </div>
     </div>
     <div :style="{height:tabHeight-35+'px'}">
@@ -18,7 +18,7 @@
     </div>
   </div>
 
-  <el-dialog v-model="giveDialog" @close="hideGiveDialog" :title="'给人员 => ' + selectItem.name + ' 身份'" width="50%">
+  <el-dialog v-model="giveDialog" @close="hideGiveDialog" :title="'给人员 => ' + selectItem.name + ' 岗位'" width="50%">
     <el-input v-model="giveSearch" class="search" placeholder="搜索用户" @input="giveSearchChange">
       <template #prefix>
         <el-icon class="el-input__icon">
@@ -127,7 +127,7 @@ const pageStore = reactive({
 const diyTable = ref(null)
 const giveTable = ref(null)
 
-// 加载身份下的用户
+// 加载岗位下的用户
 const getUsers = () => {
   const data = selectItem
   if (data) {
@@ -154,11 +154,11 @@ const handleUpdate = (page: any) => {
 }
 
 
-// 移除身份下的人员
+// 移除岗位下的人员
 const removeFrom = (row: any) => {
   let url: string = 'removeIdentity';
   ElMessageBox.confirm(
-    `确定把 ${row.name} 从当前身份移除吗？`,
+    `确定把 ${row.name} 从当前岗位移除吗？`,
     '警告',
     {
       confirmButtonText: '确定',
@@ -200,7 +200,7 @@ const getOrgUsers = (filter?: string) => {
       data,
   }).then((res: ResultType) => {
     if (res.code == 200 && res.success) {
-      // 去除已分配到身份
+      // 去除已分配到岗位
       let us = res.data.result || []
       let userIds = []
       if (users.value) {
@@ -224,7 +224,7 @@ const showGiveDialog = () => {
   if (!selectItem.value.id) {
     ElMessage({
       type: 'warning',
-      message: '请选择身份'
+      message: '请选择岗位'
     })
     return false
   }
@@ -246,7 +246,7 @@ const giveSearchChange = (e: string) => {
 }
 
 
-// 给人员身份
+// 给人员岗位
 const giveIdentity = () => {
   const userIds = giveTable?.value?.state?.multipleSelection.map((u: any) => u.id);
   $services.company

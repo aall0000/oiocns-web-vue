@@ -8,7 +8,7 @@
       <el-button small link type="primary" @click="friendShow">添加好友</el-button>
       <el-button small link type="primary" @click="friendApply">查看申请</el-button>
       <el-button small link type="primary" @click="toAuth">角色管理</el-button>
-      <el-button small link type="primary" @click="toIdentity">身份管理</el-button>
+      <el-button small link type="primary" @click="toIdentity">岗位管理</el-button>
       </div>
     </div>
 
@@ -160,7 +160,7 @@
     })
   }
 
-  // 跳转至身份管理页面
+  // 跳转至岗位管理页面
   const toIdentity = () => {
     router.push({
       path: '/relation/identity',

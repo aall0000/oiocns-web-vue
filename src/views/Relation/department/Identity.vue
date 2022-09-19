@@ -3,7 +3,7 @@
       <div class="header">
         <div class="title">{{selectItem.label}}</div>
         <div class="box-btns">
-          <el-button small link type="primary" :disabled=selectItem.data.authAdmin @click="dialogVisible = true">添加身份</el-button>
+          <el-button small link type="primary" :disabled=selectItem.data.authAdmin @click="dialogVisible = true">添加岗位</el-button>
         </div>
       </div>
 
@@ -46,12 +46,12 @@
 
 
 
-  <el-dialog v-model="dialogVisible" title="请输入身份信息" width="30%">
-    <el-form-item label="身份名称">
+  <el-dialog v-model="dialogVisible" title="请输入岗位信息" width="30%">
+    <el-form-item label="岗位名称">
       <el-input v-model="fromData.departmentName" placeholder="请输入单位名称" clearable />
     </el-form-item>
-    <el-form-item label="身份编号">
-      <el-input v-model="fromData.departmentTeamCode" placeholder="请输入身份编号" clearable />
+    <el-form-item label="岗位编号">
+      <el-input v-model="fromData.departmentTeamCode" placeholder="请输入岗位编号" clearable />
     </el-form-item>
     <el-form-item label="所属集团">
       <el-input v-model="fromData.departmentTeamCode" placeholder="请输入所属集团" clearable />
@@ -59,8 +59,8 @@
     <el-form-item label="所属单位">
       <el-input v-model="fromData.departmentTeamCode" placeholder="请输入所属单位" clearable />
     </el-form-item>
-    <el-form-item label="身份描述">
-      <el-input v-model="fromData.departmentTeamRemark" placeholder="请输入身份描述" type="textarea" clearable />
+    <el-form-item label="岗位描述">
+      <el-input v-model="fromData.departmentTeamRemark" placeholder="请输入岗位描述" type="textarea" clearable />
     </el-form-item>
     <template #footer>
       <span class="dialog-footer">
@@ -159,7 +159,7 @@ const handleSelect = (key: Array<any>) => {
 }
 
 
-// 新增身份
+// 新增岗位
 const addIdentity = () => {
   API.company
     .createDepartment({

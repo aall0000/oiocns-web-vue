@@ -136,7 +136,7 @@
   const getFixedData = () => {
     anyStore.subscribed(`${anyStore.spaceId}.menu`, 'user', (data) => {
       if (Array.isArray(data)) {
-        // 过滤取消分配 或者 取消分发的应用
+        // 过滤取消分配 或者 取消分配的应用
         data = data.filter((item) => {
           return (canUseAppId.value&&canUseAppId.value.includes(item.id)) ?? true
         })

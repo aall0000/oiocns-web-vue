@@ -90,14 +90,12 @@ const showChatTime = (chatDate: moment.MomentInput) => {
 const scrollTop = debounce(async() => {
   let scroll = nodeRef.value.scrollTop
   if (scroll < 10) {
-   let {data,success} = await orgChat.getHistoryMsg()
-   if (success&&data.offset===data.total) {
-    return
-   }
-    keepScrollPos()
+    let beforeHeight = nodeRef.value.scrollHeight
+    let count = await orgChat.getHistoryMsg()
+    if(count > 0){
+        nodeRef.value.scrollTop = nodeRef.value.scrollHeight - beforeHeight
+    }
   }
-  // 记录当前滚动位置
-  scrollOfZeroToEnd.value = nodeRef.value.scrollHeight - nodeRef.value.scrollTop
 }, 200)
 
 // 滚动设置到底部
@@ -106,12 +104,6 @@ const goPageEnd = () => {
     // console.log('滚动底部', nodeRef.value.scrollHeight);
     nodeRef.value.scrollTop = nodeRef.value.scrollHeight
   })
-}
-// 加载更多时,滚动位置固定
-const keepScrollPos = () => {
-  // nextTick(() => {
-    nodeRef.value.scrollTop = nodeRef.value.scrollHeight - scrollOfZeroToEnd.value
-  // })
 }
 
 const scrollEvent = () => {
@@ -174,8 +166,7 @@ onBeforeUnmount(() => {
 })
 // 暴露子组件方法
 defineExpose({
-  goPageEnd,
-  keepScrollPos
+  goPageEnd
 })
 </script>
 <style>
