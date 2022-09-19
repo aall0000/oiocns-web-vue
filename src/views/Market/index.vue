@@ -11,7 +11,7 @@
           <el-button small link type="primary" @click="GoPage('/market/marketList')">商店列表</el-button>
           <el-button small link type="primary" @click.stop="GoPage('/market/order/buy')">采购订单</el-button>
           <el-button small link type="primary" @click.stop="GoPage('/market/order/sell')">售卖订单</el-button>
-          <el-badge :value="shopcarNum" style="padding-left: 10px">
+          <el-badge :hidden="shopcarNum===0" :value="shopcarNum" style="padding-left: 10px">
             <el-button small link type="primary" @click.stop="GoPage('/market/shopCar')">购物车</el-button>
           </el-badge>
         </div>

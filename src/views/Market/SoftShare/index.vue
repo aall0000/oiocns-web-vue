@@ -4,7 +4,7 @@
       <el-space :size="16">
         <el-button type="primary" link @click.stop="GoPage('/market/order/buy')">采购订单</el-button>
         <el-button type="primary" link @click.stop="GoPage('/market/order/sell')">售卖订单</el-button>
-        <el-badge :value="shopcarNum">
+        <el-badge :hidden="shopcarNum===0" :value="shopcarNum">
           <el-button type="primary" link @click.stop="GoPage('/market/shopCar')">购物车</el-button>
         </el-badge>
         <el-radio-group v-model="modeType" size="small" class="button" >
@@ -34,7 +34,7 @@
           @handleUpdate="handleUpdate"
           @shopcarNumChange="getShopcarNum"
         ></AppCard>
-        
+
         <Pagination
           v-if="modeType === 'card'"
           ref="pageContent"
