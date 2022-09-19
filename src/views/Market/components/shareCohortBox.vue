@@ -108,12 +108,12 @@
     id: string
     label: string
     data?: any
-    authAdmin:any
+    authAdmin: any
     children?: Tree[]
   }
   type createInfo = {
     info: {
-      id:string
+      id: string
     }
   }
   const searchValue = ref('')
@@ -157,7 +157,7 @@
   const unitProps = {
     label: 'label',
     children: 'children',
-    disabled: 'disabled',
+    disabled: 'disabled'
   }
   const page = reactive({
     currentPage: 1,
@@ -561,8 +561,8 @@
     }
   }
   const handleNodeClick = (data: any, load: boolean, search?: string) => {
-    console.log('data',data)
-    if(data.authAdmin ===false || data?.data?.authAdmin ===false){
+    console.log('data', data)
+    if (data.authAdmin === false || data?.data?.authAdmin === false) {
       return false
     }
     if (typeof load == 'object' && typeof search == 'object') {
@@ -641,6 +641,8 @@
   }
   const handleTabClick = (id: string) => {
     resource.value = id
+    cascaderTree.value = []
+    getCompanyTree(true)
   }
   const delContentAuth = (item: any) => {
     if (radio.value == '2') {
@@ -728,27 +730,30 @@
   // 节点ID和对象映射关系
   const parentIdMap: any = {}
   let cascaderTree = ref<OrgTreeModel[]>([])
-  const getCompanyTree = () => {
+  const getCompanyTree = (val?: boolean) => {
     API.company
       .getGroupTree({
         data: { id: resource.value }
       })
       .then((res: any) => {
         let obj = res.data.data
-        let arr:any =[]
-        res.data.children.forEach((element:any) => {
-          let obj = element;
+        let arr: any = []
+        res.data.children.forEach((element: any) => {
+          let obj = element
           obj.disabled = !element.data.authAdmin
           arr.push(obj)
-        });
+        })
         obj.label = obj.name
         obj.children = arr
         obj.disabled = !obj.authAdmin
         cascaderTree.value.push(obj)
-        getHistoryData()
+        if (!val) {
+          getHistoryData()
+        }
       })
   }
-  const isAuthAdmin = (nodes:any)=>{ //判断是否有操作权限
+  const isAuthAdmin = (nodes: any) => {
+    //判断是否有操作权限
     for (const node of nodes) {
       node.disabled = !node.data.authAdmin
       if (node.children) {
@@ -768,7 +773,9 @@
   }
   // 过滤掉工作组作为表单级联数据
   const filter = (nodes: OrgTreeModel[]): OrgTreeModel[] => {
-    nodes = nodes.filter((node) => node.data?.typeName !== '工作组' && node.data?.authAdmin === true)
+    nodes = nodes.filter(
+      (node) => node.data?.typeName !== '工作组' && node.data?.authAdmin === true
+    )
     for (const node of nodes) {
       node.children = filter(node.children)
     }
