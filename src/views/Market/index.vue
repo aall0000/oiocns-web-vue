@@ -48,12 +48,29 @@
               <HeadImg :name="item.name" :url="item.icon || appImg" :imgWidth="48" :limit="1" :isSquare="false" />
             </template>
 
-            <template #rightIcon>
+            <!-- 附属标题区 -->
+            <template #description>
+              <span>归属: {{ orgChat.getName(item.belongId) || '未知' }}</span>
+              <el-divider direction="vertical"></el-divider>
+              <span>版本： 0.0.1</span>
+            </template>
+            <!-- 内容区 -->
+            <template #body>
+              <el-tooltip trigger="click" effect="customized">
+                <template #content>
+                  <div style="max-width: 280px;">
+                    {{item?.remark || '暂无'}}
+                  </div>
+                </template>
+                <p class="app-card-item-con-desc">简介: {{ item?.remark || '暂无' }}</p>
+              </el-tooltip>
+            </template>
+            <!-- 操作区 -->
+            <template #option>
+              <div class="option-unit">
               <el-dropdown trigger="click" @command="(value:any) => handleCommand('own', value, item)"
-                placement="left-start">
-                <el-icon style="cursor: pointer" :size="20">
-                  <Operation />
-                </el-icon>
+                placement="bottom">
+                <div class="option-unit">设置</div>
                 <template #dropdown>
                   <el-dropdown-menu>
                     <div v-for="action in actionOptionsOfOwn" :key="action.value">
@@ -72,32 +89,17 @@
                       action.label
                       }}</el-dropdown-item>
                     </div>
-                    <el-dropdown-item @click="deleteApp(item)">移除应用</el-dropdown-item>
+                    <!-- <el-dropdown-item @click="deleteApp(item)">移除应用</el-dropdown-item> -->
                     <!-- <el-dropdown-item  @click="GoPage('/market/appDetail')">应用详情</el-dropdown-item> -->
                     <el-dropdown-item @click="GoPageWithQuery('/market/publishList', {id:item.id})">应用上架列表
                     </el-dropdown-item>
                   </el-dropdown-menu>
                 </template>
               </el-dropdown>
-            </template>
-
-            <template #description>
-              <span>归属: {{ orgChat.getName(item.belongId) || '未知' }}</span>
+              </div>
               <el-divider direction="vertical"></el-divider>
-              <span>版本： 0.0.1</span>
+              <div class="option-unit" @click="deleteApp(item)">移除应用</div>
             </template>
-
-            <template #body>
-              <el-tooltip trigger="click" effect="customized">
-                <template #content>
-                  <div style="max-width: 280px;">
-                    {{item?.remark || '暂无'}}
-                  </div>
-                </template>
-                <p class="app-card-item-con-desc">简介: {{ item?.remark || '暂无' }}</p>
-              </el-tooltip>
-            </template>
-
           </ShopCard>
         </li>
         <li class="tab-card" v-show="mode === 'list'">
@@ -481,7 +483,6 @@ const formartDateTime = (dateStr: any) => {
 </script>
 
 <style>
-
 .group-dialog>.el-dialog__body {
   padding: 10px 20px;
   height: 100px;
@@ -498,6 +499,7 @@ const formartDateTime = (dateStr: any) => {
   padding: 10px 20px;
 }
 </style>
+
 <style lang="scss" scoped>
 .header-box {
   display: flex;
