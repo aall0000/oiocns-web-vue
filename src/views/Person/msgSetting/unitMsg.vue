@@ -9,16 +9,6 @@
         <el-form-item label="单位名称">
           <el-input v-model="formModel.name" />
         </el-form-item>
-        <!-- <el-form-item label="单位类型">
-          <el-select class="select" v-model="formModel.type" placeholder="股份有限单位">
-            <el-option
-              v-for="item in options2"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            />
-          </el-select>
-        </el-form-item> -->
         <el-form-item label="单位名称">
           <el-input v-model="formModel.code" />
         </el-form-item>
