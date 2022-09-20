@@ -11,9 +11,10 @@
           <el-button small link type="primary" @click="GoPage('/market/marketList')">商店列表</el-button>
           <el-button small link type="primary" @click.stop="GoPage('/market/order/buy')">采购订单</el-button>
           <el-button small link type="primary" @click.stop="GoPage('/market/order/sell')">售卖订单</el-button>
-          <el-badge :value="shopcarNum" style="padding-left: 10px">
+          <el-badge :value="shopcarNum" style="padding-left: 10px" v-if="shopcarNum>0">
             <el-button small link type="primary" @click.stop="GoPage('/market/shopCar')">购物车</el-button>
           </el-badge>
+          <el-button small link type="primary" @click.stop="GoPage('/market/shopCar')" v-else>购物车</el-button>
         </div>
         <div>
           <el-radio-group v-model="mode" size="small" class="button">
@@ -45,7 +46,7 @@
           <MarketCreate :info="add" @myclick="GoPage('/market/softShare')" />
           <ShopCard v-for="item in state.ownProductList" :info="item" :key="item.id" :over-id="item.id" type="soft">
             <template #icon>
-              <HeadImg :name="item.name" :url="item.icon || appImg" :imgWidth="48" :limit="1" :isSquare="false" />
+              <HeadImg :name="item.name" :url="item.icon" :imgWidth="48" :limit="1" :isSquare="false" />
             </template>
 
             <template #rightIcon>

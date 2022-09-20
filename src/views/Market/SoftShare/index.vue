@@ -4,9 +4,10 @@
       <el-space :size="16">
         <el-button type="primary" link @click.stop="GoPage('/market/order/buy')">采购订单</el-button>
         <el-button type="primary" link @click.stop="GoPage('/market/order/sell')">售卖订单</el-button>
-        <el-badge :value="shopcarNum">
+        <el-badge :value="shopcarNum" v-if="shopcarNum>0">
           <el-button type="primary" link @click.stop="GoPage('/market/shopCar')">购物车</el-button>
         </el-badge>
+        <el-button type="primary" link @click.stop="GoPage('/market/shopCar')" v-else>购物车</el-button>
         <el-radio-group v-model="modeType" size="small" class="button" >
             <el-radio-button label="list"
               ><el-icon :size="18"><Tickets /></el-icon
