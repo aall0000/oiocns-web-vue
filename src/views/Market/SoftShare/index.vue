@@ -35,7 +35,7 @@
           @handleUpdate="handleUpdate"
           @shopcarNumChange="getShopcarNum"
         ></AppCard>
-        
+
         <Pagination
           v-if="modeType === 'card'"
           ref="pageContent"

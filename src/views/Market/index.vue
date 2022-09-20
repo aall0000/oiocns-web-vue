@@ -482,16 +482,6 @@ const formartDateTime = (dateStr: any) => {
 </script>
 
 <style>
-.el-popper.is-customized {
-  /* Set padding to ensure the height is 32px */
-  padding: 6px 12px;
-  background: var(--el-color-primary-light-9);
-}
-
-.el-popper.is-customized .el-popper__arrow::before {
-  background: var(--el-color-primary-light-9);
-  right: 0;
-}
 
 .group-dialog>.el-dialog__body {
   padding: 10px 20px;

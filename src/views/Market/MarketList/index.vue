@@ -46,7 +46,7 @@
                   </el-icon>
                   <template #dropdown>
                     <el-dropdown-menu>
-                      <el-dropdown-item @click.stop="hadleClick(item)">
+                      <el-dropdown-item @click.stop="handleClick(item)">
                         <el-button class="btn" type="primary" link small v-if="item.belongId == workspaceData.id">删除商店
                         </el-button>
                         <el-button class="btn" type="primary" link small v-if="item.belongId != workspaceData.id">退出商店
@@ -62,19 +62,25 @@
               <!-- 标题下一行的内容 -->
               <template #description>
                 <span>归属: {{ orgChat.getName(item.belongId) || '-' }}</span>
+                <el-divider direction="vertical" style="margin: 0 8px;"></el-divider>
+                <span class="shop-code" style="cursor: pointer;" @click.stop="copyCode(item.code)">
+                  编码: {{ item.code || '-' }}
+                  <el-icon>
+                    <DocumentCopy />
+                  </el-icon>
+                </span>
               </template>
-            
 
-            <template #body>
-              <el-tooltip trigger="click" effect="customized">
-                <template #content>
-                  <div style="max-width: 280px;">
-                    {{item?.remark }}
-                  </div>
-                </template>
-                <p class="app-card-item-con-desc">简介: {{ item?.remark || '暂无' }}</p>
-              </el-tooltip>
-            </template>
+              <template #body>
+                <el-tooltip trigger="click" effect="customized" @click.stop>
+                  <template #content>
+                    <div style="max-width: 280px;" >
+                      {{item?.remark }}
+                    </div>
+                  </template>
+                  <p class="app-card-item-con-desc" @click.stop>简介: {{ item?.remark || '暂无' }}</p>
+                </el-tooltip>
+              </template>
 
             </ShopCard>
           </template>
@@ -106,40 +112,51 @@
         </div>
       </ul>
     </div>
-    <el-dialog append-to-body v-model="createDialog" title="创建商店" width="30%" class="">
-      <el-descriptions :model="form" :column="1" border>
-        <el-descriptions-item label="商店名称">
+    <el-dialog append-to-body v-model="createDialog" title="创建商店" width="30%" class="" @close="closeCreateDialog">
+      <el-form ref="formRef" :model="form">
+        <el-form-item label="商店名称" prop="name" :rules="[
+          { required: true, message: '请输入商店名称' },
+          { min: 3, message: '商店名称至少有3个字', trigger: 'blur' },
+        ]">
+          <el-input v-model.number="form.name" type="text" autocomplete="off" />
+        </el-form-item>
+        <el-form-item label="商店编码" prop="code" :rules="[
+          { required: true, message: '请输入商店编码，以便其他查询' },
+        ]">
+          <el-input v-model.number="form.code" type="text" autocomplete="off" />
+        </el-form-item>
+        <el-form-item label="商店简介" prop="remark" :rules="[
+          { required: true, message: '请输入商店简介' },
+        ]">
+          <el-input v-model="form.remark" type="textarea" maxlength="120" show-word-limit
+            :autosize="{ minRows: 4, maxRows: 6 }" autocomplete="off" />
+        </el-form-item>
+        <el-form-item label="商店是否公开" prop="public">
+          <el-switch v-model="form.public" active-text="是" inactive-text="否" inline-prompt></el-switch>
+        </el-form-item>
+      </el-form>
+      <!-- <el-descriptions :model="form" :column="1" border >
+        <el-descriptions-item label="商店名称"  label-align="right">
           <el-input v-model="form.name" />
         </el-descriptions-item>
-        <el-descriptions-item label="商店编码">
+        <el-descriptions-item label="商店编码"  label-align="right">
           <el-input v-model="form.code" />
         </el-descriptions-item>
-        <el-descriptions-item label="商店简介">
-          <el-input v-model="form.remark" />
+        <el-descriptions-item label="商店简介"  label-align="right">
+          <el-input v-model="form.remark"  type="textarea"  maxlength="120" show-word-limit :autosize="{ minRows: 4, maxRows: 6 }"/>
         </el-descriptions-item>
-        <el-descriptions-item label="商店是否公开">
+        <el-descriptions-item label="商店是否公开" label-align="right">
           <el-switch v-model="form.public" active-text="是" inactive-text="否" inline-prompt></el-switch>
-          <!-- <el-select v-model="form.public" placeholder="是否公开" style="width: 100%">
-            <el-option v-for="item in options" :label="item.label" :value="item.value" :key="item.label"/>
-          </el-select> -->
+        
         </el-descriptions-item>
-      </el-descriptions>
+      </el-descriptions> -->
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="createDialog = false">取消</el-button>
-          <el-button type="primary" @click="create">确认</el-button>
+          <el-button type="primary" @click="createShop(formRef)">确认</el-button>
         </span>
       </template>
     </el-dialog>
-
-    <!-- <diySearch
-      :dialogShow="state.addDialog"
-      title="加入商店"
-      placeholder="搜索商店"
-      @submit="submit"
-      @remoteMethod="remoteMethod"
-      @closeDialog="closeDialog"
-    ></diySearch> -->
 
     <searchMarket v-if="searchDialog" @closeDialog="closeDialog" :serachType="7" @checksSearch="checksSearch" />
   </div>
@@ -159,6 +176,7 @@ import MarketCreate from '../components/marketCreate.vue'
 import { useUserStore } from '@/store/user'
 import storeImg from '@/assets/img/app_icon.png'
 import Pagination from '@/components/pagination/index.vue'
+import type { FormInstance } from 'element-plus'
 import { storeToRefs } from 'pinia'
 
 const searchDialog = ref<boolean>(false)
@@ -180,6 +198,7 @@ const GoPageWithQuery = (path: string, query: any) => {
     router.push({ path, query })
   }
 }
+const formRef = ref<FormInstance>()
 const pageContent = ref(null)
 const showType = ref('card')
 const add: string = '创建商店'
@@ -375,7 +394,7 @@ const marketQuit = (item: any) => {
     })
     .catch(() => { })
 }
-const hadleClick = (item: any) => {
+const handleClick = (item: any) => {
   ElMessageBox.confirm(`确认删除  ${item.name}?`, '提示', {
     confirmButtonText: '确认',
     cancelButtonText: '取消',
@@ -421,7 +440,17 @@ const options = [
   }
 ]
 //创建商店
-const create = () => {
+const createShop = async (formEl: FormInstance | undefined) => {
+  if (!formEl) return
+  const isValidate = await formEl.validate((valid, fields) => {
+    if (valid) {
+      console.log('submit!')
+    } else {
+      console.log('error submit!', fields)
+      return false
+    }
+  })
+  if (!isValidate) return
   $services.appstore
     .create({
       data: {
@@ -442,10 +471,11 @@ const create = () => {
           message: '创建成功',
           type: 'success'
         })
+        closeCreateDialog()
+        getMyMarketData()
       }
-      createDialog.value = false
-      getMyMarketData()
     })
+
 }
 const remoteMethod = (query: string, callback: any) => {
   $services.appstore
@@ -491,7 +521,15 @@ const submit = (data: any) => {
       }
     })
 }
+// 关闭创建商店弹框
+const closeCreateDialog = () => {
+  createDialog.value = false
+  formRef.value?.resetFields()
+}
+
+// 关闭搜索弹框
 const closeDialog = (data: { value: boolean }) => {
+
   searchDialog.value = false
 }
 // 获取共享仓库信息
@@ -502,6 +540,19 @@ const getMarketInfo = () => {
       software.value = state.softShareInfo.id
     }
   })
+}
+// 复制商店编码
+const copyCode = (needCopyText: string) => {
+  let copyInput = document.createElement('input')
+  copyInput.value = needCopyText
+  document.body.appendChild(copyInput)
+  copyInput.select()
+  document.execCommand('Copy')
+  ElMessage({
+    message: '复制成功',
+    type: 'success'
+  })
+  copyInput.remove()
 }
 </script>
 
@@ -549,6 +600,7 @@ const getMarketInfo = () => {
     height: calc(100vh - 108px);
     overflow-y: auto;
   }
+
   .app-card-item-con-desc {
     cursor: pointer;
     font-size: 13px;
@@ -559,8 +611,14 @@ const getMarketInfo = () => {
     display: -webkit-inline-box; //将对象作为弹性伸缩盒子模型显示。
     -webkit-box-orient: vertical; // 从上到下垂直排列子元素
     -webkit-line-clamp: 2; //显示的行数
-
   }
+
+  .shop-code {
+    &:hover {
+      color: var(--el-color-primary);
+    }
+  }
+
   .box {
     .box-ul {
       height: 100%;
