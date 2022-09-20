@@ -55,7 +55,7 @@
         </div>
       </template>
       <template #operate="scope">
-            <el-button link  small type="primary" class="btn" v-show="scope.row.status < 102" @click="cancelOrder(scope.row.id)">
+            <el-button link  small type="primary" class="btn"  @click="cancelOrder(scope.row.id)">
               取消订单
             </el-button>
           </template>
@@ -189,6 +189,14 @@ const searchValue = ref<string>('')
         prop: 'createTime',
         label: '创建时间'
       },
+      {
+        type: 'slot',
+        label: '操作',
+        fixed: 'right',
+        align: 'center',
+        minWidth: '120',
+        name: 'operate'
+      }
 
   ],tableHeadBuyDetail:[
 
