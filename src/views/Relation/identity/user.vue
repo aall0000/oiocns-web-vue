@@ -6,7 +6,7 @@
         <el-button small link type="primary" @click="showGiveDialog">指派岗位</el-button>
       </div>
     </div>
-    <div :style="{height:tabHeight-35+'px'}">
+    <div :style="{height:tabHeight-50+'px'}">
       <div style="width: 100%; height: 100%">
         <DiyTable ref="diyTable" :hasTableHead="false" :tableData="users" @handleUpdate="handleUpdate"
           :tableHead="tableHead">
