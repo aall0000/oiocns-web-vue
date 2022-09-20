@@ -47,35 +47,30 @@
             <template #content>
               <div class="shopCar-box" @click="handleCardInfo(item)">
                 <div class="app-con-title">{{ item.merchandise.caption }}</div>
-                <!-- <div class="app-con-info" v-if="item.merchandise.sellAuth !== '所属权'"
-                  >使用天数：{{ item.merchandise.days }}天</div
-                > -->
-                <!-- <div class="app-con-info">价格：￥{{ item.merchandise.price ||'0.00'}}</div> -->
-                <div class="app-con-info">单价：
-                  <span style="color: var(--el-color-warning)"> ￥ </span>
-                  <strong style="color: var(--el-color-warning); font-size: 16px">{{
-                  item.merchandise.price || '0.00'
-                  }}</strong>
+                <!-- 附属标题区 -->
+                <div class="app-card-item-con-belong">
+                  <span>归属: {{ orgChat.getName(item.belongId) || '未知' }}</span>
+                  <el-divider direction="vertical"></el-divider>
+                  <span>版本： 0.0.1</span>
                 </div>
-                <div class="app-con-info">售卖权属：{{ item.merchandise.sellAuth }}
-                  <el-tag size="small"
-                    v-if="item.merchandise.sellAuth !== '所属权' && (item.merchandise.days && item.merchandise.days!==undefined) ">
-                    使用期： {{ item.merchandise.days + '天' }}
-                  </el-tag>
+                <div style="margin-top:12px;">
+                  <div class="app-con-info">价格：
+                    <span style="color: var(--el-color-warning)"> ￥ </span>
+                    <strong style="color: var(--el-color-warning); font-size: 16px">{{
+                    item.merchandise.price || '0.00'
+                    }}</strong>
+                  </div>
+                  <div class="app-con-info">售卖权属：{{ item.merchandise.sellAuth }}
+                    <el-tag size="small"
+                      v-if="item.merchandise.sellAuth !== '所属权' && (item.merchandise.days && item.merchandise.days!==undefined) ">
+                      使用期： {{ item.merchandise.days + '天' }}
+                    </el-tag>
+                  </div>
                 </div>
               </div>
             </template>
-            <template #footer>
-              <el-divider style="margin:16px 0"></el-divider>
-              <div class="app-card-item-con-belong">
-                <span>归属: {{ orgChat.getName(item.belongId) || '未知' }}</span>
-
-                <span>版本： 0.0.1</span>
-              </div>
-              <!-- <div class="app-card-item-con-desc"
-                ><p>详情：{{ item.merchandise.information || '暂无'}}</p></div
-              > -->
-
+            <template #option>
+              <div class="option-unit" @click="createOrderByStaging(item.id)">立即购买</div>
             </template>
           </ShopCard>
         </li>

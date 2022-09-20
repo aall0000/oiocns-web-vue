@@ -34,30 +34,37 @@
         <li class="app-card" v-show="showType === 'card'">
           <template v-if="state.myMarket.length !== 0">
             <ShopCard v-for="item in state.myMarket" :info="item" :key="item.id" :overId="item.id"
-              :softwareId="software" type="market"
-              @click="GoPageWithQuery('/market/appList', { data: item.id, type: 'manage' })">
+              :softwareId="software" type="market">
               <template #icon>
                 <HeadImg :name="item.name" :url="item.icon || storeImg" :imgWidth="48" :limit="1" :isSquare="true" />
               </template>
-              <template #rightIcon>
-                <el-dropdown trigger="click" placement="left-start" v-if="item.id != software">
-                  <el-icon :size="18">
-                    <Operation />
-                  </el-icon>
-                  <template #dropdown>
-                    <el-dropdown-menu>
-                      <el-dropdown-item @click.stop="handleClick(item)">
-                        <el-button class="btn" type="primary" link small v-if="item.belongId == workspaceData.id">删除商店
-                        </el-button>
-                        <el-button class="btn" type="primary" link small v-if="item.belongId != workspaceData.id">退出商店
-                        </el-button>
-                      </el-dropdown-item>
-                      <el-dropdown-item @click.stop="hadleUserManage(item)">
-                        <el-button class="btn" link small>用户管理</el-button>
-                      </el-dropdown-item>
-                    </el-dropdown-menu>
-                  </template>
-                </el-dropdown>
+
+              <template #option>
+                <div class="option-unit" v-if="item.belongId">
+                  <el-dropdown trigger="click" placement="bottom" v-if="item.id != software">
+                    <div class="option-unit">设置</div>
+                    <!-- <el-icon :size="18">
+                      <Operation />
+                    </el-icon> -->
+                    <template #dropdown>
+                      <el-dropdown-menu>
+                        <el-dropdown-item @click.stop="handleClick(item)">
+                          <el-button class="btn" type="primary" link small v-if="item.belongId == workspaceData.id">删除商店
+                          </el-button>
+                          <el-button class="btn" type="primary" link small v-if="item.belongId != workspaceData.id">退出商店
+                          </el-button>
+                        </el-dropdown-item>
+                        <el-dropdown-item @click.stop="hadleUserManage(item)">
+                          <el-button class="btn" link small>用户管理</el-button>
+                        </el-dropdown-item>
+                      </el-dropdown-menu>
+                    </template>
+                  </el-dropdown>
+
+                </div>
+                <el-divider direction="vertical" v-if="item.belongId"></el-divider>
+                <div class="option-unit" @click="GoPageWithQuery('/market/appList', { data: item.id, type: 'manage' })">
+                  进入商店</div>
               </template>
               <!-- 标题下一行的内容 -->
               <template #description>
@@ -74,7 +81,7 @@
               <template #body>
                 <el-tooltip trigger="click" effect="customized" @click.stop>
                   <template #content>
-                    <div style="max-width: 280px;" >
+                    <div style="max-width: 280px;">
                       {{item?.remark }}
                     </div>
                   </template>
