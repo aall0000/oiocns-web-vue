@@ -5,7 +5,7 @@ import API from '@/services'
 //  readonly： 表示'只读',用来防止在构造函数之外对属性进行赋值
 
 interface MarketServicesType {
-  // 我的应用
+  //----------------------我的应用 ---------
   myAppList: ProductType[]
   //----------------------市场功能 ---------
   //创建市场
@@ -96,7 +96,7 @@ class MarketServices {
 
   // constructor() {
   // }
-  // 我的应用主页功能
+  // -----------------我的应用主页功能----------------------
   // 获取我的应用列表
   public getMyAppList = async (params: CommonParamsType) => {
     const { data, success } = await API.product.searchOwnProduct({
