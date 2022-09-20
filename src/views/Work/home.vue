@@ -118,21 +118,23 @@
   })
   // 删除tab
   const removeTabs = async (targetName: TabPanelName) => {
-    ElMessageBox.confirm('确认删除？', {
-      confirmButtonText: '继续',
-      cancelButtonText: '取消',
-      type: 'warning'
-    })
-      .then(() => {
-        const tabs = userOtherData.homeComplist.filter((el) => el.name !== targetName)
-
-        const params = {
-          workspaceId: store.workspaceData.id,
-          content: tabs
-        }
-        userOtherData.updateHomeSpace(params)
+    if (targetName !== 0) {
+      ElMessageBox.confirm('确认删除？', {
+        confirmButtonText: '继续',
+        cancelButtonText: '取消',
+        type: 'warning'
       })
-      .catch(() => {})
+        .then(() => {
+          const tabs = userOtherData.homeComplist.filter((el) => el.name !== targetName)
+
+          const params = {
+            workspaceId: store.workspaceData.id,
+            content: tabs
+          }
+          userOtherData.updateHomeSpace(params)
+        })
+        .catch(() => {})
+    }
   }
   // 点击tab右侧 + 按钮
   const handleTabsEdit = (targetName: TabPanelName, action: 'remove' | 'add') => {

@@ -5,15 +5,16 @@
     <div class="card-header">
       <span>我的好友</span>
       <div>
-      <el-button small link type="primary" @click="friendShow">添加好友</el-button>
-      <el-button small link type="primary" @click="friendApply">查看申请</el-button>
-      <el-button small link type="primary" @click="toAuth">角色管理</el-button>
-      <el-button small link type="primary" @click="toIdentity">岗位管理</el-button>
+        <el-button small link type="primary" @click="friendShow">添加好友</el-button>
+        <el-button small link type="primary" @click="friendApply">查看申请</el-button>
+        <el-button small link type="primary" @click="toAuth">角色管理</el-button>
+        <el-button small link type="primary" @click="toIdentity">岗位管理</el-button>
       </div>
     </div>
     <DiyTable
-      :style="{height:'calc(100vh - 130px)',width:'100%'}"
+      :style="{ height: 'calc(100vh - 130px)', width: '100%' }"
       ref="diyTable"
+      :total="pageStore.total"
       :hasTableHead="true"
       :tableData="state.friendList"
       :options="options"
@@ -86,7 +87,7 @@
       name: 'remark'
     },
     {
-      type:"slot",
+      type: 'slot',
       prop: 'options',
       label: '操作',
       name: 'options'
@@ -136,10 +137,12 @@
   const state = reactive({ qunList: [], friendList: [] })
   const getFriendList = async () => {
     await $services.person
-      .getFriends({ data: {
+      .getFriends({
+        data: {
           limit: pageStore.pageSize,
-          offset: (pageStore.currentPage - 1) * pageStore.pageSize, 
-        } })
+          offset: (pageStore.currentPage - 1) * pageStore.pageSize
+        }
+      })
       .then((res: ResultType) => {
         const { result = [] } = res.data
         state.friendList = result?.map((item: { team: { remark: any; code: any; name: any } }) => {
@@ -196,11 +199,11 @@
     searchDialog.value = true
   }
   const friendApply = () => {
-    router.push({ path: '/cardDetail' ,query: {type: 1,id: orgChat.userId.value}})
+    router.push({ path: '/cardDetail', query: { type: 1, id: orgChat.userId.value } })
   }
 
   // 跳转至角色管理页面
-  const toAuth = ()=>{
+  const toAuth = () => {
     router.push({
       path: '/relation/authority',
       query: {
@@ -208,7 +211,7 @@
         belongId: orgChat.userId.value,
         name: '我的好友',
         code: 'friends',
-        teamRemark: '给好友设置角色',
+        teamRemark: '给好友设置角色'
       }
     })
   }
@@ -221,7 +224,7 @@
         belongId: orgChat.userId.value,
         name: '我的好友',
         module: 'person',
-        persons: 'getFriends',
+        persons: 'getFriends'
       }
     })
   }
@@ -247,7 +250,7 @@
       }
     }
   }
-  .tab-list{
+  .tab-list {
     height: 80vh;
   }
 </style>
