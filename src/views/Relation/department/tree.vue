@@ -331,7 +331,8 @@
 
 .tree {
   position: relative;
-  max-height: 70%;
+  height: calc(100vh - 200px);
+  overflow-y: auto;
   .tree-icon{
     width: 14px;
     height: 14px;

@@ -112,7 +112,7 @@
         </div>
       </template>
       <template v-else>
-        <el-empty description="暂无好友" />
+        <el-empty description="暂无可拉取好友" />
       </template>
     </div>
     <template #footer>

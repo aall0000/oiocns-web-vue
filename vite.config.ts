@@ -126,7 +126,7 @@ export default defineConfig(({ command, mode }) => {
       host: settings.host,
       hmr: true,
       watch: {
-        usePolling: true // WSL必须，否则热更新无效
+        usePolling: true // WSL必须,否则热更新无效
       },
       proxy: settings.proxyFlag
         ? {

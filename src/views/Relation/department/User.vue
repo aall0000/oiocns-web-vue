@@ -24,7 +24,7 @@
           >
             <template #operate="scope" >
                 <div v-if="props.selectItem?.data?.typeName == '单位'">
-                  <el-button link type="danger" :disabled=!selectItem?.data?.authAdmin size="small" @click="removeFrom(scope.row)">操作离职</el-button>
+                  <el-button link type="danger" v-if="props?.selectItem?.data?.belongId != scope.row.id" :disabled=!selectItem?.data?.authAdmin size="small" @click="removeFrom(scope.row)">操作离职</el-button>
                 </div>
                 <div v-if="props.selectItem?.data?.typeName == '部门' || props.selectItem?.data?.typeName == '工作组'">
                   <el-button link type="danger" :disabled=!selectItem?.data?.authAdmin size="small" @click="removeFrom(scope.row)" >移除成员</el-button>
@@ -246,7 +246,7 @@ const removeFrom = (row: any) =>{
       getUsers()
       if (res.success) {
         ElMessage({
-          message: '操作成功',
+          message: res.msg,
           type: 'success'
         })
       }
