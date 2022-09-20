@@ -45,7 +45,10 @@ export default defineConfig(({ command, mode }) => {
         imports: ['vue', 'vue-router']
       }),
       Components({
-        resolvers: [ElementPlusResolver({importStyle: "sass"}), IconsResolver({ enabledCollections: 'ep' })]
+        resolvers: [
+          ElementPlusResolver({ importStyle: 'sass' }),
+          IconsResolver({ enabledCollections: 'ep' })
+        ]
       }),
       Icons({
         autoInstall: true
@@ -123,13 +126,13 @@ export default defineConfig(({ command, mode }) => {
       host: settings.host,
       hmr: true,
       watch: {
-        usePolling: true   // WSL必须，否则热更新无效
+        usePolling: true // WSL必须，否则热更新无效
       },
       proxy: settings.proxyFlag
         ? {
             '/orginone': {
-              // target: 'http://192.168.31.88:800', // 后台接口
-              target: 'http://anyinone.com:800', // 后台接口
+              target: 'http://192.168.31.88:800', // 后台接口
+              // target: 'http://anyinone.com:800', // 后台接口
               changeOrigin: true, // 是否允许跨域
               ws: true
             }
