@@ -323,7 +323,7 @@ onMounted(() => {
 
 .container {
   height: 100%;
-  width: 100%;
+  width: calc(100% - 100px);
   background-color: var(--el-bg-color-overlay);
   padding: 5px;
   display: flex;

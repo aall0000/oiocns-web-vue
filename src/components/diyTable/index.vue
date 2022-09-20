@@ -81,13 +81,9 @@
                 {{ scope.column.label }}
               </template>
             </el-table-column>
-            <el-table-column
-              v-else-if="item.type === 'expand'"
-              :key="item"
-              type="expand"
-            >
-            <template #default="scope">
-              <slot  :name="item.name" :row="scope.row" :index="scope.$index"></slot>
+            <el-table-column v-else-if="item.type === 'expand'" :key="item" type="expand">
+              <template #default="scope">
+                <slot :name="item.name" :row="scope.row" :index="scope.$index"></slot>
               </template>
             </el-table-column>
             <el-table-column v-else :key="'column' + index" v-bind="item"></el-table-column>
@@ -128,7 +124,7 @@
 
 <script setup lang="ts">
   import { stubFalse } from 'lodash'
-  import { ref, reactive, toRefs, computed, onMounted } from 'vue'
+  import { ref, reactive, toRefs, computed, onMounted, watch } from 'vue'
   import { useUserStore } from '@/store/user'
 
   const store = useUserStore()
@@ -148,6 +144,8 @@
     tableHead: any[]
     tableData: any[]
     checkList?: any[]
+    total: number
+    loading?: boolean
     options: {
       expandAll?: boolean
       checkBox?: any
@@ -164,6 +162,8 @@
     hasTableHead: false,
     hasTitle: true,
     hasTabs: false,
+    total: 0,
+    loading: false,
     tableHead: () => [],
     tableData: () => [],
     options: () => {
@@ -230,6 +230,13 @@
     'select',
     'selectionChange'
   ])
+
+  watch(
+    () => props.total,
+    (val, old) => {
+      state.page.total = val
+    }
+  )
 
   const cellStyle = ({
     row,

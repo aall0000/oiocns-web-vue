@@ -4,7 +4,9 @@ import API from '@/services'
 // private: 表示'私有的,只在当前类中可见'，对实例对象以及子类也是不可见的
 //  readonly： 表示'只读',用来防止在构造函数之外对属性进行赋值
 
-const desc = {
+interface MarketServicesType {
+  //----------------------我的应用 ---------
+  myAppList: ProductType[]
   //----------------------市场功能 ---------
   //创建市场
   //获取市场列表
@@ -94,7 +96,7 @@ class MarketServices {
 
   // constructor() {
   // }
-  // 我的应用主页功能
+  // -----------------我的应用主页功能----------------------
   // 获取我的应用列表
   public getMyAppList = async (params: CommonParamsType) => {
     const { data, success } = await API.product.searchOwnProduct({
@@ -136,4 +138,4 @@ class MarketServices {
   }
 }
 
-export const marketServices = new MarketServices()
+export const marketServices: MarketServicesType = new MarketServices()

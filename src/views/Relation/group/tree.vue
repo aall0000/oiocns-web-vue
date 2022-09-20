@@ -246,7 +246,11 @@ watch(filterText, (val) => {
   display: flex;
   justify-content: space-between;
 }
-
+.tree{
+  position: relative;
+  height: calc(100vh - 200px);
+  overflow-y: auto;
+}
 .search-wrap{
   margin-top: 10px;
 }

@@ -1,8 +1,8 @@
 <template>
   <div class="container">
     <div class="tab-list">
-      <el-table :data="state.cohorts" stripe class="table">
-        <el-table-column type="selection" width="50" />
+      <el-table border :data="state.cohorts" stripe class="table">
+        <el-table-column type="index" label="序号" width="70"></el-table-column>    
         <el-table-column prop="name" label="群组名称" width="240" />
         <el-table-column prop="code" label="群组编号"  width="200"/>
         <el-table-column prop="team.remark" label="群组简介" min-width="200"/>
@@ -359,7 +359,9 @@ watch(props, () => {
   // padding: 5px;
   width: 100%;
   height: 100%;
-
+  .tab-list{
+    height: calc(100vh - 230px);
+  }
   .table{
     width: 100%;
     height: 100%;
