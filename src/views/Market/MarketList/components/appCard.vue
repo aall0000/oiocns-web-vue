@@ -4,71 +4,63 @@
       <ul class="box-ul">
         <template v-if="dataList.length !== 0">
           <li class="app-card">
-            <ShopCard v-for="item in dataList" :info="item.id" :key="item.id" :cardContent="true" >
+            <ShopCard v-for="item in dataList" :info="item.id" :key="item.id" :cardContent="true">
               <template #icon>
                 <HeadImg :name="item.name" :url="item.icon || merchandiseImg" :imgWidth="48" :limit="1"
                   :isSquare="false" />
-              </template>
-              <template #rightIcon>
-                <el-dropdown trigger="click" placement="left-start">
-                  <el-icon :size="18">
-                    <Operation />
-                  </el-icon>
-                  <template #dropdown>
-                    <el-dropdown-menu>
-                      <el-dropdown-item @click="buyThings(item)"> 立即购买 </el-dropdown-item>
-                      <el-dropdown-item @click="joinStaging(item)">加入购物车</el-dropdown-item>
-                      <el-dropdown-item @click="handleCardInfo(item)">查看详情</el-dropdown-item>
-                      <el-dropdown-item @click="unpublishFun(item)" v-if="type == 'manage'">下架</el-dropdown-item>
-                    </el-dropdown-menu>
-                  </template>
-                </el-dropdown>
               </template>
 
               <template #content>
                 <div class="shopCar-box">
                   <div class="app-con-title">{{ item.caption }} </div>
-                  <!-- <div class="app-con-info" v-if="item.sellAuth !== '所属权'">使用期限：{{ item.days }}天</div> -->
-                  <div class="app-con-info">价格：
-                    <span style="color: var(--el-color-warning)"> ￥ </span>
-                    <strong style="color: var(--el-color-warning); font-size: 16px">{{
-                    item.price || '0.00'
-                    }}</strong>
+                  <!-- 附属标题区 -->
+                  <div class="app-card-item-con-belong">
+                    <span>归属: {{ orgChat.getName(item.product.belongId) || '未知' }}</span>
+                    <el-divider direction="vertical"></el-divider>
+                    <span>版本： 0.0.1</span>
                   </div>
+                  <div style="margin-top:12px;">
+                    <div class="app-con-info">价格：
+                      <span style="color: var(--el-color-warning)"> ￥ </span>
+                      <strong style="color: var(--el-color-warning); font-size: 16px">{{
+                      item.price || '0.00'
+                      }}</strong>
+                    </div>
 
-                  <div class="app-con-info">
-                    售卖权属：{{ item.sellAuth }}
-                    <el-tag size="small" v-if="item.sellAuth !== '所属权' && item.days">
-                      使用期：{{ item.days + '天'}}</el-tag>
+                    <div class="app-con-info">
+                      售卖权属：{{ item.sellAuth }}
+                      <el-tag size="small" v-if="item.sellAuth !== '所属权' && item.days">
+                        使用期：{{ item.days + '天'}}</el-tag>
+                    </div>
+
                   </div>
                   <!-- <div class="app-con-info">上架时间：{{ item.createTime.substring(0, 11) }}</div> -->
                 </div>
               </template>
-              <template #footer v-if="item.product.belongId">
-                <el-divider style="margin: 16px 0"></el-divider>
-                <div class="app-card-item-con-belong">
-                  <span>归属: {{ orgChat.getName(item.product.belongId) || '未知' }}</span>
 
-                  <span>版本： 0.0.1</span>
+              <template #option>
+                <div class="option-unit">
+                  <el-dropdown trigger="click" placement="left-start">
+                    <div class="option-unit">设置</div>
+                    <!-- <el-icon :size="18">
+                    <Operation />
+                  </el-icon> -->
+                    <template #dropdown>
+                      <el-dropdown-menu>
+                        <el-dropdown-item @click="buyThings(item)"> 立即购买 </el-dropdown-item>
+                        <!-- <el-dropdown-item @click="joinStaging(item)">加入购物车</el-dropdown-item> -->
+                        <el-dropdown-item @click="handleCardInfo(item)">查看详情</el-dropdown-item>
+                        <el-dropdown-item @click="unpublishFun(item)" v-if="type == 'manage'">下架</el-dropdown-item>
+                      </el-dropdown-menu>
+                    </template>
+                  </el-dropdown>
+                </div>
+                <el-divider direction="vertical"></el-divider>
+                <div class="option-unit" @click="joinStaging(item)">
+                  加入购物车
                 </div>
               </template>
 
-
-              <!-- <template #footer> -->
-              <!-- <el-button link @click="createOrder(item)">立即购买</el-button> -->
-              <!-- <div v-if="type == 'shop'">
-                <el-button link @click="joinStaging(item)">加入购物车</el-button>
-                <el-divider direction="vertical" />
-                <el-button link @click="createOrder(item)">立即购买</el-button>
-              </div>
-              <div v-else>
-                <el-button
-                  style="color: aliceblue; font-weight: bold; background-color: orange; width: 100px"
-                  round
-                  @click="unpublishFun(item)"
-                  >下架</el-button
-                >
-              </div> -->
             </ShopCard>
           </li>
         </template>
@@ -399,7 +391,9 @@ defineExpose({
       display: flex;
       flex-wrap: wrap;
       align-content: flex-start;
-      height: calc(100% - 60px);
+      height: calc(100vh - 310px);
+      overflow-y: auto;
+      // height: calc(100% - 60px);
     }
   }
 }

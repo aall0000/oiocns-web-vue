@@ -5,37 +5,30 @@
     <div class="card-header">
       <span>我的好友</span>
       <div>
-      <el-button small link type="primary" @click="friendShow">添加好友</el-button>
-      <el-button small link type="primary" @click="friendApply">查看申请</el-button>
-      <el-button small link type="primary" @click="toAuth">角色管理</el-button>
-      <el-button small link type="primary" @click="toIdentity">岗位管理</el-button>
+        <el-button small link type="primary" @click="friendShow">添加好友</el-button>
+        <el-button small link type="primary" @click="friendApply">查看申请</el-button>
+        <el-button small link type="primary" @click="toAuth">角色管理</el-button>
+        <el-button small link type="primary" @click="toIdentity">岗位管理</el-button>
       </div>
     </div>
-
-    <div class="tab-list">
-      <el-table
-        :data="state.friendList"
-        stripe
-        @select="handleSelect"
-        :header-cell-style="{ background: 'var(--el-color-primary-light-9)' }"
-      >
-        <el-table-column type="selection" width="50" />
-        <el-table-column prop="code" label="账号" width="180" />
-        <el-table-column prop="name" label="昵称" width="180"  />
-        <el-table-column prop="trueName" label="姓名" width="180"  />
-        <el-table-column prop="teamCode" label="手机号" width="180"  />
-        <el-table-column prop="remark" label="座右铭"  min-width="150" />
-        <el-table-column prop="name" label="操作" width="150" >
-          <template #default="scope">
-            <el-popconfirm title="您确认删除该好友吗?" @confirm="deleteFriend(scope.row.id)">
-              <template #reference>
-                <el-button type="danger" link>删除</el-button>
-              </template>
-            </el-popconfirm>
+    <DiyTable
+      :style="{ height: 'calc(100vh - 130px)', width: '100%' }"
+      ref="diyTable"
+      :total="pageStore.total"
+      :hasTableHead="true"
+      :tableData="state.friendList"
+      :options="options"
+      @handleUpdate="handleUpdate"
+      :tableHead="tableHead"
+    >
+      <template #options="scope">
+        <el-popconfirm title="您确认删除该好友吗?" @confirm="deleteFriend(scope.row.id)">
+          <template #reference>
+            <el-button type="danger" link>删除</el-button>
           </template>
-        </el-table-column>
-      </el-table>
-    </div>
+        </el-popconfirm>
+      </template>
+    </DiyTable>
     <searchFriend
       v-if="searchDialog"
       @closeDialog="closeDialog"
@@ -51,6 +44,8 @@
   import { ElMessage } from 'element-plus'
   import { useRouter } from 'vue-router'
   import orgChat from '@/hubs/orgchat'
+  import DiyTable from '@components/diyTable/index.vue'
+
   const router = useRouter()
 
   const searchDialog = ref<boolean>(false)
@@ -58,7 +53,56 @@
   type arrList = {
     id: string
   }
-
+  const diyTable = ref(null)
+  // 表格展示数据
+  const pageStore = reactive({
+    currentPage: 1,
+    pageSize: 20,
+    total: 0
+  })
+  const tableHead = ref([
+    {
+      prop: 'code',
+      label: '账号',
+      name: 'code'
+    },
+    {
+      prop: 'name',
+      label: '昵称',
+      name: 'name'
+    },
+    {
+      prop: 'trueName',
+      label: '姓名',
+      name: 'trueName'
+    },
+    {
+      prop: 'teamCode',
+      label: '手机号',
+      name: 'teamCode'
+    },
+    {
+      prop: 'remark',
+      label: '座右铭',
+      name: 'remark'
+    },
+    {
+      type: 'slot',
+      prop: 'options',
+      label: '操作',
+      name: 'options'
+    }
+  ])
+  const options = ref<any>({
+    checkBox: true,
+    order: true,
+    selectLimit: 1,
+    defaultSort: { prop: 'createTime', order: 'descending' },
+    treeProps: {
+      children: 'children',
+      hasChildren: 'hasChildren'
+    }
+  })
   const addFriends = (arr: Array<arrList>) => {
     console.log('arrr', arr)
     $services.person
@@ -78,6 +122,11 @@
         }
       })
   }
+  const handleUpdate = (page: any) => {
+    pageStore.currentPage = page.currentPage
+    pageStore.pageSize = page.pageSize
+    getFriendList()
+  }
   const handleSelect = (key: string, keyPath: string[]) => {
     // console.log(key, keyPath)
   }
@@ -88,7 +137,12 @@
   const state = reactive({ qunList: [], friendList: [] })
   const getFriendList = async () => {
     await $services.person
-      .getFriends({ data: { offset: 0, limit: 20 } })
+      .getFriends({
+        data: {
+          limit: pageStore.pageSize,
+          offset: (pageStore.currentPage - 1) * pageStore.pageSize
+        }
+      })
       .then((res: ResultType) => {
         const { result = [] } = res.data
         state.friendList = result?.map((item: { team: { remark: any; code: any; name: any } }) => {
@@ -99,6 +153,8 @@
             trueName: item.team.name
           }
         })
+        pageStore.total = res.data.total
+        diyTable.value.state.page.total = pageStore.total
       })
   }
   //删除好友
@@ -143,11 +199,11 @@
     searchDialog.value = true
   }
   const friendApply = () => {
-    router.push({ path: '/cardDetail' ,query: {type: 1,id: orgChat.userId.value}})
+    router.push({ path: '/cardDetail', query: { type: 1, id: orgChat.userId.value } })
   }
 
   // 跳转至角色管理页面
-  const toAuth = ()=>{
+  const toAuth = () => {
     router.push({
       path: '/relation/authority',
       query: {
@@ -155,7 +211,7 @@
         belongId: orgChat.userId.value,
         name: '我的好友',
         code: 'friends',
-        teamRemark: '给好友设置角色',
+        teamRemark: '给好友设置角色'
       }
     })
   }
@@ -168,7 +224,7 @@
         belongId: orgChat.userId.value,
         name: '我的好友',
         module: 'person',
-        persons: 'getFriends',
+        persons: 'getFriends'
       }
     })
   }
@@ -194,7 +250,7 @@
       }
     }
   }
-  .tab-list{
+  .tab-list {
     height: 80vh;
   }
 </style>

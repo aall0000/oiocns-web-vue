@@ -30,8 +30,12 @@
         ├── Person       # 我的(个人)
         ├── Thing        # 数据
         ├── Work         # 工作台
-
 ```
+## 文件命名规范
+路由文件夹 大驼峰
+页面文件本身 小驼峰
+页面级组件 写入 页面文件夹下 components下
+全局组件 写入 src/components 下
 ## git规范
 ● add/feat：新功能
 ● fix：bug修复

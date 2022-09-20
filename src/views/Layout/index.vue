@@ -13,6 +13,7 @@
 
       <!-- <Breadcrumb></Breadcrumb> -->
       <el-main class="main-wrap">
+        
         <Suspense>
           <template #default>
             <router-view v-slot="{ Component }">
@@ -29,6 +30,7 @@
             <LoadingVue />
           </template>
         </Suspense>
+     
       </el-main>
       <!-- <el-footer>Copyright 2021 资产云开放协同创新中⼼ 主办单位：浙江省财政厅</el-footer> -->
       <!-- </el-container> -->
@@ -63,7 +65,12 @@ onBeforeUnmount(()=>{
 window.addEventListener('beforeunload', stopConnection)
 
 </script>
-
+<style>
+   .el-main.main-wrap>div{
+    min-width: 1200px !important;
+    overflow-x: auto;
+  }
+</style>
 <style lang="scss" scoped>
 .el-header {
   --el-header-padding: 0 0 0 16px;
@@ -114,7 +121,9 @@ window.addEventListener('beforeunload', stopConnection)
     // height: 100%;
     position: relative;
     padding: 0;
+    
     // overflow-x: hidden;
   }
+ 
 }
 </style>

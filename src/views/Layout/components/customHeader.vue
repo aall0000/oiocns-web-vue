@@ -25,7 +25,7 @@
           <div class="select-box" v-infinite-scroll="load" infinite-scroll-immediate>
             <div
               class="seletc-drop__box"
-              v-for="item in store.userCompanys"
+              v-for="item in store.loadCompanys"
               :key="item.id"
               @click="switchCompany(item)"
             >
@@ -289,7 +289,7 @@
           await store.getQueryInfo(res.data.accessToken)
           current.value = 0
           store.createUnit(res.data).then(() => {
-            location.href = "/"
+            location.href = '/'
           })
         } else {
           ElMessage({
@@ -310,8 +310,8 @@
         if (res.code == 200) {
           sessionStorage.setItem('TOKEN', res.data.accessToken)
           await store.getQueryInfo(res.data.accessToken)
-          store.getWorkspaceData(res.data.workspaceId).then(() => {
-            location.href = "/"
+          store.getWorkspaceData(res.data.workspaceId, true).then(() => {
+            location.href = '/'
           })
         } else {
           ElMessage({

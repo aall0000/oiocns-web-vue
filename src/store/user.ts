@@ -29,6 +29,7 @@ export const useUserStore = defineStore({
       userInfo: {}, // 用户登录信息
       queryInfo: {} as QueryInfoType, // 用户详细信息
       userCompanys: [], // 获取用户组织列表 分页
+      loadCompanys: [],
       copyCompanys: [],
       userToken: '',
       workspaceData: {}, // 当前选中的单位
@@ -63,18 +64,17 @@ export const useUserStore = defineStore({
           password: data.password
         }
       })
-      if(res.success){
+      if (res.success) {
         this.userInfo = res.data
         this.userToken = res.data.accessToken
         this.workspaceData = {
           id: res.data.workspaceId,
           name: res.data.workspaceName
         }
-        this.userCompanys = [this.workspaceData]
+        // this.userCompanys = [this.workspaceData]
         await this.getQueryInfo(this.userToken)
         return this.workspaceData
-      }
-      else {
+      } else {
         ElMessage({
           message: res.msg,
           type: 'warning'
@@ -87,10 +87,10 @@ export const useUserStore = defineStore({
         this.userToken = token
       }
       //获取用户详细信息
-      let res:ResultType = await $services.person.queryInfo()
-      if(res.success){
+      let res: ResultType = await $services.person.queryInfo()
+      if (res.success) {
         this.queryInfo = res.data
-      }else {
+      } else {
         ElMessage({
           message: res.msg,
           type: 'warning'
@@ -115,7 +115,7 @@ export const useUserStore = defineStore({
             // }
             if (!res.data.result) {
               console.log(workspaceId, this.userInfo)
-              this.getWorkspaceData(workspaceId)
+              this.getWorkspaceData(workspaceId, false)
               return
             }
             this.userCompanys = [
@@ -128,9 +128,9 @@ export const useUserStore = defineStore({
             ]
             this.copyCompanys = JSON.parse(JSON.stringify(this.userCompanys))
             if (workspaceId) {
-              this.getWorkspaceData(workspaceId)
+              this.getWorkspaceData(workspaceId, false)
             } else {
-              this.getWorkspaceData(this.userInfo.workspaceId)
+              this.getWorkspaceData(this.userInfo.workspaceId, false)
             }
           } else {
             ElMessage({
@@ -154,7 +154,7 @@ export const useUserStore = defineStore({
           console.log(res)
           if (res.code == 200) {
             this.copyCompanys = JSON.parse(JSON.stringify(res.data.result))
-            this.getWorkspaceData(data.workspaceId)
+            this.getWorkspaceData(data.workspaceId, false)
           } else {
             ElMessage({
               message: res.msg,
@@ -164,7 +164,7 @@ export const useUserStore = defineStore({
         })
     },
 
-    async getWorkspaceData(id: string) {
+    async getWorkspaceData(id: string, getLoad: boolean) {
       await this.copyCompanys.forEach((el: any, index: number) => {
         if (id == el.id) {
           let obj = {}
@@ -185,14 +185,22 @@ export const useUserStore = defineStore({
 
           this.workspaceData = obj
           sessionStorage.setItem('WORKSPACE', JSON.stringify(obj))
-          this.userCompanys.splice(index, 1)
+          if (getLoad) {
+            // 防止选择单位时先删除后刷新
+            this.loadCompanys = JSON.parse(JSON.stringify(this.userCompanys))
+            this.userCompanys.splice(index, 1)
+          } else {
+            // 点击加载单位 去除当前单位
+            this.userCompanys.splice(index, 1)
+            this.loadCompanys = JSON.parse(JSON.stringify(this.userCompanys))
+          }
         }
       })
     },
     resetState() {
       // this.userInfo = null
       // this.queryInfo = null
-      // this.userCompanys = null
+      this.userCompanys = []
       // this.copyCompanys = null
       this.userToken = ''
       // this.workspaceData = null
