@@ -31,6 +31,7 @@ type orgChatType = {
     sendMsg: (data: any) => Promise<ResultType>, //发送消息
     recallMsg: (msg: any) => Promise<ResultType>, //撤回消息
     deleteMsg: (msg: any) => void, //删除消息
+    clearMsg: () => void, // 清空消息
     setCurrent: (chat: ImMsgChildType) => void, //设置当前会话
     getPersons: (reset: boolean) => Promise<ResultType>, //获取组织人员
     getHistoryMsg: () => Promise<number>, //获取历史消息
@@ -231,18 +232,29 @@ const orgChat: orgChatType = {
         return { success: false, data: 0, code: 404, msg: "" }
     },
     deleteMsg: async (msg: any) => {
-        if(!msg.chatId){
+        if (!msg.chatId) {
             msg.chatId = msg.id
         }
         anyStore.remove(hisMsgCollName, {
             chatId: msg.chatId
-        }, "user").then((res:ResultType)=>{
-            if(res.data === 1 && orgChat.curMsgs.value.length > 0){
-                orgChat.curMsgs.value = orgChat.curMsgs.value.filter(item=>{
+        }, "user").then((res: ResultType) => {
+            if (res.data === 1 && orgChat.curMsgs.value.length > 0) {
+                orgChat.curMsgs.value = orgChat.curMsgs.value.filter(item => {
                     return item.chatId != msg.chatId
                 })
             }
         })
+    },
+    clearMsg: async () => {
+        if(orgChat.curChat.value){
+            anyStore.remove(hisMsgCollName, {
+                sessionId: orgChat.curChat.value.id
+            }, "user").then((res: ResultType) => {
+                if (res.data > 0 && orgChat.curMsgs.value.length > 0) {
+                    orgChat.curMsgs.value = []
+                }
+            })
+        }
     },
     setCurrent: async (chat: ImMsgChildType) => {
         if (orgChat.curChat.value) {
@@ -411,9 +423,9 @@ const orgChat: orgChatType = {
                     item.msgBody = data.msgBody
                     item.msgType = "recall"
                     item.createTime = data.createTime
-                    if(data.fromId === orgChat.userId.value){
+                    if (data.fromId === orgChat.userId.value) {
                         item.allowEdit = true
-                    }else{
+                    } else {
                         delete item.allowEdit
                     }
                 }
@@ -450,7 +462,7 @@ const orgChat: orgChatType = {
                         data.showTxt = chat.showTxt
                         if (orgChat.curChat.value && orgChat.curChat.value.id === chat.id &&
                             orgChat.curChat.value.spaceId === chat.spaceId) {
-                            if(data.msgType !== "recall"){
+                            if (data.msgType !== "recall") {
                                 orgChat.curMsgs.value.push(data)
                             }
                             newChats.unshift(chat)

@@ -6,11 +6,6 @@
     @click="handleChooseItem(item)"
   >
     <div style="display: flex; flex-direction: column; align-items: center">
-      <!-- <img
-        v-if="item.icon"
-        :src="item.icon"
-        style="width: 40px; height: 40px; border-radius: 50%; margin-bottom: 10px"
-      /> -->
       <HeadImg :name="item.name" :url="item.icon" :imgWidth="40" :limit="1" :isSquare="false" />
       <span class="appName">{{ item.name }}</span>
     </div>

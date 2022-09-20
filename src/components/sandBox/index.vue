@@ -4,7 +4,7 @@
       v-if="props.containLink"
       id="myIframe"
       class="iframe"
-      ref="myIframe"
+      :ref="myIframe"
       allow="payment"
       allowfullscreen="true"
       :src="props.containLink"
@@ -18,12 +18,12 @@
 
 <script setup lang="ts">
   import { useCommonStore } from '@store/common'
-  import { watch } from 'vue'
+  import { watch,ref } from 'vue'
   type IfrType = {
     containLink: string
   }
   const props = defineProps<IfrType>()
-
+  const myIframe = ref(null)
   const { iframeLink } = useCommonStore()
   console.log('props', props, iframeLink)
   watch(
