@@ -43,7 +43,8 @@
         </div>
         <li class="app-card" v-show="mode === 'card'">
           <MarketCreate :info="add" @myclick="GoPage('/market/softShare')" />
-          <ShopCard v-for="item in state.ownProductList" :info="item" :key="item.id" :over-id="item.id" type="soft">
+          <ShopCard v-for="item in state.ownProductList" :info="item" :key="item.id" :over-id="item.id" type="soft" 
+          :class="{'dropdwon-active':item.id==state.dropDwonActiveId}">
             <template #icon>
               <HeadImg :name="item.name" :url="item.icon || appImg" :imgWidth="48" :limit="1" :isSquare="false" />
             </template>
@@ -67,38 +68,36 @@
             </template>
             <!-- 操作区 -->
             <template #option>
-              <div class="option-unit">
-              <el-dropdown trigger="click" @command="(value:any) => handleCommand('own', value, item)"
-                placement="bottom">
-                <div class="option-unit">设置</div>
-                <template #dropdown>
-                  <el-dropdown-menu>
-                    <div v-for="action in actionOptionsOfOwn" :key="action.value">
-                      <div v-if="new Date().getTime() < formartDateTime(item?.endTime)">
-                        <el-dropdown-item v-if="
-                          item.authority == '所属权' &&
-                          item.belongId == store.workspaceData.id &&
-                          action.label == '上架'
-                        " :command="action.value">{{ action.label }}</el-dropdown-item>
-                        <el-dropdown-item v-if="item.belongId == store.workspaceData.id && action.label == '共享'"
-                          :command="action.value">{{ action.label }}</el-dropdown-item>
-                        <el-dropdown-item v-if="store.workspaceData.type == 2 && action.label == '分配'"
-                          :command="action.value">{{ action.label }}</el-dropdown-item>
+                <div class="option-unit">
+                <el-dropdown trigger="click" @command="(value:any) => handleCommand('own', value, item)"
+                  placement="top" @visible-change="(value:boolean)=> optionDropdownChange(value,item.id)">
+                  <div class="option-unit">设置</div>
+                  <template #dropdown>
+                    <el-dropdown-menu>
+                      <div v-for="action in actionOptionsOfOwn" :key="action.value">
+                        <div v-if="new Date().getTime() < formartDateTime(item?.endTime)">
+                          <el-dropdown-item v-if="
+                            item.authority == '所属权' &&
+                            item.belongId == store.workspaceData.id &&
+                            action.label == '上架'
+                          " :command="action.value">{{ action.label }}</el-dropdown-item>
+                          <el-dropdown-item v-if="item.belongId == store.workspaceData.id && action.label == '共享'"
+                            :command="action.value">{{ action.label }}</el-dropdown-item>
+                          <el-dropdown-item v-if="store.workspaceData.type == 2 && action.label == '分配'"
+                            :command="action.value">{{ action.label }}</el-dropdown-item>
+                        </div>
+                        <el-dropdown-item v-if="action.label == '详情'" :command="action.value">{{
+                        action.label
+                        }}</el-dropdown-item>
                       </div>
-                      <el-dropdown-item v-if="action.label == '详情'" :command="action.value">{{
-                      action.label
-                      }}</el-dropdown-item>
-                    </div>
-                    <!-- <el-dropdown-item @click="deleteApp(item)">移除应用</el-dropdown-item> -->
-                    <!-- <el-dropdown-item  @click="GoPage('/market/appDetail')">应用详情</el-dropdown-item> -->
-                    <el-dropdown-item @click="GoPageWithQuery('/market/publishList', {id:item.id})">应用上架列表
-                    </el-dropdown-item>
-                  </el-dropdown-menu>
-                </template>
-              </el-dropdown>
-              </div>
-              <el-divider direction="vertical"></el-divider>
-              <div class="option-unit" @click="deleteApp(item)">移除应用</div>
+                      <el-dropdown-item @click="GoPageWithQuery('/market/publishList', {id:item.id})">应用上架列表
+                      </el-dropdown-item>
+                    </el-dropdown-menu>
+                  </template>
+                </el-dropdown>
+                </div>
+                <el-divider direction="vertical"></el-divider>
+                <div class="option-unit" @click="deleteApp(item)">移除应用</div>
             </template>
           </ShopCard>
         </li>
@@ -165,17 +164,16 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import { onMounted, reactive, ref, watch, nextTick } from 'vue'
 import ShopCard from './components/shopCard.vue'
 import PutawayComp from './components/putawayComp.vue'
-import { actionOptionsOfOther, actionOptionsOfOwn } from './config'
+import { actionOptionsOfOwn } from './config'
 import Cohort from './components/cohortBox.vue'
 import ShareCohort from './components/shareCohortBox.vue'
 import SharePersonBox from './components/sharePersonBox.vue'
 import { useRouter } from 'vue-router'
-import type { FormInstance, FormRules } from 'element-plus'
+import type { FormInstance } from 'element-plus'
 import MarketCreate from './components/marketCreate.vue'
 import MarketCard from '@/components/marketCard/index.vue'
 import { useUserStore } from '@/store/user'
 import DiyTable from '@/components/diyTable/index.vue'
-import { appendFile } from 'fs'
 import appImg from '@/assets/img/app_icon.png'
 import $services from '@/services'
 import Unit from '../Market/AppShare/unit.vue'
@@ -186,7 +184,7 @@ import orgChat from '@/hubs/orgchat'
 import { storeToRefs } from 'pinia'
 import MarketServices from './market.services'
 // hoverItem--鼠标移入item的id 用于展示按钮区域
-console.log('MarketServices',MarketServices);
+// console.log('MarketServices',MarketServices);
 
 const add: string = '从开放市场中添加应用'
 const groupShareVisible = ref<boolean>(false)
@@ -239,7 +237,8 @@ type StateType = {
   marketOptions: any[] //所有市场列表
   options: any[] //集团列表
   selectLabel: selectType // 选中的集团名称
-  tableHead: any[]
+  tableHead: any[],
+  dropDwonActiveId: string // 当前dropdwon打开时选中的id
 }
 
 const state: StateType = reactive({
@@ -248,6 +247,7 @@ const state: StateType = reactive({
   shareTotal: 0,
   marketOptions: [],
   options: [],
+  dropDwonActiveId:'',
   selectLabel: {
     label: '',
     id: ''
@@ -416,6 +416,17 @@ const handleCommand = (
       break
     default:
       break
+  }
+}
+
+// 下拉框显示隐藏时触发
+// value 是否显示，activeId 当前显示 的卡片内容id
+const optionDropdownChange = (value:boolean,activeId:string)=>{
+  
+  if(value) { //显示
+    state.dropDwonActiveId = activeId
+  }else{
+    state.dropDwonActiveId = ''
   }
 }
 

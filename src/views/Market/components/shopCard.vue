@@ -1,5 +1,5 @@
 <template>
-  <el-card class="shop-card-wrap app-card-item" shadow="hover" :key="info.id" @mouseleave="handleWatchMouseOver('')"
+  <el-card class="shop-card-wrap app-card-item" shadow="hover"  @mouseleave="handleWatchMouseOver('')"
     @mousleover="handleWatchMouseOver(info.id)" body-style="height:100%;">
     <div class="app-card-item-con">
       <div class="app-card-item-con-top flex">
@@ -73,7 +73,8 @@ type shopInfoType = {
   createUser?: string
   overId?: string //当前鼠标移入id
   cardContent?: boolean // 卡片内容是否自定义
-  softwareId?: string
+  softwareId?: string,
+  class?: any
 }
 const systemTime = ref<number>();
 const props = defineProps<shopInfoType>()
@@ -178,22 +179,29 @@ const formartDateTime = (dateStr: any) => {
     }
   }
   &-option {
-      // display: flex;
+      display: flex;
       align-items: center;
-      border-top: 1px solid var(--el-border-color);
-      display: none;
+      // border-top: 1px solid var(--el-border-color);
+      // display: none;
       position: absolute;
       bottom: 0;
       left: 0;
       width: 100%;
-      background-color: var(--el-bg-color-page);
+      background-color: var(--el-fill-color-light);
+      height: 0;
+      overflow: hidden;
   }
   &:hover {
     .app-card-item-option {
-      display: flex;
+      height: auto;
     }
   }
   position: relative;
+}
+.dropdwon-active {
+  .app-card-item-option {
+    height: auto;
+    }
 }
 
 // 副标题描述样式
@@ -214,6 +222,7 @@ const formartDateTime = (dateStr: any) => {
       cursor: pointer;
       line-height: 48px;
       font-size: 14px;
+      position: relative;
       &:hover {
         color: var(--el-color-primary);
        }
