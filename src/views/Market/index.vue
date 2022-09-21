@@ -119,13 +119,13 @@
             </template>
             <template #operate="scope">
               <el-button v-if=" scope.row.authority == '所属权' && scope.row.belongId == store.workspaceData.id
-              " link type="primary" @click="publishVisible = true">上架</el-button>
+              " link type="primary" @click="handleCommand('own', 'putaway', scope.row)">上架</el-button>
               <el-button link type="primary" v-if="scope.row.belongId == store.workspaceData.id"
                 @click="openShareDialog">共享</el-button>
               <el-button link type="primary" v-if="store.workspaceData.type == 2" @click="cohortVisible = true">分配
               </el-button>
-              <el-button link type="primary" @click="GoPage(`/market/detail/${selectProductItem.id}`)">
-                详情
+              <el-button link type="primary" @click="GoPage(`/market/detail/${scope.row.id}`)">
+                查看详情
               </el-button>
 
               <el-button link type="primary" @click="deleteApp(scope.row)">移除应用</el-button>
@@ -137,27 +137,27 @@
         </div>
       </ul>
     </div>
+    <el-dialog v-model="publishVisible" title="应用上架" width="600px" draggable :close-on-click-modal="false">
+      <putaway-comp :info="selectProductItem" ref="putawayRef" @closeDialog="publishVisible = false">
+        <template #btns>
+          <div class="putaway-footer" style="text-align: right">
+            <el-button @click="publishVisible = false">取消</el-button>
+            <el-button type="primary" @click="putawaySubmit()"> 确认</el-button>
+          </div>
+        </template>
+      </putaway-comp>
+    </el-dialog>
+    <el-dialog v-if="cohortVisible" v-model="cohortVisible" custom-class="share-dialog" title="应用分配" width="1000px"
+      draggable :close-on-click-modal="false">
+      <Cohort @closeDialog="cohortVisible = false" :info="selectProductItem"></Cohort>
+    </el-dialog>
+    <el-dialog v-if="shareVisible" v-model="shareVisible" custom-class="share-dialog" title="应用共享" width="1000px"
+      draggable :close-on-click-modal="false">
+      <ShareCohort v-if="store.workspaceData.type == 2" @closeDialog="shareVisible = false" :info="selectProductItem">
+      </ShareCohort>
+      <SharePersonBox v-else @closeDialog="shareVisible = false" :info="selectProductItem"></SharePersonBox>
+    </el-dialog>
   </div>
-  <el-dialog v-model="publishVisible" title="应用上架" width="600px" draggable :close-on-click-modal="false">
-    <putaway-comp :info="selectProductItem" ref="putawayRef" @closeDialog="publishVisible = false">
-      <template #btns>
-        <div class="putaway-footer" style="text-align: right">
-          <el-button @click="publishVisible = false">取消</el-button>
-          <el-button type="primary" @click="putawaySubmit()"> 确认</el-button>
-        </div>
-      </template>
-    </putaway-comp>
-  </el-dialog>
-  <el-dialog v-if="cohortVisible" v-model="cohortVisible" custom-class="share-dialog" title="应用分配" width="1000px"
-    draggable :close-on-click-modal="false">
-    <Cohort @closeDialog="cohortVisible = false" :info="selectProductItem"></Cohort>
-  </el-dialog>
-  <el-dialog v-if="shareVisible" v-model="shareVisible" custom-class="share-dialog" title="应用共享" width="1000px"
-    draggable :close-on-click-modal="false">
-    <ShareCohort v-if="store.workspaceData.type == 2" @closeDialog="shareVisible = false" :info="selectProductItem">
-    </ShareCohort>
-    <SharePersonBox v-else @closeDialog="shareVisible = false" :info="selectProductItem"></SharePersonBox>
-  </el-dialog>
 </template>
 <script setup lang="ts">
 import API from '@/services'
@@ -165,7 +165,7 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import { onMounted, reactive, ref, watch, nextTick } from 'vue'
 import ShopCard from './components/shopCard.vue'
 import PutawayComp from './components/putawayComp.vue'
-import { baseData, actionOptionsOfOther, actionOptionsOfOwn } from './config'
+import { actionOptionsOfOther, actionOptionsOfOwn } from './config'
 import Cohort from './components/cohortBox.vue'
 import ShareCohort from './components/shareCohortBox.vue'
 import SharePersonBox from './components/sharePersonBox.vue'
@@ -184,7 +184,9 @@ import Person from '../Market/AppShare/person.vue'
 import Pagination from '@/components/pagination/index.vue'
 import orgChat from '@/hubs/orgchat'
 import { storeToRefs } from 'pinia'
+import MarketServices from './market.services'
 // hoverItem--鼠标移入item的id 用于展示按钮区域
+console.log('MarketServices',MarketServices);
 
 const add: string = '从开放市场中添加应用'
 const groupShareVisible = ref<boolean>(false)
@@ -570,11 +572,11 @@ const formartDateTime = (dateStr: any) => {
   }
 
   .market-content {
-    position: absolute;
+    // position: absolute;
     padding: 2px 2px 0;
     // margin-top: 4px;
     width: 100%;
-    height: calc(100% - 60px);
+    height: calc(100vh - 108px);
     overflow-y: auto;
   }
 
