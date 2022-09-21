@@ -53,7 +53,7 @@ const orgChat: orgChatType = {
     lastMsg: null,
     curChat: ref<ImMsgChildType>(null),
     qunPersons: ref<any[]>([]),
-    nameMap: {},
+    nameMap: sessionStorage.getItem('nameMap')? JSON.parse(sessionStorage.getItem('nameMap')) : {} , // 解决首次加载时，应用中心归属人无法响应式渲染数据
     openChats: [],
     curMsgs: ref<any[]>([]),
     start: (accessToken: string, userId: string, spaceId: string) => {
@@ -79,6 +79,7 @@ const orgChat: orgChatType = {
             }
         })
         orgChat._connection.start().then(async () => {
+            // 获取当前 用户的 会话列表
             await anyStore.subscribed("orgChat", "user", async (data) => {
                 if (data.chats) {
                     orgChat.chats.value = []
@@ -92,6 +93,7 @@ const orgChat: orgChatType = {
                 }
                 if (data.nameMap) {
                     orgChat.nameMap = data.nameMap
+                    sessionStorage.setItem('nameMap',JSON.stringify(data.nameMap) )
                 }
                 if (data.openChats) {
                     orgChat.openChats = data.openChats

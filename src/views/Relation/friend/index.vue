@@ -233,7 +233,7 @@
   .container {
     width: 100%;
     // height: 100%;
-    margin: 10px;
+    margin: 3px;
     // background: #f0f2f5;
     // padding: 5px;
 

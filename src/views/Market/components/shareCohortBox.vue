@@ -591,9 +591,9 @@
             state.centerTree = res.data.result ? res.data.result : []
           }
 
-          if (state.personsData.length > 0) {
+          if (state.authorData.length > 0) {
             let arr: any[] = []
-            state.personsData.forEach((el) => {
+            state.authorData.forEach((el) => {
               if (el.type == 'add' || el.type == 'has') {
                 arr.push(el.id)
               }
@@ -618,9 +618,9 @@
             state.centerTree = res.data.result ? res.data.result : []
           }
 
-          if (state.personsData.length > 0) {
+          if (state.authorData.length > 0) {
             let arr: any[] = []
-            state.personsData.forEach((el) => {
+            state.authorData.forEach((el) => {
               if (el.type == 'add' || el.type == 'has') {
                 arr.push(el.id)
               }

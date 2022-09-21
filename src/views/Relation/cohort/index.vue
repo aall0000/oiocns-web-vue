@@ -183,7 +183,7 @@
   .container {
     // height: 100%;
     width: 100%;
-    margin: 10px;
+    margin: 3px;
     border: 0;
   }
 

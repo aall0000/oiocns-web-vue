@@ -481,6 +481,15 @@
           } else {
             state.centerTree = res.data.result ? res.data.result : []
           }
+          if (state.authorData.length > 0) {
+            let arr: any[] = []
+            state.authorData.forEach((el) => {
+              if (el.type == 'add' || el.type == 'has') {
+                arr.push(el.id)
+              }
+            })
+            centerTree.value.setCheckedKeys(arr, true)
+          }
         })
     } else {
       API.cohort
@@ -497,6 +506,15 @@
             state.centerTree.concat(res.data.result)
           } else {
             state.centerTree = res.data.result ? res.data.result : []
+          }
+          if (state.authorData.length > 0) {
+            let arr: any[] = []
+            state.authorData.forEach((el) => {
+              if (el.type == 'add' || el.type == 'has') {
+                arr.push(el.id)
+              }
+            })
+            centerTree.value.setCheckedKeys(arr, true)
           }
         })
     }

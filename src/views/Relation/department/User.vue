@@ -49,6 +49,7 @@ import searchFriend from '@/components/searchs/index.vue'
 import AssignedPerson from '@/components/searchs/index.vue'
 const props = defineProps<{
   selectItem: any,     // 节点数据
+  tabHeight:any,
 }>()
 
 const company = ref<any>({})
@@ -324,6 +325,10 @@ watch(props, () => {
     let headerHeight = cardHeight.value?.clientHeight
     tableHeight.value = headerHeight
   }, 100);
+});
+watch(props.tabHeight, () => {
+    let headerHeight = cardHeight.value?.clientHeight
+    tableHeight.value = headerHeight
 });
 
 </script>

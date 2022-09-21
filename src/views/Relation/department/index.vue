@@ -8,8 +8,8 @@
       <div class="info" ref="infoWrap">
         <Info ref="info"/>
       </div>
-      <div class="body" ref="bodyWrap" :style="{height:tabHeight+'px'}">
-        <Body ref="body" />
+      <div class="body" ref="bodyWrap"  :style="{height:tabHeight+'px'}">
+        <Body ref="body" :tabHeight="tabHeight" />
       </div>
     </div>
   </div>
@@ -65,6 +65,7 @@
         resize[i].left = resize[i].offsetLeft -left[i].offsetLeft
         // 鼠标拖动事件
         document.onmousemove = function (e) {
+          console.log('cccc',infoWrap.value.clientHeight)
 
           let endX = e.clientX
           let moveLen = resize[i].left + (endX - startX) // （endx-startx）=移动的距离。resize[i].left+移动的距离=左边区域最后的宽度
@@ -83,6 +84,7 @@
             
             // mid[0].style.width = (box[i].clientWidth - moveLen - 10) + 'px';
           }
+          tabHeight.value=containerHeight.value - 6 - infoWrap.value.clientHeight
         }
         // 鼠标松开事件
         document.onmouseup = function (evt) {

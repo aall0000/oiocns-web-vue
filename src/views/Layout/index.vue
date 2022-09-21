@@ -17,12 +17,12 @@
         <Suspense>
           <template #default>
             <router-view v-slot="{ Component }">
-              <transition name="fade-transform">
+              <!-- <transition name="fade-transform"> -->
                 <keep-alive v-if="$route.meta.keepAlive">
                   <component :is="Component" />
                 </keep-alive>
                 <component v-else :is="Component" />
-              </transition>
+              <!-- </transition> -->
             </router-view>
           </template>
 
