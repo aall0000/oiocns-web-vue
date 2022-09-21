@@ -43,8 +43,8 @@
         </div>
         <li class="app-card" v-show="mode === 'card'">
           <MarketCreate :info="add" @myclick="GoPage('/market/softShare')" />
-          <ShopCard v-for="item in state.ownProductList" :info="item" :key="item.id" :over-id="item.id" type="soft"
-            :class="{'dropdwon-active':item.id==state.dropDwonActiveId}">
+          <ShopCard v-for="item in state.ownProductList" :info="item" :key="item.id" :over-id="item.id" type="soft" 
+          :class="{'dropdwon-active':item.id==state.dropDwonActiveId}">
             <template #icon>
               <HeadImg :name="item.name" :url="item.icon || appImg" :imgWidth="48" :limit="1" :isSquare="false" />
             </template>
@@ -68,9 +68,9 @@
             </template>
             <!-- 操作区 -->
             <template #option>
-              <div class="option-unit">
-                <el-dropdown trigger="click" @command="(value:any) => handleCommand('own', value, item)" placement="top"
-                  @visible-change="(value:boolean)=> optionDropdownChange(value,item.id)">
+                <div class="option-unit">
+                <el-dropdown trigger="click" @command="(value:any) => handleCommand('own', value, item)"
+                  placement="top" @visible-change="(value:boolean)=> optionDropdownChange(value,item.id)">
                   <div class="option-unit">设置</div>
                   <template #dropdown>
                     <el-dropdown-menu>
@@ -95,9 +95,9 @@
                     </el-dropdown-menu>
                   </template>
                 </el-dropdown>
-              </div>
-              <el-divider direction="vertical"></el-divider>
-              <div class="option-unit" @click="deleteApp(item)">移除应用</div>
+                </div>
+                <el-divider direction="vertical"></el-divider>
+                <div class="option-unit" @click="deleteApp(item)">移除应用</div>
             </template>
           </ShopCard>
         </li>
@@ -247,7 +247,7 @@ const state: StateType = reactive({
   shareTotal: 0,
   marketOptions: [],
   options: [],
-  dropDwonActiveId: '',
+  dropDwonActiveId:'',
   selectLabel: {
     label: '',
     id: ''
@@ -421,11 +421,11 @@ const handleCommand = (
 
 // 下拉框显示隐藏时触发
 // value 是否显示，activeId 当前显示 的卡片内容id
-const optionDropdownChange = (value: boolean, activeId: string) => {
-
-  if (value) { //显示  
+const optionDropdownChange = (value:boolean,activeId:string)=>{
+  
+  if(value) { //显示
     state.dropDwonActiveId = activeId
-  } else {
+  }else{
     state.dropDwonActiveId = ''
   }
 }
