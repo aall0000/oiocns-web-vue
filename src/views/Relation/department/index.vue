@@ -71,7 +71,7 @@
             console.log(moveLen)
           let maxT = box[i].clientWidth - resize[i].offsetWidth // 容器宽度 - 左边区域的宽度 = 右边区域的宽度
           if (moveLen < 240) moveLen = 240 // 左边区域的最小宽度为240px
-          if (moveLen > 580) moveLen = 580
+          if (moveLen > 450) moveLen = 450
           resize[i].style.left = moveLen // 设置左侧区域的宽度
           for (let j = 0; j < left.length; j++) {
             left[0].style.width = moveLen + 'px'
@@ -138,6 +138,7 @@
   .content{
     width: 77%;
     height: 100%;
+    flex: 1;
     // padding:0 3px;
     box-sizing: border-box;
     // background: #f0f2f5;

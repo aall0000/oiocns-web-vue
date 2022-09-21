@@ -48,12 +48,29 @@
               <HeadImg :name="item.name" :url="item.icon || appImg" :imgWidth="48" :limit="1" :isSquare="false" />
             </template>
 
-            <template #rightIcon>
+            <!-- 附属标题区 -->
+            <template #description>
+              <span>归属: {{ orgChat.getName(item.belongId) || '未知' }}</span>
+              <el-divider direction="vertical"></el-divider>
+              <span>版本： 0.0.1</span>
+            </template>
+            <!-- 内容区 -->
+            <template #body>
+              <el-tooltip trigger="click" effect="customized">
+                <template #content>
+                  <div style="max-width: 280px;">
+                    {{item?.remark || '暂无'}}
+                  </div>
+                </template>
+                <p class="app-card-item-con-desc">简介: {{ item?.remark || '暂无' }}</p>
+              </el-tooltip>
+            </template>
+            <!-- 操作区 -->
+            <template #option>
+              <div class="option-unit">
               <el-dropdown trigger="click" @command="(value:any) => handleCommand('own', value, item)"
-                placement="left-start">
-                <el-icon style="cursor: pointer" :size="20">
-                  <Operation />
-                </el-icon>
+                placement="bottom">
+                <div class="option-unit">设置</div>
                 <template #dropdown>
                   <el-dropdown-menu>
                     <div v-for="action in actionOptionsOfOwn" :key="action.value">
@@ -72,32 +89,17 @@
                       action.label
                       }}</el-dropdown-item>
                     </div>
-                    <el-dropdown-item @click="deleteApp(item)">移除应用</el-dropdown-item>
+                    <!-- <el-dropdown-item @click="deleteApp(item)">移除应用</el-dropdown-item> -->
                     <!-- <el-dropdown-item  @click="GoPage('/market/appDetail')">应用详情</el-dropdown-item> -->
                     <el-dropdown-item @click="GoPageWithQuery('/market/publishList', {id:item.id})">应用上架列表
                     </el-dropdown-item>
                   </el-dropdown-menu>
                 </template>
               </el-dropdown>
-            </template>
-
-            <template #description>
-              <span>归属: {{ orgChat.getName(item.belongId) || '未知' }}</span>
+              </div>
               <el-divider direction="vertical"></el-divider>
-              <span>版本： 0.0.1</span>
+              <div class="option-unit" @click="deleteApp(item)">移除应用</div>
             </template>
-
-            <template #body>
-              <el-tooltip trigger="click" effect="customized">
-                <template #content>
-                  <div style="max-width: 280px;">
-                    {{item?.remark || '暂无'}}
-                  </div>
-                </template>
-                <p class="app-card-item-con-desc">简介: {{ item?.remark || '暂无' }}</p>
-              </el-tooltip>
-            </template>
-
           </ShopCard>
         </li>
         <li class="tab-card" v-show="mode === 'list'">
@@ -117,13 +119,13 @@
             </template>
             <template #operate="scope">
               <el-button v-if=" scope.row.authority == '所属权' && scope.row.belongId == store.workspaceData.id
-              " link type="primary" @click="publishVisible = true">上架</el-button>
+              " link type="primary" @click="handleCommand('own', 'putaway', scope.row)">上架</el-button>
               <el-button link type="primary" v-if="scope.row.belongId == store.workspaceData.id"
                 @click="openShareDialog">共享</el-button>
               <el-button link type="primary" v-if="store.workspaceData.type == 2" @click="cohortVisible = true">分配
               </el-button>
-              <el-button link type="primary" @click="GoPage(`/market/detail/${selectProductItem.id}`)">
-                详情
+              <el-button link type="primary" @click="GoPage(`/market/detail/${scope.row.id}`)">
+                查看详情
               </el-button>
 
               <el-button link type="primary" @click="deleteApp(scope.row)">移除应用</el-button>
@@ -135,27 +137,27 @@
         </div>
       </ul>
     </div>
+    <el-dialog v-model="publishVisible" title="应用上架" width="600px" draggable :close-on-click-modal="false">
+      <putaway-comp :info="selectProductItem" ref="putawayRef" @closeDialog="publishVisible = false">
+        <template #btns>
+          <div class="putaway-footer" style="text-align: right">
+            <el-button @click="publishVisible = false">取消</el-button>
+            <el-button type="primary" @click="putawaySubmit()"> 确认</el-button>
+          </div>
+        </template>
+      </putaway-comp>
+    </el-dialog>
+    <el-dialog v-if="cohortVisible" v-model="cohortVisible" custom-class="share-dialog" title="应用分配" width="1000px"
+      draggable :close-on-click-modal="false">
+      <Cohort @closeDialog="cohortVisible = false" :info="selectProductItem"></Cohort>
+    </el-dialog>
+    <el-dialog v-if="shareVisible" v-model="shareVisible" custom-class="share-dialog" title="应用共享" width="1000px"
+      draggable :close-on-click-modal="false">
+      <ShareCohort v-if="store.workspaceData.type == 2" @closeDialog="shareVisible = false" :info="selectProductItem">
+      </ShareCohort>
+      <SharePersonBox v-else @closeDialog="shareVisible = false" :info="selectProductItem"></SharePersonBox>
+    </el-dialog>
   </div>
-  <el-dialog v-model="publishVisible" title="应用上架" width="600px" draggable :close-on-click-modal="false">
-    <putaway-comp :info="selectProductItem" ref="putawayRef" @closeDialog="publishVisible = false">
-      <template #btns>
-        <div class="putaway-footer" style="text-align: right">
-          <el-button @click="publishVisible = false">取消</el-button>
-          <el-button type="primary" @click="putawaySubmit()"> 确认</el-button>
-        </div>
-      </template>
-    </putaway-comp>
-  </el-dialog>
-  <el-dialog v-if="cohortVisible" v-model="cohortVisible" custom-class="share-dialog" title="应用分配" width="1000px"
-    draggable :close-on-click-modal="false">
-    <Cohort @closeDialog="cohortVisible = false" :info="selectProductItem"></Cohort>
-  </el-dialog>
-  <el-dialog v-if="shareVisible" v-model="shareVisible" custom-class="share-dialog" title="应用共享" width="1000px"
-    draggable :close-on-click-modal="false">
-    <ShareCohort v-if="store.workspaceData.type == 2" @closeDialog="shareVisible = false" :info="selectProductItem">
-    </ShareCohort>
-    <SharePersonBox v-else @closeDialog="shareVisible = false" :info="selectProductItem"></SharePersonBox>
-  </el-dialog>
 </template>
 <script setup lang="ts">
 import API from '@/services'
@@ -483,7 +485,6 @@ const formartDateTime = (dateStr: any) => {
 </script>
 
 <style>
-
 .group-dialog>.el-dialog__body {
   padding: 10px 20px;
   height: 100px;
@@ -500,6 +501,7 @@ const formartDateTime = (dateStr: any) => {
   padding: 10px 20px;
 }
 </style>
+
 <style lang="scss" scoped>
 .header-box {
   display: flex;
@@ -570,11 +572,11 @@ const formartDateTime = (dateStr: any) => {
   }
 
   .market-content {
-    position: absolute;
+    // position: absolute;
     padding: 2px 2px 0;
     // margin-top: 4px;
     width: 100%;
-    height: calc(100% - 60px);
+    height: calc(100vh - 108px);
     overflow-y: auto;
   }
 
