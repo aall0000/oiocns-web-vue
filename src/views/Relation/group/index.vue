@@ -99,6 +99,8 @@
               }
 
             // mid[0].style.width = (box[i].clientWidth - moveLen - 10) + 'px';
+            tabHeight.value=containerHeight.value - 6 - infoWrap.value.clientHeight
+
           }
         }
         // 鼠标松开事件
