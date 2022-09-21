@@ -1,6 +1,6 @@
 <template>
   <div class="chart-side-wrap" @contextmenu.stop>
-    <el-space class="group-side-bar-search flex" :size="4">
+    <div class="group-side-bar-search flex" :size="4">
       <el-input placeholder="搜索" v-model="searchValue" prefix-icon="Search" />
       <el-button
         icon="Refresh"
@@ -10,7 +10,7 @@
         @click="orgChat.getChats"
       ></el-button>
       <!-- <el-icon :size="20" class="refresh"><Refresh /></el-icon> -->
-    </el-space>
+    </div>
     <div class="group-side-bar-wrap" @contextmenu.prevent="mousePosition.isShowContext = false">
       <ul class="group-con" v-for="item in showList" :key="item.id">
         <li class="group-con-item">
