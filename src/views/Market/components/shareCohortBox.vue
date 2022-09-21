@@ -140,15 +140,11 @@
       }
     ],
     options: [], // 集团列表
-    departData: [], // 集团分配右侧数据
-    departHisData: [], // 集团分配历史数据
-    centerTree: [], // 角色分配中间树形
-    authorHisData: [], // 角色历史数据
-    authorData: [], // 角色右侧数据
-    personsHisData: [], // 人员历史数据
-    personsData: [], // 人员右侧数据
-    identitysData: [], //岗位右侧数据
-    identitysHisData: [] // 岗位历史数据
+    departData: [], // 集团共发右侧数据
+    departHisData: [], // 集团共发历史数据
+    centerTree: [], // 职权共发中间树形
+    authorHisData: [], // 职权历史数据
+    authorData: [] // 职权右侧数据
   })
   const authorityProps = {
     label: 'name',
@@ -188,10 +184,6 @@
           leftTree.value.setCheckedKeys(arr, true)
         } else if (newValue == '2' && state.authorData.length == 0) {
           getHistoryData()
-        } else if (newValue == '3' && state.personsData.length == 0) {
-          getHistoryData()
-        } else if (newValue == '4' && state.identitysData.length == 0) {
-          getHistoryData()
         }
       })
     },
@@ -225,26 +217,18 @@
     }
   )
   const props = defineProps<createInfo>()
+
   onMounted(() => {
     getGroupList()
   })
+
   const emit = defineEmits(['closeDialog'])
+
   const closeDialog = () => {
     emit('closeDialog')
   }
-  // 清除树形中的type
-  const clearTreeType = (data: any) => {
-    for (let i = 0; i < data.length; i++) {
-      if (data[i].type) {
-        delete data[i].type
-        if (data[i].children.length !== 0) {
-          clearTreeType(data[i].children)
-        }
-      } else {
-        clearTreeType(data[i].children)
-      }
-    }
-  }
+
+  // 获取集团数据
   const getGroupList = () => {
     API.company
       .companyGetGroups({
@@ -261,62 +245,21 @@
         }
       })
   }
-  // 获取部门历史数据
-  const getOrgHistoryData = () => {}
 
-  // 获取历史数据（提交表单后）
-  const getNewHistoryData = () => {
-    switch (radio.value) {
-      case '1':
-        API.product
-          .searchGroupShare({
-            data: {
-              id: props.info.id,
-              offset: 0,
-              limit: 1000,
-              filter: '',
-              teamId: resource.value
-            }
-          })
-          .then((res: ResultType) => {
-            state.departHisData = res?.data?.result ? res.data.result : []
-            leftTree.value.setCheckedKeys([])
-            let arr: any[] = []
-            state.departHisData.forEach((el) => {
-              el.type = 'has'
-              arr.push(el.id)
-            })
-            state.departData = state.departHisData
-            leftTree.value.setCheckedKeys(arr, true)
-          })
-        break
-      case '2':
-        API.product
-          .searchUnitShare({
-            data: {
-              id: props.info.id,
-              offset: 0,
-              limit: 1000,
-              filter: '',
-              teamId: resource.value
-            }
-          })
-          .then((res: ResultType) => {
-            state.authorHisData = res.data.result ? res.data.result : []
-            centerTree.value.setCheckedKeys([])
-            let arr: any[] = []
-            state.authorHisData.forEach((el) => {
-              el.type = 'has'
-              arr.push(el.id)
-            })
-            state.authorData = state.authorHisData
-            centerTree.value.setCheckedKeys(arr, true)
-          })
-        break
-      default:
-        break
+  // 清除树形中的type
+  const clearTreeType = (data: any) => {
+    for (let i = 0; i < data.length; i++) {
+      if (data[i].type) {
+        delete data[i].type
+        if (data[i].children.length !== 0) {
+          clearTreeType(data[i].children)
+        }
+      } else {
+        clearTreeType(data[i].children)
+      }
     }
   }
+
   // 获取历史数据
   const getHistoryData = () => {
     switch (radio.value) {
@@ -456,23 +399,13 @@
   const centerAuthorClick = (data: any, checked: boolean, indeterminate: any) => {
     console.log('点击中间', data, checked, indeterminate)
     if (checked) {
-      if (radio.value == '2') {
-        handleBoxClick(state.authorHisData, state.authorData, data)
-      } else if (radio.value == '3') {
-        handleBoxClick(state.personsHisData, state.personsData, data)
-      } else {
-        handleBoxClick(state.identitysHisData, state.identitysData, data)
-      }
+      handleBoxClick(state.authorHisData, state.authorData, data)
     } else {
-      if (radio.value == '2') {
-        handleBoxCancelClick(state.authorHisData, state.authorData, data)
-      } else if (radio.value == '3') {
-        handleBoxCancelClick(state.personsHisData, state.personsData, data)
-      } else {
-        handleBoxCancelClick(state.identitysHisData, state.identitysData, data)
-      }
+      handleBoxCancelClick(state.authorHisData, state.authorData, data)
     }
   }
+
+  // 中间树形点击取消事件
   const handleBoxCancelClick = (hisData: any, dataList: any, data: any) => {
     let result = hisData.some((item: any) => {
       return item.id == data.id
@@ -488,6 +421,8 @@
       }
     })
   }
+
+  //中间树形点击勾选事件
   const handleBoxClick = (hisData: any, dataList: any, data: any) => {
     let result = hisData.some((item: any) => {
       return item.id == data.id
@@ -514,7 +449,7 @@
       dataList.push(data)
     }
   }
-  // 左侧树点击事件
+  // 左侧checkbox点击事件
   const handleCheckChange = (data: any, checked: boolean, indeterminate: any) => {
     if (checked) {
       if (radio.value == '1') {
@@ -560,6 +495,7 @@
       }
     }
   }
+  // 左侧间树形点击事件
   const handleNodeClick = (data: any, load: boolean, search?: string) => {
     console.log('data', data)
     if (data.authAdmin === false || data?.data?.authAdmin === false) {
@@ -590,16 +526,6 @@
           } else {
             state.centerTree = res.data.result ? res.data.result : []
           }
-
-          if (state.personsData.length > 0) {
-            let arr: any[] = []
-            state.personsData.forEach((el) => {
-              if (el.type == 'add' || el.type == 'has') {
-                arr.push(el.id)
-              }
-            })
-            centerTree.value.setCheckedKeys(arr, true)
-          }
         })
     } else {
       API.company
@@ -617,94 +543,38 @@
           } else {
             state.centerTree = res.data.result ? res.data.result : []
           }
-
-          if (state.personsData.length > 0) {
-            let arr: any[] = []
-            state.personsData.forEach((el) => {
-              if (el.type == 'add' || el.type == 'has') {
-                arr.push(el.id)
-              }
-            })
-            centerTree.value.setCheckedKeys(arr, true)
-          }
         })
     }
   }
-  const handleTreeData = (item: any) => {
-    for (let i = 0; i < item.length; i++) {
-      if (item[i].nodes) {
-        handleTreeData(item[i].nodes)
-      } else {
-        item[i].nodes = []
-      }
-    }
-  }
+
   const handleTabClick = (id: string) => {
     resource.value = id
+    cascaderTree.value = []
+    getCompanyTree(true)
   }
+  // raido = 2 时点击取消图标事件
   const delContentAuth = (item: any) => {
-    if (radio.value == '2') {
-      if (item.type == 'del') {
-        return
-      } else if (item.type == 'add') {
-        state.authorData.forEach((el, index) => {
-          if (el.id == item.id) {
-            state.authorData.splice(index, 1)
-            centerTree.value.setChecked(item.id, false)
-          }
-        })
-      } else {
-        state.authorData.forEach((el, index) => {
-          if (el.id == item.id) {
-            el.type = 'del'
-            if (state.centerTree.length !== 0) {
-              centerTree.value.setChecked(el.id, false)
-            }
-          }
-        })
-      }
-    } else if (radio.value == '3') {
-      if (item.type == 'del') {
-        return
-      } else if (item.type == 'add') {
-        state.personsData.forEach((el, index) => {
-          if (el.id == item.id) {
-            state.personsData.splice(index, 1)
-            centerTree.value.setChecked(item.id, false)
-          }
-        })
-      } else {
-        state.personsData.forEach((el, index) => {
-          if (el.id == item.id) {
-            el.type = 'del'
-            if (state.centerTree.length !== 0) {
-              centerTree.value.setChecked(el.id, false)
-            }
-          }
-        })
-      }
+    if (item.type == 'del') {
+      return
+    } else if (item.type == 'add') {
+      state.authorData.forEach((el, index) => {
+        if (el.id == item.id) {
+          state.authorData.splice(index, 1)
+          centerTree.value.setChecked(item.id, false)
+        }
+      })
     } else {
-      if (item.type == 'del') {
-        return
-      } else if (item.type == 'add') {
-        state.identitysData.forEach((el, index) => {
-          if (el.id == item.id) {
-            state.identitysData.splice(index, 1)
-            centerTree.value.setChecked(item.id, false)
+      state.authorData.forEach((el, index) => {
+        if (el.id == item.id) {
+          el.type = 'del'
+          if (state.centerTree.length !== 0) {
+            centerTree.value.setChecked(el.id, false)
           }
-        })
-      } else {
-        state.identitysData.forEach((el, index) => {
-          if (el.id == item.id) {
-            el.type = 'del'
-            if (state.centerTree.length !== 0) {
-              centerTree.value.setChecked(el.id, false)
-            }
-          }
-        })
-      }
+        }
+      })
     }
   }
+  // radio = 1 时点击图标取消事件
   const delContent = (item: any) => {
     if (item.type == 'del') {
       return
@@ -728,7 +598,7 @@
   // 节点ID和对象映射关系
   const parentIdMap: any = {}
   let cascaderTree = ref<OrgTreeModel[]>([])
-  const getCompanyTree = () => {
+  const getCompanyTree = (val?: boolean) => {
     API.company
       .getGroupTree({
         data: { id: resource.value }
@@ -745,7 +615,9 @@
         obj.children = arr
         obj.disabled = !obj.authAdmin
         cascaderTree.value.push(obj)
-        getHistoryData()
+        if (!val) {
+          getHistoryData()
+        }
       })
   }
   const isAuthAdmin = (nodes: any) => {
