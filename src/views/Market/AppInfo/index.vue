@@ -55,7 +55,7 @@
         </el-form-item> -->
             <el-form-item label="应用介绍">
               <el-input
-                :rows="2"
+                :rows="4"
                 v-model="form.data.remark"
                 type="textarea"
                 maxlength="120"

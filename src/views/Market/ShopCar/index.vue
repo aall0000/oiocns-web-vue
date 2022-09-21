@@ -333,7 +333,7 @@ const createOrderByStaging = async (checkedId?: string) => {
       1,
       checkedStagIds
     )
-  })
+  }).catch(()=>{})
 }
 
 //从购物车移除 (批量)
