@@ -1,57 +1,25 @@
 <template>
   <el-card class="shop-card-wrap app-card-item" shadow="hover" :key="info.id" @mouseleave="handleWatchMouseOver('')"
-    @mouseover="handleWatchMouseOver(info.id)" body-style="height:100%;">
+    @mousleover="handleWatchMouseOver(info.id)" body-style="height:100%;">
     <div class="app-card-item-con">
       <div class="app-card-item-con-top flex">
-        <div class="app-card-rightIcon" @click.stop>
-          <slot name="rightIcon"></slot>
-        </div>
-        <div class="app-card-rightTriangle" @click.stop>
-          <slot name="rightTriangle"></slot>
-        </div>
         <!-- <HeadImg :name="info.name" :url="appImg" :imgWidth="48" :limit="1" :isSquare="false" /> -->
         <slot name="icon"></slot>
         <div class="app-con" v-if="!cardContent">
+          <!-- 标题 -->
           <div class="app-con-title">
             {{ info.name }}
           </div>
-          <!-- <el-tooltip :content="`${props.type != 'market'? '应用' :'商店'}归属`"> -->
+          <!-- 副标题 -->
             <div class="app-card-item-con-belong">
               <slot name="description"></slot>
             </div>
-          <!-- </el-tooltip> -->
-
-          <!-- 商店卡片特有 -->
-          <!-- <el-tag v-if="props.type == 'market'" style="margin-right:10px" :type="info.public?'success':'danger'">{{
-            info.public ? '公开的' : '私有的'
-            }}</el-tag>
-            <el-tag v-if="props.type == 'market'&&info.id != softwareId" style="margin-right:10px">{{
-            info.belongId == workspaceData.id ? '创建的' : '加入的'
-            }}</el-tag> -->
-          <!-- end -->
-
         </div>
         <slot v-else name="content"></slot>
       </div>
       <div class="app-card-item-body">
         <slot name="body"></slot>
         <slot name="footer"></slot>
-       
-        <!-- end -->
-        <!-- <div class="app-card-item-con-line" v-if="props.type != 'market'">
-        <el-divider style="margin: 16px 0" v-if="type!='shopCard'&&info.id != softwareId"></el-divider>
-        </div> -->
-        <!-- <div class="app-card-item-con-footer" v-if="info.id != softwareId&&props.type != 'market'">
-
-            <div class="app-card-item-con-desc" >
-              <p> 归属:{{ orgChat.getName(info.belongId) }}</p>
-              <p>创建:{{ orgChat.getName(info.createUser) }}</p>
-            </div>
-
-            <div v-if="props.type != 'market'" class="app-card-item-con-version">
-             版本:0.0.1
-            </div>
-        </div> -->
       </div>
       <div class="app-tag">
           <!-- 商店卡片特有 -->
@@ -74,6 +42,16 @@
           <el-tag v-if="props.type == 'soft'" style="margin-right:10px">{{info.source}}</el-tag>
 
           <!-- 应用卡片特有 end -->
+      </div>
+        <div class="app-card-item-option" >
+          <slot name="option"></slot>
+           <!--<div class="option-unit">
+            <slot name="rightIcon"  @click.stop></slot>
+          </div>
+            <el-divider direction="vertical"></el-divider>
+          <div class="option-unit">
+            <slot name="mainOption"></slot>
+          </div> -->
         </div>
     </div>
   </el-card>
@@ -116,18 +94,6 @@ const formartDateTime = (dateStr: any) => {
 </script>
 
 <style lang="scss" scoped>
-.app-card-rightIcon {
-  position: absolute;
-  right: 20px;
-  top: 20px;
-  cursor: pointer;
-}
-
-.app-card-rightTriangle {
-  position: absolute;
-  right: 0px;
-  top: 0px;
-}
 
 @media not screen and (min-width: 1300px) {
 
@@ -142,7 +108,7 @@ const formartDateTime = (dateStr: any) => {
 
   width: 24%;
   min-width: 200px;
-  max-height: 184px;
+  max-height: 204px;
   margin-bottom: 10px;
   margin-right: 10px;
 
@@ -166,7 +132,7 @@ const formartDateTime = (dateStr: any) => {
       padding-bottom: 8px;
       overflow: hidden;
       text-overflow: ellipsis;
-      padding-right: 40px;
+      // padding-right: 40px;
     }
 
     &-desc {
@@ -187,6 +153,7 @@ const formartDateTime = (dateStr: any) => {
       font-size: 14px;
       color: var(--el-color-info);
     }
+    
   }
 
   &-body {
@@ -194,27 +161,6 @@ const formartDateTime = (dateStr: any) => {
     padding-bottom: 10px;
   }
 
-  // .app-card-item-con-line {
-  //   margin-top: 30px;
-  //   height: 30px;
-  // }
-
-  // .app-card-item-con-footer {
-
-  //   display: flex;
-  //   width: 100%;
-  //   align-items: flex-end;
-
-
-  //   .app-card-item-con-version {
-  //     display: flex;
-  //     width: 25%;
-  //     justify-content: flex-end;
-  //     font-size: 12px;
-  //     font-weight: 400;
-  //     color: var(--el-text-color-secondary);
-  //   }
-  // }
 
   &-footer {
     position: absolute;
@@ -231,6 +177,23 @@ const formartDateTime = (dateStr: any) => {
       padding: 6px 10px;
     }
   }
+  &-option {
+      // display: flex;
+      align-items: center;
+      border-top: 1px solid var(--el-border-color);
+      display: none;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background-color: var(--el-bg-color-page);
+  }
+  &:hover {
+    .app-card-item-option {
+      display: flex;
+    }
+  }
+  position: relative;
 }
 
 // 副标题描述样式
@@ -243,5 +206,16 @@ const formartDateTime = (dateStr: any) => {
   align-content: center;
 }
 
-
+</style>
+<style lang="scss">
+ .app-card-item .option-unit {
+      flex:1;
+      text-align: center;
+      cursor: pointer;
+      line-height: 48px;
+      font-size: 14px;
+      &:hover {
+        color: var(--el-color-primary);
+       }
+    }
 </style>

@@ -173,7 +173,9 @@ defineExpose({
   max-width: 100%;
   max-height: 400px;
 }
-
+.con-content-txt >span{
+  line-height: 2;
+}
 .con-content-txt div {
   max-width: 100% !important;
 }
@@ -242,6 +244,7 @@ defineExpose({
         z-index: 1;
         margin-top: -10px;
         font-size: small;
+        
       }
 
       &-link {
