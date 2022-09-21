@@ -163,7 +163,7 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import { onMounted, reactive, ref, watch, nextTick } from 'vue'
 import ShopCard from './components/shopCard.vue'
 import PutawayComp from './components/putawayComp.vue'
-import { baseData, actionOptionsOfOther, actionOptionsOfOwn } from './config'
+import { actionOptionsOfOther, actionOptionsOfOwn } from './config'
 import Cohort from './components/cohortBox.vue'
 import ShareCohort from './components/shareCohortBox.vue'
 import SharePersonBox from './components/sharePersonBox.vue'
@@ -182,7 +182,9 @@ import Person from '../Market/AppShare/person.vue'
 import Pagination from '@/components/pagination/index.vue'
 import orgChat from '@/hubs/orgchat'
 import { storeToRefs } from 'pinia'
+import MarketServices from './market.services'
 // hoverItem--鼠标移入item的id 用于展示按钮区域
+console.log('MarketServices',MarketServices);
 
 const add: string = '从开放市场中添加应用'
 const groupShareVisible = ref<boolean>(false)
