@@ -185,9 +185,9 @@ import Person from '../Market/AppShare/person.vue'
 import Pagination from '@/components/pagination/index.vue'
 import orgChat from '@/hubs/orgchat'
 import { storeToRefs } from 'pinia'
-import MarketServices from './market.services'
+// import MarketServices from './market.services'
 // hoverItem--鼠标移入item的id 用于展示按钮区域
-console.log('MarketServices',MarketServices);
+// console.log('MarketServices',MarketServices);
 
 const add: string = '从开放市场中添加应用'
 const groupShareVisible = ref<boolean>(false)
