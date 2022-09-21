@@ -137,5 +137,5 @@ class MarketServices {
     }
   }
 }
-
-export const marketServices: MarketServicesType = new MarketServices()
+const marketServices: MarketServicesType = new MarketServices()
+export default marketServices

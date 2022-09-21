@@ -144,6 +144,7 @@
     tableHead: any[]
     tableData: any[]
     checkList?: any[]
+    pageSizes?: any[]
     total: number
     loading?: boolean
     options: {
@@ -164,6 +165,7 @@
     hasTabs: false,
     total: 0,
     loading: false,
+    pageSizes: () => [20, 30, 50],
     tableHead: () => [],
     tableData: () => [],
     options: () => {
@@ -235,6 +237,12 @@
     () => props.total,
     (val, old) => {
       state.page.total = val
+    }
+  )
+  watch(
+    () => props.pageSizes,
+    (val, old) => {
+      state.page.pageSizes = val
     }
   )
 
