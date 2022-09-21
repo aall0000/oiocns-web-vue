@@ -1,7 +1,7 @@
 <template>
     <div class="card" ref="cardHeight">
       <div class="header">
-        <div class="title">{{props.selectItem.label}} {{props.tabHeight}}</div>
+        <div class="title">{{props.selectItem.label}}</div>
         <div class="box-btns">
           <div v-if="props.selectItem?.data?.typeName == '单位'">
             <el-button small link type="primary" :disabled=!selectItem?.data?.authAdmin @click="friendDialog = true">添加成员</el-button>
