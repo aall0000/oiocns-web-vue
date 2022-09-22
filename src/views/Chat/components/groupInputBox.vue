@@ -80,6 +80,10 @@ const reCreatChatContent = (elementChild: NodeList | any[]): Array<string> => {
   // return newSpace.innerHTML
 }
 
+const reWrite = (str:string)=>{
+  document.getElementById('insterHtml').innerHTML = str
+}
+
 const handleImgChoosed = (url: string) => {
   const img = document.createElement('img')
   img.src = url
@@ -132,29 +136,9 @@ const setFocus = () => {
   selection.addRange(range)
 }
 
-  // //换行并重新定位光标位置
-  // const textareaRange = () => {
-  //   var el = inputRef.value
-  //   var range = document.createRange();
-  //   //返回用户当前的选区
-  //   var sel = document.getSelection();
-  //   //获取当前光标位置
-  //   var offset = sel.focusOffset
-  //   //div当前内容
-  //   var content = el.innerHTML
-  //   //添加换行符\n
-  //   el.innerHTML = content.slice(0, offset) + '\n' + content.slice(offset)
-  //   //设置光标为当前位置
-  //   range.setStart(el.childNodes[0], offset + 1);
-  //   //使得选区(光标)开始与结束位置重叠
-  //   range.collapse(true);
-  //   //移除现有其他的选区
-  //   sel.removeAllRanges();
-  //   //加入光标的选区
-  //   sel.addRange(range);
-  //   console.log('参数', offset, content, range);
-
-  // }
+defineExpose({
+  reWrite
+})
 </script>
 
 <style lang="scss">

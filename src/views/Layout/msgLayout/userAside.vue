@@ -2,9 +2,8 @@
   <div class="tac">
     <el-menu
       router
-      style="width: 200px; height: calc(100vh - 60px)"
-      default-active="userMsg"
-      
+      style="width: 200px; height: calc(100vh - 60px);padding-top: 20px;"
+      :default-active="state.activeMenu"
       @open="handleOpen"
       @close="handleClose"
     >
@@ -16,12 +15,15 @@
 </template>
 
 <script lang="ts" setup>
-  import { onBeforeMount, ref,watch } from 'vue'
+  import { onBeforeMount, ref,watch,reactive } from 'vue'
   import { useUserStore } from '@/store/user'
   import { useRouter } from 'vue-router'
   const menu = ref([])
   const store = useUserStore()
   const router = useRouter()
+  const state= reactive({
+    activeMenu: router.currentRoute.value.path
+  })
   onBeforeMount(() => {
     workspace()
   })

@@ -2,7 +2,7 @@
   <div class="container">
     <el-card class="wrap">
       <div>
-        <div class="title">{{router.currentRoute.value.query?.name}}岗位</div>
+        <div class="title">{{router.currentRoute.value.query?.name}}的岗位</div>
       </div>
 
       <div class="search-wrap">
@@ -44,7 +44,7 @@
         <el-cascader
           :props="cascaderProps"
           :options="cascaderTree"
-          v-model="formData.parentIds"
+          v-model="formData.authId"
           style="width: 100%"
           placeholder="请选择"
         />
@@ -66,7 +66,7 @@
   import { useRouter } from 'vue-router'
   import { ref, onMounted,reactive } from 'vue'
   import $services from '@/services'
-  import { ElMessage, ElMessageBox } from 'element-plus'
+  import { ElMessage } from 'element-plus'
   const emit = defineEmits(['itemClick'])
 
   const router = useRouter()
@@ -96,14 +96,12 @@
     $services.cohort.getIdentitys({
       data: {
         offset:0,
-        limit:20,
+        limit: 1000,
         id: belongId.value,
       }
     }).then((res: ResultType) => {
       if (res.success) {
         identityList.list = res.data.result
-        console.log(identityList.list)
-
       }
     })
   }
@@ -114,7 +112,7 @@
         name: formData.name,
         code: formData.code,
         remark: formData.remark,
-        authId: formData.parentIds[formData.parentIds.length-1]
+        authId: formData.authId
       }
     }).then((res: ResultType) => {
       if (res.success) {
@@ -127,8 +125,6 @@
       }
     })
   }
-  // 节点ID和对象映射关系
-  const parentIdMap: any = {}
 
   let authorityTree = ref<any[]>([])
   let cascaderTree = ref<any[]>([])
@@ -138,6 +134,7 @@
     value: 'id',
     label: 'name',
     children: 'nodes',
+    emitPath: false,
   }
 
   // 加载角色树
@@ -145,21 +142,12 @@
     $services.company.getAuthorityTree({data: {id: belongId.value}}).then((res: any)=>{
       authorityTree.value = []
       authorityTree.value.push(res.data)
-      initIdMap(authorityTree.value)
       cascaderTree.value = authorityTree.value
     })
   }
-  // 初始化ID和对象映射关系
-  const initIdMap = (nodes: any[]) => {
-    for(const node of nodes){
-      parentIdMap[node.id] = node
-      if(node.nodes){
-        initIdMap(node.nodes)
-      }
-    }
-  }
 
   const dialogHide = ()=>{
+    formData.value = {}
     createIdntityDialog.value = false
   }
 

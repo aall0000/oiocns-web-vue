@@ -10,7 +10,7 @@
       <!-- 左侧聊天内容显示 -->
       <div class="group-content-left con recall" v-if="item.msgType === 'recall'">
         {{ item.showTxt }}
-        <!-- <span class="reWrite" @click="handleReWrite(item.msgBody)">重新编辑</span> -->
+        <span class="reWrite" v-if="item.allowEdit" @click="handleReWrite(item.msgBody)">重新编辑</span>
       </div>
 
       <div class="group-content-left con" v-else-if="item.fromId !== orgChat.userId.value">
@@ -71,11 +71,12 @@ import { debounce } from '@/utils/tools'
 import HeadImg from '@/components/headImg.vue'
 import moment from 'moment'
 import orgChat from '@/hubs/orgchat'
+import { ElMessage } from 'element-plus'
 
 // dom节点
 const nodeRef = ref(null)
 // 事件viewMoreMsg--查看更多 recallMsg--撤销消息
-const emit = defineEmits(['recallMsg', 'handleReWrite'])
+const emit = defineEmits(['handleReWrite'])
 
 const info = inject('reWrite', ref(''))
 // 重新编辑功能
@@ -87,7 +88,10 @@ const handleReWrite = (txt: string) => {
 const curShow = ref<any>(null)
 
 const editShow = (item: any) => {
-  if (curShow.value) {
+  if(item.chatId){
+    item.id = item.chatId
+  }
+  if (curShow.value && curShow.value.id !== item.id) {
     curShow.value.edit = false
   }
   curShow.value = item
@@ -107,7 +111,14 @@ const recallMsg = (item: any) => {
     delete item.chatId
     delete item.sessionId
   }
-  orgChat.recallMsg(item)
+  orgChat.recallMsg(item).then((res:ResultType)=>{
+    if(res.data != 1){
+      ElMessage({
+        type: "warning",
+        message: "只能撤回1分钟内发送的消息"
+      })
+    }
+  })
 }
 
 const deleteMsg = (item: any) => {

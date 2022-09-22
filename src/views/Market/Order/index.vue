@@ -43,7 +43,7 @@
 
           <template #operate="scope">
 
-            <el-button link small type="primary" class="btn" v-show="scope.row.status < 102" @click="cancelOrderDetail(scope.row.id, 220, null)">
+            <el-button link small type="primary" class="btn" v-show="scope.row.status < 102" @click="cancelBuy(scope.row.id)">
               取消订单
             </el-button>
             <el-button link small type="primary" class="btn" v-show="scope.row.status == 102" @click="reject(scope.row.id)">
@@ -54,6 +54,11 @@
       </DiyTable>
         </div>
       </template>
+      <template #operate="scope">
+            <el-button link  small type="primary" class="btn"  @click="cancelOrder(scope.row.id)">
+              取消订单
+            </el-button>
+          </template>
     </DiyTable>
 
       <DiyTable
@@ -77,7 +82,7 @@
           </template>
 
           <template #operate="scope">
-            <el-button link  small type="primary" class="btn" v-show="scope.row.status < 102" @click="cancelOrderDetail(scope.row.id, 221, null)">
+            <el-button link  small type="primary" class="btn" v-show="scope.row.status < 102" @click="cancelSell(scope.row.id)">
               取消订单
             </el-button>
             <el-button link small type="primary" class="btn"  v-show="scope.row.status < 102 && scope.row.merchandise" @click="delivery(scope.row.id)">
@@ -184,6 +189,14 @@ const searchValue = ref<string>('')
         prop: 'createTime',
         label: '创建时间'
       },
+      {
+        type: 'slot',
+        label: '操作',
+        fixed: 'right',
+        align: 'center',
+        minWidth: '120',
+        name: 'operate'
+      }
 
   ],tableHeadBuyDetail:[
 
@@ -207,7 +220,7 @@ const searchValue = ref<string>('')
       {
         prop:'marketId',
         label:"市场名称",
-        formatter: (row:any, column:any) => {return row.marketId? orgChat.getName(row.marketId) :null} 
+        formatter: (row:any, column:any) => {return row.merchandise.marketId? orgChat.getName(row.merchandise.marketId) :null} 
       },
       {
         prop:'sellerId',
@@ -251,51 +264,58 @@ const searchValue = ref<string>('')
   ],tableHeadSell: [
       {
         prop: 'code',
-        label: '订单号'
+        label: '订单号',
+        minWidth: '120'
       },
       {
         prop: 'caption',
-        label: '名称'
+        label: '名称',
+        minWidth: '120'
       },
       {
         prop:'marketId',
         label:"市场名称",
-        formatter: (row:any, column:any) => {return row.marketId? orgChat.getName(row.marketId) :null} 
+        formatter: (row:any, column:any) => {return row.merchandise.marketId? orgChat.getName(row.merchandise.marketId) :null} 
       },
       {
         prop: 'belongId',
         label: '买方名称',
+        minWidth: '120',
         formatter: (row:any, column:any) => orgChat.getName(row.belongId)
       },
       {
         prop: 'sellAuth',
-        label: '售卖权属'
+        label: '售卖权属',
+        minWidth: '120'
       },
       {
         prop: 'days',
         label: '使用期限',
+        minWidth: '120',
         formatter: (row:any, column:any) => {return row.days || '永久'}
       },
       {
         prop: 'price',
-        label: '价格'
+        label: '价格',
+        minWidth: '100'
       },
       {
         prop: 'status',
         label: '状态',
+        minWidth: '120',
         formatter: (row:any, column:any) => renderDict(row, column, 'OrderStatus')
       },
       {
         prop: 'createTime',
         label: '创建时间',
-        minWidth: '120',
+        minWidth: '200',
       },
       {
         type: 'slot',
         label: '支付记录',
         fixed: 'right',
         align: 'center',
-        width: '150',
+        minWidth: '150',
         name: 'paylist'
       },
       {
@@ -303,7 +323,7 @@ const searchValue = ref<string>('')
         label: '商品状态',
         fixed: 'right',
         align: 'center',
-        width: '150',
+        minWidth: '150',
         name: 'merchandiseStatus'
       },
       {
@@ -311,7 +331,7 @@ const searchValue = ref<string>('')
         label: '操作',
         fixed: 'right',
         align: 'center',
-        minWidth: '120',
+        minWidth: '200',
         name: 'operate'
       }
     ] })
@@ -444,7 +464,7 @@ const searchValue = ref<string>('')
   //确认开始交易
   const sureContent = async (id: string) => {
     await $services.order
-      .orderConfirm({
+      .updateDetail({
         data: {
           id: id,
           status: 100
@@ -503,24 +523,6 @@ const searchValue = ref<string>('')
   //       }
   //     })
   // }
-  //取消
-  const cancelOrder = async (id: string) => {
-    await $services.order
-      .delete({
-        data: {
-          id: id
-        }
-      })
-      .then((res: ResultType) => {
-        if (res.code == 200) {
-          getTableList(searchType.value)
-          ElMessage({
-            message: '取消成功',
-            type: 'success'
-          })
-        }
-      })
-  }
     //退货退款
   const reject = async (id: string) => {
     await $services.order
@@ -541,33 +543,18 @@ const searchValue = ref<string>('')
       })
   }
 
-  //取消订单详情  由删除更改为中止
-  const cancelOrderDetail = async (id: string,status:number,reason:string) => {
-    // await $services.order
-    //   .deleteDetail({
-    //     data: {
-    //       id: id
-    //     }
-    //   })
-    //   .then((res: ResultType) => {
-    //     if (res.code == 200) {
-    //       getTableList(searchType.value)
-    //       ElMessage({
-    //         message: '取消成功',
-    //         type: 'success'
-    //       })
-    //     }
-    //   })
+     //买方取消订单详情
+  const cancelOrder = async (id: string) => { 
     ElMessageBox.prompt('请输入原因', '确认取消订单?', {
       confirmButtonText: '确定',
       cancelButtonText: '取消',
     })
     .then(({ value }) => {
       $services.order
-      .orderConfirm({
+      .cancel({
         data: {
           id: id,
-          status: status
+          status: 220
         }
       })
       .then((res: ResultType) => {
@@ -582,6 +569,89 @@ const searchValue = ref<string>('')
     })
     .catch(() => {})
   }
+
+    //买方取消订单详情
+  const cancelBuy = async (id: string) => {
+    ElMessageBox.prompt('请输入原因', '确认取消订单?', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+    })
+    .then(({ value }) => {
+      $services.order
+      .cancelBuy({
+        data: {
+          id: id,
+          status: 220
+        }
+      })
+      .then((res: ResultType) => {
+        if (res.code == 200) {
+          getTableList(searchType.value)
+          ElMessage({
+            message: '取消订单成功',
+            type: 'success'
+          })
+        }
+      })
+    })
+    .catch(() => {})
+  }
+
+    //卖方取消订单详情
+  const cancelSell = async (id: string) => {
+    ElMessageBox.prompt('请输入原因', '确认取消订单?', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+    })
+    .then(({ value }) => {
+      $services.order
+      .cancelSell({
+        data: {
+          id: id,
+          status: 221
+        }
+      })
+      .then((res: ResultType) => {
+        if (res.code == 200) {
+          getTableList(searchType.value)
+          ElMessage({
+            message: '取消订单成功',
+            type: 'success'
+          })
+        }
+      })
+    })
+    .catch(() => {})
+  }
+
+  
+
+  // //取消订单详情  由删除更改为中止
+  // const cancelOrderDetail = async (id: string,status:number,reason:string) => {
+  //   ElMessageBox.prompt('请输入原因', '确认取消订单?', {
+  //     confirmButtonText: '确定',
+  //     cancelButtonText: '取消',
+  //   })
+  //   .then(({ value }) => {
+  //     $services.order
+  //     .orderConfirm({
+  //       data: {
+  //         id: id,
+  //         status: status
+  //       }
+  //     })
+  //     .then((res: ResultType) => {
+  //       if (res.code == 200) {
+  //         getTableList(searchType.value)
+  //         ElMessage({
+  //           message: '取消订单成功',
+  //           type: 'success'
+  //         })
+  //       }
+  //     })
+  //   })
+  //   .catch(() => {})
+  // }
   //确认交付
   const delivery = async (id: string) => {
     await $services.order
@@ -604,7 +674,7 @@ const searchValue = ref<string>('')
   //确认收货
   const accept = async (id: string) => {
     await $services.order
-      .orderConfirm({
+      .updateDetail({
         data: {
           id: id,
           status: 103

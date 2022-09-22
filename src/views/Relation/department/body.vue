@@ -3,7 +3,7 @@
     <el-tabs v-model="activeName" class="tabs" ref="tabs"  @tab-click="handleClick">
       <el-tab-pane label="人员列表" name="user">
       </el-tab-pane>
-      <User :selectItem="selectItem"></User>
+      <User :tabHeight="props.tabHeight" :selectItem="selectItem"></User>
       <!-- <el-tab-pane label="岗位列表" name="identity">
         <Identity :selectItem="selectItem"></Identity>
       </el-tab-pane> -->
@@ -14,6 +14,9 @@
 import { ref } from 'vue'
 import type { TabsPaneContext } from 'element-plus'
 import User from './User.vue'
+const props = defineProps<{
+  tabHeight: any,     // 高度数据
+}>()
 
 const activeName = ref('user')
 let selectItem = ref<any>({})

@@ -66,10 +66,9 @@
             label="序号"
             width="70"
           ></el-table-column>
-          <template v-for="(item, index) in tableHead">
+          <template v-for="(item, index) in tableHead" :key="'column' + index">
             <el-table-column
               v-if="item.type === 'slot'"
-              :key="index"
               v-bind="item"
               :sortable="item.sortable"
             >
@@ -81,12 +80,12 @@
                 {{ scope.column.label }}
               </template>
             </el-table-column>
-            <el-table-column v-else-if="item.type === 'expand'" :key="item" type="expand">
+            <el-table-column v-else-if="item.type === 'expand'" type="expand">
               <template #default="scope">
                 <slot :name="item.name" :row="scope.row" :index="scope.$index"></slot>
               </template>
             </el-table-column>
-            <el-table-column v-else :key="'column' + index" v-bind="item"></el-table-column>
+            <el-table-column v-else  v-bind="item"></el-table-column>
           </template>
         </el-table>
       </div>
@@ -137,26 +136,26 @@
     children?: User[]
   }
   type Props = {
-    tableName: string
-    hasTableHead: boolean
-    hasTitle: boolean
-    hasTabs: boolean
+    tableName?: string
+    hasTableHead?: boolean
+    hasTitle?: boolean
+    hasTabs?: boolean
     tableHead: any[]
-    tableData: any[]
+    tableData?: any[]
     checkList?: any[]
     pageSizes?: any[]
-    total: number
+    total?: number
     loading?: boolean
-    options: {
+    options?: {
       expandAll?: boolean
       checkBox?: any
       order?: any
       noPage?: boolean
       selectLimit?: number //限制选择个数，默认20
     }
-    batchOperate: any[]
-    queryParams: any[]
-    cell: boolean
+    batchOperate?: any[]
+    queryParams?: any[]
+    cell?: boolean
   }
   const props = withDefaults(defineProps<Props>(), {
     tableName: '',
