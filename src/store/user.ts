@@ -33,7 +33,6 @@ export const useUserStore = defineStore({
       copyCompanys: [],
       userToken: '',
       workspaceData: {}, // 当前选中的单位
-      userNameMap: new Map(),
       userUnitInfo: {} as UnitInfoType //所在单位信息
     }
   },
@@ -50,11 +49,7 @@ export const useUserStore = defineStore({
       // paths 是一个数组，如果写了 就会只存储 包含的 变量，当然也可以写多个。
     ]
   },
-  getters: {
-    getUserName: (state) => {
-      return (userId: string): string => state.userNameMap.get(userId)
-    }
-  },
+  getters: { },
   actions: {
     async updateUserInfo(data: { username: string; password: string }) {
       // 获取用户登录信息
@@ -205,8 +200,5 @@ export const useUserStore = defineStore({
       this.userToken = ''
       // this.workspaceData = null
     },
-    setUserNameMap(id: string, name: string) {
-      this.userNameMap.set(id, name)
-    }
   }
 })
