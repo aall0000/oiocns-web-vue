@@ -203,6 +203,7 @@ const orgChat: orgChatType = {
                                         chat.msgTime = c.msgTime
                                         chat.msgType = c.msgType
                                         chat.showTxt = c.showTxt
+                                        chat.noRead = c.noRead
                                     }
                                 })
                             }
