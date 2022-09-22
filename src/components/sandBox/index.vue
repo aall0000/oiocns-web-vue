@@ -43,47 +43,54 @@
   })
   // 接受子页面信息
   const handleReceiveMsg = async (msg: any) => {
-    // origin: strinng,
-    // appId: string,
-    // type: string,
-    // queryTime: string,
-    // params: Object,
-    // desc:'string'
-
     // 判断是否处理改信息
-    const { type, params = {} } = msg.data
+    const { type, data } = msg.data
 
     if (!type) {
       return console.error('平台接受消息-请求无效')
     }
     console.log('平台接受消息---接受子页面信息====》\n', msg.data)
-    sendMessage(type, params)
+    sendMessage(type, data, msg.data)
   }
 
   // 向子页面iframe传递数据的事件
-  const sendMessage = async (type: string, params: any) => {
+  const sendMessage = async (type: string, params: any, queryInfo: any) => {
     let response: any = {
-      origin: 'HOST',
+      from: 'HOST',
+      to: queryInfo.form,
       appId: props.appId,
-      type,
+      type: queryInfo.type,
       success: true,
-      createTime: new Date().getTime(),
+      code: 200,
+      msg: '成功！',
+      checkCode: queryInfo.checkCode,
       data: null
     }
+    const isModelUrl = queryInfo.type.includes('_')
+    const queryUrl = isModelUrl ? queryInfo.type.split('_') : queryInfo.type
+
     switch (type) {
       case 'getAppToken':
-        const { data, success } = await API.person.createAPPtoken({
-          data: { appId: props.appId, funcAuthList: [] }
-        })
-        if (success) {
-          response.data = data
+        {
+          const { data, success } = await API.person.createAPPtoken({
+            data: { appId: props.appId, funcAuthList: [] }
+          })
+          if (success) {
+            response.data = data
+          }
         }
-        // })
         break
 
       default:
+        {
+          const { data, success } = await API[queryUrl[0]][queryUrl[1]]({
+            data: params
+          })
+          if (success) {
+            response.data = data
+          }
+        }
         console.log('其他消息', type)
-
         break
     }
     nextTick(() => {
