@@ -36,7 +36,7 @@ export default {
     removeIdentity: person + '/remove/identity', //删除好友岗位
     searchPersons: person + '/search/persons', //搜索人员
     update: person + '/update', //变更信息
-    reset:person + '/reset/pwd', //重置密码
+    reset: person + '/reset/pwd' //重置密码
   },
   cohort: {
     applyJoin: cohort + '/apply/join', //申请加群组
@@ -214,7 +214,10 @@ export default {
     delteDeptment: product + '/delete/distribution/to/deptment',
     delteAuthority: product + '/delete/distribution/to/authority',
     delteIdentity: product + '/delete/distribution/to/identity',
-    deltePerson: product + '/delete/distribution/to/person'
+    deltePerson: product + '/delete/distribution/to/person',
+    extendCreate: product + '/extend/create', //创建产品、资源的扩展
+    extendDelete: product + '/extend/delete', // 取消产品、资源的扩展
+    extendQuery: product + '/extend/query' // 查询产品、资源的扩展
   },
   // 历史记录
   history: {

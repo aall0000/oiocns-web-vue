@@ -45,6 +45,8 @@
           v-else
           ref="leftTree"
           :data="cascaderTree"
+          :highlight-current="true"
+          :expand-on-click-node="false"
           :props="{ class: customNodeClass }"
           :default-expand-all="true"
           @node-click="handleNodeClick"
@@ -98,7 +100,7 @@
         ></Author>
       </div>
     </div>
-    <div class="footer">
+    <div class="footer" v-if="radio == '1'">
       <el-button type="primary" @click="submitAll">确认</el-button>
       <el-button class="footer-btn" @click="closeDialog">取消</el-button>
     </div>
@@ -108,7 +110,7 @@
 <script setup lang="ts">
   // @ts-nocheck
   import InfiniteScroll from 'element-plus'
-  import { onMounted, ref, reactive, toRefs, watch, nextTick, computed } from 'vue'
+  import { onMounted, ref, reactive, toRefs, watch, nextTick, computed, onUnmounted } from 'vue'
   import { ElMessage, ElMessageBox } from 'element-plus'
   import API from '@/services'
   import Author from './components/author.vue'
@@ -118,12 +120,12 @@
     id: string
     label: string
     data?: any
-    authAdmin:any
+    authAdmin: any
     children?: Tree[]
   }
   type createInfo = {
     info: {
-      id:string
+      id: string
     }
   }
   const searchValue = ref('')
@@ -149,14 +151,15 @@
         label: '按角色分配'
       },
       {
-        id: '3',
-        label: '按人员分配'
-      },
-      {
         id: '4',
         label: '按岗位分配'
+      },
+      {
+        id: '3',
+        label: '按人员分配'
       }
     ],
+    switchData: {}, // 存储左侧树形数据
     departData: [], // 集团分配右侧数据
     departHisData: [], // 集团分配历史数据
     centerTree: [], // 角色分配中间树形
@@ -170,7 +173,7 @@
   const authorityProps = {
     label: 'name',
     children: 'nodes',
-    disabled: 'disabled',
+    disabled: 'disabled'
   }
   const unitProps = {
     label: 'label',
@@ -187,6 +190,10 @@
     () => radio.value,
     (newValue, oldValue) => {
       state.centerTree = []
+      state.authorData = []
+      state.departData = []
+      state.personsData = []
+      state.identitysData = []
       nextTick(() => {
         if (newValue == '1') {
           getOrgHistoryData()
@@ -217,7 +224,7 @@
         clearTreeType(cascaderTree.value)
         leftTree.value.setCheckedKeys([])
       }
-      getHistoryData()
+      // getHistoryData()
     }
   )
   watch(
@@ -240,8 +247,12 @@
     getCompanyTree()
   })
 
+  onUnmounted(() => {
+    sumbitSwitch(state.switchData, true)
+  })
+
   const emit = defineEmits(['closeDialog'])
-  
+
   const closeDialog = () => {
     emit('closeDialog')
   }
@@ -263,12 +274,12 @@
   // 获取部门历史数据
   const getOrgHistoryData = () => {
     API.product
-      .toDepartment({
+      .extendQuery({
         data: {
-          id: resource.value,
-          offset: 0,
-          limit: 1000,
-          filter: ''
+          teamId: rootTreeId.value,
+          sourceId: resource.value,
+          sourceType: '资源',
+          destType: '组织'
         }
       })
       .then((res: ResultType) => {
@@ -299,12 +310,12 @@
     switch (radio.value) {
       case '1':
         API.product
-          .toDepartment({
+          .extendQuery({
             data: {
-              id: resource.value,
-              offset: 0,
-              limit: 1000,
-              filter: ''
+              teamId: rootTreeId.value,
+              sourceId: resource.value,
+              sourceType: '资源',
+              destType: '组织'
             }
           })
           .then((res: ResultType) => {
@@ -390,36 +401,40 @@
     }
   }
   // 获取历史数据
-  const getHistoryData = () => {
+  const getHistoryData = (data?: any) => {
     switch (radio.value) {
       case '1':
-        API.product
-          .toDepartment({
-            data: {
-              id: resource.value,
-              offset: 0,
-              limit: 1000,
-              filter: ''
-            }
-          })
-          .then((res: ResultType) => {
-            state.departHisData = res.data.result ? res.data.result : []
-            let arr: any[] = []
-            state.departHisData.forEach((el) => {
-              arr.push(el.id)
+        setTimeout(() => {
+          API.product
+            .extendQuery({
+              data: {
+                teamId: rootTreeId.value,
+                sourceId: resource.value,
+                sourceType: '资源',
+                destType: '组织'
+              }
             })
-            setTimeout(()=>{leftTree.value.setCheckedKeys(arr, true)},300)
-              
-          })
+            .then((res: ResultType) => {
+              state.departHisData = res.data.result ? res.data.result : []
+              let arr: any[] = []
+              state.departHisData.forEach((el) => {
+                arr.push(el.id)
+              })
+              setTimeout(() => {
+                leftTree.value.setCheckedKeys(arr, true)
+              }, 300)
+            })
+        }, 300)
+
         break
       case '2':
         API.product
-          .toAuthority({
+          .extendQuery({
             data: {
-              id: resource.value,
-              offset: 0,
-              limit: 1000,
-              filter: ''
+              teamId: data.id,
+              sourceId: resource.value,
+              sourceType: '资源',
+              destType: '角色'
             }
           })
           .then((res: ResultType) => {
@@ -438,12 +453,12 @@
         break
       case '3':
         API.product
-          .toPerson({
+          .extendQuery({
             data: {
-              id: resource.value,
-              offset: 0,
-              limit: 1000,
-              filter: ''
+              teamId: data.id,
+              sourceId: resource.value,
+              sourceType: '资源',
+              destType: '人员'
             }
           })
           .then((res: ResultType) => {
@@ -461,12 +476,12 @@
         break
       case '4':
         API.product
-          .toIdentity({
+          .extendQuery({
             data: {
-              id: resource.value,
-              offset: 0,
-              limit: 1000,
-              filter: ''
+              teamId: data.id,
+              sourceId: resource.value,
+              sourceType: '资源',
+              destType: '岗位'
             }
           })
           .then((res: ResultType) => {
@@ -493,16 +508,129 @@
     return data.label.includes(value)
   }
 
+  const sumbitSwitch = async (data, bol?: boolean) => {
+    // 当radio！=1 时切换左侧树调用提交接口
+    if (state.switchData !== data || bol) {
+      switch (radio.value) {
+        case '2':
+          let authorAdd: any[] = []
+          let authorDel: any[] = []
+          state.authorData.forEach((el) => {
+            if (el.type == 'add') {
+              authorAdd.push(el.id)
+            } else if (el.type == 'del') {
+              authorDel.push(el.id)
+            }
+          })
+          let promise1
+          let promise2
+          if (authorAdd.length > 0) {
+            promise1 = API.product.extendCreate({
+              data: {
+                teamId: state.switchData.id,
+                sourceId: resource.value,
+                destIds: authorAdd,
+                sourceType: '资源',
+                destType: '角色'
+              }
+            })
+          }
+          if (authorDel.length > 0) {
+            promise2 = API.product.extendDelete({
+              data: {
+                teamId: state.switchData.id,
+                sourceId: resource.value,
+                destIds: authorDel,
+                sourceType: '资源',
+                destType: '角色'
+              }
+            })
+          }
+          await Promise.all([promise1, promise2])
+          break
+        case '3':
+          let personAdd: any[] = []
+          let personDel: any[] = []
+          state.personsData.forEach((el) => {
+            if (el.type == 'add') {
+              personAdd.push(el.id)
+            } else if (el.type == 'del') {
+              personDel.push(el.id)
+            }
+          })
+          let promise3
+          let promise4
+          if (personAdd.length > 0) {
+            promise3 = API.product.extendCreate({
+              data: {
+                teamId: state.switchData.id,
+                sourceId: resource.value,
+                destIds: personAdd,
+                sourceType: '资源',
+                destType: '人员'
+              }
+            })
+          }
+          if (personDel.length > 0) {
+            promise4 = API.product.extendDelete({
+              data: {
+                teamId: state.switchData.id,
+                sourceId: resource.value,
+                destIds: personDel,
+                sourceType: '资源',
+                destType: '人员'
+              }
+            })
+          }
+          await Promise.all([promise3, promise4])
+          break
+        case '4':
+          let identityAdd: any[] = []
+          let identityDel: any[] = []
+          state.identitysData.forEach((el) => {
+            if (el.type == 'add') {
+              identityAdd.push(el.id)
+            } else if (el.type == 'del') {
+              identityDel.push(el.id)
+            }
+          })
+          let promise5
+          let promise6
+          if (identityAdd.length > 0) {
+            promise5 = API.product.extendCreate({
+              data: {
+                teamId: state.switchData.id,
+                sourceId: resource.value,
+                destIds: identityAdd,
+                sourceType: '资源',
+                destType: '岗位'
+              }
+            })
+          }
+          if (identityDel.length > 0) {
+            promise6 = API.product.extendDelete({
+              data: {
+                teamId: state.switchData.id,
+                sourceId: resource.value,
+                destIds: identityDel,
+                sourceType: '资源',
+                destType: '岗位'
+              }
+            })
+          }
+          await Promise.all([promise5, promise6])
+          break
+
+        default:
+          break
+      }
+    }
+  }
+
   // 提交表单
   const submitAll = () => {
     let departAdd: any[] = []
     let departDel: any[] = []
-    let authorAdd: any[] = []
-    let authorDel: any[] = []
-    let personsAdd: any[] = []
-    let personsDel: any[] = []
-    let identityAdd: any[] = []
-    let identityDel: any[] = []
 
     state.departData.forEach((el) => {
       if (el.type == 'add') {
@@ -512,104 +640,32 @@
       }
     })
 
-    state.personsData.forEach((el) => {
-      if (el.type == 'add') {
-        personsAdd.push(el.id)
-      } else if (el.type == 'del') {
-        personsDel.push(el.id)
-      }
-    })
-
-    state.authorData.forEach((el) => {
-      if (el.type == 'add') {
-        authorAdd.push(el.id)
-      } else if (el.type == 'del') {
-        authorDel.push(el.id)
-      }
-    })
-
-    state.identitysData.forEach((el) => {
-      if (el.type == 'add') {
-        identityAdd.push(el.id)
-      } else if (el.type == 'del') {
-        identityDel.push(el.id)
-      }
-    })
-
     let promise1
     let promise2
-    let promise3
-    let promise4
-    let promise5
-    let promise6
-    let promise7
-    let promise8
     if (departAdd.length > 0) {
-      promise1 = API.product.department({
+      promise1 = API.product.extendCreate({
         data: {
-          resId: resource.value,
-          targetIds: departAdd
+          teamId: rootTreeId.value,
+          sourceId: resource.value,
+          destIds: departAdd,
+          sourceType: '资源',
+          destType: '组织'
         }
       })
     }
     if (departDel.length > 0) {
-      promise5 = API.product.delteDeptment({
+      promise2 = API.product.extendDelete({
         data: {
-          resId: resource.value,
-          targetIds: departDel
+          teamId: rootTreeId.value,
+          sourceId: resource.value,
+          destIds: departDel,
+          sourceType: '资源',
+          destType: '组织'
         }
       })
     }
-    if (authorAdd.length > 0) {
-      promise2 = API.product.authority({
-        data: {
-          resId: resource.value,
-          targetIds: authorAdd
-        }
-      })
-    }
-
-    if (authorDel.length > 0) {
-      promise6 = API.product.delteAuthority({
-        data: {
-          resId: resource.value,
-          targetIds: authorDel
-        }
-      })
-    }
-    if (personsAdd.length > 0) {
-      promise3 = API.product.person({
-        data: {
-          resId: resource.value,
-          targetIds: personsAdd
-        }
-      })
-    }
-    if (personsDel.length > 0) {
-      promise7 = API.product.deltePerson({
-        data: {
-          resId: resource.value,
-          targetIds: personsDel
-        }
-      })
-    }
-    if (identityAdd.length > 0) {
-      promise4 = API.product.identity({
-        data: {
-          resId: resource.value,
-          targetIds: identityAdd
-        }
-      })
-    }
-    if (identityDel.length > 0) {
-      promise8 = API.product.delteIdentity({
-        data: {
-          resId: resource.value,
-          targetIds: identityDel
-        }
-      })
-    }
-    Promise.all([promise1, promise2, promise3, promise4]).then((res) => {
+    Promise.all([promise1, promise2])
+      .then((res) => {
         ElMessageBox.confirm('分配成功，是否继续分配？', {
           confirmButtonText: '继续',
           cancelButtonText: '取消',
@@ -625,12 +681,13 @@
           .catch(() => {
             closeDialog()
           })
-    }).catch((err)=>{
-      ElMessage({
+      })
+      .catch((err) => {
+        ElMessage({
           message: err,
           type: 'warning'
         })
-    })
+      })
   }
   // 中间树形滚动加载事件
   const load = () => {
@@ -755,7 +812,7 @@
     }
   }
   const handleNodeClick = (data: any, load: boolean, search?: string) => {
-    if(data.authAdmin ===false || data?.data?.authAdmin ===false){
+    if (data.authAdmin === false || data?.data?.authAdmin === false) {
       return false
     }
     if (typeof load == 'object' && typeof search == 'object') {
@@ -780,19 +837,20 @@
             let arr: any[] = []
             arr.push(res.data)
             handleTreeData(arr)
-            console.log('arrrrrrr',arr)
             state.centerTree = arr
-            if (state.authorData.length > 0) {
-              let arr: any[] = []
-              state.authorData.forEach((el, index) => {
-                if (el.type == 'add' || el.type == 'has') {
-                  arr.push(el.id)
-                }
-              })
-              setTimeout(() => {
-                centerTree.value.setCheckedKeys(arr, true)
-              }, 300)
-            }
+
+            getHistoryData(data)
+            // if (state.authorData.length > 0) {
+            //   let arr: any[] = []
+            //   state.authorData.forEach((el, index) => {
+            //     if (el.type == 'add' || el.type == 'has') {
+            //       arr.push(el.id)
+            //     }
+            //   })
+            //   setTimeout(() => {
+            //     centerTree.value.setCheckedKeys(arr, true)
+            //   }, 300)
+            // }
           })
         break
       case '3':
@@ -814,15 +872,16 @@
                 state.centerTree = res.data.result ? res.data.result : []
               }
 
-              if (state.personsData.length > 0) {
-                let arr: any[] = []
-                state.personsData.forEach((el) => {
-                  if (el.type == 'add' || el.type == 'has') {
-                    arr.push(el.id)
-                  }
-                })
-                centerTree.value.setCheckedKeys(arr, true)
-              }
+              getHistoryData(data)
+              // if (state.personsData.length > 0) {
+              //   let arr: any[] = []
+              //   state.personsData.forEach((el) => {
+              //     if (el.type == 'add' || el.type == 'has') {
+              //       arr.push(el.id)
+              //     }
+              //   })
+              //   centerTree.value.setCheckedKeys(arr, true)
+              // }
             })
         } else {
           API.company
@@ -840,16 +899,16 @@
               } else {
                 state.centerTree = res.data.result ? res.data.result : []
               }
-
-              if (state.personsData.length > 0) {
-                let arr: any[] = []
-                state.personsData.forEach((el) => {
-                  if (el.type == 'add' || el.type == 'has') {
-                    arr.push(el.id)
-                  }
-                })
-                centerTree.value.setCheckedKeys(arr, true)
-              }
+              getHistoryData(data)
+              // if (state.personsData.length > 0) {
+              //   let arr: any[] = []
+              //   state.personsData.forEach((el) => {
+              //     if (el.type == 'add' || el.type == 'has') {
+              //       arr.push(el.id)
+              //     }
+              //   })
+              //   centerTree.value.setCheckedKeys(arr, true)
+              // }
             })
         }
 
@@ -866,34 +925,34 @@
             }
           })
           .then((res: ResultType) => {
-            const { result = []} = res.data
-              result.forEach((el:any)=>{
-                el.name.indexOf('管理员') !== -1 ? el.disabled = true : ''
-              })
+            const { result = [] } = res.data
             if (load == true) {
               state.centerTree.concat(res.data.result)
             } else {
               state.centerTree = res.data.result ? res.data.result : []
             }
 
-            if (state.identitysData.length > 0) {
-              let arr: any[] = []
-              state.identitysData.forEach((el) => {
-                if (el.type == 'add' || el.type == 'has') {
-                  arr.push(el.id)
-                }
-              })
-              centerTree.value.setCheckedKeys(arr, true)
-            }
+            getHistoryData(data)
+            // if (state.identitysData.length > 0) {
+            //   let arr: any[] = []
+            //   state.identitysData.forEach((el) => {
+            //     if (el.type == 'add' || el.type == 'has') {
+            //       arr.push(el.id)
+            //     }
+            //   })
+            //   centerTree.value.setCheckedKeys(arr, true)
+            // }
           })
         break
       default:
         break
     }
+    sumbitSwitch(data)
+    state.switchData = data
   }
   const handleTreeData = (item: any) => {
     for (let i = 0; i < item.length; i++) {
-      if(item[i].name == '管理员'){
+      if (item[i].name == '管理员') {
         item[i].disabled = true
       }
       if (item[i].nodes) {
@@ -1007,17 +1066,20 @@
   }
 
   // 节点ID和对象映射关系
+  const rootTreeId = ref<string>('')
   const parentIdMap: any = {}
   let cascaderTree = ref<OrgTreeModel[]>([])
   const getCompanyTree = () => {
     API.company.getCompanyTree({}).then((res: ResultType) => {
+      rootTreeId.value = res.data.data.id
       let orgTree = []
       orgTree.push(res.data)
       initIdMap(orgTree)
       cascaderTree.value = isAuthAdmin(filter(JSON.parse(JSON.stringify(orgTree))))
     })
   }
-  const isAuthAdmin = (nodes:any)=>{ //判断是否有操作权限
+  const isAuthAdmin = (nodes: any) => {
+    //判断是否有操作权限
     for (const node of nodes) {
       node.disabled = !node.data.authAdmin
       if (node.children) {
