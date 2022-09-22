@@ -45,52 +45,54 @@
       </div>
       <div class="bodyRight">
         <div class="touX">
-          <span>头像</span>
-          <img class="image" src="@/assets/img/toux.jpg" alt="" />
-        </div>
-        <div class="up">
-          <el-icon><Upload /></el-icon>
-          <span>上传文件</span>
-        </div>
+          <div>头像</div>
+          <img class="image" src="https://gw.alipayobjects.com/zos/rmsportal/BiazfanxmamNRoxxVxka.png" alt="avatar" />
+        
+        <el-button icon="Upload" style="margin: 24px 40px;">上传文件</el-button>
+      </div>
+        <!-- <div class="up"> -->
+          <!-- <el-icon><Upload /></el-icon>
+          <span>上传文件</span> -->
+        <!-- </div> -->
       </div>
     </div>
+    <el-dialog v-model="dialogVisible" title="修改密码" width="40%">
+      <el-form ref="ruleFormRef" :rules="rules" :model="ruleForm" status-icon class="demo-ruleForm">
+        <el-form-item prop="password">
+          <el-input
+            size="large"
+            placeholder="请输入密码(包含大小写字母和数字符号组合的6-15位密码)"
+            v-model="ruleForm.password"
+            type="password"
+            autocomplete="off"
+          />
+        </el-form-item>
+        <el-form-item prop="password2">
+          <el-input
+            size="large"
+            placeholder="请再次输入密码"
+            v-model="ruleForm.password2"
+            type="password"
+            autocomplete="off"
+          />
+        </el-form-item>
+        <el-form-item prop="privateKey">
+          <el-input
+            size="large"
+            placeholder="请输入助记词"
+            v-model="ruleForm.privateKey"
+            autocomplete="off"
+          />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="dialogVisible = false">取消</el-button>
+          <el-button type="primary" @click="changePWD">确认</el-button>
+        </span>
+      </template>
+    </el-dialog>
   </div>
-  <el-dialog v-model="dialogVisible" title="修改密码" width="40%">
-    <el-form ref="ruleFormRef" :rules="rules" :model="ruleForm" status-icon class="demo-ruleForm">
-      <el-form-item prop="password">
-        <el-input
-          size="large"
-          placeholder="请输入密码(包含大小写字母和数字符号组合的6-15位密码)"
-          v-model="ruleForm.password"
-          type="password"
-          autocomplete="off"
-        />
-      </el-form-item>
-      <el-form-item prop="password2">
-        <el-input
-          size="large"
-          placeholder="请再次输入密码"
-          v-model="ruleForm.password2"
-          type="password"
-          autocomplete="off"
-        />
-      </el-form-item>
-      <el-form-item prop="privateKey">
-        <el-input
-          size="large"
-          placeholder="请输入助记词"
-          v-model="ruleForm.privateKey"
-          autocomplete="off"
-        />
-      </el-form-item>
-    </el-form>
-    <template #footer>
-      <span class="dialog-footer">
-        <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="changePWD">确认</el-button>
-      </span>
-    </template>
-  </el-dialog>
 </template>
 
 <script lang="ts" setup>
@@ -246,21 +248,19 @@
 </script>
 <style lang="scss" scoped>
   .userMsg {
-    width: 100%;
+    flex: 1;
     height: 100%;
-    background-color: #eff0f4;
-    position: relative;
+    background-color: var(--el-bg-color-page);
+    // position: relative;
     .pageHeader {
       width: 100%;
-      height: 60px;
-      background-color: #fff;
-      .header {
-        margin-top: 20px;
-        margin-left: 30px;
-      }
+      // height: 60px;
+      background-color: var(--el-bg-color);
+      padding-bottom: 30px;
       .title {
-        padding-top: 20px;
-        margin-left: 30px;
+        padding-top: 30px;
+        padding-left: 30px;
+        // margin-left: 54px;
         font-size: 20px;
         font-weight: 600;
       }
@@ -269,21 +269,19 @@
       height: calc(100% - 76px);
       overflow-y: auto;
       width: 100%;
-      position: absolute;
-      background-color: #fff;
-      border-left: 16px solid #eff0f4;
-      border-top: 16px solid #eff0f4;
-      border-right: 16px solid #eff0f4;
+      // position: absolute;
+      background-color: var(--el-bg-color);
+      
       display: flex;
       box-sizing: border-box;
       padding-bottom: 20px;
       .bodyLeft {
         height: 100%;
-        width: 60%;
-
+        // width: 60%;
+        flex: 2;
         .form1 {
-          width: 80%;
-          margin-left: 80px;
+          // width: 80%;
+          padding-left: 30px;
           margin-top: 20px;
           font-weight: 600;
           .el-input {
@@ -291,8 +289,8 @@
           }
         }
         .form2 {
-          width: 80%;
-          margin-left: 80px;
+          // width: 80%;
+          padding-left: 30px;
           font-weight: 600;
           .el-input {
             width: 400px;
@@ -306,14 +304,18 @@
       }
       .bodyRight {
         height: 100%;
-        width: 40%;
+        flex:1;
+        margin-left: 24px;
+        // width: 40%;
 
         .touX {
           width: 220px;
-          display: flex;
-          margin-top: 50px;
+          // display: flex;
+          // flex-direction: column;
+          margin-top: 30px;
           .image {
-            width: 180px;
+            width: 144px;
+            height: 144px;
           }
         }
         .up {

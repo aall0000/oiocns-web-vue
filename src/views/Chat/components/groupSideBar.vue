@@ -381,12 +381,12 @@ const handleContextChange = (item: MenuItemType) => {
 
   .context-text-wrap {
     position: absolute;
-    background-color: #fff;
+    background-color: var(--el-bg-color);
     width: 110px;
     height: max-content;
     padding: 10px;
-    border: 1px solid #e6e6e6;
-    box-shadow: 0 0 2px 2px #e6e6e6;
+    border: 1px solid var(--el-border-color);
+    box-shadow: var(--el-box-shadow);
     z-index: 999;
 
     .context-menu-item {

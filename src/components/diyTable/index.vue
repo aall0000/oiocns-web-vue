@@ -136,26 +136,26 @@
     children?: User[]
   }
   type Props = {
-    tableName: string
-    hasTableHead: boolean
-    hasTitle: boolean
-    hasTabs: boolean
+    tableName?: string
+    hasTableHead?: boolean
+    hasTitle?: boolean
+    hasTabs?: boolean
     tableHead: any[]
-    tableData: any[]
+    tableData?: any[]
     checkList?: any[]
     pageSizes?: any[]
-    total: number
+    total?: number
     loading?: boolean
-    options: {
+    options?: {
       expandAll?: boolean
       checkBox?: any
       order?: any
       noPage?: boolean
       selectLimit?: number //限制选择个数，默认20
     }
-    batchOperate: any[]
-    queryParams: any[]
-    cell: boolean
+    batchOperate?: any[]
+    queryParams?: any[]
+    cell?: boolean
   }
   const props = withDefaults(defineProps<Props>(), {
     tableName: '',
