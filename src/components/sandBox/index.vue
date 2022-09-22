@@ -23,7 +23,7 @@
   import API from '@/services'
   type IfrType = {
     containLink: string
-    appId: string
+    appId?: string
   }
   const props = defineProps<IfrType>()
   const loading = ref<boolean>(true)
