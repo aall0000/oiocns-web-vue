@@ -4,7 +4,7 @@
       v-if="props.containLink"
       id="myIframe"
       class="iframe"
-      :ref="myIframe"
+      ref="myIframe"
       allow="payment"
       allowfullscreen="true"
       :src="props.containLink"
@@ -19,16 +19,15 @@
 
 <script setup lang="ts">
   import { useCommonStore } from '@store/common'
-  import { onUnmounted, ref, watch } from 'vue'
+  import { nextTick, onUnmounted, ref, watch } from 'vue'
   import API from '@/services'
   type IfrType = {
     containLink: string
-    appId:string
+    appId: string
   }
   const props = defineProps<IfrType>()
   const loading = ref<boolean>(true)
   const { iframeLink } = useCommonStore()
-  console.log('props', props.containLink, '======', iframeLink)
   const myIframe = ref()
 
   // iframe加载完成时向iframe传递数据
@@ -44,27 +43,62 @@
   })
   // 接受子页面信息
   const handleReceiveMsg = async (msg: any) => {
+    // origin: strinng,
+    // appId: string,
+    // cmd: string,
+    // queryTime: string,
+    // params: Object,
+    // desc:'string'
+
     // 判断是否处理改信息
-    const { aimUrl, params = {} } = msg.data
+    const { cmd, params = {} } = msg.data
     console.log('平台接受消息---接受子页面信息====》\n', msg.data)
-    myIframe.value.contentWindow.postMessage('平台数据发给子应用', props.containLink)
-    sendMessage(aimUrl, params)
+    sendMessage(cmd, params)
   }
 
   // 向子页面iframe传递数据的事件
-  const sendMessage = async (aimUrl: string, params: any) => {
-    const queryUrl = aimUrl.includes('&&') ? aimUrl.split('&&') : aimUrl
-    // 返回处理结果
-    const { data, success } = await API[queryUrl[0]][queryUrl[1]]({
-      data: {}
-    })
-    if (success) {
-      console.log('平台请求结果====>\n', data)
-      myIframe.value.contentWindow.postMessage(data, props.containLink)
+  const sendMessage = async (cmd: string, params: any) => {
+    let response: any = {
+      origin: 'HOST',
+      appId: props.appId,
+      cmd,
+      success: true,
+      createTime: new Date().getTime(),
+      data: null
     }
+    switch (cmd) {
+      case 'getAppToken':
+        const { data, success } = await API.person.createAPPtoken({
+          data: { appId: props.appId, funcAuthList: [] }
+        })
+        if (success) {
+          response.data = data
+        }
+        // })
+        break
+
+      default:
+        console.log('其他消息', cmd)
+
+        break
+    }
+    nextTick(() => {
+      console.log('平台回复消息内容',response)
+      myIframe.value.contentWindow.postMessage(response, props.containLink)
+    })
+
+    // const queryUrl = aimUrl.includes('&&') ? aimUrl.split('&&') : aimUrl
+    // // 返回处理结果
+    // const { data, success } = await API[queryUrl[0]][queryUrl[1]]({
+    //   data: {}
+    // })
+    // if (success) {
+    //   console.log('平台请求结果====>\n', data)
+    //   myIframe.value.contentWindow.postMessage(data, props.containLink)
+    // }
   }
   watch(
-    ()=>props,
+    () => props,
     (val) => {
       API.person
         .createAPPtoken({
