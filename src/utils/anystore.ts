@@ -38,7 +38,7 @@ const anyStore: anyStoreType = {
         anyStore._stoped = false
         if (anyStore._connection) return
         // 初始化
-        anyStore._connection = new signalR.HubConnectionBuilder().withUrl('/orginone/anydata/object/hub').build()
+        anyStore._connection = new signalR.HubConnectionBuilder().withUrl('/orginone/anydata/hub').build()
         anyStore._connection.on("Updated", anyStore._updated)
         anyStore._connection.onclose((error) => {
             if (!anyStore._stoped) {
@@ -111,36 +111,28 @@ const anyStore: anyStoreType = {
         return { success: false, data: {}, code: 404, msg: "" }
     },
     insert: async (collName: string, data: any, domain: string) => {
-        return $services.collection.insert(collName, {
-            data: data,
-            params: {
-                shareDomain: domain
-            }
-        })
+        if (anyStore.isConnected()) {
+            return await anyStore._connection.invoke<ResultType>("Insert", collName, data, domain)
+        }
+        return { success: false, data: {}, code: 404, msg: "" }
     },
     update: async (collName: string, update: any, domain: string) => {
-        return $services.collection.update(collName, {
-            data: update,
-            params: {
-                shareDomain: domain
-            }
-        })
+        if (anyStore.isConnected()) {
+            return await anyStore._connection.invoke<ResultType>("Update", collName, update, domain)
+        }
+        return { success: false, data: {}, code: 404, msg: "" }
     },
     remove: async (collName: string, match: any, domain: string) => {
-        return $services.collection.remove(collName, {
-            data: match,
-            params: {
-                shareDomain: domain
-            }
-        })
+        if (anyStore.isConnected()) {
+            return await anyStore._connection.invoke<ResultType>("Remove", collName, match, domain)
+        }
+        return { success: false, data: {}, code: 404, msg: "" }
     },
     aggregate: async (collName: string, options: any, domain: string) => {
-        return $services.collection.aggregate(collName, {
-            data: options,
-            params: {
-                shareDomain: domain
-            }
-        })
+        if (anyStore.isConnected()) {
+            return await anyStore._connection.invoke<ResultType>("Aggregate", collName, options, domain)
+        }
+        return { success: false, data: {}, code: 404, msg: "" }
     },
     unSubscribed: (key: string, domain: string) => {
         let fullKey = key + '|' + domain
