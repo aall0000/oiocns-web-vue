@@ -103,11 +103,13 @@ const formartDateTime = (dateStr: any) => {
     width: calc(33% - 15px) !important;
   }
 }
-
+.app-card-item:nth-child(4n) {
+  margin-right: 0;
+}
 .app-card-item {
   position: relative;
 
-  width: 24%;
+  width: calc(25% - 8px);
   min-width: 200px;
   max-height: 204px;
   margin-bottom: 10px;
