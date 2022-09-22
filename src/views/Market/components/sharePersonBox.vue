@@ -176,7 +176,6 @@
     currentPage: 1,
     pageSize: 20
   })
-
   const handleCurrent: any = computed(() => {
     return (page.currentPage - 1) * page.pageSize
   })
@@ -248,6 +247,8 @@
             el.disabled = true
           }
         })
+        console.log(cascaderTree.value)
+
         cascaderTree.value.unshift(obj)
         getHistoryData()
       })
@@ -293,6 +294,9 @@
               el.type = 'has'
               arr.push(el.id)
             })
+            if (state.centerTree.length > 0) {
+              centerTree.value.setCheckedKeys(arr, true)
+            }
           })
         break
       case '3':
@@ -313,8 +317,6 @@
               el.type = 'has'
               arr.push(el.id)
             })
-            console.log(state.identitysData)
-
             if (state.centerTree.length > 0) {
               centerTree.value.setCheckedKeys(arr, true)
             }
@@ -528,9 +530,21 @@
   const centerAuthorClick = (data: any, checked: boolean, indeterminate: any) => {
     console.log('点击中间', data, checked, indeterminate)
     if (checked) {
-      handleBoxClick(state.authorHisData, state.authorData, data)
+      if (radio.value == '2') {
+        handleBoxClick(state.authorHisData, state.authorData, data)
+      } else if (radio.value == '3') {
+        handleBoxClick(state.identitysHisData, state.identitysData, data)
+      } else {
+        handleBoxClick(state.personsHisData, state.personsData, data)
+      }
     } else {
-      handleBoxCancelClick(state.authorHisData, state.authorData, data)
+      if (radio.value == '2') {
+        handleBoxCancelClick(state.authorHisData, state.authorData, data)
+      } else if (radio.value == '3') {
+        handleBoxCancelClick(state.identitysHisData, state.identitysData, data)
+      } else {
+        handleBoxCancelClick(state.personsHisData, state.personsData, data)
+      }
     }
   }
   // 中间树形点击取消事件
@@ -635,40 +649,103 @@
       page.currentPage = 1
     }
 
-    state.loadID = data
-    if (data.parentId == '0') {
-      API.person
-        .getFriends({
-          data: {
-            limit: page.pageSize,
-            offset: handleCurrent.value,
-            filter: typeof search == 'string' ? search : ''
-          }
-        })
-        .then((res: ResultType) => {
-          if (load == true) {
-            state.centerTree.concat(res.data.result)
-          } else {
-            state.centerTree = res.data.result ? res.data.result : []
-          }
-        })
-    } else {
-      API.cohort
-        .getPersons({
-          data: {
-            id: data.id,
-            limit: page.pageSize,
-            offset: handleCurrent.value,
-            filter: typeof search == 'string' ? search : ''
-          }
-        })
-        .then((res: ResultType) => {
-          if (load == true) {
-            state.centerTree.concat(res.data.result)
-          } else {
-            state.centerTree = res.data.result ? res.data.result : []
-          }
-        })
+    switch (radio.value) {
+      case '2':
+        state.loadID = data
+        API.company
+          .getAuthorityTree({
+            data: {
+              id: data.id,
+              filter: typeof search == 'string' ? search : ''
+            }
+          })
+          .then((res: ResultType) => {
+            let arr: any[] = []
+            arr.push(res.data)
+            handleTreeData(arr)
+            state.centerTree = arr
+            getHistoryData(data)
+          })
+        break
+      case '3':
+        state.loadID = data
+        API.company
+          .getIdentities({
+            data: {
+              id: data.id,
+              limit: page.pageSize,
+              offset: handleCurrent.value,
+              filter: typeof search == 'string' ? search : ''
+            }
+          })
+          .then((res: ResultType) => {
+            const { result = [] } = res.data
+            if (load == true) {
+              state.centerTree.concat(res.data.result)
+            } else {
+              state.centerTree = res.data.result ? res.data.result : []
+            }
+
+            getHistoryData(data)
+          })
+        break
+      case '4':
+        state.loadID = data
+        if (data.parentId == '0') {
+          API.person
+            .getFriends({
+              data: {
+                limit: page.pageSize,
+                offset: handleCurrent.value,
+                filter: typeof search == 'string' ? search : ''
+              }
+            })
+            .then((res: ResultType) => {
+              if (load == true) {
+                state.centerTree.concat(res.data.result)
+              } else {
+                state.centerTree = res.data.result ? res.data.result : []
+              }
+              getHistoryData(data)
+            })
+        } else {
+          API.cohort
+            .getPersons({
+              data: {
+                id: data.id,
+                limit: page.pageSize,
+                offset: handleCurrent.value,
+                filter: typeof search == 'string' ? search : ''
+              }
+            })
+            .then((res: ResultType) => {
+              if (load == true) {
+                state.centerTree.concat(res.data.result)
+              } else {
+                state.centerTree = res.data.result ? res.data.result : []
+              }
+              getHistoryData(data)
+            })
+        }
+        break
+
+      default:
+        break
+    }
+    sumbitSwitch(data)
+    state.switchData = data
+  }
+
+  const handleTreeData = (item: any) => {
+    for (let i = 0; i < item.length; i++) {
+      if (item[i].name == '管理员') {
+        item[i].disabled = true
+      }
+      if (item[i].nodes) {
+        handleTreeData(item[i].nodes)
+      } else {
+        item[i].nodes = []
+      }
     }
   }
 
@@ -718,6 +795,12 @@
     }
   }
 </script>
+
+<style>
+  .penultimate > .el-tree-node__content {
+    color: var(--el-text-color-disabled);
+  }
+</style>
 
 <style lang="scss" scoped>
   .footer-btn {
