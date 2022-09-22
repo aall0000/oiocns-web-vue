@@ -76,7 +76,7 @@
         />
       </li>
     </ul>
-    <div class="footer">
+    <div class="footer" v-if="orgChat.curChat.value.spaceId === orgChat.userId.value">
       <template v-if="orgChat.curChat.value?.typeName === '群组'">
         <el-button type="danger" plain>退出该群</el-button>
         <el-button type="danger">解散该群</el-button>
@@ -84,8 +84,8 @@
       <template v-if="orgChat.curChat.value?.typeName === '人员'">
         <el-button type="danger" plain>删除好友</el-button>
       </template>
-      <template v-else>
-        <el-button type="danger" plain>清空聊天记录</el-button>
+      <template v-if="true">
+        <el-button type="danger" v-on:click="orgChat.clearMsg()" plain>清空聊天记录</el-button>
       </template>
     </div>
   </div>

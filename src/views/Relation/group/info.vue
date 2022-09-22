@@ -12,9 +12,9 @@
     <div class="tab-list">
       <el-descriptions :column="2" border>
         <el-descriptions-item width="150px" :label="'集团名称'" label-align="center" align="center"
-          label-class-name="my-label" class-name="my-content">{{selectItem?.data?.name}}</el-descriptions-item>
+          label-class-name="my-label" class-name="my-content">{{selectItem?.data?.teamName}}</el-descriptions-item>
         <el-descriptions-item width="150px" :label="'集团编码'" label-align="center" align="center"
-          label-class-name="my-label" class-name="my-content">{{selectItem?.data?.teamCode}}</el-descriptions-item>
+          label-class-name="my-label" class-name="my-content">{{selectItem?.data?.code}}</el-descriptions-item>
         <el-descriptions-item :label="'我的岗位'" label-align="center" align="center" width="150px"
           label-class-name="my-label" class-name="my-content">{{orgChat.parseIdentitys(selectItem?.data?.identitys)}}</el-descriptions-item>
         <el-descriptions-item :label="'团队编码'" label-align="center" align="center" width="150px"

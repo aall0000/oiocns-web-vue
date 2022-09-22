@@ -9,9 +9,6 @@
         <el-form-item label="单位名称">
           <el-input v-model="formModel.name" />
         </el-form-item>
-        <el-form-item label="单位名称">
-          <el-input v-model="formModel.code" />
-        </el-form-item>
         <el-form-item label="社会信用代码">
           <el-input v-model="formModel.code" />
         </el-form-item>

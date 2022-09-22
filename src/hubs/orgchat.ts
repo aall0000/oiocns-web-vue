@@ -31,6 +31,7 @@ type orgChatType = {
     sendMsg: (data: any) => Promise<ResultType>, //发送消息
     recallMsg: (msg: any) => Promise<ResultType>, //撤回消息
     deleteMsg: (msg: any) => void, //删除消息
+    clearMsg: () => void, // 清空消息
     setCurrent: (chat: ImMsgChildType) => void, //设置当前会话
     getPersons: (reset: boolean) => Promise<ResultType>, //获取组织人员
     getHistoryMsg: () => Promise<number>, //获取历史消息
@@ -52,7 +53,7 @@ const orgChat: orgChatType = {
     lastMsg: null,
     curChat: ref<ImMsgChildType>(null),
     qunPersons: ref<any[]>([]),
-    nameMap: {},
+    nameMap: sessionStorage.getItem('nameMap')? JSON.parse(sessionStorage.getItem('nameMap')) : {} , // 解决首次加载时，应用中心归属人无法响应式渲染数据
     openChats: [],
     curMsgs: ref<any[]>([]),
     start: (accessToken: string, userId: string, spaceId: string) => {
@@ -78,6 +79,7 @@ const orgChat: orgChatType = {
             }
         })
         orgChat._connection.start().then(async () => {
+            // 获取当前 用户的 会话列表
             await anyStore.subscribed("orgChat", "user", async (data) => {
                 if (data.chats) {
                     orgChat.chats.value = []
@@ -91,6 +93,7 @@ const orgChat: orgChatType = {
                 }
                 if (data.nameMap) {
                     orgChat.nameMap = data.nameMap
+                    sessionStorage.setItem('nameMap',JSON.stringify(data.nameMap) )
                 }
                 if (data.openChats) {
                     orgChat.openChats = data.openChats
@@ -228,21 +231,32 @@ const orgChat: orgChatType = {
         if (orgChat.isConnected()) {
             return await orgChat._connection.invoke("RecallMsg", msg)
         }
-        return { success: false, data: {}, code: 404, msg: "" }
+        return { success: false, data: 0, code: 404, msg: "" }
     },
     deleteMsg: async (msg: any) => {
-        if(!msg.chatId){
+        if (!msg.chatId) {
             msg.chatId = msg.id
         }
         anyStore.remove(hisMsgCollName, {
             chatId: msg.chatId
-        }, "user").then((res:ResultType)=>{
-            if(res.data === 1 && orgChat.curMsgs.value.length > 0){
-                orgChat.curMsgs.value = orgChat.curMsgs.value.filter(item=>{
+        }, "user").then((res: ResultType) => {
+            if (res.data === 1 && orgChat.curMsgs.value.length > 0) {
+                orgChat.curMsgs.value = orgChat.curMsgs.value.filter(item => {
                     return item.chatId != msg.chatId
                 })
             }
         })
+    },
+    clearMsg: async () => {
+        if(orgChat.curChat.value){
+            anyStore.remove(hisMsgCollName, {
+                sessionId: orgChat.curChat.value.id
+            }, "user").then((res: ResultType) => {
+                if (res.data > 0 && orgChat.curMsgs.value.length > 0) {
+                    orgChat.curMsgs.value = []
+                }
+            })
+        }
     },
     setCurrent: async (chat: ImMsgChildType) => {
         if (orgChat.curChat.value) {
@@ -407,9 +421,15 @@ const orgChat: orgChatType = {
             data.showTxt = "撤回了一条消息"
             orgChat.curMsgs.value.forEach((item: any) => {
                 if (item.id === data.id) {
+                    item.showTxt = data.showTxt
                     item.msgBody = data.msgBody
                     item.msgType = "recall"
                     item.createTime = data.createTime
+                    if (data.fromId === orgChat.userId.value) {
+                        item.allowEdit = true
+                    } else {
+                        delete item.allowEdit
+                    }
                 }
             })
         }
@@ -444,7 +464,9 @@ const orgChat: orgChatType = {
                         data.showTxt = chat.showTxt
                         if (orgChat.curChat.value && orgChat.curChat.value.id === chat.id &&
                             orgChat.curChat.value.spaceId === chat.spaceId) {
-                            orgChat.curMsgs.value.push(data)
+                            if (data.msgType !== "recall") {
+                                orgChat.curMsgs.value.push(data)
+                            }
                             newChats.unshift(chat)
                         } else {
                             let opened = orgChat.openChats.filter(i => {

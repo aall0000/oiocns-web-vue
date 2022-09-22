@@ -34,28 +34,29 @@
         <li class="app-card" v-show="showType === 'card'">
           <template v-if="state.myMarket.length !== 0">
             <ShopCard v-for="item in state.myMarket" :info="item" :key="item.id" :overId="item.id"
-              :softwareId="software" type="market">
+              :softwareId="software" type="market"
+              :class="{'dropdwon-active':item.id==state.dropDwonActiveId}"
+              >
               <template #icon>
                 <HeadImg :name="item.name" :url="item.icon || storeImg" :imgWidth="48" :limit="1" :isSquare="true" />
               </template>
 
               <template #option>
                 <div class="option-unit" v-if="item.belongId">
-                  <el-dropdown trigger="click" placement="bottom" v-if="item.id != software">
+                  <el-dropdown trigger="click" placement="top" v-if="item.id != software"
+                  @visible-change="(value:boolean)=> optionDropdownChange(value,item.id)" >
                     <div class="option-unit">设置</div>
                     <!-- <el-icon :size="18">
                       <Operation />
                     </el-icon> -->
                     <template #dropdown>
                       <el-dropdown-menu>
-                        <el-dropdown-item @click.stop="handleClick(item)">
-                          <el-button class="btn" type="primary" link small v-if="item.belongId == workspaceData.id">删除商店
-                          </el-button>
-                          <el-button class="btn" type="primary" link small v-if="item.belongId != workspaceData.id">退出商店
-                          </el-button>
+                        <el-dropdown-item @click.stop="handleClick(item)" >
+                          {{item.belongId == workspaceData.id ?'删除':'退出' }}商店
+                          
                         </el-dropdown-item>
                         <el-dropdown-item @click.stop="hadleUserManage(item)">
-                          <el-button class="btn" link small>用户管理</el-button>
+                          用户管理
                         </el-dropdown-item>
                       </el-dropdown-menu>
                     </template>
@@ -213,6 +214,7 @@ const add1: string = '加入商店'
 const searchText = ref<string>('')
 const software = ref<string>('')
 const state = reactive({
+  dropDwonActiveId:'',
   softShareInfo: {
     id: ''
   },
@@ -293,10 +295,16 @@ const handleUpdate = (val: any) => {
 
   getMyMarketData()
 }
-// const handleCurrentJoinChange = (val: number) => {
-//   state.pageJoin.currentPage = val
-//   getJoinMarketData()
-// }
+// 下拉框显示隐藏时触发
+// value 是否显示，activeId 当前显示 的卡片内容id
+const optionDropdownChange = (value:boolean,activeId:string)=>{
+  
+  if(value) { //显示
+    state.dropDwonActiveId = activeId
+  }else{
+    state.dropDwonActiveId = ''
+  }
+}
 const GoPage = (path: string) => {
   router.push(path)
 }

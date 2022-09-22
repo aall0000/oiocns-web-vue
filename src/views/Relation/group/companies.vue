@@ -71,6 +71,7 @@
 
   const props = defineProps<{
     selectItem: any // 节点数据
+    tabHeight:any
   }>()
   const rootGroup = ref<any>({})
   // 表格用户数据
@@ -290,6 +291,12 @@
       tabHeight.value = headerHeight
     })
   })
+  watch(props.tabHeight, () => {
+    console.log('props.tabHeight',props.tabHeight)
+      let headerHeight = cardHeight.value?.clientHeight
+      tabHeight.value = headerHeight
+  });
+
 </script>
 
 <style lang="scss" scoped>

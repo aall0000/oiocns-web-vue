@@ -4,7 +4,7 @@
       v-if="props.containLink"
       id="myIframe"
       class="iframe"
-      ref="myIframe"
+      :ref="myIframe"
       allow="payment"
       allowfullscreen="true"
       :src="props.containLink"

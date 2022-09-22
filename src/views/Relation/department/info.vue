@@ -173,14 +173,14 @@ const toAuth = () => {
 // 跳转至岗位管理页面
 const toIdentity = () => {
   let persons = 'getPersons'
-  switch (selectItem.value.data.typeName) {
-    case '部门':
-      persons = 'getDepartmentPersons'
-      break
-    case '工作组':
-      persons = 'getJobPersons'
-      break
-  }
+  // switch (selectItem.value.data.typeName) {
+  //   case '部门':
+  //     persons = 'getDepartmentPersons'
+  //     break
+  //   case '工作组':
+  //     persons = 'getJobPersons'
+  //     break
+  // }
   router.push({
     path: '/relation/identity',
     query: {
