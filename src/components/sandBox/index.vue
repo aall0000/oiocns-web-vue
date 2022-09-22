@@ -52,6 +52,10 @@
 
     // 判断是否处理改信息
     const { cmd, params = {} } = msg.data
+
+    if (!cmd) {
+      return console.error('平台接受消息-请求无效')
+    }
     console.log('平台接受消息---接受子页面信息====》\n', msg.data)
     sendMessage(cmd, params)
   }
@@ -83,7 +87,7 @@
         break
     }
     nextTick(() => {
-      console.log('平台回复消息内容',response)
+      console.log('平台回复消息内容', response)
       myIframe.value.contentWindow.postMessage(response, props.containLink)
     })
 
