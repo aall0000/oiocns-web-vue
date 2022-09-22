@@ -42,7 +42,7 @@
           ></CreateUnitDialog>
           <searchCompany
             v-if="friendDialog"
-            @closeDialog="closeDialog"
+            @closeDialog="()=> {friendDialog = false}"
             :serachType="3"
             @checksSearch="checksSearch"
           ></searchCompany>
@@ -231,18 +231,18 @@ import orgChat from '@/hubs/orgchat'
     height: 100%;
     .title {
       .body-head {
-        background: #fff;
-
+        background: var(--el-bg-color);
+        
         :deep(.el-tabs__item) {
-          font-size: 20px !important;
-          font-weight: 600;
+          // font-size: 20px !important;
+          // font-weight: 600;
           margin-left: 30px;
-          border-color: #1a5773;
+          // border-color: #1a5773;
         }
-        :deep(.el-tabs__header) {
-          padding-top: 20px;
-          margin: 0;
-        }
+        // :deep(.el-tabs__header) {
+        //   padding-top: 20px;
+        //   margin: 0;
+        // }
       }
 
       .body {
@@ -259,7 +259,7 @@ import orgChat from '@/hubs/orgchat'
     height: 100%;
     box-sizing: border-box;
     .contet {
-      padding: 20px;
+      // padding: 20px;
       box-sizing: border-box;
       height: calc(100vh - 140px);
     }
@@ -268,12 +268,12 @@ import orgChat from '@/hubs/orgchat'
       padding: 20px;
       display: flex;
       justify-content: space-between;
-      background: #fff;
+      background: var(--el-bg-color);
     }
     .createdBody {
-      height: calc(100vh - 220px);
+      // height: calc(100vh - 220px);
       box-sizing: border-box;
-      background: #fff;
+      background: var(--el-bg-color);
       padding: 16px;
     }
   }

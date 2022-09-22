@@ -51,11 +51,11 @@ width: 100%;
   width: 98%;
   height: 50px;
   padding-bottom: 20px;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--el-border-color);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin: 30px;
+  margin: 30px 0;
   .left{
     width: 60%;
 
@@ -64,18 +64,18 @@ width: 100%;
     .title{
 
       .bind{
-        color: rgb(123, 123, 123);
+        // color: var(--el-text-color-regular);
         margin-bottom: 10px;
       }
       .noBind{
-        color: #ccc;
+        color: var(--el-text-color-secondary);
       }
     }
 
   }
   .right{
       .bindOption{
-        color: dodgerblue;
+        color: var(--el-color-primary);
         margin-right: 30px;
       }
     }
