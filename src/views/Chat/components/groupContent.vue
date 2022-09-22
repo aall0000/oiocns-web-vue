@@ -88,7 +88,10 @@ const handleReWrite = (txt: string) => {
 const curShow = ref<any>(null)
 
 const editShow = (item: any) => {
-  if (curShow.value) {
+  if(item.chatId){
+    item.id = item.chatId
+  }
+  if (curShow.value && curShow.value.id !== item.id) {
     curShow.value.edit = false
   }
   curShow.value = item
