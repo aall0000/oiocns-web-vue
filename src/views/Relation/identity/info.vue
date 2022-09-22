@@ -28,19 +28,19 @@
     </div>
   </div>
 
-  <el-dialog v-model="dialogVisible" title="修改角色信息" width="40%" center append-to-body @close="dialogHide">
+  <el-dialog v-model="dialogVisible" title="修改岗位信息" width="40%" center append-to-body @close="dialogHide">
     <div>
-      <el-form-item label="角色名称" style="width: 100%">
+      <el-form-item label="岗位名称" style="width: 100%">
         <el-input v-model="formData.name" placeholder="请输入" clearable style="width: 100%" />
       </el-form-item>
-      <el-form-item label="角色编号" style="width: 100%">
+      <el-form-item label="岗位编号" style="width: 100%">
         <el-input v-model="formData.code" placeholder="请输入" clearable style="width: 100%" />
       </el-form-item>
-      <el-form-item label="上级节点" style="width: 100%">
-        <el-cascader :props="cascaderProps" :options="cascaderTree" v-model="formData.parentIds" style="width: 100%"
+      <el-form-item label="所属角色" style="width: 100%">
+        <el-cascader :props="cascaderProps" :options="cascaderTree" v-model="formData.authId" style="width: 100%"
           placeholder="请选择" />
       </el-form-item>
-      <el-form-item label="角色简介" style="width: 100%">
+      <el-form-item label="岗位简介" style="width: 100%">
         <el-input v-model="formData.remark" :autosize="{ minRows: 5 }" placeholder="请输入" type="textarea" clearable />
       </el-form-item>
     </div>
@@ -58,6 +58,7 @@ import { ref, watch, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import router from '@/router';
 import orgChat from '@/hubs/orgchat';
+import { Message, MessageBox } from '@element-plus/icons-vue';
 
 const emit = defineEmits(['refresh'])
 
@@ -72,7 +73,6 @@ const selectItemChange = (data: any) => {
   selectItem.value = data;
 };
 defineExpose({ selectItemChange });
-
 
 watch(selectItem, () => {
 });
@@ -120,13 +120,15 @@ const handleUpdate = () => {
   }
   formData.value = selectItem.value
   dialogVisible.value = true
-  formData.value.parentIds = getParentIds({ id: selectItem.value.authId }, [selectItem.value.authId])
 }
 const dialogHide = () => {
   dialogVisible.value = false
+  formData.value = {}
 }
-// 保存
+// 保存 todo
 const updateIdentity = () => {
+  ElMessage.error('待提供接口...')
+  return;
   const data = { ...formData.value };
   let url = null;
   if (data.typeName == '集团') {
@@ -145,9 +147,6 @@ const updateIdentity = () => {
   })
 }
 
-// 节点ID和父对象映射关系
-const idParentMap: any = {}
-
 let authorityTree = ref<any[]>([])
 let cascaderTree = ref<any[]>([])
 
@@ -156,6 +155,7 @@ const cascaderProps = {
   value: 'id',
   label: 'name',
   children: 'nodes',
+  emitPath: false,
 }
 
 // 加载角色树
@@ -163,30 +163,10 @@ const loadAuthorityTree = () => {
   $services.company.getAuthorityTree({ data: { id: belongId.value } }).then((res: any) => {
     authorityTree.value = []
     authorityTree.value.push(res.data)
-    initIdParentMap(res.data)
     cascaderTree.value = authorityTree.value
   })
 }
-// 初始化ID和对象映射关系
-const initIdParentMap = (node: any) => {
-  if (node.nodes) {
-    for (const n of node.nodes) {
-      idParentMap[n.id] = node
-      initIdParentMap(n)
-    }
-  }
 
-}
-
-// 获取父节点到根节点的ID列表
-const getParentIds = (node: any, parentIds: any[]): any[] => {
-  const parentNode = idParentMap[node.id]
-  if (parentNode) {
-    parentIds.push(parentNode.id)
-    parentIds = getParentIds(parentNode, parentIds)
-  }
-  return parentIds;
-}
 
 onMounted(() => {
   belongId.value = router.currentRoute.value.query?.belongId

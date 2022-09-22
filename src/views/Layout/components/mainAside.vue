@@ -117,6 +117,7 @@
     data.type = 'app'
     activeAppId.value = data.id ?? ''
     commonStore.iframeLink = data?.link
+    commonStore.iframeID = data?.id
     let bool = state.mainMenus.filter((el) => {
       return el.id == data.id
     })
@@ -211,6 +212,7 @@
       // active.value = item.name
       if (activeAppId.value) {
         commonStore.iframeLink = item?.link
+        commonStore.iframeID = item?.id
       }
       router.push({ path: item.path })
     } else {

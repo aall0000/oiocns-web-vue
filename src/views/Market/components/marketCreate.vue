@@ -2,12 +2,16 @@
   <el-card
     class="marketCreate"
     shadow="hover"
-    :body-style="{ padding: '0px' }"
+    
     @click="() => emit('myclick')"
   >
-    <div class="createCard">
-      <el-icon><Plus /></el-icon>
-      {{ info }}
+  <div class="createCard">
+      <div>
+
+        <el-icon :size="24"></el-icon>
+        {{ info }}
+      </div>
+      <el-icon :size="24"><Plus /></el-icon>
     </div>
   </el-card>
 </template>
@@ -26,20 +30,25 @@
 <style lang="scss" scoped>
     @media not screen and (min-width: 1300px) {
     /* styles */
-    .marketCreate{
-      width: calc(33% - 15px) !important;
-    }
+    // .marketCreate{
+    //   width: calc(33% - 15px) !important;
+    // }
 }
   .marketCreate {
-    width: 24%;
+    width: 100%;
     min-width: 200px;
     height: 184px;
     margin-bottom: 10px;
     margin-right: 10px;
     border: 2px dashed #409eff;
     text-align: center;
-    line-height: 184px;
+    line-height: 136px;
+    border-radius: 2px;
+    cursor: pointer;
     .createCard {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
   }
 </style>

@@ -220,7 +220,7 @@ const searchValue = ref<string>('')
       {
         prop:'marketId',
         label:"市场名称",
-        formatter: (row:any, column:any) => {return row.marketId? orgChat.getName(row.marketId) :null} 
+        formatter: (row:any, column:any) => {return row.merchandise.marketId? orgChat.getName(row.merchandise.marketId) :null} 
       },
       {
         prop:'sellerId',
@@ -275,8 +275,7 @@ const searchValue = ref<string>('')
       {
         prop:'marketId',
         label:"市场名称",
-        minWidth: '120',
-        formatter: (row:any, column:any) => {return row.marketId? orgChat.getName(row.marketId) :null} 
+        formatter: (row:any, column:any) => {return row.merchandise.marketId? orgChat.getName(row.merchandise.marketId) :null} 
       },
       {
         prop: 'belongId',

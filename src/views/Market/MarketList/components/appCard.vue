@@ -4,7 +4,10 @@
       <ul class="box-ul">
         <template v-if="dataList.length !== 0">
           <li class="app-card">
-            <ShopCard v-for="item in dataList" :info="item.id" :key="item.id" :cardContent="true">
+            <ShopCard v-for="item in dataList" :info="item.id" :key="item.id" 
+            :cardContent="true"
+            :class="{'dropdwon-active':item.id==state.dropDwonActiveId}"
+            >
               <template #icon>
                 <HeadImg :name="item.name" :url="item.icon || merchandiseImg" :imgWidth="48" :limit="1"
                   :isSquare="false" />
@@ -40,11 +43,11 @@
 
               <template #option>
                 <div class="option-unit">
-                  <el-dropdown trigger="click" placement="left-start">
-                    <div class="option-unit">设置</div>
+                  <el-dropdown trigger="click" placement="top" @visible-change="(value:boolean)=> optionDropdownChange(value,item.id)">
+                    <div class="option-unit">操作</div>
                     <!-- <el-icon :size="18">
-                    <Operation />
-                  </el-icon> -->
+                      <Operation />
+                    </el-icon> -->
                     <template #dropdown>
                       <el-dropdown-menu>
                         <el-dropdown-item @click="buyThings(item)"> 立即购买 </el-dropdown-item>
@@ -112,6 +115,7 @@ const handleCurrent: any = computed(() => {
 })
 
 const state = reactive({
+  dropDwonActiveId:'',
   page: {
     total: 0, // 总条数
     currentPage: 1, // 当前页
@@ -128,12 +132,14 @@ const state = reactive({
   ]
 })
 
+//立即购买回调
 const buyThings = (item: AppType) => {
   ElMessageBox.confirm('此操作将生成交易订单。是否确认?', '确认订单', {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
     type: 'success'
   }).then(() => {
+    debugger
     setTimeout(async () => {
       await $services.order
         .create({
@@ -152,14 +158,7 @@ const buyThings = (item: AppType) => {
           }
         })
     }, 1)
-  })
-}
-
-const moreOperations = () => {
-  ElMessage({
-    message: '更多操作',
-    type: 'success'
-  })
+  }).catch(()=>{})
 }
 
 const handleUpdate = (page: any) => {
@@ -174,7 +173,16 @@ const GoPage = (path: string) => {
 const GoPageWithQuery = (path: string, query: any) => {
   router.push({ path, query })
 }
-
+// 下拉框显示隐藏时触发
+// value 是否显示，activeId 当前显示 的卡片内容id
+const optionDropdownChange = (value:boolean,activeId:string)=>{
+  
+  if(value) { //显示
+    state.dropDwonActiveId = activeId
+  }else{
+    state.dropDwonActiveId = ''
+  }
+}
 // 查看卡片详情
 const handleCardInfo = (item: any) => {
   state.dialogShow.map((el: { value: boolean; key: string; sendData?: any }) => {
@@ -192,30 +200,9 @@ const closeDialog = (val: string) => {
   })
 }
 
-const handleCurrentChange = (val: number) => {
-  state.page.currentPage = val
-  emit('handleUpdate')
-}
-
-const addShopCar = (data: any) => {
-  $services.appstore
-    .staging({
-      data: {
-        id: data.id
-      }
-    })
-    .then((res: ResultType) => {
-      if (res.code == 200) {
-        ElMessage({
-          message: '添加成功',
-          type: 'success'
-        })
-      }
-    })
-}
-
+// 加入购物车
 const joinStaging = async (item: any) => {
-  console.log(item)
+  // console.log(item)
   await $services.market
     .joinStaging({
       data: {
@@ -239,13 +226,6 @@ const joinStaging = async (item: any) => {
     })
 }
 
-function getUuid() {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-    var r = (Math.random() * 16) | 0,
-      v = c == 'x' ? r : (r & 0x3) | 0x8
-    return v.toString(16)
-  })
-}
 
 const createOrder = async (item: any) => {
   ElMessageBox.confirm('此操作将生成交易订单。是否确认?', '确认订单', {

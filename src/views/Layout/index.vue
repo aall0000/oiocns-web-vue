@@ -17,12 +17,12 @@
         <Suspense>
           <template #default>
             <router-view v-slot="{ Component }">
-              <transition name="fade-transform">
+              <!-- <transition name="fade-transform"> -->
                 <keep-alive v-if="$route.meta.keepAlive">
                   <component :is="Component" />
                 </keep-alive>
                 <component v-else :is="Component" />
-              </transition>
+              <!-- </transition> -->
             </router-view>
           </template>
 
@@ -45,7 +45,7 @@ import MainAsideVue from './components/mainAside.vue'
 import LoadingVue from './components/loading.vue'
 import { useUserStore } from '@/store/user'
 import orgChat from '@/hubs/orgchat'
-import { onBeforeMount, onBeforeUnmount,onMounted } from 'vue'
+import { onBeforeMount, onBeforeUnmount } from 'vue'
 const { userToken, queryInfo, workspaceData } = useUserStore()
 
 const stopConnection = ()=>{

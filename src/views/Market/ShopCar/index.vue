@@ -1,5 +1,5 @@
 <template>
-  <div class="common-layout">
+  
     <MarketCard>
       <template #right>
         <el-button type="text" @click="deleteStagings">删除</el-button>
@@ -20,7 +20,7 @@
         </div>
       </template>
     </MarketCard>
-    <div v-if="isRouterAlive" class="shopcar-content">
+    <div class="shopcar-content">
       <ul class="box-ul" v-if="mode == 'card'">
         <li class="app-card">
           <ShopCard v-for="item in pageStore.tableData" :class="{'bule-shadow':item.checked}" :info="item.id"
@@ -96,7 +96,7 @@
         v-model:currentPage="pagination.current" v-model:page-size="pagination.limit"
         layout="total, prev, pager, next, sizes" :total="pageStore.total"></el-pagination>
     </div>
-  </div>
+
 </template>
 
 <script setup lang="ts">
@@ -333,7 +333,7 @@ const createOrderByStaging = async (checkedId?: string) => {
       1,
       checkedStagIds
     )
-  })
+  }).catch(()=>{})
 }
 
 //从购物车移除 (批量)
@@ -583,6 +583,7 @@ const checkedChange = (item: any) => {
 .shopcar-content {
   padding-left: 16px;
   padding-top: 16px;
+ 
 }
 
 .box {
