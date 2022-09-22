@@ -45,32 +45,32 @@
   const handleReceiveMsg = async (msg: any) => {
     // origin: strinng,
     // appId: string,
-    // cmd: string,
+    // type: string,
     // queryTime: string,
     // params: Object,
     // desc:'string'
 
     // 判断是否处理改信息
-    const { cmd, params = {} } = msg.data
+    const { type, params = {} } = msg.data
 
-    if (!cmd) {
+    if (!type) {
       return console.error('平台接受消息-请求无效')
     }
     console.log('平台接受消息---接受子页面信息====》\n', msg.data)
-    sendMessage(cmd, params)
+    sendMessage(type, params)
   }
 
   // 向子页面iframe传递数据的事件
-  const sendMessage = async (cmd: string, params: any) => {
+  const sendMessage = async (type: string, params: any) => {
     let response: any = {
       origin: 'HOST',
       appId: props.appId,
-      cmd,
+      type,
       success: true,
       createTime: new Date().getTime(),
       data: null
     }
-    switch (cmd) {
+    switch (type) {
       case 'getAppToken':
         const { data, success } = await API.person.createAPPtoken({
           data: { appId: props.appId, funcAuthList: [] }
@@ -82,7 +82,7 @@
         break
 
       default:
-        console.log('其他消息', cmd)
+        console.log('其他消息', type)
 
         break
     }
