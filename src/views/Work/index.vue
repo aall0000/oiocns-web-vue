@@ -266,9 +266,9 @@ export default defineComponent({
       } else {
         // 关闭
         if (state.BtnDirection == 'right') {
-          menu = 'right:-205px;transition: all 0.5s ease;left:unset;'
+          menu = 'right:-199px;transition: all 0.5s ease;left:unset;'
         } else {
-          menu = 'transition: all 0.5s ease;margin-left:-205px'
+          menu = 'transition: all 0.5s ease;margin-left:-199px'
         }
       }
       return menu
@@ -891,22 +891,22 @@ export default defineComponent({
       width: 20px;
       height: 20px;
       position: absolute;
-      top: 46%;
+      top: 45.5%;
       right: 100%;
       transform: translate(0, -50%);
       cursor: pointer;
-      background-image: radial-gradient(20px at 0px 0px, var(--el-bg-color-overlay) 50px, var(--el-bg-color-overlay) 50px);
+      background-image: radial-gradient(20px at 0px 0px, rgba(255, 255, 255, 0) 50px, var(--el-bg-color-overlay) 50px);
     }
 
     &__btnBottom {
       width: 20px;
       height: 20px;
       position: absolute;
-      top: 54%;
+      top: 54.5%;
       right: 100%;
       transform: translate(0, -45%);
       cursor: pointer;
-      background-image: radial-gradient(20px at 0px 20px, var(--el-bg-color-overlay) 50px, var(--el-bg-color-overlay) 50px);
+      background-image: radial-gradient(20px at 0px 20px, rgba(255, 255, 255, 0) 50px, var(--el-bg-color-overlay) 50px);
     }
 
     &__btnRight {
@@ -961,7 +961,16 @@ export default defineComponent({
     }
   }
 }
+.dark {
+  .layout-menu__btnTopLeft {
+    background-image: radial-gradient(20px at 0px 0px, rgba(0, 0, 0, 0) 50px, var(--el-bg-color-overlay) 50px);
 
+  }
+  .layout-menu__btnBottom {
+    background-image: radial-gradient(20px at 0px 20px, rgba(0, 0, 0, 0) 50px, var(--el-bg-color-overlay) 50px);
+
+  }
+} 
 .vue-grid-layout {
   position: relative;
   min-height: calc(100vh - 150px);
