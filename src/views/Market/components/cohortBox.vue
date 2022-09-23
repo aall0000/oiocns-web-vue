@@ -45,6 +45,7 @@
           v-else
           ref="leftTree"
           :data="cascaderTree"
+          :key="radio"
           :highlight-current="true"
           :expand-on-click-node="false"
           :props="{ class: customNodeClass }"
@@ -216,6 +217,7 @@
   watch(
     () => resource.value,
     (newValue, oldValue) => {
+      state.centerTree = []
       state.authorData = []
       state.departData = []
       state.personsData = []

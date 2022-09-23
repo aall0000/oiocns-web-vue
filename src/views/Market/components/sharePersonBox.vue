@@ -33,6 +33,7 @@
           v-else
           ref="leftTree"
           :data="cascaderTree"
+          :key="radio"
           :props="unitProps"
           :highlight-current="true"
           :expand-on-click-node="false"
@@ -167,15 +168,23 @@
     children: 'nodes',
     disabled: 'disabled'
   }
+  const customNodeClass = (data: any, node: any) => {
+    if (data.disabled) {
+      return 'penultimate'
+    }
+    return null
+  }
   const unitProps = {
     label: 'name',
     children: 'children',
-    disabled: 'disabled'
+    disabled: 'disabled',
+    class: customNodeClass
   }
   const page = reactive({
     currentPage: 1,
     pageSize: 20
   })
+
   const handleCurrent: any = computed(() => {
     return (page.currentPage - 1) * page.pageSize
   })
@@ -640,8 +649,12 @@
 
   // 获取中间树形数据
   const handleNodeClick = (data: any, load: boolean, search?: string) => {
+    console.log('data', data)
     if (typeof load == 'object' && typeof search == 'object') {
       searchValue.value = ''
+    }
+    if (data.disabled == true) {
+      return false
     }
     if (typeof load !== 'boolean') {
       page.currentPage = 1
@@ -799,6 +812,7 @@
 <style>
   .penultimate > .el-tree-node__content {
     color: var(--el-text-color-disabled);
+    cursor: not-allowed;
   }
 </style>
 
