@@ -16,6 +16,9 @@ Object.keys(urls).forEach((key) => {
     FUNS[key] = {}
     Object.keys(urls[key]).forEach((item) => {
       if (typeof urls[key][item] === 'function') {
+        const apiStr = `${key}_${item}`
+         ACCETP_API[apiStr] = true
+         console.log('少时诵诗书',apiStr);
         // 接口拼接额外动态参数
         FUNS[key][item] = (extarStr: string, options = {}) => {
           return request(urls[key][item](extarStr), options)
