@@ -253,11 +253,11 @@ export default {
     pullTarget: appstore + '/pull/target',
     searchPublishApply: appstore + '/search/publish/apply'
   },
-  collection: {
-    insert: (collName: string) => collection + '/insert/' + collName,
-    aggregate: (collName: string) => collection + '/aggregate/' + collName,
-    update: (collName: string) => collection + '/update/' + collName,
-    remove: (collName: string) => collection + '/remove/' + collName
-  }
+  // collection: {
+  //   insert: (collName: string) => collection + '/insert/' + collName,
+  //   aggregate: (collName: string) => collection + '/aggregate/' + collName,
+  //   update: (collName: string) => collection + '/update/' + collName,
+  //   remove: (collName: string) => collection + '/remove/' + collName
+  // }
   //others
 }

@@ -2,9 +2,11 @@ import { onMounted, onUnmounted, ref, Ref, nextTick } from 'vue'
 import API from '@/services'
 
 export default function (iframeRef: Ref<any>, appId: string, link: string) {
-  if (appId) {
-    return
-  }
+  // if (appId) {
+  //   return
+  // }
+  console.log('注入POSTMESSAGE')
+
   const APP_TOKEN = ref<string>('')
   const ignoreApi = ['person_register', 'person_login', 'person_changeWorkspace']
 
@@ -63,13 +65,32 @@ export default function (iframeRef: Ref<any>, appId: string, link: string) {
       if (!APP_TOKEN.value) {
         return console.warn('应用登录失败!请重试')
       }
-      const { data, success } = await API[queryUrl[0]][queryUrl[1]]({
-        headers: { Authorization: APP_TOKEN.value },
-        data: params
-      })
-      if (success) {
-        response.data = data
-      }
+      await API[queryUrl[0]]
+        [queryUrl[1]]({
+          headers: { Authorization: APP_TOKEN.value },
+          data: params
+        })
+        .then((res: ResultType) => {
+          const { data, success } = res
+          response.data = data
+        })
+        .catch(() => {
+          response.data = null
+          const errorObj = {
+            success: true,
+            code: 500, //SDK 判断消息成功的字段
+            msg: '失败！'
+          }
+          response = { ...response, ...errorObj }
+        })
+      // if (success) {
+      //   response.data = data
+      //   const errorObj = {
+      //     success: false,
+      //     code: 500, //SDK 判断消息成功的字段
+      //     msg: '失败！'
+      //   }
+      // }
       nextTick(() => {
         console.log('平台回复消息内容', response)
         iframeRef.value.contentWindow.postMessage(response, link)
