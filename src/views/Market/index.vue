@@ -4,13 +4,10 @@
       <template #right>
         <div class="edit-wrap">
           <el-button small link type="primary" @click="GoPage('/market/appApply')">我的上架申请</el-button>
-          <el-button small link type="primary" @click="GoPage('/market/register')" v-show="mode !== 'card'">注册应用
-          </el-button>
+          <!-- <el-button small link type="primary" @click="GoPage('/market/register')" >注册应用 </el-button> -->
           <!-- <el-button small link type="primary" @click="GoPage('/market/softShare')"
-            >从开放市场中添加应用</el-button
-          > -->
-          <el-button small link type="primary" @click="GoPage('/market/marketList')" v-show="mode !== 'card'">商店列表
-          </el-button>
+            >从开放市场中添加应用</el-button> -->
+          <!-- <el-button small link type="primary" @click="GoPage('/market/marketList')" >商店列表 </el-button> -->
           <el-button small link type="primary" @click.stop="GoPage('/market/order/buy')">采购订单</el-button>
           <el-button small link type="primary" @click.stop="GoPage('/market/order/sell')">售卖订单</el-button>
           <el-badge :value="shopcarNum" style="padding-left: 10px" v-if="shopcarNum>0">
@@ -35,27 +32,26 @@
       </template>
     </MarketCard>
     <div class="market-content box">
+      <el-row :gutter="10">
+        <el-col :span="6">
+          <MarketCreate :info="add" @myclick="GoPage('/market/softShare')" />
+        </el-col>
+        <el-col :span="6">
+          <MarketCreate info="从 ⌈商店⌋ 添加" @myclick="GoPage('/market/marketList')" />
+        </el-col>
+        <el-col :span="6">
+          <MarketCreate info="创建应用" @myclick="GoPage('/market/register')" />
+        </el-col>
+      </el-row>
 
       <div class="getApp-radio">
-        <p class="box-ul-title">我的应用</p>
+        <h4 class="box-ul-title">我的应用</h4>
         <div class="search">
           <el-input v-model="searchText" @input="searchList" placeholder="搜索应用" clearable />
         </div>
       </div>
       <!-- 卡片视图 -->
       <div v-show="mode === 'card'">
-        <el-row :gutter="10">
-          <el-col :span="6">
-            <MarketCreate :info="add" @myclick="GoPage('/market/softShare')" />
-          </el-col>
-          <el-col :span="6">
-            <MarketCreate info="从 ⌈商店⌋ 添加" @myclick="GoPage('/market/marketList')" />
-          </el-col>
-          <el-col :span="6">
-            <MarketCreate info="创建应用" @myclick="GoPage('/market/register')" />
-          </el-col>
-        </el-row>
-        <h4>应用列表 </h4>
         <div class="app-card">
           <ShopCard v-for="item in state.ownProductList" :info="item" :key="item.id" :over-id="item.id" type="soft"
             :class="{'dropdwon-active':item.id==state.dropDwonActiveId}">
@@ -659,6 +655,7 @@ const formartDateTime = (dateStr: any) => {
       width: 100%;
       justify-content: space-between;
       margin-bottom: 20px;
+      align-items: center;
 
       .box-ul-title {
         width: 50%;
@@ -668,8 +665,7 @@ const formartDateTime = (dateStr: any) => {
 
       .search {
         width: 200px;
-        display: flex;
-        justify-content: flex-start;
+  
       }
     }
 
