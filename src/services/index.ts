@@ -7,7 +7,7 @@ import urls from './RESTFULURL'
 const FUNS: { [key: string]: any } = {}
 
 // 拒绝处理的API
-const REFUSE_API = ['person_register', 'person_login', 'person_changeWorkspace']
+const REFUSE_API = ['person_register', 'person_login',"person_createAPPtoken", 'person_changeWorkspace']
 //子应用 支持的API
 let ACCETP_API: { [key: string]: boolean } = { APP_INIT: true }
 

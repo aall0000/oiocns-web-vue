@@ -28,8 +28,8 @@ export default function (iframeRef: Ref<any>, appId: string, link: string) {
     // 判断是否处理改信息
     const { type, checkCode, data } = msg.data
     // const obj = { url: 'collection.insert', extar: 'aaa' }
-    let endType: string = type as string,
-      extar = ''
+    let endType: string = type as string
+    let extar = ''
     if (isObject(type)) {
       endType = type.url
       extar = type.extar
