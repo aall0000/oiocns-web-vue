@@ -1,61 +1,67 @@
 <template>
-  <template v-if="menus.length > 0">
+  <template v-if="props.menus.length > 0">
     <ul
       class="setAppMenu-wrap"
-      :class="className"
-      v-for="(menuItem, index) in menus"
+      :class="props.className"
+      v-for="(menuItem, index) in props.menus"
       :key="menuItem.customId"
       @click.stop
     >
       <!-- 子集导航样式 -->
       <li class="menu-item flex">
-        <div :class="['menu-label', readOnly ? '' : 'required']">资源名称:</div>
+        <div :class="['menu-label', props.readOnly ? '' : 'required']">资源名称:</div>
         <el-input
           placeholder="请设置资源名称"
           v-model="menuItem.name"
-          :readonly="readOnly"
+          :readonly="props.readOnly"
         ></el-input>
         <el-icon
           class="child-btn"
-          v-if="!readOnly"
-          @click.stop="handleEvent('Delete', menuItem.customId)"
+          v-if="!props.readOnly"
+          @click.stop="handleEvent('Delete', menuItem.customId ?? menuItem.id)"
           ><Delete
         /></el-icon>
         <el-icon
           class="child-btn"
-          v-if="!readOnly"
+          v-if="!props.readOnly"
           @click.stop="handleEvent('Up', menuItem.customId)"
           ><SortUp
         /></el-icon>
         <el-icon
           class="child-btn"
-          v-if="!readOnly"
+          v-if="!props.readOnly"
           @click.stop="handleEvent('Down', menuItem.customId)"
           ><SortDown
         /></el-icon>
       </li>
       <!-- 共有部分 -->
       <li class="menu-item flex">
-        <div :class="['menu-label', readOnly ? '' : 'required']">资源地址:</div>
+        <div :class="['menu-label', props.readOnly ? '' : 'required']">资源地址:</div>
         <el-input
           placeholder="例如:http://anyinone.com:800/"
           v-model="menuItem.link"
-          :readonly="readOnly"
+          :readonly="props.readOnly"
         ></el-input>
       </li>
 
       <li class="menu-item flex">
         <div class="menu-label">资源编码:</div>
-        <el-input placeholder="请设置" v-model="menuItem.code" :readonly="readOnly"></el-input>
+        <el-input
+          placeholder="请设置"
+          v-model="menuItem.code"
+          :readonly="props.readOnly"
+        ></el-input>
       </li>
-      <el-divider v-if="index !== menus.length - 1" />
+      <el-divider v-if="index !== props.menus.length - 1" />
     </ul>
   </template>
   <template v-else>
-    <div class="noData" style="text-align: center;margin-top:50px">暂无资源</div>
+    <div class="noData" style="text-align: center; margin-top: 50px">暂无资源</div>
   </template>
 </template>
 <script lang="ts" setup>
+  import { watch } from 'vue'
+
   // import SetAppMenu from './setAppMenu.vue'
   type Props = {
     readOnly?: boolean
@@ -64,12 +70,20 @@
     isChildren?: boolean
   }
   // type ProductMenuEventType = 'add' | 'delete' | 'up' | 'down'
-  const { menus, className, readOnly } = withDefaults(defineProps<Props>(), {
+  // const { menus, className, props.readOnly } = withDefaults(defineProps<Props>(), {
+  //   isChildren: false,
+  //   props.readOnly: false
+  // })
+
+  const props = withDefaults(defineProps<Props>(), {
     isChildren: false,
     readOnly: false
   })
+
   const emit = defineEmits(['handleMemuEvent'])
   const handleEvent = (type: ProductMenuEventType, id: string) => {
+    console.log('======', type, id)
+
     emit('handleMemuEvent', type, id)
   }
 </script>
