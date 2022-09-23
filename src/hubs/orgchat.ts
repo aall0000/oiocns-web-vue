@@ -217,8 +217,6 @@ const orgChat: orgChatType = {
                 orgChat._cacheChats()
             }
             return res
-        } else {
-            ElNotification
         }
         return { success: false, data: {}, code: 404, msg: "" }
     },
