@@ -29,12 +29,12 @@ const codeMessage = {
 
 // 处理成功调用后 信息处理
 function responseLog(response) {
-const { data } = response
+  const { data } = response
 
   switch (data.code) {
     case 500:
       ElMessage({
-        message: data.msg.replace(/[^\u4E00-\u9FA5]/g,''),
+        message: data.msg.replace(/[^\u4E00-\u9FA5]/g, ''),
         type: 'warning'
       })
       break
@@ -93,7 +93,7 @@ const axiosRequest = {
   success: (config) => {
     // 以下代码，鉴权token,可根据具体业务增删。
     const store = useUserStore()
-    if (store.userToken !== '') {
+    if (store.userToken !== '' && !config.headers['Authorization']) {
       config.headers['Authorization'] = store.userToken
     }
     return config
@@ -154,7 +154,15 @@ requestInstance.interceptors.response.use(axiosResponse.success, axiosResponse.e
  */
 export default function request(
   url,
-  { method = 'post', timeout = TIMEOUT, prefix = '', data = {}, params = {}, headers = {}, dataType = 'json' }
+  {
+    method = 'post',
+    timeout = TIMEOUT,
+    prefix = '',
+    data = {},
+    params = {},
+    headers = {},
+    dataType = 'json'
+  }
 ) {
   const baseURL = autoMatchBaseUrl(prefix)
 

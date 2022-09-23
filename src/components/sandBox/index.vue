@@ -19,8 +19,10 @@
 
 <script setup lang="ts">
   // import { useCommonStore } from '@store/common'
-  import { nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
-  import API from '@/services'
+  import { onMounted, ref, watch } from 'vue'
+  import usePostMessage from '@/hooks/usePostMessage'
+console.log(usePostMessage);
+
   type IfrType = {
     containLink: string
     appId?: string
@@ -29,106 +31,15 @@
   const loading = ref<boolean>(true)
   // const { iframeLink } = useCommonStore()
   const myIframe = ref()
-  const APP_TOKEN = ref<string>('')
+  // const APP_TOKEN = ref<string>('')
 
   // iframe加载完成时向iframe传递数据
   const load = () => {
     console.log('子页面加载完成')
     loading.value = false
   }
-
-  onMounted(() => {
-    // 监听iframe传递的数据
-    window.addEventListener('message', handleReceiveMsg)
-  })
-  onUnmounted(() => {
-    // 退出则撤销信息监听
-    window.removeEventListener('message', handleReceiveMsg)
-  })
-
-  // 接受子页面信息
-  const handleReceiveMsg = async (msg: any) => {
-    // 判断是否处理改信息
-    const { type, data } = msg.data
-
-    if (!type) {
-      return console.error('平台接受消息-请求无效')
-    }
-    console.log('平台接受消息---接受子页面信息====》\n', msg.data)
-    sendMessage(type, data, msg.data)
-  }
-
-  // 向子页面iframe传递数据的事件
-  const sendMessage = async (type: string, params: any, queryInfo: any) => {
-    // 返回信息
-    let response: any = {
-      from: 'HOST',
-      to: queryInfo.form,
-      appId: props.appId,
-      type: queryInfo.type,
-      success: true,
-      code: 200,
-      msg: '成功！',
-      checkCode: queryInfo.checkCode,
-      data: null
-    }
-    // 判断是否模块请求
-    const isModelUrl = queryInfo.type.includes('_')
-    const queryUrl = isModelUrl ? queryInfo.type.split('_') : queryInfo.type
-
-    switch (type) {
-      case 'APP_INIT':
-        {
-          const { data, success } = await API.person.createAPPtoken({
-            data: { appId: props.appId, funcAuthList: [] }
-          })
-          if (success) {
-            // response.data = data
-            APP_TOKEN.value = data.data
-          }
-        }
-        return
-
-      default:
-        {
-          const { data, success } = await API[queryUrl[0]][queryUrl[1]]({
-            data: params
-          })
-          if (success) {
-            response.data = data
-          }
-        }
-        console.log('其他消息', type)
-        break
-    }
-    nextTick(() => {
-      console.log('平台回复消息内容', response)
-      myIframe.value.contentWindow.postMessage(response, props.containLink)
-    })
-    // const queryUrl = aimUrl.includes('&&') ? aimUrl.split('&&') : aimUrl
-    // // 返回处理结果
-    // const { data, success } = await API[queryUrl[0]][queryUrl[1]]({
-    //   data: {}
-    // })
-    // if (success) {
-    //   console.log('平台请求结果====>\n', data)
-    //   myIframe.value.contentWindow.postMessage(data, props.containLink)
-    // }
-  }
-  // watch(
-  //   () => props,
-  //   (val) => {
-  //     API.person
-  //       .createAPPtoken({
-  //         data: { appId: props.appId, funcAuthList: [] }
-  //       })
-  //       .then((result: ResultType) => {
-  //         const { data, success } = result
-  //         console.log('触发监听', data, success)
-  //       })
-  //   },
-  //   { immediate: true }
-  // )
+  usePostMessage(myIframe, props.appId, props.containLink)
+  
 </script>
 
 <style lang="scss" scoped>
