@@ -216,7 +216,7 @@ defineExpose({
   }
 
   .con-body {
-    max-width: 50%;
+    max-width: 80%;
     display: flex;
     flex-direction: row;
   }
@@ -249,7 +249,7 @@ defineExpose({
         z-index: 1;
         margin-top: -10px;
         font-size: small;
-        
+
       }
 
       &-link {
