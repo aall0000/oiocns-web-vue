@@ -1,15 +1,13 @@
 import { onMounted, onUnmounted, ref, Ref, nextTick } from 'vue'
 import API from '@/services'
-import ACCETP_API from '@/services/RESTFULURL'
+//所有可支持的消息列表
+import { ACCETP_API } from '@/services'
 
 export default function (iframeRef: Ref<any>, appId: string, link: string) {
-  // if (appId) {
-  //   return
-  // }
   console.log('注入POSTMESSAGE')
   const APP_TOKEN = ref<string>('')
   //所有可支持的消息列表
-  console.log('ACCETP_API', ACCETP_API)
+  // console.log('ACCETP_API', ACCETP_API)
 
   onMounted(() => {
     // 监听iframe传递的数据
@@ -25,10 +23,10 @@ export default function (iframeRef: Ref<any>, appId: string, link: string) {
     // 判断是否处理改信息
     const { type, checkCode, data } = msg.data
     // 若不存在消息类型 or 消息类型处于忽略名单,则放弃处理
-    if (!type || !checkCode) {
+    if (!type || !checkCode || !ACCETP_API[type]) {
       return console.error('平台不支持该请求', type, checkCode)
     }
-    console.log('平台接受消息---接受子页面信息\n', msg.data)
+    console.log('平台接受消息\n', JSON.stringify(msg.data))
     sendMessage(type, data, msg.data)
   }
 
@@ -37,7 +35,7 @@ export default function (iframeRef: Ref<any>, appId: string, link: string) {
     // 返回信息
     let response: any = {
       from: 'HOST', //SDK 判断消息来源的字段
-      to: queryInfo.form,
+      to: queryInfo.from,
       appId,
       type,
       success: true,
@@ -46,9 +44,6 @@ export default function (iframeRef: Ref<any>, appId: string, link: string) {
       checkCode: queryInfo.checkCode, //sdk 判断消息的核心字段
       data: null
     }
-    // 判断是否模块请求
-    const isModelUrl = queryInfo.type.includes('_')
-    const queryUrl = isModelUrl ? queryInfo.type.split('_') : queryInfo.type
 
     if (type == 'APP_INIT') {
       if (!appId) {
@@ -65,7 +60,11 @@ export default function (iframeRef: Ref<any>, appId: string, link: string) {
           link
         )
       }
-    } else if (type !== 'APP_INIT' && type.includes('_')) {
+    } else if (ACCETP_API[type]) {
+      // 判断是否模块请求
+      const isModelUrl = queryInfo.type.includes('_')
+      const queryUrl = isModelUrl ? queryInfo.type.split('_') : queryInfo.type
+
       console.log('判断是否已获得应用token', !!APP_TOKEN.value)
       if (!APP_TOKEN.value) {
         return console.warn('应用登录失败!请重试')
