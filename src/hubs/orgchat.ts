@@ -286,7 +286,7 @@ const orgChat: orgChatType = {
         newSession.isTop = type
         seeionGroup.hasTopSession = seeionGroup.chats.findIndex(n => n.isTop) === -1 ? false : true
         orgChat._cacheChats()
-    },
+    }, 
     getPersons: async (reset: boolean) => {
         if (reset) {
             orgChat.qunPersons.value = []
