@@ -2,7 +2,7 @@
   <el-row class="page-custom-header">
     <!-- 左侧 -->
     <el-col class="head-title" :span="4">
-      <div style="display: flex; align-items: center" @mouseleave="handleClose()">
+      <div style="display: flex; align-items: center; height: 100%" @mouseleave="handleClose()">
         <div class="select-item__imgSelect" style="margin-right: 5px">
           {{ workHead() }}
         </div>

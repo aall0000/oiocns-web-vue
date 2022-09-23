@@ -424,7 +424,7 @@ const mainRouter: RouteRecordRaw[] = [
 export const routes: RouteRecordRaw[] = [
   {
     path: '/',
-    redirect: '/home',
+    redirect: '/workHome',
     component: Layout,
     children: mainRouter
   },

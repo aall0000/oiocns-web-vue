@@ -36,7 +36,7 @@ export default {
     removeIdentity: person + '/remove/identity', //删除好友岗位
     searchPersons: person + '/search/persons', //搜索人员
     update: person + '/update', //变更信息
-    reset:person + '/reset/pwd', //重置密码
+    reset: person + '/reset/pwd' //重置密码
   },
   cohort: {
     applyJoin: cohort + '/apply/join', //申请加群组
@@ -160,7 +160,11 @@ export default {
     searchMerchandiseSellList: order + '/search/merchandise/sell/list', //卖方查询指定商品售卖订单列表
     searchPayList: order + '/search​/pay/list', //查询订单支付信息
     searchSellList: order + '/search/sell/list', //卖方查询售卖订单列表
-    udpate: order + '/update' //更新订单
+    udpate: order + '/update', //更新订单
+    updateDetail: order + '/update/detail', //更新订单详情
+    cancel: order + '/cancel', //取消订单
+    cancelBuy: order + '/cancel/buy/detail', //买方取消订单指定详情项
+    cancelSell: order + '/cancel/sell/detail', //卖方取消订单指定详情项
   },
   product: {
     createResource: product + '/create/resource', //创建产品资源
@@ -214,7 +218,10 @@ export default {
     delteDeptment: product + '/delete/distribution/to/deptment',
     delteAuthority: product + '/delete/distribution/to/authority',
     delteIdentity: product + '/delete/distribution/to/identity',
-    deltePerson: product + '/delete/distribution/to/person'
+    deltePerson: product + '/delete/distribution/to/person',
+    extendCreate: product + '/extend/create', //创建产品、资源的扩展
+    extendDelete: product + '/extend/delete', // 取消产品、资源的扩展
+    extendQuery: product + '/extend/query' // 查询产品、资源的扩展
   },
   // 历史记录
   history: {
