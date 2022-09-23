@@ -18,10 +18,8 @@
 </template>
 
 <script setup lang="ts">
-  // import { useCommonStore } from '@store/common'
-  import { onMounted, ref, watch } from 'vue'
+  import { ref } from 'vue'
   import usePostMessage from '@/hooks/usePostMessage'
-console.log(usePostMessage);
 
   type IfrType = {
     containLink: string
@@ -29,17 +27,15 @@ console.log(usePostMessage);
   }
   const props = defineProps<IfrType>()
   const loading = ref<boolean>(true)
-  // const { iframeLink } = useCommonStore()
   const myIframe = ref()
-  // const APP_TOKEN = ref<string>('')
 
   // iframe加载完成时向iframe传递数据
   const load = () => {
     console.log('子页面加载完成')
     loading.value = false
   }
+  // 使用poseMessage 监听子页面消息,并回复
   usePostMessage(myIframe, props.appId, props.containLink)
-  
 </script>
 
 <style lang="scss" scoped>

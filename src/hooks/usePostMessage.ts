@@ -2,6 +2,9 @@ import { onMounted, onUnmounted, ref, Ref, nextTick } from 'vue'
 import API from '@/services'
 
 export default function (iframeRef: Ref<any>, appId: string, link: string) {
+  if (appId) {
+    return
+  }
   const APP_TOKEN = ref<string>('')
   const ignoreApi = ['person_register', 'person_login', 'person_changeWorkspace']
 
