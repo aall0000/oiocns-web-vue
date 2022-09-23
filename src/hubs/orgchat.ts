@@ -38,6 +38,7 @@ type orgChatType = {
     isConnected: () => boolean //  判断该链接的状态是否为connected
     subscribed: (callback: (data: any) => void) => void // 订阅数据
     unSubscribed: () => void // 取消订阅
+    setToppingSession: (session:any,type:boolean)=>void, // 设置置顶会话 type: 是否置顶
     _recvMsg: (data: any) => void // 订阅时，当数据发生更变时通知，不对外使用
     _handleMsg: (data: any) => void // 处理消息
     _cacheChats: () => void //缓存会话
@@ -61,8 +62,7 @@ const orgChat: orgChatType = {
         orgChat.spaceId.value = spaceId
         orgChat._stoped = false
         anyStore.start(accessToken, userId, spaceId)
-        if (orgChat._connection)
-            return
+        if (orgChat._connection) return
         // 初始化
         orgChat._connection = new signalR.HubConnectionBuilder().withUrl('/orginone/orgchat/msghub').build()
         orgChat._connection.on("RecvMsg", orgChat._recvMsg)
@@ -187,30 +187,27 @@ const orgChat: orgChatType = {
         }
         return '暂无岗位'
     },
-    getChats: async () => {
+    getChats: async () => { // 获取会话
         if (orgChat.isConnected()) {
             let res = await orgChat._connection.invoke("GetChats")
             if (res.success) {
-                const { groups = [] } = res.data
-                groups.forEach((item: ImMsgType) => {
-                    item.chats.forEach((chat: ImMsgChildType) => {
-                        chat.spaceId = item.id
-                        orgChat.chats.value.forEach((i: ImMsgType) => {
-                            if (i.id === item.id) {
-                                i.chats.forEach((c: ImMsgChildType) => {
-                                    if (c.id === chat.id) {
-                                        chat.msgBody = c.msgBody
-                                        chat.msgTime = c.msgTime
-                                        chat.msgType = c.msgType
-                                        chat.showTxt = c.showTxt
-                                    }
-                                })
-                            }
-                        })
+                
+                const { groups = [] } = res.data // 远程分组
+                groups.forEach((group: ImMsgType) => {
+                    let localGoup = orgChat.chats.value.find((g:ImMsgType) =>g.id === group.id) // 本地的分组
+                    group.hasTopSession  = localGoup?.hasTopSession||false // 是否有置顶的分组
+                    group.chats =  group.chats.map((chat: ImMsgChildType) => {
+                        chat.spaceId = group.id
+                        if(localGoup) { // 如果该远程分组有对应的本地分组，则合并相关会话
+                            let localChat = localGoup.chats.find((c: ImMsgChildType)=> c.id === chat.id)
+                            chat = localChat ? {...chat,...localChat} : chat
+                        }
                         let typeName = chat.typeName == '人员' ? '' : `[${chat.typeName}]`
                         orgChat.nameMap[chat.id] = `${chat.name}${typeName}`
+                        return chat
                     })
-                    item.chats = item.chats.sort((a, b) => {
+                    // 按照时间排序
+                    group.chats.sort((a, b) => {
                         return new Date(b.msgTime).getTime() - new Date(a.msgTime).getTime()
                     })
                 })
@@ -218,6 +215,8 @@ const orgChat: orgChatType = {
                 orgChat._cacheChats()
             }
             return res
+        }else{
+            ElNotification
         }
         return { success: false, data: {}, code: 404, msg: "" }
     },
@@ -277,6 +276,15 @@ const orgChat: orgChatType = {
             }
             orgChat.openChats.push(orgChat.curChat.value)
         }
+        orgChat._cacheChats()
+    },
+    setToppingSession: (needTopSession:any,type:boolean)=>{
+        console.log(needTopSession)
+       
+        let seeionGroup = orgChat.chats.value.find(n=>n.id ===needTopSession?.spaceId)
+        let newSession = seeionGroup.chats.find(s=> s.id===needTopSession.id)
+        newSession.isTop = type
+        seeionGroup.hasTopSession =  seeionGroup.chats.findIndex(n=>n.isTop) ===-1 ? false :true
         orgChat._cacheChats()
     },
     getPersons: async (reset: boolean) => {
@@ -353,7 +361,7 @@ const orgChat: orgChatType = {
             }
         }
         return 0
-    },
+    },    
     // 订阅数据 key: 订阅数据的key  callback 数据发生变化时的回调
     subscribed: async (callback: (data: any) => void) => {
         orgChat._callBack = callback

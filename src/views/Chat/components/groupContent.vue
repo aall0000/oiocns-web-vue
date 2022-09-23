@@ -181,6 +181,8 @@ defineExpose({
 }
 .con-content-txt div {
   max-width: 100% !important;
+  word-break: break-all;
+  white-space: normal !important;
 }
 </style>
 <style lang="scss" scoped>
