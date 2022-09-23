@@ -17,20 +17,12 @@
             <el-row :gutter="40" justify="space-between">
               <el-col :span="12">
                 <el-form-item label="应用名称" prop="name">
-                  <el-input
-                    v-model="form.data.name"
-                    :readonly="isDetailPage"
-                    placeholder="请设置"
-                  />
+                  <el-input v-model="form.data.name" :readonly="editControl" placeholder="请设置" />
                 </el-form-item>
               </el-col>
               <el-col :span="12">
                 <el-form-item label="应用编码" prop="code">
-                  <el-input
-                    v-model="form.data.code"
-                    :readonly="isDetailPage"
-                    placeholder="请设置"
-                  />
+                  <el-input v-model="form.data.code" :readonly="editControl" placeholder="请设置" />
                 </el-form-item>
               </el-col>
             </el-row>
@@ -61,7 +53,7 @@
                 maxlength="120"
                 show-word-limit
                 placeholder="请输入应用介绍"
-                :readonly="isDetailPage"
+                :readonly="editControl"
               />
             </el-form-item>
           </el-form>
@@ -82,7 +74,7 @@
           <SetAppMenu
             :menus="resources.resources"
             :key="`${resources.resources.length}-${resources.resources.map((v:any)=>v?.id||v.customId).join('&')}`"
-            :readOnly="isDetailPage"
+            :readOnly="editControl"
             @handleMemuEvent="handleMemuEvent"
           />
         </div>
@@ -93,13 +85,31 @@
           }}</el-button>
           <el-button type="primary" @click="onSubmit" v-if="!isDetailPage">注册</el-button>
         </div>
+        <el-button
+          v-if="form.data.createUser == useStore.queryInfo.id"
+          small
+          link
+          type="primary"
+          class="editBtn"
+          @click="editForm"
+        >
+          {{ editControl ? '编辑' : '完成' }}</el-button
+        >
       </el-tab-pane>
       <el-tab-pane v-if="isDetailPage" label="共享信息" name="1">
-        <ShareGroup v-if="!isPerson" :info="resources.info"></ShareGroup>
-        <SharePerson v-else :info="resources.info"></SharePerson>
+        <ShareGroup
+          v-if="!isPerson && activeName == '1'"
+          :form="form.data"
+          :info="resources.info"
+        ></ShareGroup>
+        <SharePerson
+          v-else-if="isPerson && activeName == '1'"
+          :form="form.data"
+          :info="resources.info"
+        ></SharePerson>
       </el-tab-pane>
       <el-tab-pane v-if="isDetailPage && !isPerson" label="分配信息" name="2">
-        <CohortBox :info="resources.info"></CohortBox>
+        <CohortBox v-if="activeName == '2'" :info="resources.info" :form="form.data"></CohortBox>
       </el-tab-pane>
     </el-tabs>
   </div>
@@ -107,7 +117,7 @@
 <script lang="ts" setup>
   import API from '@/services'
   import SetAppMenu from './setAppMenu.vue'
-  import { onMounted, reactive, ref } from 'vue'
+  import { onMounted, reactive, ref, computed } from 'vue'
   import { ElMessage, FormRules } from 'element-plus'
   import { useRouter, useRoute } from 'vue-router'
   import { useCommonStore } from '@/store/common'
@@ -122,22 +132,26 @@
   const routeInfo = useRoute()
   const isDetailPage = !!routeInfo.params.id
   const isPerson = ref<boolean>(false)
+  const editShow = ref<boolean>(false)
   let form = reactive({
     data: {
       id: '',
       code: '',
       name: '',
       remark: '',
-      privateKey: ''
+      privateKey: '',
+      createUser: '',
+      resources: []
     }
   })
   const activeName = ref<string>('0')
   let resources = reactive({
-    info:{
-      id:''
+    info: {
+      id: ''
     },
     resources: [
       {
+        id: '',
         name: '',
         link: '',
         code: '',
@@ -146,12 +160,19 @@
       }
     ]
   })
-  const handleTabsClick = () => {}
+  const editControl = computed(() => {
+    if (isDetailPage && editShow.value) {
+      return false
+    } else {
+      return true
+    }
+  })
   // 处理资源信息操作
-  const handleMemuEvent = (type: ProductMenuEventType, selectId?: string) => {
+  const handleMemuEvent = async (type: ProductMenuEventType, selectId?: string) => {
     switch (type) {
       case 'Add':
         resources.resources.push({
+          id: '',
           name: '',
           link: '',
           code: '',
@@ -162,7 +183,16 @@
       case 'Delete':
         // handleDeleteMenu(selectId)
         if (resources.resources.length > 1) {
-          resources.resources = resources.resources.filter((item) => item.customId !== selectId)
+          resources.resources = resources.resources.filter(
+            (item) => item.customId ?? item.id !== selectId
+          )
+          const res = await API.product.deleteResource({ data: { id: selectId } })
+          if (res.code == 200) {
+            ElMessage({
+              type: 'success',
+              message: '删除成功'
+            })
+          }
         } else {
           ElMessage({
             type: 'error',
@@ -257,7 +287,7 @@
     })
   }
   onMounted(() => {
-    useStore.workspaceData.type == 1 ? isPerson.value = true : isPerson.value = false
+    useStore.workspaceData.type == 1 ? (isPerson.value = true) : (isPerson.value = false)
     resources.info = JSON.parse(JSON.stringify(routeInfo.params))
     resources.info.id.toString()
     if (isDetailPage) {
@@ -265,6 +295,24 @@
       queryInfo()
     }
   })
+
+  const editForm = async () => {
+    if (editShow.value) {
+      console.log('123', form.data, resources.resources)
+      form.data.resources = resources.resources
+      let params = form.data
+      const res = await API.product.update({
+        data: params
+      })
+      if (res.code == 200) {
+        ElMessage({
+          type: 'success',
+          message: '修改成功'
+        })
+      }
+    }
+    editShow.value = !editShow.value
+  }
 
   const queryInfo = async () => {
     const { data, success } = await API.product.queryInfo({
@@ -279,7 +327,7 @@
   }
   // 详情功能区域
   const getAppResource = async () => {
-    const { data, success } = await API.product.queryOwnResource({
+    const { data, success } = await API.product.searchResource({
       data: {
         id: routeInfo.params.id,
         offset: 0,
@@ -302,6 +350,11 @@
 </script>
 
 <style lang="scss" scoped>
+  .editBtn {
+    position: absolute;
+    right: 0;
+    top: 0;
+  }
   .app-info-wrap {
     // height: 100%;
     background: var(--el-bg-color-overlay);
