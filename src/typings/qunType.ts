@@ -37,9 +37,11 @@ interface ImMsgChildType {
   noRead?: number
   showTxt?:string
   personNum?:number
+  isTop: boolean // 是否置顶
 }
 // 聊天 侧边栏展示列表类型
 interface ImMsgType {
+  hasTopSession?: boolean // 是否包含置顶会话
   chats: ImMsgChildType[]
   id: string
   name: string

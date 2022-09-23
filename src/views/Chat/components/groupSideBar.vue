@@ -15,12 +15,10 @@
           </div>
           <!-- 展开的分组下的人员 -->
           <div v-show="openIdArr?.includes(item.id)">
-            <div :class="[
-              'con-body',
-              orgChat.curChat.value?.spaceId === item.id && orgChat.curChat.value?.id === child.id
-                ? 'active'
-                : ''
-            ]" v-for="child in item.chats" :key="child.id"
+            <div class="con-body" :class="{
+              'top-session': child?.isTop,
+              'active':orgChat.curChat.value?.spaceId === item.id && orgChat.curChat.value?.id === child.id
+          }" v-for="child in item.chats" :key="child.id"
               @contextmenu.prevent.stop="(e: MouseEvent) => handleContextClick(e, child)">
               <HeadImg :name="child.name" :label="child.label" />
               <div class="group-con-dot" v-if="child.noRead > 0">
@@ -69,7 +67,11 @@
       <!-- 鼠标右键 -->
       <ul class="context-text-wrap" v-show="mousePosition.isShowContext"
         :style="{ left: `${mousePosition.left}px`, top: `${mousePosition.top}px` }">
-        <li class="context-menu-item" v-for="item in menuList" :key="item.value" @click="handleContextChange(item)">{{
+        <li class="context-menu-item" 
+        v-for="item in mousePosition.selectMenu"
+        :key="item.value"
+         @click="handleContextChange(item)"
+         >{{
         item.label }}</li>
       </ul>
     </div>
@@ -83,6 +85,7 @@ import HeadImg from '@/components/headImg.vue'
 import orgChat from '@/hubs/orgchat'
 import { Refresh } from '@element-plus/icons-vue'
 import { useRoute } from 'vue-router'
+import { group } from 'console'
 const routerParams = useRoute().params
 
 const emit = defineEmits(['openChanged'])
@@ -99,8 +102,24 @@ const openChanged = async (child: ImMsgChildType) => {
 
 //根据搜索条件-输出展示列表
 const showList = computed((): ImMsgType[] => {
-  let showInfoArr = orgChat.chats.value
-
+  
+  let showInfoArr = [...orgChat.chats.value]
+  // 根据置顶数据重新排序
+  showInfoArr = orgChat.chats.value.map(group=>{
+    
+    if(group.hasTopSession) {
+      const chats = [... group.chats]
+      chats.sort((a,b)=>{
+        
+        if(!a.isTop) return 1
+        if(a.isTop && !b.isTop) return -1
+        return b?.isTop>a?.isTop ? 1  : -1 
+       
+      })
+      return {...group,chats}
+    }
+    return {...group,chats:[...group.chats]}
+  })
   // 数据过滤 搜索关键词是否 在 列表名称 或 显示信息里
   if (searchValue.value) {
     showInfoArr = showInfoArr.map((child: ImMsgType) => {
@@ -148,12 +167,21 @@ const handleFormatDate = (timeStr: string) => {
   return formatDate(timeStr, 'H:mm')
 }
 
+type MenuItemType = { value: number; label: string }
+const menuList: MenuItemType[] = [
+  { value: 1, label: '置顶会话' },
+  { value: 2, label: '清空信息' },
+  { value: 3, label: '取消置顶' },
+  // { value: 4, label: '消息免打扰' },
+]
+
 // 鼠标右键事件
 const mousePosition: {
   left: number
   top: number
   isShowContext: boolean
-  selectedItem: ImMsgChildType
+  selectedItem: ImMsgChildType,
+  selectMenu?: MenuItemType[]
 } = reactive({ left: 0, top: 0, isShowContext: false, selectedItem: {} as ImMsgChildType })
 const handleContextClick = (e: MouseEvent, item: ImMsgChildType) => {
   if (!item) {
@@ -163,6 +191,7 @@ const handleContextClick = (e: MouseEvent, item: ImMsgChildType) => {
   mousePosition.top = e.pageY - 48
   mousePosition.isShowContext = true
   mousePosition.selectedItem = item
+  mousePosition.selectMenu = item.isTop ? menuList.slice(1,3) : menuList.slice(0,2)
 }
 // 关闭右侧点击出现的弹框
 const closecontextmenu = () => {
@@ -180,13 +209,7 @@ onBeforeUnmount(() => {
   window.removeEventListener('contextmenu', closecontextmenu)
 })
 
-type MenuItemType = { value: number; label: string }
-const menuList: MenuItemType[] = [
-  { value: 1, label: '置顶会话' },
-  { value: 2, label: '清空信息' }
-  // { value: 3, label: '个人信息' },
-  // { value: 4, label: '消息免打扰' },
-]
+
 
 const openIdArr = ref<string[]>([])
 const handleOpenSpace = (selectedID: string) => {
@@ -199,12 +222,16 @@ const handleOpenSpace = (selectedID: string) => {
 }
 // 右键菜单点击
 const handleContextChange = (item: MenuItemType) => {
-  console.log('右键菜单点击', item, mousePosition.selectedItem)
+  // console.log('右键菜单点击', item, mousePosition.selectedItem)
   switch (item.value) {
     case 1:
+    orgChat.setToppingSession(mousePosition.selectedItem,true)
       break
     case 2:
       // props.clearHistoryMsg()
+      break
+    case 3:
+    orgChat.setToppingSession(mousePosition.selectedItem,false)
       break
 
     default:
@@ -321,6 +348,9 @@ const handleContextChange = (item: MenuItemType) => {
 
       .con-body+.con-body {
         // margin-top: 10px;
+      }
+      .top-session {
+        background-color: var(--el-fill-color-light);
       }
     }
 
