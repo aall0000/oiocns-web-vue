@@ -44,6 +44,7 @@
         <el-tree
           v-else
           ref="leftTree"
+          :key="radio"
           :data="cascaderTree"
           :highlight-current="true"
           :expand-on-click-node="false"
@@ -943,6 +944,7 @@
 <style>
   .penultimate > .el-tree-node__content {
     color: var(--el-text-color-disabled);
+    cursor: not-allowed;
   }
 </style>
 <style lang="scss" scoped>
