@@ -24,7 +24,7 @@
           label-class-name="my-label" class-name="my-content">{{selectItem?.data?.createTime}}</el-descriptions-item>
         <el-descriptions-item label="描述" width="150px" :span="2" label-align="center" align="center">
           <div class="text-remark">
-            {{selectItem?.data?.teamRemark}}
+            {{selectItem?.data?.team.remark}}
           </div>
         </el-descriptions-item>
       </el-descriptions>
