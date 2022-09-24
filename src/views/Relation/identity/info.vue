@@ -3,9 +3,9 @@
     <div class="header">
       <div class="title">岗位信息</div>
       <div class="box-btns">
-        <el-button small link type="primary" @click="handleUpdate">编辑</el-button>
-        <el-button small link type="primary" @click="handleDelete">删除</el-button>
-        <el-button small link type="primary" @click="goback">返回</el-button>
+        <el-button small link type="primary" v-if="allowEdit()" @click="handleUpdate">编辑</el-button>
+        <el-button small link type="primary" v-if="allowEdit()" @click="handleDelete">删除</el-button>
+        <el-button small link type="primary" v-if="allowEdit()" @click="goback">返回</el-button>
       </div>
     </div>
     <div class="tab-list">
@@ -58,7 +58,7 @@ import { ref, watch, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import router from '@/router';
 import orgChat from '@/hubs/orgchat';
-import { Message, MessageBox } from '@element-plus/icons-vue';
+import authority from '@/utils/authority'
 
 const emit = defineEmits(['refresh'])
 
@@ -77,6 +77,15 @@ defineExpose({ selectItemChange });
 watch(selectItem, () => {
 });
 
+const allowEdit = () => {
+  if(selectItem.value && selectItem.value.id){
+    return authority.IsRelationAdmin([
+      selectItem.value.id,
+      selectItem.value.belongId
+    ])
+  }
+  return false
+}
 // 删除岗位信息
 const handleDelete = () => {
   if (!selectItem.value.id) {

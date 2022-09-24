@@ -38,7 +38,7 @@
                     <el-dropdown-item v-if="props.type == '管理的'" @click="toIndentity(cohort)">
                       <el-icon>
                         <Avatar />
-                      </el-icon>岗位管理
+                      </el-icon>身份管理
                     </el-dropdown-item>
                     <el-dropdown-item v-if="props.type == '管理的' && workspaceData.type !=2" @click="moveAuth(cohort)">
                       <el-icon>
@@ -64,7 +64,7 @@
           <div class="content">{{cohort.code}}</div>
           <div class="row-text">创建人:{{orgChat.getName(cohort.createUser)}}</div>
           <div class="row-text">创建时间:{{cohort.createTime}}</div>
-          <div class="row-text">我的群身份:{{orgChat.parseIdentitys(cohort.identitys) }} </div>
+          <div class="row-text">我的群身份:{{authority.GetTargetIdentitys(cohort.id)}} </div>
           <div class="description">简介:{{cohort.team?.remark}}</div>
           <el-divider />
 
@@ -119,6 +119,7 @@ import { ElMessage, ElMessageBox } from 'element-plus';
 import orgChat from '@/hubs/orgchat'
 import Pagination from '@/components/pagination/index.vue'
 import { identity } from 'lodash';
+import authority from '@/utils/authority'
 
 const { queryInfo, workspaceData } = useUserStore()
 const router = useRouter()
@@ -149,25 +150,11 @@ const getCohorts = async () => {
   if (success && data && data.result) {
     if (props.type == '管理的') {
       state.cohorts = data.result.filter((d: any) => {
-        if (d.identitys && d.identitys.length > 0) {
-          for (let i of d.identitys) {
-            if (i.authId === d.team.authId) {
-              return true
-            }
-          }
-        }
-        return false
+        return authority.IsRelationAdmin([d.id,d.belongId])
       })
     } else if (props.type == '加入的') {
       state.cohorts = data.result.filter((d: any) => {
-        if (d.identitys && d.identitys.length > 0) {
-          for (let i of d.identitys) {
-            if (i.authId === d.team.authId) {
-              return false
-            }
-          }
-        }
-        return true
+        return !authority.IsRelationAdmin([d.id,d.belongId])
       })
     }
     for (const c of state.cohorts) {

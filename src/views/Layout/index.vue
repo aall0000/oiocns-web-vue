@@ -13,15 +13,15 @@
 
       <!-- <Breadcrumb></Breadcrumb> -->
       <el-main class="main-wrap">
-        
+
         <Suspense>
           <template #default>
             <router-view v-slot="{ Component }">
               <!-- <transition name="fade-transform"> -->
-                <keep-alive v-if="$route.meta.keepAlive">
-                  <component :is="Component" />
-                </keep-alive>
-                <component v-else :is="Component" />
+              <keep-alive v-if="$route.meta.keepAlive">
+                <component :is="Component" />
+              </keep-alive>
+              <component v-else :is="Component" />
               <!-- </transition> -->
             </router-view>
           </template>
@@ -30,7 +30,7 @@
             <LoadingVue />
           </template>
         </Suspense>
-     
+
       </el-main>
       <!-- <el-footer>Copyright 2021 资产云开放协同创新中⼼ 主办单位：浙江省财政厅</el-footer> -->
       <!-- </el-container> -->
@@ -45,18 +45,20 @@ import MainAsideVue from './components/mainAside.vue'
 import LoadingVue from './components/loading.vue'
 import { useUserStore } from '@/store/user'
 import orgChat from '@/hubs/orgchat'
+import authority from '@/utils/authority'
 import { onBeforeMount, onBeforeUnmount } from 'vue'
-const { userToken, queryInfo, workspaceData } = useUserStore()
 
-const stopConnection = ()=>{
+const stopConnection = () => {
   orgChat.unSubscribed()
   orgChat.stop()
 }
-onBeforeMount(() => {
-  orgChat.start(userToken, queryInfo.id, workspaceData.id)
+
+onBeforeMount(async () => {
+  let res = await authority.Load()
+  orgChat.start(useUserStore().userToken, res.userId, res.spaceId)
 })
 
-onBeforeUnmount(()=>{
+onBeforeUnmount(() => {
   stopConnection()
   window.removeEventListener('beforeunload', stopConnection)
 })
@@ -66,10 +68,10 @@ window.addEventListener('beforeunload', stopConnection)
 
 </script>
 <style>
-   .el-main.main-wrap>div{
-    min-width: 1200px !important;
-    overflow-x: auto;
-  }
+.el-main.main-wrap>div {
+  min-width: 1200px !important;
+  overflow-x: auto;
+}
 </style>
 <style lang="scss" scoped>
 .el-header {
@@ -121,9 +123,9 @@ window.addEventListener('beforeunload', stopConnection)
     // height: 100%;
     position: relative;
     padding: 0;
-    
+
     // overflow-x: hidden;
   }
- 
+
 }
 </style>

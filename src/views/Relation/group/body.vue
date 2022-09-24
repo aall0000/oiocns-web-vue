@@ -15,7 +15,6 @@
 import { ref, onMounted } from 'vue'
 import type { TabsPaneContext } from 'element-plus'
 import Companies from './companies.vue';
-import Authority from './authority.vue';
 
 const activeName = ref('companies')
 let selectItem = ref<any>({})

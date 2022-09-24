@@ -11,9 +11,9 @@
             {{ info.name }}
           </div>
           <!-- 副标题 -->
-            <div class="app-card-item-con-belong">
-              <slot name="description"></slot>
-            </div>
+          <div class="app-card-item-con-belong">
+            <slot name="description"></slot>
+          </div>
         </div>
         <slot v-else name="content"></slot>
       </div>
@@ -22,37 +22,37 @@
         <slot name="footer"></slot>
       </div>
       <div class="app-tag">
-          <!-- 商店卡片特有 -->
-          <el-tag size="small" v-if="props.type == 'market' && !info.public" style="margin-right:10px"
-            :type="info.public?'success':'danger'">{{
-            info.public ? '公开' : '私有'
-            }}</el-tag>
-          <el-tag size="small" v-if="props.type == 'market'&&info.id != softwareId" style="margin-right:10px">{{
-          info.belongId == workspaceData.id ? '创建的' : '加入的'
+        <!-- 商店卡片特有 -->
+        <el-tag size="small" v-if="props.type == 'market' && !info.public" style="margin-right:10px"
+          :type="info.public?'success':'danger'">{{
+          info.public ? '公开' : '私有'
           }}</el-tag>
+        <el-tag size="small" v-if="props.type == 'market'&&info.id != softwareId" style="margin-right:10px">{{
+        info.belongId == authority.getUserId() ? '创建的' : '加入的'
+        }}</el-tag>
 
-          <!-- 应用卡片特有 -->
-          <el-tag size="small"
-            v-if="props.type == 'soft' && (info.endTime==undefined||new Date().getTime()<formartDateTime(info?.endTime))"
-            style="margin-right:10px" :type="info.createUser==queryInfo.id?'success':''">{{
-            info.createUser==queryInfo.id ? '可管理' : '可使用'
-            }}</el-tag>
-          <el-tag  size="small"  v-if="props.type == 'soft' && new Date().getTime()>formartDateTime(info?.endTime)"
-            style="margin-right:10px" :type="'danger'">失效</el-tag>
-          <el-tag v-if="props.type == 'soft'" style="margin-right:10px">{{info.source}}</el-tag>
+        <!-- 应用卡片特有 -->
+        <el-tag size="small"
+          v-if="props.type == 'soft' && (info.endTime==undefined||new Date().getTime()<formartDateTime(info?.endTime))"
+          style="margin-right:10px" :type="authority.IsApplicationAdmin([info.belongId])?'success':''">{{
+          authority.IsApplicationAdmin([info.belongId])? '可管理' : '可使用'
+          }}</el-tag>
+        <el-tag size="small" v-if="props.type == 'soft' && new Date().getTime()>formartDateTime(info?.endTime)"
+          style="margin-right:10px" :type="'danger'">失效</el-tag>
+        <el-tag v-if="props.type == 'soft'" style="margin-right:10px">{{info.source}}</el-tag>
 
-          <!-- 应用卡片特有 end -->
+        <!-- 应用卡片特有 end -->
       </div>
-        <div class="app-card-item-option" >
-          <slot name="option"></slot>
-           <!--<div class="option-unit">
+      <div class="app-card-item-option">
+        <slot name="option"></slot>
+        <!--<div class="option-unit">
             <slot name="rightIcon"  @click.stop></slot>
           </div>
             <el-divider direction="vertical"></el-divider>
           <div class="option-unit">
             <slot name="mainOption"></slot>
           </div> -->
-        </div>
+      </div>
     </div>
   </el-card>
 </template>
@@ -61,6 +61,7 @@ import { reactive, ref } from 'vue'
 import { useUserStore } from '@/store/user'
 import { storeToRefs } from 'pinia'
 import orgChat from '@/hubs/orgchat'
+import authority from '@/utils/authority'
 // hoverItem--鼠标移入item的id 用于展示按钮区域
 const store = useUserStore()
 const { queryInfo } = storeToRefs(store)
@@ -95,7 +96,6 @@ const formartDateTime = (dateStr: any) => {
 </script>
 
 <style lang="scss" scoped>
-
 @media not screen and (min-width: 1300px) {
 
   /* styles */
@@ -103,9 +103,11 @@ const formartDateTime = (dateStr: any) => {
     width: calc(33% - 15px) !important;
   }
 }
+
 .app-card-item:nth-child(4n) {
   margin-right: 0;
 }
+
 .app-card-item {
   position: relative;
 
@@ -156,11 +158,11 @@ const formartDateTime = (dateStr: any) => {
       font-size: 14px;
       color: var(--el-color-info);
     }
-    
+
   }
 
   &-body {
-    flex:1;
+    flex: 1;
     padding-bottom: 10px;
   }
 
@@ -180,30 +182,34 @@ const formartDateTime = (dateStr: any) => {
       padding: 6px 10px;
     }
   }
+
   &-option {
-      display: flex;
-      align-items: center;
-      // border-top: 1px solid var(--el-border-color);
-      // display: none;
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      background-color: var(--el-fill-color-light);
-      height: 0;
-      overflow: hidden;
+    display: flex;
+    align-items: center;
+    // border-top: 1px solid var(--el-border-color);
+    // display: none;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: var(--el-fill-color-light);
+    height: 0;
+    overflow: hidden;
   }
+
   &:hover {
     .app-card-item-option {
       height: auto;
     }
   }
+
   position: relative;
 }
+
 .dropdwon-active {
   .app-card-item-option {
     height: auto;
-    }
+  }
 }
 
 // 副标题描述样式
@@ -215,18 +221,18 @@ const formartDateTime = (dateStr: any) => {
   display: flex;
   align-content: center;
 }
-
 </style>
 <style lang="scss">
- .app-card-item .option-unit {
-      flex:1;
-      text-align: center;
-      cursor: pointer;
-      line-height: 48px;
-      font-size: 14px;
-      position: relative;
-      &:hover {
-        color: var(--el-color-primary);
-       }
-    }
+.app-card-item .option-unit {
+  flex: 1;
+  text-align: center;
+  cursor: pointer;
+  line-height: 48px;
+  font-size: 14px;
+  position: relative;
+
+  &:hover {
+    color: var(--el-color-primary);
+  }
+}
 </style>

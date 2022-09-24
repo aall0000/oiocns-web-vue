@@ -43,7 +43,7 @@
             <template #default="{ row }">
               <div class="cell-box">
                 <el-dropdown :disabled="row.data.typeName =='工作组'">
-                  <el-button link type="primary" size="small" :disabled="row.data.typeName =='工作组' || (row.data.typeName !='工作组'&&!row.data.authAdmin)">新增</el-button>
+                  <el-button link type="primary" size="small" v-if="(row.data.typeName != '工作组' && authority.IsSpaceRelationAdmin())">新增</el-button>
                   <template #dropdown>
                     <el-dropdown-menu>
                       <el-dropdown-item @click="create(row, '部门')">
@@ -61,8 +61,8 @@
                     </el-dropdown-menu>
                   </template>
                 </el-dropdown>
-                <el-button link type="primary" size="small" :disabled="!row.data.authAdmin" @click="edit(row)">编辑</el-button>
-                <el-button link type="danger" size="small"  style="margin-left:0" @click="handleDel(row)" :disabled="row.data.typeName == '单位' || (row.data.typeName != '单位'&&!row.data.authAdmin)">删除</el-button>
+                <el-button link type="primary" size="small" v-if="(row.data.typeName != '单位' && authority.IsSpaceRelationAdmin())" @click="edit(row)">编辑</el-button>
+                <el-button link type="danger" size="small" style="margin-left:0" @click="handleDel(row)" v-if="(row.data.typeName != '单位' && authority.IsSpaceRelationAdmin())">删除</el-button>
               </div>
             </template>
           </el-table-column>
@@ -246,6 +246,7 @@
   import $services from '@/services'
   import { ElMessage,ElMessageBox } from 'element-plus';
   import { useRouter } from 'vue-router';
+  import authority from '@/utils/authority'
 
   const router = useRouter()
   let createDeptDialogVisible = ref<boolean>(false)

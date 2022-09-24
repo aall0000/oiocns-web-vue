@@ -13,7 +13,7 @@
         </el-table-column>
         <el-table-column prop="identitys" label="我的群身份" min-width="200">
           <template #default="scope">
-            <div>{{orgChat.parseIdentitys(scope.row.identitys)}}</div>
+            <div>{{authority.GetTargetIdentitys(scope.row.id)}}</div>
           </template>
         </el-table-column>
         <el-table-column prop="persons" label="群组成员" width="200">
@@ -43,7 +43,7 @@
                   <el-dropdown-menu>
                     <el-dropdown-item v-if="props.type == '管理的'" @click="edit(scope.row)"><el-icon><Edit /></el-icon>修改群组</el-dropdown-item>
                     <el-dropdown-item v-if="props.type == '管理的'" @click="toAuth(scope.row)"><el-icon><Edit /></el-icon>角色管理</el-dropdown-item>
-                    <el-dropdown-item v-if="props.type == '管理的'" @click="toIndentity(scope.row)"><el-icon><Avatar /></el-icon>岗位管理</el-dropdown-item>
+                    <el-dropdown-item v-if="props.type == '管理的'" @click="toIndentity(scope.row)"><el-icon><Avatar /></el-icon>身份管理</el-dropdown-item>
                     <el-dropdown-item v-if="props.type == '管理的' && workspaceData.type !=2" @click="moveAuth(scope.row)"><el-icon><Switch /></el-icon>转移权限</el-dropdown-item>
                     <el-dropdown-item v-if="props.type == '加入的'" @click="exit(scope.row)"><el-icon><Remove /></el-icon>退出群聊</el-dropdown-item>
                     <el-dropdown-item v-if="props.type == '管理的'" @click="deleteCohort(scope.row)"><el-icon><Delete /></el-icon>解散群组</el-dropdown-item>
@@ -91,6 +91,7 @@ import { useRouter } from 'vue-router';
 import SearchUser from '@/components/searchs/index.vue'
 import { ElMessage, ElMessageBox } from 'element-plus';
 import orgChat from '@/hubs/orgchat'
+import authority from '@/utils/authority'
 
 const { queryInfo,workspaceData } = useUserStore()
 const router = useRouter()
@@ -121,25 +122,11 @@ const getCohorts = async () => {
   if (success  && data && data.result) {
     if(props.type == '管理的'){
       state.cohorts = data.result.filter((d: any) => {
-        if(d.identitys && d.identitys.length > 0){
-          for(let i of d.identitys){
-            if(i.authId === d.team.authId){
-              return true
-            }
-          }
-        }
-        return false
+        return authority.IsRelationAdmin([d.id,d.belongId])
       })
     } else if(props.type == '加入的'){
       state.cohorts = data.result.filter((d: any) => {
-        if(d.identitys && d.identitys.length > 0){
-          for(let i of d.identitys){
-            if(i.authId === d.team.authId){
-              return false
-            }
-          }
-        }
-        return true
+        return !authority.IsRelationAdmin([d.id,d.belongId])
       })
     }
     for(const c of state.cohorts ){

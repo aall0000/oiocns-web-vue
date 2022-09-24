@@ -1,6 +1,5 @@
 
 import * as signalR from '@microsoft/signalr'
-import $services from '@/services'
 
 // 消息服务
 // 创建链接
@@ -86,7 +85,6 @@ const anyStore: anyStoreType = {
                 anyStore._subscribedKeys[fullKey] = callback
                 let res = await anyStore._connection.invoke("Subscribed", key, domain)
                 if (res.success) {
-                    console.log("已订阅===", key)
                     callback.call(callback, res.data)
                 }
             }
@@ -138,14 +136,11 @@ const anyStore: anyStoreType = {
         let fullKey = key + '|' + domain
         if (!anyStore._subscribedKeys[fullKey]) return
         anyStore.isConnected() && anyStore._connection.invoke("UnSubscribed", key, domain).then(() => {
-            console.log("取消订阅===", key)
             delete anyStore._subscribedKeys[fullKey]
         })
     },
     // 收到数据更新的消息，本地可回调 （私有方法）
     _updated: (key: string, data: any) => {
-        // 当数据发生变化时，更新本地数据
-        console.log('数据发生变化了', key, data)
         Object.keys(anyStore._subscribedKeys).forEach(fullKey=>{
             if(fullKey.split('|')[0] === key){
                 const callback: (data: any) => void = anyStore._subscribedKeys[fullKey]

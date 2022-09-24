@@ -122,8 +122,8 @@
           <template #tag="scope">
             <el-tag
               v-if=" scope.row.endTime == undefined ||  new Date().getTime() < formartDateTime(scope.row?.endTime) "
-              style="margin-left: 10px" :type="scope.row.createUser == queryInfo.id ? '' : 'success'">
-              {{ scope.row.createUser == queryInfo.id ? '可管理' : '可使用' }}</el-tag>
+              style="margin-left: 10px" :type="authority.IsApplicationAdmin(scope.row.belongId) ? '' : 'success'">
+              {{ authority.IsApplicationAdmin(scope.row.belongId) ? '可管理' : '可使用' }}</el-tag>
             <el-tag v-if="new Date().getTime() > formartDateTime(scope.row?.endTime)" style="margin-left: 10px"
               :type="'danger'">失效</el-tag>
             <el-tag style="margin-left: 10px">{{ scope.row.source }}</el-tag>
@@ -133,7 +133,7 @@
             " link type="primary" @click="handleCommand('own', 'putaway', scope.row)">上架</el-button>
             <el-button link type="primary" v-if="scope.row.belongId == store.workspaceData.id" @click="openShareDialog">
               共享</el-button>
-            <el-button link type="primary" v-if="store.workspaceData.type == 2" @click="cohortVisible = true">分配
+            <el-button link type="primary" v-if="authority.IsCompanySpace()" @click="cohortVisible = true">分配
             </el-button>
             <el-button link type="primary" @click="GoPage(`/market/detail/${scope.row.id}`)">
               查看详情
@@ -192,6 +192,7 @@ import Group from '../Market/AppShare/group.vue'
 import Person from '../Market/AppShare/person.vue'
 import Pagination from '@/components/pagination/index.vue'
 import orgChat from '@/hubs/orgchat'
+import authority from '@/utils/authority'
 import { storeToRefs } from 'pinia'
 // import MarketServices from './market.services'
 // hoverItem--鼠标移入item的id 用于展示按钮区域

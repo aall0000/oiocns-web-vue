@@ -48,11 +48,11 @@
         <el-table :data="authorityTree" stripe row-key="id" :border="true" lazy :height="tableHeight+'px'"
           :tree-props="{ children: 'nodes'}" default-expand-all class="table">
           <el-table-column type="selection" width="50" />
-          <el-table-column prop="name" label="名称" width="330" />
+          <el-table-column prop="name" label="名称" width="250" />
           <el-table-column prop="code" label="编码" width="230" />
           <el-table-column prop="belong.name" label="所属" width="230">
             <template #default="belong">
-              {{ belong.row.belong?.name }}
+              {{ belong.row.belong?.name || "奥集能" }}
               <el-tag v-if="belong.row.belong?.typeName">{{ belong.row.belong?.typeName }}</el-tag>
             </template>
           </el-table-column>
@@ -62,7 +62,7 @@
               <el-tag v-if="!pub.row.public" type="warning">否</el-tag>
             </template>
           </el-table-column>>
-          <el-table-column prop="remark" label="备注" :min-width="100" />
+          <el-table-column prop="remark" label="备注" :min-width="150" />
           <el-table-column prop="createUser" label="创建人" :min-width="100">
             <template #default="scope">
               <div>{{orgChat.getName(scope.row.createUser)}}</div>
@@ -72,10 +72,9 @@
           <el-table-column label="操作" width="150">
             <template #default="{ row }">
               <div class="cell-box">
-                <el-button link type="primary" size="small" @click="create(row)">新增</el-button>
-                <el-button link type="primary" size="small" @click="edit(row)" :disabled="!row.parentId">编辑</el-button>
-                <el-button link type="danger" size="small" @click="handleDel(row)" :disabled="!row.parentId">删除
-                </el-button>
+                <el-button link type="primary" size="small" v-if="allowAdd()" @click="create(row)">新增</el-button>
+                <el-button link type="primary" size="small" @click="edit(row)" v-if="allowEdit(row)">编辑</el-button>
+                <el-button link type="danger" size="small" @click="handleDel(row)" v-if="allowEdit(row)">删除</el-button>
               </div>
             </template>
           </el-table-column>
@@ -151,6 +150,7 @@ import $services from '@/services'
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { useRouter } from 'vue-router';
 import orgChat from '@/hubs/orgchat';
+import authority from '@/utils/authority'
 
 // 1. 组织角色； 2. 个人角色；3. 群组角色  Todo
 const router = useRouter()
@@ -167,6 +167,20 @@ const cascaderProps = {
   label: 'name',
   children: 'nodes',
   emitPath: false,
+}
+
+const allowAdd = () => {
+  return authority.IsRelationAdmin([
+    belongId.value,
+    authority.getSpaceId()
+  ])
+}
+
+const allowEdit = (belong: any) => {
+  if(belong && belong.id && belong.belongId){
+    return authority.IsRelationAdmin([belong.id,belong.belongId])
+  }
+  return false
 }
 
 let authorityTree = ref<any[]>([])
