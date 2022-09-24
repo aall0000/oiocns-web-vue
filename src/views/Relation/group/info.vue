@@ -80,7 +80,7 @@ const allowEdit = () => {
   if(selectItem.value && selectItem.value.id){
     return authority.IsRelationAdmin([
       selectItem.value.id,
-      selectItem.value.belongId
+      selectItem.value.data.belongId
     ])
   }
   return false

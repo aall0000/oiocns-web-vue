@@ -62,7 +62,7 @@ import authority from '@/utils/authority'
 const allowEdit = ()=>{
   return authority.IsRelationAdmin([
     selectItem.value.id,
-    selectItem.value.belongId
+    selectItem.value.data.belongId
   ])
 }
 let title = ref<string>('单位')
