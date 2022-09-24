@@ -18,7 +18,7 @@
         <el-icon
           class="child-btn"
           v-if="!props.readOnly"
-          @click.stop="handleEvent('Delete', menuItem.customId ?? menuItem.id)"
+          @click.stop="handleEvent('Delete', menuItem.customId)"
           ><Delete
         /></el-icon>
         <el-icon
