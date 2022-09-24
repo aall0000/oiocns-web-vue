@@ -286,7 +286,7 @@ const orgChat: orgChatType = {
         newSession.isTop = type
         seeionGroup.hasTopSession = seeionGroup.chats.findIndex(n => n.isTop) === -1 ? false : true
         orgChat._cacheChats()
-    }, 
+    },
     getPersons: async (reset: boolean) => {
         if (reset) {
             orgChat.qunPersons.value = []
@@ -445,57 +445,57 @@ const orgChat: orgChatType = {
             data.spaceId = orgChat.userId.value
         }
         orgChat.chats.value.forEach((item: ImMsgType) => {
-            if (item.id === data.spaceId) {
-                let newChats: ImMsgChildType[] = []
-                item.chats.forEach((chat: ImMsgChildType) => {
-                    let sessionId = data.toId
-                    if (chat.typeName === "人员" &&
-                        data.fromId !== orgChat.userId.value &&
-                        data.toId === orgChat.userId.value) {
-                        sessionId = data.fromId
+            let newChats: ImMsgChildType[] = []
+            item.chats.forEach((chat: ImMsgChildType) => {
+                let sessionId = data.toId
+                if (chat.typeName === "人员" &&
+                    data.fromId !== orgChat.userId.value &&
+                    data.toId === orgChat.userId.value) {
+                    sessionId = data.fromId
+                }
+                let isMatch = (chat.typeName === "人员" && item.id === data.spaceId && sessionId == chat.id)
+                isMatch = isMatch || (chat.typeName !== "人员" && sessionId == chat.id)
+                if (isMatch) {
+                    if (chat.spaceId === orgChat.userId.value) {
+                        orgChat._cacheMsg(sessionId, data)
                     }
-                    if (sessionId == chat.id) {
-                        if (chat.spaceId === orgChat.userId.value) {
-                            orgChat._cacheMsg(sessionId, data)
-                        }
-                        chat.msgBody = data.msgBody
-                        chat.msgType = data.msgType
-                        chat.msgTime = data.createTime
-                        if (chat.msgType != "recall") {
-                            chat.showTxt = data.msgBody?.includes('img') ? "[图片]" : data.msgBody
-                        } else {
-                            chat.showTxt = data.showTxt
-                        }
-                        if (chat.typeName !== "人员") {
-                            chat.showTxt = orgChat.nameMap[data.fromId] + ": " + chat.showTxt
-                        }
-                        data.showTxt = chat.showTxt
-                        if (orgChat.curChat.value && orgChat.curChat.value.id === chat.id &&
-                            orgChat.curChat.value.spaceId === chat.spaceId) {
-                            if (data.msgType !== "recall") {
-                                orgChat.curMsgs.value.push(data)
-                            }
-                            newChats.unshift(chat)
-                        } else {
-                            let opened = orgChat.openChats.filter(i => {
-                                return i.id === chat.id && i.spaceId === chat.spaceId
-                            }).length > 0
-                            if (!opened) {
-                                notify.player();
-                                chat.noRead = (chat.noRead || 0) + 1
-                            }
-                            newChats.push(chat)
-                        }
-                        orgChat.lastMsg = {
-                            data: data,
-                            chat: chat
-                        }
+                    chat.msgBody = data.msgBody
+                    chat.msgType = data.msgType
+                    chat.msgTime = data.createTime
+                    if (chat.msgType != "recall") {
+                        chat.showTxt = data.msgBody?.includes('img') ? "[图片]" : data.msgBody
                     } else {
+                        chat.showTxt = data.showTxt
+                    }
+                    if (chat.typeName !== "人员") {
+                        chat.showTxt = orgChat.nameMap[data.fromId] + ": " + chat.showTxt
+                    }
+                    data.showTxt = chat.showTxt
+                    if (orgChat.curChat.value && orgChat.curChat.value.id === chat.id &&
+                        orgChat.curChat.value.spaceId === chat.spaceId) {
+                        if (data.msgType !== "recall") {
+                            orgChat.curMsgs.value.push(data)
+                        }
+                        newChats.unshift(chat)
+                    } else {
+                        let opened = orgChat.openChats.filter(i => {
+                            return i.id === chat.id && i.spaceId === chat.spaceId
+                        }).length > 0
+                        if (!opened) {
+                            notify.player();
+                            chat.noRead = (chat.noRead || 0) + 1
+                        }
                         newChats.push(chat)
                     }
-                })
-                item.chats = newChats
-            }
+                    orgChat.lastMsg = {
+                        data: data,
+                        chat: chat
+                    }
+                } else {
+                    newChats.push(chat)
+                }
+            })
+            item.chats = newChats
         })
         orgChat._cacheChats()
     },
