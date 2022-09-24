@@ -199,6 +199,7 @@ const removeFrom = (row: any) => {
 
 // 加载单位所有用户
 const getOrgUsers = (filter?: string) => {
+  debugger
   let data = {
     id: selectItem.value.belongId,
     offset: (pageStore.currentPage - 1) * pageStore.pageSize,

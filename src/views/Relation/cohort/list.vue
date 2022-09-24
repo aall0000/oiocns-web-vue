@@ -262,6 +262,8 @@ const toIndentity = (cohort: any)=>{
       title: '群组',
       belongId:  cohort.id,
       name: cohort.name,
+      module: 'cohort',
+      persons: 'getPersons',
     }
   })
 }
