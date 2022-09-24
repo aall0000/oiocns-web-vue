@@ -133,7 +133,7 @@ const dragControllerDiv = () => {
   background-position: center;
   /*z-index: 99999;*/
   font-size: 12px;
-  padding-top: 16px;
+  padding-top: 6px;
   padding-left: 1px;
   color: white;
 }

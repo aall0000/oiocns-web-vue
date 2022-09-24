@@ -3,7 +3,8 @@
     <div class="header">
       <div class="title">{{title}}信息</div>
       <div class="box-btns">
-        <el-button small link type="primary" v-if="authority.IsSpaceRelationAdmin()" @click="handleUpdate">编辑</el-button>
+        <el-button small link type="primary" v-if="authority.IsSpaceRelationAdmin()" @click="handleUpdate">编辑
+        </el-button>
         <el-button small link type="primary" v-if="allowEdit()" @click="toAuth">角色管理</el-button>
         <el-button small link type="primary" v-if="allowEdit()" @click="toIdentity">岗位管理</el-button>
       </div>
@@ -15,11 +16,13 @@
         <el-descriptions-item :label="title+'编码'" label-align="center" align="center" width="150px"
           label-class-name="my-label" class-name="my-content">{{selectItem?.data?.code}}</el-descriptions-item>
         <el-descriptions-item :label="'我的岗位'" label-align="center" align="center" width="150px"
-          label-class-name="my-label" class-name="my-content">{{authority.GetTargetIdentitys(selectItem?.data?.id)}}</el-descriptions-item>
+          label-class-name="my-label" class-name="my-content">{{authority.GetTargetIdentitys(selectItem?.data?.id)}}
+        </el-descriptions-item>
         <el-descriptions-item :label="'团队编码'" label-align="center" align="center" width="150px"
           label-class-name="my-label" class-name="my-content">{{selectItem?.data?.team.code}}</el-descriptions-item>
         <el-descriptions-item :label="'创建人'" label-align="center" align="center" width="150px"
-          label-class-name="my-label" class-name="my-content">{{orgChat.getName(selectItem?.data?.createUser)}}</el-descriptions-item>
+          label-class-name="my-label" class-name="my-content">{{orgChat.getName(selectItem?.data?.createUser)}}
+        </el-descriptions-item>
         <el-descriptions-item :label="'创建时间'" label-align="center" align="center" width="150px"
           label-class-name="my-label" class-name="my-content">{{selectItem?.data?.createTime}}</el-descriptions-item>
         <el-descriptions-item label="描述" width="150px" :span="2" label-align="center" align="center">
@@ -59,11 +62,12 @@ import router from '@/router';
 import orgChat from '@/hubs/orgchat'
 import authority from '@/utils/authority'
 
-const allowEdit = ()=>{
-  return authority.IsRelationAdmin([
-    selectItem.value.id,
-    selectItem.value.data.belongId
-  ])
+const allowEdit = () => {
+  return selectItem.value.id &&
+    authority.IsRelationAdmin([
+      selectItem.value.id,
+      selectItem.value.data.belongId
+    ])
 }
 let title = ref<string>('单位')
 let selectItem = ref<any>({})
@@ -154,7 +158,7 @@ const toIdentity = () => {
 .header {
   display: flex;
   padding: 10px 20px;
-  padding-top: 16px;
+  padding-top: 6px;
   box-sizing: border-box;
 
   .title {

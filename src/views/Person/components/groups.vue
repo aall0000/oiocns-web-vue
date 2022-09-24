@@ -309,7 +309,7 @@
     .createdBody {
       height: calc(100vh - 220px);
       max-height: 1000px;
-      padding: 16px;
+      padding: 6px;
     }
     .createdBottom {
       position: absolute;

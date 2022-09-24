@@ -581,8 +581,8 @@ const checkedChange = (item: any) => {
 }
 
 .shopcar-content {
-  padding-left: 16px;
-  padding-top: 16px;
+  padding-left: 6px;
+  padding-top: 6px;
  
 }
 

@@ -358,7 +358,7 @@
   .app-info-wrap {
     // height: 100%;
     background: var(--el-bg-color-overlay);
-    margin: 16px;
+    margin: 6px;
     border: 0;
     overflow-y: auto;
     height: calc(100vh - 148px);

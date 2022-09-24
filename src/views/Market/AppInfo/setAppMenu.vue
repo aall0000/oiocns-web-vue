@@ -93,7 +93,7 @@
     min-height: 100px;
 
     .menu-item {
-      margin-bottom: 16px;
+      margin-bottom: 6px;
       display: flex;
       align-items: center;
 

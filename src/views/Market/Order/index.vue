@@ -787,7 +787,7 @@ const searchValue = ref<string>('')
     // background: var(--el-bg-color);
     display: flex;
     flex-direction: column;
-    margin: 16px;
+    margin: 6px;
     border: 0;
     .limit_table_height {
 
@@ -942,7 +942,7 @@ const searchValue = ref<string>('')
   }
   .table-row-sty {
     height: calc(100vh - 12rem);
-    padding: 16px;
+    padding: 6px;
   }
   .table-row-sty tr:hover,
   .table-row-sty tbody tr.el-table__row.not-read:hover {

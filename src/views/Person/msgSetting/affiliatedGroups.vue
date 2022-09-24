@@ -44,7 +44,7 @@
       .table-wrap{
         height: calc(100% - 60px);
         box-sizing: border-box;
-        padding: 16px;
+        padding: 6px;
       }
     }
   }

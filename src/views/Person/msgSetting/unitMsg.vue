@@ -158,14 +158,14 @@ const upDateCompany = ()=>{
     }
   }
     .body {
-      height: calc(100% - 76px);
+      height: calc(100% - 66px);
       width: 100%;
       overflow-y:auto;
       position: absolute;
       background-color: #fff;
-      border-left: 16px solid #eff0f4;
-      border-top: 16px solid #eff0f4;
-      border-right: 16px solid #eff0f4;
+      border-left: 6px solid #eff0f4;
+      border-top: 6px solid #eff0f4;
+      border-right: 6px solid #eff0f4;
 
       .form1 {
         width: 100%;

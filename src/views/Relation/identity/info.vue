@@ -198,7 +198,7 @@ const goback = () => {
 .header {
   display: flex;
   padding: 10px 20px;
-  padding-top: 16px;
+  padding-top: 6px;
   box-sizing: border-box;
 
   .title {

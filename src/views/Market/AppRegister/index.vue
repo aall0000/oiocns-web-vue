@@ -222,10 +222,10 @@
   .app-register-wrap {
     // height: 100%;
     background: var(--el-bg-color-overlay);
-    margin: 16px;
+    padding: 6px;
     border: 0;
     overflow-y: auto;
-    height: calc(100vh - 148px);
+    height: calc(100vh - 110px);
     padding: 20px;
 
     .register-content {

@@ -318,7 +318,7 @@
       // height: calc(100vh - 220px);
       box-sizing: border-box;
       background: var(--el-bg-color);
-      padding: 16px;
+      padding: 6px;
     }
   }
 </style>
