@@ -80,8 +80,8 @@ watch(selectItem, () => {
 const allowEdit = () => {
   if(selectItem.value && selectItem.value.id){
     return authority.IsRelationAdmin([
-      selectItem.value.id,
-      selectItem.value.belongId
+      selectItem.value.belongId,
+      authority.getSpaceId()
     ])
   }
   return false
