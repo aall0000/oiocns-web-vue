@@ -50,7 +50,7 @@
       </div>
     </el-col>
     <!-- 中间搜索 -->
-    <el-col :span="6" class="col-center" v-if="false">
+    <!-- <el-col :span="6" class="col-center" v-if="false">
       <el-popover trigger="click" :visible="visible" placement="bottom" :width="100">
         <template #reference>
           <el-input
@@ -67,9 +67,9 @@
         </template>
         <SearchDialog></SearchDialog>
       </el-popover>
-    </el-col>
+    </el-col> -->
     <!-- 右侧 -->
-    <el-col :span="14" class="flex col-right">
+    <el-col :span="20" class="flex col-right">
       <el-space class="right-navbar">
         <el-link title="消息" :underline="false" class="header-message-icon" @click="() => router.push('/chat')">
           <el-icon v-if="orgChat.isConnected() === true" class="header-message-icon link" :size="12"
