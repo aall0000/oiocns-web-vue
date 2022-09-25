@@ -36,7 +36,7 @@
       >
         <div
           :class="['apps', activeRouter.includes(item.path) ? 'active' : '']"
-          v-if="item.name === '开始'"
+          v-if="item.name === '应用'"
         >
           <el-popover placement="right-end" title="所有应用" :width="500" trigger="hover">
             <div style="height: 500px">
@@ -80,11 +80,11 @@
   }
   const state: StateType = reactive({
     mainMenus: [
+      { name: '消息', icon: 'ChatDotSquare', path: '/chat' },
       { name: '工作台', icon: 'DataAnalysis', path: '/workHome' },
       { name: '关系', icon: 'SetUp', path: '/relation' },
-      { name: '应用', icon: 'SoldOut', path: '/market' },
-      { name: '开始', icon: 'Menu', path: '/appStpre', bottom: true },
-      { name: '数据', icon: 'Files', path: '/thing' }
+      { name: '仓库', icon: 'HomeFilled', path: '/market' },
+      { name: '应用', icon: 'Menu', path: '#', bottom: true },
     ],
     clickMenu: [],
     storeObj: {
@@ -207,7 +207,7 @@
   }
 
   const handleRouterChage = (item: any) => {
-    if (item.name !== '开始') {
+    if (item.name !== '应用') {
       activeAppId.value = item?.id || ''
       // active.value = item.name
       if (activeAppId.value) {

@@ -174,7 +174,7 @@
     .tabList {
       width: 100%;
       height: calc(100vh - 130px);
-      padding: 16px 16px 0;
+      padding: 6px 6px 0;
     }
   }
 </style>

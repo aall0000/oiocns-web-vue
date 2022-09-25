@@ -17,6 +17,8 @@ export default {
     createAPPtoken: person + '/create/app/token', //生成APP访问授权accessToken
     createAuthority: person + '/create/authority', //创建个人角色
     createIdentity: person + '/create/identity', //创建岗位标签
+    updateAuthority: person + '/update/authority', //更新个人角色
+    updateIdentity: person + '/update/identity', //更新岗位标签
     getAllApply: person + '/get/all/apply', //查询我的申请
     getAllApproval: person + '/get/all/approval', //查询我的审批
     getAuthorityIdentities: person + '/get/authority/identitys', //查询角色岗位
@@ -32,6 +34,7 @@ export default {
     logout: person + '/logout', //注销
     register: person + '/register', // 注册
     queryInfo: person + '/query/info', // 查询当前登录人员详细信息
+    tokenInfo: person + '/token/info', //查询当前授信信息
     remove: person + '/remove', //删除好友
     removeIdentity: person + '/remove/identity', //删除好友岗位
     searchPersons: person + '/search/persons', //搜索人员
@@ -45,6 +48,8 @@ export default {
     join: cohort + '/join', // 加群
     createAuthority: cohort + '/create/authority', //创建群组角色
     createIdentity: cohort + '/create/identity', //创建群岗位标签
+    updateAuthority: cohort + '/update/authority', //更新个人角色
+    updateIdentity: cohort + '/update/identity', //更新岗位标签
     delete: cohort + '/delete', //删除群组
     getAuthIdentity: cohort + '/get/authority/identitys', //查询角色岗位
     getAuthority: cohort + '/get/authoritys', //查询角色
@@ -75,6 +80,8 @@ export default {
     createDepartment: company + '/create/department', //创建部门
     createGroup: company + '/create/group', //创建集团
     createIdentity: company + '/create/identity', //创建组织员工岗位标签
+    updateAuthority: company + '/update/authority', //更新角色
+    updateIdentity: company + '/update/identity', //更新岗位标签
     createJob: company + '/create/job', //创建岗位
     createSubgroup: company + '/create/subgroup', //创建子集团
     companyDelete: company + '/delete', //删除单位

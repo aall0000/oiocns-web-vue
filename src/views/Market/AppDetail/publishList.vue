@@ -289,8 +289,8 @@ const unpublishFun = (item:any) => {
     .tabList {
       width: 100%;
       height: calc(100vh - 130px);
-      padding-left: 16px;
-      padding-top: 16px;
+      padding-left: 6px;
+      padding-top: 6px;
     }
   }
 </style>

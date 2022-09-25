@@ -37,3 +37,23 @@ type OrgNodeModel = {
     teamAuthId: string
     createTime: string,
 }
+
+type AuthorityModel = {
+    id: string,
+    name: string,
+    code: string,
+    belongId: string,
+    remark: string,
+    public: boolean,
+    ParentId: string,
+}
+
+type IdentityModel = {
+    id: string,
+    name: string,
+    code: string,
+    belongId: string,
+    remark: string,
+    authId: string,
+    authority: AuthorityModel
+}

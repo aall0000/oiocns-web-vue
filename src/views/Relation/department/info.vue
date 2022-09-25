@@ -3,28 +3,31 @@
     <div class="header">
       <div class="title">{{title}}信息</div>
       <div class="box-btns">
-        <el-button small link type="primary" :disabled=!selectItem?.data?.authAdmin @click="handleUpdate">编辑</el-button>
-        <el-button small link type="primary" :disabled=!selectItem?.data?.authAdmin @click="toAuth">角色管理</el-button>
-        <el-button small link type="primary" :disabled=!selectItem?.data?.authAdmin @click="toIdentity">岗位管理</el-button>
+        <el-button small link type="primary" v-if="authority.IsSpaceRelationAdmin()" @click="handleUpdate">编辑
+        </el-button>
+        <el-button small link type="primary" v-if="allowEdit()" @click="toAuth">角色管理</el-button>
+        <el-button small link type="primary" v-if="allowEdit()" @click="toIdentity">岗位管理</el-button>
       </div>
     </div>
     <div class="tab-list">
       <el-descriptions :column="2" border>
         <el-descriptions-item :label="title+'名称'" label-align="center" align="center" width="150px"
-          label-class-name="my-label" class-name="my-content">{{selectItem?.data?.teamName}}</el-descriptions-item>
+          label-class-name="my-label" class-name="my-content">{{selectItem?.data?.team.name}}</el-descriptions-item>
         <el-descriptions-item :label="title+'编码'" label-align="center" align="center" width="150px"
           label-class-name="my-label" class-name="my-content">{{selectItem?.data?.code}}</el-descriptions-item>
         <el-descriptions-item :label="'我的岗位'" label-align="center" align="center" width="150px"
-          label-class-name="my-label" class-name="my-content">{{orgChat.parseIdentitys(selectItem?.data?.identitys)}}</el-descriptions-item>
+          label-class-name="my-label" class-name="my-content">{{authority.GetTargetIdentitys(selectItem?.data?.id)}}
+        </el-descriptions-item>
         <el-descriptions-item :label="'团队编码'" label-align="center" align="center" width="150px"
-          label-class-name="my-label" class-name="my-content">{{selectItem?.data?.teamCode}}</el-descriptions-item>
+          label-class-name="my-label" class-name="my-content">{{selectItem?.data?.team.code}}</el-descriptions-item>
         <el-descriptions-item :label="'创建人'" label-align="center" align="center" width="150px"
-          label-class-name="my-label" class-name="my-content">{{orgChat.getName(selectItem?.data?.createUser)}}</el-descriptions-item>
+          label-class-name="my-label" class-name="my-content">{{orgChat.getName(selectItem?.data?.createUser)}}
+        </el-descriptions-item>
         <el-descriptions-item :label="'创建时间'" label-align="center" align="center" width="150px"
           label-class-name="my-label" class-name="my-content">{{selectItem?.data?.createTime}}</el-descriptions-item>
         <el-descriptions-item label="描述" width="150px" :span="2" label-align="center" align="center">
           <div class="text-remark">
-            {{selectItem?.data?.teamRemark}}
+            {{selectItem?.data?.team.remark}}
           </div>
         </el-descriptions-item>
       </el-descriptions>
@@ -43,10 +46,6 @@
       <el-input v-model="formData.teamRemark" :placeholder="'请输入' + title + '描述'" :autosize="{ minRows: 5 }"
         type="textarea" clearable />
     </el-form-item>
-    <el-form-item label="管理角色" style="width: 100%">
-      <el-cascader :props="authProps" :options="authTree" v-model="formData.teamAuthId" style="width: 100%"
-        placeholder="请选择" />
-    </el-form-item>
     <template #footer>
       <span class="dialog-footer">
         <el-button @click="dialogVisible = false">取消</el-button>
@@ -61,52 +60,21 @@ import { ref, watch } from 'vue'
 import { ElMessage } from 'element-plus'
 import router from '@/router';
 import orgChat from '@/hubs/orgchat'
+import authority from '@/utils/authority'
 
+const allowEdit = () => {
+  return selectItem.value.id &&
+    authority.IsRelationAdmin([
+      selectItem.value.id,
+      selectItem.value.data.belongId
+    ])
+}
 let title = ref<string>('单位')
 let selectItem = ref<any>({})
 let dialogVisible = ref<boolean>(false)
 let formData: any = ref({})
-const authProps = {
-  checkStrictly: true,
-  emitPath: false,
-  value: 'id',
-  label: 'name',
-  children: 'nodes',
-}
-let authTree = ref<any[]>([])
-// 节点ID和对象映射关系
-const parentIdMap: any = {}
-// 加载角色树
-const loadAuthorityTree = () => {
-  console.log('selectItem', selectItem.value)
-  $services.company.getAuthorityTree({ data: { id: selectItem.value.data.id } }).then((res: any) => {
-    authTree.value = []
-    authTree.value.push(res.data)
-    initIdMap(authTree.value)
-    authTree.value = authTree.value
-  })
-}
-// 初始化ID和对象映射关系
-const initIdMap = (nodes: any[]) => {
-  for (const node of nodes) {
-    parentIdMap[node.id] = node
-    if (node.children) {
-      initIdMap(node.children)
-    }
-  }
-}
-// 获取父节点到根节点的ID列表
-const getParentIds = (node: any, parentIds: any[]): any[] => {
-  const parentId = node.data.parentId
-  if (parentId && parentId != '0') {
-    parentIds.push(parentId)
-  }
-  const parentNode = parentIdMap[parentId]
-  if (parentNode) {
-    parentIds = getParentIds(parentNode, parentIds)
-  }
-  return parentIds;
-}
+
+
 // 获取单位树点击的信息
 const selectItemChange = (data: any) => {
   selectItem.value = data;
@@ -119,12 +87,6 @@ const selectItemChange = (data: any) => {
 
 };
 defineExpose({ selectItemChange });
-
-
-watch(selectItem, () => {
-  loadAuthorityTree()
-});
-
 
 // 修改信息
 const handleUpdate = () => {
@@ -172,22 +134,13 @@ const toAuth = () => {
 }
 // 跳转至岗位管理页面
 const toIdentity = () => {
-  let persons = 'getPersons'
-  // switch (selectItem.value.data.typeName) {
-  //   case '部门':
-  //     persons = 'getDepartmentPersons'
-  //     break
-  //   case '工作组':
-  //     persons = 'getJobPersons'
-  //     break
-  // }
   router.push({
     path: '/relation/identity',
     query: {
       belongId: selectItem.value.id,
       name: selectItem.value.label,
       module: 'company',
-      persons: persons,
+      persons: 'getPersons',
     }
   })
 }
@@ -205,7 +158,7 @@ const toIdentity = () => {
 .header {
   display: flex;
   padding: 10px 20px;
-  padding-top: 16px;
+  padding-top: 6px;
   box-sizing: border-box;
 
   .title {

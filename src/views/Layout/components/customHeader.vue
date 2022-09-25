@@ -50,8 +50,8 @@
       </div>
     </el-col>
     <!-- 中间搜索 -->
-    <el-col :span="6" class="col-center">
-      <el-popover trigger="click" :visible="visible" placement="bottom" :width="500">
+    <!-- <el-col :span="6" class="col-center" v-if="false">
+      <el-popover trigger="click" :visible="visible" placement="bottom" :width="100">
         <template #reference>
           <el-input
             ref="searchRef"
@@ -67,11 +67,11 @@
         </template>
         <SearchDialog></SearchDialog>
       </el-popover>
-    </el-col>
+    </el-col> -->
     <!-- 右侧 -->
-    <el-col :span="14" class="flex col-right">
+    <el-col :span="20" class="flex col-right">
       <el-space class="right-navbar">
-        <el-link :underline="false" class="header-message-icon" @click="() => router.push('/chat')">
+        <el-link title="消息" :underline="false" class="header-message-icon" @click="() => router.push('/chat')">
           <el-icon v-if="orgChat.isConnected() === true" class="header-message-icon link" :size="12"
             ><Link
           /></el-icon>
@@ -80,7 +80,16 @@
           </el-badge>
           <el-icon class="header-message-icon" :size="18" v-else><ChatDotSquare /></el-icon>
         </el-link>
-        <el-switch
+        <el-link title="工作台" :underline="false" class="header-message-icon" @click="() => router.push('/workHome')">
+          <el-icon :size="20"><DataAnalysis/></el-icon>
+        </el-link>
+        <el-link title="关系" :underline="false" class="header-message-icon" @click="() => router.push('/relation')">
+          <el-icon :size="22"><SetUp/></el-icon>
+        </el-link>
+        <el-link title="仓库" :underline="false" class="header-message-icon" @click="() => router.push('/market')">
+          <el-icon :size="22"><HomeFilled/></el-icon>
+        </el-link>
+        <el-switch title="模式"
           v-model="isDark"
           active-icon="Moon"
           inactive-icon="Sunny"

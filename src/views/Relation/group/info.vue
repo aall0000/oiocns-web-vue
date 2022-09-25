@@ -3,29 +3,29 @@
     <div class="header">
       <div class="title">集团信息</div>
       <div class="box-btns">
-        <el-button small link type="primary" :disabled=!selectItem?.data?.authAdmin @click="handleUpdate">编辑</el-button>
-        <el-button small link type="primary" :disabled=!selectItem?.data?.authAdmin @click="handleDelete">删除</el-button>
-        <el-button small link type="primary" :disabled=!selectItem?.data?.authAdmin @click="toAuth">角色管理</el-button>
-        <el-button small link type="primary" :disabled=!selectItem?.data?.authAdmin @click="toIdentity">岗位管理</el-button>
+        <el-button small link type="primary" v-if="allowEdit()" @click="handleUpdate">编辑</el-button>
+        <el-button small link type="primary" v-if="allowEdit()" @click="handleDelete">删除</el-button>
+        <el-button small link type="primary" v-if="allowEdit()" @click="toAuth">角色管理</el-button>
+        <el-button small link type="primary" v-if="allowEdit()" @click="toIdentity">岗位管理</el-button>
       </div>
     </div>
     <div class="tab-list">
       <el-descriptions :column="2" border>
         <el-descriptions-item width="150px" :label="'集团名称'" label-align="center" align="center"
-          label-class-name="my-label" class-name="my-content">{{selectItem?.data?.teamName}}</el-descriptions-item>
+          label-class-name="my-label" class-name="my-content">{{selectItem?.data?.team.name}}</el-descriptions-item>
         <el-descriptions-item width="150px" :label="'集团编码'" label-align="center" align="center"
           label-class-name="my-label" class-name="my-content">{{selectItem?.data?.code}}</el-descriptions-item>
         <el-descriptions-item :label="'我的岗位'" label-align="center" align="center" width="150px"
-          label-class-name="my-label" class-name="my-content">{{orgChat.parseIdentitys(selectItem?.data?.identitys)}}</el-descriptions-item>
+          label-class-name="my-label" class-name="my-content">{{authority.GetTargetIdentitys(selectItem?.data?.id)}}</el-descriptions-item>
         <el-descriptions-item :label="'团队编码'" label-align="center" align="center" width="150px"
-          label-class-name="my-label" class-name="my-content">{{selectItem?.data?.teamCode}}</el-descriptions-item>
+          label-class-name="my-label" class-name="my-content">{{selectItem?.data?.team.code}}</el-descriptions-item>
         <el-descriptions-item :label="'创建人'" label-align="center" align="center" width="150px"
           label-class-name="my-label" class-name="my-content">{{orgChat.getName(selectItem?.data?.createUser)}}</el-descriptions-item>
         <el-descriptions-item :label="'创建时间'" label-align="center" align="center" width="150px"
           label-class-name="my-label" class-name="my-content">{{selectItem?.data?.createTime}}</el-descriptions-item>
         <el-descriptions-item label="描述" :span="2" label-align="center" align="center">
           <div class="text-remark">
-            {{selectItem?.data?.teamRemark}}
+            {{selectItem?.data?.team.remark}}
           </div>
         </el-descriptions-item>
       </el-descriptions>
@@ -38,11 +38,6 @@
     </el-form-item>
     <el-form-item :label="'集团编号'">
       <el-input v-model="formData.code" :placeholder="'请输入集团简介'" clearable />
-    </el-form-item>
-
-    <el-form-item label="管理角色" style="width: 100%">
-      <el-cascader :props="authorityCascaderProps" :options="authorityTree" v-model="formData.teamAuthId"
-        style="width: 100%" placeholder="请选择管理角色" />
     </el-form-item>
 
     <el-form-item :label="'集团简介'">
@@ -63,36 +58,13 @@ import { ref, watch } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import router from '@/router';
 import orgChat from '@/hubs/orgchat';
+import authority from '@/utils/authority'
 
 const emit = defineEmits(['refresh'])
 
 let selectItem = ref<any>({})
 let dialogVisible = ref<boolean>(false)
 let formData: any = ref({})
-
-const authorityCascaderProps = {
-  checkStrictly: true,
-  value: 'id',
-  label: 'name',
-  emitPath: false,
-  children: 'nodes'
-}
-// 角色树
-let authorityTree = ref([])
-
-// 表单上级节点改变时
-const parentIdChange = (value: any) => {
-  loadAuthorityTree(value)
-}
-
-// 加载角色树
-const loadAuthorityTree = (id: string) => {
-  $services.company.getAuthorityTree({ data: { id } }).then((res: any) => {
-    authorityTree.value = []
-    authorityTree.value.push(res.data)
-  })
-}
-
 
 // 获取单位树点击的信息
 const selectItemChange = (data: any) => {
@@ -104,6 +76,15 @@ defineExpose({ selectItemChange });
 watch(selectItem, () => {
 });
 
+const allowEdit = () => {
+  if(selectItem.value && selectItem.value.id){
+    return authority.IsRelationAdmin([
+      selectItem.value.id,
+      selectItem.value.data.belongId
+    ])
+  }
+  return false
+}
 // 删除集团信息
 const handleDelete = () => {
   if (!selectItem.value.id) {
@@ -154,7 +135,6 @@ const handleUpdate = () => {
   }
   formData.value = selectItem.value.data
   dialogVisible.value = true
-  loadAuthorityTree(selectItem.value.data.id)
 }
 
 // 保存
@@ -179,28 +159,32 @@ const update = () => {
 
 // 跳转至角色管理页面
 const toAuth = () => {
-  router.push({
-    path: '/relation/authority',
-    query: {
-      title: '集团',
-      belongId: selectItem.value.id,
-      name: selectItem.value.label,
-      code: selectItem.value.data.code,
-      teamRemark: selectItem.value.data.teamRemark
-    }
-  })
+  if(selectItem.value?.id?.length > 0){
+    router.push({
+      path: '/relation/authority',
+      query: {
+        title: '集团',
+        belongId: selectItem.value.id,
+        name: selectItem.value.label,
+        code: selectItem.value.data.code,
+        teamRemark: selectItem.value.data.teamRemark
+      }
+    })
+  }
 }
 // 跳转至岗位管理页面
 const toIdentity = () => {
-  router.push({
-    path: '/relation/identity',
-    query: {
-      belongId: selectItem.value.id,
-      name: selectItem.value.label,
-      module: 'company',
-      persons: 'getPersons',
-    }
-  })
+  if(selectItem.value?.id?.length > 0){
+    router.push({
+      path: '/relation/identity',
+      query: {
+        belongId: selectItem.value.id,
+        name: selectItem.value.label,
+        module: 'company',
+        persons: 'getPersons',
+      }
+    })
+  }
 }
 </script>
 
@@ -214,7 +198,7 @@ const toIdentity = () => {
 .header {
   display: flex;
   padding: 10px 20px;
-  padding-top: 16px;
+  padding-top: 6px;
   box-sizing: border-box;
 
   .title {

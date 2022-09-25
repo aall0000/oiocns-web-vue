@@ -31,7 +31,8 @@
                 :tableHead="tableHead"
               >
                 <template #option="scope">
-                  <el-button link type="danger" @click="handleExit(scope.row.id)">退出</el-button>
+                  <el-button v-if="!authority.IsSuperAdmin(scope.row.id)" link type="danger" @click="handleExit(scope.row.id)">退出</el-button>
+                  <el-button v-if="authority.IsSuperAdmin(scope.row.id)" link type="danger" @click="handleDelete(scope.row.id)">解散</el-button>
                 </template>
               </DiyTable>
             </div>
@@ -61,7 +62,8 @@
   import searchCompany from '@/components/searchs/index.vue'
   import CreateUnitDialog from '@/views/Layout/components/createUnitDialog.vue'
   import DiyTable from '@/components/diyTable/index.vue'
-import orgChat from '@/hubs/orgchat'
+  import orgChat from '@/hubs/orgchat'
+  import authority from '@/utils/authority'
 
   const store = useUserStore()
 
@@ -92,6 +94,18 @@ import orgChat from '@/hubs/orgchat'
       width: '190'
     },
     {
+      prop: 'team.code',
+      label: '团队代号',
+      name: 'teamCode',
+      width: '190'
+    },
+    {
+      prop: 'identitys',
+      label: '我的岗位',
+      name: 'identitys',
+      width: '200'
+    },
+    {
       prop: 'createUser',
       label: '设立人',
       name: 'createUser',
@@ -99,9 +113,15 @@ import orgChat from '@/hubs/orgchat'
     },
     {
       prop: 'createTime',
-      label: '创建时间',
+      label: '设立时间',
       name: 'createTime',
       width: '200'
+    },
+    {
+      prop: 'team.remark',
+      label: '简介',
+      name: 'teamRemark',
+      width: '300'
     },
     {
       type: 'slot',
@@ -122,6 +142,29 @@ import orgChat from '@/hubs/orgchat'
     }).then(() => {
       $services.company
         .exit({
+          data: {
+            id: id
+          }
+        })
+        .then((res: ResultType) => {
+          if (res.code == 200) {
+            ElMessage({
+              message: '退出成功',
+              type: 'warning'
+            })
+            getList()
+          }
+        })
+    })
+  }
+  const handleDelete = (id: string) => {
+    ElMessageBox.confirm('确定解散单位吗？', '提示', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
+    }).then(() => {
+      $services.company
+        .delete({
           data: {
             id: id
           }
@@ -164,6 +207,7 @@ import orgChat from '@/hubs/orgchat'
             if(name && name.length > 0){
               item.createUser = name
             }
+            item.identitys = authority.GetTargetIdentitys(item.id)
           })
           dataList.list = res.data.result
           diyTable.value.state.page.total = res.data.total
@@ -274,7 +318,7 @@ import orgChat from '@/hubs/orgchat'
       // height: calc(100vh - 220px);
       box-sizing: border-box;
       background: var(--el-bg-color);
-      padding: 16px;
+      padding: 6px;
     }
   }
 </style>

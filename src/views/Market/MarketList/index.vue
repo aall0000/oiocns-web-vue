@@ -610,7 +610,6 @@ const copyCode = (needCopyText: string) => {
   }
 
   .market-content {
-    padding: 16px;
     // margin-top: 4px;
     height: calc(100vh - 108px);
     overflow-y: auto;

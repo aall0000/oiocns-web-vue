@@ -354,7 +354,7 @@ defineExpose({
 
 .box {
   .box-ul+.box-ul {
-    margin-top: 16px;
+    margin-top: 6px;
   }
 
   &-ul {

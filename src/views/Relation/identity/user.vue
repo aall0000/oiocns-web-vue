@@ -3,7 +3,7 @@
     <div class="header">
       <div class="title">{{selectItem.name}}</div>
       <div class="box-btns">
-        <el-button small link type="primary" @click="showGiveDialog">指派岗位</el-button>
+        <el-button small link type="primary" v-if="allowEdit()" @click="showGiveDialog">指派岗位</el-button>
       </div>
     </div>
     <div :style="{height:tabHeight-50+'px'}">
@@ -11,7 +11,7 @@
         <DiyTable ref="diyTable" :hasTableHead="false" :tableData="users" @handleUpdate="handleUpdate"
           :tableHead="tableHead">
           <template #operate="scope">
-            <el-button link type="danger" size="small" @click="removeFrom(scope.row)">移除人员</el-button>
+            <el-button link type="danger" size="small" v-if="allowEdit() && selectItem.value.id !== scope.row.id" @click="removeFrom(scope.row)">移除人员</el-button>
           </template>
         </DiyTable>
       </div>
@@ -49,10 +49,21 @@ import DiyTable from '@/components/diyTable/index.vue'
 import { onMounted, reactive, ref, watch } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { Search } from '@element-plus/icons-vue'
+import authority from '@/utils/authority'
 
 const props = defineProps<{
   tabHeight: number,
 }>()
+
+const allowEdit = () => {
+  if(selectItem.value && selectItem.value.id){
+    return authority.IsRelationAdmin([
+      selectItem.value.belongId,
+      authority.getSpaceId()
+    ])
+  }
+  return false
+}
 
 let selectItem = ref<any>({})
 const selectItemChange = (data: any) => {
@@ -188,6 +199,7 @@ const removeFrom = (row: any) => {
 
 // 加载单位所有用户
 const getOrgUsers = (filter?: string) => {
+  debugger
   let data = {
     id: selectItem.value.belongId,
     offset: (pageStore.currentPage - 1) * pageStore.pageSize,

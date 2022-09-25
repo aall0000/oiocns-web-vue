@@ -59,16 +59,17 @@
   import { ElMessage ,ElMessageBox} from 'element-plus'
   import searchGroup from '@/components/searchs/index.vue'
   import DiyTable from '@/components/diyTable/index.vue'
-import orgChat from '@/hubs/orgchat'
+  import orgChat from '@/hubs/orgchat'
+  import authority from '@/utils/authority'
 
   const store = useUserStore()
   const tableData = ref([])
   const diyTable = ref(null)
   const tableHead = ref([
     {
-      prop: 'id',
-      label: '集团ID',
-      name: 'id'
+      prop: 'name',
+      label: '集团名称',
+      name: 'name'
     },
     {
       prop: 'code',
@@ -76,24 +77,36 @@ import orgChat from '@/hubs/orgchat'
       name: 'code'
     },
     {
-      prop: 'name',
-      label: '集团名称',
-      name: 'name'
+      prop: 'team.name',
+      label: '集团简称',
+      name: 'teamName'
     },
     {
-      prop: 'remark',
-      label: '集团简介',
-      name: 'remark'
+      prop: 'team.code',
+      label: '集团代号',
+      name: 'teamCode'
+    },
+    {
+      prop: 'identitys',
+      label: '我的岗位',
+      name: 'identitys',
+      width: '200'
     },
     {
       prop: 'createUser',
-      label: '设立人',
+      label: '创建人',
       name: 'createUser'
     },
     {
       prop: 'createTime',
-      label: '加入时间',
+      label: '创建时间',
       name: 'createTime'
+    },
+    {
+      prop: 'team.remark',
+      label: '简介',
+      name: 'teamRemark',
+      width: '300'
     },
     {
       type:'slot',
@@ -231,7 +244,7 @@ import orgChat from '@/hubs/orgchat'
         if(name && name.length > 0){
           item.createUser = name
         }
-        item.remark = item.team.remark
+        item.identitys = authority.GetTargetIdentitys(item.id)
       })
       tableData.value = data.result
       pageStore.total = data.total
@@ -296,7 +309,7 @@ import orgChat from '@/hubs/orgchat'
     .createdBody {
       height: calc(100vh - 220px);
       max-height: 1000px;
-      padding: 16px;
+      padding: 6px;
     }
     .createdBottom {
       position: absolute;

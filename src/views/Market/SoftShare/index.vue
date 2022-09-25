@@ -213,10 +213,9 @@ watch(modeType, (val, valOld) => {
 <style lang="scss" scoped>
 .getApp {
   // width: 100%;
-  height: calc(100vh - 148px);
+  height: calc(100vh - 110px);
   border: 0;
-  // padding: 16px;
-  margin: 16px;
+  padding: 6px;
 
   // &-radio {
   //   display: flex;

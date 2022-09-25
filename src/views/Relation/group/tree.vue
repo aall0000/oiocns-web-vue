@@ -12,7 +12,7 @@
       </el-input>
       <li class="con tree-btns">
         <div class="title">集团管理</div>
-        <el-icon color="#154ad8" :size="20" v-if="selectItem?.data?.authAdmin" @click="createGroupDialogShow">
+        <el-icon color="#154ad8" :size="20" v-if="allowEdit()" @click="createGroupDialogShow">
           <CirclePlus />
         </el-icon>
       </li>
@@ -45,12 +45,7 @@
       </el-form-item>
       <el-form-item label="上级节点" style="width: 100%">
         <el-cascader :props="cascaderProps" :options="cascaderTree" v-model="formData.parentId" style="width: 100%"
-          placeholder="请选择上级节点" @change="parentIdChange"/>
-      </el-form-item>
-
-      <el-form-item label="管理角色" style="width: 100%">
-        <el-cascader :props="authorityCascaderProps" :options="authorityTree" v-model="formData.teamAuthId" style="width: 100%"
-          placeholder="请选择管理角色" />
+          placeholder="请选择上级节点"/>
       </el-form-item>
 
       <el-form-item label="节点简介" style="width: 100%">
@@ -71,6 +66,7 @@
 import { ref, reactive, onMounted, watch } from 'vue'
 import $services from '@/services'
 import { ElMessage } from 'element-plus';
+import authority from '@/utils/authority'
 
 const emit = defineEmits(['nodeClick'])
 
@@ -79,7 +75,17 @@ const state = reactive({
 })
 let formData = ref<any>({})
 const selectItem = ref<any>();
-// 获取单位树点击的信息
+  
+const allowEdit = () => {
+  if(selectItem.value && selectItem.value.id){
+    return authority.IsRelationAdmin([
+      selectItem.value.id,
+      selectItem.value.belongId
+    ])
+  }
+  return false
+}
+// 获取集团树点击的信息
 const selectItemChange = (data: any) => {
   selectItem.value = data;
 };
@@ -91,17 +97,6 @@ const cascaderProps = {
 }
 // 集团树
 let cascaderTree = ref<OrgTreeModel[]>([])
-
-const authorityCascaderProps = {
-  checkStrictly: true,
-  value: 'id',
-  label: 'name',
-  emitPath: false,
-  children: 'nodes'
-}
-// 角色树
-let authorityTree = ref([])
-
 // 当前选中的集团
 let selectedValue = ref<string>()
 
@@ -173,23 +168,9 @@ const loadOrgTree = (id?: string)=>{
   })
 }
 
-// 表单上级节点改变时
-const parentIdChange = (value: any)=>{
-  loadAuthorityTree(value)
-}
-
-// 加载角色树
-const loadAuthorityTree = (id: string) => {
-  $services.company.getAuthorityTree({data: {id}}).then((res: any)=>{
-    authorityTree.value = []
-    authorityTree.value.push(res.data)
-  })
-}
-
 let createGroupDialogVisible = ref<boolean>(false)
 const createGroupDialogShow = () => {
   createGroupDialogVisible.value = true
-  loadAuthorityTree(formData.value.parentId)
 }
 
 
@@ -206,7 +187,6 @@ const createGroup = ()=>{
       parentId: formData.value.parentId,
       teamName: formData.value.name,
       teamRemark: formData.value.teamRemark,
-      teamAuthId: formData.value.teamAuthId,
     }
   }).then((res: ResultType) => {
     if (res.success) {

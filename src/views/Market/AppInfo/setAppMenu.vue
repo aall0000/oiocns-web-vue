@@ -18,7 +18,7 @@
         <el-icon
           class="child-btn"
           v-if="!props.readOnly"
-          @click.stop="handleEvent('Delete', menuItem.customId ?? menuItem.id)"
+          @click.stop="handleEvent('Delete', menuItem.customId)"
           ><Delete
         /></el-icon>
         <el-icon
@@ -93,7 +93,7 @@
     min-height: 100px;
 
     .menu-item {
-      margin-bottom: 16px;
+      margin-bottom: 6px;
       display: flex;
       align-items: center;
 

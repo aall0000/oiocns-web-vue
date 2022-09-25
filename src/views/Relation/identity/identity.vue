@@ -13,19 +13,17 @@
             </el-icon>
           </template>
         </el-input>
-        <li class="con tree-btns">
+        <li class="con tree-btns" v-if="allowAdd()">
           <el-icon color="#154ad8" :size="20" @click="createIdntityDialog = true">
             <CirclePlus />
           </el-icon>
         </li>
       </div>
       <div>
-        <el-menu
-          default-active="2"
-          class="el-menu-vertical-demo"
-        >
-          <el-menu-item class="menu-item" :index="index.toString()" v-for="(item, index) in  identityList.list" @click="checkItem(item)">
-              <div class="menu-nav">{{item.name}}</div>
+        <el-menu default-active="2" class="el-menu-vertical-demo">
+          <el-menu-item class="menu-item" :index="index.toString()" v-for="(item, index) in  identityList.list"
+            @click="checkItem(item)">
+            <div class="menu-nav">{{item.name}}</div>
           </el-menu-item>
         </el-menu>
       </div>
@@ -41,13 +39,8 @@
           <el-input v-model="formData.code" placeholder="请输入" clearable style="width: 100%" />
         </el-form-item>
         <el-form-item label="所属角色" style="width: 100%">
-        <el-cascader
-          :props="cascaderProps"
-          :options="cascaderTree"
-          v-model="formData.authId"
-          style="width: 100%"
-          placeholder="请选择"
-        />
+          <el-cascader :props="cascaderProps" :options="cascaderTree" v-model="formData.authId" style="width: 100%"
+            placeholder="请选择" />
         </el-form-item>
         <el-form-item label="岗位简介" style="width: 100%">
           <el-input v-model="formData.remark" :autosize="{ minRows: 5 }" placeholder="请输入" type="textarea" clearable />
@@ -63,145 +56,159 @@
   </div>
 </template>
 <script lang="ts" setup>
-  import { useRouter } from 'vue-router'
-  import { ref, onMounted,reactive } from 'vue'
-  import $services from '@/services'
-  import { ElMessage } from 'element-plus'
-  const emit = defineEmits(['itemClick'])
+import { useRouter } from 'vue-router'
+import { ref, onMounted, reactive } from 'vue'
+import $services from '@/services'
+import { ElMessage } from 'element-plus'
+import authority from '@/utils/authority'
+const emit = defineEmits(['itemClick'])
 
-  const router = useRouter()
-  // 当前组织ID
-  const createIdntityDialog = ref<boolean>(false)
-  let formData = reactive<any>({})
-  const belongId = ref<any>('')
-  const module = ref<any>('company')
-  const persons = ref<any>('getPersons')
-  // 岗位列表
-  const identityList = reactive({list:[]})
+const router = useRouter()
+// 当前组织ID
+const createIdntityDialog = ref<boolean>(false)
+let formData = reactive<any>({})
+const belongId = ref<any>('')
+const module = ref<any>('company')
+const persons = ref<any>('getPersons')
+// 岗位列表
+const identityList = reactive({ list: [] })
 
-  // 刷新
-  const refresh = () => {
-    loadIdentities()
-  };
-  defineExpose({ refresh });
+const allowAdd = () => {
+  return authority.IsRelationAdmin([
+    belongId.value,
+    authority.getSpaceId()
+  ])
+}
+// 刷新
+const refresh = () => {
+  loadIdentities()
+};
+defineExpose({ refresh });
 
-  const checkItem = (val: any) => {
-    val.module = module.value
-    val.persons = persons.value
-    val.belongId = belongId.value
-    emit('itemClick', val)
-  }
-  // 加载岗位
-  const loadIdentities = ()=>{
-    $services.cohort.getIdentitys({
-      data: {
-        offset:0,
-        limit: 1000,
-        id: belongId.value,
-      }
-    }).then((res: ResultType) => {
-      if (res.success) {
-        identityList.list = res.data.result
-      }
-    })
-  }
-  const createIdentity = ()=>{
-    $services.cohort.createIdentity({
-      data: {
-        belongId: belongId.value,
-        name: formData.name,
-        code: formData.code,
-        remark: formData.remark,
-        authId: formData.authId
-      }
-    }).then((res: ResultType) => {
-      if (res.success) {
-        ElMessage({
-          message: '创建成功!',
-          type: 'success'
-        })
-        dialogHide()
-        loadIdentities()
-      }
-    })
-  }
-
-  let authorityTree = ref<any[]>([])
-  let cascaderTree = ref<any[]>([])
-
-  const cascaderProps = {
-    checkStrictly: true,
-    value: 'id',
-    label: 'name',
-    children: 'nodes',
-    emitPath: false,
-  }
-
-  // 加载角色树
-  const loadAuthorityTree = () => {
-    $services.company.getAuthorityTree({data: {id: belongId.value}}).then((res: any)=>{
-      authorityTree.value = []
-      authorityTree.value.push(res.data)
-      cascaderTree.value = authorityTree.value
-    })
-  }
-
-  const dialogHide = ()=>{
-    formData.value = {}
-    createIdntityDialog.value = false
-  }
-
-  onMounted(() => {
-    module.value = router.currentRoute.value.query?.module
-    persons.value = router.currentRoute.value.query?.persons
-    belongId.value = router.currentRoute.value.query?.belongId
-    loadIdentities()
-    loadAuthorityTree()
+const checkItem = (val: any) => {
+  val.module = module.value
+  val.persons = persons.value
+  val.belongId = belongId.value
+  emit('itemClick', val)
+}
+// 加载岗位
+const loadIdentities = () => {
+  $services.cohort.getIdentitys({
+    data: {
+      offset: 0,
+      limit: 1000,
+      id: belongId.value,
+    }
+  }).then((res: ResultType) => {
+    if (res.success) {
+      identityList.list = res.data.result
+    }
   })
+}
+const createIdentity = () => {
+  $services.cohort.createIdentity({
+    data: {
+      belongId: belongId.value,
+      name: formData.name,
+      code: formData.code,
+      remark: formData.remark,
+      authId: formData.authId
+    }
+  }).then((res: ResultType) => {
+    if (res.success) {
+      ElMessage({
+        message: '创建成功!',
+        type: 'success'
+      })
+      dialogHide()
+      loadIdentities()
+    }
+  })
+}
+
+let authorityTree = ref<any[]>([])
+let cascaderTree = ref<any[]>([])
+
+const cascaderProps = {
+  checkStrictly: true,
+  value: 'id',
+  label: 'name',
+  children: 'nodes',
+  emitPath: false,
+}
+
+// 加载角色树
+const loadAuthorityTree = () => {
+  $services.company.getAuthorityTree({ data: { id: belongId.value } }).then((res: any) => {
+    authorityTree.value = []
+    authorityTree.value.push(res.data)
+    cascaderTree.value = authorityTree.value
+  })
+}
+
+const dialogHide = () => {
+  formData.value = {}
+  createIdntityDialog.value = false
+}
+
+onMounted(() => {
+  module.value = router.currentRoute.value.query?.module
+  persons.value = router.currentRoute.value.query?.persons
+  belongId.value = router.currentRoute.value.query?.belongId
+  loadIdentities()
+  loadAuthorityTree()
+})
 
 
 </script>
 <style scoped>
-.el-menu{
-  border:0 !important
+.el-menu {
+  border: 0 !important
 }
- </style>
+</style>
 <style lang="scss" scoped>
-.container{
+.container {
   height: 100%;
   width: 100%;
 
 }
-.wrap{
+
+.wrap {
   width: 100%;
   border: 0;
   // box-sizing: border-box;
   // padding: 10px;
   // background: #fff;
 }
-.title{
+
+.title {
   margin-bottom: 10px;
 }
-.search-wrap{
+
+.search-wrap {
   width: 100%;
   margin-bottom: 10px;
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
+
 .search {
   width: calc(100% - 30px);
   font-size: 12px;
+
   .el-input__inner {
     font-size: 12px;
   }
 }
-.tree-btns{
+
+.tree-btns {
   display: flex;
   justify-content: center;
   align-items: center;
   cursor: pointer;
 }
+
 .text {
   font-size: 14px;
   cursor: pointer;
@@ -209,12 +216,12 @@
 
 .menu-item {
   height: 36px;
-  .menu-nav{
-    width:100%;
+
+  .menu-nav {
+    width: 100%;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
 }
-
 </style>

@@ -191,12 +191,12 @@
   .appListLayout {
     width: 100%;
     height: calc(100vh - 60px);
-    padding: 16px;
+    padding: 6px;
     &-radio {
       display: flex;
       align-items: center;
       position: absolute;
-      left: 16px;
+      left: 6px;
       bottom: 0px;
     }
     &-container {
