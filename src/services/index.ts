@@ -19,13 +19,13 @@ const InitRequests = (req: any, urls: any, loadToken: boolean, ignores: string[]
       case "string":
         if(!ignores.includes(key)){
           req[key] = (options: any) => {
-            return request(sub, LoadToken(options, loadToken))
+            return request(sub, LoadToken(options, loadToken || key === "createAPPtoken"))
           }
         }
         break
       case "object":
         req[key] = {}
-        if(key === "person"){
+        if(key === "person" && !loadToken){
           ignores = ["login", "logout", "register", "changeWorkspace"]
         }
         InitRequests(req[key], sub, loadToken, ignores)
@@ -51,7 +51,6 @@ const LoadToken = (options: any, loadToken: boolean) => {
 InitRequests(FUNS, urls, true, [])
 
 InitRequests(APPFUNS, urls, false, [])
-console.log(APPFUNS)
 
 export function setGlobalProperties(app: App<Element>) {
   app.config.globalProperties.$API = FUNS

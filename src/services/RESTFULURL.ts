@@ -269,10 +269,12 @@ export default {
     delete: (objName: string) => object + '/delete/' + objName
   },
   collection: {
+    link: (linkKey: string) => collection + '/link/' + linkKey,
+    share: (collName: string) => collection + '/share/' + collName,
     insert: (collName: string) => collection + '/insert/' + collName,
-    aggregate: (collName: string) => collection + '/aggregate/' + collName,
     update: (collName: string) => collection + '/update/' + collName,
-    remove: (collName: string) => collection + '/remove/' + collName
+    remove: (collName: string) => collection + '/remove/' + collName,
+    aggregate: (collName: string) => collection + '/aggregate/' + collName,
   }
   //others
 }

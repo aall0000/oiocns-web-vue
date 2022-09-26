@@ -71,7 +71,7 @@ const orgChat: orgChatType = {
     lastMsg: null,
     curChat: ref<ImMsgChildType>(null),
     qunPersons: ref<any[]>([]),
-    nameMap: sessionStorage.getItem('nameMap') ? JSON.parse(sessionStorage.getItem('nameMap')) : {}, // 解决首次加载时，应用中心归属人无法响应式渲染数据
+    nameMap: {},
     openChats: [],
     curMsgs: ref<any[]>([]),
     start: (accessToken: string, userId: string, spaceId: string) => {
@@ -110,7 +110,6 @@ const orgChat: orgChatType = {
                 }
                 if (data.nameMap) {
                     orgChat.nameMap = data.nameMap
-                    sessionStorage.setItem('nameMap', JSON.stringify(data.nameMap))
                 }
                 if (data.openChats) {
                     orgChat.openChats = data.openChats
