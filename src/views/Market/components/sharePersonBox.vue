@@ -207,15 +207,14 @@ const getCompanyTree = () => {
         name: '我的好友',
         label: '我的好友',
         parentId: '0',
-        data: {
-          id: authority.getUserId(),
-          belongId: authority.getUserId()
-        }
+        belongId: authority.getUserId()
       }
       cascaderTree.value.forEach((el) => {
+        el.label = el.team.name
+        el.data = el
         el.disabled = !authority.IsApplicationAdmin([
-          el.data.id,
-          el.data.belongId
+          el.id,
+          el.belongId
         ])
       })
       console.log(cascaderTree.value)
