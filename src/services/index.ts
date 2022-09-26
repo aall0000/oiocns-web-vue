@@ -19,8 +19,8 @@ Object.keys(urls).forEach((key) => {
         const apiStr = `${key}_${item}`
          ACCETP_API[apiStr] = true
         // 接口拼接额外动态参数
-        FUNS[key][item] = (extarStr: string, options = {}) => {
-          return request(urls[key][item](extarStr), options)
+        FUNS[key][item] = (extraStr: string, options = {}) => {
+          return request(urls[key][item](extraStr), options)
         }
       } else {
         const apiStr = `${key}_${item}`
