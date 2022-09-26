@@ -87,7 +87,7 @@
           <el-icon :size="20"><SetUp/></el-icon>
         </el-link>
         <el-link title="仓库" :underline="false" class="header-message-icon" @click="() => router.push('/market')">
-          <el-icon :size="20"><Box/></el-icon>
+          <el-icon :size="19"><Box/></el-icon>
         </el-link>
         <el-switch title="模式"
           v-model="isDark"
