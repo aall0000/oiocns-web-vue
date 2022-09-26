@@ -131,6 +131,8 @@
 
       </el-form-item>
     </el-form>
+    <searchFriend  v-if="friendDialog"  :selectLimit='0' @closeDialog="closeDialog"  @checksSearch='checksSearch'/>
+    <searchIdentity  v-if="identityDialog"  :selectLimit='0' @closeDialog="closeIdentityDialog" :serachType='7' @checksSearch='checksIdentitySearch'/>
     <!-- <org-picker :title="pickerTitle" multiple :type="orgPickerType" ref="orgPicker" :selected="orgPickerSelected"
                 @ok="selected"/> -->
   </div>
@@ -147,12 +149,14 @@
     getCurrentInstance,
     ComponentInternalInstance
   } from 'vue';
+  import searchFriend from '@/components/searchs/index.vue'
+  import searchIdentity from '@/components/searchs/index.vue'
   // import OrgPicker from "@/components/common/OrgPicker";
   // import OrgItems from "../OrgItems";
     
   export default defineComponent({
     name: 'ApprovalNodeConfig',
-    // components: {OrgPicker, OrgItems},
+    components: {searchFriend,searchIdentity},
     props: {
       config: {
         type: Object,
@@ -233,6 +237,7 @@
       const selectUser = () => {
         state.orgPickerSelected = select
         state.orgPickerType = 'user'
+        friendDialog.value = true;
         // orgPicker.value.show()
       };
       const selectNoSetUser = () => {
@@ -243,6 +248,7 @@
       const selectRole = () => {
         state.orgPickerSelected = select
         state.orgPickerType = 'role'
+        identityDialog.value = true;
         // orgPicker.value.show()
       };
       const selected = (select: any) => {
@@ -253,6 +259,20 @@
       const removeOrgItem = (index: number) => {
         select.splice(index, 1)
       };
+      const checksSearch = (val:any)=>{
+        closeDialog();
+      };
+      const checksIdentitySearch= (val:any)=>{
+        closeIdentityDialog();
+      };
+      const friendDialog = ref<boolean>(false);
+      const identityDialog = ref<boolean>(false);
+      const closeDialog = ()=>{
+        friendDialog.value = false;
+      }
+      const closeIdentityDialog = ()=>{
+        identityDialog.value = false;
+      }
       // 页面加载时
       onMounted(() => {
       });
@@ -266,6 +286,8 @@
         pickerTitle,
         nodeOptions,
         showMode,
+        friendDialog,
+        identityDialog,
         //
         // orgPicker,
         //
@@ -274,6 +296,10 @@
         selectRole,
         selected,
         removeOrgItem,
+        closeDialog,
+        checksSearch,
+        closeIdentityDialog,
+        checksIdentitySearch
       };
     },
   });

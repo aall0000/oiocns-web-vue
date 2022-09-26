@@ -115,6 +115,11 @@
       tableHead.value = tableHead3.value
       url.value = 'getGroupCompanies'
       title.value = '分配单位'
+    } else if (props.serachType == 7) {
+      space.value = 'cohort'
+      tableHead.value = tableHead5.value
+      url.value = 'getIdentitys'
+      title.value = '搜索岗位'
     } else {
       space.value = 'person'
       tableHead.value = tableHead1.value
@@ -125,7 +130,7 @@
   })
   const remoteMethod = () => {
       let data
-      if(props.serachType==5|| props.serachType ==6){
+      if(props.serachType==5|| props.serachType ==6 || props.serachType ==7){
        data= {
           filter: value.value,
           offset: (pageStore.currentPage - 1) * pageStore.pageSize,
@@ -275,6 +280,19 @@
       prop: 'remark',
       label: '集团简介',
       name: 'remark'
+    },
+  ])
+  const tableHead5 = ref([
+    {
+      prop: 'name',
+      label: '岗位名称',
+      width: '300',
+      name: 'name'
+    },
+    {
+      prop: 'code',
+      label: '岗位代码',
+      name: 'code'
     },
   ])
   const options = ref<any>({
