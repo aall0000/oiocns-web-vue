@@ -23,141 +23,121 @@
     </MarketCard>
 
     <div class="market-content box">
-      <ul class="box-ul">
-        <div class="getApp-radio">
-          <p class="box-ul-title">我的商店</p>
-          <div class="search">
-            <el-input v-model="searchText" @input="searchList" placeholder="搜索商店" clearable />
-          </div>
+
+      <div class="getApp-radio">
+        <h4 class="box-ul-title">我的商店</h4>
+        <div class="search">
+          <el-input v-model="searchText" @input="searchList" placeholder="搜索商店" clearable />
         </div>
-
-        <li class="app-card" v-show="showType === 'card'">
-          <template v-if="state.myMarket.length !== 0">
-            <ShopCard v-for="item in state.myMarket" :info="item" :key="item.id" :overId="item.id"
-              :softwareId="software" type="market"
-              :class="{'dropdwon-active':item.id==state.dropDwonActiveId}"
-              >
-              <template #icon>
-                <HeadImg :name="item.name" :url="item.icon || storeImg" :imgWidth="48" :limit="1" :isSquare="true" />
-              </template>
-
-              <template #option>
-                <div class="option-unit" v-if="item.belongId">
-                  <el-dropdown trigger="click" placement="top" v-if="item.id != software"
-                  @visible-change="(value:boolean)=> optionDropdownChange(value,item.id)" >
-                    <div class="option-unit">设置</div>
-                    <!-- <el-icon :size="18">
+      </div>
+      <div class="app-card" v-show="showType === 'card'">
+        <template v-if="state.myMarket.length !== 0">
+          <ShopCard v-for="item in state.myMarket" :info="item" :key="item.id" :overId="item.id" :softwareId="software"
+            type="market" :class="{'dropdwon-active':item.id==state.dropDwonActiveId}">
+            <template #icon>
+              <HeadImg :name="item.name" :url="item.icon || storeImg" :imgWidth="48" :limit="1" :isSquare="true" />
+            </template>
+            <template #option>
+              <div class="option-unit" v-if="item.belongId">
+                <el-dropdown trigger="click" placement="top" v-if="item.id != software"
+                  @visible-change="(value:boolean)=> optionDropdownChange(value,item.id)">
+                  <div class="option-unit">设置</div>
+                  <!-- <el-icon :size="18">
                       <Operation />
                     </el-icon> -->
-                    <template #dropdown>
-                      <el-dropdown-menu>
-                        <el-dropdown-item @click.stop="handleClick(item)" >
-                          {{item.belongId == workspaceData.id ?'删除':'退出' }}商店
-                          
-                        </el-dropdown-item>
-                        <el-dropdown-item @click.stop="hadleUserManage(item)">
-                          用户管理
-                        </el-dropdown-item>
-                      </el-dropdown-menu>
-                    </template>
-                  </el-dropdown>
-
-                </div>
-                <el-divider direction="vertical" v-if="item.belongId"></el-divider>
-                <div class="option-unit" @click="GoPageWithQuery('/market/appList', { data: item.id, type: 'manage' })">
-                  进入商店</div>
-              </template>
-              <!-- 标题下一行的内容 -->
-              <template #description>
-                <span>归属: {{ orgChat.getName(item.belongId) || '-' }}</span>
-                <el-divider direction="vertical" style="margin: 0 8px;"></el-divider>
-                <span class="shop-code" style="cursor: pointer;" @click.stop="copyCode(item.code)">
-                  编码: {{ item.code || '-' }}
-                  <el-icon>
-                    <DocumentCopy />
-                  </el-icon>
-                </span>
-              </template>
-
-              <template #body>
-                <el-tooltip trigger="click" effect="customized" @click.stop>
-                  <template #content>
-                    <div style="max-width: 280px;">
-                      {{item?.remark }}
-                    </div>
+                  <template #dropdown>
+                    <el-dropdown-menu>
+                      <el-dropdown-item @click.stop="handleClick(item)">
+                        {{item.belongId == workspaceData.id ?'删除':'退出' }}商店
+                      </el-dropdown-item>
+                      <el-dropdown-item @click.stop="hadleUserManage(item)">
+                        用户管理
+                      </el-dropdown-item>
+                      <el-dropdown-item @click.stop="showDetail(item)">
+                        基础详情
+                      </el-dropdown-item>
+                    </el-dropdown-menu>
                   </template>
-                  <p class="app-card-item-con-desc" @click.stop>简介: {{ item?.remark || '暂无' }}</p>
-                </el-tooltip>
-              </template>
+                </el-dropdown>
+              </div>
+              <el-divider direction="vertical" v-if="item.belongId"></el-divider>
+              <div class="option-unit" @click="GoPageWithQuery('/market/appList', { data: item.id, type: 'manage' })">
+                进入商店
+              </div>
+            </template>
+            <!-- 标题下一行的内容 -->
+            <template #description>
+              <span>归属: {{ orgChat.getName(item.belongId) || '-' }}</span>
+              <el-divider direction="vertical" style="margin: 0 8px;"></el-divider>
+              <span class="shop-code" style="cursor: pointer;" @click.stop="copyCode(item.code)">
+                编码: {{ item.code || '-' }}
+                <el-icon>
+                  <DocumentCopy />
+                </el-icon>
+              </span>
+            </template>
 
-            </ShopCard>
+            <template #body>
+              <el-tooltip trigger="click" effect="customized" @click.stop>
+                <template #content>
+                  <div style="max-width: 280px;">
+                    {{item?.remark }}
+                  </div>
+                </template>
+                <p class="app-card-item-con-desc" @click.stop>简介: {{ item?.remark || '暂无' }}</p>
+              </el-tooltip>
+            </template>
+          </ShopCard>
+        </template>
+      </div>
+      <div class="page-flex" v-show="showType === 'card'">
+        <Pagination ref="pageContent" @handleUpdate="handleUpdate"></Pagination>
+      </div>
+      <div v-show="showType === 'list'">
+        <DiyTable ref="diyTable" :options="{ noPage: true, order: true }" :hasTitle="true" :tableData="state.myMarket"
+          :tableHead="state.tableHead">
+          <template #isPublic="scope">
+            <el-tag style="margin-left: 10px" :type="scope.row.public == true ? 'success' : ''">{{
+            scope.row.public == true ? '公开的' : '私有的'
+            }}</el-tag>
           </template>
-        </li>
-        <li v-show="showType === 'list'">
-          <DiyTable ref="diyTable" :options="{ noPage: true, order: true }" :hasTitle="true" :tableData="state.myMarket"
-            :tableHead="state.tableHead">
-            <template #isPublic="scope">
-              <el-tag style="margin-left: 10px" :type="scope.row.public == true ? 'success' : ''">{{
-              scope.row.public == true ? '公开的' : '私有的'
-              }}</el-tag>
-            </template>
-            <template #tag="scope">
-              <el-tag v-if="scope.row.id != software" style="margin-left: 10px"
-                :type="scope.row.createUser == workspaceData.id ? '' : 'success'">{{ scope.row.belongId ==
-                workspaceData.id ? '创建的' : '加入的' }}</el-tag>
-            </template>
-            <template #operate="scope">
-              <el-button v-if="scope.row.id != software" class="btn" type="primary" link small
-                @click.stop="hadleUserManage(scope.row)">用户管理</el-button>
-              <el-button class="btn" type="primary" link small @click.stop="marketQuit(scope.row)"
-                v-if="scope.row.id != software">删除商店</el-button>
-            </template>
-          </DiyTable>
-        </li>
-
-        <div class="page-flex" v-show="showType === 'card'">
-          <Pagination ref="pageContent" @handleUpdate="handleUpdate"></Pagination>
-        </div>
-      </ul>
+          <template #tag="scope">
+            <el-tag v-if="scope.row.id != software" style="margin-left: 10px"
+              :type="scope.row.createUser == workspaceData.id ? '' : 'success'">{{ scope.row.belongId ==
+              workspaceData.id ? '创建的' : '加入的' }}</el-tag>
+          </template>
+          <template #operate="scope">
+            <el-button v-if="scope.row.id != software" class="btn" type="primary" link small
+              @click.stop="hadleUserManage(scope.row)">用户管理</el-button>
+            <el-button class="btn" type="primary" link small @click.stop="marketQuit(scope.row)"
+              v-if="scope.row.id != software">删除商店</el-button>
+          </template>
+        </DiyTable>
+      </div>
     </div>
     <el-dialog append-to-body v-model="createDialog" title="创建商店" width="30%" class="" @close="closeCreateDialog">
-      <el-form ref="formRef" :model="form">
+      <el-form ref="formRef" :model="form.data">
         <el-form-item label="商店名称" prop="name" :rules="[
           { required: true, message: '请输入商店名称' },
           { min: 3, message: '商店名称至少有3个字', trigger: 'blur' },
         ]">
-          <el-input v-model.number="form.name" type="text" autocomplete="off" />
+          <el-input v-model.number="form.data.name" type="text" autocomplete="off" />
         </el-form-item>
         <el-form-item label="商店编码" prop="code" :rules="[
           { required: true, message: '请输入商店编码，以便其他查询' },
         ]">
-          <el-input v-model.number="form.code" type="text" autocomplete="off" />
+          <el-input v-model.number="form.data.code" type="text" autocomplete="off" />
         </el-form-item>
         <el-form-item label="商店简介" prop="remark" :rules="[
           { required: true, message: '请输入商店简介' },
         ]">
-          <el-input v-model="form.remark" type="textarea" maxlength="120" show-word-limit
+          <el-input v-model="form.data.remark" type="textarea" maxlength="120" show-word-limit
             :autosize="{ minRows: 4, maxRows: 6 }" autocomplete="off" />
         </el-form-item>
         <el-form-item label="商店是否公开" prop="public">
-          <el-switch v-model="form.public" active-text="是" inactive-text="否" inline-prompt></el-switch>
+          <el-switch v-model="form.data.public" active-text="是" inactive-text="否" inline-prompt></el-switch>
         </el-form-item>
       </el-form>
-      <!-- <el-descriptions :model="form" :column="1" border >
-        <el-descriptions-item label="商店名称"  label-align="right">
-          <el-input v-model="form.name" />
-        </el-descriptions-item>
-        <el-descriptions-item label="商店编码"  label-align="right">
-          <el-input v-model="form.code" />
-        </el-descriptions-item>
-        <el-descriptions-item label="商店简介"  label-align="right">
-          <el-input v-model="form.remark"  type="textarea"  maxlength="120" show-word-limit :autosize="{ minRows: 4, maxRows: 6 }"/>
-        </el-descriptions-item>
-        <el-descriptions-item label="商店是否公开" label-align="right">
-          <el-switch v-model="form.public" active-text="是" inactive-text="否" inline-prompt></el-switch>
-        
-        </el-descriptions-item>
-      </el-descriptions> -->
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="createDialog = false">取消</el-button>
@@ -165,7 +145,22 @@
         </span>
       </template>
     </el-dialog>
-
+    <!-- 商店 详情 -->
+    <el-drawer v-model="detailDrawer" :size="600" :title="detailDrawer ?state?.current.name :''">
+      <el-descriptions :column="1">
+        <el-descriptions-item v-for="item in (state.detailColumn as DetailColumnType[])" :key="(item?.prop as string)">
+          <template #label>
+            {{item.label}}
+          </template>
+          <el-tag v-if="item.type==='tag'" :type="item.props?.type(state.current)">
+            {{ item.render(state.current) }}
+          </el-tag>
+          <template v-else>
+            {{item.render ? item.render(state.current) :state.current[item?.prop as string] ||`-`}}
+          </template>
+        </el-descriptions-item>
+      </el-descriptions>
+    </el-drawer>
     <searchMarket v-if="searchDialog" @closeDialog="closeDialog" :serachType="7" @checksSearch="checksSearch" />
   </div>
 </template>
@@ -173,26 +168,28 @@
 <script setup lang="ts">
 import orgChat from '@/hubs/orgchat'
 import { reactive, onMounted, computed, ref } from 'vue'
-import diySearch from '@/components/diySearch/index.vue'
 import ShopCard from '../components/shopCard.vue'
-import ShopCardBadge from '../components/shopCardBadge.vue'
 import { useRouter } from 'vue-router'
 import $services from '@/services'
 import searchMarket from '@/components/searchs/index.vue'
+import MarketCard from '@/components/marketCard/index.vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import MarketCreate from '../components/marketCreate.vue'
 import { useUserStore } from '@/store/user'
 import storeImg from '@/assets/img/app_icon.png'
 import Pagination from '@/components/pagination/index.vue'
 import type { FormInstance } from 'element-plus'
 import { storeToRefs } from 'pinia'
-
+type DetailColumnType = {
+  prop: string,
+  label:string, //
+  props: any // 展示的节点配置
+  type: string, // 展示节点类型
+  render: (item:any)=> any, // 自定义渲染内容
+}
 const searchDialog = ref<boolean>(false)
-const searchType = ref<number>()
-
 const router = useRouter()
 const store = useUserStore()
-const { queryInfo, workspaceData } = storeToRefs(store)
+const { workspaceData } = storeToRefs(store)
 const handleCurrentMy: any = computed(() => {
   return (state.pageMy.currentPage - 1) * state.pageMy.pageSize
 })
@@ -213,8 +210,11 @@ const add: string = '创建商店'
 const add1: string = '加入商店'
 const searchText = ref<string>('')
 const software = ref<string>('')
+const createDialog = ref(false) // 创建商店
+const detailDrawer = ref(false) // 商店详情
 const state = reactive({
-  dropDwonActiveId:'',
+  dropDwonActiveId: '',
+  current: null, // 当前选中的商店对象
   softShareInfo: {
     id: ''
   },
@@ -274,10 +274,62 @@ const state = reactive({
       width: '200',
       name: 'operate'
     }
+  ],
+  detailColumn: [
+    {
+      prop: 'name',
+      label: '商店名称'
+    },
+    {
+      prop: 'code',
+      label: '商店编码'
+    },
+    {
+      prop: 'public',
+      label: '是否公开',
+      type: 'tag',
+      props: {
+        type: (item: any)=> {
+          return item.public ? 'success' :'danger'
+        }
+      },
+      render: (item: any)=> {
+        return item.public ? '公开' :'私有'
+      }
+    },
+    {
+      type: 'tag',
+      prop: 'belongId',
+      label: '应用权属',
+      props: {
+        type: (item: any)=> {
+          return item.belongId=== workspaceData?.value.id ? '' :'success'
+        }
+      },
+      render: (item: any)  => {
+       
+        return item.belongId=== workspaceData?.value.id  ? '创建的' :'加入的'
+      }
+    },
+    {
+      prop: 'remark',
+      label: '商店简介'
+    },
+    {
+      prop: 'createUser',
+      label: '归属人',
+      render: (item: any)=> {
+        return orgChat.getName(item.createUser)
+      }
+    },
+    {
+      prop: 'createTime',
+      label: '创建时间'
+    },
+    
   ]
 })
 
-const createDialog = ref(false)
 
 onMounted(() => {
   getMarketInfo()
@@ -297,11 +349,11 @@ const handleUpdate = (val: any) => {
 }
 // 下拉框显示隐藏时触发
 // value 是否显示，activeId 当前显示 的卡片内容id
-const optionDropdownChange = (value:boolean,activeId:string)=>{
-  
-  if(value) { //显示
+const optionDropdownChange = (value: boolean, activeId: string) => {
+
+  if (value) { //显示
     state.dropDwonActiveId = activeId
-  }else{
+  } else {
     state.dropDwonActiveId = ''
   }
 }
@@ -368,22 +420,7 @@ const getMyMarketData = () => {
       }
     })
 }
-// const getJoinMarketData = () => {
-//   $services.appstore
-//     .searchJoined({
-//       data: {
-//         offset: state.pageJoin.current,
-//         limit: state.pageJoin.pageSize,
-//         filter: ''
-//       }
-//     })
-//     .then((res: ResultType) => {
-//       if (res.code == 200) {
-//         state.joinMarket = res.data.result ? res.data.result : []
-//         state.pageJoin.total = res.data.total
-//       }
-//     })
-// }
+
 const marketQuit = (item: any) => {
   ElMessageBox.confirm(`确认退出  ${item.name}?`, '提示', {
     confirmButtonText: '确认',
@@ -434,15 +471,18 @@ const handleClick = (item: any) => {
     })
     .catch(() => { })
 }
-const shopcarNum = ref(0)
 
+const shopcarNum = ref(0)
 const form = reactive({
-  name: '',
-  code: '',
-  samrId: '',
-  remark: '',
-  authId: '',
-  public: true
+  data: {
+    name: '',
+    code: '',
+    samrId: '',
+    remark: '',
+    authId: '',
+    public: true
+
+  }
 })
 const options = [
   {
@@ -454,6 +494,12 @@ const options = [
     label: '否'
   }
 ]
+//查看商店详情
+const showDetail = (item: any) => {
+
+  state.current = { ...item }
+  detailDrawer.value = true
+}
 //创建商店
 const createShop = async (formEl: FormInstance | undefined) => {
   if (!formEl) return
@@ -469,15 +515,15 @@ const createShop = async (formEl: FormInstance | undefined) => {
   $services.appstore
     .create({
       data: {
-        name: form.name,
-        code: form.code,
+        name: form.data.name,
+        code: form.data.code,
         samrId: store.queryInfo.id,
         authId:
           store.workspaceData.type === 2
             ? store.workspaceData.authId
             : store.queryInfo.team.authId, // 空间为组织单位时取组织单位 的authId
-        remark: form.remark,
-        public: form.public
+        remark: form.data.remark,
+        public: form.data.public
       }
     })
     .then((res: ResultType) => {
@@ -492,32 +538,7 @@ const createShop = async (formEl: FormInstance | undefined) => {
     })
 
 }
-const remoteMethod = (query: string, callback: any) => {
-  $services.appstore
-    .searchAll({
-      data: {
-        offset: 0,
-        limit: 100,
-        filter: query
-      }
-    })
-    .then((res: ResultType) => {
-      console.log(res)
 
-      if (res.data.result) {
-        let states = res.data.result
-        let arr: { value: any; label: any }[] = []
-        states.forEach((el: any) => {
-          let obj = {
-            value: el.id,
-            label: el.name
-          }
-          arr.push(obj)
-        })
-        callback(arr)
-      }
-    })
-}
 const submit = (data: any) => {
   $services.appstore
     .applyJoin({
@@ -634,56 +655,46 @@ const copyCode = (needCopyText: string) => {
   }
 
   .box {
-    .box-ul {
-      height: 100%;
+
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+
+
+    background-color: var(--el-bg-color);
+    padding: 10px 24px;
+
+    .getApp-radio {
       display: flex;
-      flex-direction: column;
-      flex: 1;
-    }
+      width: 100%;
+      justify-content: space-between;
+      align-items: center;
 
-    .box-ul+.box-ul {
-      margin-top: 10px;
-    }
 
-    &-ul {
-      background-color: var(--el-bg-color);
-      padding: 10px 24px;
+      // .box-ul-title {
+      //   width: 50%;
+      //   display: flex;
+      //   justify-content: flex-start;
+      // }
 
-      &-title {
-        font-weight: bold;
-        padding: 8px 0;
-      }
+      .search {
+        width: 200px;
 
-      .getApp-radio {
-        display: flex;
-        width: 100%;
-        justify-content: space-between;
-        margin-bottom: 20px;
-
-        .box-ul-title {
-          width: 50%;
-          display: flex;
-          justify-content: flex-start;
-        }
-
-        .search {
-          width: 200px;
-          display: flex;
-          justify-content: flex-start;
-        }
-      }
-
-      .page-flex {
-        position: absolute;
-        right: 40px;
-        bottom: 36px;
-      }
-
-      .app-card {
-        display: flex;
-        flex-wrap: wrap;
       }
     }
+
+    // .page-flex {
+    //   position: absolute;
+    //   right: 40px;
+    //   bottom: 36px;
+    // }
+
+    .app-card {
+      display: flex;
+      flex-wrap: wrap;
+    }
+
   }
 }
 </style>

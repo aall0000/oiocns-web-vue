@@ -8,22 +8,22 @@ const APPFUNS: { [key: string]: any } = {}
 const InitRequests = (req: any, urls: any, loadToken: boolean, ignores: string[]) => {
   Object.keys(urls).forEach((key) => {
     let sub = urls[key]
-    switch (typeof (sub)) {
-      case "function":
-        if(!ignores.includes(key)){
+    switch (typeof sub) {
+      case 'function':
+        if (!ignores.includes(key)) {
           req[key] = (options: any, ...args: any) => {
             return request(sub(...args), LoadToken(options, loadToken))
           }
         }
         break
-      case "string":
-        if(!ignores.includes(key)){
+      case 'string':
+        if (!ignores.includes(key)) {
           req[key] = (options: any) => {
             return request(sub, LoadToken(options, loadToken || key === "createAPPtoken"))
           }
         }
         break
-      case "object":
+      case 'object':
         req[key] = {}
         if(key === "person" && !loadToken){
           ignores = ["login", "logout", "register", "changeWorkspace"]
@@ -31,14 +31,14 @@ const InitRequests = (req: any, urls: any, loadToken: boolean, ignores: string[]
         InitRequests(req[key], sub, loadToken, ignores)
         break
       default:
-        throw new Error("Configuration not supported.")
+        throw new Error('Configuration not supported.')
     }
   })
 }
 
 const LoadToken = (options: any, loadToken: boolean) => {
   options = options || {}
-  if(loadToken){
+  if (loadToken) {
     options.headers = options.headers || {}
     const store = useUserStore()
     if (store.userToken !== '' && !options.headers['Authorization']) {

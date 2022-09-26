@@ -39,7 +39,7 @@
   import { Props } from '@yzfe/svgicon'
   const router = useRouter()
 
-  const props = withDefaults(defineProps<{ isSee: boolean }>(), {
+  const props = withDefaults(defineProps<{ isSee?: boolean }>(), {
     isSee: false
   })
   const activeRouter = ref<string>('')
