@@ -32,9 +32,13 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-.el-dialog>.el-dialog__header {
+.el-dialog>.el-dialog__header ,.el-drawer >.el-drawer__header {
   background-color: var(--el-fill-color-light) !important;
   margin-right: 0 !important;
+}
+.el-drawer >.el-drawer__header  {
+  padding-bottom: 20px !important;
+  margin-bottom: 12px !important;
 }
 // 文字提示添加customized主题
 .el-popper.is-customized {

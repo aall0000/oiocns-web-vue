@@ -76,18 +76,18 @@
             ><Link
           /></el-icon>
           <el-badge :value="orgChat.getNoRead()" v-if="orgChat.getNoRead().length > 0">
-            <el-icon class="header-message-icon" :size="18"><ChatDotSquare /></el-icon>
+            <el-icon class="header-message-icon" :size="20"><ChatDotSquare /></el-icon>
           </el-badge>
-          <el-icon class="header-message-icon" :size="18" v-else><ChatDotSquare /></el-icon>
+          <el-icon class="header-message-icon" :size="20" v-else><ChatDotSquare /></el-icon>
         </el-link>
         <el-link title="工作台" :underline="false" class="header-message-icon" @click="() => router.push('/workHome')">
           <el-icon :size="20"><DataAnalysis/></el-icon>
         </el-link>
         <el-link title="关系" :underline="false" class="header-message-icon" @click="() => router.push('/relation')">
-          <el-icon :size="22"><SetUp/></el-icon>
+          <el-icon :size="20"><SetUp/></el-icon>
         </el-link>
         <el-link title="仓库" :underline="false" class="header-message-icon" @click="() => router.push('/market')">
-          <el-icon :size="22"><HomeFilled/></el-icon>
+          <el-icon :size="20"><Box/></el-icon>
         </el-link>
         <el-switch title="模式"
           v-model="isDark"
