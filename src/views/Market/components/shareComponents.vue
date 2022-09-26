@@ -1,7 +1,21 @@
 <template>
   <div class="cohortLayout">
+    <div class="cohortLayout-header" v-if="typePD !== 3">
+      <div class="cohortLayout-header-text"
+        >{{ typePD == 1 ? '请选择资源：' : '请选择集团：' }}
+      </div>
+      <div class="cohortLayout-header-tabs">
+        <el-tabs v-model="activeName" class="demo-tabs">
+          <el-tab-pane v-for="(item, index) in tabs" :key="item.id" :name="index">
+            <template #label>
+              <div slot="label" @click="handleTabClick(item.id)">{{ item.name }}</div>
+            </template>
+          </el-tab-pane>
+        </el-tabs>
+      </div>
+    </div>
     <div class="cohortLayout-header" style="margin-top: 10px">
-      <div class="cohortLayout-header-text">请选择共享方式：</div>
+      <div class="cohortLayout-header-text">请选择{{ typePD == 1 ? '分配' : '共享' }}方式：</div>
       <div class="cohortLayout-header-tabs">
         <el-radio-group v-model="radio">
           <el-radio v-for="item in state.way" :key="item.id" :label="item.id">{{
@@ -24,7 +38,7 @@
           ref="leftTree"
           node-key="id"
           :data="cascaderTree"
-          :props="unitProps"
+          :props="typePD !== 3 ? { class: customNodeClass } : unitProps"
           :check-strictly="true"
           :default-expand-all="true"
           show-checkbox
@@ -36,9 +50,9 @@
           ref="leftTree"
           :data="cascaderTree"
           :key="radio"
-          :props="unitProps"
           :highlight-current="true"
           :expand-on-click-node="false"
+          :props="typePD !== 3 ? { class: customNodeClass } : unitProps"
           :default-expand-all="true"
           @node-click="handleNodeClick"
           :filter-node-method="filterNode"
@@ -101,16 +115,15 @@
 </template>
 
 <script setup lang="ts">
+  // @ts-nocheck
   import InfiniteScroll from 'element-plus'
-  import { onMounted, onUnmounted, ref, reactive, toRefs, watch, nextTick, computed } from 'vue'
+  import { onMounted, ref, reactive, toRefs, watch, nextTick, computed, onUnmounted } from 'vue'
   import { ElMessage, ElMessageBox } from 'element-plus'
   import API from '@/services'
   import Author from './components/author.vue'
-  import { useUserStore } from '@/store/user'
-  import orgChat from '@/hubs/orgchat'
+  import authority from '@/utils/authority'
   import type { TabsPaneContext } from 'element-plus'
   import { AnyAaaaRecord } from 'dns'
-  import authority from '@/utils/authority'
   interface Tree {
     id: string
     label: string
@@ -121,10 +134,13 @@
     info: {
       id: string
     }
+    type?: number
+    dialogType: string
   }
-  const store = useUserStore()
   const searchValue = ref('')
   const searchLeftValue = ref('')
+  const activeName = ref(0)
+  const tabs = ref([])
   const radio = ref('1')
   const leftTree = ref(null)
   const centerTree = ref(null)
@@ -134,28 +150,8 @@
       id: '',
       label: ''
     },
-    way: [
-      {
-        id: '1',
-        label: '按群组共享'
-      },
-      {
-        id: '2',
-        label: '按角色共享'
-      },
-      {
-        id: '3',
-        label: '按身份分配'
-      },
-      {
-        id: '4',
-        label: '按人员分配'
-      }
-    ],
-    options: [], // 集团列表
-    switchData: {
-      id: ''
-    }, // 存储左侧树形数据
+    way: [],
+    switchData: {}, // 存储左侧树形数据
     departData: [], // 集团分配右侧数据
     departHisData: [], // 集团分配历史数据
     centerTree: [], // 角色分配中间树形
@@ -166,14 +162,12 @@
     identitysData: [], //岗位右侧数据
     identitysHisData: [] // 岗位历史数据
   })
-
-  let cascaderTree = ref<any[]>([])
   const authorityProps = {
     label: 'name',
     children: 'nodes',
     disabled: 'disabled'
   }
-  const customNodeClass = (data: any, node: any) => {
+  const friendNodeClass = (data: any, node: any) => {
     if (data.disabled) {
       return 'penultimate'
     }
@@ -183,17 +177,26 @@
     label: 'name',
     children: 'children',
     disabled: 'disabled',
-    class: customNodeClass
+    class: friendNodeClass
   }
   const page = reactive({
     currentPage: 1,
     pageSize: 20
   })
-
   const handleCurrent: any = computed(() => {
     return (page.currentPage - 1) * page.pageSize
   })
-
+  const typePD: any = computed(() => {
+    if (props.dialogType == '1') {
+      return 1
+    } else {
+      if (props.type == 2) {
+        return 2
+      } else {
+        return 3
+      }
+    }
+  })
   watch(
     () => radio.value,
     (newValue, oldValue) => {
@@ -202,7 +205,7 @@
       state.personsData = []
       state.identitysData = []
       nextTick(() => {
-        if (newValue == '1' && state.departData.length > 0) {
+        if (newValue == '1') {
           let arr: any[] = []
           state.departData.forEach((el) => {
             if (el.type == 'add' || el.type == 'has') {
@@ -210,16 +213,35 @@
             }
           })
           leftTree.value.setCheckedKeys(arr, true)
-        } else if (newValue == '2' && state.authorData.length == 0) {
-          getHistoryData()
         }
       })
-    },
-    { immediate: true }
+    }
+  )
+  const customNodeClass = (data: Tree, node: Node) => {
+    if (data.authAdmin === false || data?.data?.authAdmin === false) {
+      return 'penultimate'
+    }
+    return null
+  }
+  watch(
+    () => resource.value,
+    (newValue, oldValue) => {
+      state.centerTree = []
+      state.authorData = []
+      state.departData = []
+      state.personsData = []
+      state.identitysData = []
+      if (radio.value == '1') {
+        clearTreeType(cascaderTree.value)
+        leftTree.value.setCheckedKeys([])
+        getHistoryData()
+      }
+    }
   )
   watch(
     () => searchValue.value,
     (newValue, oldValue) => {
+      console.log(newValue)
       handleNodeClick(state.loadID, false, newValue)
     }
   )
@@ -230,19 +252,86 @@
     }
   )
   const props = defineProps<createInfo>()
+
   onMounted(() => {
-    getCompanyTree()
+    if (typePD.value == 1) {
+      searchResource()
+      getCompanyTree()
+      state.way = [
+        {
+          id: '1',
+          label: '按部门分配'
+        },
+        {
+          id: '2',
+          label: '按角色分配'
+        },
+        {
+          id: '3',
+          label: '按岗位分配'
+        },
+        {
+          id: '4',
+          label: '按人员分配'
+        }
+      ]
+    } else {
+      if (typePD.value == 2) {
+        state.way = [
+          {
+            id: '1',
+            label: '按集团共享'
+          },
+          {
+            id: '2',
+            label: '按角色共享'
+          },
+          {
+            id: '3',
+            label: '按岗位分配'
+          },
+          {
+            id: '4',
+            label: '按单位分配'
+          }
+        ]
+        getGroupList()
+      } else {
+        state.way = [
+          {
+            id: '1',
+            label: '按群组共享'
+          },
+          {
+            id: '2',
+            label: '按角色共享'
+          },
+          {
+            id: '3',
+            label: '按身份分配'
+          },
+          {
+            id: '4',
+            label: '按人员分配'
+          }
+        ]
+        getFriendsList()
+      }
+    }
   })
+
   onUnmounted(() => {
     sumbitSwitch(state.switchData, true)
   })
+
   const emit = defineEmits(['closeDialog'])
+
   const closeDialog = () => {
     emit('closeDialog')
   }
 
-  //获取左侧树形
-  const getCompanyTree = () => {
+  // 获取群组信息
+  const getFriendsList = () => {
     API.cohort
       .getJoinedCohorts({
         data: { offset: 0, limit: 10000, filter: '' }
@@ -262,42 +351,109 @@
         cascaderTree.value.forEach((el) => {
           el.disabled = !authority.IsApplicationAdmin([el.data.id, el.data.belongId])
         })
-        console.log(cascaderTree.value)
-
         cascaderTree.value.unshift(obj)
         getHistoryData()
       })
+  }
+
+  // 获取集团数据
+  const getGroupList = () => {
+    API.company
+      .companyGetGroups({
+        data: {
+          offset: 0,
+          limit: 1000
+        }
+      })
+      .then((res: ResultType) => {
+        if (res.data.result && res.data.result.length > 0) {
+          tabs.value = res.data.result
+          resource.value = tabs.value[0].id
+          getGroupTree()
+        }
+      })
+  }
+
+  const getGroupTree = (val?: boolean) => {
+    API.company
+      .getGroupTree({
+        data: { id: resource.value }
+      })
+      .then((res: any) => {
+        if (res.success) {
+          res.data = isGroupAuthAdmin(res.data)
+          cascaderTree.value.push(res.data)
+        }
+        if (!val) {
+          getHistoryData()
+        }
+      })
+  }
+
+  const isGroupAuthAdmin = (node: any) => {
+    node.disabled = !authority.IsApplicationAdmin([node.data.id, node.data.belongId])
+    if (node.children) {
+      for (const children of node.children) {
+        isGroupAuthAdmin(children)
+      }
+    }
+    //判断是否有操作权限
+    return node
+  }
+
+  // 清除树形中的type
+  const clearTreeType = (data: any) => {
+    for (let i = 0; i < data.length; i++) {
+      if (data[i].type) {
+        delete data[i].type
+        if (data[i].children.length !== 0) {
+          clearTreeType(data[i].children)
+        }
+      } else {
+        clearTreeType(data[i].children)
+      }
+    }
   }
 
   // 获取历史数据
   const getHistoryData = (data?: any) => {
     switch (radio.value) {
       case '1':
-        API.product
-          .extendQuery({
-            data: {
-              teamId: store.queryInfo.id,
-              sourceId: props.info.id,
-              sourceType: '产品',
-              destType: '组织'
-            }
-          })
-          .then((res: ResultType) => {
-            state.departHisData = res.data.result ? res.data.result : []
-            let arr: any[] = []
-            state.departHisData.forEach((el) => {
-              arr.push(el.id)
+        setTimeout(() => {
+          API.product
+            .extendQuery({
+              data: {
+                teamId:
+                  typePD == 1
+                    ? rootTreeId.value
+                    : typePD == 2
+                    ? resource.value
+                    : store.queryInfo.id,
+                sourceId: typePD == 1 ? resource.value : props.info.id,
+                sourceType: typePD == 1 ? '资源' : '产品',
+                destType: '组织'
+              }
             })
-            leftTree.value.setCheckedKeys(arr, true)
-          })
+            .then((res: ResultType) => {
+              state.departHisData = res.data.result ? res.data.result : []
+              let arr: any[] = []
+              state.departHisData.forEach((el) => {
+                arr.push(el.id)
+              })
+              setTimeout(() => {
+                leftTree.value.setCheckedKeys(arr, true)
+              }, 300)
+            })
+        }, 300)
+
         break
       case '2':
         API.product
           .extendQuery({
             data: {
               teamId: data.id,
-              sourceId: props.info.id,
-              sourceType: '产品',
+              sourceId: typePD == 1 ? resource.value : props.info.id,
+              sourceType: typePD == 1 ? '资源' : '产品',
               destType: '角色'
             }
           })
@@ -313,19 +469,20 @@
               centerTree.value.setCheckedKeys(arr, true)
             }
           })
+
         break
       case '3':
         API.product
           .extendQuery({
             data: {
               teamId: data.id,
-              sourceId: props.info.id,
-              sourceType: '产品',
+              sourceId: typePD == 1 ? resource.value : props.info.id,
+              sourceType: typePD == 1 ? '资源' : '产品',
               destType: '岗位'
             }
           })
           .then((res: ResultType) => {
-            state.identitysHisData = res?.data?.result ? res.data.result : []
+            state.identitysHisData = res.data.result ? res.data.result : []
             state.identitysData = JSON.parse(JSON.stringify(state.identitysHisData))
             let arr: any[] = []
             state.identitysData.forEach((el) => {
@@ -342,13 +499,13 @@
           .extendQuery({
             data: {
               teamId: data.id,
-              sourceId: props.info.id,
-              sourceType: '产品',
+              sourceId: typePD == 1 ? resource.value : props.info.id,
+              sourceType: typePD == 1 ? '资源' : '产品',
               destType: '人员'
             }
           })
           .then((res: ResultType) => {
-            state.personsHisData = res?.data?.result ? res.data.result : []
+            state.personsHisData = res.data.result ? res.data.result : []
             state.personsData = JSON.parse(JSON.stringify(state.personsHisData))
             let arr: any[] = []
             state.personsData.forEach((el) => {
@@ -371,7 +528,7 @@
     return data.label.includes(value)
   }
 
-  const sumbitSwitch = async (data: any, bol?: boolean) => {
+  const sumbitSwitch = async (data, bol?: boolean) => {
     // 当radio！=1 时切换左侧树调用提交接口
     if (state.switchData !== data || bol) {
       switch (radio.value) {
@@ -391,9 +548,9 @@
             promise1 = API.product.extendCreate({
               data: {
                 teamId: state.switchData.id,
-                sourceId: props.info.id,
+                sourceId: typePD.value == 1 ? resource.value : props.info.id,
                 destIds: authorAdd,
-                sourceType: '产品',
+                sourceType: typePD.value == 1 ? '资源' : '产品',
                 destType: '角色'
               }
             })
@@ -402,9 +559,9 @@
             promise2 = API.product.extendDelete({
               data: {
                 teamId: state.switchData.id,
-                sourceId: props.info.id,
+                sourceId: typePD.value == 1 ? resource.value : props.info.id,
                 destIds: authorDel,
-                sourceType: '产品',
+                sourceType: typePD.value == 1 ? '资源' : '产品',
                 destType: '角色'
               }
             })
@@ -421,31 +578,31 @@
               identityDel.push(el.id)
             }
           })
-          let promise3
-          let promise4
+          let promise5
+          let promise6
           if (identityAdd.length > 0) {
-            promise3 = API.product.extendCreate({
+            promise5 = API.product.extendCreate({
               data: {
                 teamId: state.switchData.id,
-                sourceId: props.info.id,
+                sourceId: typePD.value == 1 ? resource.value : props.info.id,
                 destIds: identityAdd,
-                sourceType: '产品',
+                sourceType: typePD.value == 1 ? '资源' : '产品',
                 destType: '岗位'
               }
             })
           }
           if (identityDel.length > 0) {
-            promise4 = API.product.extendDelete({
+            promise6 = API.product.extendDelete({
               data: {
                 teamId: state.switchData.id,
-                sourceId: props.info.id,
+                sourceId: typePD.value == 1 ? resource.value : props.info.id,
                 destIds: identityDel,
-                sourceType: '产品',
+                sourceType: typePD.value == 1 ? '资源' : '产品',
                 destType: '岗位'
               }
             })
           }
-          await Promise.all([promise3, promise4])
+          await Promise.all([promise5, promise6])
           break
         case '4':
           let personAdd: any[] = []
@@ -457,33 +614,32 @@
               personDel.push(el.id)
             }
           })
-          let promise5
-          let promise6
+          let promise3
+          let promise4
           if (personAdd.length > 0) {
-            promise5 = API.product.extendCreate({
+            promise3 = API.product.extendCreate({
               data: {
                 teamId: state.switchData.id,
-                sourceId: props.info.id,
+                sourceId: typePD.value == 1 ? resource.value : props.info.id,
                 destIds: personAdd,
-                sourceType: '产品',
+                sourceType: typePD.value == 1 ? '资源' : '产品',
                 destType: '人员'
               }
             })
           }
           if (personDel.length > 0) {
-            promise6 = API.product.extendDelete({
+            promise4 = API.product.extendDelete({
               data: {
                 teamId: state.switchData.id,
-                sourceId: props.info.id,
+                sourceId: typePD.value == 1 ? resource.value : props.info.id,
                 destIds: personDel,
-                sourceType: '产品',
+                sourceType: typePD.value == 1 ? '资源' : '产品',
                 destType: '人员'
               }
             })
           }
-          await Promise.all([promise5, promise6])
+          await Promise.all([promise3, promise4])
           break
-
         default:
           break
       }
@@ -491,9 +647,10 @@
   }
 
   // 提交表单
-  const submitAll = async () => {
+  const submitAll = () => {
     let departAdd: any[] = []
     let departDel: any[] = []
+
     state.departData.forEach((el) => {
       if (el.type == 'add') {
         departAdd.push(el.id)
@@ -507,10 +664,15 @@
     if (departAdd.length > 0) {
       promise1 = API.product.extendCreate({
         data: {
-          teamId: store.queryInfo.id,
-          sourceId: props.info.id,
+          teamId:
+            typePD.value == 1
+              ? rootTreeId.value
+              : typePD.value == 2
+              ? resource.value
+              : store.queryInfo.id,
+          sourceId: typePD.value == 1 ? resource.value : props.info.id,
           destIds: departAdd,
-          sourceType: '产品',
+          sourceType: typePD.value == 1 ? '资源' : '产品',
           destType: '组织'
         }
       })
@@ -518,10 +680,15 @@
     if (departDel.length > 0) {
       promise2 = API.product.extendDelete({
         data: {
-          teamId: store.queryInfo.id,
-          sourceId: props.info.id,
+          teamId:
+            typePD.value == 1
+              ? rootTreeId.value
+              : typePD.value == 2
+              ? resource.value
+              : store.queryInfo.id,
+          sourceId: typePD.value == 1 ? resource.value : props.info.id,
           destIds: departDel,
-          sourceType: '产品',
+          sourceType: typePD.value == 1 ? '资源' : '产品',
           destType: '组织'
         }
       })
@@ -529,7 +696,7 @@
     Promise.all([promise1, promise2]).then((res) => {
       ElMessage({
         type: 'success',
-        message: '共享成功'
+        message: typePD.value == 1 ? '分配成功' : '共享成功'
       })
       closeDialog()
     })
@@ -562,7 +729,6 @@
       }
     }
   }
-  // 中间树形点击取消事件
   const handleBoxCancelClick = (hisData: any, dataList: any, data: any) => {
     let result = hisData.some((item: any) => {
       return item.id == data.id
@@ -578,7 +744,6 @@
       }
     })
   }
-  //中间树形勾选事件
   const handleBoxClick = (hisData: any, dataList: any, data: any) => {
     let result = hisData.some((item: any) => {
       return item.id == data.id
@@ -625,6 +790,11 @@
         if (result) {
           if (data.type == 'del') {
             data.type = 'has'
+            state.departData.forEach((el) => {
+              if (el.id == data.id) {
+                el.type = 'has'
+              }
+            })
             return
           } else {
             data.type = 'has'
@@ -644,6 +814,7 @@
           if (el.id == data.id) {
             if (result) {
               el.type = 'del'
+              data.type = 'del'
             } else {
               state.departData.splice(index, 1)
             }
@@ -652,22 +823,16 @@
       }
     }
   }
-
-  // 获取中间树形数据
   const handleNodeClick = (node: any, load: boolean, search?: string) => {
     if (node && node.data && authority.IsApplicationAdmin([node.data.id, node.data.belongId])) {
       if (typeof load == 'object' && typeof search == 'object') {
         searchValue.value = ''
-      }
-      if (node.disabled == true) {
-        return false
       }
       if (typeof load !== 'boolean') {
         page.currentPage = 1
       } else if (typeof search == 'string') {
         page.currentPage = 1
       }
-
       switch (radio.value) {
         case '2':
           state.loadID = node
@@ -697,7 +862,7 @@
             })
             .then((res: ResultType) => {
               const { result = [] } = res.data
-              result.forEach((item: any) => {
+              result.forEach((item) => {
                 item.disable = !authority.IsApplicationAdmin([item.belongId, node.data.belongId])
               })
               if (load == true) {
@@ -710,25 +875,44 @@
           break
         case '4':
           state.loadID = node
-          let action = 'getFriends'
-          if (node.TypeName === '群组') {
+          let action = ''
+          if (typePD.value == 1) {
             action = 'getPersons'
+            switch (node.data.typeName) {
+              case '部门':
+                action = 'getDepartmentPersons'
+                break
+              case '工作组':
+                action = 'getJobPersons'
+                break
+            }
+          } else {
+            action = 'getGroupCompanies'
+            if (node.TypeName === '子集团') {
+              action = 'getSubgroupCompanies'
+            }
           }
-          API.person[action]({
+
+          API.company[action]({
             data: {
+              id: node.id,
               limit: page.pageSize,
               offset: handleCurrent.value,
               filter: typeof search == 'string' ? search : ''
             }
-          }).then((res: ResultType) => {
-            if (load == true) {
-              state.centerTree.concat(res.data.result)
-            } else {
-              state.centerTree = res.data.result ? res.data.result : []
-            }
-            getHistoryData(node)
           })
-          break
+            .then((res: ResultType) => {
+              if (load == true) {
+                state.centerTree.concat(res.data.result)
+              } else {
+                state.centerTree = res.data.result ? res.data.result : []
+              }
+              getHistoryData(node)
+            })
+            .catch(() => {
+              state.centerTree = []
+              state.personsData = []
+            })
         default:
           break
       }
@@ -740,7 +924,7 @@
   const handleTreeData = (node: any, belongId: string) => {
     node.disabled = !(node.belongId && node.belongId == belongId)
     if (node.nodes) {
-      node.nodes = node.nodes.map((children: any) => {
+      node.nodes = node.nodes.map((children) => {
         return handleTreeData(children, belongId)
       })
     }
@@ -748,7 +932,9 @@
     return node
   }
 
-  // raido = 2 时点击取消图标事件
+  const handleTabClick = (id: string) => {
+    resource.value = id
+  }
   const delContentAuth = (item: any) => {
     if (radio.value == '2') {
       if (item.type == 'del') {
@@ -770,10 +956,48 @@
           }
         })
       }
+    } else if (radio.value == '3') {
+      if (item.type == 'del') {
+        return
+      } else if (item.type == 'add') {
+        state.personsData.forEach((el, index) => {
+          if (el.id == item.id) {
+            state.personsData.splice(index, 1)
+            centerTree.value.setChecked(item.id, false)
+          }
+        })
+      } else {
+        state.personsData.forEach((el, index) => {
+          if (el.id == item.id) {
+            el.type = 'del'
+            if (state.centerTree.length !== 0) {
+              centerTree.value.setChecked(el.id, false)
+            }
+          }
+        })
+      }
+    } else {
+      if (item.type == 'del') {
+        return
+      } else if (item.type == 'add') {
+        state.identitysData.forEach((el, index) => {
+          if (el.id == item.id) {
+            state.identitysData.splice(index, 1)
+            centerTree.value.setChecked(item.id, false)
+          }
+        })
+      } else {
+        state.identitysData.forEach((el, index) => {
+          if (el.id == item.id) {
+            el.type = 'del'
+            if (state.centerTree.length !== 0) {
+              centerTree.value.setChecked(el.id, false)
+            }
+          }
+        })
+      }
     }
   }
-
-  // radio = 1 时点击图标取消事件
   const delContent = (item: any) => {
     if (item.type == 'del') {
       return
@@ -793,14 +1017,72 @@
       })
     }
   }
-</script>
-
-<style>
-  .penultimate > .el-tree-node__content {
-    color: var(--el-text-color-disabled);
-    cursor: not-allowed;
+  const searchResource = () => {
+    API.product
+      .searchResource({
+        data: {
+          id: props.info.id,
+          offset: 0,
+          limit: 1000,
+          filter: ''
+        }
+      })
+      .then((res: ResultType) => {
+        if (res.success) {
+          tabs.value = res.data.result
+          resource.value = res.data.result[0].id
+        }
+      })
   }
-</style>
+
+  // 节点ID和对象映射关系
+  const rootTreeId = ref<string>('')
+  const parentIdMap: any = {}
+  let cascaderTree = ref<OrgTreeModel[]>([])
+  const getCompanyTree = () => {
+    API.company.getCompanyTree({}).then((res: ResultType) => {
+      rootTreeId.value = res.data.data.id
+      let orgTree = []
+      orgTree.push(res.data)
+      initIdMap(orgTree)
+      cascaderTree.value = isAuthAdmin(filter(orgTree))
+      getHistoryData()
+    })
+  }
+  const isAuthAdmin = (nodes: any) => {
+    //判断是否有操作权限
+    for (const node of nodes) {
+      node.disabled = !authority.IsApplicationAdmin([node.data.id, node.data.belongId])
+      if (node.children) {
+        isAuthAdmin(node.children)
+      }
+    }
+    return nodes
+  }
+  // 初始化ID和对象映射关系
+  const initIdMap = (nodes: any[]) => {
+    for (const node of nodes) {
+      parentIdMap[node.id] = node
+      if (node.children) {
+        initIdMap(node.children)
+      }
+    }
+  }
+  // 过滤掉工作组作为表单级联数据
+  const filter = (nodes: OrgTreeModel[]): OrgTreeModel[] => {
+    if (typePD.value == 1) {
+      nodes = nodes.filter((node) => node.data?.typeName !== '工作组')
+    } else {
+      nodes = nodes.filter(
+        (node) => node.data?.typeName !== '工作组' && node.data?.authAdmin === true
+      )
+    }
+    for (const node of nodes) {
+      node.children = filter(node.children)
+    }
+    return nodes
+  }
+</script>
 
 <style lang="scss" scoped>
   .footer-btn {
