@@ -133,7 +133,9 @@ export default {
     getAllSubgroups: company + '/get/all/subgroups', //查询所有子集团
     getCompanyTree: company + '/get/company/tree', //查询单位组织树
     getGroupTree: company + '/get/group/tree', //查询集团组织树
-    getAuthorityTree: company + '/get/authority/tree' //查询组织继承角色树
+    getAuthorityTree: company + '/get/authority/tree', //查询组织继承角色树
+    getAssignedDepartments: company + '/get/assigned/departments', //获取单位空间分配的部门
+    getTargetsByAuthority: company + '/get/targets/by/authority' //获取单位空间拥有角色的组织
   },
   market: {
     merchandise: market + '​/approval​/merchandise', //商品上架审核

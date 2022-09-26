@@ -1,46 +1,59 @@
-// @ts-nocheck
-
-import { isObject } from '@vueuse/shared'
 import { App } from 'vue'
 import request from './request'
 import urls from './RESTFULURL'
+import { useUserStore } from '@/store/user'
 const FUNS: { [key: string]: any } = {}
+const APPFUNS: { [key: string]: any } = {}
 
-// 拒绝处理的API
-const REFUSE_API = ['person_register', 'person_login',"person_createAPPtoken", 'person_changeWorkspace']
-//子应用 支持的API
-let ACCETP_API: { [key: string]: boolean } = { APP_INIT: true }
+const InitRequests = (req: any, urls: any, loadToken: boolean) => {
+  Object.keys(urls).forEach((key) => {
+    let sub = urls[key]
+    switch (typeof (sub)) {
+      case "function":
+        req[key] = (options: any, ...args: any) => {
+          return request(sub(...args), LoadToken(options, loadToken))
+        }
+        break
+      case "string":
+        req[key] = (options: any) => {
+          return request(sub, LoadToken(options, loadToken || key === "createAPPtoken"))
+        }
+        break
+      case "object":
+        req[key] = {}
+        InitRequests(req[key], sub, loadToken)
+        break
+      default:
+        throw new Error("Configuration not supported.")
+    }
+  })
+}
 
-Object.keys(urls).forEach((key) => {
-  if (isObject(urls[key])) {
-    FUNS[key] = {}
-    Object.keys(urls[key]).forEach((item) => {
-      if (typeof urls[key][item] === 'function') {
-        const apiStr = `${key}_${item}`
-         ACCETP_API[apiStr] = true
-        // 接口拼接额外动态参数
-        FUNS[key][item] = (extraStr: string, options = {}) => {
-          return request(urls[key][item](extraStr), options)
-        }
-      } else {
-        const apiStr = `${key}_${item}`
-        !REFUSE_API.includes(apiStr) && (ACCETP_API[`${key}_${item}`] = true)
-        FUNS[key][item] = (options = {}) => {
-          return request(urls[key][item], options)
-        }
-      }
-    })
-  } else {
-    FUNS[key] = (options = {}) => {
-      ACCETP_API[key] = true
-      return request(urls[key], options)
+const LoadToken = (options: any, loadToken: boolean) => {
+  options = options || {}
+  if(loadToken){
+    options.headers = options.headers || {}
+    const store = useUserStore()
+    if (store.userToken !== '' && !options.headers['Authorization']) {
+      options.headers['Authorization'] = store.userToken
     }
   }
-})
+  return options
+}
+
+InitRequests(FUNS, urls, true)
+
+InitRequests(APPFUNS, urls, false)
+console.log('APPFUNS',APPFUNS);
+
+delete APPFUNS.person.login
+delete APPFUNS.person.logout
+delete APPFUNS.person.register
+delete APPFUNS.person.changeWorkspace
 
 export function setGlobalProperties(app: App<Element>) {
   app.config.globalProperties.$API = FUNS
 }
 
 export default FUNS
-export { ACCETP_API }
+export { APPFUNS }
