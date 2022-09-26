@@ -5,6 +5,23 @@ import anyStore from '@/utils/anystore'
 import notify from '@/utils/notify'
 const hisMsgCollName = "chat-message"
 
+enum TargetType {
+    Person = "人员",
+    Company = "单位",
+    Group = "集团",
+    SubGroup = "子集团",
+    Department = "部门",
+    Job = "工作组",
+    Cohort = "群组"
+}
+
+enum MessageType {
+    Text = "文本",
+    Image = "图片",
+    Video = "视频",
+    Voice = "语音",
+    Recall = "撤回"
+}
 
 // 消息服务
 // 创建链接
@@ -204,7 +221,7 @@ const orgChat: orgChatType = {
                                 chat = { ...chat, msgTime, msgType, msgBody, showTxt, isTop }
                             }
                         }
-                        let typeName = chat.typeName == '人员' ? '' : `[${chat.typeName}]`
+                        let typeName = chat.typeName == TargetType.Person ? '' : `[${chat.typeName}]`
                         orgChat.nameMap[chat.id] = `${chat.name}${typeName}`
                         return chat
                     })
@@ -271,7 +288,7 @@ const orgChat: orgChatType = {
             chat.noRead = 0
             orgChat.curChat.value = chat
             await orgChat.getHistoryMsg()
-            if (chat.typeName !== "人员") {
+            if (chat.typeName !== TargetType.Person) {
                 await orgChat.getPersons(true)
             }
             orgChat.openChats.push(orgChat.curChat.value)
@@ -303,7 +320,7 @@ const orgChat: orgChatType = {
                     res.data.result.forEach((item: any) => {
                         if (item.team) {
                             item.name = item.team.name
-                            let typeName = item.typeName == '人员' ? '' : `[${item.typeName}]`
+                            let typeName = item.typeName == TargetType.Person ? '' : `[${item.typeName}]`
                             orgChat.nameMap[item.id] = `${item.name}${typeName}`
                         }
                         orgChat.qunPersons.value.push(item)
@@ -339,7 +356,7 @@ const orgChat: orgChatType = {
                 if (orgChat.isConnected() && orgChat.curChat) {
                     let funcName = 'QueryFriendMsg'
                     let idName = 'friendId'
-                    if (orgChat.curChat.value.typeName != '人员') {
+                    if (orgChat.curChat.value.typeName != TargetType.Person) {
                         funcName = 'QueryCohortMsg'
                         idName = 'cohortId'
                     }
@@ -448,13 +465,13 @@ const orgChat: orgChatType = {
             let newChats: ImMsgChildType[] = []
             item.chats.forEach((chat: ImMsgChildType) => {
                 let sessionId = data.toId
-                if (chat.typeName === "人员" &&
+                if (chat.typeName === TargetType.Person &&
                     data.fromId !== orgChat.userId.value &&
                     data.toId === orgChat.userId.value) {
                     sessionId = data.fromId
                 }
-                let isMatch = (chat.typeName === "人员" && item.id === data.spaceId && sessionId == chat.id)
-                isMatch = isMatch || (chat.typeName !== "人员" && sessionId == chat.id)
+                let isMatch = (chat.typeName === TargetType.Person && item.id === data.spaceId && sessionId == chat.id)
+                isMatch = isMatch || (chat.typeName !== TargetType.Person && sessionId == chat.id)
                 if (isMatch) {
                     if (chat.spaceId === orgChat.userId.value) {
                         orgChat._cacheMsg(sessionId, data)
@@ -467,7 +484,7 @@ const orgChat: orgChatType = {
                     } else {
                         chat.showTxt = data.showTxt
                     }
-                    if (chat.typeName !== "人员") {
+                    if (chat.typeName !== TargetType.Person) {
                         chat.showTxt = orgChat.nameMap[data.fromId] + ": " + chat.showTxt
                     }
                     data.showTxt = chat.showTxt
