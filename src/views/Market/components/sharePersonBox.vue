@@ -202,13 +202,14 @@ const getCompanyTree = () => {
     })
     .then((res: ResultType) => {
       cascaderTree.value = res.data?.result ?? []
-      let obj = {
+      let obj:any = {
         id: authority.getUserId(),
         name: '我的好友',
         label: '我的好友',
         parentId: '0',
         belongId: authority.getUserId()
       }
+      obj.data = obj
       cascaderTree.value.forEach((el) => {
         el.label = el.team.name
         el.data = el
@@ -667,12 +668,15 @@ const handleNodeClick = (node: any, load: boolean, search?: string) => {
         break
       case '4':
         state.loadID = node
+        let module = 'person'
         let action = 'getFriends'
-        if (node.TypeName === "群组") {
+        if (node.typeName === "群组") {
+          module = 'cohort'
           action = "getPersons"
         }
-        API.person[action]({
+        API[module][action]({
           data: {
+            id: node.id,
             limit: page.pageSize,
             offset: handleCurrent.value,
             filter: typeof search == 'string' ? search : ''

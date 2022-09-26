@@ -1,26 +1,27 @@
 import { onMounted, onUnmounted, Ref } from 'vue'
 //所有可支持的消息列表
 import { APPFUNS } from '@/services'
-import funcs from '@/services/RESTFULURL'
 
 export default function (iframeRef: Ref<any>, appId: string, link: string) {
   console.log('注入POSTMESSAGE')
+  let funcs = {}
   onMounted(() => {
     // 加载app可用urls
-    const loadUrls = (urls: any) => {
+    const loadUrls = (urls: any, obj: any) => {
       Object.keys(urls).forEach((key) => {
         let sub = urls[key]
         switch (typeof (sub)) {
           case "function":
-            urls[key] = sub("")
+            obj[key] = ""
             break
           case "object":
-            loadUrls(sub)
+            obj[key] = {}
+            loadUrls(sub, obj[key])
             break
         }
       })
     }
-    loadUrls(funcs)
+    loadUrls(APPFUNS, funcs)
     // 监听iframe传递的数据
     window.addEventListener('message', handleReceiveMsg)
   })
