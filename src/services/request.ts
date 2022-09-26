@@ -3,7 +3,6 @@ import Qs from 'qs'
 import axios from 'axios'
 import autoMatchBaseUrl from './autoMatchBaseUrl'
 import { TIMEOUT } from '@/constant'
-import { useUserStore } from '@/store/user'
 import router from '@/router'
 import { ElMessage } from 'element-plus'
 
@@ -86,22 +85,6 @@ function checkStatus(response) {
 }
 
 /**
- * requestInstance 实例全局请求扩展配置
- * 添加一个请求拦截器 （于transformRequest之前处理）
- */
-const axiosRequest = {
-  success: (config) => {
-    // 以下代码，鉴权token,可根据具体业务增删。
-    const store = useUserStore()
-    if (store.userToken !== '' && !config.headers['Authorization']) {
-      config.headers['Authorization'] = store.userToken
-    }
-    return config
-  },
-  error: (error) => Promise.reject(error)
-}
-
-/**
  * requestInstance 实例全局请求响应处理
  * 添加一个返回拦截器 （于transformResponse之后处理）
  * 返回的数据类型默认是json，若是其他类型（text）就会出现问题，因此用try,catch捕获异常
@@ -137,7 +120,6 @@ const axiosResponse = {
   }
 }
 
-requestInstance.interceptors.request.use(axiosRequest.success, axiosRequest.error)
 requestInstance.interceptors.response.use(axiosResponse.success, axiosResponse.error)
 
 /**

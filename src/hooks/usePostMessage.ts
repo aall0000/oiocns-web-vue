@@ -1,8 +1,7 @@
 import { onMounted, onUnmounted, ref, Ref, nextTick } from 'vue'
-import API from '@/services'
 import { isObject } from '@vueuse/shared'
 //所有可支持的消息列表
-import { ACCETP_API } from '@/services'
+import { APPFUNS } from '@/services'
 
 export default function (iframeRef: Ref<any>, appId: string, link: string) {
   console.log('注入POSTMESSAGE')
@@ -35,7 +34,7 @@ export default function (iframeRef: Ref<any>, appId: string, link: string) {
       extar = type.extar
     }
     // 若不存在消息类型 or 消息类型处于忽略名单,则放弃处理
-    if (!endType || !checkCode || !ACCETP_API[endType]) {
+    if (!endType || !checkCode ) {
       return console.error('平台不支持该请求', endType, checkCode)
     }
     sendMessage(endType, data, msg.data, extar)
@@ -61,7 +60,7 @@ export default function (iframeRef: Ref<any>, appId: string, link: string) {
         return console.error('未获取应用id!请重试')
       }
       // 获取应用token
-      const { data, success } = await API.person.createAPPtoken({
+      const { data, success } = await APPFUNS.person.createAPPtoken({
         data: { appId, funcAuthList: [] }
       })
       if (success) {
@@ -71,7 +70,7 @@ export default function (iframeRef: Ref<any>, appId: string, link: string) {
           link
         )
       }
-    } else if (ACCETP_API[type]) {
+    } else {
       // 判断是否模块请求
       const isModelUrl = type.includes('_')
       const queryUrl = isModelUrl ? type.split('_') : queryInfo.type
@@ -85,7 +84,7 @@ export default function (iframeRef: Ref<any>, appId: string, link: string) {
         headers: { Authorization: APP_TOKEN.value },
         data: params
       }
-      const FUN = API[queryUrl[0]][queryUrl[1]]
+      const FUN = APPFUNS[queryUrl[0]][queryUrl[1]]
       if (extar) {
         await FUN(extar, option)
           .then((res: ResultType) => {
@@ -122,8 +121,6 @@ export default function (iframeRef: Ref<any>, appId: string, link: string) {
         console.log('平台回复消息内容', response)
         iframeRef.value.contentWindow.postMessage(response, link)
       })
-    } else {
-      console.log('不支持消息类型', type)
     }
   }
 }
