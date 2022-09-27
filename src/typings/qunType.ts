@@ -1,5 +1,3 @@
-// @ts-nocheck
-
 //好友/群列表 数据类型
 interface userType {
   code: string

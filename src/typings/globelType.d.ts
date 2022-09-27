@@ -25,3 +25,9 @@ type PaginationProps= {
   layout: string;
 }
 
+interface ResultType {
+  code: number
+  data: any
+  msg: string
+  success: boolean
+}
