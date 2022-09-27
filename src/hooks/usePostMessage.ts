@@ -1,15 +1,27 @@
-import { onMounted, onUnmounted, ref, Ref, nextTick } from 'vue'
-import { isObject } from '@vueuse/shared'
+import { onMounted, onUnmounted, Ref } from 'vue'
 //所有可支持的消息列表
 import { APPFUNS } from '@/services'
 
 export default function (iframeRef: Ref<any>, appId: string, link: string) {
   console.log('注入POSTMESSAGE')
-  const APP_TOKEN = ref<string>('')
-  //所有可支持的消息列表
-  // console.log('ACCETP_API', ACCETP_API)
-
+  let funcs = {}
   onMounted(() => {
+    // 加载app可用urls
+    const loadUrls = (urls: any, obj: any) => {
+      Object.keys(urls).forEach((key) => {
+        let sub = urls[key]
+        switch (typeof (sub)) {
+          case "function":
+            obj[key] = ""
+            break
+          case "object":
+            obj[key] = {}
+            loadUrls(sub, obj[key])
+            break
+        }
+      })
+    }
+    loadUrls(APPFUNS, funcs)
     // 监听iframe传递的数据
     window.addEventListener('message', handleReceiveMsg)
   })
@@ -17,110 +29,37 @@ export default function (iframeRef: Ref<any>, appId: string, link: string) {
     // 退出则撤销信息监听
     window.removeEventListener('message', handleReceiveMsg)
   })
-  type MSGType = {
-    data: { type: string | { url: string; extar: string }; checkCode: any; data: any }
-  }
   // 接受子页面信息
-  const handleReceiveMsg = async (msg: MSGType) => {
-    console.log('平台接受消息\n', msg.data.type)
-
-    // 判断是否处理改信息
-    const { type, checkCode, data } = msg.data
-    // const obj = { url: 'collection.insert', extar: 'aaa' }
-    let endType: string = type as string
-    let extar = ''
-    if (isObject(type)) {
-      endType = type.url
-      extar = type.extar
-    }
-    // 若不存在消息类型 or 消息类型处于忽略名单,则放弃处理
-    if (!endType || !checkCode ) {
-      return console.error('平台不支持该请求', endType, checkCode)
-    }
-    sendMessage(endType, data, msg.data, extar)
+  const handleReceiveMsg = async (message: any) => {
+    ((msg: any) => {
+      setTimeout(async () => {
+        let result: any = { sendId: msg.data.sendId, from: "orginone" }
+        try {
+          let res: any = await execAppRequest(msg.data)
+          result = { ...result, ...res }
+        }
+        catch (ex) {
+          result.exception = ex
+        }
+        finally {
+          iframeRef.value.contentWindow.postMessage(result, link)
+        }
+      })
+    })(message)
   }
-
-  // 向子页面iframe传递数据的事件
-  const sendMessage = async (type: string, params = {}, queryInfo: any, extar?: string) => {
-    // 返回信息
-    let response: any = {
-      from: 'HOST', //SDK 判断消息来源的字段
-      to: queryInfo.from,
-      appId,
-      type,
-      success: true,
-      code: 200, //SDK 判断消息成功的字段
-      msg: '成功！',
-      checkCode: queryInfo.checkCode, //sdk 判断消息的核心字段
-      data: null
-    }
-
-    if (type == 'APP_INIT') {
-      if (!appId) {
-        return console.error('未获取应用id!请重试')
-      }
-      // 获取应用token
-      const { data, success } = await APPFUNS.person.createAPPtoken({
-        data: { appId, funcAuthList: [] }
-      })
-      if (success) {
-        APP_TOKEN.value = data.accessToken
-        iframeRef.value.contentWindow.postMessage(
-          { code: 200, msg: '初始化完成', success: true },
-          link
-        )
-      }
-    } else {
-      // 判断是否模块请求
-      const isModelUrl = type.includes('_')
-      const queryUrl = isModelUrl ? type.split('_') : queryInfo.type
-
-      console.log('判断是否已获得应用token', !!APP_TOKEN.value)
-      if (!APP_TOKEN.value) {
-        return console.warn('应用登录失败!请重试')
-      }
-
-      let option = {
-        headers: { Authorization: APP_TOKEN.value },
-        data: params
-      }
-      const FUN = APPFUNS[queryUrl[0]][queryUrl[1]]
-      if (extar) {
-        await FUN(extar, option)
-          .then((res: ResultType) => {
-            const { data, success } = res
-            response.data = data
-          })
-          .catch(() => {
-            response.data = null
-            const errorObj = {
-              success: true,
-              code: 500, //SDK 判断消息成功的字段
-              msg: '失败！'
-            }
-            response = { ...response, ...errorObj }
-          })
-      } else {
-        await FUN(option)
-          .then((res: ResultType) => {
-            const { data, success } = res
-            response.data = data
-          })
-          .catch(() => {
-            response.data = null
-            const errorObj = {
-              success: true,
-              code: 500, //SDK 判断消息成功的字段
-              msg: '失败！'
-            }
-            response = { ...response, ...errorObj }
-          })
-      }
-
-      nextTick(() => {
-        console.log('平台回复消息内容', response)
-        iframeRef.value.contentWindow.postMessage(response, link)
-      })
+  // 处理app请求
+  const execAppRequest = async (data: any) => {
+    switch (data.url) {
+      case "actions":
+        return { success: true, code: 200, data: funcs, msg: "成功." }
+      default:
+        let urls = data.url.split('.')
+        let action = APPFUNS
+        for (let index = 0; index < urls.length; index++) {
+          action = action[urls[index]];
+        }
+        let requst = action as Function
+        return requst(data.options, data.args)
     }
   }
 }

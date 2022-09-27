@@ -83,7 +83,7 @@
       { name: '消息', icon: 'ChatDotSquare', path: '/chat' },
       { name: '工作台', icon: 'DataAnalysis', path: '/workHome' },
       { name: '关系', icon: 'SetUp', path: '/relation' },
-      { name: '仓库', icon: 'HomeFilled', path: '/market' },
+      { name: '仓库', icon: 'Box', path: '/market' },
       { name: '应用', icon: 'Menu', path: '#', bottom: true },
     ],
     clickMenu: [],
