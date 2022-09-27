@@ -10,13 +10,13 @@
   <div class="container">
     <div class="limit_table_height">
       <!-- 采购订单 -->
-      <DiyTable v-if="route.fullPath.includes('buy')" ref="diyTable" :hasTitle="true" :tableData="state.orderList"
-        :tableHead="state.tableHeadBuy" :options="{ noPage: true }" @handleUpdate="handleUpdate" @select="handleSelect">
+      <DiyTable v-if="route.fullPath.includes('buy')" ref="diyTable" :tableData="state.orderMessage.list"
+        :tableHead="state.tableHeadBuy" :total="state.orderMessage.total" @handleUpdate="handleUpdate" @select="handleSelect">
         <template #expand="props">
           <div style="margin-left: 50px">
             <DiyTable ref="diyTableDetail" :tableData="props.row.details" :tableHead="state.tableHeadBuyDetail"
               :options="{ noPage: true }">
-              
+
               <template #merchandiseStatus="scope">
                 <el-tag v-show="scope.row.merchandise">在售</el-tag>
                 <el-tag class="ml-2" type="danger" v-show="!scope.row.merchandise">已下架</el-tag>
@@ -44,9 +44,8 @@
         </template>
       </DiyTable>
       <!--售卖订单 -->
-      <DiyTable v-else ref="diyTable" :hasTitle="true" :tableData="state.orderList" :tableHead="state.tableHeadSell"
-        :options="{ noPage: true }" @handleUpdate="handleUpdate" @select="handleSelect">
-
+      <DiyTable v-else ref="diyTable" :hasTitle="true" :tableData="state.orderMessage.list" :tableHead="state.tableHeadSell"
+        :total="state.orderMessage.total" @handleUpdate="searchSellList" @select="handleSelect">
         <template #merchandiseStatus="scope">
           <el-tag v-show="scope.row.merchandise">在售</el-tag>
           <el-tag class="ml-2" type="danger" v-show="!scope.row.merchandise">已下架</el-tag>
@@ -69,13 +68,7 @@
       <payView v-if="payDialog.show" :order="payDialog.data" @close="closePay"></payView>
       <payList v-if="payListDialog.show" :selectLimit="0" @closeDialog="closePayList" />
     </div>
-    <div class="page-pagination">
-
-      <el-pagination  @size-change="(e) => handlePaginationChange(e, 'limit')"
-        @current-change="(e) => handlePaginationChange(e, 'current')" background :page-sizes="pageSizes"
-        v-model:currentPage="pagination.current" v-model:page-size="pagination.limit"
-        layout="total, prev, pager, next, sizes" :total="pageStore.total" />
-    </div>
+    
   </div>
 </template>
 <script lang="ts" setup>
@@ -91,6 +84,9 @@ import { ElTable } from 'element-plus'
 import orgChat from '@/hubs/orgchat'
 import moment from 'moment'
 import { useRoute, useRouter } from 'vue-router'
+import type { ListProps } from '@/module/store/order'
+import OrderSevice from '@/module/store/order'
+import { Merchandise, OrderType } from './order'
 
 const router = useRouter()
 const route = useRoute()
@@ -102,11 +98,9 @@ const pageStore = reactive({
   total: 0
 })
 const searchType = ref<string>('buy')
-const isBuy = ref<boolean>(true)
 const pageSizes = ref<Array<any>>(PAGE_SIZES)
 const payDialog = reactive({ show: false, data: {} })
 const payListDialog = reactive({ show: false, data: {} })
-const remoteOperate = ref<boolean>(false)
 const handleSelect = (key: string, keyPath: string[]) => {
   console.log(key, keyPath)
 }
@@ -134,7 +128,6 @@ onMounted(() => {
   } else {
     getTableList('sell')
   }
-
 })
 
 const options = ref<ListItem[]>([])
@@ -144,7 +137,15 @@ const handleUpdate = (page: any) => {
   getTableList(searchType.value)
 }
 const state = reactive({
-  qunList: [], orderList: [], tableHeadBuy: [
+  qunList: [],
+  orderMessage: {
+    list: [],
+    total: 0,
+    pageSize: 20,
+    current:0,
+  },
+  orderList: [],
+  tableHeadBuy: [
     {
       type: 'expand',
       name: 'expand',
@@ -212,14 +213,7 @@ const state = reactive({
       minWidth: '100',
       formatter: (row: any, column: any) => moment(row.createTime).format('YYYY/MM/DD HH:mm:ss')
     },
-    // {
-    //   type: 'slot',
-    //   label: '支付记录',
-    //   fixed: 'right',
-    //   align: 'center',
-    //   width: '150',
-    //   name: 'paylist'
-    // },
+    
     {
       type: 'slot',
       label: '商品状态',
@@ -287,14 +281,7 @@ const state = reactive({
       width: '160',
       formatter: (row: any, column: any) => moment(row.createTime).format('YYYY/MM/DD HH:mm:ss')
     },
-    // {
-    //   type: 'slot',
-    //   label: '支付记录',
-    //   fixed: 'right',
-    //   align: 'center',
-    //   minWidth: '150',
-    //   name: 'paylist'
-    // },
+   
     {
       type: 'slot',
       label: '商品状态',
@@ -323,7 +310,7 @@ const getTableList = async (type: string) => {
       searchBuyList()
       break
     case 'sell':
-      searchSellList()
+      searchSellList({current:0,pageSize:20})
       break
     case 'pre-sell':
       searchPreSellList()
@@ -358,43 +345,20 @@ const searchPreSellList = async () => {
     })
 }
 //查询已出售订单
-const searchSellList = async () => {
+const searchSellList = async (params: ListProps) => {
   state.orderList = [];
-  await $services.order
-    .searchSellList({
-      data: {
-        offset: (pagination.current - 1) * pagination.limit,
-        limit: pagination.limit,
-        status: statusvalue.value ? statusvalue.value : 0, //后续改成-1
-        filter: ''
-      }
-    })
-    .then((res: ResultType) => {
-      var { result = [], total = 0 } = res.data
-      pageStore.total = total
-      state.orderList = result?.map(
-        (item: {
-          merchandise: { caption: any; days: any; sellAuth: any; price: any; information: any; marketId: any }
-          order: { code: any; name: any; status: any, belongId: any }
-        }) => {
-          // if(!item.merchandise) {item.merchandise = {caption: null, days: null, sellAuth: null, price:null, information: null}}
-          if (!item.order) {
-            item.order = { code: null, name: null, status: null, belongId: null }
-          }
-          return {
-            ...item,
-            ordertype: 'sell',
-            code: item.order.code,
-            belongId: item.order.belongId,
-            marketId: item?.merchandise ? item.merchandise.marketId : null
-          }
-        }
-      )
-    })
+  const {data,total,success} =await OrderSevice.getSellList({
+    ...params,
+    filter: '',
+    status: statusvalue.value ? statusvalue.value : 0 //后续改成-1
+  })
+  state.orderMessage.total = total
+  state.orderMessage.list = data
+
 }
 //查询已购入订单
 const searchBuyList = async () => {
-  state.orderList = [];
+  // state.orderMessage.list = [];
   await $services.order
     .searchBuyList({
       data: {
@@ -406,14 +370,12 @@ const searchBuyList = async () => {
     })
     .then((res: ResultType) => {
       const { result = [], total = 0 } = res.data
-      pageStore.total = total
-     
-
-      state.orderList = result?.map((item: any) => {
+      state.orderMessage.total = total
+      state.orderMessage.list = result?.map((item: any) => {
         return {
           ...item,
           ordertype: 'buy',
-          hasChildren: item.details && item.details.length > 0 ?true :false,
+          hasChildren: item.details && item.details.length > 0 ? true : false,
           marketId: item.merchandise ? item.merchandise.marketId : null
         }
       })
@@ -667,76 +629,12 @@ const handlePaginationChange = (newVal: number, type: 'current' | 'limit') => {
   pagination[type] = newVal
   getTableList(searchType.value)
 }
-//配置表头背景
-const getRowClass = ({
-  row,
-  column,
-  rowIndex,
-  columnIndex
-}: {
-  row: any
-  column: any
-  rowIndex: number
-  columnIndex: number
-}) => {
-  if (rowIndex === 0) {
-    return {
-      background: 'var(--el-color-primary-light-9)',// '#F5F6FC',
-      color: 'var(--el-text-color-primary)',// '#333333',
-      height: '36px',
-      padding: '2px 0'
-    }
-  } else {
-    return {}
-  }
-}
 
 interface ListItem {
   value: string
   label: string
 }
 
-const remoteMethod = (query: string) => {
-  if (query) {
-    loading.value = true
-    $services.order
-      .searchPersons({
-        data: {
-          text: query,
-          offset: 0,
-          limit: 10
-        }
-      })
-      .then((res: ResultType) => {
-        if (res.code == 200) {
-          let arr: { value: any; label: any }[] = []
-          console.log(res.data.result != undefined, res.data.result)
-          if (res.data.result != undefined) {
-            let states = res.data.result
-            states.forEach((el: any) => {
-              let obj = {
-                value: el.id,
-                label: el.name
-              }
-              arr.push(obj)
-            })
-            options.value = arr
-            loading.value = false
-          } else {
-            options.value = arr
-            loading.value = false
-          }
-        } else {
-          ElMessage({
-            message: res.msg,
-            type: 'warning'
-          })
-        }
-      })
-  } else {
-    options.value = []
-  }
-}
 </script>
 <style lang="scss" scoped>
 .container {
@@ -749,7 +647,7 @@ const remoteMethod = (query: string) => {
   border: 0;
 
   .limit_table_height {
-    height: calc(100vh - 170px);
+    height: calc(100vh - 120px);
   }
 
   .tables {

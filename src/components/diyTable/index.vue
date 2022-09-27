@@ -155,7 +155,7 @@
     }
     batchOperate?: any[]
     queryParams?: any[]
-    cell?: boolean
+    cell?: boolean,
   }
   const props = withDefaults(defineProps<Props>(), {
     tableName: '',
@@ -178,7 +178,7 @@
     },
     batchOperate: () => [],
     queryParams: () => [],
-    cell: false
+    cell: false,
   })
 
   const {
@@ -324,14 +324,14 @@
     selectAll(false, false)
     page.value.pageSize = val
     page.value.currentPage = 1
-    emit('handleUpdate', page.value)
+    emit('handleUpdate', {pageSize:page.value.pageSize,current: page.value.current})
   }
   const handleCurrentChange = (val: any) => {
     diyTable.value.clearSelection()
     isAllSelect.value = true
     selectAll(false, false)
     page.value.currentPage = val
-    emit('handleUpdate', page.value)
+    emit('handleUpdate',  {pageSize:page.value.pageSize,current: page.value.current})
   }
   onMounted(() => {
     // console.log('props.options.selectLimit', props.options.selectLimit)
