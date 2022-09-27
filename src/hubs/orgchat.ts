@@ -511,6 +511,10 @@ const orgChat: orgChatType = {
                     newChats.push(chat)
                 }
             })
+            // 按照 时间排序
+            newChats.sort((a, b) => {
+                return new Date(b.msgTime).getTime() - new Date(a.msgTime).getTime()
+            })
             item.chats = newChats
         })
         orgChat._cacheChats()
