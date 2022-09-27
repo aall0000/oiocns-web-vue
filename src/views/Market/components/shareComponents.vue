@@ -123,8 +123,21 @@
   import Author from './components/author.vue'
   import authority from '@/utils/authority'
   import { useUserStore } from '@/store/user'
+  import Application from '@/module/store/app.ts'
   import type { TabsPaneContext } from 'element-plus'
   import { AnyAaaaRecord } from 'dns'
+  const typePD: any = computed(() => {
+    if (props.dialogType == '1') {
+      return 1
+    } else {
+      if (props.type == 2) {
+        return 2
+      } else {
+        return 3
+      }
+    }
+  })
+  const application = new Application(props.info, typePD.value)
   interface Tree {
     id: string
     label: string
@@ -188,17 +201,7 @@
   const handleCurrent: any = computed(() => {
     return (page.currentPage - 1) * page.pageSize
   })
-  const typePD: any = computed(() => {
-    if (props.dialogType == '1') {
-      return 1
-    } else {
-      if (props.type == 2) {
-        return 2
-      } else {
-        return 3
-      }
-    }
-  })
+
   watch(
     () => radio.value,
     (newValue, oldValue) => {
@@ -333,31 +336,9 @@
   }
 
   // 获取群组信息
-  const getFriendsList = () => {
-    API.cohort
-      .getJoinedCohorts({
-        data: { offset: 0, limit: 10000, filter: '' }
-      })
-      .then((res: ResultType) => {
-        cascaderTree.value = res.data?.result ?? []
-        let obj: any = {
-          id: authority.getUserId(),
-          name: '我的好友',
-          label: '我的好友',
-          parentId: '0',
-          belongId: authority.getUserId()
-        }
-        obj.data = obj
-        cascaderTree.value.forEach((el) => {
-          el.label = el.team.name
-          el.data = el
-          el.disabled = !authority.IsApplicationAdmin([el.id, el.belongId])
-        })
-        console.log(cascaderTree.value)
-
-        cascaderTree.value.unshift(obj)
-        getHistoryData()
-      })
+  const getFriendsList = async () => {
+    cascaderTree.value = await application.getJoinedCohorts()
+    getHistoryData()
   }
 
   // 获取集团数据
@@ -423,103 +404,64 @@
   const getHistoryData = (data?: any) => {
     switch (radio.value) {
       case '1':
-        setTimeout(() => {
-          API.product
-            .extendQuery({
-              data: {
-                teamId:
-                  typePD == 1
-                    ? rootTreeId.value
-                    : typePD == 2
-                    ? resource.value
-                    : store.queryInfo.id,
-                sourceId: typePD == 1 ? resource.value : props.info.id,
-                sourceType: typePD == 1 ? '资源' : '产品',
-                destType: '组织'
-              }
-            })
-            .then((res: ResultType) => {
-              state.departHisData = res.data.result ? res.data.result : []
-              let arr: any[] = []
-              state.departHisData.forEach((el) => {
-                arr.push(el.id)
-              })
-              setTimeout(() => {
-                leftTree.value.setCheckedKeys(arr, true)
-              }, 300)
-            })
+        setTimeout(async () => {
+          state.departHisData = await application.getHistoryData(
+            radio.value,
+            typePD !== 3 ? resource.value : ''
+          )
+          let arr: any[] = []
+          state.departHisData.forEach((el) => {
+            arr.push(el.id)
+          })
+          setTimeout(() => {
+            leftTree.value.setCheckedKeys(arr, true)
+          }, 300)
         }, 300)
-
         break
       case '2':
-        API.product
-          .extendQuery({
-            data: {
-              teamId: data.id,
-              sourceId: typePD == 1 ? resource.value : props.info.id,
-              sourceType: typePD == 1 ? '资源' : '产品',
-              destType: '角色'
-            }
-          })
-          .then((res: ResultType) => {
-            state.authorHisData = res.data.result ? res.data.result : []
-            state.authorData = JSON.parse(JSON.stringify(state.authorHisData))
-            let arr: any[] = []
-            state.authorData.forEach((el) => {
-              el.type = 'has'
-              arr.push(el.id)
-            })
-            if (state.centerTree.length > 0) {
-              centerTree.value.setCheckedKeys(arr, true)
-            }
-          })
-
+        state.authorHisData = await application.getHistoryData(
+          radio.value,
+          typePD !== 3 ? resource.value : ''
+        )
+        state.authorData = JSON.parse(JSON.stringify(state.authorHisData))
+        let arr: any[] = []
+        state.authorData.forEach((el) => {
+          el.type = 'has'
+          arr.push(el.id)
+        })
+        if (state.centerTree.length > 0) {
+          centerTree.value.setCheckedKeys(arr, true)
+        }
         break
       case '3':
-        API.product
-          .extendQuery({
-            data: {
-              teamId: data.id,
-              sourceId: typePD == 1 ? resource.value : props.info.id,
-              sourceType: typePD == 1 ? '资源' : '产品',
-              destType: '岗位'
-            }
-          })
-          .then((res: ResultType) => {
-            state.identitysHisData = res.data.result ? res.data.result : []
-            state.identitysData = JSON.parse(JSON.stringify(state.identitysHisData))
-            let arr: any[] = []
-            state.identitysData.forEach((el) => {
-              el.type = 'has'
-              arr.push(el.id)
-            })
-            if (state.centerTree.length > 0) {
-              centerTree.value.setCheckedKeys(arr, true)
-            }
-          })
+        state.identitysHisData = await application.getHistoryData(
+          radio.value,
+          typePD !== 3 ? resource.value : ''
+        )
+        state.identitysData = JSON.parse(JSON.stringify(state.identitysHisData))
+        let arr: any[] = []
+        state.identitysData.forEach((el) => {
+          el.type = 'has'
+          arr.push(el.id)
+        })
+        if (state.centerTree.length > 0) {
+          centerTree.value.setCheckedKeys(arr, true)
+        }
         break
       case '4':
-        API.product
-          .extendQuery({
-            data: {
-              teamId: data.id,
-              sourceId: typePD == 1 ? resource.value : props.info.id,
-              sourceType: typePD == 1 ? '资源' : '产品',
-              destType: '人员'
-            }
-          })
-          .then((res: ResultType) => {
-            state.personsHisData = res.data.result ? res.data.result : []
-            state.personsData = JSON.parse(JSON.stringify(state.personsHisData))
-            let arr: any[] = []
-            state.personsData.forEach((el) => {
-              el.type = 'has'
-              arr.push(el.id)
-            })
-            if (state.centerTree.length > 0) {
-              centerTree.value.setCheckedKeys(arr, true)
-            }
-          })
+        state.personsHisData = await application.getHistoryData(
+          radio.value,
+          typePD !== 3 ? resource.value : ''
+        )
+        state.personsData = JSON.parse(JSON.stringify(state.personsHisData))
+        let arr: any[] = []
+        state.personsData.forEach((el) => {
+          el.type = 'has'
+          arr.push(el.id)
+        })
+        if (state.centerTree.length > 0) {
+          centerTree.value.setCheckedKeys(arr, true)
+        }
         break
       default:
         break
@@ -537,112 +479,13 @@
     if (state.switchData !== data || bol) {
       switch (radio.value) {
         case '2':
-          let authorAdd: any[] = []
-          let authorDel: any[] = []
-          state.authorData.forEach((el) => {
-            if (el.type == 'add') {
-              authorAdd.push(el.id)
-            } else if (el.type == 'del') {
-              authorDel.push(el.id)
-            }
-          })
-          let promise1
-          let promise2
-          if (authorAdd.length > 0) {
-            promise1 = API.product.extendCreate({
-              data: {
-                teamId: state.switchData.id,
-                sourceId: typePD.value == 1 ? resource.value : props.info.id,
-                destIds: authorAdd,
-                sourceType: typePD.value == 1 ? '资源' : '产品',
-                destType: '角色'
-              }
-            })
-          }
-          if (authorDel.length > 0) {
-            promise2 = API.product.extendDelete({
-              data: {
-                teamId: state.switchData.id,
-                sourceId: typePD.value == 1 ? resource.value : props.info.id,
-                destIds: authorDel,
-                sourceType: typePD.value == 1 ? '资源' : '产品',
-                destType: '角色'
-              }
-            })
-          }
-          await Promise.all([promise1, promise2])
+          await application.submitAll(state.departData, state.switchData.id, resource.value)
           break
         case '3':
-          let identityAdd: any[] = []
-          let identityDel: any[] = []
-          state.identitysData.forEach((el) => {
-            if (el.type == 'add') {
-              identityAdd.push(el.id)
-            } else if (el.type == 'del') {
-              identityDel.push(el.id)
-            }
-          })
-          let promise5
-          let promise6
-          if (identityAdd.length > 0) {
-            promise5 = API.product.extendCreate({
-              data: {
-                teamId: state.switchData.id,
-                sourceId: typePD.value == 1 ? resource.value : props.info.id,
-                destIds: identityAdd,
-                sourceType: typePD.value == 1 ? '资源' : '产品',
-                destType: '岗位'
-              }
-            })
-          }
-          if (identityDel.length > 0) {
-            promise6 = API.product.extendDelete({
-              data: {
-                teamId: state.switchData.id,
-                sourceId: typePD.value == 1 ? resource.value : props.info.id,
-                destIds: identityDel,
-                sourceType: typePD.value == 1 ? '资源' : '产品',
-                destType: '岗位'
-              }
-            })
-          }
-          await Promise.all([promise5, promise6])
+          await application.submitAll(state.identitysData, state.switchData.id, resource.value)
           break
         case '4':
-          let personAdd: any[] = []
-          let personDel: any[] = []
-          state.personsData.forEach((el) => {
-            if (el.type == 'add') {
-              personAdd.push(el.id)
-            } else if (el.type == 'del') {
-              personDel.push(el.id)
-            }
-          })
-          let promise3
-          let promise4
-          if (personAdd.length > 0) {
-            promise3 = API.product.extendCreate({
-              data: {
-                teamId: state.switchData.id,
-                sourceId: typePD.value == 1 ? resource.value : props.info.id,
-                destIds: personAdd,
-                sourceType: typePD.value == 1 ? '资源' : '产品',
-                destType: '人员'
-              }
-            })
-          }
-          if (personDel.length > 0) {
-            promise4 = API.product.extendDelete({
-              data: {
-                teamId: state.switchData.id,
-                sourceId: typePD.value == 1 ? resource.value : props.info.id,
-                destIds: personDel,
-                sourceType: typePD.value == 1 ? '资源' : '产品',
-                destType: '人员'
-              }
-            })
-          }
-          await Promise.all([promise3, promise4])
+          await application.submitAll(state.personsData, state.switchData.id, resource.value)
           break
         default:
           break
@@ -651,59 +494,13 @@
   }
 
   // 提交表单
-  const submitAll = () => {
-    let departAdd: any[] = []
-    let departDel: any[] = []
-
-    state.departData.forEach((el) => {
-      if (el.type == 'add') {
-        departAdd.push(el.id)
-      } else if (el.type == 'del') {
-        departDel.push(el.id)
-      }
+  const submitAll = async () => {
+    const res = await application.submitAll(state.departData, resource.value)
+    ElMessage({
+      type: 'success',
+      message: typePD.value == 1 ? '分配成功' : '共享成功'
     })
-
-    let promise1
-    let promise2
-    if (departAdd.length > 0) {
-      promise1 = API.product.extendCreate({
-        data: {
-          teamId:
-            typePD.value == 1
-              ? rootTreeId.value
-              : typePD.value == 2
-              ? resource.value
-              : store.queryInfo.id,
-          sourceId: typePD.value == 1 ? resource.value : props.info.id,
-          destIds: departAdd,
-          sourceType: typePD.value == 1 ? '资源' : '产品',
-          destType: '组织'
-        }
-      })
-    }
-    if (departDel.length > 0) {
-      promise2 = API.product.extendDelete({
-        data: {
-          teamId:
-            typePD.value == 1
-              ? rootTreeId.value
-              : typePD.value == 2
-              ? resource.value
-              : store.queryInfo.id,
-          sourceId: typePD.value == 1 ? resource.value : props.info.id,
-          destIds: departDel,
-          sourceType: typePD.value == 1 ? '资源' : '产品',
-          destType: '组织'
-        }
-      })
-    }
-    Promise.all([promise1, promise2]).then((res) => {
-      ElMessage({
-        type: 'success',
-        message: typePD.value == 1 ? '分配成功' : '共享成功'
-      })
-      closeDialog()
-    })
+    closeDialog()
   }
   // 中间树形滚动加载事件
   const load = () => {
@@ -1031,70 +828,14 @@
       })
     }
   }
-  const searchResource = () => {
-    API.product
-      .searchResource({
-        data: {
-          id: props.info.id,
-          offset: 0,
-          limit: 1000,
-          filter: ''
-        }
-      })
-      .then((res: ResultType) => {
-        if (res.success) {
-          tabs.value = res.data.result
-          resource.value = res.data.result[0].id
-        }
-      })
+  const searchResource = async () => {
+    tabs.value = await application.searchResource()
+    resource.value = tabs.value[0].id
   }
-
-  // 节点ID和对象映射关系
-  const rootTreeId = ref<string>('')
-  const parentIdMap: any = {}
   let cascaderTree = ref<OrgTreeModel[]>([])
-  const getCompanyTree = () => {
-    API.company.getCompanyTree({}).then((res: ResultType) => {
-      rootTreeId.value = res.data.data.id
-      let orgTree = []
-      orgTree.push(res.data)
-      initIdMap(orgTree)
-      cascaderTree.value = isAuthAdmin(filter(orgTree))
-      getHistoryData()
-    })
-  }
-  const isAuthAdmin = (nodes: any) => {
-    //判断是否有操作权限
-    for (const node of nodes) {
-      node.disabled = !authority.IsApplicationAdmin([node.data.id, node.data.belongId])
-      if (node.children) {
-        isAuthAdmin(node.children)
-      }
-    }
-    return nodes
-  }
-  // 初始化ID和对象映射关系
-  const initIdMap = (nodes: any[]) => {
-    for (const node of nodes) {
-      parentIdMap[node.id] = node
-      if (node.children) {
-        initIdMap(node.children)
-      }
-    }
-  }
-  // 过滤掉工作组作为表单级联数据
-  const filter = (nodes: OrgTreeModel[]): OrgTreeModel[] => {
-    if (typePD.value == 1) {
-      nodes = nodes.filter((node) => node.data?.typeName !== '工作组')
-    } else {
-      nodes = nodes.filter(
-        (node) => node.data?.typeName !== '工作组' && node.data?.authAdmin === true
-      )
-    }
-    for (const node of nodes) {
-      node.children = filter(node.children)
-    }
-    return nodes
+  const getCompanyTree = async () => {
+    cascaderTree.value = await application.getCompanyTree()
+    getHistoryData()
   }
 </script>
 <style>
