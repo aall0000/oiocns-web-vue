@@ -31,6 +31,10 @@ export default function (iframeRef: Ref<any>, appId: string, link: string) {
   })
   // 接受子页面信息
   const handleReceiveMsg = async (message: any) => {
+    if (!message.data.sendId) {
+      return
+    }
+    console.log('平台接受消息',message.data);
     ((msg: any) => {
       setTimeout(async () => {
         let result: any = { sendId: msg.data.sendId, from: "orginone" }
