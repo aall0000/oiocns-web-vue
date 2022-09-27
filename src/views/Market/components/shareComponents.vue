@@ -122,6 +122,7 @@
   import API from '@/services'
   import Author from './components/author.vue'
   import authority from '@/utils/authority'
+  import { useUserStore } from '@/store/user'
   import type { TabsPaneContext } from 'element-plus'
   import { AnyAaaaRecord } from 'dns'
   interface Tree {
@@ -137,6 +138,7 @@
     type?: number
     dialogType: string
   }
+  const store = useUserStore()
   const searchValue = ref('')
   const searchLeftValue = ref('')
   const activeName = ref(0)
@@ -338,19 +340,21 @@
       })
       .then((res: ResultType) => {
         cascaderTree.value = res.data?.result ?? []
-        let obj = {
+        let obj: any = {
           id: authority.getUserId(),
           name: '我的好友',
           label: '我的好友',
           parentId: '0',
-          data: {
-            id: authority.getUserId(),
-            belongId: authority.getUserId()
-          }
+          belongId: authority.getUserId()
         }
+        obj.data = obj
         cascaderTree.value.forEach((el) => {
-          el.disabled = !authority.IsApplicationAdmin([el.data.id, el.data.belongId])
+          el.label = el.team.name
+          el.data = el
+          el.disabled = !authority.IsApplicationAdmin([el.id, el.belongId])
         })
+        console.log(cascaderTree.value)
+
         cascaderTree.value.unshift(obj)
         getHistoryData()
       })
@@ -876,7 +880,9 @@
         case '4':
           state.loadID = node
           let action = ''
+          let module = ''
           if (typePD.value == 1) {
+            module = 'company'
             action = 'getPersons'
             switch (node.data.typeName) {
               case '部门':
@@ -886,14 +892,22 @@
                 action = 'getJobPersons'
                 break
             }
-          } else {
+          } else if (typePD.value == 2) {
+            module = 'company'
             action = 'getGroupCompanies'
             if (node.TypeName === '子集团') {
               action = 'getSubgroupCompanies'
             }
+          } else {
+            module = 'person'
+            action = 'getFriends'
+            if (node.typeName === '群组') {
+              module = 'cohort'
+              action = 'getPersons'
+            }
           }
 
-          API.company[action]({
+          API[module][action]({
             data: {
               id: node.id,
               limit: page.pageSize,
@@ -1083,7 +1097,12 @@
     return nodes
   }
 </script>
-
+<style>
+  .penultimate > .el-tree-node__content {
+    color: var(--el-text-color-disabled);
+    cursor: not-allowed;
+  }
+</style>
 <style lang="scss" scoped>
   .footer-btn {
     margin-right: 10px;
