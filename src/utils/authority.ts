@@ -35,6 +35,12 @@ class Authority {
     getSpaceId() {
         return this.spaceId
     }
+    /**
+     * 是否为用户个人空间
+     */
+    isUserSpace(){
+        return this.spaceId == this.userId
+    }
     /**加载当前登录信息 */
     async Load() {
         let res = await api.person.tokenInfo({})
