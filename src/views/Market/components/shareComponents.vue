@@ -204,7 +204,7 @@
 
   watch(
     () => radio.value,
-    (newValue, oldValue) => {
+    async (newValue, oldValue) => {
       state.centerTree = []
       state.authorData = []
       state.personsData = []
@@ -663,6 +663,8 @@
 
   const handleTabClick = (id: string) => {
     resource.value = id
+    cascaderTree.value = []
+    getGroupTree(true)
   }
   const delContentAuth = (item: any) => {
     if (radio.value == '2') {
