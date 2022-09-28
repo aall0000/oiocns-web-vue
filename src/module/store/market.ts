@@ -1,4 +1,5 @@
 import API from '@/services'
+import { ElMessage, ElMessageBox } from 'element-plus'
 // public 是默认可见性，所以，'可以直接省略'
 // protected: 表示'受保护的',仅对其声明所在类和子类中 (非实例对象) 可见
 // private: 表示'私有的,只在当前类中可见'，对实例对象以及子类也是不可见的
@@ -10,8 +11,12 @@ interface MarketServicesType {
   //----------------------市场功能 ---------
   //创建市场
   //获取市场列表
+  getMarketList: () => void
   //编辑市场信息
   //删除市场
+  deleteMarket: () => void
+  // 退出市场
+  quitMarket: () => void
   //获取共享市场信息
   // 获取市场展示应用--筛选
   // ----------------------应用购物车功能 ---------
@@ -26,90 +31,125 @@ interface MarketServicesType {
 }
 
 class MarketServices {
-  //--------------我的应用主页功能区域---------------------------
-  //展示列表 我的应用列表
-  public myAppList: ProductType[]
-  public myAppListTotal: number
-  public myAppQueryParams: CommonParamsType
-  public shopcarCount: number
-  static tableHead: [
-    {
-      type: 'slot'
-      prop: 'name'
-      name: 'name'
-      label: '应用名称'
-    },
-    {
-      type: 'slot'
-      prop: 'tag'
-      name: 'tag'
-      label: '应用状态'
-    },
-    {
-      prop: 'code'
-      label: '应用编码'
-    },
-    {
-      prop: 'source'
-      label: '应用来源'
-    },
-    {
-      prop: 'typeName'
-      label: '应用类型'
-    },
-    {
-      prop: 'authority'
-      label: '持有权限'
-    },
-    {
-      prop: 'createTime'
-      label: '创建时间'
-      width: '200'
-    },
-    {
-      type: 'slot'
-      label: '操作'
-      fixed: 'right'
-      align: 'center'
-      width: '300'
-      name: 'operate'
-    }
-  ]
-  // --------------市场功能区域---------------------------
-  //展示列表 市场列表
-  public marketList: MarketType[]
-  //--------------应用功能区域---------------------------
-  //展示列表 应用列表
-  public productList: ProductType[]
+  public marketList: MarketType[] //商店列表
+  public marketTotal: number //商店列表 总数
+  public QueryParams: CommonParamsType //记录历史请求参数
+  public PUBLIC_STORE_ID: string //共享仓库id
+  public shopcarCount: number //当前购物车数量
 
-  // constructor() {
-  // }
-  // -----------------我的应用主页功能----------------------
-  // 获取我的应用列表
-  public getMyAppList = async (params: CommonParamsType) => {
-    const { data, success } = await API.product.searchOwnProduct({
+  /**
+   * @description: 获取市场列表
+   * @param {CommonParamsType} params
+   * @return {*}
+   */
+  public getMarketList = async (params: CommonParamsType) => {
+    const { data, success } = await API.market
+    .searchOwn({
       data: params
     })
     if (success) {
       const { result = [], total = 0 } = data
-      this.myAppList = result
-      this.myAppListTotal = total
+      this.marketList = result
+      this.marketTotal = total
       // 记录搜索条件
-      this.myAppQueryParams = params
-    }
-  }
-  // 删除我的应用
-  public deleteMyAppItem = async (id: string | number) => {
-    const { success } = await API.product.delete({
-      data: { id }
-    })
-    if (success) {
-      // 删除后刷新获取展示列表
-      this.getMyAppList(this.myAppQueryParams)
+      this.QueryParams = params
     }
   }
 
+  /**
+   * @description: 创建市场
+   * @param:
+   * @return {*}
+   */
+  public creatMarket = async (params: {
+    name: string
+    code: string
+    samrId: string
+    authId: string // 空间为组织单位时取组织单位 的authId
+    remark: string
+    public: boolean
+  }) => {
+    const { success } = await API.appstore.create({
+      data: params
+    })
+    if (success) {
+      await this.getMarketList(this.QueryParams)
+    }
+  }
+
+  /**
+   * @desc: 更新商店信息
+   * @event:{
+        "id": 0,
+        "name": "string",
+        "code": "string",
+        "samrId": 0,
+        "remark": "string",
+        "public": true
+      }
+   * @return {*}
+   */
+  public updateMarket = async (params: {
+    id: string
+    name: string
+    code: string
+    samrId: string
+    authId: string // 空间为组织单位时取组织单位 的authId
+    remark: string
+    public: boolean
+  }) => {
+    const { success } = await API.appstore.create({
+      data: params
+    })
+    if (success) {
+      await  this.getMarketList(this.QueryParams)
+    }
+  }
+  /**
+   * @description: 删除 管理的市场
+   * @param {string} id 市场id
+   * @return {*}
+   */
+
+  public deleteMarket = async (id: string) => {
+    const { success } = await API.appstore.marketDel({
+      data: { id }
+    })
+    if (success) {
+      await this.getMarketList(this.QueryParams)
+    }
+  }
+  /**
+   * @desc: 退出市场
+   * @param {string} id 市场Id
+   * @return {*}
+   */
+  public quitMarket = async (id: string | number) => {
+    const { success } = await API.appstore.marketQuit({
+      data: { id }
+    })
+    if (success) {
+    await this.getMarketList(this.QueryParams)
+    }
+  }
+
+  /**
+   * @description: 获取共享仓库详情
+   * @event:{}
+   * @return {*}
+   */
+  public getPublicStore = async () => {
+    const { success, data } = await API.market.getSoftShareInfo()
+    if (success) {
+      const { id } = data
+      this.PUBLIC_STORE_ID = id
+    }
+  }
   // -------------------购物车-------------------------------
+  /**
+   * @description: 获取当前购物车数量
+   * @return {*}
+   */
   public getShopCarCount = async () => {
     const { success, data } = await API.market.searchStaging({
       data: {
@@ -120,10 +160,11 @@ class MarketServices {
       }
     })
     if (success) {
-      let { result = [], total = 0 } = data
+      let { total = 0 } = data
       this.shopcarCount = total
     }
   }
 }
-const marketServices: MarketServicesType = new MarketServices()
+const marketServices = new MarketServices()
 export default marketServices
+console.log('marketServices', marketServices)
