@@ -34,8 +34,6 @@
         tabHeight.value=containerHeight.value - 6 - infoWrap.value.clientHeight
       }
     }, 100);
-      
-    
   }
   const container = ref(null)
   const infoWrap = ref(null)
