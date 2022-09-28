@@ -179,6 +179,8 @@ import storeImg from '@/assets/img/app_icon.png'
 import Pagination from '@/components/pagination/index.vue'
 import type { FormInstance } from 'element-plus'
 import { storeToRefs } from 'pinia'
+import marketServices from "@/module/store/market"
+
 type DetailColumnType = {
   prop: string,
   label:string, //
@@ -307,7 +309,7 @@ const state = reactive({
         }
       },
       render: (item: any)  => {
-       
+
         return item.belongId=== workspaceData?.value.id  ? '创建的' :'加入的'
       }
     },
@@ -326,7 +328,7 @@ const state = reactive({
       prop: 'createTime',
       label: '创建时间'
     },
-    
+
   ]
 })
 
@@ -335,7 +337,6 @@ onMounted(() => {
   getMarketInfo()
   getMyMarketData()
   //getJoinMarketData()
-  getShopcarNum()
 })
 
 const handleCurrentChange = (val: number) => {
@@ -386,39 +387,15 @@ const checksSearch = (val: any) => {
   }
 }
 
-const getShopcarNum = async () => {
-  await $services.market
-    .searchStaging({
-      data: {
-        id: 0, //商店id （需删除）
-        offset: 0,
-        limit: 20,
-        filter: ''
-      }
-    })
-    .then((res: ResultType) => {
-      var { result = [], total = 0 } = res.data
-      shopcarNum.value = total
-    })
-}
 
-const getMyMarketData = () => {
-  $services.market
-    .searchOwn({
-      data: {
+const getMyMarketData = async() => {
+  await marketServices.getMarketList({
         offset: state.pageMy.current,
         limit: state.pageMy.pageSize,
         filter: searchText.value
-      }
-    })
-    .then((res: ResultType) => {
-      if (res.success) {
-        const { result = [], total = 0 } = res.data
-        state.myMarket = result
-        state.pageMy.total = total
-        pageContent.value.state.page.total = total
-      }
-    })
+      });
+      getPageDataFromServices()
+
 }
 
 const marketQuit = (item: any) => {
@@ -427,22 +404,9 @@ const marketQuit = (item: any) => {
     cancelButtonText: '取消',
     type: 'warning'
   })
-    .then(() => {
-      $services.appstore
-        .marketQuit({
-          data: {
-            id: item.id
-          }
-        })
-        .then((res: ResultType) => {
-          if (res.code == 200) {
-            //getJoinMarketData()
-            ElMessage({
-              message: '退出成功',
-              type: 'success'
-            })
-          }
-        })
+    .then(async() => {
+      await marketServices.quitMarket(item.id);
+      getPageDataFromServices()
     })
     .catch(() => { })
 }
@@ -452,27 +416,19 @@ const handleClick = (item: any) => {
     cancelButtonText: '取消',
     type: 'warning'
   })
-    .then(() => {
-      $services.appstore
-        .marketDel({
-          data: {
-            id: item.id
-          }
-        })
-        .then((res: ResultType) => {
-          if (res.code == 200) {
-            getMyMarketData()
-            ElMessage({
-              message: '删除成功',
-              type: 'success'
-            })
-          }
-        })
+    .then(async() => {
+      await marketServices.deleteMarket(item.id);
+      getPageDataFromServices()
     })
     .catch(() => { })
 }
+// 从文件内获取展示数据
+const getPageDataFromServices = ()=>{
+    state.myMarket = marketServices.marketList
+    state.pageMy.total = marketServices.marketTotal
+    pageContent.value.state.page.total = marketServices.marketTotal
+}
 
-const shopcarNum = ref(0)
 const form = reactive({
   data: {
     name: '',
@@ -484,16 +440,7 @@ const form = reactive({
 
   }
 })
-const options = [
-  {
-    value: true,
-    label: '是'
-  },
-  {
-    value: false,
-    label: '否'
-  }
-]
+
 //查看商店详情
 const showDetail = (item: any) => {
 
@@ -512,9 +459,7 @@ const createShop = async (formEl: FormInstance | undefined) => {
     }
   })
   if (!isValidate) return
-  $services.appstore
-    .create({
-      data: {
+  await marketServices.creatMarket({
         name: form.data.name,
         code: form.data.code,
         samrId: store.queryInfo.id,
@@ -524,19 +469,10 @@ const createShop = async (formEl: FormInstance | undefined) => {
             : store.queryInfo.team.authId, // 空间为组织单位时取组织单位 的authId
         remark: form.data.remark,
         public: form.data.public
-      }
-    })
-    .then((res: ResultType) => {
-      if (res.success) {
-        ElMessage({
-          message: '创建成功',
-          type: 'success'
-        })
-        closeCreateDialog()
-        getMyMarketData()
-      }
-    })
+      });
 
+        getPageDataFromServices()
+        closeCreateDialog()
 }
 
 const submit = (data: any) => {
@@ -569,13 +505,11 @@ const closeDialog = (data: { value: boolean }) => {
   searchDialog.value = false
 }
 // 获取共享仓库信息
-const getMarketInfo = () => {
-  $services.market.getSoftShareInfo().then((res: ResultType) => {
-    if (res.code == 200) {
-      state.softShareInfo = res?.data || {}
-      software.value = state.softShareInfo.id
-    }
-  })
+const getMarketInfo = async() => {
+await marketServices.getPublicStore()
+      store.softShareInfo=marketServices.PUBLIC_STORE
+      software.value = marketServices.PUBLIC_STORE.id
+
 }
 // 复制商店编码
 const copyCode = (needCopyText: string) => {

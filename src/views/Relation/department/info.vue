@@ -61,7 +61,7 @@ import { ElMessage } from 'element-plus'
 import router from '@/router';
 import orgChat from '@/hubs/orgchat'
 import authority from '@/utils/authority'
-
+import departmentServices from '@/module/relation/department'
 const allowEdit = () => {
   return selectItem.value.id &&
     authority.IsRelationAdmin([
@@ -84,7 +84,6 @@ const selectItemChange = (data: any) => {
   } else {
     title.value = obj.typeName
   }
-
 };
 defineExpose({ selectItemChange });
 
@@ -99,25 +98,12 @@ const handleUpdate = () => {
 }
 
 // 保存
-const update = () => {
+const update = async () => {
   const data = { ...formData.value, ...selectItem.value.data };
-  let url = null;
-  if (data.typeName == '单位') {
-    url = 'update'
-  } else if (data.typeName == '部门') {
-    url = 'updateDepartment'
-  } else if (data.typeName == '工作组') {
-    url = 'updateJob'
-  }
-  $services.company[url]({
-    data
-  }).then((res: ResultType) => {
-    if (res.code == 200 && res.success) {
-      dialogVisible.value = false
-      ElMessage.success('信息修改成功!')
-      selectItem.value.data = data
-    }
-  })
+  const val =  await departmentServices.upDateDempartment(data)
+  dialogVisible.value = false
+  ElMessage.success('信息修改成功!')
+  selectItem.value.data = val
 }
 // 跳转至角色管理页面
 const toAuth = () => {

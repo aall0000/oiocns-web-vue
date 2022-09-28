@@ -6,7 +6,7 @@
         <p><span class="custom-span"></span> 基础信息</p>
       </div>
       <el-form
-        :model="form.data"
+        :model="state.form"
         ref="registerFormRef"
         :rules="rules"
         label-position="top"
@@ -15,12 +15,12 @@
         <el-row :gutter="40" justify="space-between">
           <el-col :span="12">
             <el-form-item label="应用名称" prop="name">
-              <el-input v-model="form.data.name" placeholder="请设置" />
+              <el-input v-model="state.form.name" placeholder="请设置" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="应用编码" prop="code">
-              <el-input v-model="form.data.code" placeholder="请设置" />
+              <el-input v-model="state.form.code" placeholder="请设置" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -46,12 +46,11 @@
         <el-form-item label="应用介绍">
           <el-input
             :rows="4"
-            v-model="form.data.remark"
+            v-model="state.form.remark"
             type="textarea"
             maxlength="120"
             show-word-limit
             placeholder="请输入应用介绍"
-            
           />
         </el-form-item>
       </el-form>
@@ -65,8 +64,8 @@
         </el-icon>
       </div>
       <SetAppMenu
-        :menus="resources.resources"
-        :key="`${resources.resources.length}-${resources.resources.map((v:any)=>v?.id||v.customId).join('&')}`"
+        :menus="state.resources"
+        :key="`${state.resources.length}-${state.resources.map((v:any)=>v?.id||v.customId).join('&')}`"
         @handleMemuEvent="handleMemuEvent"
       />
     </div>
@@ -86,16 +85,14 @@
   import { useCommonStore } from '@/store/common'
   const commonStore = useCommonStore()
   const router = useRouter()
-  let form = reactive({
-    data: {
+  let state = reactive({
+    form: {
       id: '',
       code: '',
       name: '',
       remark: '',
       privateKey: ''
-    }
-  })
-  let resources = reactive({
+    },
     resources: [
       {
         name: '',
@@ -106,22 +103,23 @@
       }
     ]
   })
+
   // 处理资源信息操作
   const handleMemuEvent = (type: ProductMenuEventType, selectId?: string) => {
     switch (type) {
       case 'Add':
-        resources.resources.push({
+        state.resources.push({
           name: '',
           link: '',
           code: '',
           privateKey: '',
-          customId: `${resources.resources.length + 1}`
+          customId: `${state.resources.length + 1}`
         })
         break
       case 'Delete':
         // handleDeleteMenu(selectId)
-        if (resources.resources.length > 1) {
-          resources.resources = resources.resources.filter((item) => item.customId !== selectId)
+        if (state.resources.length > 1) {
+          state.resources = state.resources.filter((item) => item.customId !== selectId)
         } else {
           ElMessage({
             type: 'error',
@@ -142,7 +140,7 @@
   }
   // 排序资源信息
   const handleSortMenu = (type: ProductMenuEventType, aimId: string) => {
-    const data = resources.resources
+    const data = state.resources
     // 根据当前所选标志 获取目标数据信息
     const obj = data.find((item) => item.customId === aimId)
 
@@ -163,7 +161,7 @@
   }
   // 触发表单 提交信息
   const onSubmit = () => {
-    console.log('submit!', form.data)
+    console.log('submit!', state.form)
     onRegisterSubmit()
   }
   // 注册表单Dom
@@ -189,17 +187,17 @@
     registerFormRef.value.validate(async (valid: any, fields: any) => {
       if (valid) {
         // 无资源提示
-        if (!resources.resources[0].link) {
+        if (!state.resources[0].link) {
           return ElMessage({
             type: 'error',
             message: '请填写至少一个资源地址'
           })
         }
         // 过滤无效填写
-        const resourcesData = resources.resources.filter((item) => {
+        const resourcesData = state.resources.filter((item) => {
           return item.link
         })
-        const params = { ...form.data, resources: resourcesData }
+        const params = { ...state.form, resources: resourcesData }
         const { success, data } = await API.product.register({
           data: params
         })
@@ -208,6 +206,7 @@
             type: 'success',
             message: '应用注册成功'
           })
+          // 触发注册后 更新可用应用列表
           commonStore.isChangeStartApp = true
           router.back()
         }

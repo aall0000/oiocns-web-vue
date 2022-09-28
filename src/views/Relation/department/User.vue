@@ -46,6 +46,8 @@ import { Search } from '@element-plus/icons-vue'
 import searchFriend from '@/components/searchs/index.vue'
 import AssignedPerson from '@/components/searchs/index.vue'
 import authority from '@/utils/authority'
+import DepartmentServices from '@/module/relation/department'
+const departmentServices = new DepartmentServices()
 
 const props = defineProps<{
   selectItem: any,     // 节点数据
@@ -123,41 +125,21 @@ const columns = ref([
 ])
 const router = useRouter()
 // 表格展示数据
-const pageStore = reactive({
-  tableData: [],
-  currentPage: 1,
-  pageSize: 20,
-  total: 0
-})
+
 
 const diyTable = ref(null)
 // 加载用户
-const getUsers = () => {
-  const data = props.selectItem?.data
-  if (data) {
-    let url = '';
-    if (data.typeName == '单位') {
-      url = 'getPersons'
-      company.value = JSON.parse(JSON.stringify(data))
-    } else if (data.typeName == '部门') {
-      url = 'getDepartmentPersons'
-    } else if (data.typeName == '工作组') {
-      url = 'getJobPersons'
+const getUsers = async () => {
+  if(props.selectItem?.data){
+    const data = props.selectItem?.data
+    const backData =  await departmentServices.getUser(data)
+    if(backData.result){
+      users.value =backData.result;
+      diyTable.value.state.page.total = backData.total
+    }else{
+      users.value =[];
+      diyTable.value.state.page.total = 0
     }
-    $services.company[url]({
-      data: {
-        id: props.selectItem.id,
-        offset: (pageStore.currentPage - 1) * pageStore.pageSize,
-        limit: pageStore.pageSize
-      }
-    }).then((res: ResultType) => {
-      if (res.code == 200 && res.success) {
-        users.value = res.data.result;
-        pageStore.total = res.data.total;
-        diyTable.value.state.loading = false
-        diyTable.value.state.page.total = pageStore.total;
-      }
-    })
   }
 }
 
@@ -192,28 +174,20 @@ const checksCompanySearch = (val: any) => {
 }
 
 //邀请加入单位
-const pullPerson = (arr: any) => {
-  $services.company
-    .pullPerson({
-      data: {
-        id: props.selectItem.id,
-        targetIds: arr
-      }
+const pullPerson = async (arr: any) => {
+  const data =  await departmentServices.pullPerson(props.selectItem.id,arr)
+  if (data) {
+    ElMessage({
+      message: '添加成功',
+      type: 'success'
     })
-    .then((res: ResultType) => {
-      if (res.success) {
-        ElMessage({
-          message: '添加成功',
-          type: 'success'
-        })
-        getUsers()
-      }
-      friendDialog.value = false;
-    })
+    getUsers()
+    friendDialog.value = false;
+  }
 }
 const handleUpdate = (page: any) => {
-  pageStore.currentPage = page.currentPage
-  pageStore.pageSize = page.pageSize
+  //  page.currentPage
+  //  page.pageSize
   getUsers()
 }
 
@@ -223,46 +197,20 @@ const viewApplication = (row: any) => {
 }
 
 // 移除
-const removeFrom = (row: any) => {
-  let url: string;
-  let title: string;
-  if (props.selectItem?.data?.typeName == '单位') {
-    url = 'removeFromCompany'
-    title = `操作离职，将删除 ${row.name} 在单位的信息，确定操作吗？`
-  } else if (props.selectItem?.data?.typeName == '部门') {
-    url = 'removeFromDepartment'
-    title = `确定把 ${row.name} 从当前部门移除吗？`
-  } else if (props.selectItem?.data?.typeName == '工作组') {
-    url = 'removeFromJob'
-    title = `确定把 ${row.name} 从当前部门移除吗？`
+const removeFrom = async (row: any) => {
+  let rowObj = {
+    name:row.name,
+    id:row.id,
+    typeName:props.selectItem.data.typeName
   }
-  ElMessageBox.confirm(
-    title,
-    '警告',
-    {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      type: 'warning'
-    }
-  ).then(() => {
-    $services.company[url]({
-      data: {
-        id: props.selectItem.id,
-        targetIds: [row.id]
-      }
-    }).then((res: ResultType) => {
-      getUsers()
-      if (res.success) {
-        ElMessage({
-          message: res.msg,
-          type: 'success'
-        })
-      }
+  const data =  await departmentServices.removePerson(rowObj,props.selectItem.data.id)
+  if(data){
+    ElMessage({
+      message: '操作成功',
+      type: 'success'
     })
-  })
-    .catch(() => {
-      console.log('取消移除!')
-    })
+    getUsers()
+  }
 }
 
 
@@ -287,38 +235,28 @@ const assign = (arr: any) => {
 }
 
 //分配部门
-const assignDepartment = (id: string, targetIds: any) => {
-  $services.company
-    .assignDepartment({
-      data: { id, targetIds }
+const assignDepartment =  async (id:string, targetIds: string[]) => {
+  const data = await departmentServices.assignDepartment(id,targetIds)
+  if(data){
+    ElMessage({
+      message: '分配成功',
+      type: 'success'
     })
-    .then((res: ResultType) => {
-      if (res.success) {
-        ElMessage({
-          message: '分配成功',
-          type: 'success'
-        })
-        hideAssignDialog()
-      }
-      getUsers()
-    })
+    hideAssignDialog()
+    getUsers()
+  }
 }
 //分配工作组
-const assignJob = (id: string, targetIds: string[]) => {
-  $services.company
-    .assignJob({
-      data: { id, targetIds }
+const assignJob = async (id: string, targetIds: string[]) => {
+  const data = await departmentServices.assignJob(id,targetIds)
+  if(data){
+    ElMessage({
+      message: '分配成功',
+      type: 'success'
     })
-    .then((res: ResultType) => {
-      if (res.success) {
-        ElMessage({
-          message: '分配成功',
-          type: 'success'
-        })
-        hideAssignDialog()
-      }
-      getUsers()
-    })
+    hideAssignDialog()
+    getUsers()
+  }
 }
 const cardHeight = ref(null)
 const tableHeight = ref<number>(100)
