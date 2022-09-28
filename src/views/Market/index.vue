@@ -3,17 +3,27 @@
     <MarketCard :isSee="true">
       <template #right>
         <div class="edit-wrap">
-          <el-button small link type="primary" @click="GoPage('/market/appApply')">我的上架申请</el-button>
+          <el-button small link type="primary" @click="GoPage('/market/appApply')"
+            >我的上架申请</el-button
+          >
           <!-- <el-button small link type="primary" @click="GoPage('/market/register')" >注册应用 </el-button> -->
           <!-- <el-button small link type="primary" @click="GoPage('/market/softShare')"
             >从开放市场中添加应用</el-button> -->
           <!-- <el-button small link type="primary" @click="GoPage('/market/marketList')" >商店列表 </el-button> -->
-          <el-button small link type="primary" @click.stop="GoPage('/market/order/buy')">采购订单</el-button>
-          <el-button small link type="primary" @click.stop="GoPage('/market/order/sell')">售卖订单</el-button>
-          <el-badge :value="shopcarNum" style="padding-left: 10px" v-if="shopcarNum>0">
-            <el-button small link type="primary" @click.stop="GoPage('/market/shopCar')">购物车</el-button>
+          <el-button small link type="primary" @click.stop="GoPage('/market/order/buy')"
+            >采购订单</el-button
+          >
+          <el-button small link type="primary" @click.stop="GoPage('/market/order/sell')"
+            >售卖订单</el-button
+          >
+          <el-badge :value="shopcarNum" style="padding-left: 10px" v-if="shopcarNum > 0">
+            <el-button small link type="primary" @click.stop="GoPage('/market/shopCar')"
+              >购物车</el-button
+            >
           </el-badge>
-          <el-button small link type="primary" @click.stop="GoPage('/market/shopCar')" v-else>购物车</el-button>
+          <el-button small link type="primary" @click.stop="GoPage('/market/shopCar')" v-else
+            >购物车</el-button
+          >
         </div>
         <div>
           <el-radio-group v-model="mode" size="small" class="button">
@@ -53,10 +63,22 @@
       <!-- 卡片视图 -->
       <div v-show="mode === 'card'">
         <div class="app-card">
-          <ShopCard v-for="item in state.ownProductList" :info="item" :key="item.id" :over-id="item.id" type="soft"
-            :class="{'dropdwon-active':item.id==state.dropDwonActiveId}">
+          <ShopCard
+            v-for="item in state.ownProductList"
+            :info="item"
+            :key="item.id"
+            :over-id="item.id"
+            type="soft"
+            :class="{ 'dropdwon-active': item.id == state.dropDwonActiveId }"
+          >
             <template #icon>
-              <HeadImg :name="item.name" :url="item.icon" :imgWidth="48" :limit="1" :isSquare="false" />
+              <HeadImg
+                :name="item.name"
+                :url="item.icon"
+                :imgWidth="48"
+                :limit="1"
+                :isSquare="false"
+              />
             </template>
 
             <!-- 附属标题区 -->
@@ -69,8 +91,8 @@
             <template #body>
               <el-tooltip trigger="click" effect="customized">
                 <template #content>
-                  <div style="max-width: 280px;">
-                    {{item?.remark || '暂无'}}
+                  <div style="max-width: 280px">
+                    {{ item?.remark || '暂无' }}
                   </div>
                 </template>
                 <p class="app-card-item-con-desc">简介: {{ item?.remark || '暂无' }}</p>
@@ -79,28 +101,44 @@
             <!-- 操作区 -->
             <template #option>
               <div class="option-unit">
-                <el-dropdown trigger="click" @command="(value:any) => handleCommand('own', value, item)" placement="top"
-                  @visible-change="(value:boolean)=> optionDropdownChange(value,item.id)">
+                <el-dropdown
+                  trigger="click"
+                  @command="(value:any) => handleCommand('own', value, item)"
+                  placement="top"
+                  @visible-change="(value:boolean)=> optionDropdownChange(value,item.id)"
+                >
                   <div class="option-unit">设置</div>
                   <template #dropdown>
                     <el-dropdown-menu>
                       <div v-for="action in actionOptionsOfOwn" :key="action.value">
                         <div v-if="new Date().getTime() < formartDateTime(item?.endTime)">
-                          <el-dropdown-item v-if="
-                            item.authority == '所属权' &&
-                            item.belongId == store.workspaceData.id &&
-                            action.label == '上架'
-                          " :command="action.value">{{ action.label }}</el-dropdown-item>
-                          <el-dropdown-item v-if="item.belongId == store.workspaceData.id && action.label == '共享'"
-                            :command="action.value">{{ action.label }}</el-dropdown-item>
-                          <el-dropdown-item v-if="store.workspaceData.type == 2 && action.label == '分配'"
-                            :command="action.value">{{ action.label }}</el-dropdown-item>
+                          <el-dropdown-item
+                            v-if="
+                              item.authority == '所属权' &&
+                              item.belongId == store.workspaceData.id &&
+                              action.label == '上架'
+                            "
+                            :command="action.value"
+                            >{{ action.label }}</el-dropdown-item
+                          >
+                          <el-dropdown-item
+                            v-if="item.belongId == store.workspaceData.id && action.label == '共享'"
+                            :command="action.value"
+                            >{{ action.label }}</el-dropdown-item
+                          >
+                          <el-dropdown-item
+                            v-if="store.workspaceData.type == 2 && action.label == '分配'"
+                            :command="action.value"
+                            >{{ action.label }}</el-dropdown-item
+                          >
                         </div>
                         <el-dropdown-item v-if="action.label == '详情'" :command="action.value">{{
-                        action.label
+                          action.label
                         }}</el-dropdown-item>
                       </div>
-                      <el-dropdown-item @click="GoPageWithQuery('/market/publishList', {id:item.id})">应用上架列表
+                      <el-dropdown-item
+                        @click="GoPageWithQuery('/market/publishList', { id: item.id })"
+                        >应用上架列表
                       </el-dropdown-item>
                     </el-dropdown-menu>
                   </template>
@@ -110,30 +148,61 @@
               <div class="option-unit" @click="deleteApp(item)">移除应用</div>
             </template>
           </ShopCard>
-
         </div>
       </div>
       <div class="tab-card" v-show="mode === 'list'">
-        <DiyTable ref="diyTable" :hasTitle="true" @handleUpdate="handleUpdate" v-if="state.ownProductList "
-          :tableData="state.ownProductList" :tableHead="state.tableHead">
+        <DiyTable
+          ref="diyTable"
+          :hasTitle="true"
+          @handleUpdate="handleUpdate"
+          v-if="state.ownProductList"
+          :tableData="state.ownProductList"
+          :tableHead="state.tableHead"
+        >
           <template #name="scope">
             {{ scope.row.name }}
           </template>
           <template #tag="scope">
             <el-tag
-              v-if=" scope.row.endTime == undefined ||  new Date().getTime() < formartDateTime(scope.row?.endTime) "
-              style="margin-left: 10px" :type="authority.IsApplicationAdmin(scope.row.belongId) ? '' : 'success'">
-              {{ authority.IsApplicationAdmin(scope.row.belongId) ? '可管理' : '可使用' }}</el-tag>
-            <el-tag v-if="new Date().getTime() > formartDateTime(scope.row?.endTime)" style="margin-left: 10px"
-              :type="'danger'">失效</el-tag>
+              v-if="
+                scope.row.endTime == undefined ||
+                new Date().getTime() < formartDateTime(scope.row?.endTime)
+              "
+              style="margin-left: 10px"
+              :type="authority.IsApplicationAdmin(scope.row.belongId) ? '' : 'success'"
+            >
+              {{ authority.IsApplicationAdmin(scope.row.belongId) ? '可管理' : '可使用' }}</el-tag
+            >
+            <el-tag
+              v-if="new Date().getTime() > formartDateTime(scope.row?.endTime)"
+              style="margin-left: 10px"
+              :type="'danger'"
+              >失效</el-tag
+            >
             <el-tag style="margin-left: 10px">{{ scope.row.source }}</el-tag>
           </template>
           <template #operate="scope">
-            <el-button v-if=" scope.row.authority == '所属权' && scope.row.belongId == store.workspaceData.id
-            " link type="primary" @click="handleCommand('own', 'putaway', scope.row)">上架</el-button>
-            <el-button link type="primary" v-if="scope.row.belongId == store.workspaceData.id" @click="openShareDialog">
-              共享</el-button>
-            <el-button link type="primary" v-if="authority.IsCompanySpace()" @click="cohortVisible = true">分配
+            <el-button
+              v-if="scope.row.authority == '所属权' && scope.row.belongId == store.workspaceData.id"
+              link
+              type="primary"
+              @click="handleCommand('own', 'putaway', scope.row)"
+              >上架</el-button
+            >
+            <el-button
+              link
+              type="primary"
+              v-if="scope.row.belongId == store.workspaceData.id"
+              @click="openShareDialog"
+            >
+              共享</el-button
+            >
+            <el-button
+              link
+              type="primary"
+              v-if="authority.IsCompanySpace()"
+              @click="cohortVisible = true"
+              >分配
             </el-button>
             <el-button link type="primary" @click="GoPage(`/market/detail/${scope.row.id}`)">
               查看详情
@@ -147,8 +216,18 @@
         <Pagination ref="pageContent" @handleUpdate="handleUpdate"></Pagination>
       </div>
     </div>
-    <el-dialog v-model="publishVisible" title="应用上架" width="600px" draggable :close-on-click-modal="false">
-      <putaway-comp :info="selectProductItem" ref="putawayRef" @closeDialog="publishVisible = false">
+    <el-dialog
+      v-model="publishVisible"
+      title="应用上架"
+      width="600px"
+      draggable
+      :close-on-click-modal="false"
+    >
+      <putaway-comp
+        :info="selectProductItem"
+        ref="putawayRef"
+        @closeDialog="publishVisible = false"
+      >
         <template #btns>
           <div class="putaway-footer" style="text-align: right">
             <el-button @click="publishVisible = false">取消</el-button>
@@ -157,531 +236,563 @@
         </template>
       </putaway-comp>
     </el-dialog>
-    <el-dialog v-if="cohortVisible" v-model="cohortVisible" custom-class="share-dialog" title="应用分配" width="1000px"
-      draggable :close-on-click-modal="false">
-      <Cohort @closeDialog="cohortVisible = false" :info="selectProductItem"></Cohort>
+    <el-dialog
+      v-if="cohortVisible"
+      v-model="cohortVisible"
+      custom-class="share-dialog"
+      title="应用分配"
+      width="1000px"
+      draggable
+      :close-on-click-modal="false"
+    >
+      <ShareComponent
+        dialogType="1"
+        @closeDialog="cohortVisible = false"
+        :info="selectProductItem"
+      ></ShareComponent>
     </el-dialog>
-    <el-dialog v-if="shareVisible" v-model="shareVisible" custom-class="share-dialog" title="应用共享" width="1000px"
-      draggable :close-on-click-modal="false">
-      <ShareCohort v-if="store.workspaceData.type == 2" @closeDialog="shareVisible = false" :info="selectProductItem">
+    <el-dialog
+      v-if="shareVisible"
+      v-model="shareVisible"
+      custom-class="share-dialog"
+      title="应用共享"
+      width="1000px"
+      draggable
+      :close-on-click-modal="false"
+    >
+      <ShareComponent
+        dialogType="2"
+        :type="store.workspaceData.type"
+        @closeDialog="shareVisible = false"
+        :info="selectProductItem"
+      ></ShareComponent>
+      <!-- <ShareComponent
+        :type="store.workspaceData.type"
+        :info="selectProductItem"
+        @closeDialog="shareVisible = false"
+      ></ShareComponent> -->
+      <!-- <ShareCohort
+        v-if="store.workspaceData.type == 2"
+        @closeDialog="shareVisible = false"
+        :info="selectProductItem"
+      >
       </ShareCohort>
-      <SharePersonBox v-else @closeDialog="shareVisible = false" :info="selectProductItem"></SharePersonBox>
+      <SharePersonBox
+        v-else
+        @closeDialog="shareVisible = false"
+        :info="selectProductItem"
+      ></SharePersonBox> -->
     </el-dialog>
   </div>
 </template>
 <script setup lang="ts">
-import API from '@/services'
-import { ElMessage, ElMessageBox } from 'element-plus'
-import { onMounted, reactive, ref, watch, nextTick } from 'vue'
-import ShopCard from './components/shopCard.vue'
-import PutawayComp from './components/putawayComp.vue'
-import { actionOptionsOfOwn } from './config'
-import Cohort from './components/cohortBox.vue'
-import ShareCohort from './components/shareCohortBox.vue'
-import SharePersonBox from './components/sharePersonBox.vue'
-import { useRouter } from 'vue-router'
-import type { FormInstance } from 'element-plus'
-import MarketCreate from './components/marketCreate.vue'
-import MarketCard from '@/components/marketCard/index.vue'
-import { useUserStore } from '@/store/user'
-import DiyTable from '@/components/diyTable/index.vue'
-import appImg from '@/assets/img/app_icon.png'
-import $services from '@/services'
-import Unit from '../Market/AppShare/unit.vue'
-import Group from '../Market/AppShare/group.vue'
-import Person from '../Market/AppShare/person.vue'
-import Pagination from '@/components/pagination/index.vue'
-import orgChat from '@/hubs/orgchat'
-import authority from '@/utils/authority'
-import { storeToRefs } from 'pinia'
-// import MarketServices from './market.services'
-// hoverItem--鼠标移入item的id 用于展示按钮区域
-// console.log('MarketServices',MarketServices);
+  import API from '@/services'
+  import { ElMessage, ElMessageBox } from 'element-plus'
+  import { onMounted, reactive, ref, watch, nextTick } from 'vue'
+  import ShopCard from './components/shopCard.vue'
+  import PutawayComp from './components/putawayComp.vue'
+  import { actionOptionsOfOwn } from './config'
+  import Cohort from './components/cohortBox.vue'
+  import ShareCohort from './components/shareCohortBox.vue'
+  import SharePersonBox from './components/sharePersonBox.vue'
+  import ShareComponent from './components/shareComponents.vue'
+  import { useRouter } from 'vue-router'
+  import type { FormInstance } from 'element-plus'
+  import MarketCreate from './components/marketCreate.vue'
+  import MarketCard from '@/components/marketCard/index.vue'
+  import { useUserStore } from '@/store/user'
+  import DiyTable from '@/components/diyTable/index.vue'
+  import appImg from '@/assets/img/app_icon.png'
+  import $services from '@/services'
+  import Unit from '../Market/AppShare/unit.vue'
+  import Group from '../Market/AppShare/group.vue'
+  import Person from '../Market/AppShare/person.vue'
+  import Pagination from '@/components/pagination/index.vue'
+  import orgChat from '@/hubs/orgchat'
+  import authority from '@/utils/authority'
+  import { storeToRefs } from 'pinia'
+  // import MarketServices from './market.services'
+  // hoverItem--鼠标移入item的id 用于展示按钮区域
+  // console.log('MarketServices',MarketServices);
 
-const add: string = '从 ⌈开放市场⌋ 添加'
-const groupShareVisible = ref<boolean>(false)
-const unitShareVisible = ref<boolean>(false)
-const personCohortShareVisible = ref<boolean>(false)
+  const add: string = '从 ⌈开放市场⌋ 添加'
+  const groupShareVisible = ref<boolean>(false)
+  const unitShareVisible = ref<boolean>(false)
+  const personCohortShareVisible = ref<boolean>(false)
 
-const isCard = ref(true)
-const mode = ref('card')
-// 注册页面实例
-const registerFormRef = ref<FormInstance>()
-const router = useRouter()
-const store = useUserStore()
-const cohort = ref(null)
+  const isCard = ref(true)
+  const mode = ref('card')
+  // 注册页面实例
+  const registerFormRef = ref<FormInstance>()
+  const router = useRouter()
+  const store = useUserStore()
+  const cohort = ref(null)
 
-const { queryInfo } = storeToRefs(store)
+  const { queryInfo } = storeToRefs(store)
 
-// 当前用户的集团
-let groups = reactive([])
-// 当前选中的集团
-let selectedValue = ref<string>('')
-// 集团共享
-const groupVisible = ref<boolean>(false)
-// 共享功能
-const cohortVisible = ref<boolean>(false)
+  // 当前用户的集团
+  let groups = reactive([])
+  // 当前选中的集团
+  let selectedValue = ref<string>('')
+  // 集团共享
+  const groupVisible = ref<boolean>(false)
+  // 共享功能
+  const cohortVisible = ref<boolean>(false)
 
-const shareVisible = ref<boolean>(false)
-// 路由跳转
-const searchText = ref<string>('')
-const pageContent = ref(null)
-const diyTable = ref(null)
-// 表格展示数据
-const pageStore = reactive({
-  tableData: [],
-  currentPage: 1,
-  pageSize: 20,
-  total: 0
-})
-
-const GoPageWithQuery = (path: string, query: any) => {
-  router.push({ path, query })
-}
-//应用搜索
-const GoPage = (path: string) => {
-  router.push(path)
-}
-type StateType = {
-  ownProductList: ProductType[] //我的应用
-  ownTotal: number
-  shareTotal: number
-  marketOptions: any[] //所有市场列表
-  options: any[] //集团列表
-  selectLabel: selectType // 选中的集团名称
-  tableHead: any[],
-  dropDwonActiveId: string // 当前dropdwon打开时选中的id
-}
-
-const state: StateType = reactive({
-  ownProductList: [],
-  ownTotal: 0,
-  shareTotal: 0,
-  marketOptions: [],
-  options: [],
-  dropDwonActiveId: '',
-  selectLabel: {
-    label: '',
-    id: ''
-  },
-  tableHead: [
-    {
-      type: 'slot',
-      prop: 'name',
-      name: 'name',
-      label: '应用名称'
-    },
-    {
-      type: 'slot',
-      prop: 'tag',
-      name: 'tag',
-      label: '应用状态'
-    },
-    {
-      prop: 'code',
-      label: '应用编码'
-    },
-    {
-      prop: 'source',
-      label: '应用来源'
-    },
-    {
-      prop: 'typeName',
-      label: '应用类型'
-    },
-    {
-      prop: 'authority',
-      label: '持有权限'
-    },
-    {
-      prop: 'createTime',
-      label: '创建时间',
-      width: '200'
-    },
-    {
-      type: 'slot',
-      label: '操作',
-      fixed: 'right',
-      align: 'center',
-      width: '300',
-      name: 'operate'
-    }
-  ]
-})
-const title = ref<string>('')
-onMounted(() => {
-  // 获取列表
-  getProductList()
-  getShopcarNum()
-})
-
-//列表
-watch([isCard], ([val], [valOld]) => {
-  // 监听 展示方式变化
-  nextTick(() => {
-    if (val) {
-      getProductList()
-    } else {
-      getProductList()
-    }
+  const shareVisible = ref<boolean>(false)
+  // 路由跳转
+  const searchText = ref<string>('')
+  const pageContent = ref(null)
+  const diyTable = ref(null)
+  // 表格展示数据
+  const pageStore = reactive({
+    tableData: [],
+    currentPage: 1,
+    pageSize: 20,
+    total: 0
   })
-  // 监听所选市场变化
-  // if (activeMVal!==activeMValOld) {
-  //   getData()
-  // }
-})
 
-const selectchange = (val: string) => {
-  state.selectLabel = state.options.find((el) => {
-    return el.value == val
-  })
-}
-const shopcarNum = ref(0)
-const getShopcarNum = async () => {
-  await $services.market
-    .searchStaging({
-      data: {
-        id: 0, //市场id （需删除）
-        offset: 0,
-        limit: 20,
-        filter: ''
-      }
-    })
-    .then((res: ResultType) => {
-      var { result = [], total = 0 } = res.data
-      shopcarNum.value = total
-    })
-}
-// 关闭共享弹窗
-// const closeDialog = () => {
-//   shareVisible.value = false
-// }
-const handleUpdate = (page: any) => {
-  pageStore.currentPage = page.currentPage
-  pageStore.pageSize = page.pageSize
-  getProductList()
-}
-// 获取我的应用列表
-const getProductList = async () => {
-  const { data, success } = await API.product['searchOwnProduct']({
-    data: {
-      offset: (pageStore.currentPage - 1) * pageStore.pageSize,
-      limit: pageStore.pageSize,
-      filter: searchText.value
-    }
-  })
-  if (success) {
-    const { result = [], total = 0 } = data
-    state[`ownProductList`] = [...result]
-    state[`ownTotal`] = total
-    pageStore.total = total
-    diyTable.value.state.page.total = total
-    pageContent.value.state.page.total = total
+  const GoPageWithQuery = (path: string, query: any) => {
+    router.push({ path, query })
   }
-}
+  //应用搜索
+  const GoPage = (path: string) => {
+    router.push(path)
+  }
+  type StateType = {
+    ownProductList: ProductType[] //我的应用
+    ownTotal: number
+    shareTotal: number
+    marketOptions: any[] //所有市场列表
+    options: any[] //集团列表
+    selectLabel: selectType // 选中的集团名称
+    tableHead: any[]
+    dropDwonActiveId: string // 当前dropdwon打开时选中的id
+  }
 
-// 移除app
-const deleteApp = (item: any) => {
-  ElMessageBox.confirm(`确认删除  ${item.name}?`, '警告', {
-    confirmButtonText: '确认',
-    cancelButtonText: '取消',
-    type: 'warning'
+  const state: StateType = reactive({
+    ownProductList: [],
+    ownTotal: 0,
+    shareTotal: 0,
+    marketOptions: [],
+    options: [],
+    dropDwonActiveId: '',
+    selectLabel: {
+      label: '',
+      id: ''
+    },
+    tableHead: [
+      {
+        type: 'slot',
+        prop: 'name',
+        name: 'name',
+        label: '应用名称'
+      },
+      {
+        type: 'slot',
+        prop: 'tag',
+        name: 'tag',
+        label: '应用状态'
+      },
+      {
+        prop: 'code',
+        label: '应用编码'
+      },
+      {
+        prop: 'source',
+        label: '应用来源'
+      },
+      {
+        prop: 'typeName',
+        label: '应用类型'
+      },
+      {
+        prop: 'authority',
+        label: '持有权限'
+      },
+      {
+        prop: 'createTime',
+        label: '创建时间',
+        width: '200'
+      },
+      {
+        type: 'slot',
+        label: '操作',
+        fixed: 'right',
+        align: 'center',
+        width: '300',
+        name: 'operate'
+      }
+    ]
   })
-    .then(async () => {
-      const { success } = await API.product.delete({
-        data: { id: item.id }
-      })
-      if (success) {
+  const title = ref<string>('')
+  onMounted(() => {
+    // 获取列表
+    getProductList()
+    getShopcarNum()
+  })
+
+  //列表
+  watch([isCard], ([val], [valOld]) => {
+    // 监听 展示方式变化
+    nextTick(() => {
+      if (val) {
         getProductList()
-        ElMessage({
-          type: 'success',
-          message: '操作成功'
-        })
+      } else {
+        getProductList()
       }
     })
-    .catch(() => { })
-}
+    // 监听所选市场变化
+    // if (activeMVal!==activeMValOld) {
+    //   getData()
+    // }
+  })
 
-// 记录当前操作的 应用信息
-const selectProductItem = ref<ProductType>()
-// 处理 设置 菜单选择事件
-const handleCommand = (
-  type: 'own' | 'other',
-  command: string | number | object,
-  item: ProductType
-) => {
-  selectProductItem.value = item
-  switch (command) {
-    case 'share':
-      openShareDialog()
-      break
-    case 'putaway':
-      publishVisible.value = true
-      break
-    case 'unsubscribe':
-      break
-    case 'distribution':
-      cohortVisible.value = true
-      break
-    case 'detail':
-      GoPage(`/market/detail/${item.id}`)
-      break
-    default:
-      break
-  }
-}
-
-// 下拉框显示隐藏时触发
-// value 是否显示，activeId 当前显示 的卡片内容id
-const optionDropdownChange = (value: boolean, activeId: string) => {
-
-  if (value) { //显示
-    state.dropDwonActiveId = activeId
-  } else {
-    state.dropDwonActiveId = ''
-  }
-}
-
-//  打开集团选择弹窗
-const openShareDialog = () => {
-  shareVisible.value = true
-}
-
-const groupId = ref('')
-const groupName = ref('')
-const appInfo = ref('')
-// 跳转到group共享界面
-const shareGroup = () => {
-  if (selectedValue.value) {
-    groupId.value = selectedValue.value
-    groupName.value = state.selectLabel.label
-    appInfo.value = selectProductItem.value.id
-    groupVisible.value = false
-    groupShareVisible.value = true
-  } else {
-    ElMessage({
-      type: 'warning',
-      message: '请选择集团'
+  const selectchange = (val: string) => {
+    state.selectLabel = state.options.find((el) => {
+      return el.value == val
     })
   }
-}
-// 跳转到unit共享界面
-// const shareUnit = () => {
-//   if (selectedValue.value) {
-//     groupId.value = selectedValue.value
-//     groupName.value = state.selectLabel.label
-//     appInfo.value = selectProductItem.value.id
-
-//     groupVisible.value = false
-//     // groupShareVisible.value = true
-//     shareVisible.value = true
-//   } else {
-//     ElMessage({
-//       type: 'warning',
-//       message: '请选择集团'
-//     })
-//   }
-// }
-// 按群组共享
-const shareCohort = () => { }
-
-// 上架应用功能
-const publishVisible = ref<boolean>(false)
-const putawayRef = ref<any>()
-// 提交上架
-const putawaySubmit = () => {
-  putawayRef.value.onPutawaySubmit()
-}
-//搜索应用
-const searchList = () => {
-  pageStore.currentPage = 1
-  getProductList()
-}
-const formartDateTime = (dateStr: any) => {
-  if (dateStr) {
-    var timestamp = new Date(dateStr).getTime()
-    return timestamp
-  } else {
-    return new Date().getTime() + 1000
+  const shopcarNum = ref(0)
+  const getShopcarNum = async () => {
+    await $services.market
+      .searchStaging({
+        data: {
+          id: 0, //市场id （需删除）
+          offset: 0,
+          limit: 20,
+          filter: ''
+        }
+      })
+      .then((res: ResultType) => {
+        var { result = [], total = 0 } = res.data
+        shopcarNum.value = total
+      })
   }
-}
+  // 关闭共享弹窗
+  // const closeDialog = () => {
+  //   shareVisible.value = false
+  // }
+  const handleUpdate = (page: any) => {
+    pageStore.currentPage = page.currentPage
+    pageStore.pageSize = page.pageSize
+    getProductList()
+  }
+  // 获取我的应用列表
+  const getProductList = async () => {
+    const { data, success } = await API.product['searchOwnProduct']({
+      data: {
+        offset: (pageStore.currentPage - 1) * pageStore.pageSize,
+        limit: pageStore.pageSize,
+        filter: searchText.value
+      }
+    })
+    if (success) {
+      const { result = [], total = 0 } = data
+      state[`ownProductList`] = [...result]
+      state[`ownTotal`] = total
+      pageStore.total = total
+      diyTable.value.state.page.total = total
+      pageContent.value.state.page.total = total
+    }
+  }
+
+  // 移除app
+  const deleteApp = (item: any) => {
+    ElMessageBox.confirm(`确认删除  ${item.name}?`, '警告', {
+      confirmButtonText: '确认',
+      cancelButtonText: '取消',
+      type: 'warning'
+    })
+      .then(async () => {
+        const { success } = await API.product.delete({
+          data: { id: item.id }
+        })
+        if (success) {
+          getProductList()
+          ElMessage({
+            type: 'success',
+            message: '操作成功'
+          })
+        }
+      })
+      .catch(() => {})
+  }
+
+  // 记录当前操作的 应用信息
+  const selectProductItem = ref<ProductType>()
+  // 处理 设置 菜单选择事件
+  const handleCommand = (
+    type: 'own' | 'other',
+    command: string | number | object,
+    item: ProductType
+  ) => {
+    selectProductItem.value = item
+    switch (command) {
+      case 'share':
+        openShareDialog()
+        break
+      case 'putaway':
+        publishVisible.value = true
+        break
+      case 'unsubscribe':
+        break
+      case 'distribution':
+        cohortVisible.value = true
+        break
+      case 'detail':
+        GoPage(`/market/detail/${item.id}`)
+        break
+      default:
+        break
+    }
+  }
+
+  // 下拉框显示隐藏时触发
+  // value 是否显示，activeId 当前显示 的卡片内容id
+  const optionDropdownChange = (value: boolean, activeId: string) => {
+    if (value) {
+      //显示
+      state.dropDwonActiveId = activeId
+    } else {
+      state.dropDwonActiveId = ''
+    }
+  }
+
+  //  打开集团选择弹窗
+  const openShareDialog = () => {
+    shareVisible.value = true
+  }
+
+  const groupId = ref('')
+  const groupName = ref('')
+  const appInfo = ref('')
+  // 跳转到group共享界面
+  const shareGroup = () => {
+    if (selectedValue.value) {
+      groupId.value = selectedValue.value
+      groupName.value = state.selectLabel.label
+      appInfo.value = selectProductItem.value.id
+      groupVisible.value = false
+      groupShareVisible.value = true
+    } else {
+      ElMessage({
+        type: 'warning',
+        message: '请选择集团'
+      })
+    }
+  }
+  // 跳转到unit共享界面
+  // const shareUnit = () => {
+  //   if (selectedValue.value) {
+  //     groupId.value = selectedValue.value
+  //     groupName.value = state.selectLabel.label
+  //     appInfo.value = selectProductItem.value.id
+
+  //     groupVisible.value = false
+  //     // groupShareVisible.value = true
+  //     shareVisible.value = true
+  //   } else {
+  //     ElMessage({
+  //       type: 'warning',
+  //       message: '请选择集团'
+  //     })
+  //   }
+  // }
+  // 按群组共享
+  const shareCohort = () => {}
+
+  // 上架应用功能
+  const publishVisible = ref<boolean>(false)
+  const putawayRef = ref<any>()
+  // 提交上架
+  const putawaySubmit = () => {
+    putawayRef.value.onPutawaySubmit()
+  }
+  //搜索应用
+  const searchList = () => {
+    pageStore.currentPage = 1
+    getProductList()
+  }
+  const formartDateTime = (dateStr: any) => {
+    if (dateStr) {
+      var timestamp = new Date(dateStr).getTime()
+      return timestamp
+    } else {
+      return new Date().getTime() + 1000
+    }
+  }
 </script>
 
 <style>
-.group-dialog>.el-dialog__body {
-  padding: 10px 20px;
-  height: 100px;
-  display: flex;
-  align-items: center;
-}
+  .group-dialog > .el-dialog__body {
+    padding: 10px 20px;
+    height: 100px;
+    display: flex;
+    align-items: center;
+  }
 
-.share-dialog>.el-dialog__header {
-  text-align: center;
-  font-weight: bold;
-}
+  .share-dialog > .el-dialog__header {
+    text-align: center;
+    font-weight: bold;
+  }
 
-.share-dialog>.el-dialog__body {
-  padding: 10px 20px;
-}
+  .share-dialog > .el-dialog__body {
+    padding: 10px 20px;
+  }
 </style>
 
 <style lang="scss" scoped>
-.header-box {
-  display: flex;
-}
-
-.cohortLayout {
-  width: 100%;
-  height: 500px;
-  overflow: auto;
-}
-
-.page-flex {
-  height: 64px;
-  width: 100%;
-  overflow: hidden;
-}
-
-.menuRight {
-  width: 100px;
-  height: 60px;
-  position: absolute;
-  background-color: rgb(247, 247, 247);
-  font-size: 12px;
-  z-index: 999;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-
-  &-fixed {
-    padding: 5px 0;
-    width: 100%;
-    text-align: center;
-
-    &:hover {
-      background-color: #fff;
-    }
-  }
-
-  &-cancel {
-    padding: 10px 0;
-    width: 100%;
-    text-align: center;
-
-    &:hover {
-      background-color: #fff;
-    }
-  }
-}
-
-.el-select {
-  width: 100%;
-}
-
-.market-layout {
-  width: 100%;
-  height: 100%;
-  min-width: 1000px;
-  position: relative;
-
-  .market-head {
+  .header-box {
     display: flex;
-    justify-content: flex-end;
-    align-items: center;
+  }
+
+  .cohortLayout {
+    width: 100%;
+    height: 500px;
+    overflow: auto;
+  }
+
+  .page-flex {
+    height: 64px;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .menuRight {
+    width: 100px;
     height: 60px;
-    padding: 0 20px;
-  }
-
-  .market-content {
-    // position: absolute;
-    padding: 2px 2px 0;
-    // margin-top: 4px;
-    width: 100%;
-    height: calc(100vh - 120px);
-    overflow-y: auto;
-  }
-
-  .edit-wrap {
+    position: absolute;
+    background-color: rgb(247, 247, 247);
+    font-size: 12px;
+    z-index: 999;
     display: flex;
-    align-items: center;
+    flex-direction: column;
     justify-content: center;
-  }
-
-  .app-card-item-con-desc {
+    align-items: center;
     cursor: pointer;
-    font-size: 13px;
-    color: var(--el-text-color-regular);
-    line-height: 1.8;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: -webkit-inline-box; //将对象作为弹性伸缩盒子模型显示。
-    -webkit-box-orient: vertical; // 从上到下垂直排列子元素
-    -webkit-line-clamp: 2; //显示的行数
 
-  }
-
-  // body内每行 高度
-  .card-body-cell {
-    overflow: hidden;
-    text-overflow: ellipsis;
-
-  }
-
-  .button {
-    // position: absolute;
-    // right: 50px;
-    // bottom: 20px;
-    margin-left: 20px;
-  }
-
-  .box {
-
-
-    background-color: var(--el-bg-color);
-    padding: 10px 24px;
-    // height: 100%;
-
-    // display: flex;
-    // flex-direction: column;
-    // flex: 1;
-    &-title {
-      font-weight: bold;
-      padding: 8px 0;
-    }
-
-    .getApp-radio {
-      display: flex;
+    &-fixed {
+      padding: 5px 0;
       width: 100%;
-      justify-content: space-between;
-      margin-bottom: 20px;
-      align-items: center;
+      text-align: center;
 
-      .box-ul-title {
-        width: 50%;
-        display: flex;
-        justify-content: flex-start;
-      }
-
-      .search {
-        width: 200px;
-  
+      &:hover {
+        background-color: #fff;
       }
     }
 
-    .app-card {
+    &-cancel {
+      padding: 10px 0;
+      width: 100%;
+      text-align: center;
+
+      &:hover {
+        background-color: #fff;
+      }
+    }
+  }
+
+  .el-select {
+    width: 100%;
+  }
+
+  .market-layout {
+    width: 100%;
+    height: 100%;
+    min-width: 1000px;
+    position: relative;
+
+    .market-head {
       display: flex;
-      flex-wrap: wrap;
-      height: calc(100% - 460px);
-      align-content: flex-start;
+      justify-content: flex-end;
+      align-items: center;
+      height: 60px;
+      padding: 0 20px;
+    }
+
+    .market-content {
+      // position: absolute;
+      padding: 2px 2px 0;
+      // margin-top: 4px;
+      width: 100%;
+      height: calc(100vh - 120px);
       overflow-y: auto;
     }
 
-    .tab-card {
-      height: calc(100vh - 395px)
+    .edit-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
+    .app-card-item-con-desc {
+      cursor: pointer;
+      font-size: 13px;
+      color: var(--el-text-color-regular);
+      line-height: 1.8;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-inline-box; //将对象作为弹性伸缩盒子模型显示。
+      -webkit-box-orient: vertical; // 从上到下垂直排列子元素
+      -webkit-line-clamp: 2; //显示的行数
+    }
+
+    // body内每行 高度
+    .card-body-cell {
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .button {
+      // position: absolute;
+      // right: 50px;
+      // bottom: 20px;
+      margin-left: 20px;
+    }
+
+    .box {
+      background-color: var(--el-bg-color);
+      padding: 10px 24px;
+      // height: 100%;
+
+      // display: flex;
+      // flex-direction: column;
+      // flex: 1;
+      &-title {
+        font-weight: bold;
+        padding: 8px 0;
+      }
+
+      .getApp-radio {
+        display: flex;
+        width: 100%;
+        justify-content: space-between;
+        margin-bottom: 20px;
+        align-items: center;
+
+        .box-ul-title {
+          width: 50%;
+          display: flex;
+          justify-content: flex-start;
+        }
+
+        .search {
+          width: 200px;
+        }
+      }
+
+      .app-card {
+        display: flex;
+        flex-wrap: wrap;
+        height: calc(100% - 460px);
+        align-content: flex-start;
+        overflow-y: auto;
+      }
+
+      .tab-card {
+        height: calc(100vh - 395px);
+      }
+    }
   }
-}
 </style>
