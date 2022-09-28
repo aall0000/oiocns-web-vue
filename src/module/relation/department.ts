@@ -10,7 +10,7 @@ import { ElMessage, ElMessageBox } from 'element-plus';
 class DepartmentServices {
   /**
    * @description: 页码
-   */  
+   */
   public pageStore = {
     currentPage: 1,
     pageSize: 20,
@@ -23,7 +23,7 @@ class DepartmentServices {
    */
   // 
 
-  public upDateDempartment = async (params: paramsDataType) => {
+  public async upDateDempartment(params: paramsDataType) {
     let url = null;
     if (params.typeName == '单位') {
       url = 'update'
@@ -44,9 +44,9 @@ class DepartmentServices {
    * @description: 获取人员列表
    * @param {paramsDataType} params
    * @return {*}
-   */  
+   */
 
-  public getUser = async (params: paramsDataType) => {
+  public async getUser(params: paramsDataType) {
     let url = '';
     if (params.typeName == '单位') {
       url = 'getPersons'
@@ -55,16 +55,16 @@ class DepartmentServices {
     } else if (params.typeName == '工作组') {
       url = 'getJobPersons'
     }
-    const {data,success} = await API.company[url]({
+    const { data, success } = await API.company[url]({
       data: {
         id: params.id,
         offset: (this.pageStore.currentPage - 1) * this.pageStore.pageSize,
         limit: this.pageStore.pageSize
-      } 
+      }
     })
     if (success) {
       let backData = {
-        result:data.result,
+        result: data.result,
         total: data.total,
       }
       return backData
@@ -76,10 +76,10 @@ class DepartmentServices {
    * @param {paramsDataType} id
    * @param {Array} Arr
    * @return {*}
-   */  
+   */
 
-  public pullPerson = async (id:paramsDataType,Arr:Array<paramsDataType>) =>{
-    const {data,success} = await API.company.pullPerson({
+  public async pullPerson(id: paramsDataType, Arr: Array<paramsDataType>) {
+    const { data, success } = await API.company.pullPerson({
       data: {
         id: id,
         targetIds: Arr
@@ -94,8 +94,8 @@ class DepartmentServices {
    * @param {paramsDataType} row
    * @param {string} id
    * @return {*}
-   */  
-  public removePerson =async (row:paramsDataType,id:string) => {
+   */
+  public async removePerson(row: paramsDataType, id: string) {
     let url: string;
     let title: string;
     if (row.typeName == '单位') {
@@ -108,7 +108,7 @@ class DepartmentServices {
       url = 'removeFromJob'
       title = `确定把 ${row.name} 从当前部门移除吗？`
     }
-    const data =  await ElMessageBox.confirm(
+    const data = await ElMessageBox.confirm(
       title,
       '警告',
       {
@@ -116,17 +116,17 @@ class DepartmentServices {
         cancelButtonText: '取消',
         type: 'warning'
       }
-    ) .catch((action:any) => {
+    ).catch((action: any) => {
       console.log(action)
     })
-    if(data =='confirm'){
-      const msg =await API.company[url]({
+    if (data == 'confirm') {
+      const msg = await API.company[url]({
         data: {
           id: id,
           targetIds: [row.id]
         }
       })
-      if(data){
+      if (data) {
         return msg
       }
     }
@@ -136,9 +136,9 @@ class DepartmentServices {
    * @param {paramsDataType} id
    * @param {Array} Arr
    * @return {*}
-   */  
-   public assignDepartment = async(id:string,targetIds:string[]) =>{
-    const {data,success} = await API.company.assignDepartment({
+   */
+  public async assignDepartment(id: string, targetIds: string[]) {
+    const { data, success } = await API.company.assignDepartment({
       data: {
         id: id,
         targetIds: targetIds
@@ -153,9 +153,9 @@ class DepartmentServices {
    * @param {paramsDataType} id
    * @param {Array} Arr
    * @return {*}
-   */  
-   public assignJob = async(id:string,targetIds:string[]) =>{
-    const {data,success} = await API.company.assignJob({
+   */
+  public async assignJob(id: string, targetIds: string[]) {
+    const { data, success } = await API.company.assignJob({
       data: {
         id: id,
         targetIds: targetIds

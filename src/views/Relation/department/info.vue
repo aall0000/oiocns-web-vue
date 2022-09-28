@@ -61,7 +61,7 @@ import { ElMessage } from 'element-plus'
 import router from '@/router';
 import orgChat from '@/hubs/orgchat'
 import authority from '@/utils/authority'
-import departmentServices from '@/module/relation/department'
+import DepartmentServices from '@/module/relation/department'
 const allowEdit = () => {
   return selectItem.value.id &&
     authority.IsRelationAdmin([
@@ -73,7 +73,7 @@ let title = ref<string>('单位')
 let selectItem = ref<any>({})
 let dialogVisible = ref<boolean>(false)
 let formData: any = ref({})
-
+const service  = new DepartmentServices()
 
 // 获取单位树点击的信息
 const selectItemChange = (data: any) => {
@@ -100,7 +100,7 @@ const handleUpdate = () => {
 // 保存
 const update = async () => {
   const data = { ...formData.value, ...selectItem.value.data };
-  const val =  await departmentServices.upDateDempartment(data)
+  const val =  await service.upDateDempartment(data)
   dialogVisible.value = false
   ElMessage.success('信息修改成功!')
   selectItem.value.data = val
