@@ -19,15 +19,7 @@ interface MarketServicesType {
   quitMarket: () => void
   //获取共享市场信息
   // 获取市场展示应用--筛选
-  // ----------------------应用购物车功能 ---------
-  // 加购应用
-  // 取消加购
-  // 获取当前购物车数量
-  // 购买应用
-  // 采购订单
-  // 出售订单
-  // 取消订单
-  // 确认订单
+
 }
 
 class MarketServices {
@@ -167,4 +159,3 @@ class MarketServices {
 }
 const marketServices = new MarketServices()
 export default marketServices
-console.log('marketServices', marketServices)

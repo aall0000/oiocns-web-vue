@@ -1,4 +1,12 @@
-
+  // ----------------------应用购物车功能 ---------
+  // 加购应用
+  // 取消加购
+  // 获取当前购物车数量
+  // 购买应用
+  // 采购订单
+  // 出售订单
+  // 取消订单
+  // 确认订单
 import API from '@/services'
 import { Merchandise, OrderType } from '@/views/Market/Order/order'
 
