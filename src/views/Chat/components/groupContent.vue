@@ -88,7 +88,7 @@ const handleReWrite = (txt: string) => {
 const curShow = ref<any>(null)
 
 const editShow = (item: any) => {
-  if(item.chatId){
+  if (item.chatId) {
     item.id = item.chatId
   }
   if (curShow.value && curShow.value.id !== item.id) {
@@ -97,8 +97,8 @@ const editShow = (item: any) => {
   curShow.value = item
 }
 
-const canDelete = (item: any)=>{
-  if(item.chatId){
+const canDelete = (item: any) => {
+  if (item.chatId) {
     return true
   }
   return item.spaceId === orgChat.userId.value
@@ -106,13 +106,13 @@ const canDelete = (item: any)=>{
 
 const recallMsg = (item: any) => {
   item.edit = false
-  if(item.chatId){
+  if (item.chatId) {
     item.id = item.chatId
     delete item.chatId
     delete item.sessionId
   }
-  orgChat.recallMsg(item).then((res:ResultType)=>{
-    if(res.data != 1){
+  orgChat.recallMsg(item).then((res: ResultType) => {
+    if (res.data != 1) {
       ElMessage({
         type: "warning",
         message: "只能撤回1分钟内发送的消息"
@@ -134,19 +134,27 @@ const isShowTime = (index: number) => {
 
 // 显示聊天间隔时间
 const showChatTime = (chatDate: moment.MomentInput) => {
-  const formatTime = moment(chatDate).format('MM月DD日 a hh:mm')
-  const formatTimeArr = formatTime.split(' ')
-  const showText = { am: '上午 ', pm: '下午 ' }[formatTimeArr[1]] + formatTimeArr[2]
-  if (!moment(chatDate).isBefore(moment(), 'day')) { // 今天
-    return showText
+  const cdate = moment(chatDate)
+  const days = moment().diff(cdate, 'day')
+  switch (days) {
+    case 0:
+      return cdate.format('H:mm')
+    case 1:
+      return "昨天 " + cdate.format('H:mm')
+    case 2:
+      return "前天 " + cdate.format('H:mm')
   }
-  return formatTimeArr[0] + ' ' + showText // 今天之前
+  const year = moment().diff(cdate, 'year')
+  if(year == 0){
+    return cdate.format('M月D日 H:mm')
+  }
+  return cdate.format('yy年 M月D日 H:mm')
 }
 
 // 实时滚动条高度
 const scrollTop = debounce(async () => {
   let scroll = nodeRef.value.scrollTop
-  if (scroll < 10) {
+  if (scroll > 0 && scroll < 20) {
     let beforeHeight = nodeRef.value.scrollHeight
     let count = await orgChat.getHistoryMsg()
     if (count > 0) {
@@ -176,9 +184,11 @@ defineExpose({
   max-width: 100%;
   max-height: 400px;
 }
-.con-content-txt >span{
+
+.con-content-txt>span {
   line-height: 2;
 }
+
 .con-content-txt div {
   max-width: 100% !important;
   word-break: break-all;

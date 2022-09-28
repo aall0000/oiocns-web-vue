@@ -72,22 +72,13 @@
     <el-col :span="20" class="flex col-right">
       <el-space class="right-navbar">
         <el-link title="消息" :underline="false" class="header-message-icon" @click="() => router.push('/chat')">
-          <el-icon v-if="orgChat.isConnected() === true" class="header-message-icon link" :size="12"
+          <el-icon v-if="orgChat.isConnected()" class="header-message-icon link" :size="12"
             ><Link
           /></el-icon>
           <el-badge :value="orgChat.getNoRead()" v-if="orgChat.getNoRead().length > 0">
             <el-icon class="header-message-icon" :size="20"><ChatDotSquare /></el-icon>
           </el-badge>
           <el-icon class="header-message-icon" :size="20" v-else><ChatDotSquare /></el-icon>
-        </el-link>
-        <el-link title="工作台" :underline="false" class="header-message-icon" @click="() => router.push('/workHome')">
-          <el-icon :size="20"><DataAnalysis/></el-icon>
-        </el-link>
-        <el-link title="关系" :underline="false" class="header-message-icon" @click="() => router.push('/relation')">
-          <el-icon :size="20"><SetUp/></el-icon>
-        </el-link>
-        <el-link title="仓库" :underline="false" class="header-message-icon" @click="() => router.push('/market')">
-          <el-icon :size="19"><Box/></el-icon>
         </el-link>
         <el-switch title="模式"
           v-model="isDark"

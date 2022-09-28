@@ -8,6 +8,7 @@ type anyStoreType = {
     _stoped: boolean,
     userId: string,
     spaceId: string,
+    authed: boolean,
     _connection: signalR.HubConnection, // 链接对象本身
     _subscribedKeys: Record<string, (data: any) => void>, // 订阅的值和回调方法
     start: (accessToken: string, userId: string, spaceId: string) => void, // 创建及启动链接
@@ -31,10 +32,12 @@ const anyStore: anyStoreType = {
     _subscribedKeys: {},
     userId: "",
     spaceId: "",
+    authed: false,
     start: (accessToken: string, userId: string, spaceId: string) => { // 不传默认为链接用户属性库
         anyStore.userId = userId
         anyStore.spaceId = spaceId
         anyStore._stoped = false
+        anyStore.authed = false
         if (anyStore._connection) return
         // 初始化
         anyStore._connection = new signalR.HubConnectionBuilder().withUrl('/orginone/anydata/hub').build()
@@ -50,6 +53,7 @@ const anyStore: anyStoreType = {
         })
         anyStore._connection.start().then(async () => {
             await anyStore._connection.invoke("TokenAuth", accessToken, "user")
+            anyStore.authed = true
             anyStore._resubscribed()
         }).catch((error: any) => {
             console.log('链接出错,5秒后重连', error)
@@ -60,7 +64,7 @@ const anyStore: anyStoreType = {
         })// 开启链接
     },
     isConnected: () => {
-        if (anyStore._connection != null) {
+        if (anyStore._connection != null && anyStore.authed) {
             return anyStore._connection.state == signalR.HubConnectionState.Connected
         }
         return false
@@ -70,7 +74,8 @@ const anyStore: anyStoreType = {
             anyStore._connection.stop()
         }
         anyStore._connection = null
-        anyStore._stoped = true;
+        anyStore._stoped = true
+        anyStore.authed = false
         anyStore._subscribedKeys = {}
     },
     // 订阅数据 key: 订阅数据的key  callback 数据发生变化时的回调
