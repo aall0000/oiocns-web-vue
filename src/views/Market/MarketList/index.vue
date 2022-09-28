@@ -337,7 +337,6 @@ onMounted(() => {
   getMarketInfo()
   getMyMarketData()
   //getJoinMarketData()
-  getShopcarNum()
 })
 
 const handleCurrentChange = (val: number) => {
@@ -388,21 +387,6 @@ const checksSearch = (val: any) => {
   }
 }
 
-const getShopcarNum = async () => {
-  await $services.market
-    .searchStaging({
-      data: {
-        id: 0, //商店id （需删除）
-        offset: 0,
-        limit: 20,
-        filter: ''
-      }
-    })
-    .then((res: ResultType) => {
-      var { result = [], total = 0 } = res.data
-      shopcarNum.value = total
-    })
-}
 
 const getMyMarketData = async() => {
   await marketServices.getMarketList({
@@ -445,7 +429,6 @@ const getPageDataFromServices = ()=>{
     pageContent.value.state.page.total = marketServices.marketTotal
 }
 
-const shopcarNum = ref(0)
 const form = reactive({
   data: {
     name: '',
@@ -524,7 +507,8 @@ const closeDialog = (data: { value: boolean }) => {
 // 获取共享仓库信息
 const getMarketInfo = async() => {
 await marketServices.getPublicStore()
-      software.value = marketServices.PUBLIC_STORE_ID
+      store.softShareInfo=marketServices.PUBLIC_STORE
+      software.value = marketServices.PUBLIC_STORE.id
 
 }
 // 复制商店编码

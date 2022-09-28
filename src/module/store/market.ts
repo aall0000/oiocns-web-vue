@@ -26,7 +26,7 @@ class MarketServices {
   public marketList: MarketType[] //商店列表
   public marketTotal: number //商店列表 总数
   public QueryParams: CommonParamsType //记录历史请求参数
-  public PUBLIC_STORE_ID: string //共享仓库id
+  public PUBLIC_STORE: ProductType //共享仓库信息
   public shopcarCount: number //当前购物车数量
 
   /**
@@ -90,7 +90,7 @@ class MarketServices {
     remark: string
     public: boolean
   }) => {
-    const { success } = await API.appstore.create({
+    const { success } = await API.appstore.updateMarket({
       data: params
     })
     if (success) {
@@ -133,29 +133,11 @@ class MarketServices {
   public getPublicStore = async () => {
     const { success, data } = await API.market.getSoftShareInfo()
     if (success) {
-      const { id } = data
-      this.PUBLIC_STORE_ID = id
+      // const { id } = data
+      this.PUBLIC_STORE = data
     }
   }
-  // -------------------购物车-------------------------------
-  /**
-   * @description: 获取当前购物车数量
-   * @return {*}
-   */
-  public getShopCarCount = async () => {
-    const { success, data } = await API.market.searchStaging({
-      data: {
-        id: 0, //市场id （需删除）
-        offset: 0,
-        limit: 2,
-        filter: ''
-      }
-    })
-    if (success) {
-      let { total = 0 } = data
-      this.shopcarCount = total
-    }
-  }
+
 }
 const marketServices = new MarketServices()
 export default marketServices
