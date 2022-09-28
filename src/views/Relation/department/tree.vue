@@ -194,10 +194,10 @@ const createDept = () => {
         type: 'success'
       })
     } else {
-      ElMessage({
-        message: res.msg,
-        type: 'error'
-      })
+      // ElMessage({
+      //   message: res.msg,
+      //   type: 'error'
+      // })
     }
   })
 }
