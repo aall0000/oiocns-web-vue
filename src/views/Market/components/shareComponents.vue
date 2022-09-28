@@ -342,48 +342,18 @@
   }
 
   // 获取集团数据
-  const getGroupList = () => {
-    API.company
-      .companyGetGroups({
-        data: {
-          offset: 0,
-          limit: 1000
-        }
-      })
-      .then((res: ResultType) => {
-        if (res.data.result && res.data.result.length > 0) {
-          tabs.value = res.data.result
-          resource.value = tabs.value[0].id
-          getGroupTree()
-        }
-      })
+  const getGroupList = async () => {
+    tabs.value = await application.searchResource()
+    resource.value = tabs.value[0].id
+    await getGroupTree()
   }
 
-  const getGroupTree = (val?: boolean) => {
-    API.company
-      .getGroupTree({
-        data: { id: resource.value }
-      })
-      .then((res: any) => {
-        if (res.success) {
-          res.data = isGroupAuthAdmin(res.data)
-          cascaderTree.value.push(res.data)
-        }
-        if (!val) {
-          getHistoryData()
-        }
-      })
-  }
-
-  const isGroupAuthAdmin = (node: any) => {
-    node.disabled = !authority.IsApplicationAdmin([node.data.id, node.data.belongId])
-    if (node.children) {
-      for (const children of node.children) {
-        isGroupAuthAdmin(children)
-      }
+  const getGroupTree = async (val?: boolean) => {
+    const res = await application.getGroupTree(resource.value)
+    cascaderTree.value.push(res)
+    if (!val) {
+      await getHistoryData()
     }
-    //判断是否有操作权限
-    return node
   }
 
   // 清除树形中的type
@@ -401,7 +371,7 @@
   }
 
   // 获取历史数据
-  const getHistoryData = (data?: any) => {
+  const getHistoryData = async (data?: any) => {
     switch (radio.value) {
       case '1':
         setTimeout(async () => {
@@ -421,46 +391,49 @@
       case '2':
         state.authorHisData = await application.getHistoryData(
           radio.value,
-          typePD !== 3 ? resource.value : ''
+          typePD !== 3 ? resource.value : '',
+          data
         )
         state.authorData = JSON.parse(JSON.stringify(state.authorHisData))
-        let arr: any[] = []
+        let arrAu: any[] = []
         state.authorData.forEach((el) => {
           el.type = 'has'
-          arr.push(el.id)
+          arrAu.push(el.id)
         })
         if (state.centerTree.length > 0) {
-          centerTree.value.setCheckedKeys(arr, true)
+          centerTree.value.setCheckedKeys(arrAu, true)
         }
         break
       case '3':
         state.identitysHisData = await application.getHistoryData(
           radio.value,
-          typePD !== 3 ? resource.value : ''
+          typePD !== 3 ? resource.value : '',
+          data
         )
         state.identitysData = JSON.parse(JSON.stringify(state.identitysHisData))
-        let arr: any[] = []
+        let arrId: any[] = []
         state.identitysData.forEach((el) => {
           el.type = 'has'
-          arr.push(el.id)
+          arrId.push(el.id)
         })
         if (state.centerTree.length > 0) {
-          centerTree.value.setCheckedKeys(arr, true)
+          centerTree.value.setCheckedKeys(arrId, true)
         }
         break
       case '4':
         state.personsHisData = await application.getHistoryData(
           radio.value,
-          typePD !== 3 ? resource.value : ''
+          typePD !== 3 ? resource.value : '',
+          data
         )
         state.personsData = JSON.parse(JSON.stringify(state.personsHisData))
-        let arr: any[] = []
+        let arrPe: any[] = []
         state.personsData.forEach((el) => {
           el.type = 'has'
-          arr.push(el.id)
+          arrPe.push(el.id)
         })
         if (state.centerTree.length > 0) {
-          centerTree.value.setCheckedKeys(arr, true)
+          centerTree.value.setCheckedKeys(arrPe, true)
         }
         break
       default:
@@ -479,13 +452,28 @@
     if (state.switchData !== data || bol) {
       switch (radio.value) {
         case '2':
-          await application.submitAll(state.departData, state.switchData.id, resource.value)
+          await application.sumbitSwitch(
+            state.departData,
+            state.switchData.id,
+            '角色',
+            resource.value
+          )
           break
         case '3':
-          await application.submitAll(state.identitysData, state.switchData.id, resource.value)
+          await application.sumbitSwitch(
+            state.identitysData,
+            state.switchData.id,
+            '岗位',
+            resource.value
+          )
           break
         case '4':
-          await application.submitAll(state.personsData, state.switchData.id, resource.value)
+          await application.sumbitSwitch(
+            state.personsData,
+            state.switchData.id,
+            '人员',
+            resource.value
+          )
           break
         default:
           break
@@ -624,8 +612,10 @@
       }
     }
   }
-  const handleNodeClick = (node: any, load: boolean, search?: string) => {
+  const handleNodeClick = async (node: any, load: boolean, search?: string) => {
     if (node && node.data && authority.IsApplicationAdmin([node.data.id, node.data.belongId])) {
+      sumbitSwitch(node)
+      state.switchData = node
       if (typeof load == 'object' && typeof search == 'object') {
         searchValue.value = ''
       }
@@ -637,110 +627,38 @@
       switch (radio.value) {
         case '2':
           state.loadID = node
-          API.company
-            .getAuthorityTree({
-              data: {
-                id: node.id,
-                filter: typeof search == 'string' ? search : ''
-              }
-            })
-            .then((res: ResultType) => {
-              res.data = handleTreeData(res.data, node.id)
-              state.centerTree = [res.data]
-              getHistoryData(node)
-            })
+          const centerData = await application.getAuthorityTree(node, search)
+          state.centerTree = [centerData]
+          getHistoryData(node)
           break
         case '3':
           state.loadID = node
-          API.company
-            .getIdentities({
-              data: {
-                id: node.id,
-                limit: page.pageSize,
-                offset: handleCurrent.value,
-                filter: typeof search == 'string' ? search : ''
-              }
-            })
-            .then((res: ResultType) => {
-              const { result = [] } = res.data
-              result.forEach((item) => {
-                item.disable = !authority.IsApplicationAdmin([item.belongId, node.data.belongId])
-              })
-              if (load == true) {
-                state.centerTree.concat(res.data.result)
-              } else {
-                state.centerTree = res.data.result ? res.data.result : []
-              }
-              getHistoryData(node)
-            })
+          const res = await application.getIdentities(node, page, search)
+          if (load == true) {
+            state.centerTree.concat(res)
+          } else {
+            state.centerTree = res
+          }
+          getHistoryData(node)
           break
         case '4':
           state.loadID = node
-          let action = ''
-          let module = ''
-          if (typePD.value == 1) {
-            module = 'company'
-            action = 'getPersons'
-            switch (node.data.typeName) {
-              case '部门':
-                action = 'getDepartmentPersons'
-                break
-              case '工作组':
-                action = 'getJobPersons'
-                break
+          const result = await application.getPerson(node, page, search)
+          if (result) {
+            if (load == true) {
+              state.centerTree.concat(result)
+            } else {
+              state.centerTree = result
             }
-          } else if (typePD.value == 2) {
-            module = 'company'
-            action = 'getGroupCompanies'
-            if (node.TypeName === '子集团') {
-              action = 'getSubgroupCompanies'
-            }
+            getHistoryData(node)
           } else {
-            module = 'person'
-            action = 'getFriends'
-            if (node.typeName === '群组') {
-              module = 'cohort'
-              action = 'getPersons'
-            }
+            state.centerTree = []
+            state.personsData = []
           }
-
-          API[module][action]({
-            data: {
-              id: node.id,
-              limit: page.pageSize,
-              offset: handleCurrent.value,
-              filter: typeof search == 'string' ? search : ''
-            }
-          })
-            .then((res: ResultType) => {
-              if (load == true) {
-                state.centerTree.concat(res.data.result)
-              } else {
-                state.centerTree = res.data.result ? res.data.result : []
-              }
-              getHistoryData(node)
-            })
-            .catch(() => {
-              state.centerTree = []
-              state.personsData = []
-            })
         default:
           break
       }
-      sumbitSwitch(node)
-      state.switchData = node
     }
-  }
-
-  const handleTreeData = (node: any, belongId: string) => {
-    node.disabled = !(node.belongId && node.belongId == belongId)
-    if (node.nodes) {
-      node.nodes = node.nodes.map((children) => {
-        return handleTreeData(children, belongId)
-      })
-    }
-    //判断是否有操作权限
-    return node
   }
 
   const handleTabClick = (id: string) => {
@@ -771,14 +689,14 @@
       if (item.type == 'del') {
         return
       } else if (item.type == 'add') {
-        state.personsData.forEach((el, index) => {
+        state.identitysData.forEach((el, index) => {
           if (el.id == item.id) {
-            state.personsData.splice(index, 1)
+            state.identitysData.splice(index, 1)
             centerTree.value.setChecked(item.id, false)
           }
         })
       } else {
-        state.personsData.forEach((el, index) => {
+        state.identitysData.forEach((el, index) => {
           if (el.id == item.id) {
             el.type = 'del'
             if (state.centerTree.length !== 0) {
@@ -791,14 +709,14 @@
       if (item.type == 'del') {
         return
       } else if (item.type == 'add') {
-        state.identitysData.forEach((el, index) => {
+        state.personsData.forEach((el, index) => {
           if (el.id == item.id) {
-            state.identitysData.splice(index, 1)
+            state.personsData.splice(index, 1)
             centerTree.value.setChecked(item.id, false)
           }
         })
       } else {
-        state.identitysData.forEach((el, index) => {
+        state.personsData.forEach((el, index) => {
           if (el.id == item.id) {
             el.type = 'del'
             if (state.centerTree.length !== 0) {

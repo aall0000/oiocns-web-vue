@@ -44,25 +44,64 @@ export default class Application {
     this.cascaderTree.unshift(obj)
     return this.cascaderTree
   }
+  /*
+   *获取集团树形
+   */
+  public async getGroupTree(resource: string) {
+    const res = await API.company.getGroupTree({
+      data: { id: resource }
+    })
+    if (!res.success) {
+      return
+    }
+    res.data = this.isGroupAuthAdmin(res.data)
+    return res.data
+  }
+
+  private isGroupAuthAdmin(node: any) {
+    node.disabled = !authority.IsApplicationAdmin([node.data.id, node.data.belongId])
+    if (node.children) {
+      for (const children of node.children) {
+        this.isGroupAuthAdmin(children)
+      }
+    }
+    //判断是否有操作权限
+    return node
+  }
 
   /*
    *获取tab数据
    */
   public async searchResource() {
-    const { data, success } = await API.product.searchResource({
-      data: {
-        id: this.appInfo.id,
-        offset: 0,
-        limit: 1000,
-        filter: ''
+    if (this.opertion == 1) {
+      const { data, success } = await API.product.searchResource({
+        data: {
+          id: this.appInfo.id,
+          offset: 0,
+          limit: 1000,
+          filter: ''
+        }
+      })
+      if (!success) {
+        return
       }
-    })
-    if (!success) {
-      return
+      const { result = [], total = 0 } = data
+      this.tabs = result
+      return this.tabs
+    } else {
+      const { data, success } = await API.company.companyGetGroups({
+        data: {
+          offset: 0,
+          limit: 1000
+        }
+      })
+      if (!success) {
+        return
+      }
+      const { result = [], total = 0 } = data
+      this.tabs = result
+      return this.tabs
     }
-    const { result = [], total = 0 } = data
-    this.tabs = result
-    return this.tabs
   }
 
   /*
@@ -199,7 +238,7 @@ export default class Application {
   /*
    *提交radio != 1 时的方法
    */
-  public async sumbitSwitch(data: any, switchData: string, resource?: string) {
+  public async sumbitSwitch(data: any, switchData: string, destType: string, resource?: string) {
     let addData: any[] = []
     let delData: any[] = []
     data.forEach((el: any) => {
@@ -220,21 +259,120 @@ export default class Application {
           sourceId: sourceId,
           destIds: addData,
           sourceType: sourceType,
-          destType: '角色'
+          destType: destType
         }
       })
     }
     if (delData.length > 0) {
       promise2 = API.product.extendDelete({
         data: {
-          teamId: switchData.id,
+          teamId: switchData,
           sourceId: sourceId,
           destIds: delData,
           sourceType: sourceType,
-          destType: '角色'
+          destType: destType
         }
       })
     }
     await Promise.all([promise1, promise2])
+  }
+
+  /*
+   *点击左侧树形获取到的数据
+   *按角色
+   */
+  public async getAuthorityTree(node: any, search?: string) {
+    const { data, success } = await API.company.getAuthorityTree({
+      data: {
+        id: node.id,
+        filter: typeof search == 'string' ? search : ''
+      }
+    })
+    if (!success) {
+      return
+    }
+    const tree = this.handleTreeData(data, node.id)
+    return tree
+  }
+  private handleTreeData(node: any, belongId: string) {
+    node.disabled = !(node.belongId && node.belongId == belongId)
+    if (node.nodes) {
+      node.nodes = node.nodes.map((children: any) => {
+        return this.handleTreeData(children, belongId)
+      })
+    }
+    //判断是否有操作权限
+    return node
+  }
+  /*
+   *点击左侧树形获取到的数据
+   *按岗位
+   */
+  public async getIdentities(node: any, page: any, search: string) {
+    const { data, success } = await API.company.getIdentities({
+      data: {
+        id: node.id,
+        limit: page.pageSize,
+        offset: this.handleCurrent(page),
+        filter: typeof search == 'string' ? search : ''
+      }
+    })
+    if (!success) {
+      return
+    }
+    const { result = [], total = 0 } = data
+    result.forEach((item: any) => {
+      item.disable = !authority.IsApplicationAdmin([item.belongId, node.data.belongId])
+    })
+    return result
+  }
+  private handleCurrent(page: any) {
+    return (page.currentPage - 1) * page.pageSize
+  }
+  /*
+   *点击左侧树形获取到的数据
+   *按人员
+   */
+  public async getPerson(node: any, page: any, search: string) {
+    let action = ''
+    let module = ''
+    if (this.opertion == 1) {
+      module = 'company'
+      action = 'getPersons'
+      switch (node.data.typeName) {
+        case '部门':
+          action = 'getDepartmentPersons'
+          break
+        case '工作组':
+          action = 'getJobPersons'
+          break
+      }
+    } else if (this.opertion == 2) {
+      module = 'company'
+      action = 'getGroupCompanies'
+      if (node.TypeName === '子集团') {
+        action = 'getSubgroupCompanies'
+      }
+    } else {
+      module = 'person'
+      action = 'getFriends'
+      if (node.typeName === '群组') {
+        module = 'cohort'
+        action = 'getPersons'
+      }
+    }
+    const { data, success } = await API[module][action]({
+      data: {
+        id: node.id,
+        limit: page.pageSize,
+        offset: this.handleCurrent(page),
+        filter: typeof search == 'string' ? search : ''
+      }
+    })
+    if (!success) {
+      return
+    }
+    const { result = [], total = 0 } = data
+    return result
   }
 }
