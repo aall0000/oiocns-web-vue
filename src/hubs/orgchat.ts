@@ -91,6 +91,7 @@ const orgChat: orgChatType = {
             await orgChat.getChats()
         })
         orgChat._connection.onclose((error) => {
+            anyStore.unSubscribed("orgChat", "user")
             if (!orgChat._stoped) {
                 console.log('链接已断开,5秒后重连', error)
                 setTimeout(() => {
@@ -149,7 +150,7 @@ const orgChat: orgChatType = {
             orgChat._connection.invoke("GetName", id).then((res) => {
                 if (res.success) {
                     orgChat.nameMap[id] = res.data
-                    if(orgChat.chats.value.length > 0){
+                    if (orgChat.chats.value.length > 0) {
                         orgChat._cacheChats()
                     }
                 }
