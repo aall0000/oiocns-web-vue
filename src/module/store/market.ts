@@ -19,7 +19,6 @@ interface MarketServicesType {
   quitMarket: () => void
   //获取共享市场信息
   // 获取市场展示应用--筛选
-
 }
 
 class MarketServices {
@@ -27,16 +26,16 @@ class MarketServices {
   public marketTotal: number //商店列表 总数
   public QueryParams: CommonParamsType //记录历史请求参数
   public PUBLIC_STORE: ProductType //共享仓库信息
-  public shopcarCount: number //当前购物车数量
 
   /**
-   * @description: 获取市场列表
-   * @param {CommonParamsType} params
+   * @desc: 获取市场列表
+   * @param {number} params.offset
+   * @param {number} params.limit
+   * @param {string} params.filter
    * @return {*}
    */
-  public getMarketList = async (params: CommonParamsType) => {
-    const { data, success } = await API.market
-    .searchOwn({
+  public async getMarketList(params: CommonParamsType) {
+    const { data, success } = await API.market.searchOwn({
       data: params
     })
     if (success) {
@@ -49,18 +48,23 @@ class MarketServices {
   }
 
   /**
-   * @description: 创建市场
-   * @param:
+   * @desc: 创建市场
+   * @param {string} params.name
+   * @param {string} params.code
+   * @param {string} params.samrId
+   * @param {string} params.authId  // 空间为组织单位时取组织单位 的authId
+   * @param {string} params.remark
+   * @param {boolean} params.public
    * @return {*}
    */
-  public creatMarket = async (params: {
+  public async creatMarket(params: {
     name: string
     code: string
     samrId: string
     authId: string // 空间为组织单位时取组织单位 的authId
     remark: string
     public: boolean
-  }) => {
+  }) {
     const { success } = await API.appstore.create({
       data: params
     })
@@ -71,17 +75,15 @@ class MarketServices {
 
   /**
    * @desc: 更新商店信息
-   * @event:{
-        "id": 0,
-        "name": "string",
-        "code": "string",
-        "samrId": 0,
-        "remark": "string",
-        "public": true
-      }
+   * @param {string} params.id
+   * @param {string} params.name
+   * @param {string} params.code
+   * @param {string} params.samrId  // 空间为组织单位时取组织单位 的authId
+   * @param {string} params.remark
+   * @param {boolean} params.public
    * @return {*}
    */
-  public updateMarket = async (params: {
+  public async updateMarket(params: {
     id: string
     name: string
     code: string
@@ -89,21 +91,21 @@ class MarketServices {
     authId: string // 空间为组织单位时取组织单位 的authId
     remark: string
     public: boolean
-  }) => {
+  }) {
     const { success } = await API.appstore.updateMarket({
       data: params
     })
     if (success) {
-      await  this.getMarketList(this.QueryParams)
+      await this.getMarketList(this.QueryParams)
     }
   }
   /**
-   * @description: 删除 管理的市场
+   * @desc: 删除 管理的市场
    * @param {string} id 市场id
    * @return {*}
    */
 
-  public deleteMarket = async (id: string) => {
+  public async deleteMarket(id: string) {
     const { success } = await API.appstore.marketDel({
       data: { id }
     })
@@ -116,28 +118,27 @@ class MarketServices {
    * @param {string} id 市场Id
    * @return {*}
    */
-  public quitMarket = async (id: string | number) => {
+  public async quitMarket(id: string | number) {
     const { success } = await API.appstore.marketQuit({
       data: { id }
     })
     if (success) {
-    await this.getMarketList(this.QueryParams)
+      await this.getMarketList(this.QueryParams)
     }
   }
 
   /**
-   * @description: 获取共享仓库详情
+   * @desc: 获取共享仓库详情
    * @event:{}
    * @return {*}
    */
-  public getPublicStore = async () => {
+  public async getPublicStore() {
     const { success, data } = await API.market.getSoftShareInfo()
     if (success) {
       // const { id } = data
       this.PUBLIC_STORE = data
     }
   }
-
 }
 const marketServices = new MarketServices()
 export default marketServices
