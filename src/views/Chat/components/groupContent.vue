@@ -115,7 +115,7 @@ const recallMsg = (item: any) => {
     if (res.data != 1) {
       ElMessage({
         type: "warning",
-        message: "只能撤回1分钟内发送的消息"
+        message: "只能撤回2分钟内发送的消息"
       })
     }
   })
