@@ -26,24 +26,6 @@ type shareTeam = {
   updateUser: string
   version: string
 }
-//分发tabs类型
-interface shareTab {
-  id: string
-  belongId?: string
-  code: string
-  createTime: string
-  createUser: string
-  name: string
-  status: number
-  thingId?: string
-  typeName?: string
-  updateTime: string
-  updateUser: string
-  version: string
-  team?: shareTeam
-  link?: string
-  productId?: string
-}
 
 // 市场信息类型
 interface MarketType {

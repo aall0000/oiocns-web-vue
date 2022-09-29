@@ -108,6 +108,7 @@
   import { useUserStore } from '@/store/user'
   import ShareCohort from '../components/shareCohortBox.vue'
   import SharePersonBox from '../components/sharePersonBox.vue'
+  import { Application } from '@/module/store/app'
   const store = useUserStore()
   // 当前选中的集团
   let selectedValue = ref<string>()
@@ -136,6 +137,7 @@
     // groupId: string
   }
   const props = defineProps<createInfo>()
+  const application = new Application(props.info.id, 2)
   onMounted(() => {
     nextTick(() => {
       getGroupList()
@@ -160,76 +162,25 @@
     getHistoryData()
   }
   // 查询历史记录
-  const getHistoryData = () => {
-    API.product
-      .extendQuery({
-        data: {
-          sourceId: props.info.id,
-          sourceType: '产品',
-          destType: '组织'
-        }
-      })
-      .then((res: ResultType) => {
-        let { result = [] } = res.data
-        state.groupShare = result
-      })
-    API.product
-      .extendQuery({
-        data: {
-          sourceId: props.info.id,
-          sourceType: '产品',
-          destType: '角色'
-        }
-      })
-      .then((res: ResultType) => {
-        let { result = [] } = res.data
-        state.roleShare = result
-      })
-    API.product
-      .extendQuery({
-        data: {
-          sourceId: props.info.id,
-          sourceType: '产品',
-          destType: '岗位'
-        }
-      })
-      .then((res: ResultType) => {
-        let { result = [] } = res.data
-        state.jobsShare = result
-      })
-    API.product
-      .extendQuery({
-        data: {
-          sourceId: props.info.id,
-          sourceType: '产品',
-          destType: '人员'
-        }
-      })
-      .then((res: ResultType) => {
-        let { result = [] } = res.data
-        state.personShare = result
-      })
+  const getHistoryData = async () => {
+    let promise1 = application.getAllHistoryData(2, '产品', '组织')
+    let promise2 = application.getAllHistoryData(2, '产品', '角色')
+    let promise3 = application.getAllHistoryData(2, '产品', '岗位')
+    let promise4 = application.getAllHistoryData(2, '产品', '人员')
+    Promise.all([promise1, promise2, promise3, promise4]).then((res) => {
+      state.groupShare = res[0]
+      state.roleShare = res[1]
+      state.jobsShare = res[2]
+      state.personShare = res[3]
+    })
   }
   // 查询集团列表
-  const getGroupList = () => {
-    API.company
-      .companyGetGroups({
-        data: {
-          offset: 0,
-          limit: 1000
-        }
-      })
-      .then((res: ResultType) => {
-        if (res.data.result && res.data.result.length > 0) {
-          groups = res.data.result
-          state.options = groups.map((g) => {
-            return { value: g.id, label: g.name }
-          })
-          selectedValue.value = groups[0].id
-        } else {
-          groups = []
-        }
-      })
+  const getGroupList = async () => {
+    groups = await application.searchResource()
+    state.options = groups.map((g) => {
+      return { value: g.id, label: g.name }
+    })
+    selectedValue.value = groups[0].id
   }
 </script>
 

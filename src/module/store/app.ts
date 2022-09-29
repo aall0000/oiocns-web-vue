@@ -1,41 +1,181 @@
 import authority from '@/utils/authority'
 import API from '@/services'
 import { useUserStore } from '@/store/user'
+import { ElMessage } from 'element-plus'
 const store = useUserStore()
 type TreeData = {
   children: any[]
-  data: shareTab
+  data: any
   disabled: boolean
   hasNodes: boolean
   id: string
   label: string
   type: string
 }
+type PageStore = {
+  tableData: any[]
+  currentPage: number
+  pageSize: number
+  total: number
+}
 type Page = {
   currentPage: number
   pageSize: number
+}
+/*
+ *应用相关业务
+ */
+class appStore {
+  /**
+   * @desc 获取应用中心中我的应用
+   * @param pageStore 分页参数
+   * @param searchText 查询条件
+   */
+  public async getProductList(pageStore: PageStore, searchText: string) {
+    const { data, success } = await API.product['searchOwnProduct']({
+      data: {
+        offset: (pageStore.currentPage - 1) * pageStore.pageSize,
+        limit: pageStore.pageSize,
+        filter: searchText
+      }
+    })
+    if (!success) {
+      return
+    }
+    const { result = [], total = 0 } = data
+    let obj = {
+      result,
+      total
+    }
+    return obj
+  }
+  /**
+   * @desc 删除应用
+   * @param id 所选应用id
+   * @return 返回是否成功
+   */
+  public async deleteApp(id: string) {
+    const { success } = await API.product.delete({
+      data: { id: id }
+    })
+    return success
+  }
+  /**
+   * @desc 获取购物车数量
+   * @return 返回购物车数量
+   */
+  public async getShopcarNum() {
+    const { total = 0, success } = await API.market.searchStaging({
+      data: {
+        offset: 0,
+        limit: 20,
+        filter: ''
+      }
+    })
+    if (!success) {
+      return 0
+    }
+    return total
+  }
+  /**
+   * @desc  删除资源信息
+   * @param selectId 资源id
+   */
+  public async deleteResource(selectId: string) {
+    const { success } = await API.product.deleteResource({ data: { id: selectId } })
+    return success
+  }
+
+  /**
+   * @desc  处理资源移动
+   * @param resources 资源信息
+   */
+  public handleSortMenu(resources: any, type: ProductMenuEventType, aimId: string) {
+    const data = resources
+    // 根据当前所选标志 获取目标数据信息
+    const obj = data.find((item: any) => item.customId === aimId)
+
+    const idArr = data.map((item: AppResourcesType) => item.customId)
+    const index = idArr.indexOf(aimId)
+    const endIndex = data.length - 1
+    const willChageIndex = type === 'Up' ? index - 1 : index + 1
+    // 若最后一个选择向下排序/第一个向上,则终止
+    if ((type === 'Down' && willChageIndex > endIndex) || (type === 'Up' && index === 0)) {
+      return
+    }
+    // 若最后一个选择向下排序,则终止
+    if (index > -1) {
+      const willChangeObj = data[willChageIndex]
+      data[index] = willChangeObj
+      data[willChageIndex] = obj
+    }
+  }
+
+  /**
+   * @desc  注册应用
+   * @param params 填写的应用信息
+   * @return 返回接口调用结果
+   */
+  public async onRegister(params: any) {
+    const { success } = await API.product.register({
+      data: params
+    })
+    return success
+  }
+
+  /**
+   * @desc 获取应用信息
+   * @param appId 应用id
+   */
+  public async queryInfo(appId: string) {
+    const { data, success } = await API.product.queryInfo({
+      data: {
+        id: appId
+      }
+    })
+    if (!success) {
+      return {}
+    }
+    return data
+  }
+
+  /**
+   * @desc 修改应用信息
+   * @param params 应用信息
+   */
+  public async updateProduct(params: any) {
+    const { success } = await API.product.update({
+      data: params
+    })
+    if (success) {
+      ElMessage({
+        type: 'success',
+        message: '修改成功'
+      })
+    }
+  }
 }
 
 /*
  *分发分享业务逻辑
  */
-export default class Application {
+export class Application {
   /*
    *分发分享变量定义
    */
-  private appInfo: ProductType
+  private appInfo: string
   private opertion: number
   private rootTreeId: string
   private parentIdMap: any = {}
   public cascaderTree: any
-  public tabs: shareTab
+  public tabs: any
 
-  constructor(appInfo: ProductType, opertion: number) {
+  constructor(appInfo?: string, opertion?: number) {
     this.appInfo = appInfo
     this.opertion = opertion
   }
   /**
-   * 获取群的树形信息
+   * @desc 获取群的树形信息
    * @return 返回群的树形信息
    */
   public async getJoinedCohorts() {
@@ -64,7 +204,7 @@ export default class Application {
     return this.cascaderTree
   }
   /**
-   *获取集团树形
+   *@desc 获取集团树形
    * @param resource 当前选择的资源id
    * @return 返回集团树形
    */
@@ -91,14 +231,14 @@ export default class Application {
   }
 
   /**
-   *获取tab数据
+   *@desc 获取tab数据
    * @return 返回资源或集团的数据
    */
   public async searchResource() {
     if (this.opertion == 1) {
       const { data, success } = await API.product.searchResource({
         data: {
-          id: this.appInfo.id,
+          id: this.appInfo,
           offset: 0,
           limit: 1000,
           filter: ''
@@ -118,7 +258,7 @@ export default class Application {
         }
       })
       if (!success) {
-        return
+        return []
       }
       const { result = [], total = 0 } = data
       this.tabs = result
@@ -126,8 +266,8 @@ export default class Application {
     }
   }
 
-  /*
-   *获取左侧树形
+  /**
+   *@desc 获取左侧树形
    */
   public async getCompanyTree() {
     const res = await API.company.getCompanyTree({})
@@ -184,7 +324,7 @@ export default class Application {
   }
 
   /**
-   *获取历史记录
+   *@desc 获取历史记录
    *@param radio 当前选中的radio
    *@param resource 当前选中的资源id
    *@param treeData 当前选中的左侧树数据
@@ -199,7 +339,7 @@ export default class Application {
           ? resource
           : store.queryInfo.id
         : treeData.id
-    let sourceId = this.opertion == 1 ? resource : this.appInfo.id
+    let sourceId = this.opertion == 1 ? resource : this.appInfo
     let sourceType = this.opertion == 1 ? '资源' : '产品'
     let destType = radio == '1' ? '组织' : radio == '2' ? '角色' : radio == '3' ? '岗位' : '人员'
     const { data, success } = await API.product.extendQuery({
@@ -218,7 +358,33 @@ export default class Application {
   }
 
   /**
-   *提交radio = 1 时的方法
+   *@desc 获取所有历史记录
+   *@param type 区别分发还是共享
+   *@param source 传入sourceType值
+   *@param dest 传入destType值
+   *@param resource 传入resource值
+   *@return 获取历史记录
+   */
+  public async getAllHistoryData(type: number, source: string, dest: string, resource?: string) {
+    let sourceId = type == 1 ? resource : this.appInfo
+    let sourceType = source
+    let destType = dest
+    const { data, success } = await API.product.extendQuery({
+      data: {
+        sourceId: sourceId,
+        sourceType: sourceType,
+        destType: destType
+      }
+    })
+    if (!success) {
+      return
+    }
+    const { result = [], total = 0 } = data
+    return result
+  }
+
+  /**
+   *@desc 提交radio = 1 时的方法
    *@param departData 提交的数据
    *@param resource 所选择的资源信息
    */
@@ -235,7 +401,7 @@ export default class Application {
     })
     let teamId =
       this.opertion == 1 ? this.rootTreeId : this.opertion == 2 ? resource : store.queryInfo.id
-    let sourceId = this.opertion == 1 ? resource : this.appInfo.id
+    let sourceId = this.opertion == 1 ? resource : this.appInfo
     let sourceType = this.opertion == 1 ? '资源' : '产品'
     let promise1
     let promise2
@@ -265,7 +431,7 @@ export default class Application {
     return res
   }
   /**
-   *提交radio != 1 时的方法
+   *@desc 提交radio != 1 时的方法
    *@param data 所选中的数据
    *@param switchData 接口所需teamid数据
    *@param destType 区分分发分享的数据
@@ -281,7 +447,7 @@ export default class Application {
         delData.push(el.id)
       }
     })
-    let sourceId = this.opertion == 1 ? resource : this.appInfo.id
+    let sourceId = this.opertion == 1 ? resource : this.appInfo
     let sourceType = this.opertion == 1 ? '资源' : '产品'
     let promise1
     let promise2
@@ -311,8 +477,8 @@ export default class Application {
   }
 
   /**
-   *点击左侧树形获取到的数据
-   *按角色
+   *@desc 点击左侧树形获取到的数据
+   *@type 按角色
    *@param node 所选中左侧树的数据
    *@param search 搜索内容
    *@return 返回角色中间树形信息
@@ -341,8 +507,8 @@ export default class Application {
     return node
   }
   /**
-   *点击左侧树形获取到的数据
-   *按岗位
+   *@desc 点击左侧树形获取到的数据
+   *@type 按岗位
    *@param node 所选中左侧树的数据
    *@param search 搜索内容
    *@param page 接口页数信息
@@ -370,8 +536,8 @@ export default class Application {
     return (page.currentPage - 1) * page.pageSize
   }
   /**
-   *点击左侧树形获取到的数据
-   *按人员
+   *@desc 点击左侧树形获取到的数据
+   *@type 按人员
    *@param node 所选中左侧树的数据
    *@param page 接口页数信息
    *@param search 搜索内容
@@ -420,3 +586,5 @@ export default class Application {
     return result
   }
 }
+
+export const appstore = new appStore()

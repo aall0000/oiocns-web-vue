@@ -123,7 +123,7 @@
   import Author from './components/author.vue'
   import authority from '@/utils/authority'
   import { useUserStore } from '@/store/user'
-  import Application from '@/module/store/app.ts'
+  import { Application } from '@/module/store/app.ts'
   import type { TabsPaneContext } from 'element-plus'
   import { AnyAaaaRecord } from 'dns'
   const typePD: any = computed(() => {
@@ -137,7 +137,7 @@
       }
     }
   })
-  const application = new Application(props.info, typePD.value)
+  const application = new Application(props.info.id, typePD.value)
   interface Tree {
     id: string
     label: string

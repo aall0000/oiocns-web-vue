@@ -295,6 +295,7 @@
   import orgChat from '@/hubs/orgchat'
   import authority from '@/utils/authority'
   import { storeToRefs } from 'pinia'
+  import { appstore } from '@/module/store/app'
   // import MarketServices from './market.services'
   // hoverItem--鼠标移入item的id 用于展示按钮区域
   // console.log('MarketServices',MarketServices);
@@ -432,26 +433,10 @@
     // }
   })
 
-  const selectchange = (val: string) => {
-    state.selectLabel = state.options.find((el) => {
-      return el.value == val
-    })
-  }
   const shopcarNum = ref(0)
   const getShopcarNum = async () => {
-    await $services.market
-      .searchStaging({
-        data: {
-          id: 0, //市场id （需删除）
-          offset: 0,
-          limit: 20,
-          filter: ''
-        }
-      })
-      .then((res: ResultType) => {
-        var { result = [], total = 0 } = res.data
-        shopcarNum.value = total
-      })
+    const total = await appstore.getShopcarNum()
+    shopcarNum.value = total
   }
   // 关闭共享弹窗
   // const closeDialog = () => {
@@ -464,21 +449,12 @@
   }
   // 获取我的应用列表
   const getProductList = async () => {
-    const { data, success } = await API.product['searchOwnProduct']({
-      data: {
-        offset: (pageStore.currentPage - 1) * pageStore.pageSize,
-        limit: pageStore.pageSize,
-        filter: searchText.value
-      }
-    })
-    if (success) {
-      const { result = [], total = 0 } = data
-      state[`ownProductList`] = [...result]
-      state[`ownTotal`] = total
-      pageStore.total = total
-      diyTable.value.state.page.total = total
-      pageContent.value.state.page.total = total
-    }
+    const res = await appstore.getProductList(pageStore, searchText.value)
+    state[`ownProductList`] = [...res.result]
+    state[`ownTotal`] = res.total
+    pageStore.total = res.total
+    diyTable.value.state.page.total = res.total
+    pageContent.value.state.page.total = res.total
   }
 
   // 移除app
@@ -489,9 +465,7 @@
       type: 'warning'
     })
       .then(async () => {
-        const { success } = await API.product.delete({
-          data: { id: item.id }
-        })
+        const success = await appstore.deleteApp(item.id)
         if (success) {
           getProductList()
           ElMessage({

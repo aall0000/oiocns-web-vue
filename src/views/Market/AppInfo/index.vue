@@ -115,7 +115,6 @@
   </div>
 </template>
 <script lang="ts" setup>
-  import API from '@/services'
   import SetAppMenu from './setAppMenu.vue'
   import { onMounted, reactive, ref, computed } from 'vue'
   import { ElMessage, FormRules } from 'element-plus'
@@ -125,12 +124,14 @@
   import SharePerson from './sharePerson.vue'
   import CohortBox from './cohortBox.vue'
   import { useUserStore } from '@/store/user'
+  import { appstore, Application } from '@/module/store/app'
 
   const useStore = useUserStore()
   const commonStore = useCommonStore()
   const router = useRouter()
   const routeInfo = useRoute()
   const isDetailPage = !!routeInfo.params.id
+  const application = new Application(routeInfo.params.id.toString(), 1)
   const isPerson = ref<boolean>(false)
   const editShow = ref<boolean>(false)
   let form = reactive({
@@ -186,8 +187,8 @@
           resources.resources = resources.resources.filter(
             (item) => item.customId ?? item.id !== selectId
           )
-          const res = await API.product.deleteResource({ data: { id: selectId } })
-          if (res.code == 200) {
+          const res = await appstore.deleteResource(selectId)
+          if (res) {
             ElMessage({
               type: 'success',
               message: '删除成功'
@@ -213,24 +214,7 @@
   }
   // 排序资源信息
   const handleSortMenu = (type: ProductMenuEventType, aimId: string) => {
-    const data = resources.resources
-    // 根据当前所选标志 获取目标数据信息
-    const obj = data.find((item) => item.customId === aimId)
-
-    const idArr = data.map((item: AppResourcesType) => item.customId)
-    const index = idArr.indexOf(aimId)
-    const endIndex = data.length - 1
-    const willChageIndex = type === 'Up' ? index - 1 : index + 1
-    // 若最后一个选择向下排序/第一个向上,则终止
-    if ((type === 'Down' && willChageIndex > endIndex) || (type === 'Up' && index === 0)) {
-      return
-    }
-    // 若最后一个选择向下排序,则终止
-    if (index > -1) {
-      const willChangeObj = data[willChageIndex]
-      data[index] = willChangeObj
-      data[willChageIndex] = obj
-    }
+    appstore.handleSortMenu(resources.resources, type, aimId)
   }
   // 触发表单 提交信息
   const onSubmit = () => {
@@ -270,9 +254,7 @@
           return item.link
         })
         const params = { ...form.data, resources: resourcesData }
-        const { success, data } = await API.product.register({
-          data: params
-        })
+        const success = await appstore.onRegister(params)
         if (success) {
           ElMessage({
             type: 'success',
@@ -298,54 +280,21 @@
 
   const editForm = async () => {
     if (editShow.value) {
-      console.log('123', form.data, resources.resources)
       form.data.resources = resources.resources
       let params = form.data
-      const res = await API.product.update({
-        data: params
-      })
-      if (res.code == 200) {
-        ElMessage({
-          type: 'success',
-          message: '修改成功'
-        })
-      }
+      await appstore.updateProduct(params)
     }
     editShow.value = !editShow.value
   }
 
   const queryInfo = async () => {
-    const { data, success } = await API.product.queryInfo({
-      data: {
-        id: routeInfo.params.id
-      }
-    })
-    if (success) {
-      // registerFormRef.value.resetFields(data)
-      form.data = { ...data }
-    }
+    const data = await appstore.queryInfo(routeInfo.params.id.toString())
+    form.data = { ...data }
   }
   // 详情功能区域
   const getAppResource = async () => {
-    const { data, success } = await API.product.searchResource({
-      data: {
-        id: routeInfo.params.id,
-        offset: 0,
-        limit: 10,
-        filter: ''
-      }
-    })
-    if (success) {
-      const { result = [], total = 0 } = data
-      if (total === 0 && !isDetailPage) {
-        return ElMessage({
-          type: 'error',
-          message: '该应用资源缺失,请联系管理员'
-        })
-      } else {
-        resources.resources = result
-      }
-    }
+    const result = await application.searchResource()
+    resources.resources = result
   }
 </script>
 
