@@ -315,10 +315,12 @@ const orgChat: orgChatType = {
     getHistoryMsg: async () => {
         if (orgChat.curChat) {
             if (orgChat.curChat.value.spaceId === orgChat.userId.value) {
+                let match:any = {sessionId: orgChat.curChat.value.id}
+                if(orgChat.curChat.value.typeName === TargetType.Person){
+                    match.spaceId = orgChat.curChat.value.id
+                }
                 let res = await anyStore.aggregate(hisMsgCollName, {
-                    match: {
-                        sessionId: orgChat.curChat.value.id
-                    },
+                    match: match,
                     sort: {
                         createTime: -1
                     },
@@ -466,21 +468,18 @@ const orgChat: orgChatType = {
                 }
             })
         }
-        if (data.spaceId === data.fromId) {
-            data.spaceId = orgChat.userId.value
-        }
         orgChat.chats.value.forEach((item: ImMsgType) => {
             let newChats: ImMsgChildType[] = []
             let topChats: ImMsgChildType[] = []
             item.chats.forEach((chat: ImMsgChildType) => {
                 let sessionId = data.toId
-                if (chat.typeName === TargetType.Person &&
-                    data.fromId !== orgChat.userId.value &&
-                    data.toId === orgChat.userId.value) {
+                if(data.toId === orgChat.userId.value){
                     sessionId = data.fromId
                 }
-                let isMatch = (chat.typeName === TargetType.Person && item.id === data.spaceId && sessionId == chat.id)
-                isMatch = isMatch || (chat.typeName !== TargetType.Person && sessionId == chat.id)
+                let isMatch = (sessionId == chat.id)
+                if(chat.typeName == TargetType.Person && isMatch){
+                    isMatch = (data.spaceId == chat.spaceId)
+                }
                 if (isMatch) {
                     if (data.msgType === "toping") {
                         chat.isTop = data.msgBody
