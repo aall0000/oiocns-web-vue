@@ -29,9 +29,9 @@ class MarketServices {
 
   /**
    * @desc: 获取市场列表
-   * @param {number} params.offset
-   * @param {number} params.limit
-   * @param {string} params.filter
+   * @param {number} params.offset 起始位置
+   * @param {number} params.limit  数量限制
+   * @param {string} params.filter 过滤关键字
    * @return {*}
    */
   public async getMarketList(params: CommonParamsType) {
@@ -42,26 +42,26 @@ class MarketServices {
       const { result = [], total = 0 } = data
       this.marketList = result
       this.marketTotal = total
-      // 记录搜索条件
+      //记录搜索条件
       this.QueryParams = params
     }
   }
 
   /**
    * @desc: 创建市场
-   * @param {string} params.name
-   * @param {string} params.code
+   * @param {string} params.name 商店名称
+   * @param {string} params.code  商店编码
    * @param {string} params.samrId
-   * @param {string} params.authId  // 空间为组织单位时取组织单位 的authId
-   * @param {string} params.remark
-   * @param {boolean} params.public
+   * @param {string} params.authId   空间为组织单位时取组织单位 的authId
+   * @param {string} params.remark 备注
+   * @param {boolean} params.public 是否公开
    * @return {*}
    */
   public async creatMarket(params: {
     name: string
     code: string
     samrId: string
-    authId: string // 空间为组织单位时取组织单位 的authId
+    authId: string
     remark: string
     public: boolean
   }) {
@@ -75,12 +75,12 @@ class MarketServices {
 
   /**
    * @desc: 更新商店信息
-   * @param {string} params.id
-   * @param {string} params.name
-   * @param {string} params.code
-   * @param {string} params.samrId  // 空间为组织单位时取组织单位 的authId
-   * @param {string} params.remark
-   * @param {boolean} params.public
+   * @param {string} params.id        商店id
+   * @param {string} params.name      商店名称
+   * @param {string} params.code      商店编码
+   * @param {string} params.samrId    空间为组织单位时取组织单位 的authId
+   * @param {string} params.remark    备注
+   * @param {boolean} params.public   是否公开
    * @return {*}
    */
   public async updateMarket(params: {
@@ -88,7 +88,7 @@ class MarketServices {
     name: string
     code: string
     samrId: string
-    authId: string // 空间为组织单位时取组织单位 的authId
+    authId: string
     remark: string
     public: boolean
   }) {
@@ -135,7 +135,7 @@ class MarketServices {
   public async getPublicStore() {
     const { success, data } = await API.market.getSoftShareInfo()
     if (success) {
-      // const { id } = data
+      const { id } = data
       this.PUBLIC_STORE = data
     }
   }
