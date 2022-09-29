@@ -266,22 +266,6 @@
         @closeDialog="shareVisible = false"
         :info="selectProductItem"
       ></ShareComponent>
-      <!-- <ShareComponent
-        :type="store.workspaceData.type"
-        :info="selectProductItem"
-        @closeDialog="shareVisible = false"
-      ></ShareComponent> -->
-      <!-- <ShareCohort
-        v-if="store.workspaceData.type == 2"
-        @closeDialog="shareVisible = false"
-        :info="selectProductItem"
-      >
-      </ShareCohort>
-      <SharePersonBox
-        v-else
-        @closeDialog="shareVisible = false"
-        :info="selectProductItem"
-      ></SharePersonBox> -->
     </el-dialog>
   </div>
 </template>
@@ -563,44 +547,6 @@
   const openShareDialog = () => {
     shareVisible.value = true
   }
-
-  const groupId = ref('')
-  const groupName = ref('')
-  const appInfo = ref('')
-  // 跳转到group共享界面
-  const shareGroup = () => {
-    if (selectedValue.value) {
-      groupId.value = selectedValue.value
-      groupName.value = state.selectLabel.label
-      appInfo.value = selectProductItem.value.id
-      groupVisible.value = false
-      groupShareVisible.value = true
-    } else {
-      ElMessage({
-        type: 'warning',
-        message: '请选择集团'
-      })
-    }
-  }
-  // 跳转到unit共享界面
-  // const shareUnit = () => {
-  //   if (selectedValue.value) {
-  //     groupId.value = selectedValue.value
-  //     groupName.value = state.selectLabel.label
-  //     appInfo.value = selectProductItem.value.id
-
-  //     groupVisible.value = false
-  //     // groupShareVisible.value = true
-  //     shareVisible.value = true
-  //   } else {
-  //     ElMessage({
-  //       type: 'warning',
-  //       message: '请选择集团'
-  //     })
-  //   }
-  // }
-  // 按群组共享
-  const shareCohort = () => {}
 
   // 上架应用功能
   const publishVisible = ref<boolean>(false)

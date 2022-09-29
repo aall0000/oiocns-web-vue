@@ -2,29 +2,48 @@ import authority from '@/utils/authority'
 import API from '@/services'
 import { useUserStore } from '@/store/user'
 const store = useUserStore()
-export default class Application {
-  private appInfo: any
-  private opertion: number
+type TreeData = {
+  children: any[]
+  data: shareTab
+  disabled: boolean
+  hasNodes: boolean
+  id: string
+  label: string
+  type: string
+}
+type Page = {
+  currentPage: number
+  pageSize: number
+}
 
+/*
+ *分发分享业务逻辑
+ */
+export default class Application {
+  /*
+   *分发分享变量定义
+   */
+  private appInfo: ProductType
+  private opertion: number
   private rootTreeId: string
   private parentIdMap: any = {}
-
   public cascaderTree: any
-  public tabs: any
+  public tabs: shareTab
 
-  constructor(appInfo: any, opertion: number) {
+  constructor(appInfo: ProductType, opertion: number) {
     this.appInfo = appInfo
     this.opertion = opertion
   }
   /**
    * 获取群的树形信息
+   * @return 返回群的树形信息
    */
   public async getJoinedCohorts() {
     const { data, success } = await API.cohort.getJoinedCohorts({
       data: { offset: 0, limit: 10000, filter: '' }
     })
     if (!success) {
-      return
+      return []
     }
     const { result = [], total = 0 } = data
     this.cascaderTree = result
@@ -44,8 +63,10 @@ export default class Application {
     this.cascaderTree.unshift(obj)
     return this.cascaderTree
   }
-  /*
+  /**
    *获取集团树形
+   * @param resource 当前选择的资源id
+   * @return 返回集团树形
    */
   public async getGroupTree(resource: string) {
     const res = await API.company.getGroupTree({
@@ -69,8 +90,9 @@ export default class Application {
     return node
   }
 
-  /*
+  /**
    *获取tab数据
+   * @return 返回资源或集团的数据
    */
   public async searchResource() {
     if (this.opertion == 1) {
@@ -130,8 +152,9 @@ export default class Application {
       }
     }
   }
-  /*
+  /**
    * 树形权限判断
+   * @param nodes 过滤出的树形数据
    */
   private isAuthAdmin = (nodes: any) => {
     //判断是否有操作权限
@@ -160,10 +183,14 @@ export default class Application {
     return nodes
   }
 
-  /*
+  /**
    *获取历史记录
+   *@param radio 当前选中的radio
+   *@param resource 当前选中的资源id
+   *@param treeData 当前选中的左侧树数据
+   *@return 获取历史记录
    */
-  public async getHistoryData(radio: string, resource?: string, treeData?: any) {
+  public async getHistoryData(radio: string, resource?: string, treeData?: TreeData) {
     let teamId =
       radio == '1'
         ? this.opertion == 1
@@ -190,8 +217,10 @@ export default class Application {
     return result
   }
 
-  /*
+  /**
    *提交radio = 1 时的方法
+   *@param departData 提交的数据
+   *@param resource 所选择的资源信息
    */
   public async submitAll(departData: any, resource?: string) {
     let departAdd: any[] = []
@@ -235,8 +264,12 @@ export default class Application {
     const res = await Promise.all([promise1, promise2])
     return res
   }
-  /*
+  /**
    *提交radio != 1 时的方法
+   *@param data 所选中的数据
+   *@param switchData 接口所需teamid数据
+   *@param destType 区分分发分享的数据
+   *@param resource 所选中的资源信息
    */
   public async sumbitSwitch(data: any, switchData: string, destType: string, resource?: string) {
     let addData: any[] = []
@@ -277,9 +310,12 @@ export default class Application {
     await Promise.all([promise1, promise2])
   }
 
-  /*
+  /**
    *点击左侧树形获取到的数据
    *按角色
+   *@param node 所选中左侧树的数据
+   *@param search 搜索内容
+   *@return 返回角色中间树形信息
    */
   public async getAuthorityTree(node: any, search?: string) {
     const { data, success } = await API.company.getAuthorityTree({
@@ -304,11 +340,15 @@ export default class Application {
     //判断是否有操作权限
     return node
   }
-  /*
+  /**
    *点击左侧树形获取到的数据
    *按岗位
+   *@param node 所选中左侧树的数据
+   *@param search 搜索内容
+   *@param page 接口页数信息
+   *@return 返回岗位中间树形信息
    */
-  public async getIdentities(node: any, page: any, search: string) {
+  public async getIdentities(node: any, page: Page, search: string) {
     const { data, success } = await API.company.getIdentities({
       data: {
         id: node.id,
@@ -329,11 +369,15 @@ export default class Application {
   private handleCurrent(page: any) {
     return (page.currentPage - 1) * page.pageSize
   }
-  /*
+  /**
    *点击左侧树形获取到的数据
    *按人员
+   *@param node 所选中左侧树的数据
+   *@param page 接口页数信息
+   *@param search 搜索内容
+   *@return 返回人员中间树形信息
    */
-  public async getPerson(node: any, page: any, search: string) {
+  public async getPerson(node: any, page: Page, search: string) {
     let action = ''
     let module = ''
     if (this.opertion == 1) {

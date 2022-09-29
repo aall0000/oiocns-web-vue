@@ -3,14 +3,46 @@ interface OptionType {
   value: string
   label?: string
   id?: string | number
-  authority?:string
-  belongId?:string
-  endTime?:string | boolean | number
+  authority?: string
+  belongId?: string
+  endTime?: string | boolean | number
 }
 // select数据类型
 interface selectType {
   label: string
   id: string | number
+}
+
+type shareTeam = {
+  code: string
+  createTime: string
+  createUser: string
+  id: string
+  name: string
+  remark: string
+  status: number
+  targetId: string
+  updateTime: string
+  updateUser: string
+  version: string
+}
+//分发tabs类型
+interface shareTab {
+  id: string
+  belongId?: string
+  code: string
+  createTime: string
+  createUser: string
+  name: string
+  status: number
+  thingId?: string
+  typeName?: string
+  updateTime: string
+  updateUser: string
+  version: string
+  team?: shareTeam
+  link?: string
+  productId?: string
 }
 
 // 市场信息类型
