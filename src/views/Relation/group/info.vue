@@ -59,7 +59,8 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import router from '@/router';
 import orgChat from '@/hubs/orgchat';
 import authority from '@/utils/authority'
-
+import GroupServices from '@/module/relation/group'
+const groupServices = new GroupServices()
 const emit = defineEmits(['refresh'])
 
 let selectItem = ref<any>({})
@@ -86,45 +87,24 @@ const allowEdit = () => {
   return false
 }
 // 删除集团信息
-const handleDelete = () => {
+const handleDelete = async () => {
   if (!selectItem.value.id) {
     ElMessage.warning('请左侧选择集团')
     return
   }
-  const data = selectItem.value.data
-  let url: string = null;
-  if (data.typeName == '集团') {
-    url = 'deleteGroup'
-  } else if (data.typeName == '子集团') {
-    url = 'deleteSubgroup'
+  let selectObj = {
+    name:selectItem.value.data.name,
+    id:selectItem.value.id,
+    typeName:selectItem.value.data.typeName
   }
-  ElMessageBox.confirm(
-    `确定删除 ${data.name} ${data.typeName}吗？`,
-    '警告',
-    {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      type: 'warning'
-    }
-  ).then(() => {
-    $services.company[url]({
-      data: {
-        id: data.id,
-      }
-    }).then((res: ResultType) => {
-      selectItem.value = {}
-      if (res.success) {
-        ElMessage({
-          message: '操作成功',
-          type: 'success'
-        })
-        emit('refresh')
-      }
+  const data =  await groupServices.deleteGroup(selectObj)
+  if(data){
+    ElMessage({
+      message: '操作成功',
+      type: 'success'
     })
-  })
-    .catch(() => {
-      console.log('取消移除!')
-    })
+    emit('refresh')
+  }
 }
 
 // 修改信息
@@ -138,23 +118,12 @@ const handleUpdate = () => {
 }
 
 // 保存
-const update = () => {
+const update = async () => {
   const data = { ...formData.value, ...selectItem.value.data };
-  let url = null;
-  if (data.typeName == '集团') {
-    url = 'updateGroup'
-  } else if (data.typeName == '子集团') {
-    url = 'updateSubGroup'
-  }
-  $services.company[url]({
-    data
-  }).then((res: ResultType) => {
-    if (res.code == 200 && res.success) {
-      dialogVisible.value = false
-      ElMessage.success('信息修改成功!')
-      selectItem.value.data = data
-    }
-  })
+  const val =  await groupServices.upDateGroup(data)
+  dialogVisible.value = false
+  ElMessage.success('信息修改成功!')
+  selectItem.value.data = val
 }
 
 // 跳转至角色管理页面

@@ -41,7 +41,8 @@ import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import searchCompany from '@/components/searchs/index.vue'
 import authority from '@/utils/authority'
-
+import GroupServices from '@/module/relation/group'
+const groupServices = new GroupServices()
 const props = defineProps<{
   selectItem: any // 节点数据
   tabHeight: any
@@ -112,30 +113,16 @@ const handleUpdate = (page: any) => {
 }
 
 // 加载单位
-const getCompanies = () => {
-  const data = props.selectItem?.data
-  if (data) {
-    let url = ''
-    if (data.typeName == '集团') {
-      url = 'getGroupCompanies'
-      rootGroup.value = JSON.parse(JSON.stringify(data))
-    } else if (data.typeName == '子集团') {
-      url = 'getSubgroupCompanies'
+const getCompanies = async () => {
+  const item = props.selectItem?.data
+  if(item){
+    if (item.typeName == '集团') {
+      rootGroup.value = JSON.parse(JSON.stringify(item))
     }
-    $services.company[url]({
-      data: {
-        id: props.selectItem.id,
-        offset: (pageStore.currentPage - 1) * pageStore.pageSize,
-        limit: pageStore.pageSize
-      }
-    }).then((res: ResultType) => {
-      if (res.code == 200 && res.success) {
-        companies.value = res.data.result
-        pageStore.total = res.data.total
-        diyTable.value.state.loading = false
-        diyTable.value.state.page.total = pageStore.total
-      }
-    })
+    const backData = await groupServices.getCompanies(props.selectItem)
+    companies.value = backData.result
+    pageStore.total = backData.total
+    diyTable.value.state.page.total = pageStore.total
   }
 }
 const pullCompanysDialog = ref<boolean>(false)
@@ -169,24 +156,16 @@ const checksCompanySearch = (val: any) => {
 }
 
 //拉单位进集团
-const pullCompanys = (arr: any) => {
-  $services.company
-    .pullCompanys({
-      data: {
-        id: props.selectItem.id,
-        targetIds: arr
-      }
+const pullCompanys = async (arr: any) => {
+  const data =  await groupServices.pullCompanys(props.selectItem.id,arr)
+  if (data) {
+    ElMessage({
+      message: '添加成功',
+      type: 'success'
     })
-    .then((res: ResultType) => {
-      if (res.success) {
-        ElMessage({
-          message: '添加成功',
-          type: 'success'
-        })
-        getCompanies()
-      }
-      pullCompanysDialog.value = false
-    })
+    getCompanies()
+    pullCompanysDialog.value = false;
+  }
 }
 
 //查看申请
@@ -195,40 +174,20 @@ const viewApplication = (row: any) => {
 }
 
 // 移除n
-const removeFrom = (row: any) => {
-  let url: string
-  let title: string
-  if (props.selectItem?.data?.typeName == '集团') {
-    url = 'removeFromGroup'
-    title = `确定把 ${row.name} 从集团移除吗？`
-  } else if (props.selectItem?.data?.typeName == '子集团') {
-    url = 'removeFromSubgroup'
-    title = `确定把 ${row.name} 从子集团移除吗？`
+const removeFrom = async (row: any) => {
+  let rowObj = {
+    name:row.name,
+    id:row.id,
+    typeName:props.selectItem.data.typeName
   }
-  ElMessageBox.confirm(title, '警告', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    type: 'warning'
-  })
-    .then(() => {
-      $services.company[url]({
-        data: {
-          id: props.selectItem.id,
-          targetIds: [row.id]
-        }
-      }).then((res: ResultType) => {
-        getCompanies()
-        if (res.success) {
-          ElMessage({
-            message: '操作成功',
-            type: 'success'
-          })
-        }
-      })
+  const data =  await groupServices.removeCompany(rowObj,props.selectItem.data.id)
+  if(data){
+    ElMessage({
+      message: '操作成功',
+      type: 'success'
     })
-    .catch(() => {
-      console.log('移除成功!')
-    })
+    getCompanies()
+  }
 }
 
 const assignDialog = ref<boolean>(false)
@@ -241,32 +200,31 @@ const showAssignDialog = () => {
 }
 
 // 分配单位到子集团
-const assign = (arr: any) => {
+const assign = async (arr: any) => {
   const companyIds = arr
-  const data = { id: props.selectItem.id, targetIds: companyIds }
-  $services.company.assignSubgroup({ data }).then((res: ResultType) => {
-    if (res.success) {
-      ElMessage({
-        message: '分配成功',
-        type: 'success'
-      })
-      hideAssignDialog()
-    }
+  const data = await groupServices.assignSubgroup(props.selectItem.id,companyIds)
+  if(data){
+    ElMessage({
+      message: '分配成功',
+      type: 'success'
+    })
+    hideAssignDialog()
     getCompanies()
-  })
+  }
 }
 
 const cardHeight = ref(null)
 const tabHeight = ref<number>(100)
 onMounted(() => {
-  getCompanies()
   nextTick(() => {
     let headerHeight = cardHeight.value?.clientHeight
     tabHeight.value = headerHeight
   })
+  getCompanies()
 })
 
 watch(props, () => {
+  pageStore.currentPage = 1;
   getCompanies()
   nextTick(() => {
     let headerHeight = cardHeight.value?.clientHeight
@@ -274,7 +232,6 @@ watch(props, () => {
   })
 })
 watch(props.tabHeight, () => {
-  console.log('props.tabHeight', props.tabHeight)
   let headerHeight = cardHeight.value?.clientHeight
   tabHeight.value = headerHeight
 });

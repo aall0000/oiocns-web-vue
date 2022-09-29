@@ -19,7 +19,8 @@ class DepartmentServices {
 
   /**
    * @description: 更新单位or部门or工作组
-   * @return {*}
+   * @params {typeName:string}
+   * @return data 更新后的结果
    */
   // 
 
@@ -42,8 +43,10 @@ class DepartmentServices {
 
   /**
    * @description: 获取人员列表
-   * @param {paramsDataType} params
-   * @return {*}
+   * @param params.typeName 获取人员的类型
+   * @param params.id id
+   * @return backData.result 人员列表
+   * @return backData.total  总数
    */
 
   public async getUser(params: paramsDataType) {
@@ -73,9 +76,9 @@ class DepartmentServices {
 
   /**
    * @description: 拉人进单位
-   * @param {paramsDataType} id
-   * @param {Array} Arr
-   * @return {*}
+   * @param id:单位id
+   * @param Arr:选中的人 
+   * @return data:操作结果
    */
 
   public async pullPerson(id: paramsDataType, Arr: Array<paramsDataType>) {
@@ -91,9 +94,10 @@ class DepartmentServices {
   }
   /**
    * @description: 移除人员
-   * @param {paramsDataType} row
-   * @param {string} id
-   * @return {*}
+   * @param row.typeName 移除的组的类型
+   * @param row.name 移除的人名
+   * @param id 移除的人的id
+   * @return msg 返回操作结果
    */
   public async removePerson(row: paramsDataType, id: string) {
     let url: string;
@@ -133,9 +137,9 @@ class DepartmentServices {
   }
   /**
    * @description: 分配部门
-   * @param {paramsDataType} id
-   * @param {Array} Arr
-   * @return {*}
+   * @param id :部门id
+   * @param targetIds :分配的人的id[]
+   * @return data 操作结果
    */
   public async assignDepartment(id: string, targetIds: string[]) {
     const { data, success } = await API.company.assignDepartment({
@@ -150,9 +154,9 @@ class DepartmentServices {
   }
   /**
    * @description: 分配工作组
-   * @param {paramsDataType} id
-   * @param {Array} Arr
-   * @return {*}
+   * @param id:工作组id
+   * @param targetIds :分配的人的id[]
+   * @return data:操作结果
    */
   public async assignJob(id: string, targetIds: string[]) {
     const { data, success } = await API.company.assignJob({

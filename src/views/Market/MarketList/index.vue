@@ -387,7 +387,6 @@ const checksSearch = (val: any) => {
   }
 }
 
-
 const getMyMarketData = async() => {
   await marketServices.getMarketList({
         offset: state.pageMy.current,
