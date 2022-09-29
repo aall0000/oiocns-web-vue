@@ -317,7 +317,7 @@ const orgChat: orgChatType = {
             if (orgChat.curChat.value.spaceId === orgChat.userId.value) {
                 let match:any = {sessionId: orgChat.curChat.value.id}
                 if(orgChat.curChat.value.typeName === TargetType.Person){
-                    match.spaceId = orgChat.curChat.value.id
+                    match.spaceId = orgChat.userId.value
                 }
                 let res = await anyStore.aggregate(hisMsgCollName, {
                     match: match,
