@@ -9,6 +9,7 @@ export const BadRequst: ResultType = { success: false, data: {}, code: 400, msg:
  */
 export default class AnyStore extends Object {
     private stoped: boolean
+    private closed: boolean
     private accessToken: string
     public userId: Ref<string>
     public spaceId: Ref<string>
@@ -20,6 +21,7 @@ export default class AnyStore extends Object {
     private _subscribeCallbacks: Record<string, (data: any) => void>
     private constructor() {
         super()
+        this.closed = false
         this.stoped = false
         this.userId = ref("")
         this.spaceId = ref("")
@@ -33,12 +35,7 @@ export default class AnyStore extends Object {
         this.connection.keepAliveIntervalInMilliseconds = 3000
         this.connection.onclose(() => {
             this.authed.value = false
-            if (!this.stoped) {
-                console.error("disconnected from anydata, await 5s reconnect.")
-                setTimeout(async () => {
-                    await this.start(this.accessToken)
-                }, 5000)
-            }
+            this.reconnect("disconnected from anydata, await 5s reconnect.")
         })
         this.connection.on("Insert", this._insert)
         this.connection.on("Update", this._update)
@@ -78,11 +75,9 @@ export default class AnyStore extends Object {
                     this._resubscribed()
                 })
             }).catch(() => {
+                this.authed.value = false
                 this.isconnecting = false
-                console.error("connecting to anydata failed, await 5s reconnect.")
-                setTimeout(async () => {
-                    await this.start(this.accessToken)
-                }, 5000)
+                this.reconnect("connecting to anydata failed, await 5s reconnect.")
             })
         }
     }
@@ -94,6 +89,18 @@ export default class AnyStore extends Object {
         this.accessToken = ""
         this.authed.value = false
         await this.connection.stop()
+    }
+    private async reconnect(err: string) {
+        if (!this.closed) {
+            this.closed = true
+            if (!this.stoped) {
+                console.error(err)
+                setTimeout(() => {
+                    this.closed = false
+                    this.start(this.accessToken)
+                }, 5000)
+            }
+        }
     }
     /**
      * 连接成功hook

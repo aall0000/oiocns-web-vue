@@ -23,6 +23,7 @@ const hisMsgCollName = "chat-message"
 export default class OrgChat extends Object {
     private lastMsg: any
     private stoped: boolean
+    private closed: boolean
     private anyStore: AnyStore
     public curMsgs: Ref<any[]>
     private accessToken: string
@@ -40,6 +41,7 @@ export default class OrgChat extends Object {
     private static orgChat: OrgChat = null
     constructor() {
         super()
+        this.closed = false
         this.stoped = false
         this.lastMsg = {}
         this.openChats = []
@@ -58,12 +60,7 @@ export default class OrgChat extends Object {
         this.connection.keepAliveIntervalInMilliseconds = 3000
         this.connection.onclose(() => {
             this.authed.value = false
-            if (!this.stoped) {
-                console.error("disconnected from orgchat, await 5s reconnect.")
-                setTimeout(async () => {
-                    await this.start(this.accessToken)
-                }, 3000)
-            }
+            this.reconnect("disconnected from orgchat, await 5s reconnect.")
         })
         this.connection.on("RecvMsg", (data) => {
             this._recvMsg(data)
@@ -115,11 +112,9 @@ export default class OrgChat extends Object {
                     }
                 }, 500)
             }).catch(() => {
+                this.authed.value = false
                 this.isconnecting = false
-                console.error("connecting to orgchat failed, await 5s reconnect.")
-                setTimeout(async () => {
-                    await this.start(this.accessToken)
-                }, 3000)
+                this.reconnect("connecting to orgchat failed, await 5s reconnect.")
             })
         }
     }
@@ -132,6 +127,18 @@ export default class OrgChat extends Object {
         this.authed.value = false
         await this.connection.stop()
         await this.anyStore.stop()
+    }
+    private async reconnect(err: string) {
+        if (!this.closed) {
+            this.closed = true
+            if (!this.stoped) {
+                console.error(err)
+                setTimeout(() => {
+                    this.closed = false
+                    this.start(this.accessToken)
+                }, 5000)
+            }
+        }
     }
     /**
      * 新消息hook
