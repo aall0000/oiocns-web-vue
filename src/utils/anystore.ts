@@ -41,6 +41,8 @@ const anyStore: anyStoreType = {
         if (anyStore._connection) return
         // 初始化
         anyStore._connection = new signalR.HubConnectionBuilder().withUrl('/orginone/anydata/hub').build()
+        anyStore._connection.serverTimeoutInMilliseconds = 5000
+        anyStore._connection.keepAliveIntervalInMilliseconds = 3000
         anyStore._connection.on("Updated", anyStore._updated)
         anyStore._connection.onclose((error) => {
             if (!anyStore._stoped) {
