@@ -86,6 +86,8 @@ const orgChat: orgChatType = {
         if (orgChat._connection) return
         // 初始化
         orgChat._connection = new signalR.HubConnectionBuilder().withUrl('/orginone/orgchat/msghub').build()
+        orgChat._connection.serverTimeoutInMilliseconds = 5000
+        orgChat._connection.keepAliveIntervalInMilliseconds = 3000
         orgChat._connection.on("RecvMsg", orgChat._recvMsg)
         orgChat._connection.on("ChatRefresh", async (data: any) => {
             await orgChat.getChats()
@@ -317,7 +319,7 @@ const orgChat: orgChatType = {
             if (orgChat.curChat.value.spaceId === orgChat.userId.value) {
                 let match:any = {sessionId: orgChat.curChat.value.id}
                 if(orgChat.curChat.value.typeName === TargetType.Person){
-                    match.spaceId = orgChat.curChat.value.id
+                    match.spaceId = orgChat.userId.value
                 }
                 let res = await anyStore.aggregate(hisMsgCollName, {
                     match: match,
