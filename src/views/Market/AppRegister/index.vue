@@ -83,6 +83,7 @@
   import { ElMessage, FormRules } from 'element-plus'
   import { useRouter } from 'vue-router'
   import { useCommonStore } from '@/store/common'
+  import { appstore } from '@/module/store/app'
   const commonStore = useCommonStore()
   const router = useRouter()
   let state = reactive({
@@ -198,15 +199,12 @@
           return item.link
         })
         const params = { ...state.form, resources: resourcesData }
-        const { success, data } = await API.product.register({
-          data: params
-        })
+        const success = await appstore.onRegister(params)
         if (success) {
           ElMessage({
             type: 'success',
             message: '应用注册成功'
           })
-          // 触发注册后 更新可用应用列表
           commonStore.isChangeStartApp = true
           router.back()
         }

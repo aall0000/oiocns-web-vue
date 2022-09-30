@@ -13,14 +13,10 @@ type TreeData = {
   type: string
 }
 type PageStore = {
-  tableData: any[]
+  tableData?: any[]
   currentPage: number
   pageSize: number
-  total: number
-}
-type Page = {
-  currentPage: number
-  pageSize: number
+  total?: number
 }
 /*
  *应用相关业务
@@ -153,6 +149,94 @@ class appStore {
         message: '修改成功'
       })
     }
+  }
+  /**
+   *@desc 应用上架
+   *@param  formLabelAlign 表单填写数据
+   */
+  public async publishProduct(formLabelAlign: any) {
+    const { success } = await API.product.publish({
+      data: formLabelAlign
+    })
+    if (success) {
+      // getPageList()
+      ElMessage({
+        type: 'success',
+        message: '已提交上架申请'
+      })
+    }
+  }
+
+  /**
+   * @desc 获取应用上架列表
+   * @param id 应用id
+   * @param page 分页参数
+   * @return 列表数据以及总数
+   */
+  public async searchMerchandiseSellList(id: string, page: PageStore) {
+    const { data, success } = await API.order.searchMerchandiseSellList({
+      data: {
+        id: id,
+        offset: (page.currentPage - 1) * page.pageSize,
+        limit: page.pageSize,
+        filter: ''
+      }
+    })
+    if (!success) {
+      return
+    }
+    const { result = [], total = 0 } = data
+    let obj = {
+      result,
+      total
+    }
+    return obj
+  }
+  /**
+   * @desc 应用下架
+   * @param id 应用id
+   * @return 接口请求成功
+   */
+  public async unpublishApp(id: string) {
+    const { success } = await API.product.unpublishMerchandise({
+      data: {
+        id: id
+      }
+    })
+    if (!success) {
+      return
+    }
+    ElMessage({
+      message: '下架成功',
+      type: 'success'
+    })
+    return success
+  }
+
+  /**
+   * @desc 查询上架申请
+   * @param id 应用id
+   * @param page 分页参数
+   * @return 接口请求成功
+   */
+  public async searchPublishList(id: string, page: PageStore) {
+    const { data, success } = await API.product.searchPublishList({
+      data: {
+        id: id,
+        offset: (page.currentPage - 1) * page.pageSize,
+        limit: page.pageSize,
+        filter: ''
+      }
+    })
+    if (!success) {
+      return
+    }
+    const { result = [], total = 0 } = data
+    let obj = {
+      result,
+      total
+    }
+    return obj
   }
 }
 
@@ -514,7 +598,7 @@ export class Application {
    *@param page 接口页数信息
    *@return 返回岗位中间树形信息
    */
-  public async getIdentities(node: any, page: Page, search: string) {
+  public async getIdentities(node: any, page: PageStore, search: string) {
     const { data, success } = await API.company.getIdentities({
       data: {
         id: node.id,
@@ -543,7 +627,7 @@ export class Application {
    *@param search 搜索内容
    *@return 返回人员中间树形信息
    */
-  public async getPerson(node: any, page: Page, search: string) {
+  public async getPerson(node: any, page: PageStore, search: string) {
     let action = ''
     let module = ''
     if (this.opertion == 1) {
