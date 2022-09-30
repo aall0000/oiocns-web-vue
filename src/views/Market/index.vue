@@ -83,7 +83,7 @@
 
             <!-- 附属标题区 -->
             <template #description>
-              <span>归属: {{ orgChat.getName(item.belongId) || '未知' }}</span>
+              <span>归属: {{ chat.getName(item.belongId) || '未知' }}</span>
               <el-divider direction="vertical"></el-divider>
               <span>版本： 0.0.1</span>
             </template>
@@ -292,7 +292,7 @@
   import Group from '../Market/AppShare/group.vue'
   import Person from '../Market/AppShare/person.vue'
   import Pagination from '@/components/pagination/index.vue'
-  import orgChat from '@/hubs/orgchat'
+  import {chat} from '@/module/chat/orgchat'
   import authority from '@/utils/authority'
   import { storeToRefs } from 'pinia'
   import { appstore } from '@/module/store/app'

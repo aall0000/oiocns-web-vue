@@ -1,4 +1,5 @@
 import Notify from "@wcjiang/notify"
+import { ElNotification } from "element-plus";
 
 const notify = new Notify({
     message: "There is message.", // page title.
@@ -32,4 +33,24 @@ const notify = new Notify({
     },
 });
 
+notify.showImMsg = (noReadCount: number, title: string, showText: string) => {
+    ElNotification.closeAll()
+    ElNotification({
+        showClose: true,
+        dangerouslyUseHTMLString: true,
+        offset: 30,
+        duration: 2500,
+        message: `<div style="position:relative;">
+                    <span style="color: var(--el-text-color-secondary);margin-right:4px;">${title}有最新消息</span> 
+                    ${noReadCount > 0 ? `<div class="el-badge">
+                    <sup class="el-badge__content el-badge__content--danger">${noReadCount}</sup></div>` : ''}
+                    <div style="overflow: hidden;
+                    text-overflow: ellipsis;
+                    display: -webkit-box;
+                    word-break: break-all;
+                    -webkit-line-clamp: 1;
+                    -webkit-box-orient: vertical;
+                    ">${showText}</div><div>`
+    })
+}
 export default notify

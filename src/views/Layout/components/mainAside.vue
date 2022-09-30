@@ -52,7 +52,7 @@ import { useRouter } from 'vue-router'
 import { useCommonStore } from '@store/common'
 import { ElMessage } from 'element-plus'
 import CanUseApp from './canUseApp.vue'
-import anyStore from '@/utils/anystore'
+import { anystore } from '@/hubs/anystore'
 
 const router = useRouter()
 const commonStore = useCommonStore()
@@ -121,7 +121,7 @@ const rightClick = (event: any, item: any) => {
   }
 }
 const getFixedData = () => {
-  anyStore.subscribed(`${anyStore.spaceId}.menu`, 'user', (data) => {
+  anystore.subscribed(`${anystore.spaceId.value}.menu`, 'user', (data) => {
     if (Array.isArray(data)) {
       // 过滤取消分配 或者 取消分配的应用
       data = data.filter((item) => {
@@ -146,23 +146,17 @@ const cancelFixed = () => {
   if (bool && bool.fixed) {
     arr.splice(findIndex, 1)
   }
-  anyStore
-    .set(
-      `${anyStore.spaceId}.menu`,
-      {
-        operation: 'replaceAll',
-        data: arr
-      },
-      'user'
-    )
-    .then((res: ResultType) => {
-      if (res.success) {
-        ElMessage({
-          message: '取消成功',
-          type: 'success'
-        })
-      }
-    })
+  anystore.set(`${anystore.spaceId.value}.menu`, {
+    operation: 'replaceAll',
+    data: arr
+  }, 'user').then((res: ResultType) => {
+    if (res.success) {
+      ElMessage({
+        message: '取消成功',
+        type: 'success'
+      })
+    }
+  })
 }
 const clickFixed = () => {
   let bool = state.clickMenu.find((el) => {
@@ -173,23 +167,17 @@ const clickFixed = () => {
     state.storeObj.fixed = true
     state.clickMenu.push(state.storeObj)
   }
-  anyStore
-    .set(
-      `${anyStore.spaceId}.menu`,
-      {
-        operation: 'replaceAll',
-        data: state.clickMenu
-      },
-      'user'
-    )
-    .then((res: ResultType) => {
-      if (res.success) {
-        ElMessage({
-          message: '固定成功',
-          type: 'success'
-        })
-      }
-    })
+  anystore.set(`${anystore.spaceId.value}.menu`, {
+    operation: 'replaceAll',
+    data: state.clickMenu
+  }, 'user').then((res: ResultType) => {
+    if (res.success) {
+      ElMessage({
+        message: '固定成功',
+        type: 'success'
+      })
+    }
+  })
 }
 
 const handleRouterChage = (item: any) => {

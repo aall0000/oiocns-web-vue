@@ -41,7 +41,7 @@
   import $services from '@/services'
   import { ref, reactive, onMounted, nextTick } from 'vue'
   import { ElMessage } from 'element-plus'
-  import orgChat from '@/hubs/orgchat'
+  import {chat} from '@/module/chat/orgchat'
   const dialogVisible = ref<boolean>(true)
   const diyTable = ref(null)
   // 表格展示数据
@@ -161,8 +161,8 @@
                     code: el.code,
                     name: el.name,
                     remark: el.remark,
-                    belong:orgChat.getName(el.belongId),
-                    create: orgChat.getName(el.createUser)
+                    belong:chat.getName(el.belongId),
+                    create: chat.getName(el.createUser)
                   }
 
                 }

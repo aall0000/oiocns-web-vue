@@ -38,7 +38,7 @@
 <script lang="ts" setup>
 import { ElMessage } from 'element-plus'
 import { onMounted, ref } from 'vue'
-import orgChat from '@/hubs/orgchat'
+import { chat } from '@/module/chat/orgchat'
 
 const inputRef = ref(null)
 const faceBtnRef = ref(null)
@@ -51,9 +51,9 @@ const submit = async () => {
   const text = inputContent.length > 0 ? reCreatChatContent(document.getElementById('insterHtml').childNodes) : [document.getElementById('insterHtml').innerHTML]
   let massage = text.join('').trim()
   if (massage.length > 0) {
-    await orgChat.sendMsg({
-      toId: orgChat.curChat.value.id,
-      spaceId: orgChat.curChat.value.spaceId,
+    await chat.sendMsg({
+      toId: chat.curChat.value.id,
+      spaceId: chat.curChat.value.spaceId,
       msgType: 'text',
       msgBody: massage
     })
@@ -80,7 +80,7 @@ const reCreatChatContent = (elementChild: NodeList | any[]): Array<string> => {
   // return newSpace.innerHTML
 }
 
-const reWrite = (str:string)=>{
+const reWrite = (str: string) => {
   document.getElementById('insterHtml').innerHTML = str
 }
 

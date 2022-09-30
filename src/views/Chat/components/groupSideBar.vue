@@ -2,7 +2,7 @@
   <div class="chart-side-wrap" @contextmenu.stop>
     <div class="group-side-bar-search flex" :size="4">
       <el-input placeholder="搜索" v-model="searchValue" prefix-icon="Search" />
-      <el-button icon="Refresh" type="primary" link class="refresh" @click="orgChat.getChats"></el-button>
+      <el-button icon="Refresh" type="primary" link class="refresh" @click="chat.getChats"></el-button>
       <!-- <el-icon :size="20" class="refresh"><Refresh /></el-icon> -->
     </div>
     <div class="group-side-bar-wrap" @contextmenu.prevent="mousePosition.isShowContext = false">
@@ -17,7 +17,7 @@
           <div v-show="openIdArr?.includes(item.id)">
             <div class="con-body" :class="{
                 'top-session': item.id === 'toping',
-                'active':orgChat.curChat.value?.spaceId === item.id && orgChat.curChat.value?.id === child.id
+                'active':chat.curChat.value?.spaceId === item.id && chat.curChat.value?.id === child.id
             }" v-for="child in item.chats" :key="child.id"
               @contextmenu.prevent.stop="(e: MouseEvent) => handleContextClick(e, child)">
               <HeadImg :name="child.name" :label="child.label" />
@@ -40,7 +40,7 @@
           <!-- 如果该分组没有被打开 但是有未读消息 则把未读消息会话显示出来 -->
           <div :class="[
             'con-body',
-            orgChat.curChat.value?.spaceId === item.id && orgChat.curChat.value?.id === child.id
+            chat.curChat.value?.spaceId === item.id && chat.curChat.value?.id === child.id
               ? 'active'
               : ''
           ]" v-for="child in item.chats.filter((v) => v.noRead > 0)" :key="child.id + child.name"
@@ -79,9 +79,8 @@
 import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
 import { formatDate } from '@/utils/index'
 import HeadImg from '@/components/headImg.vue'
-import orgChat from '@/hubs/orgchat'
+import { chat } from '@/module/chat/orgchat'
 import { useRoute } from 'vue-router'
-import { toTypeString } from '@vue/shared'
 const routerParams = useRoute().params
 
 const emit = defineEmits(['openChanged'])
@@ -92,7 +91,7 @@ const searchValue = ref<string>('')
 const isMounted = ref<boolean>(false)
 
 const openChanged = async (child: ImMsgChildType) => {
-  await orgChat.setCurrent(child)
+  await chat.setCurrent(child)
   emit('openChanged', child)
 }
 
@@ -103,7 +102,7 @@ const showList = computed((): ImMsgType[] => {
     name: "置顶会话"
   }
   topGroup.chats = []
-  let showInfoArr = orgChat.chats.value
+  let showInfoArr = chat.chats.value
   showInfoArr = showInfoArr.map((child: ImMsgType) => {
     let chats = child.chats.filter((item: ImMsgChildType) => {
       let matched = (!searchValue.value ||
@@ -214,13 +213,13 @@ const handleContextChange = (item: MenuItemType) => {
   // console.log('右键菜单点击', item, mousePosition.selectedItem)
   switch (item.value) {
     case 1:
-      orgChat.setToppingSession(mousePosition.selectedItem, true)
+      chat.setToppingSession(mousePosition.selectedItem, true)
       break
     case 2:
       // props.clearHistoryMsg()
       break
     case 3:
-      orgChat.setToppingSession(mousePosition.selectedItem, false)
+      chat.setToppingSession(mousePosition.selectedItem, false)
       break
 
     default:

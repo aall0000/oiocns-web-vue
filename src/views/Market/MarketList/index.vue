@@ -67,7 +67,7 @@
             </template>
             <!-- 标题下一行的内容 -->
             <template #description>
-              <span>归属: {{ orgChat.getName(item.belongId) || '-' }}</span>
+              <span>归属: {{ chat.getName(item.belongId) || '-' }}</span>
               <el-divider direction="vertical" style="margin: 0 8px;"></el-divider>
               <span class="shop-code" style="cursor: pointer;" @click.stop="copyCode(item.code)">
                 编码: {{ item.code || '-' }}
@@ -166,7 +166,7 @@
 </template>
 
 <script setup lang="ts">
-import orgChat from '@/hubs/orgchat'
+import {chat} from '@/module/chat/orgchat'
 import { reactive, onMounted, computed, ref } from 'vue'
 import ShopCard from '../components/shopCard.vue'
 import { useRouter } from 'vue-router'
@@ -321,7 +321,7 @@ const state = reactive({
       prop: 'createUser',
       label: '归属人',
       render: (item: any)=> {
-        return orgChat.getName(item.createUser)
+        return chat.getName(item.createUser)
       }
     },
     {

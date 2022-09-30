@@ -20,7 +20,7 @@
         <el-descriptions-item :label="'团队编码'" label-align="center" align="center" width="150px"
           label-class-name="my-label" class-name="my-content">{{selectItem?.data?.team.code}}</el-descriptions-item>
         <el-descriptions-item :label="'创建人'" label-align="center" align="center" width="150px"
-          label-class-name="my-label" class-name="my-content">{{orgChat.getName(selectItem?.data?.createUser)}}</el-descriptions-item>
+          label-class-name="my-label" class-name="my-content">{{chat.getName(selectItem?.data?.createUser)}}</el-descriptions-item>
         <el-descriptions-item :label="'创建时间'" label-align="center" align="center" width="150px"
           label-class-name="my-label" class-name="my-content">{{selectItem?.data?.createTime}}</el-descriptions-item>
         <el-descriptions-item label="描述" :span="2" label-align="center" align="center">
@@ -57,7 +57,7 @@ import $services from '@/services'
 import { ref, watch } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import router from '@/router';
-import orgChat from '@/hubs/orgchat';
+import {chat} from '@/module/chat/orgchat';
 import authority from '@/utils/authority'
 import GroupServices from '@/module/relation/group'
 const groupServices = new GroupServices()

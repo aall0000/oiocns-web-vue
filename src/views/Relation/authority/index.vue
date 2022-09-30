@@ -65,7 +65,7 @@
           <el-table-column prop="remark" label="备注" :min-width="150" />
           <el-table-column prop="createUser" label="创建人" :min-width="100">
             <template #default="scope">
-              <div>{{orgChat.getName(scope.row.createUser)}}</div>
+              <div>{{chat.getName(scope.row.createUser)}}</div>
             </template>
           </el-table-column>
           <el-table-column prop="createTime" label="创建时间" :min-width="200" />
@@ -149,7 +149,7 @@ import { ref, onMounted } from 'vue'
 import $services from '@/services'
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { useRouter } from 'vue-router';
-import orgChat from '@/hubs/orgchat';
+import {chat} from '@/module/chat/orgchat';
 import authority from '@/utils/authority'
 
 // 1. 组织角色； 2. 个人角色；3. 群组角色  Todo

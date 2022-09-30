@@ -8,7 +8,7 @@
         <el-table-column prop="team.remark" label="群组简介" min-width="200"/>
         <el-table-column prop="belongId" label="归属" min-width="200">
           <template #default="scope">
-            <div>{{orgChat.getName(scope.row.belongId)}}</div>
+            <div>{{chat.getName(scope.row.belongId)}}</div>
           </template>
         </el-table-column>
         <el-table-column prop="identitys" label="我的群身份" min-width="200">
@@ -29,7 +29,7 @@
         </el-table-column>
         <el-table-column prop="createUser" label="创建人" min-width="100">
           <template #default="scope">
-            <div>{{orgChat.getName(scope.row.createUser)}}</div>
+            <div>{{chat.getName(scope.row.createUser)}}</div>
           </template>
         </el-table-column>
         <el-table-column prop="createTime" label="创建时间" min-width="200"/>
@@ -90,7 +90,7 @@ import { useUserStore } from '@/store/user'
 import { useRouter } from 'vue-router';
 import SearchUser from '@/components/searchs/index.vue'
 import { ElMessage, ElMessageBox } from 'element-plus';
-import orgChat from '@/hubs/orgchat'
+import {chat} from '@/module/chat/orgchat'
 import authority from '@/utils/authority'
 
 const { queryInfo,workspaceData } = useUserStore()

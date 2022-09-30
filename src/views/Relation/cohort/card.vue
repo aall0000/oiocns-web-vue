@@ -60,9 +60,9 @@
               </el-dropdown>
             </div>
           </template>
-          <div class="row-text">归属:{{orgChat.getName(cohort.belongId)}}</div>
+          <div class="row-text">归属:{{chat.getName(cohort.belongId)}}</div>
           <div class="content">{{cohort.code}}</div>
-          <div class="row-text">创建人:{{orgChat.getName(cohort.createUser)}}</div>
+          <div class="row-text">创建人:{{chat.getName(cohort.createUser)}}</div>
           <div class="row-text">创建时间:{{cohort.createTime}}</div>
           <div class="row-text">我的群身份:{{authority.GetTargetIdentitys(cohort.id)}} </div>
           <div class="description">简介:{{cohort.team?.remark}}</div>
@@ -116,7 +116,7 @@ import SearchUser from '@/components/searchs/index.vue'
 import SearchGroupPerson from '@/components/searchs/searchGroupPerson.vue'
 import { Service } from '@element-plus/icons-vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
-import orgChat from '@/hubs/orgchat'
+import {chat} from '@/module/chat/orgchat'
 import Pagination from '@/components/pagination/index.vue'
 import { identity } from 'lodash';
 import authority from '@/utils/authority'

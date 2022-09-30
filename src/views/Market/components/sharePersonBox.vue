@@ -107,7 +107,7 @@
   import API from '@/services'
   import Author from './components/author.vue'
   import { useUserStore } from '@/store/user'
-  import orgChat from '@/hubs/orgchat'
+  import {chat} from '@/module/chat/orgchat'
   import type { TabsPaneContext } from 'element-plus'
   import { AnyAaaaRecord } from 'dns'
   import authority from '@/utils/authority'

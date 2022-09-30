@@ -60,10 +60,8 @@
   import { reactive, ref, onMounted } from 'vue'
   import { useUserStore } from '@/store/user'
   import { useMarketStore } from '@/store/market'
-  import { useAnyData } from '@/store/anydata'
   import { useRouter } from 'vue-router'
   import { ElMessage } from 'element-plus'
-  import { dataType } from 'element-plus/es/components/table-v2/src/common'
 
   const dialogVisible = ref<boolean>(false)
   const carousel = ref<any>()

@@ -81,7 +81,7 @@ import payView from '@/components/pay/pay.vue'
 import payList from '@/components/pay/list.vue'
 import DiyButton from '@/components/diyButton/index.vue'
 import { ElTable } from 'element-plus'
-import orgChat from '@/hubs/orgchat'
+import {chat} from '@/module/chat/orgchat'
 import moment from 'moment'
 import { useRoute, useRouter } from 'vue-router'
 import type { ListProps } from '@/module/store/order'
@@ -195,12 +195,12 @@ const state = reactive({
     {
       prop: 'marketId',
       label: "市场名称",
-      formatter: (row: any, column: any) => { return row.marketId ? orgChat.getName(row.marketId) : null }
+      formatter: (row: any, column: any) => { return row.marketId ? chat.getName(row.marketId) : null }
     },
     {
       prop: 'sellerId',
       label: "卖方名称",
-      formatter: (row: any, column: any) => { return row.sellerId ? orgChat.getName(row.sellerId) : null }
+      formatter: (row: any, column: any) => { return row.sellerId ? chat.getName(row.sellerId) : null }
     },
     {
       prop: 'status',
@@ -245,13 +245,13 @@ const state = reactive({
       prop: 'marketId',
       label: "市场名称",
       minWidth: '120',
-      formatter: (row: any, column: any) => { return row.marketId ? orgChat.getName(row.marketId) : '-' }
+      formatter: (row: any, column: any) => { return row.marketId ? chat.getName(row.marketId) : '-' }
     },
     {
       prop: 'belongId',
       label: '买方名称',
       minWidth: '120',
-      formatter: (row: any, column: any) => orgChat.getName(row.belongId)
+      formatter: (row: any, column: any) => chat.getName(row.belongId)
     },
     {
       prop: 'sellAuth',

@@ -35,13 +35,13 @@
         <template #label>
           <div > 归属 </div>
         </template>
-        {{ orgChat.getName(dialogShow.sendData.product.belongId) }}
+        {{ chat.getName(dialogShow.sendData.product.belongId) }}
       </el-descriptions-item>
       <el-descriptions-item :span="1">
         <template #label>
           <div > 发起人 </div>
         </template>
-        {{ orgChat.getName(dialogShow.sendData.createUser) }}
+        {{ chat.getName(dialogShow.sendData.createUser) }}
       </el-descriptions-item>
       <el-descriptions-item :span="1">
         <template #label>
@@ -73,7 +73,7 @@
   import $services from '@/services'
   import { ElMessage } from 'element-plus'
   import moment from 'moment'
-  import orgChat from '@/hubs/orgchat'
+  import {chat} from '@/module/chat/orgchat'
 
   const props = defineProps({
     dialogShow: {

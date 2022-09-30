@@ -62,7 +62,7 @@
   import searchCompany from '@/components/searchs/index.vue'
   import CreateUnitDialog from '@/views/Layout/components/createUnitDialog.vue'
   import DiyTable from '@/components/diyTable/index.vue'
-  import orgChat from '@/hubs/orgchat'
+  import {chat} from '@/module/chat/orgchat'
   import authority from '@/utils/authority'
 
   const store = useUserStore()
@@ -203,7 +203,7 @@
       .then((res: ResultType) => {
         if (res.success) {
           res.data.result.forEach((item:any)=>{
-            let name = orgChat.getName(item.createUser)
+            let name = chat.getName(item.createUser)
             if(name && name.length > 0){
               item.createUser = name
             }

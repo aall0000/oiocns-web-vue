@@ -72,7 +72,7 @@
   import { useRouter } from 'vue-router'
   import { useUserStore } from '@/store/user'
   import { useAnyData } from '@/store/anydata'
-  import anyStore from '@/utils/anystore'
+  import { anystore } from '@/hubs/anystore'
 
   const router = useRouter()
   const store = useUserStore()
@@ -106,7 +106,7 @@
     const templateContentLen = userOtherData.homeComplist ? userOtherData.homeComplist.length : 0
     editableTabsValue.value = templateContentLen > 0 ? templateContentLen - 1 : 0
     // 订阅工作空间数据变化
-    anyStore.subscribed(`${store.workspaceData.id}`, 'user', (data) => {
+    anystore.subscribed(`${store.workspaceData.id}`, 'user', (data) => {
       // console.log('home===',data)
       userOtherData.setWorkspace(data)
       editableTabsValue.value =
@@ -114,7 +114,7 @@
     })
   })
   onBeforeUnmount(() => {
-    anyStore.unSubscribed(`${store.workspaceData.id}`, 'user')
+    anystore.unSubscribed(`${store.workspaceData.id}`, 'user')
   })
   // 删除tab
   const removeTabs = async (targetName: TabPanelName) => {

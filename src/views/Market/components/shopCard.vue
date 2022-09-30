@@ -60,7 +60,7 @@
 import { reactive, ref } from 'vue'
 import { useUserStore } from '@/store/user'
 import { storeToRefs } from 'pinia'
-import orgChat from '@/hubs/orgchat'
+import {chat} from '@/module/chat/orgchat'
 import authority from '@/utils/authority'
 // hoverItem--鼠标移入item的id 用于展示按钮区域
 const store = useUserStore()

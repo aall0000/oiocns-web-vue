@@ -49,7 +49,7 @@
                 <div class="app-con-title">{{ item.merchandise.caption }}</div>
                 <!-- 附属标题区 -->
                 <div class="app-card-item-con-belong">
-                  <span>归属: {{ orgChat.getName(item.belongId) || '未知' }}</span>
+                  <span>归属: {{ chat.getName(item.belongId) || '未知' }}</span>
                   <el-divider direction="vertical"></el-divider>
                   <span>版本： 0.0.1</span>
                 </div>
@@ -111,7 +111,7 @@ import AppInfoDialog from '../MarketList/components/appInfoDialog.vue'
 import DiyButton from '@/components/diyButton/index.vue'
 import merchandiseImg from '@/assets/img/app_icon.png'
 import moment from 'moment'
-import orgChat from '@/hubs/orgchat'
+import {chat} from '@/module/chat/orgchat'
 const router = useRouter()
 // 表格分页数据
 const pagination: { current: number; limit: number } = reactive({ current: 1, limit: PAGE_NUM })

@@ -43,7 +43,7 @@
   import { ref, reactive, onMounted } from 'vue'
   import { ElMessage } from 'element-plus'
   import { useRouter } from 'vue-router'
-  import orgChat from '@/hubs/orgchat'
+  import {chat} from '@/module/chat/orgchat'
   import DiyTable from '@components/diyTable/index.vue'
 
   const router = useRouter()
@@ -199,7 +199,7 @@
     searchDialog.value = true
   }
   const friendApply = () => {
-    router.push({ path: '/cardDetail', query: { type: 1, id: orgChat.userId.value } })
+    router.push({ path: '/cardDetail', query: { type: 1, id: chat.userId.value } })
   }
 
   // 跳转至角色管理页面
@@ -208,7 +208,7 @@
       path: '/relation/authority',
       query: {
         title: '好友',
-        belongId: orgChat.userId.value,
+        belongId: chat.userId.value,
         name: '我的好友',
         code: 'friends',
         teamRemark: '给好友设置角色'
@@ -221,7 +221,7 @@
     router.push({
       path: '/relation/identity',
       query: {
-        belongId: orgChat.userId.value,
+        belongId: chat.userId.value,
         name: '我的好友',
         module: 'person',
         persons: 'getFriends'

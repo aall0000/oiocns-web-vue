@@ -4,7 +4,7 @@
     workspace 配置信息
 */
 import { defineStore } from 'pinia'
-import anyStore from '@/utils/anystore'
+import {anystore} from '@/hubs/anystore'
 
 type UsingSpace = {
     id: string;
@@ -56,7 +56,7 @@ export const useAnyData = defineStore({
         // 更新用户组件配置
         updateUserSpace(params: { workspaceId: string, content: UserSpace[] }) {
             console.log('更新用户组件', params.content)
-            anyStore.set(`${params.workspaceId}.user.content`,
+            anystore.set(`${params.workspaceId}.user.content`,
                 {
                     operation: 'replaceAll',
                     data: params.content
@@ -67,7 +67,7 @@ export const useAnyData = defineStore({
         // 更新工作空间配置
         updateHomeSpace(params: { workspaceId: string, content: UsingSpace[] }) {
             console.log('更新工作空间配置', params.content)
-            anyStore.set(`${params.workspaceId}.content`,
+            anystore.set(`${params.workspaceId}.content`,
                 {
                     operation: 'replaceAll',
                     data: params.content || []

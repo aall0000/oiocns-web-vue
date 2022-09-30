@@ -44,27 +44,22 @@ import MainAsideVue from './components/mainAside.vue'
 // import Breadcrumb from './components/breadcrumb.vue'
 import LoadingVue from './components/loading.vue'
 import { useUserStore } from '@/store/user'
-import orgChat from '@/hubs/orgchat'
 import authority from '@/utils/authority'
 import { onBeforeMount, onBeforeUnmount } from 'vue'
-
-const stopConnection = () => {
-  orgChat.unSubscribed()
-  orgChat.stop()
-}
+import {chat} from '@/module/chat/orgchat'
 
 onBeforeMount(async () => {
-  let res = await authority.Load()
-  orgChat.start(useUserStore().userToken, res.userId, res.spaceId)
+  await authority.Load()
+  chat.start(useUserStore().userToken)
 })
 
 onBeforeUnmount(() => {
-  stopConnection()
-  window.removeEventListener('beforeunload', stopConnection)
+  chat.stop()
+  window.removeEventListener('beforeunload', chat.stop)
 })
 
 // 页面刷新时 关闭握手
-window.addEventListener('beforeunload', stopConnection)
+window.addEventListener('beforeunload', chat.stop)
 
 </script>
 <style>

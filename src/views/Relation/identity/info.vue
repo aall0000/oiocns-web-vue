@@ -15,7 +15,7 @@
         <el-descriptions-item width="150px" :label="'编码'" label-align="center" align="center"
           label-class-name="my-label" class-name="my-content">{{selectItem?.code}}</el-descriptions-item>
         <el-descriptions-item width="150px" :label="'创建人'" label-align="center" align="center"
-          label-class-name="my-label" class-name="my-content">{{orgChat.getName(selectItem?.createUser)}}</el-descriptions-item>
+          label-class-name="my-label" class-name="my-content">{{chat.getName(selectItem?.createUser)}}</el-descriptions-item>
         <el-descriptions-item width="150px" :label="'创建时间'" label-align="center" align="center"
           label-class-name="my-label" class-name="my-content">{{selectItem?.createTime}}</el-descriptions-item>
         <el-descriptions-item label="描述" :span="2" label-align="center" align="center">
@@ -57,7 +57,7 @@ import $services from '@/services'
 import { ref, watch, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import router from '@/router';
-import orgChat from '@/hubs/orgchat';
+import {chat} from '@/module/chat/orgchat';
 import authority from '@/utils/authority'
 
 const emit = defineEmits(['refresh'])

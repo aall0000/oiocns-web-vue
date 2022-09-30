@@ -42,7 +42,7 @@
   import { useRouter, useRoute } from 'vue-router'
   import { ElMessage, ElMessageBox } from 'element-plus'
   import DiyTable from '@/components/diyTable/index.vue'
-  import orgChat from '@/hubs/orgchat'
+  import {chat} from '@/module/chat/orgchat'
   const router = useRouter()
   const route = useRoute()
   const diyTable = ref(null)
@@ -62,7 +62,7 @@
             {
               prop: 'belongId',
               label: '买方名称',
-              formatter: (row:any, column:any) => orgChat.getName(row.belongId)
+              formatter: (row:any, column:any) => chat.getName(row.belongId)
             },
             {
               prop: 'sellAuth',

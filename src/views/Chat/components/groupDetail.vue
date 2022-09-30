@@ -2,17 +2,17 @@
   <div class="group-detail-wrap">
     <el-row align="middle" style="padding-bottom: 12px">
       <el-col :span="4">
-        <HeadImg :name="orgChat.curChat.value?.name" :label="''" />
+        <HeadImg :name="chat.curChat.value?.name" :label="''" />
       </el-col>
       <el-col :span="20">
-        <h4 class="title">{{ orgChat.curChat.value?.name }}</h4>
-        <div class="base-info-desc">{{ orgChat.curChat.value?.remark }}</div>
+        <h4 class="title">{{ chat.curChat.value?.name }}</h4>
+        <div class="base-info-desc">{{ chat.curChat.value?.remark }}</div>
       </el-col>
     </el-row>
     <ul class="user-list">
-      <li class="li-search con" v-if="orgChat.curChat.value?.typeName !== '人员'">
+      <li class="li-search con" v-if="chat.curChat.value?.typeName !== '人员'">
         <p class="li-search-con"
-          >组成员<span class="li-search-con-num">{{ orgChat.curChat.value?.personNum }}</span
+          >组成员<span class="li-search-con-num">{{ chat.curChat.value?.personNum }}</span
           >人</p
         >
         <el-input class="li-search-inp" placeholder="搜索成员">
@@ -27,13 +27,13 @@
         <li
           class="img-list-con img-list-add"
           @click="openDialogAdd"
-          v-if="orgChat.curChat.value?.typeName === '群组'"
+          v-if="chat.curChat.value?.typeName === '群组'"
           >+
         </li>
         <li
           class="img-list-con img-list-del"
           @click="openDialogDel"
-          v-if="orgChat.curChat.value?.typeName === '群组'"
+          v-if="chat.curChat.value?.typeName === '群组'"
         >
           <el-icon>
             <SemiSelect />
@@ -41,7 +41,7 @@
         </li>
         <li
           class="img-list-con"
-          v-for="item in orgChat.qunPersons.value"
+          v-for="item in chat.qunPersons.value"
           :key="item.id"
           :title="item.name"
         >
@@ -49,43 +49,43 @@
           <span class="img-list-con-name">{{ item.name }}</span>
         </li>
         <span
-          v-show="orgChat.curChat.value?.personNum > 10"
+          v-show="chat.curChat.value?.personNum > 10"
           class="img-list-more-btn"
-          @click="orgChat.getPersons(false)"
+          @click="chat.getPersons(false)"
           >查看更多</span
         >
       </ul>
-      <li class="con setting-con border-b" v-if="orgChat.curChat.value?.typeName === '群组'">
+      <li class="con setting-con border-b" v-if="chat.curChat.value?.typeName === '群组'">
         <span class="con-label">我在本群昵称</span>
         <span class="con-value">测试昵称</span>
       </li>
-      <li class="con setting-con border-b" v-if="orgChat.curChat.value?.typeName === '群组'">
-        <span class="con-label">{{ `${orgChat.curChat.value?.typeName}备注` }}</span>
-        <span class="con-value">{{ orgChat.curChat.value?.remark }}</span>
+      <li class="con setting-con border-b" v-if="chat.curChat.value?.typeName === '群组'">
+        <span class="con-label">{{ `${chat.curChat.value?.typeName}备注` }}</span>
+        <span class="con-value">{{ chat.curChat.value?.remark }}</span>
       </li>
       <li class="con check-con">
         <el-checkbox
           v-model="state.isIgnoreMsg"
-          :label="orgChat.curChat.value?.typeName !== '人员' ? '设置群消息免打扰' : '设置免打扰'"
+          :label="chat.curChat.value?.typeName !== '人员' ? '设置群消息免打扰' : '设置免打扰'"
         />
       </li>
       <li class="con check-con">
         <el-checkbox
           v-model="state.isStick"
-          :label="orgChat.curChat.value?.typeName !== '人员' ? '置顶该群' : '置顶会话'"
+          :label="chat.curChat.value?.typeName !== '人员' ? '置顶该群' : '置顶会话'"
         />
       </li>
     </ul>
-    <div class="footer" v-if="orgChat.curChat.value.spaceId === orgChat.userId.value">
-      <template v-if="orgChat.curChat.value?.typeName === '群组'">
+    <div class="footer" v-if="chat.curChat.value.spaceId === chat.userId.value">
+      <template v-if="chat.curChat.value?.typeName === '群组'">
         <el-button type="danger" plain>退出该群</el-button>
         <el-button type="danger">解散该群</el-button>
       </template>
-      <template v-if="orgChat.curChat.value?.typeName === '人员'">
+      <template v-if="chat.curChat.value?.typeName === '人员'">
         <el-button type="danger" plain>删除好友</el-button>
       </template>
       <template v-if="true">
-        <el-button type="danger" v-on:click="orgChat.clearMsg()" plain>清空聊天记录</el-button>
+        <el-button type="danger" v-on:click="chat.clearMsg()" plain>清空聊天记录</el-button>
       </template>
     </div>
   </div>
@@ -126,7 +126,7 @@
     <div class="invitateBox">
       <div
         class="invitateBox-box"
-        v-for="(item, index) in orgChat.qunPersons.value"
+        v-for="(item, index) in chat.qunPersons.value"
         :key="item.id"
         @click="onClickBoxDel(item, index)"
       >
@@ -156,7 +156,7 @@
   import { ElMessage } from 'element-plus'
   import HeadImg from '@/components/headImg.vue'
   import { reactive, ref } from 'vue'
-  import orgChat from '@/hubs/orgchat'
+  import {chat} from '@/module/chat/orgchat'
 
   const dialogVisible = ref(false) // 控制拉入群聊dialog
   const dialogVisibleDel = ref(false) // 控制移出群聊dialog
@@ -208,7 +208,7 @@
     $services.cohort
       .pullPerson({
         data: {
-          id: orgChat.curChat.value?.id,
+          id: chat.curChat.value?.id,
           targetIds: state.ids
         }
       })
@@ -219,7 +219,7 @@
             type: 'success'
           })
           dialogVisible.value = false
-          orgChat.getPersons(true)
+          chat.getPersons(true)
         } else {
           ElMessage({
             message: '您不是群管理员',
@@ -233,7 +233,7 @@
     $services.cohort
       .removePerson({
         data: {
-          id: orgChat.curChat.value?.id,
+          id: chat.curChat.value?.id,
           targetIds: state.delids
         }
       })
@@ -244,7 +244,7 @@
             type: 'success'
           })
           dialogVisibleDel.value = false
-          orgChat.getPersons(true)
+          chat.getPersons(true)
         } else {
           ElMessage({
             message: '您不是群管理员',
@@ -256,13 +256,13 @@
 
   const openDialogAdd = () => {
     dialogVisible.value = true
-    orgChat.chats.value.forEach((item) => {
-      if (item.id === orgChat.userId.value) {
-        state.friendsData = item.chats.filter((chat) => {
-          if (chat.typeName === '人员') {
+    chat.chats.value.forEach((item) => {
+      if (item.id === chat.userId.value) {
+        state.friendsData = item.chats.filter((c) => {
+          if (c.typeName === '人员') {
             let exist = false
-            orgChat.qunPersons.value.forEach((p) => {
-              if (chat.id === p.id) {
+            chat.qunPersons.value.forEach((p) => {
+              if (c.id === p.id) {
                 exist = true
               }
             })

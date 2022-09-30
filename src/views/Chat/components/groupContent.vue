@@ -1,6 +1,6 @@
 <template>
   <div class="group-content-wrap" ref="nodeRef" @scroll="scrollEvent">
-    <template v-for="(item, index) in orgChat.curMsgs.value" :key="item.fromId">
+    <template v-for="(item, index) in chat.curMsgs.value" :key="item.fromId">
       <!-- 聊天间隔时间3分钟则 显示时间 -->
       <div class="chats-space-Time" v-if="isShowTime(index)">
         <span>
@@ -13,15 +13,15 @@
         <span class="reWrite" v-if="item.allowEdit" @click="handleReWrite(item.msgBody)">重新编辑</span>
       </div>
 
-      <div class="group-content-left con" v-else-if="item.fromId !== orgChat.userId.value">
+      <div class="group-content-left con" v-else-if="item.fromId !== chat.userId.value">
         <el-popover placement="top-end" :width="155" trigger="click" :hide-after="100" v-model:visible="item.edit"
           @show="editShow(item)">
           <template #reference>
             <div class="con-body">
-              <HeadImg :name="orgChat.getName(item.fromId)" :label="''" />
+              <HeadImg :name="chat.getName(item.fromId)" :label="''" />
               <div class="con-content">
-                <span v-if="orgChat.curChat.value.typeName!=='人员'" class="con-content-name">{{
-                orgChat.getName(item.fromId)
+                <span v-if="chat.curChat.value.typeName!=='人员'" class="con-content-name">{{
+                chat.getName(item.fromId)
                 }}</span>
                 <div class="con-content-link"></div>
                 <div class="con-content-txt" v-html="item.msgBody"></div>
@@ -44,7 +44,7 @@
                 <div class="con-content-link"></div>
                 <div class="con-content-txt" v-html="item.msgBody"></div>
               </div>
-              <HeadImg :name="orgChat.getName(item.fromId)" />
+              <HeadImg :name="chat.getName(item.fromId)" />
             </div>
           </template>
           <div class="flex justify-space-between mb-3 flex-wrap gap-3">
@@ -70,7 +70,7 @@ import {
 import { debounce } from '@/utils/tools'
 import HeadImg from '@/components/headImg.vue'
 import moment from 'moment'
-import orgChat from '@/hubs/orgchat'
+import {chat} from '@/module/chat/orgchat'
 import { ElMessage } from 'element-plus'
 
 // dom节点
@@ -101,7 +101,7 @@ const canDelete = (item: any) => {
   if (item.chatId) {
     return true
   }
-  return item.spaceId === orgChat.userId.value
+  return item.spaceId === chat.userId.value
 }
 
 const recallMsg = (item: any) => {
@@ -111,7 +111,7 @@ const recallMsg = (item: any) => {
     delete item.chatId
     delete item.sessionId
   }
-  orgChat.recallMsg(item).then((res: ResultType) => {
+  chat.recallMsg(item).then((res: ResultType) => {
     if (res.data != 1) {
       ElMessage({
         type: "warning",
@@ -123,13 +123,13 @@ const recallMsg = (item: any) => {
 
 const deleteMsg = (item: any) => {
   item.edit = false
-  orgChat.deleteMsg(item)
+  chat.deleteMsg(item)
 }
 
 const isShowTime = (index: number) => {
   if (index == 0) return true
-  return moment(orgChat.curMsgs.value[index].createTime).
-    diff(orgChat.curMsgs.value[index - 1].createTime, 'minute') > 3
+  return moment(chat.curMsgs.value[index].createTime).
+    diff(chat.curMsgs.value[index - 1].createTime, 'minute') > 3
 }
 
 // 显示聊天间隔时间
@@ -154,9 +154,9 @@ const showChatTime = (chatDate: moment.MomentInput) => {
 // 实时滚动条高度
 const scrollTop = debounce(async () => {
   let scroll = nodeRef.value.scrollTop
-  if (scroll > 0 && scroll < 20) {
+  if (chat.curMsgs.value.length > 0 && scroll < 20) {
     let beforeHeight = nodeRef.value.scrollHeight
-    let count = await orgChat.getHistoryMsg()
+    let count = await chat.getHistoryMsg()
     if (count > 0) {
       nodeRef.value.scrollTop = nodeRef.value.scrollHeight - beforeHeight
     }

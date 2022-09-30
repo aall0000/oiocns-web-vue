@@ -18,7 +18,7 @@
                   <div class="app-con-title">{{ item.caption }} </div>
                   <!-- 附属标题区 -->
                   <div class="app-card-item-con-belong">
-                    <span>归属: {{ orgChat.getName(item.product.belongId) || '未知' }}</span>
+                    <span>归属: {{ chat.getName(item.product.belongId) || '未知' }}</span>
                     <el-divider direction="vertical"></el-divider>
                     <span>版本： 0.0.1</span>
                   </div>
@@ -86,7 +86,7 @@ import AppInfoDialog from './appInfoDialog.vue'
 import { ElNotification } from 'element-plus'
 import merchandiseImg from '@/assets/img/app_icon.png'
 import { useRouter } from 'vue-router'
-import orgChat from '@/hubs/orgchat'
+import {chat} from '@/module/chat/orgchat'
 const router = useRouter()
 const emit = defineEmits(['handleUpdate', 'shopcarNumChange'])
 type Props = {

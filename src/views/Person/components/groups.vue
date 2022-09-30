@@ -59,7 +59,7 @@
   import { ElMessage ,ElMessageBox} from 'element-plus'
   import searchGroup from '@/components/searchs/index.vue'
   import DiyTable from '@/components/diyTable/index.vue'
-  import orgChat from '@/hubs/orgchat'
+  import {chat} from '@/module/chat/orgchat'
   import authority from '@/utils/authority'
 
   const store = useUserStore()
@@ -240,7 +240,7 @@
     })
     if (success) {
       data.result.forEach((item:any)=>{
-        let name = orgChat.getName(item.createUser)
+        let name = chat.getName(item.createUser)
         if(name && name.length > 0){
           item.createUser = name
         }
