@@ -93,6 +93,7 @@ const orgChat: orgChatType = {
             await orgChat.getChats()
         })
         orgChat._connection.onclose((error) => {
+            orgChat.authed.value = false
             anyStore.unSubscribed("orgChat", "user")
             if (!orgChat._stoped) {
                 console.log('链接已断开,5秒后重连', error)

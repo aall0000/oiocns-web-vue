@@ -45,6 +45,7 @@ const anyStore: anyStoreType = {
         anyStore._connection.keepAliveIntervalInMilliseconds = 3000
         anyStore._connection.on("Updated", anyStore._updated)
         anyStore._connection.onclose((error) => {
+            anyStore.authed = false
             if (!anyStore._stoped) {
                 console.log('链接已断开,5秒后重连', error)
                 setTimeout(() => {
