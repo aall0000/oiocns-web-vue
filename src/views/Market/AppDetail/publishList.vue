@@ -204,8 +204,11 @@
   }
   //下架应用-应用所有者
   const unpublishApp = async (item: any) => {
-    const success = await unpublishApp(item.id)
-    getTableList()
+    console.log(item)
+    if (item) {
+      await unpublishApp(item.id)
+      getTableList()
+    }
   }
   //查询上架申请
   const getTableList = async () => {

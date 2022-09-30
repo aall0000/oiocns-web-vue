@@ -198,6 +198,7 @@ class appStore {
    * @return 接口请求成功
    */
   public async unpublishApp(id: string) {
+    debugger
     const { success } = await API.product.unpublishMerchandise({
       data: {
         id: id
@@ -237,6 +238,65 @@ class appStore {
       total
     }
     return obj
+  }
+
+  /**
+   * @desc 加入购物车
+   * @param id 应用id
+   * @return 接口请求成功
+   */
+  public async staging(id: string) {
+    const { success } = await API.appstore.staging({
+      data: {
+        id: id
+      }
+    })
+    if (!success) {
+      return
+    }
+    ElMessage({
+      message: '添加成功',
+      type: 'success'
+    })
+  }
+
+  /**
+   * @desc 获取共享仓库应用列表
+   * @param id 应用id
+   * @param page 分页参数
+   * @param search 查询参数
+   * @return 返回列表信息和总值
+   */
+  public async merchandise(id: string, page: PageStore, search?: string) {
+    const { success, data } = await API.appstore.merchandise({
+      data: {
+        id: id,
+        offset: (page.currentPage - 1) * page.pageSize,
+        limit: page.pageSize,
+        filter: search
+      }
+    })
+    if (!success) {
+      return
+    }
+    const { result = [], total = 0 } = data
+    let obj = {
+      result,
+      total
+    }
+    return obj
+  }
+
+  /**
+   * @desc 获取共享仓库信息
+   * @return 返回仓库信息
+   */
+  public async getMarketInfo() {
+    const { data, success } = await API.market.getSoftShareInfo()
+    if (!success) {
+      return
+    }
+    return data
   }
 }
 
