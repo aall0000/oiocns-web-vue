@@ -350,7 +350,7 @@ const searchSellList = async (params: ListProps) => {
   const {data,total,success} =await OrderSevice.getSellList({
     ...params,
     filter: '',
-    status: statusvalue.value ? statusvalue.value : 0 //后续改成-1
+    status: statusvalue.value ? statusvalue.value : "0" //后续改成-1
   })
   state.orderMessage.total = total
   state.orderMessage.list = data

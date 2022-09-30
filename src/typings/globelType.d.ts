@@ -13,6 +13,9 @@ type CommonParamsType = {
   offset: number
   limit: number
   filter?: string
+  current?:number
+  pageSize?:number
+  status?: string
 }
 // 翻页props
 type PaginationProps= {
