@@ -12,7 +12,7 @@ const notify = new Notify({
     // Optional playback sound
     audio: {
         // You can use arrays to pass sound files in multiple formats.
-        file: ["src/assets/mp4/bone.mp3"],
+        file: ["/mp4/bone.mp3"],
     },
     // Title flashing, or scrolling speed
     interval: 1000,

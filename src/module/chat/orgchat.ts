@@ -349,6 +349,7 @@ export default class OrgChat extends Object {
                 if (res.success) {
                     if (res.data.result) {
                         res.data.result.forEach((item: any) => {
+                            item.msgBody = StringPako.inflate(item.msgBody)
                             this.curMsgs.value.unshift(item)
                         })
                         return res.data.result.length

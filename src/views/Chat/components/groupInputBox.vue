@@ -13,8 +13,8 @@
               :class="['qqface', `qqface${value}`, 'small']">
             </li> -->
             <li>
-              <img class="emoji" v-for="index in 36" :key="index" :src="`/src/assets/emo/${index}.png`" alt=""
-                @click="handleImgChoosed(`/src/assets/emo/${index}.png`)" />
+              <img class="emoji" v-for="index in 36" :key="index" :src="`/emo/${index}.png`" alt=""
+                @click="handleImgChoosed(`/emo/${index}.png`)" />
 
             </li>
           </ul>
