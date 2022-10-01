@@ -5,6 +5,7 @@ import api from '@/services'
 import router from "@/router"
 import notify from '@/utils/notify'
 import { TargetType, Quatrains } from "../enums"
+import {StringPako} from '@utils/package'
 
 /** 消息类型 */
 export enum MessageType {
@@ -185,19 +186,10 @@ export default class OrgChat extends Object {
      * @param data 消息数据
      * @returns {ResultType} 发送结果
      */
-    public async sendMsg(data: any, num?: number) {
-        if(num && num >= 1000) return
+    public async sendMsg(data: any) {
         if (this.authed.value && data) {
-            num = num || 0
-            let item = Quatrains[num%Quatrains.length]
-            num++
-            item = "&#12288;&#12288;&#12288;&#12288;&#12288;&#12288;第" + num + "首</br>" + item
-            data.msgBody = `<span style='font-size: 40px;font-family: 楷体;font-weight: 600;'>${item}</span>`
-            await this.connection.invoke("SendMsg", data)
-            setTimeout(() => {
-                this.sendMsg(data, num)
-            }, 500)
-            // return await this.connection.invoke("SendMsg", data)
+            data.msgBody = StringPako.deflate(data.msgBody)
+            return await this.connection.invoke("SendMsg", data)
         }
         return BadRequst
     }
@@ -336,6 +328,7 @@ export default class OrgChat extends Object {
                 if (res.success && Array.isArray(res.data)) {
                     res.data.forEach((item: any) => {
                         item.id = item.chatId
+                        item.msgBody = StringPako.inflate(item.msgBody)
                         this.curMsgs.value.unshift(item)
                     })
                     return res.data.length
@@ -436,6 +429,7 @@ export default class OrgChat extends Object {
                     if (data.msgType === "toping") {
                         chat.isTop = data.msgBody
                     } else {
+                        let msgBody = StringPako.inflate(data.msgBody)
                         if (chat.spaceId === this.userId.value) {
                             this._cacheMsg(sessionId, data)
                         }
@@ -443,7 +437,7 @@ export default class OrgChat extends Object {
                         chat.msgType = data.msgType
                         chat.msgTime = data.createTime
                         if (chat.msgType != "recall") {
-                            chat.showTxt = data.msgBody?.includes('img') ? "[图片]" : data.msgBody
+                            chat.showTxt = msgBody?.includes('img') ? "[图片]" : msgBody
                         } else {
                             chat.showTxt = data.showTxt
                         }
@@ -454,7 +448,10 @@ export default class OrgChat extends Object {
                         if (this.curChat.value && this.curChat.value.id === chat.id &&
                             this.curChat.value.spaceId === chat.spaceId) {
                             if (data.msgType !== "recall") {
-                                this.curMsgs.value.push(data)
+                                this.curMsgs.value.push({
+                                    ...data,
+                                    msgBody: msgBody
+                                })
                             }
                         } else {
                             if (this.openChats.findIndex(i => i.id === chat.id && i.spaceId === chat.spaceId) < 0) {

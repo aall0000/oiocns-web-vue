@@ -18,6 +18,7 @@
     "element-china-area-data": "^5.0.2",
     "moment": "^2.29.4",
     "nprogress": "^0.2.0",
+    "pako": "^2.0.4",
     "pinia-plugin-persist": "^1.0.0",
     "qrcode": "^1.5.1",
     "rollup-plugin-visualizer": "^5.7.1",
