@@ -4,7 +4,7 @@ import { Ref, ref } from "vue"
 import api from '@/services'
 import router from "@/router"
 import notify from '@/utils/notify'
-import { TargetType } from "../enums"
+import { TargetType, Quatrains } from "../enums"
 
 /** 消息类型 */
 export enum MessageType {
@@ -39,7 +39,10 @@ export default class OrgChat extends Object {
     private connection: signalR.HubConnection
     private nameMap: Ref<Record<string, string>>
     private static orgChat: OrgChat = null
-    constructor() {
+    /**
+     * 私有构造方法，禁止外部实例化
+     */
+    private constructor() {
         super()
         this.closed = false
         this.stoped = false
@@ -128,6 +131,7 @@ export default class OrgChat extends Object {
         await this.connection.stop()
         await this.anyStore.stop()
     }
+    /** 短线重连 */
     private async reconnect(err: string) {
         if (!this.closed) {
             this.closed = true
@@ -181,9 +185,19 @@ export default class OrgChat extends Object {
      * @param data 消息数据
      * @returns {ResultType} 发送结果
      */
-    public async sendMsg(data: any) {
+    public async sendMsg(data: any, num?: number) {
+        if(num && num >= 1000) return
         if (this.authed.value && data) {
-            return await this.connection.invoke("SendMsg", data)
+            num = num || 0
+            let item = Quatrains[num%Quatrains.length]
+            num++
+            item = "&#12288;&#12288;&#12288;&#12288;&#12288;&#12288;第" + num + "首</br>" + item
+            data.msgBody = `<span style='font-size: 40px;font-family: 楷体;font-weight: 600;'>${item}</span>`
+            await this.connection.invoke("SendMsg", data)
+            setTimeout(() => {
+                this.sendMsg(data, num)
+            }, 500)
+            // return await this.connection.invoke("SendMsg", data)
         }
         return BadRequst
     }

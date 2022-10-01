@@ -19,6 +19,9 @@ export default class AnyStore extends Object {
     private static anyStore: AnyStore = null
     private _connectedCallbacks: (() => void)[]
     private _subscribeCallbacks: Record<string, (data: any) => void>
+    /**
+     * 私有构造方法，禁止外部实例化
+     */
     private constructor() {
         super()
         this.closed = false
@@ -90,6 +93,7 @@ export default class AnyStore extends Object {
         this.authed.value = false
         await this.connection.stop()
     }
+    /** 短线重连 */
     private async reconnect(err: string) {
         if (!this.closed) {
             this.closed = true
