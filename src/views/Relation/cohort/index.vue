@@ -84,6 +84,8 @@
   import { Plus, CirclePlus } from '@element-plus/icons-vue'
   import SearchCohort from '@/components/searchs/index.vue'
   import type { FormInstance,FormRules } from 'element-plus'
+  import CohortServices from '@/module/relation/cohort'
+  const cohortServices  = new CohortServices()
   const mode = ref('list')
   const activeName = ref('管理的')
   const ruleFormRef = ref<FormInstance>()
@@ -124,23 +126,24 @@
    
   })
   // 创建群组
-  const createCohort = (formEl: FormInstance | undefined) => {
-    formEl.validate((valid) => {
+  const createCohort = async (formEl: FormInstance | undefined) => {
+    formEl.validate(async (valid) => {
       if (valid) {
-        $services.cohort.create({ data: formData.value }).then((res: ResultType) => {
-          if (res.code == 200) {
-            ElMessage({
-              message: '创建成功',
-              type: 'success'
-            })
-            createCohortDialog.value = false
-            let oldModel = mode.value;
-            mode.value = '';
-            setTimeout(() => {
-              mode.value = oldModel
-            }, 100);
-          }
-        })
+       const data = await cohortServices.create(formData.value)
+       console.log('data',data)
+       if(data){
+          ElMessage({
+            message: '创建成功',
+            type: 'success'
+          })
+          createCohortDialog.value = false
+          let oldModel = mode.value;
+          mode.value = '';
+          setTimeout(() => {
+            mode.value = oldModel
+          }, 100);
+       }
+       
       } else {
         return false
       }
@@ -160,22 +163,15 @@
     }
   }
   // 申请加入群组
-  const applyJoinCohort = (arr: Array<any>) => {
-    $services.cohort
-      .applyJoin({
-        data: {
-          id: arr.join(',')
-        }
+  const applyJoinCohort =  async (arr: Array<any>) => {
+    const data = await cohortServices.applyJoin(arr)
+    if (data) {
+      ElMessage({
+        message: '申请成功，请等待审核通过!',
+        type: 'success'
       })
-      .then((res: ResultType) => {
-        if (res.success) {
-          ElMessage({
-            message: '申请成功，请等待审核通过!',
-            type: 'success'
-          })
-          searchDialog.value = false
-        }
-      })
+      searchDialog.value = false
+    }
   }
   onMounted(() => {})
 </script>

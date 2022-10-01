@@ -120,6 +120,8 @@ import {chat} from '@/module/chat/orgchat'
 import Pagination from '@/components/pagination/index.vue'
 import { identity } from 'lodash';
 import authority from '@/utils/authority'
+import CohortServices from '@/module/relation/cohort'
+const cohortServices  = new CohortServices()
 
 const { queryInfo, workspaceData } = useUserStore()
 const router = useRouter()
@@ -192,8 +194,8 @@ const checksGroupSearch = (val: any) => {
     searchGroupDialog.value = false
   }
 }
-const updateBelong = (belongId?: string) => {
-  const data = {
+const updateBelong = async (belongId?: string) => {
+  const obj = {
     id: curCohort.value.id,
     name: curCohort.value.name,
     code: curCohort.value.code,
@@ -204,21 +206,18 @@ const updateBelong = (belongId?: string) => {
     teamRemark: curCohort.value.remark,
     teamAuthId: curCohort.value.team.authId,
   }
-  $services.cohort.update({
-    data
-  }).then((res: ResultType) => {
-    if (res.success) {
-      ElMessage({
-        message: '转让成功',
-        type: 'success'
-      })
-      searchGroupDialog.value = false;
-      getCohorts()
-    }
-  })
+  const data = await cohortServices.update(obj)
+  if (data) {
+    ElMessage({
+      message: '转让成功',
+      type: 'success'
+    })
+    searchGroupDialog.value = false;
+    getCohorts()
+  }
 }
-const update = () => {
-  const data = {
+const update = async () => {
+  const obj = {
     id: curCohort.value.id,
     name: formData.value.name,
     code: formData.value.code,
@@ -229,18 +228,15 @@ const update = () => {
     teamRemark: formData.value.remark,
     teamAuthId: curCohort.value.team.authId,
   }
-  $services.cohort.update({
-    data
-  }).then((res: ResultType) => {
-    if (res.success) {
+  const data = await cohortServices.update(obj)
+  if (data) {
       ElMessage({
         message: '修改成功',
         type: 'success'
       })
       editCohortDialog.value = false
       getCohorts()
-    }
-  })
+  }
 }
 
 

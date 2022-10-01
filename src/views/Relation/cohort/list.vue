@@ -92,7 +92,8 @@ import SearchUser from '@/components/searchs/index.vue'
 import { ElMessage, ElMessageBox } from 'element-plus';
 import {chat} from '@/module/chat/orgchat'
 import authority from '@/utils/authority'
-
+import CohortServices from '@/module/relation/cohort'
+const cohortServices  = new CohortServices()
 const { queryInfo,workspaceData } = useUserStore()
 const router = useRouter()
 
@@ -155,8 +156,8 @@ const edit = (cohort: any)=>{
   formData.value = { name: cohort.name, code: cohort.code, remark: cohort.team?.remark }
 }
 
-const update = ()=>{
-  const data = {
+const update = async ()=>{
+  const obj = {
     id: curCohort.value.id,
     name: formData.value.name,
     code: formData.value.code,
@@ -167,18 +168,15 @@ const update = ()=>{
     teamRemark: formData.value.remark,
     teamAuthId: curCohort.value.team.authId,
   }
-  $services.cohort.update({
-      data
-    }).then((res: ResultType) => {
-      if (res.success) {
-        ElMessage({
-          message: '修改成功',
-          type: 'success'
-        })
-        editCohortDialog.value = false
-        getCohorts()
-      }
+  const data = await cohortServices.update(obj)
+  if (data) {
+    ElMessage({
+      message: '修改成功',
+      type: 'success'
     })
+    editCohortDialog.value = false
+    getCohorts()
+  }
 }
 //权限转移
 const checksGroupSearch = (val:any)=>{
@@ -188,8 +186,8 @@ const checksGroupSearch = (val:any)=>{
     searchGroupDialog.value = false
   }
 }
-const updateBelong = (belongId?:string)=>{
-  const data = {
+const updateBelong = async (belongId?:string)=>{
+  const obj = {
     id: curCohort.value.id,
     name: curCohort.value.name,
     code: curCohort.value.code,
@@ -200,18 +198,15 @@ const updateBelong = (belongId?:string)=>{
     teamRemark: curCohort.value.remark,
     teamAuthId: curCohort.value.team.authId,
   }
-  $services.cohort.update({
-      data
-    }).then((res: ResultType) => {
-      if (res.success) {
-        ElMessage({
-          message: '转让成功',
-          type: 'success'
-        })
-        searchGroupDialog.value = false;
-        getCohorts()
-      }
-    })
+  const data = await cohortServices.update(obj)
+    if (data) {
+      ElMessage({
+        message: '转让成功',
+        type: 'success'
+      })
+      searchGroupDialog.value = false;
+      getCohorts()
+    }
 }
 
 // 选择人员后的回调

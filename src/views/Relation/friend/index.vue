@@ -45,6 +45,8 @@
   import { useRouter } from 'vue-router'
   import {chat} from '@/module/chat/orgchat'
   import DiyTable from '@components/diyTable/index.vue'
+  import FriendServices from '@/module/relation/friend'
+  const friendServices  = new FriendServices()
 
   const router = useRouter()
 
@@ -104,23 +106,15 @@
     }
   })
   const addFriends = (arr: Array<arrList>) => {
-    console.log('arrr', arr)
-    $services.person
-      .applyJoin({
-        data: {
-          id: arr.join(',')
-        }
+    const data =  friendServices.applyJoin(arr)
+     if(data){
+      ElMessage({
+        message: '申请成功',
+        type: 'warning'
       })
-      .then((res: ResultType) => {
-        if (res.code == 200) {
-          ElMessage({
-            message: '申请成功',
-            type: 'warning'
-          })
-          searchDialog.value = false
-          getFriendList()
-        }
-      })
+      searchDialog.value = false
+      getFriendList()
+     }
   }
   const handleUpdate = (page: any) => {
     pageStore.currentPage = page.currentPage
@@ -136,50 +130,22 @@
 
   const state = reactive({ qunList: [], friendList: [] })
   const getFriendList = async () => {
-    await $services.person
-      .getFriends({
-        data: {
-          limit: pageStore.pageSize,
-          offset: (pageStore.currentPage - 1) * pageStore.pageSize
-        }
-      })
-      .then((res: ResultType) => {
-        const { result = [] } = res.data
-        state.friendList = result?.map((item: { team: { remark: any; code: any; name: any } }) => {
-          return {
-            ...item,
-            remark: item.team.remark,
-            teamCode: item.team.code,
-            trueName: item.team.name
-          }
-        })
-        pageStore.total = res.data.total
-        diyTable.value.state.page.total = pageStore.total
-      })
+    const backData = await friendServices.getFriends();
+    if(backData){
+      state.friendList  = backData.friendList;
+      diyTable.value.state.page.total = backData.total
+    }
   }
   //删除好友
-  const deleteFriend = (id: string) => {
-    $services.person
-      .remove({
-        data: {
-          id: id,
-          targetIds: [id]
-        }
+  const deleteFriend = async (id: string) => {
+    const data = await friendServices.remove(id)
+    if(data){
+      ElMessage({
+        message: '删除成功',
+        type: 'warning'
       })
-      .then((res: ResultType) => {
-        if (res.code == 200) {
-          ElMessage({
-            message: '删除成功',
-            type: 'warning'
-          })
-          getFriendList()
-        } else {
-          ElMessage({
-            message: res.msg,
-            type: 'warning'
-          })
-        }
-      })
+      getFriendList()
+    }
   }
   const checksSearch = (val: any) => {
     if (val.value.length > 0) {
