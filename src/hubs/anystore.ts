@@ -40,10 +40,18 @@ export default class AnyStore extends Object {
             this.authed.value = false
             this.reconnect("disconnected from anydata, await 5s reconnect.")
         })
-        this.connection.on("Insert", this._insert)
-        this.connection.on("Update", this._update)
-        this.connection.on("Remove", this._remove)
-        this.connection.on("Updated", this._updated)
+        this.connection.on("Insert", (collName, data) => {
+            this._insert(collName, data)
+        })
+        this.connection.on("Update", (collName, data) => {
+            this._update(collName, data)
+        })
+        this.connection.on("Remove", (collName, data) => {
+            this._remove(collName, data)
+        })
+        this.connection.on("Updated", (key, data) => {
+            this._updated(key, data)
+        })
     }
     /** 获取单例 */
     public static getInstance() {
