@@ -3,6 +3,7 @@
 
     <!-- 头部 用户信息 -->
     <div class="headers">
+
       <Head />
     </div>
 
@@ -31,15 +32,16 @@
       </el-col>
       <el-col :span="8" :xs="24" :sm="24" :md="24" :lg="8" :xl="8" style="margin-top: 10px;">
         <!-- 后台管理 -->
-        
-          <ManageSystem />
-        
+
+        <ManageSystem />
+
       </el-col>
     </el-row>
+    <searchFriend v-if="dialogVisible" @closeDialog="dialogVisible = false" :serachType="1"
+      @checksSearch="checksSearch" />
+    <!-- <el-dialog v-model="dialogVisible" title="添加好友" width="30%"> -->
 
-    <el-dialog v-model="dialogVisible" title="添加好友" width="30%">
-
-      <el-select v-model="value" filterable remote reserve-keyword placeholder="请输入要查找的好友名"
+    <!-- <el-select v-model="value" filterable remote reserve-keyword placeholder="请输入要查找的好友名"
         :remote-method="remoteMethod" :loading="loading" style="width: 100%;">
         <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
       </el-select>
@@ -49,13 +51,14 @@
           <el-button @click="dialogVisible = false">取消</el-button>
           <el-button type="primary" @click="submitFriends">确认</el-button>
         </span>
-      </template>
-    </el-dialog>
+      </template> -->
+    <!-- </el-dialog> -->
   </div>
 </template>
 
 <script lang="ts" setup>
 import { ref, reactive, onMounted } from 'vue'
+import searchFriend from '@/components/searchs/index.vue'
 import Menu from '@/views/Layout/components/menu.vue'
 import Head from '@/components/protal/components/head.vue'
 import Invitate from '@/components/protal/components/invitate.vue'
@@ -63,6 +66,7 @@ import Organization from '@/components/protal/components/organization.vue'
 import AppMarket from '@/components/protal/components/appMarket.vue'
 import AppCommon from '@/components/protal/components/appCommon.vue'
 import ManageSystem from '@/components/protal/components/manageSystem.vue'
+import FriendServices from '@/module/relation/friend'
 import $services from '@/services'
 import { ElMessage } from 'element-plus'
 
@@ -70,6 +74,10 @@ interface ListItem {
   value: string
   label: string
 }
+type arrList = {
+  id: string
+}
+const friendServices = new FriendServices()
 const isShowMenu = ref<boolean>(false)
 const options = ref<ListItem[]>([])
 const value = ref('')
@@ -77,66 +85,27 @@ const loading = ref(false)
 onMounted(() => {
   isShowMenu.value = true
 })
-const remoteMethod = (query: string) => {
-  if (query) {
-    loading.value = true
-    $services.person
-      .searchPersons({
-        data: {
-          text: query,
-          offset: 0,
-          limit: 10
-        }
-      })
-      .then((res: ResultType) => {
-        if (res.code == 200) {
-          console.log(res)
-          let states = res.data.result
-          let arr: { value: any; label: any }[] = []
-          states.forEach((el: any) => {
-            let obj = {
-              value: el.id,
-              label: el.name
-            }
-            arr.push(obj)
-          })
-          console.log('====', options.value)
-          options.value = arr
-          loading.value = false
-        } else {
-          ElMessage({
-            message: res.msg,
-            type: 'warning'
-          })
-        }
-      })
-  } else {
-    options.value = []
+const addFriends = (arr: Array<arrList>) => {
+  const data = friendServices.applyJoin(arr)
+  if (data) {
+    ElMessage({
+      message: '申请成功',
+      type: 'warning'
+    })
+    dialogVisible.value = false
   }
 }
-const submitFriends = () => {
-  $services.person
-    .applyJoin({
-      data: {
-        id: value.value
-      }
+const checksSearch = (val: any) => {
+  if (val.value.length > 0) {
+    let arr: Array<arrList> = []
+    val.value.forEach((element: any) => {
+      arr.push(element.id)
     })
-    .then((res: ResultType) => {
-      if (res.code == 200) {
-        ElMessage({
-          message: '申请成功',
-          type: 'warning'
-        })
-        dialogVisible.value = false
-      } else {
-        ElMessage({
-          message: res.msg,
-          type: 'warning'
-        })
-      }
-    })
+    addFriends(arr)
+  } else {
+    dialogVisible.value = false
+  }
 }
-
 const dialogVisible = ref(false)
 const joinFriend = () => {
   dialogVisible.value = true
@@ -168,6 +137,7 @@ const joinFriend = () => {
   height: 18%;
   margin-top: 10px;
   min-height: 120px;
+
   &-left {
     // width: 50%;
     height: 100%;
@@ -183,13 +153,14 @@ const joinFriend = () => {
 .articleBtm {
   // min-height: 450px;
   min-height: 64%;
-  
+
   &-box {
     // height: 100%;
     display: flex;
     flex-direction: column;
     margin-top: 10px;
   }
+
   &-right {
     // width: 100%;
     min-height: 320px;
@@ -203,6 +174,6 @@ const joinFriend = () => {
 
   }
 
-  
+
 }
 </style>
