@@ -129,6 +129,7 @@ export default class OrgChat extends Object {
         this.stoped = true
         this.accessToken = ""
         this.authed.value = false
+        await this.setCurrent(null)
         await this.connection.stop()
         await this.anyStore.stop()
     }
@@ -241,22 +242,24 @@ export default class OrgChat extends Object {
      * @param {ImMsgChildType} chat 当前会话
      */
     public async setCurrent(chat: ImMsgChildType) {
-        if (this.authed.value && chat && chat.id.length > 0) {
-            if (this.curChat.value) {
+        if (this.authed.value) {
+            if(this.curChat.value){
                 this.openChats = this.openChats.filter((item) => {
                     return item.id !== this.curChat.value.id ||
                         item.spaceId !== this.curChat.value.spaceId
                 })
             }
-            this.curMsgs.value = []
-            this.qunPersons.value = []
-            chat.noRead = 0
-            this.curChat.value = chat
-            await this.getHistoryMsg()
-            if (chat.typeName !== TargetType.Person) {
-                await this.getPersons(true)
+            if(chat && chat.id.length > 0){
+                this.curMsgs.value = []
+                this.qunPersons.value = []
+                chat.noRead = 0
+                this.curChat.value = chat
+                await this.getHistoryMsg()
+                if (chat.typeName !== TargetType.Person) {
+                    await this.getPersons(true)
+                }
+                this.openChats.push(this.curChat.value)
             }
-            this.openChats.push(this.curChat.value)
             this._cacheChats()
         }
     }
@@ -511,6 +514,7 @@ export default class OrgChat extends Object {
                 return item.id === lastMsg.data.id
             }).length > 0
             if (!exists) {
+                lastMsg.data.msgBody = StringPako.inflate(lastMsg.data.msgBody);
                 this.curMsgs.value.push(lastMsg.data)
             }
         }
