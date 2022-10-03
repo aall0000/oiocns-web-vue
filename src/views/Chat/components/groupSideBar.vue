@@ -2,9 +2,14 @@
   <div class="chart-side-wrap" @contextmenu.stop>
     <div class="group-side-bar-search flex" :size="4">
       <el-input placeholder="搜索" v-model="searchValue" prefix-icon="Search" />
-      <el-button icon="Refresh" type="primary" link class="refresh" @click="chat.getChats"></el-button>
-      <!-- <el-icon :size="20" class="refresh"><Refresh /></el-icon> -->
+      <el-button icon="CirclePlus" type="primary" link class="refresh" @click="targetIsMore" @focusout="isMoreClose"></el-button>
     </div>
+    <ul class="context-text-wrap more" v-if="isMore">
+      <li class="context-menu-item" @click="chat.getChats()"><el-icon><ChatRound /></el-icon>发起群聊</li>
+      <li class="context-menu-item" @click="dialogVisible = true"><el-icon><Plus /></el-icon>添加好友</li>
+      <li class="context-menu-item" @click="chat.getChats()"><el-icon><Refresh /></el-icon>刷新会话</li>
+    </ul>
+    <searchFriend v-if="dialogVisible" @closeDialog="dialogVisible = false" :serachType="1" @checksSearch="checksSearch" />
     <div class="group-side-bar-wrap" @contextmenu.prevent="mousePosition.isShowContext = false">
       <ul class="group-con" v-for="item in showList" :key="item.id">
         <li class="group-con-item">
@@ -81,7 +86,11 @@ import { formatDate } from '@/utils/index'
 import HeadImg from '@/components/headImg.vue'
 import { chat } from '@/module/chat/orgchat'
 import { useRoute } from 'vue-router'
+import { ElMessage } from 'element-plus'
+import searchFriend from '@/components/searchs/index.vue'
+import FriendServices from '@/module/relation/friend'
 const routerParams = useRoute().params
+const friendServices = new FriendServices()
 
 const emit = defineEmits(['openChanged'])
 // 会话列表搜索关键字
@@ -89,6 +98,20 @@ const searchValue = ref<string>('')
 
 // 是否已加载--判断是否需要默认打开
 const isMounted = ref<boolean>(false)
+
+const isMore = ref<boolean>(false)
+
+const dialogVisible = ref<boolean>(false)
+
+const targetIsMore = ()=>{
+  isMore.value = !isMore.value
+}
+
+const isMoreClose = ()=>{
+  setTimeout(()=>{
+    isMore.value = false
+  },200)
+}
 
 const openChanged = async (child: ImMsgChildType) => {
   await chat.setCurrent(child)
@@ -162,7 +185,24 @@ const menuList: MenuItemType[] = [
   { value: 3, label: '取消置顶' },
   // { value: 4, label: '消息免打扰' },
 ]
-
+type arrList = {
+  id: string
+}
+const addFriends = (arr: Array<arrList>) => {
+  friendServices.applyJoin(arr)
+  dialogVisible.value = false
+}
+const checksSearch = (val: any) => {
+  if (val.value.length > 0) {
+    let arr: Array<arrList> = []
+    val.value.forEach((element: any) => {
+      arr.push(element.id)
+    })
+    addFriends(arr)
+  } else {
+    dialogVisible.value = false
+  }
+}
 // 鼠标右键事件
 const mousePosition: {
   left: number
@@ -235,6 +275,12 @@ const handleContextChange = (item: MenuItemType) => {
   justify-content: space-between;
   border-right: 1px solid var(--el-border-color); // #d8d8d8;
   background-color: var(--el-bg-color);
+
+  .more{
+    width: 150px;
+    margin-top: 45px;
+    margin-left: 150px;
+  }
 }
 
 .group-side-bar-search {
@@ -397,24 +443,27 @@ const handleContextChange = (item: MenuItemType) => {
       transform: scale(80%);
     }
   }
+}
 
-  .context-text-wrap {
-    position: absolute;
-    background-color: var(--el-bg-color);
-    width: 110px;
-    height: max-content;
-    padding: 10px;
-    border: 1px solid var(--el-border-color);
-    box-shadow: var(--el-box-shadow);
-    z-index: 999;
 
-    .context-menu-item {
-      padding: 5px;
-      cursor: pointer;
+.context-text-wrap {
+  position: absolute;
+  background-color: var(--el-bg-color);
+  width: 130px;
+  height: max-content;
+  padding: 10px;
+  border: 1px solid var(--el-border-color);
+  box-shadow: var(--el-box-shadow);
+  z-index: 999;
 
-      &:hover {
-        background-color: #e3e3e3;
-      }
+  .context-menu-item {
+    padding: 5px;
+    cursor: pointer;
+    line-height: 30px;
+    border-bottom: 1px solid var(--el-border-color);
+
+    &:hover {
+      background-color: #e3e3e3;
     }
   }
 }
