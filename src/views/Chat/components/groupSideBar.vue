@@ -154,12 +154,13 @@ const showList = computed((): ImMsgType[] => {
     } else {
       if (topGroup.chats.length < 1) {
         openIdArr.value.push(showInfoArr[0].id)
+      }else{
+        openIdArr.value.push("toping")
       }
     }
     isMounted.value = true
   }
   if (topGroup.chats.length > 0) {
-    openIdArr.value.push("toping")
     return [topGroup, ...showInfoArr]
   }
   return showInfoArr

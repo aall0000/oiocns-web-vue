@@ -126,10 +126,10 @@ export default class OrgChat extends Object {
      * 停止连接
      */
     public async stop() {
+        await this.setCurrent(null)
         this.stoped = true
         this.accessToken = ""
         this.authed.value = false
-        await this.setCurrent(null)
         await this.connection.stop()
         await this.anyStore.stop()
     }
