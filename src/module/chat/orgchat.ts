@@ -282,14 +282,15 @@ export default class OrgChat extends Object {
      * @param reset 是否重置
      * @returns {ResponseType} 查询到的人员结果
      */
-    public async getPersons(reset: boolean) {
+    public async getPersons(reset: boolean, filter?: string) {
         if (this.authed.value && this.curChat.value) {
             if (reset) {
                 this.qunPersons.value = []
             }
             let res = await this.connection.invoke("GetPersons", {
                 cohortId: this.curChat.value.id,
-                limit: 1000,
+                limit: 20,
+                filter: filter,
                 offset: this.qunPersons.value.length
             })
             if (res.success) {
