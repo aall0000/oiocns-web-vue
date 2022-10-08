@@ -23,13 +23,13 @@ class CohortServices {
 
   /**
    * @description: 更新群组
-   * @param obj.typeName 选中的类型
+   * @param obj 选中的群组信息
    * @param params 更新的selectItem
    * @return msg 成功状态
    */
   // 
 
-  public async update (obj:any){
+  public async update (obj:cohortType){
     const { data , success} = await API.cohort.update({
       data: obj
     })
