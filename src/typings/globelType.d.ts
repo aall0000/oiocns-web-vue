@@ -15,7 +15,7 @@ type CommonParamsType = {
   filter?: string
   current?:number
   pageSize?:number
-  status?: string
+  status?: string|number
 }
 // 翻页props
 type PaginationProps= {
