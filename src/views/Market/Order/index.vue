@@ -11,7 +11,8 @@
     <div class="limit_table_height">
       <!-- 采购订单 -->
       <DiyTable v-if="route.fullPath.includes('buy')" ref="diyTable" :tableData="state.orderMessage.list"
-        :tableHead="state.tableHeadBuy" :total="state.orderMessage.total" @handleUpdate="handleUpdate" @select="handleSelect">
+        :tableHead="state.tableHeadBuy" :total="state.orderMessage.total" @handleUpdate="handleUpdate"
+        @select="handleSelect">
         <template #expand="props">
           <div style="margin-left: 50px">
             <DiyTable ref="diyTableDetail" :tableData="props.row.details" :tableHead="state.tableHeadBuyDetail"
@@ -44,8 +45,9 @@
         </template>
       </DiyTable>
       <!--售卖订单 -->
-      <DiyTable v-else ref="diyTable" :hasTitle="true" :tableData="state.orderMessage.list" :tableHead="state.tableHeadSell"
-        :total="state.orderMessage.total" @handleUpdate="searchSellList" @select="handleSelect">
+      <DiyTable v-else ref="diyTable" :hasTitle="true" :tableData="state.orderMessage.list"
+        :tableHead="state.tableHeadSell" :total="state.orderMessage.total" @handleUpdate="searchSellList"
+        @select="handleSelect">
         <template #merchandiseStatus="scope">
           <el-tag v-show="scope.row.merchandise">在售</el-tag>
           <el-tag class="ml-2" type="danger" v-show="!scope.row.merchandise">已下架</el-tag>
@@ -68,7 +70,7 @@
       <payView v-if="payDialog.show" :order="payDialog.data" @close="closePay"></payView>
       <payList v-if="payListDialog.show" :selectLimit="0" @closeDialog="closePayList" />
     </div>
-    
+
   </div>
 </template>
 <script lang="ts" setup>
@@ -81,7 +83,7 @@ import payView from '@/components/pay/pay.vue'
 import payList from '@/components/pay/list.vue'
 import DiyButton from '@/components/diyButton/index.vue'
 import { ElTable } from 'element-plus'
-import {chat} from '@/module/chat/orgchat'
+import { chat } from '@/module/chat/orgchat'
 import moment from 'moment'
 import { useRoute, useRouter } from 'vue-router'
 import type { ListProps } from '@/module/store/order'
@@ -142,7 +144,7 @@ const state = reactive({
     list: [],
     total: 0,
     pageSize: 20,
-    current:0,
+    current: 0,
   },
   orderList: [],
   tableHeadBuy: [
@@ -213,7 +215,7 @@ const state = reactive({
       minWidth: '100',
       formatter: (row: any, column: any) => moment(row.createTime).format('YYYY/MM/DD HH:mm:ss')
     },
-    
+
     {
       type: 'slot',
       label: '商品状态',
@@ -281,7 +283,7 @@ const state = reactive({
       width: '160',
       formatter: (row: any, column: any) => moment(row.createTime).format('YYYY/MM/DD HH:mm:ss')
     },
-   
+
     {
       type: 'slot',
       label: '商品状态',
@@ -307,10 +309,10 @@ const getTableList = async (type: string) => {
       searchAllOrderList()
       break
     case 'buy':
-      searchBuyList()
+      searchBuyList({ current: 0, pageSize: 20 })
       break
     case 'sell':
-      searchSellList({current:0,pageSize:20})
+      searchSellList({ current: 0, pageSize: 20 })
       break
     case 'pre-sell':
       searchPreSellList()
@@ -347,39 +349,26 @@ const searchPreSellList = async () => {
 //查询已出售订单
 const searchSellList = async (params: ListProps) => {
   state.orderList = [];
-  const {data,total,success} =await OrderSevice.getSellList({
+  const { data, total, success } = await OrderSevice.getSellList({
     ...params,
     filter: '',
-    status: statusvalue.value ? statusvalue.value : "0" //后续改成-1
+    status: statusvalue.value ? statusvalue.value : 0 //后续改成-1
   })
   state.orderMessage.total = total
   state.orderMessage.list = data
 
 }
 //查询已购入订单
-const searchBuyList = async () => {
+const searchBuyList = async (params: ListProps) => {
   // state.orderMessage.list = [];
-  await $services.order
-    .searchBuyList({
-      data: {
-        offset: (pagination.current - 1) * pagination.limit,
-        limit: pagination.limit,
-        status: statusvalue.value ? statusvalue.value : 0, //后续改成-1
-        filter: ''
-      }
-    })
-    .then((res: ResultType) => {
-      const { result = [], total = 0 } = res.data
-      state.orderMessage.total = total
-      state.orderMessage.list = result?.map((item: any) => {
-        return {
-          ...item,
-          ordertype: 'buy',
-          hasChildren: item.details && item.details.length > 0 ? true : false,
-          marketId: item.merchandise ? item.merchandise.marketId : null
-        }
-      })
-    })
+  const { data, total, success } = await OrderSevice.geBuyList({
+    ...params,
+    filter: '',
+    status: statusvalue.value ? statusvalue.value : 0, //后续改成-1
+  })
+  state.orderMessage.total = total
+  state.orderMessage.list = data
+
 }
 //确认开始交易
 const sureContent = async (id: string) => {
