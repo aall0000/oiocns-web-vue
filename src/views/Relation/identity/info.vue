@@ -59,7 +59,9 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import router from '@/router';
 import {chat} from '@/module/chat/orgchat';
 import authority from '@/utils/authority'
+import identityServices from '@/module/relation/identity'
 
+const IdentityServices = new identityServices()
 const emit = defineEmits(['refresh'])
 
 let selectItem = ref<any>({})
@@ -100,21 +102,16 @@ const handleDelete = () => {
       cancelButtonText: '取消',
       type: 'warning'
     }
-  ).then(() => {
-    $services.company.deleteIdentity({
-      data: {
-        id: selectItem.value.id,
-      }
-    }).then((res: ResultType) => {
+  ).then(async () => {
+    const data = await IdentityServices.deleteIdentity(selectItem.value.id)
+    if (data) {
       selectItem.value = {}
-      if (res.success) {
-        ElMessage({
-          message: '操作成功',
-          type: 'success'
-        })
-        emit('refresh')
-      }
-    })
+      ElMessage({
+        message: '操作成功',
+        type: 'success'
+      })
+      emit('refresh')
+    }
   })
     .catch(() => {
       console.log('取消移除!')
@@ -169,11 +166,12 @@ const cascaderProps = {
 
 // 加载角色树
 const loadAuthorityTree = () => {
-  $services.company.getAuthorityTree({ data: { id: belongId.value } }).then((res: any) => {
+  const data = IdentityServices.getAuthorityTree(belongId.value)
+  if(data){
     authorityTree.value = []
-    authorityTree.value.push(res.data)
+    authorityTree.value.push(data)
     cascaderTree.value = authorityTree.value
-  })
+  }
 }
 
 
