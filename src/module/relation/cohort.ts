@@ -30,10 +30,8 @@ class CohortServices {
   // 
 
   public async update (obj:any){
-    const { data , success} = await API.person.applyJoin({
-      data: {
-        id: obj
-      }
+    const { data , success} = await API.cohort.update({
+      data: obj
     })
     if (success) {
         return data
