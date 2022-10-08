@@ -705,13 +705,13 @@
       .app-card {
         display: flex;
         flex-wrap: wrap;
-        height: calc(100% - 460px);
+        height: calc(100vh - 460px);
         align-content: flex-start;
         overflow-y: auto;
       }
 
       .tab-card {
-        height: calc(100vh - 395px);
+        height: calc(100vh - 404px);
       }
     }
   }
