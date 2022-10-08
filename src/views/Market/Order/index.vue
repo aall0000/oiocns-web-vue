@@ -11,8 +11,7 @@
     <div class="limit_table_height">
       <!-- 采购订单 -->
       <DiyTable v-if="route.fullPath.includes('buy')" ref="diyTable" :tableData="state.orderMessage.list"
-        :tableHead="state.tableHeadBuy" :total="state.orderMessage.total" @handleUpdate="handleUpdate"
-        @select="handleSelect">
+        :tableHead="state.tableHeadBuy" :total="state.orderMessage.total" @handleUpdate="handleUpdate">
         <template #expand="props">
           <div style="margin-left: 50px">
             <DiyTable ref="diyTableDetail" :tableData="props.row.details" :tableHead="state.tableHeadBuyDetail"
@@ -46,8 +45,7 @@
       </DiyTable>
       <!--售卖订单 -->
       <DiyTable v-else ref="diyTable" :hasTitle="true" :tableData="state.orderMessage.list"
-        :tableHead="state.tableHeadSell" :total="state.orderMessage.total" @handleUpdate="searchSellList"
-        @select="handleSelect">
+        :tableHead="state.tableHeadSell" :total="state.orderMessage.total" @handleUpdate="searchSellList">
         <template #merchandiseStatus="scope">
           <el-tag v-show="scope.row.merchandise">在售</el-tag>
           <el-tag class="ml-2" type="danger" v-show="!scope.row.merchandise">已下架</el-tag>
@@ -103,9 +101,7 @@ const searchType = ref<string>('buy')
 const pageSizes = ref<Array<any>>(PAGE_SIZES)
 const payDialog = reactive({ show: false, data: {} })
 const payListDialog = reactive({ show: false, data: {} })
-const handleSelect = (key: string, keyPath: string[]) => {
-  console.log(key, keyPath)
-}
+
 const orderTableRef = ref<InstanceType<typeof ElTable>>()
 //点击行触发，选中或不选中复选框
 const handleRowClick = (row: any) => {
