@@ -117,7 +117,7 @@
 <script lang="ts" setup>
   import SetAppMenu from './setAppMenu.vue'
   import { onMounted, reactive, ref, computed } from 'vue'
-  import { ElMessage, FormRules } from 'element-plus'
+  import { ElMessage, FormRules, ElMessageBox } from 'element-plus'
   import { useRouter, useRoute } from 'vue-router'
   import { useCommonStore } from '@/store/common'
   import ShareGroup from './shareGroup.vue'
@@ -184,16 +184,27 @@
       case 'Delete':
         // handleDeleteMenu(selectId)
         if (resources.resources.length > 1) {
-          resources.resources = resources.resources.filter(
-            (item) => item.customId ?? item.id !== selectId
-          )
-          const res = await appstore.deleteResource(selectId)
-          if (res) {
-            ElMessage({
-              type: 'success',
-              message: '删除成功'
+          ElMessageBox.confirm('确认删除所选资源？', {
+            confirmButtonText: '继续',
+            cancelButtonText: '取消',
+            type: 'warning'
+          })
+            .then(async () => {
+              resources.resources = resources.resources.filter(
+                (item) => item.customId ?? item.id !== selectId
+              )
+              const res = await appstore.deleteResource(selectId)
+              if (res) {
+                ElMessage({
+                  type: 'success',
+                  message: '删除成功'
+                })
+                getAppResource()
+              }
             })
-          }
+            .catch(() => {
+              return
+            })
         } else {
           ElMessage({
             type: 'error',
