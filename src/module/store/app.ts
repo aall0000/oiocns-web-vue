@@ -393,6 +393,9 @@ export class Application {
       }
       const { result = [], total = 0 } = data
       this.tabs = result
+      this.tabs.forEach((el) => {
+        el.customId = el.id
+      })
       return this.tabs
     } else {
       const { data, success } = await API.company.companyGetGroups({
