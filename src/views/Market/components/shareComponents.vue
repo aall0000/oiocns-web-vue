@@ -453,7 +453,7 @@
       switch (radio.value) {
         case '2':
           await application.sumbitSwitch(
-            state.departData,
+            state.authorData,
             state.switchData.id,
             '角色',
             resource.value
