@@ -12,3 +12,7 @@ export type OrderType = { // 订单主表
     status: number,
     belongId: string
 }
+
+export type CancelType = 'sell' | 'buy' | 'main'  // 取消订单
+
+export type OrderListType = 'sell' | 'buy' // 加载订单

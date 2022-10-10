@@ -50,7 +50,7 @@
                   type="danger"
                   class="btn"
                   v-show="scope.row.status < 102"
-                  @click="cancelBuy(scope.row.id)"
+                  @click="cancelOrder('buy', scope.row.id)"
                 >
                   取消订单
                 </el-button>
@@ -69,7 +69,13 @@
           </div>
         </template>
         <template #operate="scope">
-          <el-button link small type="danger" class="btn" @click="cancelOrder(scope.row.id)">
+          <el-button
+            link
+            small
+            type="danger"
+            class="btn"
+            @click="cancelOrder('main', scope.row.id)"
+          >
             取消订单
           </el-button>
         </template>
@@ -107,7 +113,7 @@
               small
               type="danger"
               v-show="scope.row.status < 102"
-              @click="cancelSell(scope.row.id)"
+              @click="cancelOrder('sell', scope.row.id)"
             >
               取消订单
             </el-button>
@@ -123,7 +129,6 @@
   import $services from '@/services'
   import { ref, reactive, onMounted } from 'vue'
   import { ElMessage, ElMessageBox } from 'element-plus'
-  import { PAGE_SIZES, PAGE_NUM } from '@/constant'
   import renderDict from '@/services/dict'
   import payView from '@/components/pay/pay.vue'
   import payList from '@/components/pay/list.vue'
@@ -134,24 +139,21 @@
   import { useRoute, useRouter } from 'vue-router'
   import type { ListProps } from '@/module/store/order'
   import OrderSevice from '@/module/store/order'
-  import { Merchandise, OrderType } from './order'
+  import type { OrderListType, CancelType } from './order'
 
   const router = useRouter()
   const route = useRoute()
   // 表格分页数据
-  const pagination: { current: number; limit: number } = reactive({ current: 1, limit: PAGE_NUM })
+  // const pagination: { current: number; limit: number } = reactive({ current: 1, limit: PAGE_NUM })
   // 表格展示数据
   const pageStore = reactive({
     tableData: [],
     total: 0
   })
-  const searchType = ref<string>('buy')
-  const pageSizes = ref<Array<any>>(PAGE_SIZES)
+  const searchType = ref<OrderListType>('buy')
   const payDialog = reactive({ show: false, data: {} })
   const payListDialog = reactive({ show: false, data: {} })
-  // const handleSelect = (key: string, keyPath: string[]) => {
-  //   console.log(key, keyPath)
-  // }
+
   const orderTableRef = ref<InstanceType<typeof ElTable>>()
   //点击行触发，选中或不选中复选框
   const handleRowClick = (row: any) => {
@@ -177,7 +179,10 @@
       getTableList('sell')
     }
   })
-
+  interface ListItem {
+    value: string
+    label: string
+  }
   const options = ref<ListItem[]>([])
   const value = ref('')
   const loading = ref(false)
@@ -357,85 +362,71 @@
     ]
   })
   //查询
-  const getTableList = async (type: string) => {
+  const getTableList = async (type: OrderListType) => {
     searchType.value = type
     switch (type) {
-      case 'all':
-        searchAllOrderList()
-        break
+      // case 'all':
+      //   searchAllOrderList()
+      //   break
       case 'buy':
-        searchBuyList()
+        searchBuyList({ current: 0, pageSize: 20 })
         break
       case 'sell':
         searchSellList({ current: 0, pageSize: 20 })
         break
-      case 'pre-sell':
-        searchPreSellList()
-        break
+      // case 'pre-sell':
+      //   searchPreSellList()
+      //   break
     }
   }
-  //查询所有订单
-  const searchAllOrderList = async () => {}
+  // //查询所有订单
+  // const searchAllOrderList = async () => { }
 
-  //查询出售 待审批/确认交易内容的订单
-  const searchPreSellList = async () => {
-    await $services.order
-      .searchSellList({
-        data: {
-          offset: (pagination.current - 1) * pagination.limit,
-          limit: pagination.limit,
-          status: 1,
-          filter: ''
-        }
-      })
-      .then((res: ResultType) => {
-        const { result = [], total = 0 } = res.data
-        pageStore.total = total
-        state.orderList = result?.map((item: { market: { remark: any; code: any; name: any } }) => {
-          return {
-            ...item
-            // remark: item.market.remark,
-            // marketCode: item.market.code,
-            // marketName: item.market.name
-          }
-        })
-      })
-  }
+  // //查询出售 待审批/确认交易内容的订单
+  // const searchPreSellList = async () => {
+  //   await $services.order
+  //     .searchSellList({
+  //       data: {
+  //         offset: (pagination.current - 1) * pagination.limit,
+  //         limit: pagination.limit,
+  //         status: 1,
+  //         filter: ''
+  //       }
+  //     })
+  //     .then((res: ResultType) => {
+  //       const { result = [], total = 0 } = res.data
+  //       pageStore.total = total
+  //       state.orderList = result?.map((item: { market: { remark: any; code: any; name: any } }) => {
+  //         return {
+  //           ...item,
+  //           // remark: item.market.remark,
+  //           // marketCode: item.market.code,
+  //           // marketName: item.market.name
+  //         }
+  //       })
+  //     })
+  // }
   //查询已出售订单
   const searchSellList = async (params: ListProps) => {
     state.orderList = []
-    const { data, total, success } = await OrderSevice.getSellList({
+    const { data, total } = await OrderSevice.getSellList({
       ...params,
       filter: '',
-      status: statusvalue.value ? statusvalue.value : '0' //后续改成-1
+      status: statusvalue.value ? statusvalue.value : 0 //后续改成-1
     })
     state.orderMessage.total = total
     state.orderMessage.list = data
   }
   //查询已购入订单
-  const searchBuyList = async () => {
+  const searchBuyList = async (params: ListProps) => {
     // state.orderMessage.list = [];
-    await $services.order
-      .searchBuyList({
-        data: {
-          offset: (pagination.current - 1) * pagination.limit,
-          limit: pagination.limit,
-          status: statusvalue.value ? statusvalue.value : 0, //后续改成-1
-          filter: ''
-        }
-      })
-      .then((res: ResultType) => {
-        const { result = [], total = 0 } = res.data
-        state.orderMessage.total = total
-        state.orderMessage.list = result?.map((item: any) => {
-          return {
-            ...item,
-            ordertype: 'buy',
-            hasChildren: item.details && item.details.length > 0 ? true : false,
-            marketId: item.merchandise ? item.merchandise.marketId : null
-          }
-        })
-      })
+    const { data, total } = await OrderSevice.geBuyList({
+      ...params,
+      filter: '',
+      status: statusvalue.value ? statusvalue.value : 0 //后续改成-1
+    })
+    state.orderMessage.total = total
+    state.orderMessage.list = data
   }
   //确认开始交易
   const sureContent = async (id: string) => {
@@ -501,104 +492,95 @@
   // }
   //退货退款
   const reject = async (id: string) => {
-    await $services.order
-      .reject({
-        data: {
-          id: id,
-          status: 222
-        }
+    const { code } = await OrderSevice.rejectOrder({
+      id: id,
+      status: 222
+    })
+
+    if (code == 200) {
+      getTableList(searchType.value)
+      ElMessage({
+        message: '退货成功',
+        type: 'success'
       })
-      .then((res: ResultType) => {
-        if (res.code == 200) {
+    }
+  }
+
+  // 取消订单
+  const cancelOrder = async (type: CancelType, id: string) => {
+    ElMessageBox.prompt('请输入原因', '确认取消订单?', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消'
+    })
+      .then(async ({ value }) => {
+        const { code } = await OrderSevice.cancelOrder(type, {
+          id: id,
+          status: type === 'sell' ? 221 : 220
+        })
+        if (code == 200) {
           getTableList(searchType.value)
           ElMessage({
-            message: '退货成功',
+            message: '取消订单成功',
             type: 'success'
           })
         }
       })
-  }
-
-  //买方取消订单详情
-  const cancelOrder = async (id: string) => {
-    ElMessageBox.prompt('请输入原因', '确认取消订单?', {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消'
-    })
-      .then(({ value }) => {
-        $services.order
-          .cancel({
-            data: {
-              id: id,
-              status: 220
-            }
-          })
-          .then((res: ResultType) => {
-            if (res.code == 200) {
-              getTableList(searchType.value)
-              ElMessage({
-                message: '取消订单成功',
-                type: 'success'
-              })
-            }
-          })
-      })
       .catch(() => {})
   }
 
-  //买方取消订单详情
-  const cancelBuy = async (id: string) => {
-    ElMessageBox.prompt('请输入原因', '确认取消订单?', {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消'
-    })
-      .then(({ value }) => {
-        $services.order
-          .cancelBuy({
-            data: {
-              id: id,
-              status: 220
-            }
-          })
-          .then((res: ResultType) => {
-            if (res.code == 200) {
-              getTableList(searchType.value)
-              ElMessage({
-                message: '取消订单成功',
-                type: 'success'
-              })
-            }
-          })
-      })
-      .catch(() => {})
-  }
+  // //买方取消订单详情
+  // const cancelBuy = async (id: string) => {
+  //   ElMessageBox.prompt('请输入原因', '确认取消订单?', {
+  //     confirmButtonText: '确定',
+  //     cancelButtonText: '取消'
+  //   })
+  //     .then(({ value }) => {
+  //       $services.order
+  //         .cancelBuy({
+  //           data: {
+  //             id: id,
+  //             status: 220
+  //           }
+  //         })
+  //         .then((res: ResultType) => {
+  //           if (res.code == 200) {
+  //             getTableList(searchType.value)
+  //             ElMessage({
+  //               message: '取消订单成功',
+  //               type: 'success'
+  //             })
+  //           }
+  //         })
+  //     })
+  //     .catch(() => {})
+  // }
 
-  //卖方取消订单详情
-  const cancelSell = async (id: string) => {
-    ElMessageBox.prompt('请输入原因', '确认取消订单?', {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消'
-    })
-      .then(({ value }) => {
-        $services.order
-          .cancelSell({
-            data: {
-              id: id,
-              status: 221
-            }
-          })
-          .then((res: ResultType) => {
-            if (res.code == 200) {
-              getTableList(searchType.value)
-              ElMessage({
-                message: '取消订单成功',
-                type: 'success'
-              })
-            }
-          })
-      })
-      .catch(() => {})
-  }
+  // //卖方取消订单详情
+  // const cancelSell = async (id: string) => {
+  //   ElMessageBox.prompt('请输入原因', '确认取消订单?', {
+  //     confirmButtonText: '确定',
+  //     cancelButtonText: '取消'
+  //   })
+  //     .then(({ value }) => {
+  //       $services.order
+  //         .cancelSell({
+  //           data: {
+  //             id: id,
+  //             status: 221
+  //           }
+  //         })
+  //         .then((res: ResultType) => {
+  //           if (res.code == 200) {
+  //             getTableList(searchType.value)
+  //             ElMessage({
+  //               message: '取消订单成功',
+  //               type: 'success'
+  //             })
+  //           }
+  //         })
+  //     })
+  //     .catch(() => {})
+  // }
 
   // //取消订单详情  由删除更改为中止
   // const cancelOrderDetail = async (id: string,status:number,reason:string) => {
@@ -628,71 +610,61 @@
   // }
   //确认交付
   const delivery = async (id: string) => {
-    await $services.order
-      .deliverMerchandise({
-        data: {
-          id: id,
-          status: 102
-        }
+    const { code } = await OrderSevice.deliverMerchandise({
+      id: id,
+      status: 102
+    })
+    if (code == 200) {
+      getTableList(searchType.value)
+      ElMessage({
+        message: '交付成功',
+        type: 'success'
       })
-      .then((res: ResultType) => {
-        if (res.code == 200) {
-          getTableList(searchType.value)
-          ElMessage({
-            message: '交付成功',
-            type: 'success'
-          })
-        }
-      })
+    }
   }
   //确认收货
-  const accept = async (id: string) => {
-    await $services.order
-      .updateDetail({
-        data: {
-          id: id,
-          status: 103
-        }
-      })
-      .then((res: ResultType) => {
-        if (res.code == 200) {
-          getTableList(searchType.value)
-          ElMessage({
-            message: '确认收货成功',
-            type: 'success'
-          })
-        }
-      })
-  }
+  // const accept = async (id: string) => {
+  //   await $services.order
+  //     .updateDetail({
+  //       data: {
+  //         id: id,
+  //         status: 103
+  //       }
+  //     })
+  //     .then((res: ResultType) => {
+  //       if (res.code == 200) {
+  //         getTableList(searchType.value)
+  //         ElMessage({
+  //           message: '确认收货成功',
+  //           type: 'success'
+  //         })
+  //       }
+  //     })
+  // }
   //评论
-  const comment = (id: string) => {
-    ElMessage({
-      message: '评论成功',
-      type: 'success'
-    })
-  }
+  // const comment = (id: string) => {
+  //   ElMessage({
+  //     message: '评论成功',
+  //     type: 'success'
+  //   })
+  // }
   //查看评价
-  const viewComment = (id: string) => {
-    ElMessage({
-      message: '该功能暂未开放',
-      type: 'warning'
-    })
-  }
+  // const viewComment = (id: string) => {
+  //   ElMessage({
+  //     message: '该功能暂未开放',
+  //     type: 'warning'
+  //   })
+  // }
   // 处理表格分页操作
-  const handlePaginationChange = (newVal: number, type: 'current' | 'limit') => {
-    pagination[type] = newVal
-    getTableList(searchType.value)
-  }
-
-  interface ListItem {
-    value: string
-    label: string
-  }
+  // const handlePaginationChange = (newVal: number, type: 'current' | 'limit') => {
+  //   pagination[type] = newVal
+  //   getTableList(searchType.value)
+  // }
 </script>
 <style lang="scss" scoped>
   :deep(.cell) {
-    display: flex;
-  }
+      display: flex;
+    }
   .container {
     // width: 100%;
     height: 100vh;
