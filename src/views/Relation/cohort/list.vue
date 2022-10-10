@@ -215,6 +215,7 @@ const updateBelong = async (belongId?: string) => {
     name: curCohort.value.name,
     code: curCohort.value.code,
     belongId: belongId,
+    thingId: curCohort.value.thingId,
     teamName: curCohort.value.team.name,
     teamCode: curCohort.value.team.code,
     teamRemark: curCohort.value.team.remark,
