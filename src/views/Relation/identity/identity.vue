@@ -6,7 +6,7 @@
       </div>
 
       <div class="search-wrap">
-        <el-input class="search" placeholder="搜索岗位">
+        <el-input class="search" @input="serachData()" v-model="searchText" placeholder="搜索岗位">
           <template #suffix>
             <el-icon class="el-input__icon">
               <search />
@@ -20,7 +20,7 @@
         </li>
       </div>
       <div>
-        <el-menu default-active="2" class="el-menu-vertical-demo">
+        <el-menu default-active="0" class="el-menu-vertical-demo">
           <el-menu-item class="menu-item" :index="index.toString()" v-for="(item, index) in  identityList.list"
             @click="checkItem(item)">
             <div class="menu-nav">{{item.name}}</div>
@@ -82,6 +82,15 @@ const allowAdd = () => {
     authority.getSpaceId()
   ])
 }
+
+const searchText = ref<string>('');
+const serachData = async () => {
+  const data = await IdentityServices.getIdentitys(belongId.value,searchText.value)
+  if (data) {
+    identityList.list = data.result
+    emit('itemClick',identityList.list[0])
+  }
+}
 // 刷新
 const refresh = () => {
   loadIdentities()
@@ -96,7 +105,7 @@ const checkItem = (val: any) => {
 }
 // 加载岗位
 const loadIdentities = async () => {
-  const data = await IdentityServices.getIdentitys(belongId.value)
+  const data = await IdentityServices.getIdentitys(belongId.value,'')
   if (data) {
     identityList.list = data.result
   }
@@ -133,7 +142,7 @@ const cascaderProps = {
 
 // 加载角色树
 const loadAuthorityTree = async () => {
-  const data = await IdentityServices.getAuthorityTree(belongId.value)
+  const data = await IdentityServices.getAuthorityTree(belongId.value,'')
   if(data){
     authorityTree.value = []
     authorityTree.value.push(data)

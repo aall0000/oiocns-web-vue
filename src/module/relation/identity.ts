@@ -42,13 +42,15 @@ class identityServices {
   /**
    * @description: 加载岗位
    * @param id :belongId
+   * @param text : filter
    * @return data 操作结果
    */
-     public async getIdentitys(id:string) {
+     public async getIdentitys(id:string,text:string) {
         const { data, success } = await API.cohort.getIdentitys({data: {
             offset: 0,
             limit: 1000,
-            id:id
+            id:id,
+            filter:text
         }})
         if (success) {
             return data
