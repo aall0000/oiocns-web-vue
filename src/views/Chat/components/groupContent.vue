@@ -9,7 +9,7 @@
       </div>
       <!-- 左侧聊天内容显示 -->
       <div class="group-content-left con recall" v-if="item.msgType === 'recall'">
-        {{ item.showTxt }}
+        {{ chat.getName(item.fromId) }}撤回了一条消息
         <span class="reWrite" v-if="item.allowEdit" @click="handleReWrite(item.msgBody)">重新编辑</span>
       </div>
 
