@@ -393,7 +393,7 @@ export class Application {
       }
       const { result = [], total = 0 } = data
       this.tabs = result
-      this.tabs.forEach((el) => {
+      this.tabs.forEach((el: any) => {
         el.customId = el.id
       })
       return this.tabs
