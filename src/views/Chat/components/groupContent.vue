@@ -112,7 +112,7 @@ const recallMsg = (item: any) => {
     delete item.sessionId
   }
   chat.recallMsg(item).then((res: ResultType) => {
-    if (res.data != 1) {
+    if (res.data.status != 2) {
       ElMessage({
         type: "warning",
         message: "只能撤回2分钟内发送的消息"
