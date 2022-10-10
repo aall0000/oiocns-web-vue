@@ -2,8 +2,8 @@ import { onMounted, onUnmounted, Ref } from 'vue'
 //所有可支持的消息列表
 import { APPFUNS } from '@/services'
 
-export default function (iframeRef: Ref<any>, appId: string, link: string) {
-  console.log('注入POSTMESSAGE')
+export default function (iframeRef: Ref<any>, appInfo: any, link: string) {
+  console.log(appInfo)
   let funcs = {}
   onMounted(() => {
     // 加载app可用urls
@@ -56,6 +56,8 @@ export default function (iframeRef: Ref<any>, appId: string, link: string) {
     switch (data.url) {
       case "actions":
         return { success: true, code: 200, data: funcs, msg: "成功." }
+      case "appInfo":
+        return { success: true, code: 200, data: appInfo, msg: "成功."}
       default:
         let urls = data.url.split('.')
         let action = APPFUNS

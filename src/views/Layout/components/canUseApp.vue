@@ -69,7 +69,7 @@
       }
       // TODO:按照权限判断展示哪个资源
       const {link } = result[0]
-      emit('AppChange', { id:app.id, name: app.name, icon: img1, link, path: '/online' })
+      emit('AppChange', { appInfo: app, icon: img1, link, path: '/online' })
     }
     // emit('AppChange', app)
   }

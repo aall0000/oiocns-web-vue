@@ -24,6 +24,7 @@
   type IfrType = {
     containLink: string
     appId?: string
+    appInfo?: any
   }
   const props = defineProps<IfrType>()
   const loading = ref<boolean>(true)
@@ -35,7 +36,7 @@
     loading.value = false
   }
   // 使用poseMessage 监听子页面消息,并回复
-  usePostMessage(myIframe, props.appId, props.containLink)
+  usePostMessage(myIframe, props.appInfo, props.containLink)
 </script>
 
 <style lang="scss" scoped>

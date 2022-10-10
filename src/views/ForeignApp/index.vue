@@ -1,5 +1,5 @@
 <template>
-  <SandBox :containLink="commonStore.iframeLink" :appId="commonStore.iframeID" :key="commonStore.iframeLink" />
+  <SandBox :appInfo="commonStore.appInfo" :containLink="commonStore.iframeLink" :appId="commonStore.iframeID" :key="commonStore.iframeLink" />
 </template>
 <script lang="ts" setup>
   import SandBox from '@/components/sandBox/index.vue'
