@@ -419,6 +419,7 @@ export default class OrgChat extends Object {
         if (data.msgType === "recall") {
             data = this._recallMsg(data)
         }
+        debugger
         this.chats.value.forEach((item: ImMsgType) => {
             let newChats: ImMsgChildType[] = []
             item.chats.forEach((chat: ImMsgChildType) => {
@@ -476,7 +477,7 @@ export default class OrgChat extends Object {
         this._cacheChats()
         return data
     }
-    private async _recallMsg(data: any) {
+    private _recallMsg(data: any) {
         data.showTxt = "撤回了一条消息"
         this.curMsgs.value.forEach((item: any) => {
             if (item.id === data.id) {
