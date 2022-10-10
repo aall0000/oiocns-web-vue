@@ -126,6 +126,7 @@ export default class OrgChat extends Object {
      * 停止连接
      */
     public async stop() {
+        await this.setCurrent(null)
         this.stoped = true
         this.accessToken = ""
         this.authed.value = false
@@ -241,22 +242,24 @@ export default class OrgChat extends Object {
      * @param {ImMsgChildType} chat 当前会话
      */
     public async setCurrent(chat: ImMsgChildType) {
-        if (this.authed.value && chat && chat.id.length > 0) {
-            if (this.curChat.value) {
+        if (this.authed.value) {
+            if(this.curChat.value){
                 this.openChats = this.openChats.filter((item) => {
                     return item.id !== this.curChat.value.id ||
                         item.spaceId !== this.curChat.value.spaceId
                 })
             }
-            this.curMsgs.value = []
-            this.qunPersons.value = []
-            chat.noRead = 0
-            this.curChat.value = chat
-            await this.getHistoryMsg()
-            if (chat.typeName !== TargetType.Person) {
-                await this.getPersons(true)
+            if(chat && chat.id.length > 0){
+                this.curMsgs.value = []
+                this.qunPersons.value = []
+                chat.noRead = 0
+                this.curChat.value = chat
+                await this.getHistoryMsg()
+                if (chat.typeName !== TargetType.Person) {
+                    await this.getPersons(true)
+                }
+                this.openChats.push(this.curChat.value)
             }
-            this.openChats.push(this.curChat.value)
             this._cacheChats()
         }
     }
@@ -279,14 +282,15 @@ export default class OrgChat extends Object {
      * @param reset 是否重置
      * @returns {ResponseType} 查询到的人员结果
      */
-    public async getPersons(reset: boolean) {
+    public async getPersons(reset: boolean, filter?: string) {
         if (this.authed.value && this.curChat.value) {
             if (reset) {
                 this.qunPersons.value = []
             }
             let res = await this.connection.invoke("GetPersons", {
                 cohortId: this.curChat.value.id,
-                limit: 1000,
+                limit: 20,
+                filter: filter,
                 offset: this.qunPersons.value.length
             })
             if (res.success) {
@@ -511,6 +515,7 @@ export default class OrgChat extends Object {
                 return item.id === lastMsg.data.id
             }).length > 0
             if (!exists) {
+                lastMsg.data.msgBody = StringPako.inflate(lastMsg.data.msgBody);
                 this.curMsgs.value.push(lastMsg.data)
             }
         }
