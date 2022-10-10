@@ -3,7 +3,6 @@ import Qs from 'qs'
 import axios from 'axios'
 import autoMatchBaseUrl from './autoMatchBaseUrl'
 import { TIMEOUT } from '@/constant'
-import { useUserStore } from '@/store/user'
 import router from '@/router'
 import { ElMessage } from 'element-plus'
 
@@ -15,7 +14,7 @@ const codeMessage = {
   202: '一个请求已经进入后台排队（异步任务）。',
   204: '删除数据成功。',
   400: '发出的请求有错误，服务器没有进行新建或修改数据的操作。',
-  401: '用户没有权限（令牌、用户名、密码错误）。',
+  401: '用户没有权限（令牌、用户名、密码错误）或 登录失效。',
   403: '用户得到授权，但是访问是被禁止的。',
   404: '发出的请求针对的是不存在的记录，服务器没有进行操作。',
   406: '请求的格式不可得。',
@@ -29,12 +28,12 @@ const codeMessage = {
 
 // 处理成功调用后 信息处理
 function responseLog(response) {
-const { data } = response
+  const { data } = response
 
   switch (data.code) {
     case 500:
       ElMessage({
-        message: data.msg.replace(/[^\u4E00-\u9FA5]/g,''),
+        message: data.msg.replace(/[^\u4E00-\u9FA5]/g, ''),
         type: 'warning'
       })
       break
@@ -86,22 +85,6 @@ function checkStatus(response) {
 }
 
 /**
- * requestInstance 实例全局请求扩展配置
- * 添加一个请求拦截器 （于transformRequest之前处理）
- */
-const axiosRequest = {
-  success: (config) => {
-    // 以下代码，鉴权token,可根据具体业务增删。
-    const store = useUserStore()
-    if (store.userToken !== '') {
-      config.headers['Authorization'] = store.userToken
-    }
-    return config
-  },
-  error: (error) => Promise.reject(error)
-}
-
-/**
  * requestInstance 实例全局请求响应处理
  * 添加一个返回拦截器 （于transformResponse之后处理）
  * 返回的数据类型默认是json，若是其他类型（text）就会出现问题，因此用try,catch捕获异常
@@ -117,13 +100,23 @@ const axiosResponse = {
     if (code === 'ECONNABORTED') {
       // Timeout error
       console.log('Timeout error', code)
+      ElMessage({
+        message: codeMessage[504],
+        type: 'error'
+      })
     }
     if (response) {
-      const { status } = response
-      // 请求已发出，但是不在2xx的范围
-      // 对返回的错误进行一些处理
-      if (status == 401) {
-        router.push({ path: '/login' })
+      const { status, statusText } = response
+      ElMessage({
+        message: codeMessage[status] || statusText,
+        type: 'error'
+      })
+      switch (status) {
+        case 401:
+          router.push({ path: '/login' })
+          break
+        default:
+          break
       }
 
       return Promise.reject(checkStatus(response))
@@ -137,7 +130,6 @@ const axiosResponse = {
   }
 }
 
-requestInstance.interceptors.request.use(axiosRequest.success, axiosRequest.error)
 requestInstance.interceptors.response.use(axiosResponse.success, axiosResponse.error)
 
 /**
@@ -147,13 +139,22 @@ requestInstance.interceptors.response.use(axiosResponse.success, axiosResponse.e
  * @param timeout
  * @param prefix 用来拼接url地址
  * @param data
+ * @param params
  * @param headers
  * @param dataType
  * @returns {Promise.<T>}
  */
 export default function request(
   url,
-  { method = 'post', timeout = TIMEOUT, prefix = '', data = {}, headers = {}, dataType = 'json' }
+  {
+    method = 'post',
+    timeout = TIMEOUT,
+    prefix = '',
+    data = {},
+    params = {},
+    headers = {},
+    dataType = 'json'
+  }
 ) {
   const baseURL = autoMatchBaseUrl(prefix)
 
@@ -166,7 +167,7 @@ export default function request(
     baseURL,
     url,
     method,
-    params: data,
+    params: params,
     data,
     timeout,
     headers: formatHeaders,
@@ -188,8 +189,6 @@ export default function request(
   if (method === 'get') {
     defaultConfig.data = {}
   } else {
-    defaultConfig.params = {}
-
     const contentType = formatHeaders['Content-Type']
 
     if (typeof contentType !== 'undefined') {

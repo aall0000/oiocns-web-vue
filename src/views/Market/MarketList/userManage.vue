@@ -77,6 +77,8 @@
       val.value.forEach((element: any) => {
         arr.push(element.id)
       })
+      console.log(arr);
+
       addFriends(arr)
     } else {
       searchDialog.value = false
@@ -193,6 +195,6 @@
     padding: 10px;
     width: 100%;
     height: calc(100vh - 60px);
-    background-color: #fff;
+    // background-color: #fff;
   }
 </style>

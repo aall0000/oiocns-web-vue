@@ -1,10 +1,10 @@
 <template>
   <div class="chart-side-wrap" @contextmenu.stop>
-    <el-space class="group-side-bar-search flex" :size="4">
+    <div class="group-side-bar-search flex" :size="4">
       <el-input placeholder="搜索" v-model="searchValue" prefix-icon="Search" />
-      <el-button icon="Refresh" type="primary" link class="refresh" @click="orgChat.getChats"></el-button>
+      <el-button icon="Refresh" type="primary" link class="refresh" @click="chat.getChats"></el-button>
       <!-- <el-icon :size="20" class="refresh"><Refresh /></el-icon> -->
-    </el-space>
+    </div>
     <div class="group-side-bar-wrap" @contextmenu.prevent="mousePosition.isShowContext = false">
       <ul class="group-con" v-for="item in showList" :key="item.id">
         <li class="group-con-item">
@@ -15,17 +15,17 @@
           </div>
           <!-- 展开的分组下的人员 -->
           <div v-show="openIdArr?.includes(item.id)">
-            <div :class="[
-              'con-body',
-              orgChat.curChat.value?.spaceId === item.id && orgChat.curChat.value?.id === child.id ? 'active' : ''
-            ]" v-for="child in item.chats" :key="child.id"
+            <div class="con-body" :class="{
+                'top-session': item.id === 'toping',
+                'active':chat.curChat.value?.spaceId === item.id && chat.curChat.value?.id === child.id
+            }" v-for="child in item.chats" :key="child.id"
               @contextmenu.prevent.stop="(e: MouseEvent) => handleContextClick(e, child)">
               <HeadImg :name="child.name" :label="child.label" />
               <div class="group-con-dot" v-if="child.noRead > 0">
                 <span>{{ child.noRead }}</span>
               </div>
               <div class="group-con-show" @click="openChanged(child)">
-                <el-tooltip class="box-item" :disabled="child.name.length < 7" :content="child.name"
+                <el-tooltip class="box-item" :disabled="child.name.length < 10" :content="child.name"
                   placement="right-start">
                   <p class="group-con-show-name">
                     <span class="group-con-show-name-label">{{ child.name }}</span>
@@ -40,20 +40,21 @@
           <!-- 如果该分组没有被打开 但是有未读消息 则把未读消息会话显示出来 -->
           <div :class="[
             'con-body',
-            orgChat.curChat.value?.spaceId === item.id && orgChat.curChat.value?.id === child.id ? 'active' : ''
-          ]" v-for="child in item.chats.filter(
-            (v) => v.noRead > 0
-          )" :key="child.id + child.name" v-show="!openIdArr?.includes(item.id)"
+            chat.curChat.value?.spaceId === item.id && chat.curChat.value?.id === child.id
+              ? 'active'
+              : ''
+          ]" v-for="child in item.chats.filter((v) => v.noRead > 0)" :key="child.id + child.name"
+            v-show="!openIdArr?.includes(item.id)"
             @contextmenu.prevent.stop="(e: MouseEvent) => handleContextClick(e, child)">
             <HeadImg :name="child.name" :label="child.label" />
             <div class="group-con-dot" v-if="child.noRead > 0">
               <span>{{ child.noRead }}</span>
             </div>
             <div class="group-con-show" @click="openChanged(child)">
-              <el-tooltip class="box-item" :disabled="child.name.length < 7" :content="child.name"
+              <el-tooltip class="box-item" :disabled="child.name.length < 10" :content="child.name"
                 placement="right-start">
                 <p class="group-con-show-name">
-                  <span class="group-con-show-name-label">{{child.name }}</span>
+                  <span class="group-con-show-name-label">{{ child.name }}</span>
                   <span class="group-con-show-name-time">{{ handleFormatDate(child.msgTime) }}
                   </span>
                 </p>
@@ -66,19 +67,21 @@
       <!-- 鼠标右键 -->
       <ul class="context-text-wrap" v-show="mousePosition.isShowContext"
         :style="{ left: `${mousePosition.left}px`, top: `${mousePosition.top}px` }">
-        <li class="context-menu-item" v-for="item in menuList" :key="item.value" @click="handleContextChange(item)">{{
-        item.label }}</li>
+        <li class="context-menu-item" v-for="item in mousePosition.selectMenu" :key="item.value"
+          @click="handleContextChange(item)">{{
+          item.label }}</li>
       </ul>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup name="groupSideBar">
-import { computed, onBeforeUnmount, onMounted, reactive, ref, Ref, watch } from 'vue'
+import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
 import { formatDate } from '@/utils/index'
 import HeadImg from '@/components/headImg.vue'
-import orgChat from '@/hubs/orgchat'
-import { Refresh } from '@element-plus/icons-vue';
+import { chat } from '@/module/chat/orgchat'
+import { useRoute } from 'vue-router'
+const routerParams = useRoute().params
 
 const emit = defineEmits(['openChanged'])
 // 会话列表搜索关键字
@@ -87,35 +90,55 @@ const searchValue = ref<string>('')
 // 是否已加载--判断是否需要默认打开
 const isMounted = ref<boolean>(false)
 
-const openChanged = (async (child: ImMsgChildType) => {
-  await orgChat.setCurrent(child)
-  emit("openChanged", child)
-})
+const openChanged = async (child: ImMsgChildType) => {
+  await chat.setCurrent(child)
+  emit('openChanged', child)
+}
 
 //根据搜索条件-输出展示列表
 const showList = computed((): ImMsgType[] => {
-  let showInfoArr = orgChat.chats.value
-
-  // 数据过滤 搜索关键词是否 在 列表名称 或 显示信息里
-  if (searchValue.value) {
-    showInfoArr = showInfoArr.map((child: ImMsgType) => {
-      const { id, name } = child
-      return {
-        id,
-        name,
-        chats: child?.chats?.filter((item: ImMsgChildType) => {
-          return item.name.includes(searchValue.value) || item.msgBody?.includes(searchValue.value)
-        })
-      }
-    })
+  let topGroup: any = {
+    id: "toping",
+    name: "置顶会话"
   }
-
+  topGroup.chats = []
+  let showInfoArr = chat.chats.value
+  showInfoArr = showInfoArr.map((child: ImMsgType) => {
+    let chats = child.chats.filter((item: ImMsgChildType) => {
+      let matched = (!searchValue.value ||
+        item.name.includes(searchValue.value) ||
+        item.msgBody?.includes(searchValue.value))
+      if (matched && item.isTop) {
+        topGroup.chats.push(item)
+      }
+      return matched && !item.isTop
+    })
+    return {
+      id: child.id,
+      name: child.name,
+      chats: chats
+    }
+  })
   // 首次进入页面默认打开第一个分组
   if (!isMounted.value && openIdArr.value.length === 0 && showInfoArr.length > 0) {
-    openIdArr.value.push(showInfoArr[0].id)
+    // 当从关系-群组 进入会话携带id 则进入对应聊天室
+    if (routerParams.defaultOpenID) {
+      openIdArr.value.push(routerParams.spaceId as string)
+      const aimItem = showInfoArr
+        .find((item) => item.id == routerParams.spaceId)
+        ?.chats.find((item) => item.id == routerParams.defaultOpenID)
+      aimItem && openChanged(aimItem)
+    } else {
+      if (topGroup.chats.length < 1) {
+        openIdArr.value.push(showInfoArr[0].id)
+      }
+    }
     isMounted.value = true
   }
-
+  if (topGroup.chats.length > 0) {
+    openIdArr.value.push("toping")
+    return [topGroup, ...showInfoArr]
+  }
   return showInfoArr
 })
 
@@ -128,51 +151,53 @@ const handleFormatDate = (timeStr: string) => {
   if (nowTime - showTime > 3600 * 24 * 1000) {
     return formatDate(timeStr, 'M月d日')
   }
-  // 超过一天 展示 时/分
+  // 不超过一天 展示 时/分
   return formatDate(timeStr, 'H:mm')
 }
+
+type MenuItemType = { value: number; label: string }
+const menuList: MenuItemType[] = [
+  { value: 1, label: '置顶会话' },
+  { value: 2, label: '清空信息' },
+  { value: 3, label: '取消置顶' },
+  // { value: 4, label: '消息免打扰' },
+]
 
 // 鼠标右键事件
 const mousePosition: {
   left: number
   top: number
   isShowContext: boolean
-  selectedItem: ImMsgChildType
+  selectedItem: ImMsgChildType,
+  selectMenu?: MenuItemType[]
 } = reactive({ left: 0, top: 0, isShowContext: false, selectedItem: {} as ImMsgChildType })
 const handleContextClick = (e: MouseEvent, item: ImMsgChildType) => {
   if (!item) {
     return
   }
-  mousePosition.left = e.pageX
-  mousePosition.top = e.pageY
+  mousePosition.left = e.pageX - 60
+  mousePosition.top = e.pageY - 48
   mousePosition.isShowContext = true
   mousePosition.selectedItem = item
+  mousePosition.selectMenu = item.isTop ? menuList.slice(1, 3) : menuList.slice(0, 2)
+}
+// 关闭右侧点击出现的弹框
+const closecontextmenu = () => {
+  mousePosition.isShowContext = false
 }
 // 页面加载完毕，点击其他位置则隐藏菜单
 onMounted(() => {
-  window.addEventListener('click', () => {
-    mousePosition.isShowContext = false
-  })
-  window.addEventListener('contextmenu', () => {
-    mousePosition.isShowContext = false
-  })
+  window.addEventListener('click', closecontextmenu)
+  window.addEventListener('contextmenu', closecontextmenu)
 })
 
 // 页面卸载前给他删了
 onBeforeUnmount(() => {
-  window.removeEventListener('click', () => { })
-  window.removeEventListener('contextmenu', () => {
-    mousePosition.isShowContext = false
-  })
+  window.removeEventListener('click', closecontextmenu)
+  window.removeEventListener('contextmenu', closecontextmenu)
 })
 
-type MenuItemType = { value: number; label: string }
-const menuList: MenuItemType[] = [
-  { value: 1, label: '置顶会话' },
-  { value: 2, label: '清空信息' }
-  // { value: 3, label: '个人信息' },
-  // { value: 4, label: '消息免打扰' },
-]
+
 
 const openIdArr = ref<string[]>([])
 const handleOpenSpace = (selectedID: string) => {
@@ -185,12 +210,16 @@ const handleOpenSpace = (selectedID: string) => {
 }
 // 右键菜单点击
 const handleContextChange = (item: MenuItemType) => {
-  console.log('右键菜单点击', item, mousePosition.selectedItem)
+  // console.log('右键菜单点击', item, mousePosition.selectedItem)
   switch (item.value) {
     case 1:
+      chat.setToppingSession(mousePosition.selectedItem, true)
       break
     case 2:
       // props.clearHistoryMsg()
+      break
+    case 3:
+      chat.setToppingSession(mousePosition.selectedItem, false)
       break
 
     default:
@@ -212,11 +241,12 @@ const handleContextChange = (item: MenuItemType) => {
   display: flex;
   align-items: center;
   padding: 10px;
-  
-  .refresh{
+
+  .refresh {
     .el-icon {
       font-size: 20px;
     }
+
     color: var(--el-color-primary);
   }
 }
@@ -307,6 +337,10 @@ const handleContextChange = (item: MenuItemType) => {
       .con-body+.con-body {
         // margin-top: 10px;
       }
+
+      .top-session {
+        background-color: var(--el-fill-color);
+      }
     }
 
     .group-con-show {
@@ -321,7 +355,7 @@ const handleContextChange = (item: MenuItemType) => {
         &-label {
           font-size: 14px;
           font-weight: bold;
-          max-width: 100px;
+          max-width: 140px;
           text-overflow: ellipsis;
           overflow: hidden;
           white-space: nowrap;
@@ -334,7 +368,7 @@ const handleContextChange = (item: MenuItemType) => {
       }
 
       &-msg {
-        max-width: 140px;
+        max-width: 180px;
         text-overflow: ellipsis;
         max-height: 24px;
         overflow: hidden;
@@ -366,12 +400,12 @@ const handleContextChange = (item: MenuItemType) => {
 
   .context-text-wrap {
     position: absolute;
-    background-color: #fff;
+    background-color: var(--el-bg-color);
     width: 110px;
     height: max-content;
     padding: 10px;
-    border: 1px solid #e6e6e6;
-    box-shadow: 0 0 2px 2px #e6e6e6;
+    border: 1px solid var(--el-border-color);
+    box-shadow: var(--el-box-shadow);
     z-index: 999;
 
     .context-menu-item {

@@ -20,30 +20,31 @@
 <style lang="scss" scoped>
   .userSaveSet {
     height: 100%;
-    background-color: #eff0f4;
-
+    // background-color: #eff0f4;
+    display: flex;
+    flex-direction: column;
     .pageHeader {
       width: 100%;
-      height: 10%;
-      background-color: #fff;
-      .header {
-        margin-top: 20px;
-        margin-left: 30px;
-      }
+      // height: 60px;
+      background-color: var(--el-bg-color);
+     
       .title {
-        padding-top: 20px;
-        margin-left: 30px;
+        padding-top: 30px;
+        padding-left: 30px;
+        // padding-bottom: 30px;
         font-size: 20px;
         font-weight: 600;
       }
     }
     .body {
-      height: 60%;
-      width: 100%;
-      background-color: #fff;
-      border-left: 10px solid #eff0f4;
-      border-top: 16px solid #eff0f4;
-      border-right: 16px solid #eff0f4;
+      // height: 60%;
+      flex: 1;
+      // width: 100%;
+      background-color: var(--el-bg-color);
+      padding:  24px 30px;
+      // border-left: 10px solid #eff0f4;
+      // border-top: 16px solid #eff0f4;
+      // border-right: 16px solid #eff0f4;
     }
   }
 </style>

@@ -1,41 +1,39 @@
 <template>
-    <div class="card" ref="cardHeight">
-      <div class="header">
-        <div class="title">{{props.selectItem.label}}</div>
-        <div class="box-btns">
-          <div v-if="props.selectItem?.data?.typeName == '公司'">
-            <el-button small link type="primary" @click="friendDialog = true">添加成员</el-button>
-            <el-button small link type="primary" @click="viewApplication">查看申请</el-button>
-          </div>
-          <div v-if="props.selectItem?.data?.typeName == '部门' || props.selectItem?.data?.typeName == '工作组'">
-            <el-button small link type="primary" @click="showAssignDialog">分配人员</el-button>
-          </div>
+  <div class="card" ref="cardHeight">
+    <div class="header">
+      <div class="title">{{props.selectItem.label}}</div>
+      <div class="box-btns">
+        <div v-if="props.selectItem?.data?.typeName == '单位'">
+          <el-button small link type="primary" v-if="allowEdit()" @click="friendDialog = true">添加成员</el-button>
+          <el-button small link type="primary" v-if="allowEdit()" @click="viewApplication">查看申请</el-button>
         </div>
-      </div>
-      <div :style="{height:tableHeight-20+'px'}">
-        <div style="width: 100%; height: 100%">
-          <DiyTable
-            ref="diyTable"
-            :hasTableHead="false"
-            :tableData="users"
-            :checkList="[]"
-            @handleUpdate="handleUpdate"
-            :tableHead="tableHead"
-          >
-            <template #operate="scope" >
-                <div v-if="props.selectItem?.data?.typeName == '公司'">
-                  <el-button link type="danger" size="small" @click="removeFrom(scope.row)">操作离职</el-button>
-                </div>
-                <div v-if="props.selectItem?.data?.typeName == '部门' || props.selectItem?.data?.typeName == '工作组'">
-                  <el-button link type="danger" size="small" @click="removeFrom(scope.row)" >移除成员</el-button>
-                </div>
-            </template>
-          </DiyTable>
+        <div v-if="props.selectItem?.data?.typeName == '部门' || props.selectItem?.data?.typeName == '工作组'">
+          <el-button small link type="primary" v-if="allowEdit()" @click="showAssignDialog">分配人员</el-button>
         </div>
       </div>
     </div>
-  <searchFriend  v-if="friendDialog" :checkList='users' :selectLimit='0' @closeDialog="closeDialog"  @checksSearch='checksSearch'/>
-  <AssignedPerson  v-if="assignDialog" :checkList='users' :id="company.id" :selectLimit='0' :serachType='5' @closeDialog="hideAssignDialog"  @checksSearch='checksCompanySearch'/>
+    <div :style="{height:tableHeight-20+'px'}">
+      <div style="width: 100%; height: 100%">
+        <DiyTable ref="diyTable" :hasTableHead="false" :tableData="users" :checkList="[]" @handleUpdate="handleUpdate"
+          :tableHead="tableHead">
+          <template #operate="scope">
+            <div v-if="props.selectItem?.data?.typeName == '单位'">
+              <el-button link type="danger" v-if="props?.selectItem?.data?.belongId != scope.row.id && allowEdit()"
+                size="small" @click="removeFrom(scope.row)">操作离职</el-button>
+            </div>
+            <div
+              v-if="allowEdit()&&(props.selectItem?.data?.typeName == '部门' || props.selectItem?.data?.typeName == '工作组')">
+              <el-button link type="danger" size="small" @click="removeFrom(scope.row)">移除成员</el-button>
+            </div>
+          </template>
+        </DiyTable>
+      </div>
+    </div>
+  </div>
+  <searchFriend v-if="friendDialog" :checkList='users' :selectLimit='0' @closeDialog="closeDialog"
+    @checksSearch='checksSearch' />
+  <AssignedPerson v-if="assignDialog" :checkList='users' :id="company.id" :selectLimit='0' :serachType='5'
+    @closeDialog="hideAssignDialog" @checksSearch='checksCompanySearch' />
 
 </template>
 <script lang='ts' setup>
@@ -47,9 +45,21 @@ import { ElMessage, ElMessageBox } from 'element-plus';
 import { Search } from '@element-plus/icons-vue'
 import searchFriend from '@/components/searchs/index.vue'
 import AssignedPerson from '@/components/searchs/index.vue'
+import authority from '@/utils/authority'
+import DepartmentServices from '@/module/relation/department'
+const departmentServices = new DepartmentServices()
+
 const props = defineProps<{
   selectItem: any,     // 节点数据
+  tabHeight: any,
 }>()
+
+const allowEdit = () => {
+  return authority.IsRelationAdmin([
+    props.selectItem.id,
+    props.selectItem.data.belongId
+  ])
+}
 
 const company = ref<any>({})
 
@@ -61,21 +71,27 @@ const tableHead = ref([
   },
   {
     prop: 'name',
+    label: '昵称',
+    width: '200',
+    name: 'name',
+  },
+  {
+    prop: 'team.name',
     label: '姓名',
-    width: '240',
-    name:'name',
+    width: '200',
+    name: 'teamName',
   },
   {
     prop: 'team.code',
     label: '手机号',
-    width: '330',
-    name:'teamCode',
+    width: '200',
+    name: 'teamCode',
   },
   {
     prop: 'team.remark',
     label: '座右铭',
     width: '330',
-    name:'teamRemark',
+    name: 'teamRemark',
   },
   {
     type: 'slot',
@@ -98,220 +114,154 @@ const columns = ref([
     prop: 'name',
     label: '姓名',
     width: '240',
-    name:'name',
+    name: 'name',
   },
   {
     prop: 'team.code',
     label: '手机号',
     width: '330',
-    name:'teamCode',
+    name: 'teamCode',
   }
 ])
 const router = useRouter()
 // 表格展示数据
-const pageStore = reactive({
-  tableData: [],
-  currentPage: 1,
-  pageSize: 20,
-  total: 0
-})
+
 
 const diyTable = ref(null)
 // 加载用户
-const getUsers = ()=>{
-  const data = props.selectItem?.data
-  if(data){
-    let url = '';
-    if(data.typeName == '公司'){
-      url = 'getPersons'
-      company.value = JSON.parse(JSON.stringify(data))
-    } else if(data.typeName == '部门'){
-      url = 'getDepartmentPersons'
-    } else if(data.typeName == '工作组'){
-      url = 'getJobPersons'
+const getUsers = async () => {
+  if(props.selectItem?.data){
+    const data = props.selectItem?.data
+    const backData =  await departmentServices.getUser(data)
+    if(backData.result){
+      users.value =backData.result;
+      diyTable.value.state.page.total = backData.total
+    }else{
+      users.value =[];
+      diyTable.value.state.page.total = 0
     }
-    $services.company[url]({
-      data: {
-        id: props.selectItem.id,
-        offset: (pageStore.currentPage-1)*pageStore.pageSize,
-        limit: pageStore.pageSize
-      }
-    }).then((res: ResultType) => {
-      if (res.code == 200 && res.success) {
-        users.value = res.data.result;
-        pageStore.total = res.data.total;
-        diyTable.value.state.loading = false
-        diyTable.value.state.page.total = pageStore.total;
-      }
-    })
   }
 }
 
 const friendDialog = ref<boolean>(false)
-const closeDialog = ()=>{
-   friendDialog.value = false;
+const closeDialog = () => {
+  friendDialog.value = false;
 }
 type arrList = {
-  id:string
+  id: string
 }
-const checksSearch=(val:any)=>{
-  if(val.value.length>0){
-    let arr:Array<arrList> =[]
-    val.value.forEach((element:any) => {
+const checksSearch = (val: any) => {
+  if (val.value.length > 0) {
+    let arr: Array<arrList> = []
+    val.value.forEach((element: any) => {
       arr.push(element.id)
     });
     pullPerson(arr)
-  }else{
+  } else {
     friendDialog.value = false;
   }
 }
-const checksCompanySearch =(val:any)=>{
-  if(val.value.length>0){
-    let arr:Array<arrList> =[]
-    val.value.forEach((element:any) => {
+const checksCompanySearch = (val: any) => {
+  if (val.value.length > 0) {
+    let arr: Array<arrList> = []
+    val.value.forEach((element: any) => {
       arr.push(element.id)
     });
     assign(arr)
-  }else{
+  } else {
     assignDialog.value = false;
   }
 }
 
 //邀请加入单位
-const pullPerson = (arr:any) => {
-  $services.company
-    .pullPerson({
-      data: {
-        id: props.selectItem.id,
-        targetIds: arr
-      }
+const pullPerson = async (arr: any) => {
+  const data =  await departmentServices.pullPerson(props.selectItem.id,arr)
+  if (data) {
+    ElMessage({
+      message: '添加成功',
+      type: 'success'
     })
-    .then((res: ResultType) => {
-      if (res.success) {
-        ElMessage({
-          message: '添加成功',
-          type: 'success'
-        })
-        getUsers()
-      }
-      friendDialog.value = false;
-    })
+    getUsers()
+    friendDialog.value = false;
+  }
 }
-const handleUpdate = (page: any)=>{
-  pageStore.currentPage = page.currentPage
-  pageStore.pageSize = page.pageSize
+const handleUpdate = (page: any) => {
+  //  page.currentPage
+  //  page.pageSize
   getUsers()
 }
 
 //查看申请
 const viewApplication = (row: any) => {
-  router.push('/cardDetail')
+  router.push({ path: '/cardDetail', query: { type: 1, id: props.selectItem.id } })
 }
 
 // 移除
-const removeFrom = (row: any) =>{
-  let url: string;
-  let title: string;
-  if(props.selectItem?.data?.typeName == '公司'){
-    url = 'removeFromCompany'
-    title = `操作离职，将删除 ${row.name} 在单位的信息，确定操作吗？`
-  } else if(props.selectItem?.data?.typeName == '部门'){
-    url = 'removeFromDepartment'
-    title = `确定把 ${row.name} 从当前部门移除吗？`
-  } else if(props.selectItem?.data?.typeName == '工作组'){
-    url = 'removeFromJob'
-    title = `确定把 ${row.name} 从当前部门移除吗？`
+const removeFrom = async (row: any) => {
+  let rowObj = {
+    name:row.name,
+    id:row.id,
+    typeName:props.selectItem.data.typeName
   }
-  ElMessageBox.confirm(
-    title,
-    '警告',
-    {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      type: 'warning'
-    }
-  ).then(() => {
-    $services.company[url]({
-      data: {
-        id: props.selectItem.id,
-        targetIds: [row.id]
-      }
-    }).then((res: ResultType) => {
-      getUsers()
-      if (res.success) {
-        ElMessage({
-          message: '操作成功',
-          type: 'success'
-        })
-      }
+  const data =  await departmentServices.removePerson(rowObj,props.selectItem.data.id)
+  if(data){
+    ElMessage({
+      message: '操作成功',
+      type: 'success'
     })
-  })
-  .catch(() => {
-    console.log('取消移除!')
-  })
+    getUsers()
+  }
 }
 
 
 const assignDialog = ref<boolean>(false)
-const hideAssignDialog = ()=>{
+const hideAssignDialog = () => {
   assignDialog.value = false
 }
 
-const showAssignDialog = ()=>{
+const showAssignDialog = () => {
   assignDialog.value = true
 }
 
 
 // 分配人员
-const assign = (arr:any) => {
+const assign = (arr: any) => {
   const userIds = arr
-  if(props.selectItem?.data?.typeName == '部门'){
+  if (props.selectItem?.data?.typeName == '部门') {
     assignDepartment(props.selectItem.id, userIds)
-  } else if(props.selectItem?.data?.typeName == '工作组'){
+  } else if (props.selectItem?.data?.typeName == '工作组') {
     assignJob(props.selectItem.id, userIds)
   }
 }
 
 //分配部门
-const assignDepartment = (id: string, targetIds:any) => {
-  $services.company
-    .assignDepartment({
-      data: { id, targetIds }
+const assignDepartment =  async (id:string, targetIds: string[]) => {
+  const data = await departmentServices.assignDepartment(id,targetIds)
+  if(data){
+    ElMessage({
+      message: '分配成功',
+      type: 'success'
     })
-    .then((res: ResultType) => {
-      if (res.success) {
-        ElMessage({
-          message: '分配成功',
-          type: 'success'
-        })
-        hideAssignDialog()
-      }
-      getUsers()
-    })
+    hideAssignDialog()
+    getUsers()
+  }
 }
 //分配工作组
-const assignJob = (id: string, targetIds: string[]) => {
-  $services.company
-    .assignJob({
-      data: { id, targetIds }
+const assignJob = async (id: string, targetIds: string[]) => {
+  const data = await departmentServices.assignJob(id,targetIds)
+  if(data){
+    ElMessage({
+      message: '分配成功',
+      type: 'success'
     })
-    .then((res: ResultType) => {
-      if (res.success) {
-        ElMessage({
-          message: '分配成功',
-          type: 'success'
-        })
-        hideAssignDialog()
-      }
-      getUsers()
-    })
+    hideAssignDialog()
+    getUsers()
+  }
 }
 const cardHeight = ref(null)
 const tableHeight = ref<number>(100)
 onMounted(() => {
   getUsers()
-
-
 })
 
 watch(props, () => {
@@ -321,11 +271,14 @@ watch(props, () => {
     tableHeight.value = headerHeight
   }, 100);
 });
+watch(props.tabHeight, () => {
+  let headerHeight = cardHeight.value?.clientHeight
+  tableHeight.value = headerHeight
+});
 
 </script>
 
 <style lang='scss' scoped>
-
 .card {
   height: 100%;
   width: 100%;
@@ -337,14 +290,18 @@ watch(props, () => {
     .title {
       text-align: left;
       font-size: 16px;
-      width: 30%;
+      width: 50%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
       font-weight: bold;
     }
+
     .box-btns {
       text-align: right;
       padding-right: 14px;
       padding-bottom: 10px;
-      width: 70%;
+      width: 50%;
     }
   }
 

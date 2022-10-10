@@ -1,7 +1,19 @@
 <template>
   <div class="cohortLayout">
+    <div class="cohortLayout-header">
+      <div class="cohortLayout-header-text">请选择集团：</div>
+      <div class="cohortLayout-header-tabs">
+        <el-tabs v-model="activeName" class="demo-tabs">
+          <el-tab-pane v-for="(item, index) in tabs" :key="item.id" :name="index">
+            <template #label>
+              <div slot="label" @click="handleTabClick(item.id)">{{ item.name }}</div>
+            </template>
+          </el-tab-pane>
+        </el-tabs>
+      </div>
+    </div>
     <div class="cohortLayout-header" style="margin-top: 10px">
-      <div class="cohortLayout-header-text">请选择分享方式：</div>
+      <div class="cohortLayout-header-text">请选择共享方式：</div>
       <div class="cohortLayout-header-tabs">
         <el-radio-group v-model="radio">
           <el-radio v-for="item in state.way" :key="item.id" :label="item.id">{{
@@ -14,7 +26,9 @@
       <div class="cohortLayout-content-left" :style="'width:' + (radio == '1' ? '49%' : '33%')">
         <el-input v-model="searchLeftValue" class="w-50 m-2" placeholder="搜索">
           <template #prefix>
-            <el-icon class="el-input__icon"><search /></el-icon>
+            <el-icon class="el-input__icon">
+              <search />
+            </el-icon>
           </template>
         </el-input>
         <el-tree
@@ -22,18 +36,21 @@
           ref="leftTree"
           node-key="id"
           :data="cascaderTree"
-          :props="unitProps"
           :check-strictly="true"
           :default-expand-all="true"
           show-checkbox
           @check-change="handleCheckChange"
           :filter-node-method="filterNode"
+          :props="{ class: customNodeClass }"
         />
         <el-tree
           v-else
           ref="leftTree"
+          :key="radio"
           :data="cascaderTree"
-          :props="unitProps"
+          :highlight-current="true"
+          :expand-on-click-node="false"
+          :props="{ class: customNodeClass }"
           :default-expand-all="true"
           @node-click="handleNodeClick"
           :filter-node-method="filterNode"
@@ -48,7 +65,9 @@
       >
         <el-input v-model="searchValue" class="w-50 m-2" placeholder="搜索">
           <template #prefix>
-            <el-icon class="el-input__icon"><search /></el-icon>
+            <el-icon class="el-input__icon">
+              <search />
+            </el-icon>
           </template>
         </el-input>
         <el-tree
@@ -74,9 +93,19 @@
           @delContent="delContentAuth"
           :departData="state.authorData"
         ></Author>
+        <Author
+          v-if="radio == '3'"
+          @delContent="delContentAuth"
+          :departData="state.identitysData"
+        ></Author>
+        <Author
+          v-if="radio == '4'"
+          @delContent="delContentAuth"
+          :departData="state.personsData"
+        ></Author>
       </div>
     </div>
-    <div class="footer">
+    <div class="footer" v-if="radio == '1'">
       <el-button type="primary" @click="submitAll">确认</el-button>
       <el-button class="footer-btn" @click="closeDialog">取消</el-button>
     </div>
@@ -84,6 +113,7 @@
 </template>
 
 <script setup lang="ts">
+  // @ts-nocheck
   import InfiniteScroll from 'element-plus'
   import { onMounted, ref, reactive, toRefs, watch, nextTick, computed } from 'vue'
   import { ElMessage, ElMessageBox } from 'element-plus'
@@ -91,6 +121,7 @@
   import Author from './components/author.vue'
   import type { TabsPaneContext } from 'element-plus'
   import { AnyAaaaRecord } from 'dns'
+  import authority from '@/utils/authority'
   interface Tree {
     id: string
     label: string
@@ -98,8 +129,9 @@
     children?: Tree[]
   }
   type createInfo = {
-    info: ProductType
-    groupId: string
+    info: {
+      id: string
+    }
   }
   const searchValue = ref('')
   const searchLeftValue = ref('')
@@ -117,22 +149,32 @@
     way: [
       {
         id: '1',
-        label: '按集团分享'
+        label: '按集团共享'
       },
       {
         id: '2',
-        label: '按单位分享'
+        label: '按角色共享'
+      },
+      {
+        id: '3',
+        label: '按岗位分配'
+      },
+      {
+        id: '4',
+        label: '按单位分配'
       }
     ],
-    departData: [], // 集团分发右侧数据
-    departHisData: [], // 集团分发历史数据
-    centerTree: [], // 职权分发中间树形
-    authorHisData: [], // 职权历史数据
-    authorData: [], // 职权右侧数据
+    options: [], // 集团列表
+    switchData: {}, // 存储左侧树形数据
+    departData: [], // 集团分配右侧数据
+    departHisData: [], // 集团分配历史数据
+    centerTree: [], // 角色分配中间树形
+    authorHisData: [], // 角色历史数据
+    authorData: [], // 角色右侧数据
     personsHisData: [], // 人员历史数据
     personsData: [], // 人员右侧数据
-    identitysData: [], //身份右侧数据
-    identitysHisData: [] // 身份历史数据
+    identitysData: [], //岗位右侧数据
+    identitysHisData: [] // 岗位历史数据
   })
   const authorityProps = {
     label: 'name',
@@ -140,7 +182,8 @@
   }
   const unitProps = {
     label: 'label',
-    children: 'children'
+    children: 'children',
+    disabled: 'disabled'
   }
   const page = reactive({
     currentPage: 1,
@@ -149,10 +192,20 @@
   const handleCurrent: any = computed(() => {
     return (page.currentPage - 1) * page.pageSize
   })
+  const customNodeClass = (data: Tree, node: Node) => {
+    if (data.authAdmin === false || data?.data?.authAdmin === false) {
+      return 'penultimate'
+    }
+    return null
+  }
+
   watch(
     () => radio.value,
     (newValue, oldValue) => {
       state.centerTree = []
+      state.authorData = []
+      state.personsData = []
+      state.identitysData = []
       nextTick(() => {
         if (newValue == '1' && state.departData.length > 0) {
           let arr: any[] = []
@@ -164,10 +217,6 @@
           leftTree.value.setCheckedKeys(arr, true)
         } else if (newValue == '2' && state.authorData.length == 0) {
           getHistoryData()
-        } else if (newValue == '3' && state.personsData.length == 0) {
-          getHistoryData()
-        } else if (newValue == '4' && state.identitysData.length == 0) {
-          getHistoryData()
         }
       })
     },
@@ -176,10 +225,14 @@
   watch(
     () => resource.value,
     (newValue, oldValue) => {
+      state.centerTree = []
       state.authorData = []
       state.departData = []
       state.personsData = []
       state.identitysData = []
+      if (radio.value == '1') {
+        clearTreeType(cascaderTree.value)
+      }
       if (radio.value == '1') {
         leftTree.value.setCheckedKeys([])
       }
@@ -200,86 +253,68 @@
     }
   )
   const props = defineProps<createInfo>()
+
   onMounted(() => {
-    getCompanyTree()
+    getGroupList()
   })
+
+  onUnmounted(() => {
+    sumbitSwitch(state.switchData, true)
+  })
+
   const emit = defineEmits(['closeDialog'])
+
   const closeDialog = () => {
     emit('closeDialog')
   }
 
-  // 获取部门历史数据
-  const getOrgHistoryData = () => {}
+  // 获取集团数据
+  const getGroupList = () => {
+    API.company
+      .companyGetGroups({
+        data: {
+          offset: 0,
+          limit: 1000
+        }
+      })
+      .then((res: ResultType) => {
+        if (res.data.result && res.data.result.length > 0) {
+          tabs.value = res.data.result
+          resource.value = tabs.value[0].id
+          getCompanyTree()
+        }
+      })
+  }
 
-  // 获取历史数据（提交表单后）
-  const getNewHistoryData = () => {
-    switch (radio.value) {
-      case '1':
-        API.product
-          .searchGroupShare({
-            data: {
-              id: props.info.id,
-              offset: 0,
-              limit: 1000,
-              filter: '',
-              teamId: props.groupId
-            }
-          })
-          .then((res: ResultType) => {
-            state.departHisData = res.data.result ? res.data.result : []
-            leftTree.value.setCheckedKeys([])
-            let arr: any[] = []
-            state.departHisData.forEach((el) => {
-              el.type = 'has'
-              arr.push(el.id)
-            })
-            state.departData = state.departHisData
-            leftTree.value.setCheckedKeys(arr, true)
-          })
-        break
-      case '2':
-        API.product
-          .searchUnitShare({
-            data: {
-              id: props.info.id,
-              offset: 0,
-              limit: 1000,
-              filter: '',
-              teamId: props.groupId
-            }
-          })
-          .then((res: ResultType) => {
-            state.authorHisData = res.data.result ? res.data.result : []
-            centerTree.value.setCheckedKeys([])
-            let arr: any[] = []
-            state.authorHisData.forEach((el) => {
-              el.type = 'has'
-              arr.push(el.id)
-            })
-            state.authorData = state.authorHisData
-            centerTree.value.setCheckedKeys(arr, true)
-          })
-        break
-      default:
-        break
+  // 清除树形中的type
+  const clearTreeType = (data: any) => {
+    for (let i = 0; i < data.length; i++) {
+      if (data[i].type) {
+        delete data[i].type
+        if (data[i].children.length !== 0) {
+          clearTreeType(data[i].children)
+        }
+      } else {
+        clearTreeType(data[i].children)
+      }
     }
   }
+
   // 获取历史数据
-  const getHistoryData = () => {
+  const getHistoryData = (data?: any) => {
     switch (radio.value) {
       case '1':
         API.product
-          .searchGroupShare({
+          .extendQuery({
             data: {
-              id: props.info.id,
-              offset: 0,
-              limit: 1000,
-              filter: '',
-              teamId: props.groupId
+              teamId: resource.value,
+              sourceId: props.info.id,
+              sourceType: '产品',
+              destType: '组织'
             }
           })
           .then((res: ResultType) => {
-            state.departHisData = res.data.result ? res.data.result : []
+            state.departHisData = res?.data?.result ? res.data.result : []
             let arr: any[] = []
             state.departHisData.forEach((el) => {
               arr.push(el.id)
@@ -289,23 +324,73 @@
         break
       case '2':
         API.product
-          .searchUnitShare({
+          .extendQuery({
             data: {
-              id: props.info.id,
-              teamId: props.groupId,
-              offset: 0,
-              limit: 1000,
-              filter: ''
+              teamId: data.id,
+              sourceId: props.info.id,
+              sourceType: '产品',
+              destType: '角色'
             }
           })
           .then((res: ResultType) => {
-            state.authorHisData = res.data.result ? res.data.result : []
+            state.authorHisData = res?.data?.result ? res.data.result : []
             state.authorData = JSON.parse(JSON.stringify(state.authorHisData))
             let arr: any[] = []
             state.authorData.forEach((el) => {
               el.type = 'has'
               arr.push(el.id)
             })
+            if (state.centerTree.length > 0) {
+              centerTree.value.setCheckedKeys(arr, true)
+            }
+          })
+        break
+      case '3':
+        API.product
+          .extendQuery({
+            data: {
+              teamId: data.id,
+              sourceId: props.info.id,
+              sourceType: '产品',
+              destType: '岗位'
+            }
+          })
+          .then((res: ResultType) => {
+            state.identitysHisData = res?.data?.result ? res.data.result : []
+            state.identitysData = JSON.parse(JSON.stringify(state.identitysHisData))
+            let arr: any[] = []
+            state.identitysData.forEach((el) => {
+              el.type = 'has'
+              arr.push(el.id)
+            })
+            console.log(state.identitysData)
+
+            if (state.centerTree.length > 0) {
+              centerTree.value.setCheckedKeys(arr, true)
+            }
+          })
+        break
+      case '4':
+        API.product
+          .extendQuery({
+            data: {
+              teamId: data.id,
+              sourceId: props.info.id,
+              sourceType: '产品',
+              destType: '人员'
+            }
+          })
+          .then((res: ResultType) => {
+            state.personsHisData = res?.data?.result ? res.data.result : []
+            state.personsData = JSON.parse(JSON.stringify(state.personsHisData))
+            let arr: any[] = []
+            state.personsData.forEach((el) => {
+              el.type = 'has'
+              arr.push(el.id)
+            })
+            if (state.centerTree.length > 0) {
+              centerTree.value.setCheckedKeys(arr, true)
+            }
           })
         break
       default:
@@ -319,12 +404,129 @@
     return data.label.includes(value)
   }
 
+  const sumbitSwitch = async (data, bol?: boolean) => {
+    // 当radio！=1 时切换左侧树调用提交接口
+    if (state.switchData !== data || bol) {
+      switch (radio.value) {
+        case '2':
+          let authorAdd: any[] = []
+          let authorDel: any[] = []
+          state.authorData.forEach((el) => {
+            if (el.type == 'add') {
+              authorAdd.push(el.id)
+            } else if (el.type == 'del') {
+              authorDel.push(el.id)
+            }
+          })
+          let promise1
+          let promise2
+          if (authorAdd.length > 0) {
+            promise1 = API.product.extendCreate({
+              data: {
+                teamId: state.switchData.id,
+                sourceId: props.info.id,
+                destIds: authorAdd,
+                sourceType: '产品',
+                destType: '角色'
+              }
+            })
+          }
+          if (authorDel.length > 0) {
+            promise2 = API.product.extendDelete({
+              data: {
+                teamId: state.switchData.id,
+                sourceId: props.info.id,
+                destIds: authorDel,
+                sourceType: '产品',
+                destType: '角色'
+              }
+            })
+          }
+          await Promise.all([promise1, promise2])
+          break
+        case '3':
+          let identityAdd: any[] = []
+          let identityDel: any[] = []
+          state.identitysData.forEach((el) => {
+            if (el.type == 'add') {
+              identityAdd.push(el.id)
+            } else if (el.type == 'del') {
+              identityDel.push(el.id)
+            }
+          })
+          let promise3
+          let promise4
+          if (identityAdd.length > 0) {
+            promise3 = API.product.extendCreate({
+              data: {
+                teamId: state.switchData.id,
+                sourceId: props.info.id,
+                destIds: identityAdd,
+                sourceType: '产品',
+                destType: '岗位'
+              }
+            })
+          }
+          if (identityDel.length > 0) {
+            promise4 = API.product.extendDelete({
+              data: {
+                teamId: state.switchData.id,
+                sourceId: props.info.id,
+                destIds: identityDel,
+                sourceType: '产品',
+                destType: '岗位'
+              }
+            })
+          }
+          await Promise.all([promise3, promise4])
+          break
+        case '4':
+          let personAdd: any[] = []
+          let personDel: any[] = []
+          state.personsData.forEach((el) => {
+            if (el.type == 'add') {
+              personAdd.push(el.id)
+            } else if (el.type == 'del') {
+              personDel.push(el.id)
+            }
+          })
+          let promise5
+          let promise6
+          if (personAdd.length > 0) {
+            promise5 = API.product.extendCreate({
+              data: {
+                teamId: state.switchData.id,
+                sourceId: props.info.id,
+                destIds: personAdd,
+                sourceType: '产品',
+                destType: '人员'
+              }
+            })
+          }
+          if (personDel.length > 0) {
+            promise6 = API.product.extendDelete({
+              data: {
+                teamId: state.switchData.id,
+                sourceId: props.info.id,
+                destIds: personDel,
+                sourceType: '产品',
+                destType: '人员'
+              }
+            })
+          }
+          await Promise.all([promise5, promise6])
+          break
+
+        default:
+          break
+      }
+    }
+  }
+
   // 提交表单
   const submitAll = async () => {
     let departAdd: any[] = []
     let departDel: any[] = []
-    let authorAdd: any[] = []
-    let authorDel: any[] = []
     state.departData.forEach((el) => {
       if (el.type == 'add') {
         departAdd.push(el.id)
@@ -333,58 +535,34 @@
       }
     })
 
-    state.authorData.forEach((el) => {
-      if (el.type == 'add') {
-        authorAdd.push(el.id)
-      } else if (el.type == 'del') {
-        authorDel.push(el.id)
-      }
-    })
-
     let promise1
     let promise2
-    let promise3
-    let promise4
     if (departAdd.length > 0) {
-      promise1 = API.product.groupShare({
+      promise1 = API.product.extendCreate({
         data: {
-          productId: props.info.id,
-          teamId: props.groupId,
-          targetIds: departAdd
+          teamId: resource.value,
+          sourceId: props.info.id,
+          destIds: departAdd,
+          sourceType: '产品',
+          destType: '组织'
         }
       })
     }
     if (departDel.length > 0) {
-      promise2 = API.product.deleteGroupShare({
+      promise2 = API.product.extendDelete({
         data: {
-          productId: props.info.id,
-          teamId: props.groupId,
-          targetIds: departDel
+          teamId: resource.value,
+          sourceId: props.info.id,
+          destIds: departDel,
+          sourceType: '产品',
+          destType: '组织'
         }
       })
     }
-    if (authorAdd.length > 0) {
-      promise3 = await API.product.share({
-        data: {
-          productId: props.info.id,
-          teamId: props.groupId,
-          targetIds: authorAdd
-        }
-      })
-    }
-    if (authorDel.length > 0) {
-      promise4 = API.product.deleteShare({
-        data: {
-          productId: props.info.id,
-          teamId: props.groupId,
-          targetIds: authorDel
-        }
-      })
-    }
-    Promise.all([promise1, promise2, promise3, promise4]).then((res) => {
+    Promise.all([promise1, promise2]).then((res) => {
       ElMessage({
         type: 'success',
-        message: '分享成功'
+        message: '共享成功'
       })
       closeDialog()
     })
@@ -403,20 +581,22 @@
       if (radio.value == '2') {
         handleBoxClick(state.authorHisData, state.authorData, data)
       } else if (radio.value == '3') {
-        handleBoxClick(state.personsHisData, state.personsData, data)
-      } else {
         handleBoxClick(state.identitysHisData, state.identitysData, data)
+      } else {
+        handleBoxClick(state.personsHisData, state.personsData, data)
       }
     } else {
       if (radio.value == '2') {
         handleBoxCancelClick(state.authorHisData, state.authorData, data)
       } else if (radio.value == '3') {
-        handleBoxCancelClick(state.personsHisData, state.personsData, data)
-      } else {
         handleBoxCancelClick(state.identitysHisData, state.identitysData, data)
+      } else {
+        handleBoxCancelClick(state.personsHisData, state.personsData, data)
       }
     }
   }
+
+  // 中间树形点击取消事件
   const handleBoxCancelClick = (hisData: any, dataList: any, data: any) => {
     let result = hisData.some((item: any) => {
       return item.id == data.id
@@ -432,6 +612,8 @@
       }
     })
   }
+
+  //中间树形点击勾选事件
   const handleBoxClick = (hisData: any, dataList: any, data: any) => {
     let result = hisData.some((item: any) => {
       return item.id == data.id
@@ -458,9 +640,8 @@
       dataList.push(data)
     }
   }
-  // 左侧树点击事件
+  // 左侧checkbox点击事件
   const handleCheckChange = (data: any, checked: boolean, indeterminate: any) => {
-    console.log('点击左侧', data, checked, indeterminate)
     if (checked) {
       if (radio.value == '1') {
         let result = state.departHisData.some((item: any) => {
@@ -505,84 +686,104 @@
       }
     }
   }
-  const handleNodeClick = (data: any, load: boolean, search?: string) => {
-    if (typeof load == 'object' && typeof search == 'object') {
-      searchValue.value = ''
-    }
-    if (typeof load !== 'boolean') {
-      page.currentPage = 1
-    } else if (typeof search == 'string') {
-      page.currentPage = 1
-    }
-    state.loadID = data
-    if (data.parentId == '0') {
-      API.company
-        .getGroupCompanies({
-          data: {
-            id: data.id,
-            limit: page.pageSize,
-            offset: handleCurrent.value,
-            filter: typeof search == 'string' ? search : ''
-          }
-        })
-        .then((res: ResultType) => {
-          if (load == true) {
-            state.centerTree.concat(res.data.result)
-          } else {
-            state.centerTree = res.data.result ? res.data.result : []
-          }
-
-          if (state.personsData.length > 0) {
-            let arr: any[] = []
-            state.personsData.forEach((el) => {
-              if (el.type == 'add' || el.type == 'has') {
-                arr.push(el.id)
-              }
-            })
-            centerTree.value.setCheckedKeys(arr, true)
-          }
-        })
-    } else {
-      API.company
-        .getSubgroupCompanies({
-          data: {
-            id: data.id,
-            limit: page.pageSize,
-            offset: handleCurrent.value,
-            filter: typeof search == 'string' ? search : ''
-          }
-        })
-        .then((res: ResultType) => {
-          if (load == true) {
-            state.centerTree.concat(res.data.result)
-          } else {
-            state.centerTree = res.data.result ? res.data.result : []
-          }
-
-          if (state.personsData.length > 0) {
-            let arr: any[] = []
-            state.personsData.forEach((el) => {
-              if (el.type == 'add' || el.type == 'has') {
-                arr.push(el.id)
-              }
-            })
-            centerTree.value.setCheckedKeys(arr, true)
-          }
-        })
-    }
-  }
-  const handleTreeData = (item: any) => {
-    for (let i = 0; i < item.length; i++) {
-      if (item[i].nodes) {
-        handleTreeData(item[i].nodes)
-      } else {
-        item[i].nodes = []
+  // 左侧间树形点击事件
+  const handleNodeClick = (node: any, load: boolean, search?: string) => {
+    if (node && node.data && authority.IsApplicationAdmin([node.data.id, node.data.belongId])) {
+      if (typeof load == 'object' && typeof search == 'object') {
+        searchValue.value = ''
       }
+      if (typeof load !== 'boolean') {
+        page.currentPage = 1
+      } else if (typeof search == 'string') {
+        page.currentPage = 1
+      }
+      switch (radio.value) {
+        case '2':
+          state.loadID = node
+          API.company
+            .getAuthorityTree({
+              data: {
+                id: node.id,
+                filter: typeof search == 'string' ? search : ''
+              }
+            })
+            .then((res: ResultType) => {
+              res.data = handleTreeData(res.data, node.id)
+              state.centerTree = [res.data]
+              getHistoryData(node)
+            })
+          break
+        case '3':
+          state.loadID = node
+          API.company
+            .getIdentities({
+              data: {
+                id: node.id,
+                limit: page.pageSize,
+                offset: handleCurrent.value,
+                filter: typeof search == 'string' ? search : ''
+              }
+            })
+            .then((res: ResultType) => {
+              const { result = [] } = res.data
+              result.forEach((item) => {
+                item.disable = !authority.IsApplicationAdmin([item.belongId, node.data.belongId])
+              })
+              if (load == true) {
+                state.centerTree.concat(res.data.result)
+              } else {
+                state.centerTree = res.data.result ? res.data.result : []
+              }
+              getHistoryData(node)
+            })
+          break
+        case '4':
+          state.loadID = node
+          let action = 'getGroupCompanies'
+          if (node.TypeName === '子集团') {
+            action = 'getSubgroupCompanies'
+          }
+          API.company[action]({
+            data: {
+              id: node.id,
+              limit: page.pageSize,
+              offset: handleCurrent.value,
+              filter: typeof search == 'string' ? search : ''
+            }
+          }).then((res: ResultType) => {
+            if (load == true) {
+              state.centerTree.concat(res.data.result)
+            } else {
+              state.centerTree = res.data.result ? res.data.result : []
+            }
+            getHistoryData(node)
+          })
+          break
+        default:
+          break
+      }
+      sumbitSwitch(node)
+      state.switchData = node
     }
   }
+
+  const handleTreeData = (node: any, belongId: string) => {
+    node.disabled = !(node.belongId && node.belongId == belongId)
+    if (node.nodes) {
+      node.nodes = node.nodes.map((children) => {
+        return handleTreeData(children, belongId)
+      })
+    }
+    //判断是否有操作权限
+    return node
+  }
+
   const handleTabClick = (id: string) => {
     resource.value = id
+    cascaderTree.value = []
+    getCompanyTree(true)
   }
+  // raido = 2 时点击取消图标事件
   const delContentAuth = (item: any) => {
     if (radio.value == '2') {
       if (item.type == 'del') {
@@ -608,26 +809,6 @@
       if (item.type == 'del') {
         return
       } else if (item.type == 'add') {
-        state.personsData.forEach((el, index) => {
-          if (el.id == item.id) {
-            state.personsData.splice(index, 1)
-            centerTree.value.setChecked(item.id, false)
-          }
-        })
-      } else {
-        state.personsData.forEach((el, index) => {
-          if (el.id == item.id) {
-            el.type = 'del'
-            if (state.centerTree.length !== 0) {
-              centerTree.value.setChecked(el.id, false)
-            }
-          }
-        })
-      }
-    } else {
-      if (item.type == 'del') {
-        return
-      } else if (item.type == 'add') {
         state.identitysData.forEach((el, index) => {
           if (el.id == item.id) {
             state.identitysData.splice(index, 1)
@@ -644,8 +825,29 @@
           }
         })
       }
+    } else {
+      if (item.type == 'del') {
+        return
+      } else if (item.type == 'add') {
+        state.personsData.forEach((el, index) => {
+          if (el.id == item.id) {
+            state.personsData.splice(index, 1)
+            centerTree.value.setChecked(item.id, false)
+          }
+        })
+      } else {
+        state.personsData.forEach((el, index) => {
+          if (el.id == item.id) {
+            el.type = 'del'
+            if (state.centerTree.length !== 0) {
+              centerTree.value.setChecked(el.id, false)
+            }
+          }
+        })
+      }
     }
   }
+  // radio = 1 时点击图标取消事件
   const delContent = (item: any) => {
     if (item.type == 'del') {
       return
@@ -669,19 +871,31 @@
   // 节点ID和对象映射关系
   const parentIdMap: any = {}
   let cascaderTree = ref<OrgTreeModel[]>([])
-  const getCompanyTree = () => {
+  const getCompanyTree = (val?: boolean) => {
     API.company
       .getGroupTree({
-        data: { id: props.groupId }
+        data: { id: resource.value }
       })
       .then((res: any) => {
-        let obj = res.data.data
-        let children = res.data.children
-        obj.label = obj.name
-        obj.children = children
-        cascaderTree.value.push(obj)
-        getHistoryData()
+        if (res.success) {
+          res.data = isAuthAdmin(res.data)
+          cascaderTree.value.push(res.data)
+        }
+        if (!val) {
+          getHistoryData()
+        }
       })
+  }
+
+  const isAuthAdmin = (node: any) => {
+    node.disabled = !authority.IsApplicationAdmin([node.data.id, node.data.belongId])
+    if (node.children) {
+      for (const children of node.children) {
+        isAuthAdmin(children)
+      }
+    }
+    //判断是否有操作权限
+    return node
   }
   // 初始化ID和对象映射关系
   const initIdMap = (nodes: any[]) => {
@@ -694,51 +908,66 @@
   }
   // 过滤掉工作组作为表单级联数据
   const filter = (nodes: OrgTreeModel[]): OrgTreeModel[] => {
-    nodes = nodes.filter((node) => node.data?.typeName !== '工作组')
+    nodes = nodes.filter(
+      (node) => node.data?.typeName !== '工作组' && node.data?.authAdmin === true
+    )
     for (const node of nodes) {
       node.children = filter(node.children)
     }
     return nodes
   }
 </script>
-
+<style>
+  .penultimate > .el-tree-node__content {
+    color: var(--el-text-color-disabled);
+    cursor: not-allowed;
+  }
+</style>
 <style lang="scss" scoped>
   .footer-btn {
     margin-right: 10px;
   }
+
   .footer {
     margin-top: 20px;
     display: flex;
     flex-direction: row-reverse;
   }
+
   .demo-tabs {
     margin-left: 20px;
   }
+
   .cohortLayout {
     width: 100%;
     height: 100%;
     display: flex;
     flex-direction: column;
     overflow: hidden !important;
+
     &-header {
       display: flex;
       align-items: center;
     }
+
     &-content {
       height: 360px;
       width: 100%;
       display: flex;
       justify-content: space-between;
+
       &-left {
         border: 1px solid rgb(241, 241, 248);
         height: 100%;
         overflow: auto;
       }
+
       &-center {
         border: 1px solid rgb(241, 241, 248);
         height: 100%;
         overflow: auto;
       }
+
       &-right {
         border: 1px solid rgb(241, 241, 248);
         height: 100%;
@@ -746,15 +975,19 @@
       }
     }
   }
+
   :deep(.el-tabs__header) {
     margin: unset;
   }
+
   :deep(.el-tabs__nav-wrap::after) {
     background-color: unset;
   }
+
   .cohortLayout-header-tabs {
     flex: 1;
   }
+
   .demo-tabs > .el-tabs__content {
     padding: 32px;
     color: #6b778c;

@@ -7,6 +7,8 @@ const market = '/orginone/appstore/market'
 const order = '/orginone/appstore/order'
 const product = '/orginone/appstore/product'
 const appstore = '/orginone/appstore/market'
+const collection = '/orginone/anydata/collection'
+const object = '/orginone/anydata/object'
 export default {
   // 人员接口
   person: {
@@ -14,49 +16,54 @@ export default {
     cancelJoin: person + '/cancel/join', //取消/删除申请
     changeWorkspace: person + '/change/workspace', //切换工作空间
     createAPPtoken: person + '/create/app/token', //生成APP访问授权accessToken
-    createAuthority: person + '/create/authority', //创建个人职权
-    createIdentity: person + '/create/identity', //创建身份标签
+    createAuthority: person + '/create/authority', //创建个人角色
+    createIdentity: person + '/create/identity', //创建岗位标签
+    updateAuthority: person + '/update/authority', //更新个人角色
+    updateIdentity: person + '/update/identity', //更新岗位标签
     getAllApply: person + '/get/all/apply', //查询我的申请
     getAllApproval: person + '/get/all/approval', //查询我的审批
-    getAuthorityIdentities: person + '/get/authority/identitys', //查询职权身份
-    getAuthority: person + '/get/authoritys', //查询职权
+    getAuthorityIdentities: person + '/get/authority/identitys', //查询角色岗位
+    getAuthority: person + '/get/authoritys', //查询角色
     getFriends: person + '/get/friends', //查询好友
-    getIdentityPersons: person + '/get/identity/persons', //查询身份的人
-    getIdentities: person + '/get/identitys', //查询身份
-    getSubAuthority: person + '/get/subauthoritys', //查询子职权
-    giveIdentity: person + '/give/identity', //给好友身份
+    getIdentityPersons: person + '/get/identity/persons', //查询岗位的人
+    getIdentities: person + '/get/identitys', //查询岗位
+    getSubAuthority: person + '/get/subauthoritys', //查询子角色
+    giveIdentity: person + '/give/identity', //给好友岗位
     joinRefuse: person + '/join/refuse', //加好友拒绝
     joinSuccess: person + '/join/success', //加好友通过
     login: person + '/login', // 登录
     logout: person + '/logout', //注销
     register: person + '/register', // 注册
-    approval: person + '/get/all/approval', // 代办列表
     queryInfo: person + '/query/info', // 查询当前登录人员详细信息
+    tokenInfo: person + '/token/info', //查询当前授信信息
     remove: person + '/remove', //删除好友
-    removeIdentity: person + '/remove/identity', //删除好友身份
+    removeIdentity: person + '/remove/identity', //删除好友岗位
     searchPersons: person + '/search/persons', //搜索人员
-    update: person + '/update' //变更信息
+    update: person + '/update', //变更信息
+    reset: person + '/reset/pwd' //重置密码
   },
   cohort: {
     applyJoin: cohort + '/apply/join', //申请加群组
     exit: cohort + '/exit', //退出群组
     create: cohort + '/create', //创建群组
     join: cohort + '/join', // 加群
-    createAuthority: cohort + '/create/authority', //创建群组职权
-    createIdentity: cohort + '/create/identity', //创建群身份标签
+    createAuthority: cohort + '/create/authority', //创建群组角色
+    createIdentity: cohort + '/create/identity', //创建群岗位标签
+    updateAuthority: cohort + '/update/authority', //更新个人角色
+    updateIdentity: cohort + '/update/identity', //更新岗位标签
     delete: cohort + '/delete', //删除群组
-    getAuthIdentity: cohort + '/get/authority/identitys', //查询职权身份
-    getAuthority: cohort + '/get/authoritys', //查询职权
-    getIdentityPerson: cohort + '/get/identity/persons', //查询身份的人
-    getIdentitys: cohort + '/get/identitys', //查询身份
+    getAuthIdentity: cohort + '/get/authority/identitys', //查询角色岗位
+    getAuthority: cohort + '/get/authoritys', //查询角色
+    getIdentityPerson: cohort + '/get/identity/persons', //查询岗位的人
+    getIdentitys: cohort + '/get/identitys', //查询岗位
     getJoinedCohorts: cohort + '/get/joined/cohorts', //查询我加入的群
     getPersons: cohort + '/get/persons', //查询群成员
-    getSubAuthorities: cohort + '/get/subauthoritys', //查询子职权
-    giveIdentity: cohort + '/give/identity', //给群成员身份
+    getSubAuthorities: cohort + '/get/subauthoritys', //查询子角色
+    giveIdentity: cohort + '/give/identity', //给群成员岗位
     joinRefuse: cohort + '/join/refuse', //加群组拒绝
     joinSuccess: cohort + '/join/success', //加群组通过
     pullPerson: cohort + '/pull/persons', //拉人进群组
-    removeIdentity: cohort + '/remove/identity', //移除群成员身份
+    removeIdentity: cohort + '/remove/identity', //移除群成员岗位
     removePerson: cohort + '/remove/persons', //移除群成员
     searchCohorts: cohort + '/search/cohorts', //搜索群聊
     update: cohort + '/update' //变更群组
@@ -70,10 +77,12 @@ export default {
     assignJob: company + '/assign/job', //分配岗位
     assignSubgroup: company + '/assign/subgroup', //分配子集团
     create: company + '/create', //创建单位
-    createAuthority: company + '/create/authority', //创建组织员工职权
+    createAuthority: company + '/create/authority', //创建组织员工角色
     createDepartment: company + '/create/department', //创建部门
     createGroup: company + '/create/group', //创建集团
-    createIdentity: company + '/create/identity', //创建组织员工身份标签
+    createIdentity: company + '/create/identity', //创建组织员工岗位标签
+    updateAuthority: company + '/update/authority', //更新角色
+    updateIdentity: company + '/update/identity', //更新岗位标签
     createJob: company + '/create/job', //创建岗位
     createSubgroup: company + '/create/subgroup', //创建子集团
     companyDelete: company + '/delete', //删除单位
@@ -81,25 +90,25 @@ export default {
     deleteGroup: company + '/delete/group', //删除集团
     deleteJob: company + '/delete/job', //删除岗位
     deleteSubgroup: company + '/delete/subgroup', //删除子集团
-    deleteAuthority: company + '/delete/authority', //删除职权
-    deleteIdentity: company + '/delete/identity', //删除身份
-    getAuthorityIdentities: company + '/get/authority/identitys', //查询职权身份
-    getAuthorities: company + '/get/authoritys', //查询职权
+    deleteAuthority: company + '/delete/authority', //删除角色
+    deleteIdentity: company + '/delete/identity', //删除岗位
+    getAuthorityIdentities: company + '/get/authority/identitys', //查询角色岗位
+    getAuthorities: company + '/get/authoritys', //查询角色
     getDepartmentPersons: company + '/get/department/persons', //查询部门员工
     getDepartments: company + '/get/departments', //查询部门
     getGroupCompanies: company + '/get/group/companys', //查询集团单位
     companyGetGroups: company + '/get/groups', //查询集团
-    getIdentityPersons: company + '/get/identity/persons', //查询身份的人
-    getIdentities: company + '/get/identitys', //查询身份
+    getIdentityPersons: company + '/get/identity/persons', //查询岗位的人
+    getIdentities: company + '/get/identitys', //查询岗位
     getJobPersons: company + '/get/job/persons', //查询岗位员工
     getJobs: company + '/get/jobs', //查询岗位
     getJoinGroupApply: company + '/get/join/group/apply', //查询加入集团申请
-    getJoinedCompany: company + '/get/joined/companys', //查询加入的公司
-    getPersons: company + '/get/persons', //查询公司员工
-    getSubAuthorities: company + '/get/subauthoritys', //查询子职权
+    getJoinedCompany: company + '/get/joined/companys', //查询加入的单位
+    getPersons: company + '/get/persons', //查询单位员工
+    getSubAuthorities: company + '/get/subauthoritys', //查询子角色
     getSubgroupCompanies: company + '/get/subgroup/companys', //查询子集团单位
     getSubgroups: company + '/get/subgroups', //查询子集团
-    giveIdentity: company + '/give/identity', //给员工身份
+    giveIdentity: company + '/give/identity', //给员工岗位
     joinApproval: company + '/join/approval', //加申请审批
     joinRefuse: company + '/join/refuse', //加申请拒绝
     joinSuccess: company + '/join/success', //加申请通过
@@ -111,7 +120,7 @@ export default {
     removeFromGroup: company + '/remove/from/group', //移除集团成员
     removeFromJob: company + '/remove/from/job', //移除岗位成员
     removeFromSubgroup: company + '/remove/from/subgroup', //移除子集团成员
-    removeIdentity: company + '/remove/identity', //移除员工身份
+    removeIdentity: company + '/remove/identity', //移除员工岗位
     searchCompany: company + '/search/companys', //搜索单位
     searchGroups: company + '/search/groups', //搜索单位
     update: company + '/update', //变更单位
@@ -125,7 +134,9 @@ export default {
     getAllSubgroups: company + '/get/all/subgroups', //查询所有子集团
     getCompanyTree: company + '/get/company/tree', //查询单位组织树
     getGroupTree: company + '/get/group/tree', //查询集团组织树
-    getAuthorityTree: company + '/get/authority/tree' //查询组织继承职权树
+    getAuthorityTree: company + '/get/authority/tree', //查询组织继承角色树
+    getAssignedDepartments: company + '/get/assigned/departments', //获取单位空间分配的部门
+    getTargetsByAuthority: company + '/get/targets/by/authority' //获取单位空间拥有角色的组织
   },
   market: {
     merchandise: market + '​/approval​/merchandise', //商品上架审核
@@ -144,7 +155,7 @@ export default {
     searchStaging: market + '/search/staging', //查询购物车
     unpublishMerchandise: market + '/unpublish', //下架商品
     updateMarket: market + '​/update', //更新市场
-    getSoftShareInfo: market + '/search/softshare' //获取共享仓库信息
+    getSoftShareInfo: market + '/search/softshare' //获取开放市场信息
   },
   order: {
     orderConfirm: order + '/confirm', //确认订单详情(买方确认收货)
@@ -159,23 +170,27 @@ export default {
     searchMerchandiseSellList: order + '/search/merchandise/sell/list', //卖方查询指定商品售卖订单列表
     searchPayList: order + '/search​/pay/list', //查询订单支付信息
     searchSellList: order + '/search/sell/list', //卖方查询售卖订单列表
-    udpate: order + '/update' //更新订单
+    udpate: order + '/update', //更新订单
+    updateDetail: order + '/update/detail', //更新订单详情
+    cancel: order + '/cancel', //取消订单
+    cancelBuy: order + '/cancel/buy/detail', //买方取消订单指定详情项
+    cancelSell: order + '/cancel/sell/detail', //卖方取消订单指定详情项
   },
   product: {
     createResource: product + '/create/resource', //创建产品资源
     createResources: product + '/create/resources', //批量创建产品资源
-    createShare: product + '/create/share', //分享产品
+    createShare: product + '/create/share', //共享产品
     createWebappmenu: product + '/create/webappmenu', //创建产品资源菜单
     delete: product + '/delete', //删除产品
-    deleteDistributeAuth: product + '/delete/distribute/auth', //取消职权分配
+    deleteDistributeAuth: product + '/delete/distribute/auth', //取消角色分配
     deleteDistributeTarget: product + '/delete/distribute/target', //取消组织对象的分配
     deleteResource: product + '/delete/resource', //删除产品资源
-    deleteShare: product + '/delete/share', //取消指定产品分享
+    deleteShare: product + '/delete/share', //取消指定产品共享
     deleteWebappmenu: product + '/delete/webappmenu', //删除资源菜单
-    distributionAuth: product + '/distribution/auth', //根据职权分配产品资源
+    distributionAuth: product + '/distribution/auth', //根据角色分配产品资源
     distributionTarget: product + '/distribution/target', //分配产品资源至下属组织/个人
     publishMerchandise: product + '/publish/merchandise', //产品所有者上架商品
-    queryDistributionAuth: product + '/query/distribution/auth', //查询产品资源职权分配记录
+    queryDistributionAuth: product + '/query/distribution/auth', //查询产品资源角色分配记录
     queryDistributionTarget: product + '/query/distribution/target', //查询产品资源组织/个人分配记录
     queryInfo: product + '/query/info', //查询产品详细信息
     queryOwnResource: product + '/query/own/resource', //查询组织/个人拥有的资源列表
@@ -187,10 +202,10 @@ export default {
     searchResource: product + '/search/resource', //查询产品资源列表
     searchOwnProduct: product + '/search/own/product', //模糊查找组织/个人产品
     searchPublishList: product + '/search/publish/List', //查询指定产品的上架信息
-    searchShare: product + '/search/share', //查询产品分享情况
-    searchShareProduct: product + '/search/share/product', //模糊查找分享商品
+    searchShare: product + '/search/share', //查询产品共享情况
+    searchShareProduct: product + '/search/share/product', //模糊查找共享商品
     searchWebappmenu: product + '/search​/webappmenu', //查询产品资源菜单
-    unpublishMerchandise: product + '​/unpublish​/merchandise', //下架商品
+    unpublishMerchandise: product + '/unpublish', //下架商品
     update: product + '/update', //更新产品
     updateMerchandise: product + '/update/merchandise', //更新商品信息
     updateResource: product + '/update/resource', //更新产品资源
@@ -198,7 +213,7 @@ export default {
     groupShare: product + '/group/share',
     searchGroupShare: product + '/search/group/share',
     deleteGroupShare: product + '/delete/group/share',
-    share: product + '/share', //创建针对单位个人的分享
+    share: product + '/share', //创建针对单位个人的共享
     searchUnitShare: product + '/search/share', //查询
     deleteUnitShare: product + '/delete/share', //删除
     // 不确定是否已存在
@@ -213,7 +228,10 @@ export default {
     delteDeptment: product + '/delete/distribution/to/deptment',
     delteAuthority: product + '/delete/distribution/to/authority',
     delteIdentity: product + '/delete/distribution/to/identity',
-    deltePerson: product + '/delete/distribution/to/person'
+    deltePerson: product + '/delete/distribution/to/person',
+    extendCreate: product + '/extend/create', //创建产品、资源的扩展
+    extendDelete: product + '/extend/delete', // 取消产品、资源的扩展
+    extendQuery: product + '/extend/query' // 查询产品、资源的扩展
   },
   // 历史记录
   history: {
@@ -244,6 +262,19 @@ export default {
     approvalPublish: appstore + '/approval/publish',
     pullTarget: appstore + '/pull/target',
     searchPublishApply: appstore + '/search/publish/apply'
+  },
+  object: {
+    get: (objName: string) => object + '/get/' + objName,
+    set: (objName: string) => object + '/set/' + objName,
+    delete: (objName: string) => object + '/delete/' + objName
+  },
+  collection: {
+    link: (linkKey: string) => collection + '/link/' + linkKey,
+    share: (collName: string) => collection + '/share/' + collName,
+    insert: (collName: string) => collection + '/insert/' + collName,
+    update: (collName: string) => collection + '/update/' + collName,
+    remove: (collName: string) => collection + '/remove/' + collName,
+    aggregate: (collName: string) => collection + '/aggregate/' + collName,
   }
   //others
 }

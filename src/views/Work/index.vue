@@ -23,8 +23,8 @@
       </grid-layout>
     </div>
 <!-- @mousedown="move" -->
-    <div class="layout-menu box" :style="MenuStyle" style="background: white" >
-      <el-button type="primary" icon="el-icon-s-check" @click="clearTemplate">清空</el-button>
+    <div class="layout-menu box" :style="MenuStyle" style="background: var(--el-bg-color-overlay);" >
+      <el-button type="primary" icon="DeleteFilled" @click="clearTemplate">清空</el-button>
       <div class="layout-menu-body__tree" v-show="listShow">
         <TheSearchInput placeholder="输入组件名" :filterText.sync="filterText" @filterText="changeFilterText">
         </TheSearchInput>
@@ -92,21 +92,21 @@
           </div>
         </div>
       </div>
-      <div style="height: 45px; border-top: 1px solid #ebeef5; margin-bottom: 8px" class="flex-center">
-        <el-button type="text" style="width: 100%; font-size: 16px; padding-top: 30px" @click="back">返回</el-button>
-        <div style="width: 1px; height: 100%; border: 1px solid #eeeeee; margin-top: 20px"></div>
-        <el-button type="text" style="width: 100%; font-size: 16px; padding-top: 30px" @click="handleSave">保存
+      <div style="height: 45px;" class="flex-center">
+        <el-button type="default" bg style=" font-size: 16px;" size="large" text @click="back">返回</el-button>
+        <!-- <div style="width: 1px; height: 100%; border: 1px solid #eeeeee; margin-top: 20px"></div> -->
+        <el-button type="primary" plain size="large" bg style=" font-size: 16px;" @click="handleSave">保存
         </el-button>
       </div>
       <div class="layout-menu__btnTopLeft" v-show="menuBtnShow && BtnDirection == 'left'"></div>
       <div class="layout-menu__btnBottomLeft" v-show="menuBtnShow && BtnDirection == 'left'"></div>
-      <div class="layout-menu__btnLeft flex-center" style="background: white" @click="handleMenuBtn"
+      <div class="layout-menu__btnLeft flex-center" style="background: var(--el-bg-color-overlay);" @click="handleMenuBtn"
         v-show="menuBtnShow && BtnDirection == 'left'">
         <div class="el-icon-caret-right" :style="menuShow ? 'transform: rotate(180deg)' : 'transform: rotate(0)'"></div>
       </div>
       <div class="layout-menu__btnTop" v-show="menuBtnShow && BtnDirection == 'right'"></div>
       <div class="layout-menu__btnBottom" v-show="menuBtnShow && BtnDirection == 'right'"></div>
-      <div class="layout-menu__btnRight flex-center" style="background: white" @click="handleMenuBtn"
+      <div class="layout-menu__btnRight flex-center" style="background: var(--el-bg-color-overlay);" @click="handleMenuBtn"
         v-show="menuBtnShow && BtnDirection == 'right'">
         <el-icon class="el-icon-caret-left" :style="menuShow ? 'transform: rotate(180deg)' : 'transform: rotate(0)'">
           <CaretLeft />
@@ -266,9 +266,9 @@ export default defineComponent({
       } else {
         // 关闭
         if (state.BtnDirection == 'right') {
-          menu = 'right:-205px;transition: all 0.5s ease;left:unset;'
+          menu = 'right:-199px;transition: all 0.5s ease;left:unset;'
         } else {
-          menu = 'transition: all 0.5s ease;margin-left:-205px'
+          menu = 'transition: all 0.5s ease;margin-left:-199px'
         }
       }
       return menu
@@ -412,6 +412,8 @@ export default defineComponent({
       let panelWidth = workSpace.clientWidth - 12,
         panelHeight = workSpace.clientHeight - 12
       let canvas = document.getElementById('canvasBg')
+      let  isDarkTheme = document.getElementsByClassName('dark')
+      console.log(isDarkTheme)
       if (canvas == null) return false
       canvas.width = panelWidth
       canvas.height = panelHeight
@@ -421,14 +423,14 @@ export default defineComponent({
       let hig = state.canvasBg.hig
       for (let h = panelHeight, j = 0; h > hig; h -= hig, j++) {
         for (let i = 0; i < 12; i++) {
-          drowJux(context, i * (w + 3.8) + 5, j * (hig + 3.8) + 5, w, hig - 1)
+          drowJux(context, i * (w + 3.8) + 5, j * (hig + 3.8) + 5, w, hig - 1 ,isDarkTheme[0])
         }
       }
     }
     //绘制矩形
-    const drowJux = (context, left, top, w, h) => {
+    const drowJux = (context, left, top, w, h,isDarkTheme) => {
       //设定图形边框的样式
-      context.strokeStyle = '#E0E5F3'
+      context.strokeStyle =isDarkTheme ? '#414243'  :  '#E0E5F3'
       //指定线宽
       context.lineWidth = 1
       context.strokeRect(left, top, w, h)
@@ -889,22 +891,22 @@ export default defineComponent({
       width: 20px;
       height: 20px;
       position: absolute;
-      top: 46%;
+      top: 45.5%;
       right: 100%;
       transform: translate(0, -50%);
       cursor: pointer;
-      background-image: radial-gradient(20px at 0px 0px, rgba(255, 255, 255, 0) 50px, #fff 50px);
+      background-image: radial-gradient(20px at 0px 0px, rgba(255, 255, 255, 0) 50px, var(--el-bg-color-overlay) 50px);
     }
 
     &__btnBottom {
       width: 20px;
       height: 20px;
       position: absolute;
-      top: 54%;
+      top: 54.5%;
       right: 100%;
       transform: translate(0, -45%);
       cursor: pointer;
-      background-image: radial-gradient(20px at 0px 20px, rgba(255, 255, 255, 0) 50px, #fff 50px);
+      background-image: radial-gradient(20px at 0px 20px, rgba(255, 255, 255, 0) 50px, var(--el-bg-color-overlay) 50px);
     }
 
     &__btnRight {
@@ -959,7 +961,16 @@ export default defineComponent({
     }
   }
 }
+.dark {
+  .layout-menu__btnTopLeft {
+    background-image: radial-gradient(20px at 0px 0px, rgba(0, 0, 0, 0) 50px, var(--el-bg-color-overlay) 50px);
 
+  }
+  .layout-menu__btnBottom {
+    background-image: radial-gradient(20px at 0px 20px, rgba(0, 0, 0, 0) 50px, var(--el-bg-color-overlay) 50px);
+
+  }
+} 
 .vue-grid-layout {
   position: relative;
   min-height: calc(100vh - 150px);
@@ -1001,13 +1012,16 @@ export default defineComponent({
 }
 
 .canvasBg {
-  background: rgb(242, 244, 249);
+  background: #f2f4f9;
   position: absolute;
   left: 0px;
   top: 0px;
   width: 100%;
   height: 100%;
   z-index: 1;
+}
+.dark .canvasBg {
+  background: var(--el-bg-color-page);
 }
 
 .el-icon-caret-right {
@@ -1016,7 +1030,7 @@ export default defineComponent({
 
 .text {
   display: none;
-  color: rgba(255, 255, 255, 1);
+  color: #ffffff;
 }
 
 .el-icon-star-off {

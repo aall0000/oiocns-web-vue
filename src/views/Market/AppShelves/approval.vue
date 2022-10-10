@@ -170,11 +170,11 @@
   .managerApproval {
     width: 100%;
     height: 100%;
-    background-color: #fff;
+
     .tabList {
       width: 100%;
       height: calc(100vh - 130px);
-      padding-left: 16px;
+      padding: 6px 6px 0;
     }
   }
 </style>

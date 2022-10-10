@@ -125,7 +125,7 @@ const mainRouter: RouteRecordRaw[] = [
         name: 'identity',
         component: () => import('@/views/Relation/identity/index.vue'),
         meta: {
-          title: '身份管理'
+          title: '岗位管理'
         }
       }
     ]
@@ -158,30 +158,12 @@ const mainRouter: RouteRecordRaw[] = [
     }
   },
   {
-    component: () => import('@/views/Work/personalApp.vue'),
-    name: 'personalApp',
-    path: '/personalApp',
-    meta: {
-      keepAlive: false,
-      title: '我的应用'
-    }
-  },
-  {
     component: () => import('@/views/Person/application/index.vue'),
     name: 'application',
     path: '/application',
     meta: {
       keepAlive: false,
       title: '我的申请'
-    }
-  },
-  {
-    component: () => import('@/views/ForeignApp/index.vue'),
-    name: 'ForeignApp',
-    path: '/online',
-    meta: {
-      keepAlive: false,
-      title: '外部应用'
     }
   },
   //个人中心信息设置路由
@@ -225,6 +207,16 @@ const mainRouter: RouteRecordRaw[] = [
     ]
   },
   {
+    component: () => import('@/views/ForeignApp/index.vue'),
+    name: 'ForeignApp',
+    path: '/online',
+    meta: {
+      keepAlive: false,
+      title: '外部应用'
+    }
+  },
+  // 应用市场 路由信息
+  {
     path: '/market',
     meta: {
       keepAlive: false,
@@ -245,7 +237,7 @@ const mainRouter: RouteRecordRaw[] = [
         name: 'marketGroup',
         component: () => import('@/views/Market/AppShare/group.vue'),
         meta: {
-          title: '分享集团'
+          title: '共享集团'
         }
       },
       {
@@ -253,13 +245,13 @@ const mainRouter: RouteRecordRaw[] = [
         name: 'marketUnit',
         component: () => import('@/views/Market/AppShare/unit.vue'),
         meta: {
-          title: '分享单位'
+          title: '共享单位'
         }
       },
       {
-        path: '/market/markList',
-        name: 'marketMarkList',
-        component: () => import('@/views/Market/AppList/index.vue'),
+        path: '/market/marketList',
+        name: 'marketList',
+        component: () => import('@/views/Market/MarketList/index.vue'),
         meta: {
           title: '商店列表'
         }
@@ -267,7 +259,7 @@ const mainRouter: RouteRecordRaw[] = [
       {
         path: '/market/appList',
         name: 'marketAppList',
-        component: () => import('@/views/Market/AppList/appList.vue'),
+        component: () => import('@/views/Market/MarketList/appList.vue'),
         meta: {
           title: '应用列表'
         }
@@ -280,12 +272,13 @@ const mainRouter: RouteRecordRaw[] = [
           title: '应用注册'
         }
       },
+      // 可使用应用 信息展示页面
       {
         path: '/market/detail/:id',
         name: 'marketAppDetail',
-        component: () => import('@/views/Market/AppRegister/index.vue'),
+        component: () => import('@/views/Market/AppInfo/index.vue'),
         meta: {
-          title: '应用详情'
+          title: '应用信息'
         }
       },
       {
@@ -293,25 +286,31 @@ const mainRouter: RouteRecordRaw[] = [
         name: 'softShare',
         component: () => import('@/views/Market/SoftShare/index.vue'),
         meta: {
-          title: '共享仓库'
+          title: '开放市场'
         }
       },
       {
         path: '/market/userManage',
         name: 'marketUserManage',
-        component: () => import('@/views/Market/AppList/userManage.vue'),
+        component: () => import('@/views/Market/MarketList/userManage.vue'),
         meta: {
           title: '用户管理'
         }
       },
-
-
       {
-        path: '/market/order',
-        name: 'marketOrder',
+        path: '/market/order/buy',
+        name: 'marketOrderBuy',
         component: () => import('@/views/Market/Order/index.vue'),
         meta: {
-          title: '我的订单'
+          title: '采购订单'
+        }
+      },
+      {
+        path: '/market/order/sell',
+        name: 'marketOrderSell',
+        component: () => import('@/views/Market/Order/index.vue'),
+        meta: {
+          title: '售卖订单'
         }
       },
       {
@@ -425,7 +424,7 @@ const mainRouter: RouteRecordRaw[] = [
 export const routes: RouteRecordRaw[] = [
   {
     path: '/',
-    redirect: '/home',
+    redirect: '/workHome',
     component: Layout,
     children: mainRouter
   },

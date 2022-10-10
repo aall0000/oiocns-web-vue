@@ -27,13 +27,13 @@
     <el-dialog v-model="dialogVisible" title="提示" width="30%">
       <el-form :model="form" label-width="120px">
         <el-form-item label="集团名称">
-          <el-input v-model="form.name" style="width: 80%" />
+          <el-input v-model="form.teamName" style="width: 80%" />
         </el-form-item>
         <el-form-item label="集团编码">
           <el-input v-model="form.code" style="width: 80%" />
         </el-form-item>
         <el-form-item label="集团简称">
-          <el-input v-model="form.teamName" style="width: 80%" />
+          <el-input v-model="form.name" style="width: 80%" />
         </el-form-item>
         <el-form-item label="集团代码">
           <el-input v-model="form.teamCode" style="width: 80%" />
@@ -59,15 +59,17 @@
   import { ElMessage ,ElMessageBox} from 'element-plus'
   import searchGroup from '@/components/searchs/index.vue'
   import DiyTable from '@/components/diyTable/index.vue'
+  import {chat} from '@/module/chat/orgchat'
+  import authority from '@/utils/authority'
 
   const store = useUserStore()
   const tableData = ref([])
   const diyTable = ref(null)
   const tableHead = ref([
     {
-      prop: 'id',
-      label: '集团ID',
-      name: 'id'
+      prop: 'name',
+      label: '集团名称',
+      name: 'name'
     },
     {
       prop: 'code',
@@ -75,24 +77,36 @@
       name: 'code'
     },
     {
-      prop: 'name',
-      label: '集团名称',
-      name: 'name'
+      prop: 'team.name',
+      label: '集团简称',
+      name: 'teamName'
     },
     {
-      prop: 'remark',
-      label: '集团描述',
-      name: 'remark'
+      prop: 'team.code',
+      label: '集团代号',
+      name: 'teamCode'
     },
     {
-      prop: 'belongId',
-      label: '管理单位',
-      name: 'belongId'
+      prop: 'identitys',
+      label: '我的岗位',
+      name: 'identitys',
+      width: '200'
+    },
+    {
+      prop: 'createUser',
+      label: '创建人',
+      name: 'createUser'
     },
     {
       prop: 'createTime',
-      label: '加入时间',
+      label: '创建时间',
       name: 'createTime'
+    },
+    {
+      prop: 'team.remark',
+      label: '简介',
+      name: 'teamRemark',
+      width: '300'
     },
     {
       type:'slot',
@@ -163,9 +177,6 @@
       .deleteGroup({
         data: {
           id: id
-        },
-        headers: {
-          Authorization: token
         }
       })
       .then((res: ResultType) => {
@@ -188,7 +199,6 @@
     // console.log(dialogVisible)
   }
   const save = () => {
-    let token = sessionStorage.getItem('TOKEN')
     $services.company
       .createGroup({
         data: {
@@ -198,9 +208,6 @@
           teamName: form.teamName,
           teamCode: form.teamCode,
           teamRemark: form.teamRemark
-        },
-        headers: {
-          Authorization: token
         }
       })
       .then((res: ResultType) => {
@@ -232,6 +239,13 @@
       },
     })
     if (success) {
+      data.result.forEach((item:any)=>{
+        let name = chat.getName(item.createUser)
+        if(name && name.length > 0){
+          item.createUser = name
+        }
+        item.identitys = authority.GetTargetIdentitys(item.id)
+      })
       tableData.value = data.result
       pageStore.total = data.total
       diyTable.value.state.page.total = data.total;
@@ -295,7 +309,7 @@
     .createdBody {
       height: calc(100vh - 220px);
       max-height: 1000px;
-      padding: 16px;
+      padding: 6px;
     }
     .createdBottom {
       position: absolute;

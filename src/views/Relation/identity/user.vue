@@ -1,49 +1,38 @@
 <template>
-    <div class="card">
-      <div class="header">
-        <div class="title">{{selectItem.name}}</div>
-        <div class="box-btns">
-          <el-button small link type="primary" @click="showGiveDialog">指派身份</el-button>
-        </div>
-      </div>
-      <div :style="{height:tabHeight-35+'px'}">
-        <div style="width: 100%; height: 100%">
-          <DiyTable
-            ref="diyTable"
-            :hasTableHead="false"
-            :tableData="users"
-            @handleUpdate="handleUpdate"
-            :tableHead="tableHead"
-          >
-            <template #operate="scope" >
-              <el-button link type="danger" size="small" @click="removeFrom(scope.row)" >移除人员</el-button>
-            </template>
-          </DiyTable>
-        </div>
+  <div class="card">
+    <div class="header">
+      <div class="title">{{selectItem.name}}</div>
+      <div class="box-btns">
+        <el-button small link type="primary" v-if="allowEdit()" @click="showGiveDialog">指派岗位</el-button>
       </div>
     </div>
+    <div :style="{height:tabHeight-50+'px'}">
+      <div style="width: 100%; height: 100%">
+        <DiyTable ref="diyTable" :hasTableHead="false" :tableData="users" @handleUpdate="handleUpdate"
+          :tableHead="tableHead">
+          <template #operate="scope">
+            <el-button link type="danger" size="small" v-if="allowEdit() && selectItem.value.id !== scope.row.id" @click="removeFrom(scope.row)">移除人员</el-button>
+          </template>
+        </DiyTable>
+      </div>
+    </div>
+  </div>
 
-  <el-dialog v-model="giveDialog" @close="hideGiveDialog" :title="'给人员 => ' + selectItem.name + ' 身份'" width="50%">
+  <el-dialog v-model="giveDialog" @close="hideGiveDialog" :title="'给人员 => ' + selectItem.name + ' 岗位'" width="50%">
     <el-input v-model="giveSearch" class="search" placeholder="搜索用户" @input="giveSearchChange">
       <template #prefix>
-        <el-icon class="el-input__icon"><Search /></el-icon>
+        <el-icon class="el-input__icon">
+          <Search />
+        </el-icon>
       </template>
     </el-input>
-    <DiyTable
-      ref="giveTable"
-      :hasTableHead="true"
-      :tableData="companyUsers"
-      :options="{
-        expandAll: false,
-        checkBox: true,
-        order: true,
-        selectLimit:0,
-        noPage: false
-      }"
-      @handleUpdate="giveTableChange"
-      :tableHead="columns"
-      :style="{height: '350px'}"
-    >
+    <DiyTable ref="giveTable" :hasTableHead="true" :tableData="companyUsers" :options="{
+      expandAll: false,
+      checkBox: true,
+      order: true,
+      selectLimit:0,
+      noPage: false
+    }" @handleUpdate="giveTableChange" :tableHead="columns" :style="{height: '350px'}">
     </DiyTable>
     <template #footer>
       <span class="dialog-footer">
@@ -60,18 +49,27 @@ import DiyTable from '@/components/diyTable/index.vue'
 import { onMounted, reactive, ref, watch } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { Search } from '@element-plus/icons-vue'
+import authority from '@/utils/authority'
 
 const props = defineProps<{
   tabHeight: number,
 }>()
+
+const allowEdit = () => {
+  if(selectItem.value && selectItem.value.id){
+    return authority.IsRelationAdmin([
+      selectItem.value.belongId,
+      authority.getSpaceId()
+    ])
+  }
+  return false
+}
 
 let selectItem = ref<any>({})
 const selectItemChange = (data: any) => {
   selectItem.value = data;
 };
 defineExpose({ selectItemChange });
-
-const company = ref<any>({})
 
 const tableHead = ref([
   {
@@ -83,19 +81,19 @@ const tableHead = ref([
     prop: 'name',
     label: '姓名',
     width: '240',
-    name:'name',
+    name: 'name',
   },
   {
     prop: 'team.code',
     label: '手机号',
     width: '330',
-    name:'teamCode',
+    name: 'teamCode',
   },
   {
     prop: 'team.remark',
     label: '座右铭',
     width: '330',
-    name:'teamRemark',
+    name: 'teamRemark',
   },
   {
     type: 'slot',
@@ -118,13 +116,13 @@ const columns = ref([
     prop: 'name',
     label: '姓名',
     width: '240',
-    name:'name',
+    name: 'name',
   },
   {
     prop: 'team.code',
     label: '手机号',
     width: '330',
-    name:'teamCode',
+    name: 'teamCode',
   }
 ])
 let companyUsers = ref<any>([])
@@ -140,14 +138,14 @@ const pageStore = reactive({
 const diyTable = ref(null)
 const giveTable = ref(null)
 
-// 加载身份下的用户
-const getUsers = ()=>{
+// 加载岗位下的用户
+const getUsers = () => {
   const data = selectItem
-  if(data){
+  if (data) {
     $services.cohort.getIdentityPerson({
       data: {
         id: selectItem.value.id,
-        offset: (pageStore.currentPage-1)*pageStore.pageSize,
+        offset: (pageStore.currentPage - 1) * pageStore.pageSize,
         limit: pageStore.pageSize
       }
     }).then((res: ResultType) => {
@@ -160,18 +158,18 @@ const getUsers = ()=>{
   }
 }
 
-const handleUpdate = (page: any)=>{
+const handleUpdate = (page: any) => {
   pageStore.currentPage = page.currentPage
   pageStore.pageSize = page.pageSize
   getUsers()
 }
 
 
-// 移除身份下的人员
-const removeFrom = (row: any) =>{
+// 移除岗位下的人员
+const removeFrom = (row: any) => {
   let url: string = 'removeIdentity';
   ElMessageBox.confirm(
-    `确定把 ${row.name} 从当前身份移除吗？`,
+    `确定把 ${row.name} 从当前岗位移除吗？`,
     '警告',
     {
       confirmButtonText: '确定',
@@ -194,74 +192,73 @@ const removeFrom = (row: any) =>{
       }
     })
   })
-  .catch(() => {
-    console.log('移除成功!')
+    .catch(() => {
+      console.log('移除成功!')
+    })
+}
+
+// 加载单位所有用户
+const getOrgUsers = (filter?: string) => {
+  debugger
+  let data = {
+    id: selectItem.value.belongId,
+    offset: (pageStore.currentPage - 1) * pageStore.pageSize,
+    limit: pageStore.pageSize
+  }
+  if (filter && filter.trim() != '') {
+    data = { ...data, ...{ filter } }
+  }
+  $services[selectItem.value.module][selectItem.value.persons]({
+      data,
+  }).then((res: ResultType) => {
+    if (res.code == 200 && res.success) {
+      // 去除已分配到岗位
+      let us = res.data.result || []
+      let userIds = []
+      if (users.value) {
+        userIds = users.value.map((u: any) => u.id);
+      }
+      const set: Set<string> = new Set(userIds)
+      companyUsers.value = us.filter((u: any) => !set.has(u.id))
+      pageStore.total = res.data.total - userIds.length
+      giveTable.value.state.page.total = pageStore.total;
+    }
   })
 }
 
-// 加载公司所有用户
-const getCompanyUsers = (filter?: string)=>{
-  let data = {
-    id: company.value.id,
-    offset: (pageStore.currentPage-1)*pageStore.pageSize,
-    limit: pageStore.pageSize
-  }
-  if(filter && filter.trim() != ''){
-    data = {...data, ...{filter}}
-  }
-  if(company.value){
-    $services.company.getPersons({
-      data,
-    }).then((res: ResultType) => {
-      if (res.code == 200 && res.success) {
-        // 去除已分配到身份
-        let us = res.data.result || []
-        let userIds =  []
-        if(users.value){
-          userIds = users.value.map((u: any) => u.id);
-        }
-        const set: Set<string> = new Set(userIds)
-        companyUsers.value = us.filter((u: any) => !set.has(u.id))
-        pageStore.total = res.data.total - userIds.length
-        giveTable.value.state.page.total = pageStore.total;
-      }
-    })
-  }
-}
-
 const giveDialog = ref<boolean>(false)
-const hideGiveDialog = ()=>{
+const hideGiveDialog = () => {
   giveDialog.value = false
   getUsers()
 }
 
-const showGiveDialog = ()=>{
-  if(!selectItem.value.id){
+const showGiveDialog = () => {
+  if (!selectItem.value.id) {
     ElMessage({
       type: 'warning',
-      message: '请选择身份'
+      message: '请选择岗位'
     })
     return false
   }
   giveDialog.value = true
-  getCompanyUsers()
+  getOrgUsers()
 }
 
 // 过滤数据
 const giveSearch = ref('')
-const giveTableChange = (page: any)=>{
+const giveTableChange = (page: any) => {
   pageStore.currentPage = page.currentPage
   pageStore.pageSize = page.pageSize
-  getCompanyUsers()
+  getOrgUsers()
 }
 
 // 分配页面搜索用户变化
-const giveSearchChange = (e: string)=>{
-  getCompanyUsers(e)
+const giveSearchChange = (e: string) => {
+  getOrgUsers(e)
 }
 
 
-// 给人员身份
+// 给人员岗位
 const giveIdentity = () => {
   const userIds = giveTable?.value?.state?.multipleSelection.map((u: any) => u.id);
   $services.company
@@ -287,7 +284,6 @@ watch(selectItem, () => {
 </script>
 
 <style lang='scss' scoped>
-
 .card {
   height: 100%;
   width: 100%;
@@ -303,6 +299,7 @@ watch(selectItem, () => {
       width: 30%;
       font-weight: bold;
     }
+
     .box-btns {
       text-align: right;
       padding-right: 14px;

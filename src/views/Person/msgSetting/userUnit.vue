@@ -31,7 +31,8 @@
                 :tableHead="tableHead"
               >
                 <template #option="scope">
-                  <el-button link type="danger" @click="handleExit(scope.row.id)">退出</el-button>
+                  <el-button v-if="!authority.IsSuperAdmin(scope.row.id)" link type="danger" @click="handleExit(scope.row.id)">退出</el-button>
+                  <el-button v-if="authority.IsSuperAdmin(scope.row.id)" link type="danger" @click="handleDelete(scope.row.id)">解散</el-button>
                 </template>
               </DiyTable>
             </div>
@@ -42,7 +43,7 @@
           ></CreateUnitDialog>
           <searchCompany
             v-if="friendDialog"
-            @closeDialog="closeDialog"
+            @closeDialog="()=> {friendDialog = false}"
             :serachType="3"
             @checksSearch="checksSearch"
           ></searchCompany>
@@ -61,6 +62,8 @@
   import searchCompany from '@/components/searchs/index.vue'
   import CreateUnitDialog from '@/views/Layout/components/createUnitDialog.vue'
   import DiyTable from '@/components/diyTable/index.vue'
+  import {chat} from '@/module/chat/orgchat'
+  import authority from '@/utils/authority'
 
   const store = useUserStore()
 
@@ -91,16 +94,34 @@
       width: '190'
     },
     {
-      prop: 'belongId',
-      label: '管理员',
-      name: 'belongId',
+      prop: 'team.code',
+      label: '团队代号',
+      name: 'teamCode',
+      width: '190'
+    },
+    {
+      prop: 'identitys',
+      label: '我的岗位',
+      name: 'identitys',
+      width: '200'
+    },
+    {
+      prop: 'createUser',
+      label: '设立人',
+      name: 'createUser',
       width: '200'
     },
     {
       prop: 'createTime',
-      label: '创建时间',
+      label: '设立时间',
       name: 'createTime',
       width: '200'
+    },
+    {
+      prop: 'team.remark',
+      label: '简介',
+      name: 'teamRemark',
+      width: '300'
     },
     {
       type: 'slot',
@@ -121,6 +142,29 @@
     }).then(() => {
       $services.company
         .exit({
+          data: {
+            id: id
+          }
+        })
+        .then((res: ResultType) => {
+          if (res.code == 200) {
+            ElMessage({
+              message: '退出成功',
+              type: 'warning'
+            })
+            getList()
+          }
+        })
+    })
+  }
+  const handleDelete = (id: string) => {
+    ElMessageBox.confirm('确定解散单位吗？', '提示', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
+    }).then(() => {
+      $services.company
+        .delete({
           data: {
             id: id
           }
@@ -158,6 +202,13 @@
       })
       .then((res: ResultType) => {
         if (res.success) {
+          res.data.result.forEach((item:any)=>{
+            let name = chat.getName(item.createUser)
+            if(name && name.length > 0){
+              item.createUser = name
+            }
+            item.identitys = authority.GetTargetIdentitys(item.id)
+          })
           dataList.list = res.data.result
           diyTable.value.state.page.total = res.data.total
         }
@@ -224,18 +275,18 @@
     height: 100%;
     .title {
       .body-head {
-        background: #fff;
-
+        background: var(--el-bg-color);
+        
         :deep(.el-tabs__item) {
-          font-size: 20px !important;
-          font-weight: 600;
+          // font-size: 20px !important;
+          // font-weight: 600;
           margin-left: 30px;
-          border-color: #1a5773;
+          // border-color: #1a5773;
         }
-        :deep(.el-tabs__header) {
-          padding-top: 20px;
-          margin: 0;
-        }
+        // :deep(.el-tabs__header) {
+        //   padding-top: 20px;
+        //   margin: 0;
+        // }
       }
 
       .body {
@@ -252,7 +303,7 @@
     height: 100%;
     box-sizing: border-box;
     .contet {
-      padding: 20px;
+      // padding: 20px;
       box-sizing: border-box;
       height: calc(100vh - 140px);
     }
@@ -261,13 +312,13 @@
       padding: 20px;
       display: flex;
       justify-content: space-between;
-      background: #fff;
+      background: var(--el-bg-color);
     }
     .createdBody {
-      height: calc(100vh - 220px);
+      // height: calc(100vh - 220px);
       box-sizing: border-box;
-      background: #fff;
-      padding: 16px;
+      background: var(--el-bg-color);
+      padding: 6px;
     }
   }
 </style>

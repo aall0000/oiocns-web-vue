@@ -16,12 +16,12 @@
 
     <div class="tab-container">
       <el-tabs v-model="activeName" @tab-click="handleClick">
-        <el-tab-pane label="我创建" name="我创建"> </el-tab-pane>
-        <el-tab-pane label="我加入" name="我加入"> </el-tab-pane>
-        <div v-show="mode === 'list'">
+        <el-tab-pane label="管理的" name="管理的"> </el-tab-pane>
+        <el-tab-pane label="加入的" name="加入的"> </el-tab-pane>
+        <div v-if="mode === 'list'">
           <List :type="activeName" />
         </div>
-        <div v-show="mode === 'card'">
+        <div v-if="mode === 'card'">
           <Card :type="activeName" />
         </div>
       </el-tabs>
@@ -37,13 +37,19 @@
   </el-card>
 
   <el-dialog v-model="createCohortDialog" title="创建群组" width="35%">
-    <el-form-item label="群组名称">
+    <el-form
+    ref="ruleFormRef"
+    :model="formData"
+    :rules="rules"
+    class="demo-ruleForm"
+  >
+    <el-form-item label="群组名称" prop="name">
       <el-input v-model="formData.name" placeholder="请输入群组名称" clearable />
     </el-form-item>
-    <el-form-item label="群组编号">
+    <el-form-item label="群组编号" prop="code">
       <el-input v-model="formData.code" placeholder="请输入群组编号" clearable />
     </el-form-item>
-    <el-form-item label="群组简介">
+    <el-form-item label="群组简介" prop="teamRemark">
       <el-input
         v-model="formData.teamRemark"
         placeholder="请输入群组简介"
@@ -52,10 +58,11 @@
         :rows="4"
       />
     </el-form-item>
+    </el-form>
     <template #footer>
       <span class="dialog-footer">
         <el-button @click="createCohortDialog = false">取消</el-button>
-        <el-button type="primary" @click="createCohort">确认</el-button>
+        <el-button type="primary" @click="createCohort(ruleFormRef)">确认</el-button>
       </span>
     </template>
   </el-dialog>
@@ -69,35 +76,79 @@
 </template>
 
 <script lang="ts" setup>
-  import { ref, onMounted } from 'vue'
+  import { onMounted, ref,reactive } from 'vue'
   import List from './list.vue'
   import Card from './card.vue'
   import $services from '@/services'
   import { ElMessage, TabsPaneContext } from 'element-plus'
   import { Plus, CirclePlus } from '@element-plus/icons-vue'
   import SearchCohort from '@/components/searchs/index.vue'
-
-  const mode = ref('card')
-  const activeName = ref('我创建')
+  import type { FormInstance,FormRules } from 'element-plus'
+  import CohortServices from '@/module/relation/cohort'
+  const cohortServices  = new CohortServices()
+  const mode = ref('list')
+  const activeName = ref('管理的')
+  const ruleFormRef = ref<FormInstance>()
 
   const createCohortDialog = ref(false)
-  const formData = ref<any>({})
+  const formData = ref<any>({
+    name:'',
+    code:'',
+    teamRemark:''
+  })
 
   const searchDialog = ref<boolean>(false)
 
   const handleClick = (tab: TabsPaneContext, event: Event) => {}
 
+  const rules = reactive<FormRules>({
+    name: [
+      { 
+        required: true, 
+        message: '请输入群组名称',
+        trigger: 'blur' 
+      },
+    ],
+    code: [
+      {
+        required: true,
+        message: '请输入群组编号',
+        trigger: 'blur',
+      },
+    ],
+    teamRemark: [
+      {
+        required: true,
+        message: '请输入群组简介',
+        trigger: 'blur',
+      },
+    ],
+   
+  })
   // 创建群组
-  const createCohort = () => {
-    $services.cohort.create({ data: formData.value }).then((res: ResultType) => {
-      if (res.code == 200) {
-        ElMessage({
-          message: '创建成功',
-          type: 'success'
-        })
-        createCohortDialog.value = false
+  const createCohort = async (formEl: FormInstance | undefined) => {
+    formEl.validate(async (valid) => {
+      if (valid) {
+       const data = await cohortServices.create(formData.value)
+       console.log('data',data)
+       if(data){
+          ElMessage({
+            message: '创建成功',
+            type: 'success'
+          })
+          createCohortDialog.value = false
+          let oldModel = mode.value;
+          mode.value = '';
+          setTimeout(() => {
+            mode.value = oldModel
+          }, 100);
+       }
+       
+      } else {
+        return false
       }
     })
+    
   }
 
   const checksSearch = (val: any) => {
@@ -112,31 +163,23 @@
     }
   }
   // 申请加入群组
-  const applyJoinCohort = (arr: Array<any>) => {
-    $services.cohort
-      .applyJoin({
-        data: {
-          id: arr.join(',')
-        }
+  const applyJoinCohort =  async (arr: Array<any>) => {
+    const data = await cohortServices.applyJoin(arr)
+    if (data) {
+      ElMessage({
+        message: '申请成功，请等待审核通过!',
+        type: 'success'
       })
-      .then((res: ResultType) => {
-        if (res.success) {
-          ElMessage({
-            message: '申请成功，请等待审核通过!',
-            type: 'success'
-          })
-          searchDialog.value = false
-        }
-      })
+      searchDialog.value = false
+    }
   }
-
   onMounted(() => {})
 </script>
 <style lang="scss" scoped>
   .container {
     // height: 100%;
     width: 100%;
-    margin: 10px;
+    margin: 3px;
     border: 0;
   }
 

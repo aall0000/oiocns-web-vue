@@ -3,7 +3,7 @@
     <el-tabs v-model="activeName" class="tabs"  ref="tabs" @tab-click="handleClick">
       <el-tab-pane label="单位列表" name="companies">
       </el-tab-pane>
-      <Companies :selectItem="selectItem"></Companies>
+      <Companies :tabHeight="props.tabHeight" :selectItem="selectItem"></Companies>
 
       <!-- <el-tab-pane label="角色体系" name="identity">
         <Authority :selectItem="selectItem"></Authority>
@@ -15,11 +15,12 @@
 import { ref, onMounted } from 'vue'
 import type { TabsPaneContext } from 'element-plus'
 import Companies from './companies.vue';
-import Authority from './authority.vue';
 
 const activeName = ref('companies')
 let selectItem = ref<any>({})
-
+const props = defineProps<{
+  tabHeight: any,     // 高度数据
+}>()
 // 获取单位树点击的信息
 const selectItemChange = (data: any) => {
   selectItem.value = data;

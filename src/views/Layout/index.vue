@@ -13,15 +13,16 @@
 
       <!-- <Breadcrumb></Breadcrumb> -->
       <el-main class="main-wrap">
+
         <Suspense>
           <template #default>
             <router-view v-slot="{ Component }">
-              <transition name="fade-transform">
-                <keep-alive v-if="$route.meta.keepAlive">
-                  <component :is="Component" />
-                </keep-alive>
-                <component v-else :is="Component" />
-              </transition>
+              <!-- <transition name="fade-transform"> -->
+              <keep-alive v-if="$route.meta.keepAlive">
+                <component :is="Component" />
+              </keep-alive>
+              <component v-else :is="Component" />
+              <!-- </transition> -->
             </router-view>
           </template>
 
@@ -29,6 +30,7 @@
             <LoadingVue />
           </template>
         </Suspense>
+
       </el-main>
       <!-- <el-footer>Copyright 2021 资产云开放协同创新中⼼ 主办单位：浙江省财政厅</el-footer> -->
       <!-- </el-container> -->
@@ -39,30 +41,33 @@
 <script lang="ts" setup>
 import CustomHeadr from './components/customHeader.vue'
 import MainAsideVue from './components/mainAside.vue'
-import Breadcrumb from './components/breadcrumb.vue'
+// import Breadcrumb from './components/breadcrumb.vue'
 import LoadingVue from './components/loading.vue'
 import { useUserStore } from '@/store/user'
-import orgChat from '@/hubs/orgchat'
-import { onMounted, onBeforeUnmount } from 'vue'
-const { userToken, queryInfo } = useUserStore()
+import authority from '@/utils/authority'
+import { onBeforeMount, onBeforeUnmount } from 'vue'
+import {chat} from '@/module/chat/orgchat'
 
-onMounted(() => {
-  orgChat.start(userToken, queryInfo.id)
+onBeforeMount(async () => {
+  await authority.Load()
+  chat.start(useUserStore().userToken)
 })
 
-onBeforeUnmount(()=>{
-  orgChat.unSubscribed()
-  orgChat.stop()
+onBeforeUnmount(() => {
+  chat.stop()
+  window.removeEventListener('beforeunload', chat.stop)
 })
 
-//初始化关闭
-window.addEventListener('beforeunload', function (e) {
-  orgChat.unSubscribed()
-  orgChat.stop()
-})
+// 页面刷新时 关闭握手
+window.addEventListener('beforeunload', chat.stop)
 
 </script>
-
+<style>
+.el-main.main-wrap>div {
+  min-width: 1200px !important;
+  overflow-x: auto;
+}
+</style>
 <style lang="scss" scoped>
 .el-header {
   --el-header-padding: 0 0 0 16px;
@@ -113,7 +118,9 @@ window.addEventListener('beforeunload', function (e) {
     // height: 100%;
     position: relative;
     padding: 0;
+
     // overflow-x: hidden;
   }
+
 }
 </style>

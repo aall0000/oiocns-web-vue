@@ -66,10 +66,9 @@
             label="序号"
             width="70"
           ></el-table-column>
-          <template v-for="(item, index) in tableHead">
+          <template v-for="(item, index) in tableHead" :key="'column' + index">
             <el-table-column
               v-if="item.type === 'slot'"
-              :key="index"
               v-bind="item"
               :sortable="item.sortable"
             >
@@ -81,7 +80,12 @@
                 {{ scope.column.label }}
               </template>
             </el-table-column>
-            <el-table-column v-else :key="'column' + index" v-bind="item"></el-table-column>
+            <el-table-column v-else-if="item.type === 'expand'" type="expand">
+              <template #default="scope">
+                <slot :name="item.name" :row="scope.row" :index="scope.$index"></slot>
+              </template>
+            </el-table-column>
+            <el-table-column v-else  v-bind="item"></el-table-column>
           </template>
         </el-table>
       </div>
@@ -119,7 +123,7 @@
 
 <script setup lang="ts">
   import { stubFalse } from 'lodash'
-  import { ref, reactive, toRefs, computed, onMounted } from 'vue'
+  import { ref, reactive, toRefs, computed, onMounted, watch } from 'vue'
   import { useUserStore } from '@/store/user'
 
   const store = useUserStore()
@@ -132,29 +136,35 @@
     children?: User[]
   }
   type Props = {
-    tableName: string
-    hasTableHead: boolean
-    hasTitle: boolean
-    hasTabs: boolean
+    tableName?: string
+    hasTableHead?: boolean
+    hasTitle?: boolean
+    hasTabs?: boolean
     tableHead: any[]
-    tableData: any[]
+    tableData?: any[]
     checkList?: any[]
-    options: {
+    pageSizes?: any[]
+    total?: number
+    loading?: boolean
+    options?: {
       expandAll?: boolean
       checkBox?: any
       order?: any
       noPage?: boolean
       selectLimit?: number //限制选择个数，默认20
     }
-    batchOperate: any[]
-    queryParams: any[]
-    cell: boolean
+    batchOperate?: any[]
+    queryParams?: any[]
+    cell?: boolean,
   }
   const props = withDefaults(defineProps<Props>(), {
     tableName: '',
     hasTableHead: false,
     hasTitle: true,
     hasTabs: false,
+    total: 0,
+    loading: false,
+    pageSizes: () => [20, 30, 50],
     tableHead: () => [],
     tableData: () => [],
     options: () => {
@@ -168,7 +178,7 @@
     },
     batchOperate: () => [],
     queryParams: () => [],
-    cell: false
+    cell: false,
   })
 
   const {
@@ -221,6 +231,19 @@
     'select',
     'selectionChange'
   ])
+
+  watch(
+    () => props.total,
+    (val, old) => {
+      state.page.total = val
+    }
+  )
+  watch(
+    () => props.pageSizes,
+    (val, old) => {
+      state.page.pageSizes = val
+    }
+  )
 
   const cellStyle = ({
     row,
@@ -301,17 +324,17 @@
     selectAll(false, false)
     page.value.pageSize = val
     page.value.currentPage = 1
-    emit('handleUpdate', page.value)
+    emit('handleUpdate', {pageSize:page.value.pageSize,current: page.value.current})
   }
   const handleCurrentChange = (val: any) => {
     diyTable.value.clearSelection()
     isAllSelect.value = true
     selectAll(false, false)
     page.value.currentPage = val
-    emit('handleUpdate', page.value)
+    emit('handleUpdate',  {pageSize:page.value.pageSize,current: page.value.current})
   }
   onMounted(() => {
-    console.log('props.options.selectLimit', props.options.selectLimit)
+    // console.log('props.options.selectLimit', props.options.selectLimit)
   })
   /**
    * 鼠标进入表格是隐藏groupselect的drop

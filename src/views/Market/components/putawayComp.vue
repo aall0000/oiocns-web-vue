@@ -35,20 +35,20 @@
       <el-input readonly v-model="props.info.typeName" />
     </el-form-item>
     <el-form-item label="应用权限:" prop="sellAuth">
-    <el-radio-group v-model.number="formLabelAlign.sellAuth">
+      <el-radio-group v-model.number="formLabelAlign.sellAuth">
         <el-radio label="使用权" />
         <el-radio label="所属权" />
       </el-radio-group>
     </el-form-item>
     <el-form-item label="使用费用:" prop="price">
       <el-input v-model.number="formLabelAlign.price" type="number" placeholder="请输入使用费用">
-      <template #append>元</template>
-    </el-input>
+        <template #append>元</template>
+      </el-input>
     </el-form-item>
     <el-form-item label="使用周期:" prop="days">
       <el-input v-model.number="formLabelAlign.days" type="number" placeholder="请输入使用周期">
-      <template #append>天</template>
-    </el-input>
+        <template #append>天</template>
+      </el-input>
     </el-form-item>
     <!-- <el-form-item label="应用说明" prop="caption">
       <el-input :rows="3" type="textarea" v-model="formLabelAlign.caption" />
@@ -66,6 +66,7 @@
   import API from '@/services'
   import { ElMessage, FormInstance, FormRules } from 'element-plus'
   import { onMounted, reactive, ref } from 'vue'
+  import { appstore } from '@/module/store/app'
   type PropType = {
     info: ProductType
   }
@@ -75,7 +76,7 @@
     caption: props.info.name,
     productid: props.info.id,
     price: undefined,
-    sellAuth: props.info.authority,
+    sellAuth: '使用权',
     marketId: undefined,
     information: '',
     days: undefined
@@ -110,39 +111,28 @@
       marketList.value = []
     }
   }
-// 提交上架
+  // 提交上架
   const onPutawaySubmit = () => {
     if (!formRef.value) return
     formRef.value.validate(async (valid, fields) => {
       if (valid) {
-        const { success } = await API.product.publish({
-          data: formLabelAlign
-        })
-        if (success) {
-          // getPageList()
-          ElMessage({
-            type: 'success',
-            message: '已提交上架申请'
-          })
-          resetForm()
-        }
+        await appstore.publishProduct(formLabelAlign)
+        resetForm()
       } else {
         console.log('上架error submit!', fields)
       }
     })
   }
 
-const emit = defineEmits(['closeDialog'])
-   // 重置注册表单
+  const emit = defineEmits(['closeDialog'])
+  // 重置注册表单
   const resetForm = () => {
     if (!formRef.value) return
     formRef.value.resetFields()
     emit('closeDialog')
   }
   const rules = reactive<FormRules>({
-    price: [
-      { required: false, message: '请输入使用费用', trigger: 'blur' },
-    ],
+    price: [{ required: false, message: '请输入使用费用', trigger: 'blur' }],
     marketId: [
       {
         required: true,

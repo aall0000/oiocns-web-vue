@@ -3,21 +3,21 @@
     <div class="tableBtn">
       <div class="tableBtn-title">
         <el-radio-group v-model="shareRadio" @change="shareChange" class="ml-4">
-          <el-radio label="1" size="large">分享给好友</el-radio>
-          <el-radio label="2" size="large">分享给群组</el-radio>
+          <el-radio label="1" size="large">共享给好友</el-radio>
+          <el-radio label="2" size="large">共享给群组</el-radio>
         </el-radio-group>
       </div>
       <el-button v-if="shareRadio === '1'" small link type="primary" @click="pullGroupDialog = true"
-        >分享给好友</el-button
+        >共享给好友</el-button
       >
       <el-button v-else small link type="primary" @click="pullGroupDialog = true"
-        >分享给群组</el-button
+        >共享给群组</el-button
       >
     </div>
     <DiyTable class="diytable" ref="diyTable" :tableData="tableData" :tableHead="tableHead">
       <template #operate="scope">
         <el-button link type="danger" size="small" @click="cancelShare(scope.row.id)"
-          >取消分享</el-button
+          >取消共享</el-button
         >
       </template>
     </DiyTable>
@@ -127,7 +127,7 @@
   type arrList = {
     id: string
   }
-  //分享
+  //共享
   const checksSearch = (val: any) => {
     let selectId: any[] = []
     val.value.forEach((el: { id: any }) => {
@@ -144,7 +144,7 @@
       if (res.success) {
         console.log(res)
         ElMessage({
-          message: '分享成功',
+          message: '共享成功',
           type: 'success'
         })
         if (url.value === 'share') {
@@ -156,7 +156,7 @@
       pullGroupDialog.value = false
     })
   }
-  //取消分享
+  //取消共享
   const cancelShare = (id: string) => {
     $services.product[deleteUrl.value]({
       data: {
@@ -167,7 +167,7 @@
     }).then((res: ResultType) => {
       if (res.success) {
         ElMessage({
-          message: '取消分享成功',
+          message: '取消共享成功',
           type: 'success'
         })
         if (deleteUrl.value === 'deleteUnitShare') {

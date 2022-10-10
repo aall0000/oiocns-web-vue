@@ -2,13 +2,14 @@
   <div>
     <el-form label-position="top" label-width="90px">
       <el-form-item label="⚙ 选择审批对象" prop="text" class="user-type">
-        <el-radio-group v-model="nodeProps.assignedType">
+        <el-radio-group v-model="nodeProps.assignedType" @change="assignedTypeChange">
           <el-radio v-for="t in approvalTypes" :label="t.type" :key="t.type">{{ t.name }}</el-radio>
         </el-radio-group>
-        <div v-if="nodeProps.assignedType === 'ASSIGN_USER'">
-          <el-button size="default" icon="el-icon-plus" type="primary" @click="selectUser" round>选择人员</el-button>
+        <div v-if="nodeProps.assignedType === 'USER'">
+          <el-button size="small" icon="el-icon-plus" type="primary" @click="selectUser(1)" round>选择人员</el-button>
           <org-items v-model="nodeProps.assignedUser"/>
         </div>
+  
         <div v-else-if="nodeProps.assignedType === 'SELF_SELECT'">
           <el-radio-group size="default" v-model="nodeProps.selfSelect.multiple">
             <el-radio-button :label="false">自选一个人</el-radio-button>
@@ -39,8 +40,8 @@
             <div style="color: #409EFF; font-size: small;">👉 直接主管为 第 1 级主管</div>
           </el-form-item>
         </div>
-        <div v-else-if="nodeProps.assignedType === 'ROLE'">
-          <el-button size="default" icon="el-icon-plus" type="primary" @click="selectRole" round>选择系统角色</el-button>
+        <div v-else-if="nodeProps.assignedType === 'JOB'">
+          <el-button size="default" icon="el-icon-plus" type="primary" @click="selectRole" round>选择岗位</el-button>
           <org-items v-model="nodeProps.role"/>
         </div>
         <div v-else-if="nodeProps.assignedType === 'FORM_USER'">
@@ -53,7 +54,7 @@
         <div v-else>
           <span class="item-desc">发起人自己作为审批人进行审批</span>
         </div>
-
+        <div v-if="nodeProps.friendDialogassigned && nodeProps.friendDialogassigned.length>0">已选择：<span v-for="(item, index) in nodeProps.friendDialogassigned" :key="index"><el-tag closable @close="handleClose(index)">{{item.name}}</el-tag></span></div> 
       </el-form-item>
 
       <el-divider></el-divider>
@@ -66,7 +67,9 @@
         </el-radio-group>
 
         <div style="margin-top: 10px" v-if="nodeProps.nobody.handler === 'TO_USER'">
-          <el-button size="default" icon="el-icon-plus" type="primary" @click="selectNoSetUser" round>选择人员</el-button>
+          <!-- <el-button size="default" icon="el-icon-plus" type="primary" @click="selectNoSetUser" round>选择人员</el-button> -->
+          <div v-if="nodeProps.friendDialogdefaultUser">已选择：{{nodeProps.friendDialogdefaultUser.name}}</div> 
+          <el-button size="small" icon="el-icon-plus" type="primary" @click="selectUser(2)" round>选择人员</el-button>
           <org-items v-model="nodeProps.assignedUser"/>
         </div>
 
@@ -75,7 +78,7 @@
       <div>
         <el-divider/>
         <el-form-item label="👩‍👦‍👦 多人审批时审批方式" prop="text" class="approve-mode">
-          <el-radio-group v-model="nodeProps.mode">
+        <el-radio-group v-model="nodeProps.mode">
             <!-- <el-radio label="NEXT">会签 （按选择顺序审批，每个人必须同意）</el-radio> -->
             <el-radio label="AND">会签（可同时审批，每个人必须同意）</el-radio>
             <el-radio label="OR">或签（有一人同意即可）</el-radio>
@@ -131,7 +134,7 @@
 
       </el-form-item>
     </el-form>
-    <searchFriend  v-if="friendDialog"  :selectLimit='0' @closeDialog="closeDialog"  @checksSearch='checksSearch'/>
+    <searchFriend  v-if="nodeProps.friendDialogmode"  :selectLimit='0' @closeDialog="closeDialog"  @checksSearch='checksSearch'/>
     <searchIdentity  v-if="identityDialog"  :selectLimit='0' @closeDialog="closeIdentityDialog" :serachType='7' @checksSearch='checksIdentitySearch'/>
     <!-- <org-picker :title="pickerTitle" multiple :type="orgPickerType" ref="orgPicker" :selected="orgPickerSelected"
                 @ok="selected"/> -->
@@ -151,9 +154,9 @@
   } from 'vue';
   import searchFriend from '@/components/searchs/index.vue'
   import searchIdentity from '@/components/searchs/index.vue'
+import { relative } from 'path/posix';
   // import OrgPicker from "@/components/common/OrgPicker";
   // import OrgItems from "../OrgItems";
-    
   export default defineComponent({
     name: 'ApprovalNodeConfig',
     components: {searchFriend,searchIdentity},
@@ -174,11 +177,11 @@
         orgPickerSelected: [],
         orgPickerType: 'user',
         approvalTypes: [
-          {name: '指定人员', type: 'ASSIGN_USER'},
+          {name: '人员', type: 'USER'},
           // {name: '发起人自选', type: 'SELF_SELECT'},
           // {name: '连续多级主管', type: 'LEADER_TOP'},
           // {name: '主管', type: 'LEADER'},
-          {name: '角色', type: 'ROLE'},
+          {name: '岗位', type: 'JOB'},
           // {name: '发起人自己', type: 'SELF'},
           // {name: '表单内联系人', type: 'FORM_USER'}
         ]
@@ -217,7 +220,7 @@
       });
       const showMode = computed(() => {
         switch (nodeProps.assignedType) {
-          case "ASSIGN_USER":
+          case "USER":
             return nodeProps.assignedUser.length > 0;
           case "SELF_SELECT":
             return nodeProps.selfSelect.multiple;
@@ -234,11 +237,15 @@
       //
       // const orgPicker = ref();
       //
-      const selectUser = () => {
+      const selectUser = (value) => {
+        debugger
         state.orgPickerSelected = select
         state.orgPickerType = 'user'
-        friendDialog.value = true;
+        proxy.$pinia.state.value.appwfConfig.selectedNode.props.friendDialogmode = value;
         // orgPicker.value.show()
+      };
+      const handleClose = (index) => {
+        proxy.$pinia.state.value.appwfConfig.selectedNode.props.friendDialogassigned.splice(index,1)
       };
       const selectNoSetUser = () => {
         state.orgPickerSelected = props.config.nobody.assignedUser
@@ -259,16 +266,34 @@
       const removeOrgItem = (index: number) => {
         select.splice(index, 1)
       };
+      const assignedTypeChange = () => {
+        proxy.$pinia.state.value.appwfConfig.selectedNode.props.friendDialogassigned = []
+      };
       const checksSearch = (val:any)=>{
+        switch(proxy.$pinia.state.value.appwfConfig.selectedNode.props.friendDialogmode){
+          case 1:
+            if(!proxy.$pinia.state.value.appwfConfig.selectedNode.props.friendDialogassigned || proxy.$pinia.state.value.appwfConfig.selectedNode.props.friendDialogassigned.length==0){
+              proxy.$pinia.state.value.appwfConfig.selectedNode.props.friendDialogassigned = []
+            }
+            for(let item of JSON.parse(JSON.stringify(val.value))){
+              proxy.$pinia.state.value.appwfConfig.selectedNode.props.friendDialogassigned.push(item) 
+            }
+            break;
+          case 2:
+          proxy.$pinia.state.value.appwfConfig.selectedNode.props.friendDialogdefaultUser =val.value[0]
+            break;
+        }
+        console.log(proxy.$pinia.state.value.appwfConfig.selectedNode.props.friendDialogdefaultUser)
         closeDialog();
       };
       const checksIdentitySearch= (val:any)=>{
         closeIdentityDialog();
       };
-      const friendDialog = ref<boolean>(false);
+      // const friendDialog = reactive({mode:0,defaultUser:null,assigned:null});
+
       const identityDialog = ref<boolean>(false);
       const closeDialog = ()=>{
-        friendDialog.value = false;
+        proxy.$pinia.state.value.appwfConfig.selectedNode.props.friendDialogmode = 0;
       }
       const closeIdentityDialog = ()=>{
         identityDialog.value = false;
@@ -286,11 +311,12 @@
         pickerTitle,
         nodeOptions,
         showMode,
-        friendDialog,
         identityDialog,
         //
         // orgPicker,
         //
+        handleClose,
+        assignedTypeChange,
         selectUser,
         selectNoSetUser,
         selectRole,
@@ -326,7 +352,7 @@ export default {
       orgPickerSelected: [],
       orgPickerType: 'user',
       approvalTypes: [
-        {name: '指定人员', type: 'ASSIGN_USER'},
+        {name: '指定人员', type: 'USER'},
         {name: '发起人自选', type: 'SELF_SELECT'},
         {name: '连续多级主管', type: 'LEADER_TOP'},
         {name: '主管', type: 'LEADER'},
@@ -370,7 +396,7 @@ export default {
     },
     showMode() {
       switch (this.nodeProps.assignedType) {
-        case "ASSIGN_USER":
+        case "USER":
           return this.nodeProps.assignedUser.length > 0;
         case "SELF_SELECT":
           return this.nodeProps.selfSelect.multiple;

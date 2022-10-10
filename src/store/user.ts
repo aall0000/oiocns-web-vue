@@ -29,10 +29,10 @@ export const useUserStore = defineStore({
       userInfo: {}, // 用户登录信息
       queryInfo: {} as QueryInfoType, // 用户详细信息
       userCompanys: [], // 获取用户组织列表 分页
+      loadCompanys: [],
       copyCompanys: [],
       userToken: '',
-      workspaceData: {}, // 当前选中的公司
-      userNameMap: new Map(),
+      workspaceData: {}, // 当前选中的单位
       userUnitInfo: {} as UnitInfoType //所在单位信息
     }
   },
@@ -49,59 +49,48 @@ export const useUserStore = defineStore({
       // paths 是一个数组，如果写了 就会只存储 包含的 变量，当然也可以写多个。
     ]
   },
-  getters: {
-    getUserName: (state) => {
-      return (userId: string): string => state.userNameMap.get(userId)
-    }
-  },
+  getters: { },
   actions: {
     async updateUserInfo(data: { username: string; password: string }) {
       // 获取用户登录信息
-      const res:ResultType = await $services.person.login({
-          data: {
-            account: data.username,
-            password: data.password
-          }
-        })
-
-        if (res.code == 200) {
-          this.userInfo = res.data
-          this.userToken = res.data.accessToken
-          this.workspaceData = {
-            id: res.data.workspaceId,
-            name: res.data.workspaceName
-          }
-          this.userCompanys = [this.workspaceData]
-          this.getQueryInfo()
-          return this.workspaceData
-        } else {
-          ElMessage({
-            message: res.msg,
-            type: 'warning'
-          })
-          return null
+      const res: ResultType = await $services.person.login({
+        data: {
+          account: data.username,
+          password: data.password
         }
+      })
+      if (res.success) {
+        this.userInfo = res.data
+        this.userToken = res.data.accessToken
+        this.workspaceData = {
+          id: res.data.workspaceId,
+          name: res.data.workspaceName
+        }
+        // this.userCompanys = [this.workspaceData]
+        await this.getQueryInfo(this.userToken)
+        return this.workspaceData
+      } else {
+        ElMessage({
+          message: res.msg,
+          type: 'warning'
+        })
+        return null
+      }
     },
-    getQueryInfo(token: string) {
+    async getQueryInfo(token: string) {
       if (token) {
         this.userToken = token
       }
       //获取用户详细信息
-      $services.person.queryInfo().then((res: ResultType) => {
-        if (res.code == 200) {
-          this.queryInfo = res.data
-          if (!token) {
-            this.getCompanyList(0)
-          }
-          console.log('搜索', res.data)
-          this.setUserNameMap(res.data.id, res.data.name)
-        } else {
-          ElMessage({
-            message: res.msg,
-            type: 'warning'
-          })
-        }
-      })
+      let res: ResultType = await $services.person.queryInfo()
+      if (res.success) {
+        this.queryInfo = res.data
+      } else {
+        ElMessage({
+          message: res.msg,
+          type: 'warning'
+        })
+      }
     },
     async getCompanyList(current: number, workspaceId: string, lazyLoad: boolean) {
       await $services.company
@@ -119,19 +108,24 @@ export const useUserStore = defineStore({
             // } else {
             //   this.userCompanys = res.data.result ? res.data.result : []
             // }
-            if(!res.data.result){
+            if (!res.data.result) {
+              console.log(workspaceId, this.userInfo)
+              this.getWorkspaceData(workspaceId, false)
               return
             }
-            this.userCompanys = [{
-              id: this.userInfo.workspaceId,
-              name: this.userInfo.workspaceName,
-              type:1
-            }, ...(res.data.result || [])]
+            this.userCompanys = [
+              {
+                id: this.userInfo.workspaceId,
+                name: this.userInfo.workspaceName,
+                type: 1
+              },
+              ...(res.data.result || [])
+            ]
             this.copyCompanys = JSON.parse(JSON.stringify(this.userCompanys))
             if (workspaceId) {
-              this.getWorkspaceData(workspaceId)
+              this.getWorkspaceData(workspaceId, false)
             } else {
-              this.getWorkspaceData(this.userInfo.workspaceId)
+              this.getWorkspaceData(this.userInfo.workspaceId, false)
             }
           } else {
             ElMessage({
@@ -155,7 +149,7 @@ export const useUserStore = defineStore({
           console.log(res)
           if (res.code == 200) {
             this.copyCompanys = JSON.parse(JSON.stringify(res.data.result))
-            this.getWorkspaceData(data.workspaceId)
+            this.getWorkspaceData(data.workspaceId, false)
           } else {
             ElMessage({
               message: res.msg,
@@ -165,42 +159,46 @@ export const useUserStore = defineStore({
         })
     },
 
-    async getWorkspaceData(id: string) {
+    async getWorkspaceData(id: string, getLoad: boolean) {
       await this.copyCompanys.forEach((el: any, index: number) => {
         if (id == el.id) {
-          let obj={}
-          if(el.type === 1){
+          let obj = {}
+          if (el.type === 1) {
             obj = {
               id: el.id,
               name: el.team ? el.team.name : el.name,
-              type:1
+              type: 1
             }
-          }
-          else{
+          } else {
             obj = {
               id: el.id,
               name: el.team ? el.team.name : el.name,
-              type:2,
-              authId:el.team.authId
+              type: 2,
+              authId: el.team.authId
             }
           }
 
           this.workspaceData = obj
           sessionStorage.setItem('WORKSPACE', JSON.stringify(obj))
-          this.userCompanys.splice(index, 1)
+          if (getLoad) {
+            // 防止选择单位时先删除后刷新
+            this.loadCompanys = JSON.parse(JSON.stringify(this.userCompanys))
+            this.userCompanys.splice(index, 1)
+          } else {
+            // 点击加载单位 去除当前单位
+            this.userCompanys.splice(index, 1)
+            this.loadCompanys = JSON.parse(JSON.stringify(this.userCompanys))
+          }
         }
       })
     },
     resetState() {
       // this.userInfo = null
       // this.queryInfo = null
-      // this.userCompanys = null
+      this.userCompanys = []
       // this.copyCompanys = null
       this.userToken = ''
       // this.workspaceData = null
     },
-    setUserNameMap(id: string, name: string) {
-      this.userNameMap.set(id, name)
-    }
   }
 })

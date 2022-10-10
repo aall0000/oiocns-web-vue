@@ -1,12 +1,22 @@
 <template>
   <div class="container">
     <div class="tab-list">
-      <el-table :data="state.cohorts" stripe class="table">
-        <el-table-column type="selection" width="50" />
+      <el-table border :data="state.cohorts" stripe class="table">
+        <el-table-column type="index" label="序号" width="70"></el-table-column>    
         <el-table-column prop="name" label="群组名称" width="240" />
         <el-table-column prop="code" label="群组编号"  width="200"/>
         <el-table-column prop="team.remark" label="群组简介" min-width="200"/>
-        <el-table-column prop="persons" label="群组成员" width="300">
+        <el-table-column prop="belongId" label="归属" min-width="200">
+          <template #default="scope">
+            <div>{{chat.getName(scope.row.belongId)}}</div>
+          </template>
+        </el-table-column>
+        <el-table-column prop="identitys" label="我的群身份" min-width="200">
+          <template #default="scope">
+            <div>{{authority.GetTargetIdentitys(scope.row.id)}}</div>
+          </template>
+        </el-table-column>
+        <el-table-column prop="persons" label="群组成员" width="200">
           <template #default="scope">
             <div v-for="(person, index) in scope.row.persons" class="avatar-container" :title="person.name">
               <el-avatar class="avatar" :size="24" >
@@ -17,20 +27,26 @@
             </div>
           </template>
         </el-table-column>
+        <el-table-column prop="createUser" label="创建人" min-width="100">
+          <template #default="scope">
+            <div>{{chat.getName(scope.row.createUser)}}</div>
+          </template>
+        </el-table-column>
+        <el-table-column prop="createTime" label="创建时间" min-width="200"/>
         <el-table-column prop="name" label="操作"  width="240">
           <template #default="scope">
             <el-button link type="primary" @click="toChat(scope.row)">进入会话</el-button>
             <el-button link type="primary" @click="invite(scope.row)">邀请成员</el-button>
             <el-dropdown>
-              <el-button link type="primary" class="dropdown-btn" @click="deleteCohort(scope.row.id)">更多</el-button>
+              <el-button link type="primary" class="dropdown-btn">更多</el-button>
               <template #dropdown>
                   <el-dropdown-menu>
-                    <el-dropdown-item v-if="props.type == '我创建'" @click="edit(scope.row)"><el-icon><Edit /></el-icon>修改群组</el-dropdown-item>
-                    <el-dropdown-item v-if="props.type == '我创建'" @click="toAuth(scope.row)"><el-icon><Edit /></el-icon>角色管理</el-dropdown-item>
-                    <el-dropdown-item v-if="props.type == '我创建'" @click="toIndentity(scope.row)"><el-icon><Avatar /></el-icon>身份管理</el-dropdown-item>
-                    <el-dropdown-item v-if="props.type == '我创建'" @click="moveAuth(scope.row)"><el-icon><Switch /></el-icon>转移权限</el-dropdown-item>
-                    <el-dropdown-item v-if="props.type == '我加入'" @click="exit(scope.row)"><el-icon><Remove /></el-icon>退出群聊</el-dropdown-item>
-                    <el-dropdown-item v-if="props.type == '我创建'" @click="deleteCohort(scope.row)"><el-icon><Delete /></el-icon>解散群组</el-dropdown-item>
+                    <el-dropdown-item v-if="props.type == '管理的'" @click="edit(scope.row)"><el-icon><Edit /></el-icon>修改群组</el-dropdown-item>
+                    <el-dropdown-item v-if="props.type == '管理的'" @click="toAuth(scope.row)"><el-icon><Edit /></el-icon>角色管理</el-dropdown-item>
+                    <el-dropdown-item v-if="props.type == '管理的'" @click="toIndentity(scope.row)"><el-icon><Avatar /></el-icon>身份管理</el-dropdown-item>
+                    <el-dropdown-item v-if="props.type == '管理的' && workspaceData.type !=2" @click="moveAuth(scope.row)"><el-icon><Switch /></el-icon>转移权限</el-dropdown-item>
+                    <el-dropdown-item v-if="props.type == '加入的'" @click="exit(scope.row)"><el-icon><Remove /></el-icon>退出群聊</el-dropdown-item>
+                    <el-dropdown-item v-if="props.type == '管理的'" @click="deleteCohort(scope.row)"><el-icon><Delete /></el-icon>解散群组</el-dropdown-item>
                   </el-dropdown-menu>
                 </template>
             </el-dropdown>
@@ -59,6 +75,12 @@
       </span>
     </template>
   </el-dialog>
+  <SearchGroupPerson
+  v-if="searchGroupDialog"
+  :serachType="2"
+  :id="checkId"
+  @closeDialog="searchGroupDialog = false"
+  @checksGroupSearch="checksGroupSearch" />
 </template>
 
 <script lang="ts" setup>
@@ -68,11 +90,16 @@ import { useUserStore } from '@/store/user'
 import { useRouter } from 'vue-router';
 import SearchUser from '@/components/searchs/index.vue'
 import { ElMessage, ElMessageBox } from 'element-plus';
-
-const { queryInfo } = useUserStore()
+import {chat} from '@/module/chat/orgchat'
+import authority from '@/utils/authority'
+import CohortServices from '@/module/relation/cohort'
+const cohortServices  = new CohortServices()
+const { queryInfo,workspaceData } = useUserStore()
 const router = useRouter()
 
 let searchDialog = ref<boolean>(false)
+
+const searchGroupDialog = ref<boolean>(false)
 
 const props = defineProps({
   type: {
@@ -91,17 +118,21 @@ const editCohortDialog = ref(false)
 
 // 获取我加入的群列表
 const getCohorts = async () => {
-  const res = await $services.cohort.getJoinedCohorts({ data: { offset: 0, limit: 10000 } })
+  const res = await $services.cohort.getJoinedCohorts({ data: { offset: 0, limit: 100 } })
   const { data, success } = res
-  if (success) {
-    if(props.type == '我创建'){
-      state.cohorts = data.result.filter((d: any) => d.createUser == queryInfo.id)
-    } else if(props.type == '我加入'){
-      state.cohorts = data.result.filter((d: any) => d.createUser !== queryInfo.id)
+  if (success  && data && data.result) {
+    if(props.type == '管理的'){
+      state.cohorts = data.result.filter((d: any) => {
+        return authority.IsRelationAdmin([d.id,d.belongId])
+      })
+    } else if(props.type == '加入的'){
+      state.cohorts = data.result.filter((d: any) => {
+        return !authority.IsRelationAdmin([d.id,d.belongId])
+      })
     }
     for(const c of state.cohorts ){
       // 获取群组成员
-      $services.cohort.getPersons({ data: { id: c.id, offset: 0, limit: 100000 } }).then((res: any) => {
+      $services.cohort.getPersons({ data: { id: c.id, offset: 0, limit: 1000 } }).then((res: any) => {
         if(res.success){
           c.persons = res.data.result;
         } else {
@@ -115,7 +146,7 @@ const getCohorts = async () => {
 
 // 进入会话
 const toChat = (cohort: any)=>{
-  router.push({ path: '/chat' })
+  router.push({ name: 'chat',params:{defaultOpenID:cohort.id,spaceId:cohort.belongId} })
 }
 
 // 修改群组信息
@@ -125,8 +156,8 @@ const edit = (cohort: any)=>{
   formData.value = { name: cohort.name, code: cohort.code, remark: cohort.team?.remark }
 }
 
-const update = ()=>{
-  const data = {
+const update = async ()=>{
+  const obj = {
     id: curCohort.value.id,
     name: formData.value.name,
     code: formData.value.code,
@@ -137,21 +168,46 @@ const update = ()=>{
     teamRemark: formData.value.remark,
     teamAuthId: curCohort.value.team.authId,
   }
-  $services.cohort.update({
-      data
-    }).then((res: ResultType) => {
-      if (res.success) {
-        ElMessage({
-          message: '修改成功',
-          type: 'success'
-        })
-        editCohortDialog.value = false
-        getCohorts()
-      }
+  const data = await cohortServices.update(obj)
+  if (data) {
+    ElMessage({
+      message: '修改成功',
+      type: 'success'
     })
+    editCohortDialog.value = false
+    getCohorts()
+  }
 }
-
-
+//权限转移
+const checksGroupSearch = (val:any)=>{
+  if (val.value.length > 0) {
+    updateBelong(val.value[0].id)
+  } else {
+    searchGroupDialog.value = false
+  }
+}
+const updateBelong = async (belongId?:string)=>{
+  const obj = {
+    id: curCohort.value.id,
+    name: curCohort.value.name,
+    code: curCohort.value.code,
+    thingId: curCohort.value.thingId,
+    belongId: belongId,
+    teamName: curCohort.value.name,
+    teamCode: curCohort.value.code,
+    teamRemark: curCohort.value.remark,
+    teamAuthId: curCohort.value.team.authId,
+  }
+  const data = await cohortServices.update(obj)
+    if (data) {
+      ElMessage({
+        message: '转让成功',
+        type: 'success'
+      })
+      searchGroupDialog.value = false;
+      getCohorts()
+    }
+}
 
 // 选择人员后的回调
 const checksSearch = (res: any)=>{
@@ -179,7 +235,7 @@ const invite = (cohort: any)=>{
   searchDialog.value = true
 }
 
-// 角色(职权)管理
+// 角色(角色)管理
 const toAuth = (cohort: any)=>{
   router.push({
     path: '/relation/authority',
@@ -193,7 +249,7 @@ const toAuth = (cohort: any)=>{
   })
 }
 
-// 身份管理
+// 岗位管理
 const toIndentity = (cohort: any)=>{
   router.push({
     path: '/relation/identity',
@@ -201,13 +257,19 @@ const toIndentity = (cohort: any)=>{
       title: '群组',
       belongId:  cohort.id,
       name: cohort.name,
+      module: 'cohort',
+      persons: 'getPersons',
     }
   })
 }
 
+const checkId=ref<string>('');
+
 // 转移权限
 const moveAuth = (cohort: any)=>{
-  ElMessage.warning('待开发。。。')
+  curCohort.value = cohort
+  searchGroupDialog.value = true;
+  checkId.value = cohort.id
 }
 
 // 退出群聊
@@ -274,15 +336,16 @@ watch(props, () => {
   getCohorts()
 });
 
-
 </script>
 <style lang="scss" scoped>
 .container{
-  background: #f0f2f5;
+  // background-color: var(--el-bg-color);
   // padding: 5px;
   width: 100%;
   height: 100%;
-
+  .tab-list{
+    height: calc(100vh - 230px);
+  }
   .table{
     width: 100%;
     height: 100%;

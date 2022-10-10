@@ -10,12 +10,6 @@
       >登 录</el-button
     >
     <div class="other-login">
-      <!-- <div class="other-login-box">
-        <div style="margin-right: 10px">其他登录方式</div>
-        <img class="loginImg" src="@/assets/img/shape.png" alt="" />
-        <img class="loginImg" src="@/assets/img/wb.png" alt="" />
-        <img class="loginImg" src="@/assets/img/we.png" alt="" />
-      </div> -->
       <div class="other-login__register" @click="register">注册用户</div>
     </div>
   </div>
@@ -30,7 +24,7 @@
     setup(prop, context) {
       const username = ref<any>()
       const forgetPassword = () => {
-        console.log('213213')
+        context.emit('forgetPassword')
       }
       let data = {
         activeName: 'first'

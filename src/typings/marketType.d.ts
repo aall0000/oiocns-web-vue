@@ -3,14 +3,28 @@ interface OptionType {
   value: string
   label?: string
   id?: string | number
-  authority?:string
-  belongId?:string
-  endTime?:string | boolean | number
+  authority?: string
+  belongId?: string
+  endTime?: string | boolean | number
 }
 // select数据类型
 interface selectType {
   label: string
   id: string | number
+}
+
+type shareTeam = {
+  code: string
+  createTime: string
+  createUser: string
+  id: string
+  name: string
+  remark: string
+  status: number
+  targetId: string
+  updateTime: string
+  updateUser: string
+  version: string
 }
 
 // 市场信息类型

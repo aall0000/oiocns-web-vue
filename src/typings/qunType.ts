@@ -1,5 +1,3 @@
-// @ts-nocheck
-
 //好友/群列表 数据类型
 interface userType {
   code: string
@@ -36,11 +34,12 @@ interface ImMsgChildType {
   spaceId?:string
   noRead?: number
   showTxt?:string
-  totalMsg?:number
   personNum?:number
+  isTop: boolean // 是否置顶
 }
 // 聊天 侧边栏展示列表类型
 interface ImMsgType {
+  hasTopSession?: boolean // 是否包含置顶会话
   chats: ImMsgChildType[]
   id: string
   name: string

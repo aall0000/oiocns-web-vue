@@ -1,6 +1,6 @@
 //审批节点默认属性
 export const APPROVAL_PROPS = {
-  assignedType: "ASSIGN_USER",
+  assignedType: "USER",
   mode: "AND",
   sign: false,
   nobody: {

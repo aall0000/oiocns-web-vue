@@ -8,8 +8,8 @@
       <div class="info" ref="infoWrap">
         <Info ref="info"/>
       </div>
-      <div class="body" ref="bodyWrap" :style="{height:tabHeight+'px'}">
-        <Body ref="body" />
+      <div class="body" ref="bodyWrap"  :style="{height:tabHeight+'px'}">
+        <Body ref="body" :tabHeight="tabHeight" />
       </div>
     </div>
   </div>
@@ -28,13 +28,12 @@
   const nodeClick = (selectItem: any)=>{
     info.value.selectItemChange(selectItem);
     body.value.selectItemChange(selectItem);
+    unitTree.value.selectItemChange(selectItem);
     setTimeout(() => {
       if(container.value && infoWrap.value){
         tabHeight.value=containerHeight.value - 6 - infoWrap.value.clientHeight
       }
     }, 100);
-      
-    
   }
   const container = ref(null)
   const infoWrap = ref(null)
@@ -64,13 +63,14 @@
         resize[i].left = resize[i].offsetLeft -left[i].offsetLeft
         // 鼠标拖动事件
         document.onmousemove = function (e) {
+          console.log('cccc',infoWrap.value.clientHeight)
 
           let endX = e.clientX
           let moveLen = resize[i].left + (endX - startX) // （endx-startx）=移动的距离。resize[i].left+移动的距离=左边区域最后的宽度
             console.log(moveLen)
           let maxT = box[i].clientWidth - resize[i].offsetWidth // 容器宽度 - 左边区域的宽度 = 右边区域的宽度
           if (moveLen < 240) moveLen = 240 // 左边区域的最小宽度为240px
-          if (moveLen > 580) moveLen = 580
+          if (moveLen > 450) moveLen = 450
           resize[i].style.left = moveLen // 设置左侧区域的宽度
           for (let j = 0; j < left.length; j++) {
             left[0].style.width = moveLen + 'px'
@@ -82,6 +82,7 @@
             
             // mid[0].style.width = (box[i].clientWidth - moveLen - 10) + 'px';
           }
+          tabHeight.value=containerHeight.value - 6 - infoWrap.value.clientHeight
         }
         // 鼠标松开事件
         document.onmouseup = function (evt) {
@@ -112,7 +113,7 @@
     background-position: center;
     /*z-index: 99999;*/
     font-size: 12px;
-    padding-top: 16px;
+    padding-top: 6px;
     padding-left: 1px;
     color: white;
   }
@@ -137,6 +138,7 @@
   .content{
     width: 77%;
     height: 100%;
+    flex: 1;
     // padding:0 3px;
     box-sizing: border-box;
     // background: #f0f2f5;

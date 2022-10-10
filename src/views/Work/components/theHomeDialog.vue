@@ -22,7 +22,7 @@
 import { ElMessage } from 'element-plus'
 import $services from '@/services'
 import { useUserStore } from '@/store/user'
-import anyStore from '@/utils/anystore'
+import { anystore } from '@/hubs/anystore'
 import type { FormInstance, FormRules } from 'element-plus'
 import { reactive, ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -77,14 +77,14 @@ const handleClick = async (formEl: FormInstance | undefined) => {
         workspaceId: store.workspaceData.id,
         content: arr
       }
-      anyStore.set(`${params.workspaceId}`, {
+      anystore.set(`${params.workspaceId}`, {
         operation: 'replaceAll',
         data: {
           name: '首页配置',
           // temps: props.dialogShow.sendData
           content: params.content
         }
-      }).then((res: ResultType) => {
+      }, "user").then((res: ResultType) => {
         if (res.success) {
           ElMessage({
             message: '添加成功',

@@ -29,7 +29,7 @@
           <el-table-column prop="data.teamRemark" label="描述">
             <template #default="scope">
               <el-tooltip :content="scope.row.remark" placement="bottom" effect="light">
-                <template #content> 
+                <template #content>
                   <div class="tooltip-text" style="width: 400px; max-height: 300px; overflow-y: auto;">{{scope.row.data.teamRemark}}</div>
                 </template>
                 <div class="remark-text">
@@ -37,34 +37,33 @@
                 </div>
               </el-tooltip>
             </template>
-            
+
           </el-table-column>
           <el-table-column label="操作" width="150">
             <template #default="{ row }">
-                <div class="cell-box">
-                  <el-dropdown :disabled="row.data.typeName =='工作组'">
-                <el-button link type="primary" size="small" :disabled="row.data.typeName =='工作组'">新增</el-button>
-                <template #dropdown>
-                  <el-dropdown-menu>
-                    <el-dropdown-item @click="create(row, '部门')">
-                      <el-icon class="el-icon--right">
-                        <plus />
-                      </el-icon>
-                      新增部门
-                    </el-dropdown-item>
-                    <el-dropdown-item @click="create(row, '工作组')">
-                      <el-icon class="el-icon--right">
-                        <plus />
-                      </el-icon>
-                      新增工作组
-                    </el-dropdown-item>
-                  </el-dropdown-menu>
-                </template>
-              </el-dropdown>
-              <el-button link type="primary" size="small" @click="edit(row)">编辑</el-button>
-
-                  <el-button link type="danger" size="small"  style="margin-left:0" @click="handleDel(row)" :disabled="row.data.typeName == '公司'">删除</el-button>
-                </div>
+              <div class="cell-box">
+                <el-dropdown :disabled="row.data.typeName =='工作组'">
+                  <el-button link type="primary" size="small" v-if="(row.data.typeName != '工作组' && authority.IsSpaceRelationAdmin())">新增</el-button>
+                  <template #dropdown>
+                    <el-dropdown-menu>
+                      <el-dropdown-item @click="create(row, '部门')">
+                        <el-icon class="el-icon--right">
+                          <plus />
+                        </el-icon>
+                        新增部门
+                      </el-dropdown-item>
+                      <el-dropdown-item @click="create(row, '工作组')">
+                        <el-icon class="el-icon--right">
+                          <plus />
+                        </el-icon>
+                        新增工作组
+                      </el-dropdown-item>
+                    </el-dropdown-menu>
+                  </template>
+                </el-dropdown>
+                <el-button link type="primary" size="small" v-if="(row.data.typeName != '单位' && authority.IsSpaceRelationAdmin())" @click="edit(row)">编辑</el-button>
+                <el-button link type="danger" size="small" style="margin-left:0" @click="handleDel(row)" v-if="(row.data.typeName != '单位' && authority.IsSpaceRelationAdmin())">删除</el-button>
+              </div>
             </template>
           </el-table-column>
         </el-table>
@@ -90,7 +89,7 @@
         <el-cascader
           :props="cascaderProps"
           :options="cascaderTree"
-          v-model="formData.parentIds"
+          v-model="formData.parentId"
           style="width: 100%"
           placeholder="请选择"
         />
@@ -133,7 +132,7 @@
         <el-cascader
           :props="cascaderProps"
           :options="cascaderTree"
-          v-model="formData.parentIds"
+          v-model="formData.parentId"
           style="width: 100%"
           placeholder="请选择"
         />
@@ -176,7 +175,7 @@
         <el-cascader
           :props="cascaderProps"
           :options="cascaderTree"
-          v-model="formData.parentIds"
+          v-model="formData.parentId"
           style="width: 100%"
           placeholder="请选择"
         />
@@ -218,7 +217,7 @@
         <el-cascader
           :props="cascaderProps"
           :options="cascaderTree"
-          v-model="formData.parentIds"
+          v-model="formData.parentId"
           style="width: 100%"
           placeholder="请选择"
         />
@@ -247,6 +246,7 @@
   import $services from '@/services'
   import { ElMessage,ElMessageBox } from 'element-plus';
   import { useRouter } from 'vue-router';
+  import authority from '@/utils/authority'
 
   const router = useRouter()
   let createDeptDialogVisible = ref<boolean>(false)
@@ -259,10 +259,8 @@
   const cascaderProps = {
     checkStrictly: true,
     value: 'id',
+    emitPath: false,
   }
-
-    // 节点ID和对象映射关系
-  const parentIdMap: any = {}
 
   let orgTree = ref<OrgTreeModel[]>([])
   let cascaderTree = ref<OrgTreeModel[]>([])
@@ -272,32 +270,10 @@
     $services.company.getCompanyTree({}).then((res: any)=>{
       orgTree.value = []
       orgTree.value.push(res.data)
-      initIdMap(orgTree.value)
       cascaderTree.value = filter(JSON.parse(JSON.stringify(orgTree.value)))
     })
   }
 
-  // 初始化ID和对象映射关系
-  const initIdMap = (nodes: any[]) => {
-    for(const node of nodes){
-      parentIdMap[node.id] = node
-      if(node.children){
-        initIdMap(node.children)
-      }
-    }
-  }
-  // 获取父节点到根节点的ID列表
-  const getParentIds = (node: any, parentIds: any[]): any[] =>{
-    const parentId = node.data.parentId
-    if(parentId && parentId != '0'){
-      parentIds.push(parentId)
-    }
-    const parentNode = parentIdMap[parentId]
-    if(parentNode){
-      parentIds = getParentIds(parentNode, parentIds)
-    }
-    return parentIds;
-  }
 
   // 过滤掉工作组作为表单级联数据
   const filter = (nodes: OrgTreeModel[]): OrgTreeModel[] => {
@@ -315,14 +291,12 @@
 
   // 新增
   const create = (row: any, type: string) =>{
+    formData.value = {parentId: row.id}
     if(type == '工作组'){
       createJobDialogVisible.value = true;
     } else {
       createDeptDialogVisible.value = true;
     }
-    let parentIds: any[] = [row.id]
-    parentIds = getParentIds(row, parentIds).reverse();
-    formData.value.parentIds = parentIds
   }
 
   // 编辑
@@ -332,13 +306,9 @@
     } else {
       editDeptDialogVisible.value = true;
     }
-    const parentIds = getParentIds(row, []).reverse();
     const obj = row.data;
-    formData.value.parentIds = parentIds
-
+    formData.value.parentId = row.id
     formData.value = {...formData.value, ...obj}
-
-
   }
 
   // 删除行
@@ -400,7 +370,7 @@
 
   //关闭弹窗清空
   const dialogHide = () => {
-    formData.value = {parentIds: formData.value.parentIds}
+    formData.value = {}
     createDeptDialogVisible.value = false
     editDeptDialogVisible.value = false
     createJobDialogVisible.value = false
@@ -409,17 +379,12 @@
 
   // 创建部门
   const createDept = () => {
-    let parentId = null;
-    const parentIds = formData.value.parentIds;
-    if (parentIds.length > 0) {
-      parentId = parentIds[parentIds.length - 1]
-    }
     $services.company.createDepartment({
       data: {
         id: formData.value.id,
         code: formData.value.code,
         name: formData.value.name,
-        parentId: parentId,
+        parentId: formData.value.parentId,
         teamName: formData.value.name,
         teamRemark: formData.value.teamRemark
       }
@@ -442,12 +407,6 @@
 
   // 编辑部门
   const editDept = ()=>{
-    let parentId = null;
-    const parentIds = formData.value.parentIds;
-    if (parentIds.length > 0) {
-      parentId = parentIds[parentIds.length - 1]
-    }
-    formData.value.parentId = parentId
     $services.company.updateDepartment({
       data: formData.value
     }).then((res: ResultType) => {
@@ -469,17 +428,12 @@
 
   // 创建工作组
   const createJob  = () => {
-    let parentId = null;
-    const parentIds = formData.value.parentIds;
-    if (parentIds.length > 0) {
-      parentId = parentIds[parentIds.length - 1]
-    }
     $services.company.createJob({
       data: {
         id: formData.value.id,
         code: formData.value.code,
         name: formData.value.name,
-        parentId: parentId,
+        parentId: formData.value.parentId,
         thingId: formData.value.thingId,
         teamName: formData.value.name,
         teamRemark: formData.value.teamRemark
@@ -503,12 +457,6 @@
 
   // 编辑工作组
   const editJob = ()=>{
-    let parentId = null;
-    const parentIds = formData.value.parentIds;
-    if (parentIds.length > 0) {
-      parentId = parentIds[parentIds.length - 1]
-    }
-    formData.value.parentId = parentId
     $services.company.updateJob({
       data: formData.value
     }).then((res: ResultType) => {

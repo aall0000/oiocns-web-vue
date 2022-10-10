@@ -2,12 +2,12 @@
   <div class="unitLayout">
     <div class="tableBtn">
       <div class="tableBtn-title">{{ groupName }}</div>
-      <el-button small link type="primary" @click="pullGroupDialog = true">分享集团</el-button>
+      <el-button small link type="primary" @click="pullGroupDialog = true">共享集团</el-button>
     </div>
     <DiyTable class="diytable" ref="diyTable" :tableData="tableData" :tableHead="tableHead">
       <template #operate="scope">
         <el-button link type="danger" size="small" @click="cancelShare(scope.row.id)"
-          >取消分享</el-button
+          >取消共享</el-button
         >
       </template>
     </DiyTable>
@@ -139,7 +139,7 @@
       .then((res: ResultType) => {
         if (res.success) {
           ElMessage({
-            message: '分享成功',
+            message: '共享成功',
             type: 'success'
           })
           getShareHistory()
@@ -147,7 +147,7 @@
         pullGroupDialog.value = false
       })
   }
-  //取消分享
+  //取消共享
   const cancelShare = (id: string) => {
     $services.product
       .deleteGroupShare({
@@ -160,7 +160,7 @@
       .then((res: ResultType) => {
         if (res.success) {
           ElMessage({
-            message: '取消分享成功',
+            message: '取消共享成功',
             type: 'success'
           })
           getShareHistory()

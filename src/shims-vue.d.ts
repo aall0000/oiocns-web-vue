@@ -16,3 +16,6 @@ declare module '*.svg' {
   export default component;
 }
 declare module 'vue-grid-layout';
+declare module 'qrcode';
+declare module '@wcjiang/notify';
+declare module 'pako';

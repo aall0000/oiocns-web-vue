@@ -1,10 +1,7 @@
 import { defineStore } from 'pinia'
 import $services from '@/services'
 import { ElMessage } from 'element-plus'
-import { type } from 'os'
-import { Search } from '@element-plus/icons-vue'
-import { forEach } from 'lodash'
-import { el } from 'element-plus/es/locale'
+
 const MAXLIMIT = 9999999999999
 type MarketInfoType = {
   market: object
@@ -23,6 +20,7 @@ export const useMarketStore = defineStore({
   },
   getters: {
     getMarketName: (state) => {
+      console.log(state.marketMap)
       return (id: string): string => state.marketMap.get(id)
     }
   },
@@ -38,6 +36,7 @@ export const useMarketStore = defineStore({
           }
         })
         .then(async (res: ResultType) => {
+
           if (res.success) {
             const {result = [],total = 0} = res.data
             result.forEach((item: { id: any; name: any })=>{

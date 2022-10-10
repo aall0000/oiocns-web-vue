@@ -9,19 +9,6 @@
         <el-form-item label="单位名称">
           <el-input v-model="formModel.name" />
         </el-form-item>
-        <!-- <el-form-item label="单位类型">
-          <el-select class="select" v-model="formModel.type" placeholder="股份有限公司">
-            <el-option
-              v-for="item in options2"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            />
-          </el-select>
-        </el-form-item> -->
-        <el-form-item label="单位名称">
-          <el-input v-model="formModel.code" />
-        </el-form-item>
         <el-form-item label="社会信用代码">
           <el-input v-model="formModel.code" />
         </el-form-item>
@@ -171,14 +158,14 @@ const upDateCompany = ()=>{
     }
   }
     .body {
-      height: calc(100% - 76px);
+      height: calc(100% - 66px);
       width: 100%;
       overflow-y:auto;
       position: absolute;
       background-color: #fff;
-      border-left: 16px solid #eff0f4;
-      border-top: 16px solid #eff0f4;
-      border-right: 16px solid #eff0f4;
+      border-left: 6px solid #eff0f4;
+      border-top: 6px solid #eff0f4;
+      border-right: 6px solid #eff0f4;
 
       .form1 {
         width: 100%;
