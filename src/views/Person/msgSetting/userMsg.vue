@@ -41,6 +41,7 @@
         <div class="button">
           <el-button type="primary" @click="update()">更新信息</el-button>
           <el-button type="primary" @click="updatePassword()">修改密码</el-button>
+          <el-button type="primary" @click="openProcessDesign()">测试流程</el-button>
         </div>
       </div>
       <div class="bodyRight">
@@ -93,18 +94,25 @@
       </template>
     </el-dialog>
   </div>
+  <ProcessDesign ref="processDesignRef" />
 </template>
 
 <script lang="ts" setup>
+  // @ts-nocheck
+  import { ArrowLeft } from '@element-plus/icons-vue'
   // import { regionData, CodeToText } from 'element-china-area-data'
   import { onMounted, reactive, ref } from 'vue'
   import { onBeforeMount } from 'vue'
   import $services from '@/services'
+  import console from 'console'
   import { useUserStore } from '@/store/user'
-  import { ElMessage, ElMessageBox } from 'element-plus'
+  
+  import ProcessDesign from '@/components/goWorkflow/ProcessDesign.vue';
+  const processDesignRef = ref();
+
   const store = useUserStore()
   const labelPosition = ref<'top'>('top')
-
+  
   const formModel = reactive({
     nickName: '',
     account: '',
@@ -191,13 +199,12 @@
           dialogVisible.value = false
         }
       })
-      .catch((err: any) => {
-        ElMessage({
-          message: '填写的信息有错误 请检查所填信息',
-          type: 'error'
-        })
-      })
   }
+  function openProcessDesign(){
+    console.log("测试流程");
+    processDesignRef.value.openDialog();
+  }
+
   const updatePassword = () => {
     dialogVisible.value = true
   }
@@ -307,7 +314,6 @@
         flex:1;
         margin-left: 24px;
         // width: 40%;
-
         .touX {
           width: 220px;
           // display: flex;

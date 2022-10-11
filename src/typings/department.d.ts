@@ -16,7 +16,7 @@ interface cohortType{
     teamCode?:string,
     teamName?:string,
     teamRemark?:string,
-    thingId:string
+    thingId?:string
 }
 interface pageStoreType {
     offset: number
