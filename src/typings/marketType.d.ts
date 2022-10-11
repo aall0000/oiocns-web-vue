@@ -70,7 +70,9 @@ interface AppResourcesType {
   link: string
   code: string
   privateKey: string
-  customId?: string
+  customId?: number
+  flows: any
+  components: any
 }
 // 注册应用 资源所需操作类型
 type ProductMenuEventType = 'Add' | 'Delete' | 'Up' | 'Down'

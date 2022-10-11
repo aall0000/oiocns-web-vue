@@ -113,6 +113,8 @@ class appStore {
    * @return 返回接口调用结果
    */
   public async onRegister(params: any) {
+    console.log(params)
+
     const { success } = await API.product.register({
       data: params
     })
@@ -415,7 +417,7 @@ export class Application {
       }
       const { result = [], total = 0 } = data
       this.tabs = result
-      this.tabs.forEach((el:any) => {
+      this.tabs.forEach((el: any) => {
         el.customId = el.id
       })
       return this.tabs
