@@ -54,7 +54,7 @@
         <div v-else>
           <span class="item-desc">发起人自己作为审批人进行审批</span>
         </div>
-        <div v-if="nodeProps.friendDialogassigned && nodeProps.friendDialogassigned.length>0">已选择：<span v-for="(item, index) in nodeProps.friendDialogassigned" :key="index"><el-tag closable @close="handleClose(index)">{{item.name}}</el-tag></span></div> 
+        <div v-if="nodeProps.assignedUser && nodeProps.assignedUser.length>0">已选择：<span v-for="(item, index) in nodeProps.assignedUser" :key="index"><el-tag closable @close="handleClose(index)">{{item.name}}</el-tag></span></div> 
       </el-form-item>
 
       <!-- <el-divider></el-divider>
@@ -266,7 +266,7 @@ import { title } from 'process';
         // orgPicker.value.show()
       };
       const handleClose = (index) => {
-        proxy.$pinia.state.value.appwfConfig.selectedNode.props.friendDialogassigned.splice(index,1)
+        proxy.$pinia.state.value.appwfConfig.selectedNode.props.assignedUser.splice(index,1)
       };
       const selectNoSetUser = () => {
         state.orgPickerSelected = props.config.nobody.assignedUser
@@ -288,18 +288,18 @@ import { title } from 'process';
         select.splice(index, 1)
       };
       const assignedTypeChange = () => {
-        proxy.$pinia.state.value.appwfConfig.selectedNode.props.friendDialogassigned = []
+        proxy.$pinia.state.value.appwfConfig.selectedNode.props.assignedUser = []
       };
       const checksSearch = (val:any)=>{
         
         switch(proxy.$pinia.state.value.appwfConfig.selectedNode.props.friendDialogmode){
           case 1:
           case 2:
-            if(!proxy.$pinia.state.value.appwfConfig.selectedNode.props.friendDialogassigned || proxy.$pinia.state.value.appwfConfig.selectedNode.props.friendDialogassigned.length==0){
-              proxy.$pinia.state.value.appwfConfig.selectedNode.props.friendDialogassigned = []
+            if(!proxy.$pinia.state.value.appwfConfig.selectedNode.props.assignedUser || proxy.$pinia.state.value.appwfConfig.selectedNode.props.assignedUser.length==0){
+              proxy.$pinia.state.value.appwfConfig.selectedNode.props.assignedUser = []
             }
             for(let item of JSON.parse(JSON.stringify(val))){
-              proxy.$pinia.state.value.appwfConfig.selectedNode.props.friendDialogassigned.push(item) 
+              proxy.$pinia.state.value.appwfConfig.selectedNode.props.assignedUser.push(item) 
             }
             break;
         }

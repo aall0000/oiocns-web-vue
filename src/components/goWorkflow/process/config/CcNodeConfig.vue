@@ -70,18 +70,6 @@
       }
       const friendDialogmode = ref(0)
       const checksSearch = ()=>{
-        // proxy.$pinia.state.value.appwfConfig.selectedNode.props
-        // switch(friendDialogmode.value){
-        //   case 1:
-        //   case 2:
-        //     if(!proxy.$pinia.state.value.appwfConfig.selectedNode.props.friendDialogassigned || proxy.$pinia.state.value.appwfConfig.selectedNode.props.friendDialogassigned.length==0){
-        //       proxy.$pinia.state.value.appwfConfig.selectedNode.props.friendDialogassigned = []
-        //     }
-        //     for(let item of JSON.parse(JSON.stringify(val))){
-        //       proxy.$pinia.state.value.appwfConfig.selectedNode.props.friendDialogassigned.push(item) 
-        //     }
-        //     break;
-        // }
         closeDialog();
       };
       const closeDialog = ()=>{
