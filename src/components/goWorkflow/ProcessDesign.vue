@@ -143,7 +143,7 @@
 						groupId: undefined,
 						formItems: [],
 						resource: {
-							id: "root",
+							nodeId: "ROOT",
 							parentId: null,
 							type: "ROOT",
 							name: "发起人",

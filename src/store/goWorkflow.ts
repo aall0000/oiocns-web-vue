@@ -21,7 +21,7 @@ export const useAppwfConfig = defineStore({
 	}),
 	actions: {
 		async addNodeMap(data: any) {
-			this.nodeMap.set(data.nodeid, data.node);
+			this.nodeMap.set(data.nodeId, data.node);
 		},
 		async setSelectedNode(data: any) {
 			this.selectedNode = data;

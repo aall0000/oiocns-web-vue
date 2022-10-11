@@ -125,7 +125,7 @@
         <div v-if="nodeProps.refuse.type === 'TO_NODE'">
           <span>指定节点:</span>
           <el-select style="margin-left: 10px; width: 150px;" placeholder="选择跳转步骤" size="small" v-model="nodeProps.refuse.target">
-            <el-option v-for="(node, i) in nodeOptions" :key="i" :label="node.name" :value="node.id"  :disabled="node.disabled"></el-option>
+            <el-option v-for="(node, i) in nodeOptions" :key="i" :label="node.name" :value="node.nodeId"  :disabled="node.disabled"></el-option>
           </el-select>
         </div>
 
@@ -226,8 +226,8 @@ import { title } from 'process';
         var disabled = false;
         proxy.$pinia.state.value.appwfConfig.nodeMap.forEach((v: any) => {
           if (excType.indexOf(v.type) === -1) {
-            disabled = proxy.$pinia.state.value.appwfConfig.selectedNode.id == v.id || disabled
-            values.push({id: v.id, name: v.name,disabled:disabled})
+            disabled = proxy.$pinia.state.value.appwfConfig.selectedNode.nodeId == v.nodeId || disabled
+            values.push({nodeId: v.nodeId, name: v.name,disabled:disabled})
           }
         })
         return values
@@ -410,7 +410,7 @@ export default {
       const excType = ['ROOT', 'EMPTY', "CONDITION", "CONDITIONS", "CONCURRENT", "CONCURRENTS"]
       this.$store.state.nodeMap.forEach((v) => {
         if (excType.indexOf(v.type) === -1) {
-          values.push({id: v.id, name: v.name})
+          values.push({nodeId: v.nodeId, name: v.name})
         }
       })
       return values
