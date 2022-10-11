@@ -92,7 +92,8 @@
       type: 'slot',
       prop: 'options',
       label: '操作',
-      name: 'options'
+      name: 'options',
+      fixed: 'right'
     }
   ])
   const options = ref<any>({

@@ -393,7 +393,7 @@ export class Application {
       }
       const { result = [], total = 0 } = data
       this.tabs = result
-      this.tabs.forEach((el) => {
+      this.tabs.forEach((el:any) => {
         el.customId = el.id
       })
       return this.tabs
@@ -707,13 +707,13 @@ export class Application {
     } else if (this.opertion == 2) {
       module = 'company'
       action = 'getGroupCompanies'
-      if (node.TypeName === '子集团') {
+      if (node.data.typeName === '子集团') {
         action = 'getSubgroupCompanies'
       }
     } else {
       module = 'person'
       action = 'getFriends'
-      if (node.typeName === '群组') {
+      if (node.data.typeName === '群组') {
         module = 'cohort'
         action = 'getPersons'
       }

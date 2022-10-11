@@ -23,7 +23,6 @@
     </MarketCard>
 
     <div class="market-content box">
-
       <div class="getApp-radio">
         <h4 class="box-ul-title">我的商店</h4>
         <div class="search">
@@ -90,9 +89,7 @@
           </ShopCard>
         </template>
       </div>
-      <div class="page-flex" v-show="showType === 'card'">
-        <Pagination ref="pageContent" @handleUpdate="handleUpdate"></Pagination>
-      </div>
+      
       <div v-show="showType === 'list'">
         <DiyTable ref="diyTable" :options="{ noPage: true, order: true }" :hasTitle="true" :tableData="state.myMarket"
           :tableHead="state.tableHead">
@@ -115,6 +112,9 @@
         </DiyTable>
       </div>
     </div>
+    <div class="page-flex" v-show="showType === 'card'">
+        <Pagination ref="pageContent" @handleUpdate="handleUpdate"></Pagination>
+      </div>
     <el-dialog append-to-body v-model="createDialog" title="创建商店" width="30%" class="" @close="closeCreateDialog">
       <el-form ref="formRef" :model="form.data">
         <el-form-item label="商店名称" prop="name" :rules="[
@@ -565,7 +565,7 @@ const copyCode = (needCopyText: string) => {
 
   .market-content {
     // margin-top: 4px;
-    height: calc(100vh - 108px);
+    height: calc(100vh - 168px);
     overflow-y: auto;
   }
 
@@ -589,7 +589,7 @@ const copyCode = (needCopyText: string) => {
 
   .box {
 
-    height: 100%;
+    // height: 100%;
     display: flex;
     flex-direction: column;
     flex: 1;
@@ -626,6 +626,7 @@ const copyCode = (needCopyText: string) => {
     .app-card {
       display: flex;
       flex-wrap: wrap;
+  
     }
 
   }
