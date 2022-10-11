@@ -9,6 +9,7 @@ const product = '/orginone/appstore/product'
 const appstore = '/orginone/appstore/market'
 const collection = '/orginone/anydata/collection'
 const object = '/orginone/anydata/object'
+const wflow = '/orginone/wflow'
 export default {
   // 人员接口
   person: {
@@ -262,6 +263,9 @@ export default {
     approvalPublish: appstore + '/approval/publish',
     pullTarget: appstore + '/pull/target',
     searchPublishApply: appstore + '/search/publish/apply'
+  },
+  wflow: {
+    findmypending: wflow + '/procdef/create', //搜索待办
   },
   object: {
     get: (objName: string) => object + '/get/' + objName,
