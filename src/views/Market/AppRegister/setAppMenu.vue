@@ -75,18 +75,6 @@
             @click.stop="handleAddMenu('Delete', menuIndex, item.customId)"
             ><Delete
           /></el-icon>
-          <el-icon
-            class="child-btn"
-            v-if="!readOnly"
-            @click.stop="handleAddMenu('Up', menuIndex, item.customId)"
-            ><SortUp
-          /></el-icon>
-          <el-icon
-            class="child-btn"
-            v-if="!readOnly"
-            @click.stop="handleAddMenu('Down', menuIndex, item.customId)"
-            ><SortDown
-          /></el-icon>
         </li>
         <!-- 共有部分 -->
         <div class="custom-title">
@@ -118,18 +106,6 @@
               v-if="!readOnly"
               @click.stop="handlFieldMenu('Delete', menuIndex, fIndex, fItem.customId)"
               ><Delete
-            /></el-icon>
-            <el-icon
-              class="child-btn"
-              v-if="!readOnly"
-              @click.stop="handlFieldMenu('Up', menuIndex, fIndex, fItem.customId)"
-              ><SortUp
-            /></el-icon>
-            <el-icon
-              class="child-btn"
-              v-if="!readOnly"
-              @click.stop="handlFieldMenu('Down', menuIndex, fIndex, item.customId)"
-              ><SortDown
             /></el-icon>
           </li>
           <li class="menu-item flex">
@@ -183,18 +159,6 @@
             v-if="!readOnly"
             @click.stop="handleAddComponents('Delete', menuIndex, comItem.customId)"
             ><Delete
-          /></el-icon>
-          <el-icon
-            class="child-btn"
-            v-if="!readOnly"
-            @click.stop="handleAddComponents('Up', menuIndex, comItem.customId)"
-            ><SortUp
-          /></el-icon>
-          <el-icon
-            class="child-btn"
-            v-if="!readOnly"
-            @click.stop="handleAddComponents('Down', menuIndex, comItem.customId)"
-            ><SortDown
           /></el-icon>
         </li>
         <!-- 共有部分 -->
@@ -281,6 +245,9 @@
 </script>
 
 <style lang="scss" scoped>
+  :deep(.el-select) {
+    width: 100%;
+  }
   // 自定义标题
   .custom-title {
     display: flex;

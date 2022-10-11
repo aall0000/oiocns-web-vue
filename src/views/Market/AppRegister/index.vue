@@ -190,12 +190,6 @@
         }
 
         break
-      case 'Up':
-        handleSortMenu('Up', selectId)
-        break
-      case 'Down':
-        handleSortMenu('Down', selectId)
-        break
       default:
         break
     }
@@ -232,12 +226,6 @@
         }
 
         break
-      case 'Up':
-        handleSortMenu('Up', selectId)
-        break
-      case 'Down':
-        handleSortMenu('Down', selectId)
-        break
       default:
         break
     }
@@ -270,12 +258,6 @@
           })
         }
 
-        break
-      case 'Up':
-        handleSortMenu('Up', selectId)
-        break
-      case 'Down':
-        handleSortMenu('Down', selectId)
         break
       default:
         break
