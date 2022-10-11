@@ -91,16 +91,16 @@
         } else if (isBranchNode(node)) {
           let index = 0;
           //遍历分支节点，包含并行及条件节点
-          let branchItems = node.branchs.map((branchNode: any) => {
+          let branchItems = node.branches.map((branchNode: any) => {
             //处理每个分支内子节点
             toMapping(branchNode);
             let childDoms = getDomTree(h, branchNode.children)
             decodeAppendDom(h, branchNode, childDoms, {
               level: index + 1,
-              size: node.branchs.length
+              size: node.branches.length
             })
             //插入4条横线，遮挡掉条件节点左右半边线条
-            insertCoverLine(h, index, childDoms, node.branchs)
+            insertCoverLine(h, index, childDoms, node.branches)
             //遍历子分支尾部分支
             index++;
             return h('div', {
@@ -180,8 +180,8 @@
       const decodeAppendDom = (h: any, node: any, dom: any, props = {}) => {
         dom.unshift(h(compTrans(node.type.toLowerCase()), {
           config: node,
-          ref: node.id,
-          key: node.id,
+          ref: node.nodeId,
+          key: node.nodeId,
           //定义事件，插入节点，删除节点，选中节点，复制/移动
           // on: {
           onInsertNode: (type: any) => insertNode(type, node),
@@ -195,12 +195,13 @@
       };
       // id映射到map，用来向上遍历
       const toMapping = (node: any) => {
-        if (node && node.id) {
-					stores.addNodeMap({"nodeid":node.id,"node":node});
+        debugger
+        if (node && node.nodeId) {
+					stores.addNodeMap({"nodeId":node.nodeId,"node":node});
 					console.log("nodeMap",proxy.$pinia.state.value.appwfConfig.nodeMap);
         }
       };
-      const insertCoverLine = (h: any, index: any, doms: any, branchs: any) => {
+      const insertCoverLine = (h: any, index: any, doms: any, branches: any) => {
         if (index === 0) {
           //最左侧分支
           doms.unshift(h('div', {
@@ -213,7 +214,7 @@
               'line-bot-left': true
             }
           }, []))
-        } else if (index === branchs.length - 1) {
+        } else if (index === branches.length - 1) {
           //最右侧分支
           doms.unshift(h('div', {
             'class': {
@@ -233,20 +234,20 @@
         branchNode.name = branchNode.name + '-copy'
         forEachNode(parentNode, branchNode, (parent: any, node: any) => {
           let id = getRandomId()
-          console.log(node, '新id =>' + id, '老nodeId:' + node.id)
-          node.id = id
-          node.parentId = parent.id
+          console.log(node, '新id =>' + id, '老nodeId:' + node.nodeId)
+          node.nodeId = id
+          node.parentId = parent.nodeId
         })
-        parentNode.branchs.splice(parentNode.branchs.indexOf(node), 0, branchNode)
+        parentNode.branches.splice(parentNode.branches.indexOf(node), 0, branchNode)
         // ctx.$forceUpdate()
       };
 
       const branchMove = (node: any, offset: any) => {
         let parentNode = nodeMap.value.get(node.parentId)
-        let index = parentNode.branchs.indexOf(node)
-        let branch = parentNode.branchs[index + offset]
-        parentNode.branchs[index + offset] = parentNode.branchs[index]
-        parentNode.branchs[index] = branch
+        let index = parentNode.branches.indexOf(node)
+        let branch = parentNode.branches[index + offset]
+        parentNode.branches[index + offset] = parentNode.branches[index]
+        parentNode.branches[index] = branch
         // ctx.$forceUpdate()
       };
       //判断是否为主要业务节点
@@ -291,8 +292,8 @@
         console.log("afterNode", afterNode);
         //插入新节点
         parentNode.children = {
-          id: getRandomId(),
-          parentId: parentNode.id,
+          nodeId: getRandomId(),
+          parentId: parentNode.nodeId,
           props: {},
           type: type,
         }
@@ -323,13 +324,13 @@
         if (isBranchNode({
             type: type
           })) {
-          if (afterNode && afterNode.id) {
-            afterNode.parentId = parentNode.children.children.id
+          if (afterNode && afterNode.nodeId) {
+            afterNode.parentId = parentNode.children.children.nodeId
           }
           parentNode.children.children.children = afterNode;
         } else {
-          if (afterNode && afterNode.id) {
-            afterNode.parentId = parentNode.children.id
+          if (afterNode && afterNode.nodeId) {
+            afterNode.parentId = parentNode.children.nodeId
           }
           parentNode.children.children = afterNode;
         }
@@ -349,22 +350,24 @@
         console.log("insertConditionsNode");
         parentNode.children.name = '条件分支';
         parentNode.children.children = {
-          id: getRandomId(),
-          parentId: parentNode.children.id,
+          nodeId: getRandomId(),
+          parentId: parentNode.children.nodeId,
           type: "EMPTY"
         };
-        parentNode.children.branchs = [{
-          id: getRandomId(),
-          parentId: parentNode.children.id,
+        parentNode.children.branches = [{
+          nodeId: getRandomId(),
+          parentId: parentNode.children.nodeId,
           type: "CONDITION",
           props: deepCopy(DefaultProps.CONDITION_PROPS),
+          conditions: deepCopy(DefaultProps.CONDITION_CONDITIONS),
           name: "条件1",
           children: {}
         }, {
-          id: getRandomId(),
-          parentId: parentNode.children.id,
+          nodeId: getRandomId(),
+          parentId: parentNode.children.nodeId,
           type: "CONDITION",
           props: deepCopy(DefaultProps.CONDITION_PROPS),
+          conditions: deepCopy(DefaultProps.CONDITION_CONDITIONS),
           name: "条件2",
           children: {}
         }];
@@ -373,21 +376,21 @@
         console.log("insertConcurrentsNode");
         parentNode.children.name = '并行分支';
         parentNode.children.children = {
-          id: getRandomId(),
-          parentId: parentNode.children.id,
+          nodeId: getRandomId(),
+          parentId: parentNode.children.nodeId,
           type: "EMPTY"
         };
-        parentNode.children.branchs = [{
-          id: getRandomId(),
+        parentNode.children.branches = [{
+          nodeId: getRandomId(),
           name: "分支1",
-          parentId: parentNode.children.id,
+          parentId: parentNode.children.nodeId,
           type: "CONCURRENT",
           props: {},
           children: {}
         }, {
-          id: getRandomId(),
+          nodeId: getRandomId(),
           name: "分支2",
-          parentId: parentNode.children.id,
+          parentId: parentNode.children.nodeId,
           type: "CONCURRENT",
           props: {},
           children: {}
@@ -408,18 +411,19 @@
         // proxy.$set(parentNode.children, "props", proxy.$deepCopy(DefaultProps.TRIGGER_PROPS))
       };
       const getBranchEndNode = (conditionNode: any) => {
-        if (!conditionNode.children || !conditionNode.children.id) {
+        if (!conditionNode.children || !conditionNode.children.nodeId) {
           return conditionNode;
         }
         return getBranchEndNode(conditionNode.children);
       };
       const addBranchNode = (node: any) => {
-        if (node.branchs.length < 8) {
-          node.branchs.push({
-            id: getRandomId(),
-            parentId: node.id,
-            name: (isConditionNode(node) ? '条件' : '分支') + (node.branchs.length + 1),
+        if (node.branches.length < 8) {
+          node.branches.push({
+            nodeId: getRandomId(),
+            parentId: node.nodeId,
+            name: (isConditionNode(node) ? '条件' : '分支') + (node.branches.length + 1),
             props: isConditionNode(node) ? deepCopy(DefaultProps.CONDITION_PROPS) : {},
+            conditions: isConditionNode(node) ? deepCopy(DefaultProps.CONDITION_CONDITIONS) : {},
             type: isConditionNode(node) ? "CONDITION" : "CONCURRENT",
             children: {}
           })
@@ -432,40 +436,41 @@
         console.log("删除节点", node)
         console.log("nodeMap", nodeMap.value)
         //获取该节点的父节点
+        debugger
         let parentNode = nodeMap.value.get(node.parentId)
         if (parentNode) {
           //判断该节点的父节点是不是分支节点
           if (isBranchNode(parentNode)) {
             //移除该分支
-            parentNode.branchs.splice(parentNode.branchs.indexOf(node), 1)
+            parentNode.branches.splice(parentNode.branches.indexOf(node), 1)
             //处理只剩1个分支的情况
-            if (parentNode.branchs.length < 2) {
+            if (parentNode.branches.length < 2) {
               //获取条件组的父节点
               let ppNode = nodeMap.value.get(parentNode.parentId)
               //判断唯一分支是否存在业务节点
-              if (parentNode.branchs[0].children && parentNode.branchs[0].children.id) {
+              if (parentNode.branches[0].children && parentNode.branches[0].children.nodeId) {
                 //将剩下的唯一分支头部合并到主干
-                ppNode.children = parentNode.branchs[0].children
-                ppNode.children.parentId = ppNode.id
+                ppNode.children = parentNode.branches[0].children
+                ppNode.children.parentId = ppNode.nodeId
                 //搜索唯一分支末端最后一个节点
-                let endNode = getBranchEndNode(parentNode.branchs[0])
+                let endNode = getBranchEndNode(parentNode.branches[0])
                 //后续节点进行拼接, 这里要取EMPTY后的节点
                 endNode.children = parentNode.children.children
-                if (endNode.children && endNode.children.id) {
-                  endNode.children.parentId = endNode.id
+                if (endNode.children && endNode.children.nodeId) {
+                  endNode.children.parentId = endNode.nodeId
                 }
               } else {
                 //直接合并分支后面的节点，这里要取EMPTY后的节点
                 ppNode.children = parentNode.children.children
-                if (ppNode.children && ppNode.children.id) {
-                  ppNode.children.parentId = ppNode.id
+                if (ppNode.children && ppNode.children.nodeId) {
+                  ppNode.children.parentId = ppNode.nodeId
                 }
               }
             }
           } else {
             //不是的话就直接删除
-            if (node.children && node.children.id) {
-              node.children.parentId = parentNode.id
+            if (node.children && node.children.nodeId) {
+              node.children.parentId = parentNode.nodeId
             }
             parentNode.children = node.children
           }
@@ -481,20 +486,20 @@
         return err
       };
       const validateNode = (err: any, node: any) => {
-        if (ctx.refs[node.id].validate) {
-          state.valid = ctx.refs[node.id].validate(err)
+        if (ctx.refs[node.nodeId].validate) {
+          state.valid = ctx.refs[node.nodeId].validate(err)
         }
       };
       //更新指定节点的dom
       const nodeDomUpdate = (node: any) => {
-        ctx.refs[node.id].$forceUpdate()
+        ctx.refs[node.nodeId].$forceUpdate()
       };
       //给定一个起始节点，遍历内部所有节点
       const forEachNode = (parent: any, node: any, callback: any) => {
         if (isBranchNode(node)) {
           callback(parent, node)
           forEachNode(node, node.children, callback)
-          node.branchs.map((branchNode: any) => {
+          node.branches.map((branchNode: any) => {
             callback(node, branchNode)
             forEachNode(branchNode, branchNode.children, callback)
           })
@@ -510,7 +515,7 @@
           validate(err, node.children)
         } else if (isBranchNode(node)) {
           //校验每个分支
-          node.branchs.map((branchNode: any) => {
+          node.branches.map((branchNode: any) => {
             //校验条件节点
             validateNode(err, branchNode)
             //校验条件节点后面的节点

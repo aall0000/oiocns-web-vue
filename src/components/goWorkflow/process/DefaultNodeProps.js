@@ -59,6 +59,17 @@ export const CONDITION_PROPS = {
   expression: "" //自定义表达式，灵活构建逻辑关系
 }
 
+//条件节点 条件数组
+export const CONDITION_CONDITIONS = {
+  pos:1,
+  paramKey:"",
+  paramLabel:"",
+  key:"EQ",
+  label:"等于",
+  type:"NUMERIC",
+  val: NULL
+}
+
 //抄送节点默认属性
 export const CC_PROPS = {
   shouldAdd: false,
@@ -108,5 +119,5 @@ export const DELAY_PROPS = {
 }
 
 export default {
-  APPROVAL_PROPS, CC_PROPS, DELAY_PROPS, CONDITION_PROPS, ROOT_PROPS, TRIGGER_PROPS
+  APPROVAL_PROPS, CC_PROPS, DELAY_PROPS, CONDITION_PROPS, CONDITION_CONDITIONS, ROOT_PROPS, TRIGGER_PROPS
 }

@@ -5,7 +5,7 @@
         <div class="node-body-main-header">
           <!-- <ellipsis class="title" hover-tip :content="config.name ? config.name : ('条件' + level)" /> -->
           <span class="title">{{config.name ? config.name : ('条件' + level)}}</span>
-          <span class="level">优先级{{ level }}</span>
+          <!-- <span class="level">优先级{{ level }}</span> -->
           <span class="option">
             <!-- <el-tooltip effect="dark" content="复制条件" placement="top">
               <i class="el-icon-copy-document" @click.stop="$emit('copy')"></i>
