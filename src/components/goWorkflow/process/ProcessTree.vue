@@ -69,7 +69,7 @@
       });
       
       const dom = computed(() => {
-        return proxy.$pinia.state.value.appwfConfig.design.process;
+        return proxy.$pinia.state.value.appwfConfig.design.resource;
       });
 
       const state = reactive({

@@ -53,7 +53,7 @@
 	import FormProcessDesign from './layout/FormProcessDesign.vue'
 	// import FormProSetting from './layout/FormProcessDesign.vue'
 	import LayoutPreview from './layout/LayoutPreview.vue';
-
+	import { formatDate } from '@/utils/index'
 	import { useAppwfConfig } from '@/store/goWorkflow';
 
 	export default defineComponent({
@@ -131,8 +131,14 @@
 				} else {
 					state.isShowDialog = true;
 					state.tempDesign = {
+						
+						name: "新增流程",
+						code: formatDate(new Date(),'yyyyMMddhhmmss'),
 						formId: null,
-						formName: "新增表单",
+						formName: "",
+						appId: "",
+						appName: "",
+						remainHours: 240,
 						logo: {
 							icon: "el-icon-eleme",
 							background: "#1e90ff"
@@ -148,7 +154,7 @@
 						},
 						groupId: undefined,
 						formItems: [],
-						process: {
+						resource: {
 							id: "root",
 							parentId: null,
 							type: "ROOT",

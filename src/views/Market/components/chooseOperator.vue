@@ -116,15 +116,15 @@
       data?: any
       children?: Tree[]
     }
-    type createInfo = {
-      info: {
-        id: string
-      }
-    }
+    // type createInfo = {
+    //   info: {
+    //     id: string
+    //   }
+    // }
     const searchValue = ref('')
     const searchLeftValue = ref('')
     const activeName = ref(0)
-    const tabs = ref([])
+    // const tabs = ref([])
 
     const radio = ref(props.radio)
     const leftTree = ref(null)

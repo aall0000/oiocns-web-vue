@@ -17,7 +17,7 @@
         <span>
           <el-icon :size="20" color="#409EFC">
             <Stamp />
-          </el-icon>新建流程
+          </el-icon>{{design.name}}
         </span>
       </div>
       <div class="publish">
@@ -44,6 +44,7 @@
     ComponentInternalInstance,
     reactive,
     toRefs,
+    computed,
   } from 'vue';
 
   export default defineComponent({
@@ -56,7 +57,9 @@
       } = getCurrentInstance() as ComponentInternalInstance;
 
       const proxy = appContext.config.globalProperties;
-
+      const design = computed(() => {
+        return proxy.$pinia.state.value.appwfConfig.design
+      });
       const state = reactive({
         defaultActive: 'processDesign',
       });
@@ -86,6 +89,7 @@
       };
 
       return {
+        design,
         handleSelect,
         exit,
         preview,
