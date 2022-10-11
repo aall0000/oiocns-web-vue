@@ -139,7 +139,7 @@ const buyThings = (item: AppType) => {
     cancelButtonText: '取消',
     type: 'success'
   }).then(() => {
-    debugger
+    
     setTimeout(async () => {
       await $services.order
         .create({

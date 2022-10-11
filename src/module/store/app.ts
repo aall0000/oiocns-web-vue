@@ -200,7 +200,7 @@ class appStore {
    * @return 接口请求成功
    */
   public async unpublishApp(id: string) {
-    debugger
+    
     const { success } = await API.product.unpublishMerchandise({
       data: {
         id: id

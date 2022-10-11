@@ -1,11 +1,18 @@
 <template>
   <div>
-    <el-button size="default" icon="el-icon-plus" type="primary" @click="selectOrg" round>选择抄送人</el-button>
-    <div class="option">
+    <el-button size="small" icon="el-icon-plus" type="primary" @click="friendDialogmode = 1" round>选择抄送人</el-button>
+    <!-- <div class="option">
       <el-checkbox label="允许发起人添加抄送人" v-model="config.shouldAdd"></el-checkbox>
-    </div>
+    </div> -->
     <org-items v-model="select"/>
-    <org-picker multiple ref="orgPicker" :selected="select" @ok="selected"/>
+    <!-- <org-picker multiple ref="orgPicker" :selected="select" @ok="selected"/> -->
+    <el-dialog  v-model="friendDialogmode"  custom-class="share-dialog" :title="friendDialogmode==1?'选择人员':'选择岗位'" width="1000px" draggable :close-on-click-modal="false">
+        <chooseOperator  v-if="friendDialogmode==1" @closeDialog="friendDialogmode = 0"  @submit="checksSearch" :radio="'4'"  :way="[ 
+        {
+          id: '4',
+          label: '按人员'
+        }]"></chooseOperator>
+      </el-dialog>
   </div>
 </template>
 
@@ -22,10 +29,10 @@
   } from 'vue';
   // import OrgPicker from "@/components/common/OrgPicker";
   // import OrgItems from "../OrgItems";
-  
+  import chooseOperator from '@/views/Market/components/chooseOperator.vue'
   export default defineComponent({
     name: 'CcNodeConfig',
-    // components: {OrgPicker, OrgItems},
+    components: {chooseOperator},
     props: {
       config: {
         type: Object,
@@ -61,7 +68,13 @@
       const removeOrgItem = (index: number) => {
         select.splice(index, 1)
       }
-
+      const friendDialogmode = ref(0)
+      const checksSearch = ()=>{
+        closeDialog();
+      };
+      const closeDialog = ()=>{
+        friendDialogmode.value = 0;
+      }
       // 页面加载时
       onMounted(() => {
       });
@@ -72,7 +85,8 @@
         // orgPicker,
         //
         select,
-        //
+        friendDialogmode,
+        checksSearch,
         selectOrg,
         selected,
         removeOrgItem,

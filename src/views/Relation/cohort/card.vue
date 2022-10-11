@@ -152,7 +152,7 @@ const getCohorts = async () => {
   if (success && data && data.result) {
     if (props.type == '管理的') {
       state.cohorts = data.result.filter((d: any) => {
-        debugger
+        
         return authority.IsRelationAdmin([d.id,d.belongId])
       })
     } else if (props.type == '加入的') {

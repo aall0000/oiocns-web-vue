@@ -17,16 +17,27 @@
     <div class="design" :style="'transform: scale('+ scale / 100 +');'">
       <ProcessTree ref="process-tree" @selectedNode="nodeSelected" />
     </div>
-    <el-drawer :title="selectedNode.name" v-model="showConfig" :modal-append-to-body="false" 
+    <el-drawer  v-model="showConfig" :modal-append-to-body="false" 
       :size="selectedNode.type === 'CONDITION' ? '600px':'500px'" direction="rtl" destroy-on-close>
-      <!-- <div slot="title"> -->
+      <template #header="{  titleId, titleClass }">
         <el-input v-model="selectedNode.name" size="default" v-show="showInput" style="width: 300px"
-          @blur="showInput = false"></el-input>
-        <!-- <el-link v-show="!showInput" @click="showInput = true" style="font-size: default">
+          @blur="showInput = false" @keyup.enter.native="showInput = false"></el-input>
+      <el-link :id="titleId" :class="titleClass" v-show="!showInput" @click="showInput = true">
+        {{selectedNode.name}}<el-icon class="el-icon--right"><Edit /></el-icon>
+      </el-link>
+      <!-- <el-link v-show="!showInput" @click="showInput = true" style="font-size: 16px">
           <i class="el-icon-edit" style="margin-right: 10px"></i>
           {{selectedNode.name}}
         </el-link> -->
-      <!-- </div> -->
+    </template>
+      <!-- <div slot="header"> -->
+        <!-- <el-input v-model="selectedNode.name" size="default" v-show="showInput" style="width: 300px"
+          @blur="showInput = false"></el-input>
+        <el-link v-show="!showInput" @click="showInput = true" style="font-size: default">
+          <i class="el-icon-edit" style="margin-right: 10px"></i>
+          {{selectedNode.name}}
+        </el-link>
+      </div> -->
       <div class="node-config-content">
         <NodeConfig />
       </div>

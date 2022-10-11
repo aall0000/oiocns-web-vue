@@ -50,7 +50,8 @@ import { onMounted, reactive, ref, watch } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { Search } from '@element-plus/icons-vue'
 import authority from '@/utils/authority'
-
+import identityServices from '@/module/relation/identity'
+const IdentityServices = new identityServices()
 const props = defineProps<{
   tabHeight: number,
 }>()
@@ -139,22 +140,15 @@ const diyTable = ref(null)
 const giveTable = ref(null)
 
 // 加载岗位下的用户
-const getUsers = () => {
-  const data = selectItem
-  if (data) {
-    $services.cohort.getIdentityPerson({
-      data: {
-        id: selectItem.value.id,
-        offset: (pageStore.currentPage - 1) * pageStore.pageSize,
-        limit: pageStore.pageSize
-      }
-    }).then((res: ResultType) => {
-      if (res.code == 200 && res.success) {
-        users.value = res.data.result;
-        pageStore.total = res.data.total;
-        diyTable.value.state.page.total = pageStore.total;
-      }
-    })
+const getUsers = async () => {
+  const obj = selectItem
+  if (obj) {
+    const data = await IdentityServices.getIdentityPerson(selectItem.value.id)
+    if(data){
+        users.value = data.result;
+        pageStore.total = data.total;
+        diyTable.value.state.page.total = IdentityServices.pageStore.total;
+    }
   }
 }
 
@@ -176,21 +170,15 @@ const removeFrom = (row: any) => {
       cancelButtonText: '取消',
       type: 'warning'
     }
-  ).then(() => {
-    $services.company[url]({
-      data: {
-        id: selectItem.value.id,
-        targetIds: [row.id]
-      }
-    }).then((res: ResultType) => {
+  ).then(async () => {
+    const data = await IdentityServices.removeIdentity(selectItem.value.id, row.id)
+    if(data){
       getUsers()
-      if (res.success) {
-        ElMessage({
-          message: '操作成功',
-          type: 'success'
-        })
-      }
-    })
+      ElMessage({
+        message: '操作成功',
+        type: 'success'
+      })
+    }
   })
     .catch(() => {
       console.log('移除成功!')
@@ -199,7 +187,7 @@ const removeFrom = (row: any) => {
 
 // 加载单位所有用户
 const getOrgUsers = (filter?: string) => {
-  debugger
+  
   let data = {
     id: selectItem.value.belongId,
     offset: (pageStore.currentPage - 1) * pageStore.pageSize,
@@ -259,22 +247,17 @@ const giveSearchChange = (e: string) => {
 
 
 // 给人员岗位
-const giveIdentity = () => {
+const giveIdentity = async () => {
   const userIds = giveTable?.value?.state?.multipleSelection.map((u: any) => u.id);
-  $services.company
-    .giveIdentity({
-      data: { id: selectItem.value.id, targetIds: userIds }
+  const data = await IdentityServices.giveIdentity(selectItem.value.id, userIds)
+  if (data) {
+    ElMessage({
+      message: '分配成功',
+      type: 'success'
     })
-    .then((res: ResultType) => {
-      if (res.success) {
-        ElMessage({
-          message: '分配成功',
-          type: 'success'
-        })
-        hideGiveDialog()
-      }
-      getUsers()
-    })
+    hideGiveDialog()
+    getUsers()
+  }
 }
 
 watch(selectItem, () => {

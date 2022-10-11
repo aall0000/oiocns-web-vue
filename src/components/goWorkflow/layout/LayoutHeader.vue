@@ -17,7 +17,18 @@
         <span>
           <el-icon :size="20" color="#409EFC">
             <Stamp />
-          </el-icon>新建流程
+          </el-icon>{{design.name}}
+        </span>
+        <span>
+          版本：<el-select v-model="paramObj.currentVersion" class="m-2" placeholder="请选择版本" size="small">
+            <el-option
+              v-for="item in paramObj.versionList"
+              :key="item"
+              :label="item"
+              :value="item"
+            />
+          </el-select>
+          <!-- {{design.version}} -->
         </span>
       </div>
       <div class="publish">
@@ -44,6 +55,7 @@
     ComponentInternalInstance,
     reactive,
     toRefs,
+    computed,
   } from 'vue';
 
   export default defineComponent({
@@ -56,11 +68,16 @@
       } = getCurrentInstance() as ComponentInternalInstance;
 
       const proxy = appContext.config.globalProperties;
-
+      const design = computed(() => {
+        return proxy.$pinia.state.value.appwfConfig.design
+      });
       const state = reactive({
         defaultActive: 'processDesign',
       });
-      
+      const paramObj = reactive({
+        currentVersion: proxy.$pinia.state.value.appwfConfig.design.version,
+        versionList: proxy.$pinia.state.value.appwfConfig.designList.map((item:any)=>item.version).concat('新增')
+      });
       // 切换页签
       const handleSelect = (path: any) => {
         emit('activeChange', path);
@@ -86,6 +103,8 @@
       };
 
       return {
+        design,
+        paramObj,
         handleSelect,
         exit,
         preview,

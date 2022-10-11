@@ -41,7 +41,7 @@
           </el-form-item>
         </div>
         <div v-else-if="nodeProps.assignedType === 'JOB'">
-          <el-button size="default" icon="el-icon-plus" type="primary" @click="selectRole" round>选择岗位</el-button>
+          <el-button size="small" icon="el-icon-plus" type="primary" @click="selectJob(2)" round>选择岗位</el-button>
           <org-items v-model="nodeProps.role"/>
         </div>
         <div v-else-if="nodeProps.assignedType === 'FORM_USER'">
@@ -54,26 +54,23 @@
         <div v-else>
           <span class="item-desc">发起人自己作为审批人进行审批</span>
         </div>
-        <div v-if="nodeProps.friendDialogassigned && nodeProps.friendDialogassigned.length>0">已选择：<span v-for="(item, index) in nodeProps.friendDialogassigned" :key="index"><el-tag closable @close="handleClose(index)">{{item.name}}</el-tag></span></div> 
+        <div v-if="nodeProps.assignedUser && nodeProps.assignedUser.length>0">已选择：<span v-for="(item, index) in nodeProps.assignedUser" :key="index"><el-tag closable @close="handleClose(index)">{{item.name}}</el-tag></span></div> 
       </el-form-item>
 
-      <el-divider></el-divider>
+      <!-- <el-divider></el-divider>
       <el-form-item label="👤 审批人为空时" prop="text" class="line-mode">
         <el-radio-group v-model="nodeProps.nobody.handler">
-          <el-radio label="TO_PASS">自动通过</el-radio>
+          <el-radio label="TO_PASS">自动通过</el-radio> 
           <el-radio label="TO_REFUSE">自动驳回</el-radio>
           <el-radio label="TO_ADMIN">转交审批管理员</el-radio>
           <el-radio label="TO_USER">转交到指定人员</el-radio>
         </el-radio-group>
-
         <div style="margin-top: 10px" v-if="nodeProps.nobody.handler === 'TO_USER'">
-          <!-- <el-button size="default" icon="el-icon-plus" type="primary" @click="selectNoSetUser" round>选择人员</el-button> -->
           <div v-if="nodeProps.friendDialogdefaultUser">已选择：{{nodeProps.friendDialogdefaultUser.name}}</div> 
           <el-button size="small" icon="el-icon-plus" type="primary" @click="selectUser(2)" round>选择人员</el-button>
           <org-items v-model="nodeProps.assignedUser"/>
         </div>
-
-      </el-form-item>
+      </el-form-item> -->
 
       <div>
         <el-divider/>
@@ -128,18 +125,32 @@
         <div v-if="nodeProps.refuse.type === 'TO_NODE'">
           <span>指定节点:</span>
           <el-select style="margin-left: 10px; width: 150px;" placeholder="选择跳转步骤" size="small" v-model="nodeProps.refuse.target">
-            <el-option v-for="(node, i) in nodeOptions" :key="i" :label="node.name" :value="node.id"></el-option>
+            <el-option v-for="(node, i) in nodeOptions" :key="i" :label="node.name" :value="node.id"  :disabled="node.disabled"></el-option>
           </el-select>
         </div>
 
       </el-form-item>
     </el-form>
-    <searchFriend  v-if="nodeProps.friendDialogmode"  :selectLimit='0' @closeDialog="closeDialog"  @checksSearch='checksSearch'/>
-    <searchIdentity  v-if="identityDialog"  :selectLimit='0' @closeDialog="closeIdentityDialog" :serachType='7' @checksSearch='checksIdentitySearch'/>
+    <!-- <searchFriend  v-if="nodeProps.friendDialogmode"  :selectLimit='0' @closeDialog="closeDialog"  @checksSearch='checksSearch'/> -->
+    <!-- <searchIdentity  v-if="identityDialog"  :selectLimit='0' @closeDialog="closeIdentityDialog" :serachType='7' @checksSearch='checksIdentitySearch'/> -->
     <!-- <org-picker :title="pickerTitle" multiple :type="orgPickerType" ref="orgPicker" :selected="orgPickerSelected"
                 @ok="selected"/> -->
+      <el-dialog  v-model="nodeProps.friendDialogmode"  custom-class="share-dialog" :title="nodeProps.friendDialogmode==1?'选择人员':'选择岗位'" width="1000px" draggable :close-on-click-modal="false">
+        <chooseOperator  v-if="nodeProps.friendDialogmode==1" @closeDialog="nodeProps.friendDialogmode = 0"  @submit="checksSearch" :radio="'4'"  :way="[ 
+        {
+          id: '4',
+          label: '按人员'
+        }]"></chooseOperator>
+        <chooseOperator  v-if="nodeProps.friendDialogmode==2" @closeDialog="nodeProps.friendDialogmode = 0"  @submit="checksSearch" :radio="'3'"  :way="[ 
+        {
+          id: '3',
+          label: '按岗位'
+        }]"></chooseOperator>
+      </el-dialog>
   </div>
 </template>
+
+
 
 <script lang="ts">
   import {
@@ -152,14 +163,15 @@
     getCurrentInstance,
     ComponentInternalInstance
   } from 'vue';
-  import searchFriend from '@/components/searchs/index.vue'
-  import searchIdentity from '@/components/searchs/index.vue'
+  // import searchFriend from '@/components/searchs/index.vue'
+  import chooseOperator from '@/views/Market/components/chooseOperator.vue'
 import { relative } from 'path/posix';
+import { title } from 'process';
   // import OrgPicker from "@/components/common/OrgPicker";
   // import OrgItems from "../OrgItems";
   export default defineComponent({
     name: 'ApprovalNodeConfig',
-    components: {searchFriend,searchIdentity},
+    components: {chooseOperator},
     props: {
       config: {
         type: Object,
@@ -210,10 +222,12 @@ import { relative } from 'path/posix';
       });
       const nodeOptions = computed(() => {
         let values: any[] = []
-        const excType = ['ROOT', 'EMPTY', "CONDITION", "CONDITIONS", "CONCURRENT", "CONCURRENTS"]
+        const excType = [ 'EMPTY', "CONDITION", "CONDITIONS", "CONCURRENT", "CONCURRENTS"]
+        var disabled = false;
         proxy.$pinia.state.value.appwfConfig.nodeMap.forEach((v: any) => {
           if (excType.indexOf(v.type) === -1) {
-            values.push({id: v.id, name: v.name})
+            disabled = proxy.$pinia.state.value.appwfConfig.selectedNode.id == v.id || disabled
+            values.push({id: v.id, name: v.name,disabled:disabled})
           }
         })
         return values
@@ -238,14 +252,21 @@ import { relative } from 'path/posix';
       // const orgPicker = ref();
       //
       const selectUser = (value) => {
-        debugger
+        
         state.orgPickerSelected = select
         state.orgPickerType = 'user'
         proxy.$pinia.state.value.appwfConfig.selectedNode.props.friendDialogmode = value;
         // orgPicker.value.show()
       };
+      const selectJob = (value) => {
+        
+        state.orgPickerSelected = select
+        state.orgPickerType = 'job'
+        proxy.$pinia.state.value.appwfConfig.selectedNode.props.friendDialogmode = value;
+        // orgPicker.value.show()
+      };
       const handleClose = (index) => {
-        proxy.$pinia.state.value.appwfConfig.selectedNode.props.friendDialogassigned.splice(index,1)
+        proxy.$pinia.state.value.appwfConfig.selectedNode.props.assignedUser.splice(index,1)
       };
       const selectNoSetUser = () => {
         state.orgPickerSelected = props.config.nobody.assignedUser
@@ -267,20 +288,19 @@ import { relative } from 'path/posix';
         select.splice(index, 1)
       };
       const assignedTypeChange = () => {
-        proxy.$pinia.state.value.appwfConfig.selectedNode.props.friendDialogassigned = []
+        proxy.$pinia.state.value.appwfConfig.selectedNode.props.assignedUser = []
       };
       const checksSearch = (val:any)=>{
+        
         switch(proxy.$pinia.state.value.appwfConfig.selectedNode.props.friendDialogmode){
           case 1:
-            if(!proxy.$pinia.state.value.appwfConfig.selectedNode.props.friendDialogassigned || proxy.$pinia.state.value.appwfConfig.selectedNode.props.friendDialogassigned.length==0){
-              proxy.$pinia.state.value.appwfConfig.selectedNode.props.friendDialogassigned = []
-            }
-            for(let item of JSON.parse(JSON.stringify(val.value))){
-              proxy.$pinia.state.value.appwfConfig.selectedNode.props.friendDialogassigned.push(item) 
-            }
-            break;
           case 2:
-          proxy.$pinia.state.value.appwfConfig.selectedNode.props.friendDialogdefaultUser =val.value[0]
+            if(!proxy.$pinia.state.value.appwfConfig.selectedNode.props.assignedUser || proxy.$pinia.state.value.appwfConfig.selectedNode.props.assignedUser.length==0){
+              proxy.$pinia.state.value.appwfConfig.selectedNode.props.assignedUser = []
+            }
+            for(let item of JSON.parse(JSON.stringify(val))){
+              proxy.$pinia.state.value.appwfConfig.selectedNode.props.assignedUser.push(item) 
+            }
             break;
         }
         console.log(proxy.$pinia.state.value.appwfConfig.selectedNode.props.friendDialogdefaultUser)
@@ -318,6 +338,7 @@ import { relative } from 'path/posix';
         handleClose,
         assignedTypeChange,
         selectUser,
+        selectJob,
         selectNoSetUser,
         selectRole,
         selected,

@@ -200,9 +200,11 @@
         }
       })
   }
+
+
+
   function openProcessDesign(){
-    console.log("测试流程");
-    processDesignRef.value.openDialog();
+    processDesignRef.value.startDesign('业务表单1');
   }
 
   const updatePassword = () => {
