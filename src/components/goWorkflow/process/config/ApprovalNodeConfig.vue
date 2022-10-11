@@ -291,7 +291,7 @@ import { title } from 'process';
         proxy.$pinia.state.value.appwfConfig.selectedNode.props.friendDialogassigned = []
       };
       const checksSearch = (val:any)=>{
-        debugger
+        
         switch(proxy.$pinia.state.value.appwfConfig.selectedNode.props.friendDialogmode){
           case 1:
           case 2:

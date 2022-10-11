@@ -45,6 +45,7 @@
 		reactive,
 		toRefs,
 		computed,
+		onMounted
 	} from 'vue';
 
 	import LayoutHeader from './layout/LayoutHeader.vue';
@@ -115,30 +116,17 @@
 					{title: '扩展设置', description: '', icon: '', status: ''}
 				],
 				validComponents: ['baseSetting', 'formSetting', 'processDesign', 'proSetting'],
-
-				tempDesign: {}
-
-			});
-
-			// 打开弹窗
-			const openDialog = (id: String) => {
-				if (id) {
-					state.isShowDialog = true;
-					//调取后端接口获取disign
-					state.tempDesign = {};
-					stores.setDesign(state.tempDesign);
-					console.log("design",proxy.$pinia.state.value.appwfConfig.design);
-				} else {
-					state.isShowDialog = true;
-					state.tempDesign = {
-						
-						name: "新增流程",
+				designList: [],
+				tempDesign: {},
+				defaultDesign: {
+						name: "新建流程",
 						code: formatDate(new Date(),'yyyyMMddhhmmss'),
 						formId: null,
 						formName: "",
 						appId: "",
 						appName: "",
 						remainHours: 240,
+						version: '新增',
 						logo: {
 							icon: "el-icon-eleme",
 							background: "#1e90ff"
@@ -168,6 +156,34 @@
 						},
 						remark: "备注说明"
 					}
+			});
+
+			onMounted(() => {
+				for(let i=0;i<3;i++){
+					var design  = JSON.parse(JSON.stringify(state.defaultDesign))
+					design.id = i;
+					design.name = `流程${i}`;
+					design.version = `v${i}.0`;
+					state.designList.push(design);
+				}
+				stores.setDesignList(state.designList);
+			});
+			const startDesign= (formId)=>{
+
+				openDialog('1');
+			}
+			// 打开弹窗
+			const openDialog = (id: String) => {
+		
+				if (id) {
+					state.isShowDialog = true;
+					//调取后端接口获取disign
+					state.tempDesign = state.designList.filter(item=>item.id==id)[0] || JSON.parse(JSON.stringify(state.defaultDesign));
+					stores.setDesign(state.tempDesign);
+					console.log("design",proxy.$pinia.state.value.appwfConfig.design);
+				} else {
+					state.isShowDialog = true;
+					state.tempDesign = JSON.parse(JSON.stringify(state.defaultDesign))
 					stores.setDesign(state.tempDesign);
 					console.log("design",proxy.$pinia.state.value.appwfConfig.design);
 				}
@@ -307,6 +323,7 @@
 				design,
 				// errTitle,
 				// validIcon,
+				startDesign,
 				openDialog,
 				closeDialog,
 				onCancel,

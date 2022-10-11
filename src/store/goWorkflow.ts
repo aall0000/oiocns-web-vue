@@ -6,6 +6,7 @@ type appwfState =  {
 	selectedNode: Record < string, any >;
 	selectFormItem: null;
 	design: Record < string, any >;
+	designList: Array<Record < string, any >>
 }
 
 export const useAppwfConfig = defineStore({
@@ -16,6 +17,7 @@ export const useAppwfConfig = defineStore({
 		selectedNode: {},
 		selectFormItem: null,
 		design: {},
+		designList:[],
 	}),
 	actions: {
 		async addNodeMap(data: any) {
@@ -26,6 +28,9 @@ export const useAppwfConfig = defineStore({
 		},
 		async setDesign(data: any) {
 			this.design = data;
+		},
+		async setDesignList(data: any) {
+			this.designList = data;
 		},
 		async setIsEdit(data: any) {
 			this.isEdit = data;
