@@ -703,6 +703,7 @@
   }
   // 中间树形点击事件
   const centerAuthorClick = (data: any, checked: boolean, indeterminate: any) => {
+    
     console.log('点击中间', data, checked, indeterminate)
     if (checked) {
       if (radio.value == '2') {
@@ -765,6 +766,7 @@
   }
   // 左侧树点击事件
   const handleCheckChange = (data: any, checked: boolean, indeterminate: any) => {
+    
     console.log('点击左侧', data, checked, indeterminate)
     if (checked) {
       if (radio.value == '1') {
@@ -817,6 +819,7 @@
     }
   }
   const handleNodeClick = (node: any, load: boolean, search?: string) => {
+    
     if (node && node.data && authority.IsApplicationAdmin([node.data.id, node.data.belongId])) {
       if (typeof load == 'object' && typeof search == 'object') {
         searchValue.value = ''

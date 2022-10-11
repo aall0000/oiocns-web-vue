@@ -202,7 +202,7 @@ const update = async () => {
 }
 //权限转移
 const checksGroupSearch = (val: any) => {
-  debugger
+  
   if (val.value.length > 0) {
     updateBelong(val.value[0].id)
   } else {
