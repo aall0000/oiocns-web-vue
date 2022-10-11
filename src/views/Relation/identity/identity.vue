@@ -6,7 +6,7 @@
       </div>
 
       <div class="search-wrap">
-        <el-input class="search" placeholder="搜索岗位">
+        <el-input class="search" @input="serachData()" v-model="searchText" placeholder="搜索岗位">
           <template #suffix>
             <el-icon class="el-input__icon">
               <search />
@@ -20,7 +20,7 @@
         </li>
       </div>
       <div>
-        <el-menu default-active="2" class="el-menu-vertical-demo">
+        <el-menu default-active="0" class="el-menu-vertical-demo">
           <el-menu-item class="menu-item" :index="index.toString()" v-for="(item, index) in  identityList.list"
             @click="checkItem(item)">
             <div class="menu-nav">{{item.name}}</div>
@@ -61,6 +61,9 @@ import { ref, onMounted, reactive } from 'vue'
 import $services from '@/services'
 import { ElMessage } from 'element-plus'
 import authority from '@/utils/authority'
+import identityServices from '@/module/relation/identity'
+
+const IdentityServices = new identityServices()
 const emit = defineEmits(['itemClick'])
 
 const router = useRouter()
@@ -79,6 +82,15 @@ const allowAdd = () => {
     authority.getSpaceId()
   ])
 }
+
+const searchText = ref<string>('');
+const serachData = async () => {
+  const data = await IdentityServices.getIdentitys(belongId.value,searchText.value)
+  if (data) {
+    identityList.list = data.result
+    emit('itemClick',identityList.list[0])
+  }
+}
 // 刷新
 const refresh = () => {
   loadIdentities()
@@ -92,38 +104,29 @@ const checkItem = (val: any) => {
   emit('itemClick', val)
 }
 // 加载岗位
-const loadIdentities = () => {
-  $services.cohort.getIdentitys({
-    data: {
-      offset: 0,
-      limit: 1000,
-      id: belongId.value,
-    }
-  }).then((res: ResultType) => {
-    if (res.success) {
-      identityList.list = res.data.result
-    }
-  })
+const loadIdentities = async () => {
+  const data = await IdentityServices.getIdentitys(belongId.value,'')
+  if (data) {
+    identityList.list = data.result
+  }
 }
-const createIdentity = () => {
-  $services.cohort.createIdentity({
-    data: {
-      belongId: belongId.value,
-      name: formData.name,
-      code: formData.code,
-      remark: formData.remark,
-      authId: formData.authId
-    }
-  }).then((res: ResultType) => {
-    if (res.success) {
-      ElMessage({
-        message: '创建成功!',
-        type: 'success'
-      })
-      dialogHide()
-      loadIdentities()
-    }
-  })
+const createIdentity = async () => {
+  let obj =  {
+    belongId: belongId.value,
+    name: formData.name,
+    code: formData.code,
+    remark: formData.remark,
+    authId: formData.authId
+  }
+  const data =  await IdentityServices.createIdentity(obj)
+  if(data){
+    ElMessage({
+      message: '创建成功!',
+      type: 'success'
+    })
+    dialogHide()
+    loadIdentities()
+  }
 }
 
 let authorityTree = ref<any[]>([])
@@ -138,12 +141,13 @@ const cascaderProps = {
 }
 
 // 加载角色树
-const loadAuthorityTree = () => {
-  $services.company.getAuthorityTree({ data: { id: belongId.value } }).then((res: any) => {
+const loadAuthorityTree = async () => {
+  const data = await IdentityServices.getAuthorityTree(belongId.value,'')
+  if(data){
     authorityTree.value = []
-    authorityTree.value.push(res.data)
+    authorityTree.value.push(data)
     cascaderTree.value = authorityTree.value
-  })
+  }
 }
 
 const dialogHide = () => {

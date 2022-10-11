@@ -16,15 +16,21 @@
       <el-menu-item index="5">已逾期</el-menu-item> -->
     </el-menu>
     <div class="content">
-      <!-- <div class="search">
-        <el-input class="input" v-model="input" placeholder="Please input" />
-        <div class="edit">
-          <el-button type="primary" color="#153ec9">新建代办</el-button>
-          <el-button>拒绝代办</el-button>
-          <el-button>完成代办</el-button>
-        </div>
-      </div> -->
-      <div class="tab-list">
+      <el-menu
+        v-if="activeIndex == '1'"
+        :default-active="flowActive"
+        class="el-menu-demo"
+        style="height: 40px; padding-left: 20px;margin-bottom: 20px;"
+        mode="horizontal"
+        @select="flowSelect"
+      >
+        <el-menu-item index="1">待办</el-menu-item>
+        <el-menu-item index="2">已办</el-menu-item>
+        <el-menu-item index="3">已完成</el-menu-item>
+        <el-menu-item index="4">我发起的</el-menu-item>
+        <el-menu-item index="5">已逾期</el-menu-item>
+      </el-menu>
+      <div :class="activeIndex=='1'?'tab-list':'tab-list1'" >
         <DiyTable
           class="diytable"
           ref="diyTable"
@@ -81,7 +87,8 @@
     total: 0
   })
 
-  const activeIndex = ref<string>('1')
+  const activeIndex = ref<string>('1');
+  const flowActive = ref<string>('1');
   const activeId = ref<string>('0')
   var getList = () => {
     $services.person.getAllApproval({
@@ -221,6 +228,13 @@
       getApplyList()
     }
   }
+  const flowSelect = (key:string) => {
+    flowActive.value = key
+    $services.wflow.findmypending({data: { "pageSize": 15,"pageIndex": 1}})
+    .then((res: ResultType) => {
+      console.log('res',res)
+    })
+  }
   onMounted(() => {
     const route = useRouter()
     const selectType = route.currentRoute.value.query.type
@@ -264,7 +278,7 @@
     }
   }
   .content {
-    height: calc(100% - 60px);
+    height: calc(100vh - 110px);
     padding: 20px;
     background: var(--el-bg-color-overlay);
     .search {
@@ -281,10 +295,19 @@
       }
     }
     .tab-list {
-      height: 100%;
+      height: calc(100% - 40px);
       overflow: hidden;
       box-sizing: border-box;
       
+      background: var(--el-bg-color-overlay);
+      span {
+        cursor: pointer;
+      }
+    }
+    .tab-list1{
+      height: 100%;
+      overflow: hidden;
+      box-sizing: border-box;
       background: var(--el-bg-color-overlay);
       span {
         cursor: pointer;
