@@ -73,7 +73,7 @@
           </template>
         </el-input>
         <el-tree
-          v-if="radio == '2' || radio == '3' || radio == '4'"
+          v-if="radio == '2' || radio == '3' || (radio == '4' && centerTreeShow)"
           ref="centerTree"
           node-key="id"
           :check-strictly="true"
@@ -160,6 +160,7 @@
   const leftTree = ref(null)
   const centerTree = ref(null)
   const resource = ref<string>('')
+  const centerTreeShow = ref<boolean>(false) // 控制中间树形显隐
   const state = reactive({
     loadID: {
       id: '',
@@ -205,6 +206,10 @@
   watch(
     () => radio.value,
     async (newValue, oldValue) => {
+      if (cascaderTree.value[0].children.length == 0) {
+        await sumbitSwitch(state.switchData, true, oldValue)
+      }
+      centerTreeShow.value = false
       state.centerTree = []
       state.authorData = []
       state.personsData = []
@@ -230,7 +235,8 @@
   }
   watch(
     () => resource.value,
-    (newValue, oldValue) => {
+    async (newValue, oldValue) => {
+      await sumbitSwitch(state.switchData, true)
       state.centerTree = []
       state.authorData = []
       state.departData = []
@@ -447,10 +453,10 @@
     return data.label.includes(value)
   }
 
-  const sumbitSwitch = async (data, bol?: boolean) => {
+  const sumbitSwitch = async (data, bol?: boolean, oldRadio?: number) => {
     // 当radio！=1 时切换左侧树调用提交接口
     if (state.switchData !== data || bol) {
-      switch (radio.value) {
+      switch (oldRadio ? oldRadio : radio.value) {
         case '2':
           await application.sumbitSwitch(
             state.authorData,
@@ -614,6 +620,7 @@
   }
   const handleNodeClick = async (node: any, load: boolean, search?: string) => {
     if (node && node.data && authority.IsApplicationAdmin([node.data.id, node.data.belongId])) {
+      centerTreeShow.value = true
       sumbitSwitch(node)
       state.switchData = node
       if (typeof load == 'object' && typeof search == 'object') {
