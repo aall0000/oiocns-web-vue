@@ -22,7 +22,7 @@
 
   import DefaultProps from "./DefaultNodeProps"
 
-  import { useAppwfConfig } from '@/store/goWorkflow';
+  import { useAppwfConfig } from '@/store/wflow';
 
   export default defineComponent({
     name: 'ProcessTree',

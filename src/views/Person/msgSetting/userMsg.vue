@@ -107,7 +107,7 @@
   import console from 'console'
   import { useUserStore } from '@/store/user'
   
-  import ProcessDesign from '@/components/goWorkflow/ProcessDesign.vue';
+  import ProcessDesign from '@/components/wflow/ProcessDesign.vue';
   const processDesignRef = ref();
 
   const store = useUserStore()

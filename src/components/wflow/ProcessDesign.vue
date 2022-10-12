@@ -55,7 +55,7 @@
 	// import FormProSetting from './layout/FormProcessDesign.vue'
 	import LayoutPreview from './layout/LayoutPreview.vue';
 	import { formatDate } from '@/utils/index'
-	import { useAppwfConfig } from '@/store/goWorkflow';
+	import { useAppwfConfig } from '@/store/wflow';
 
 	export default defineComponent({
 		name: 'ProcessDesign',
