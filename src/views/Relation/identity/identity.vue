@@ -142,7 +142,7 @@ const cascaderProps = {
 
 // 加载角色树
 const loadAuthorityTree = async () => {
-  const data = await IdentityServices.getAuthorityTree(belongId.value,'')
+  const data = await IdentityServices.getAuthorityTree(belongId.value)
   if(data){
     authorityTree.value = []
     authorityTree.value.push(data)
