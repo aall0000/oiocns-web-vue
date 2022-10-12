@@ -252,14 +252,12 @@ import { title } from 'process';
       // const orgPicker = ref();
       //
       const selectUser = (value) => {
-        
         state.orgPickerSelected = select
         state.orgPickerType = 'user'
         proxy.$pinia.state.value.appwfConfig.selectedNode.props.friendDialogmode = value;
         // orgPicker.value.show()
       };
       const selectJob = (value) => {
-        
         state.orgPickerSelected = select
         state.orgPickerType = 'job'
         proxy.$pinia.state.value.appwfConfig.selectedNode.props.friendDialogmode = value;
