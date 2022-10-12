@@ -305,6 +305,11 @@
   // 详情功能区域
   const getAppResource = async () => {
     const result = await application.searchResource()
+    result.forEach((el: any) => {
+      el.flows = JSON.parse(el.flows)
+      el.components = JSON.parse(el.components)
+    })
+
     resources.resources = result
   }
 </script>

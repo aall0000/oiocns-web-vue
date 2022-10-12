@@ -47,6 +47,7 @@ class Authority {
         if (res.success) {
             this.userId = res.data.userId
             this.spaceId = res.data.spaceId
+            
             this.identitys = res.data.identitys
             this.userInfo = res.data.userInfo
             this.spaceInfo = res.data.spaceInfo
@@ -61,6 +62,9 @@ class Authority {
      */
     private hasTargetsAuth(auths: string[], targetIds: string[]) {
         return this.identitys.filter((item) => {
+            if(!item.authority){
+                return false
+            }
             if (!item.authority.belongId) {
                 return targetIds.includes(item.belongId)
                     && auths.includes(item.authority.code)

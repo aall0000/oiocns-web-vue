@@ -131,7 +131,7 @@
   })
   const remoteMethod = () => {
       let data
-      if(props.serachType==5|| props.serachType ==6){
+      if(props.serachType==5|| props.serachType ==6 || props.serachType ==7){
        data= {
           filter: value.value,
           offset: (pageStore.currentPage - 1) * pageStore.pageSize,
@@ -302,14 +302,12 @@
     {
       prop: 'name',
       label: '商店名称',
-
       name: 'name'
     },
 
     {
       prop: 'code',
       label: '商店编码',
-
       name: 'code'
     },
 

@@ -67,6 +67,9 @@
         :menus="state.resources"
         :key="`${state.resources.length}-${state.resources.map((v:any)=>v?.id||v.customId).join('&')}`"
         @handleMemuEvent="handleMemuEvent"
+        @handleAddMenu="handleAddFlows"
+        @handleAddComponents="handleAddComponents"
+        @handlFieldMenu="handlFieldMenu"
       />
     </div>
     <el-divider />
@@ -86,7 +89,36 @@
   import { appstore } from '@/module/store/app'
   const commonStore = useCommonStore()
   const router = useRouter()
-  let state = reactive({
+
+  type Resources = {
+    name: string
+    code: string
+    link: string
+    privateKey: string
+    customId: number
+    flows: Flows[]
+    components: Components[]
+  }
+  type Field = {
+    name: string
+    code: string
+    type: string
+    customId: number
+  }
+  type Flows = {
+    business: string
+    customId: number
+    field: Field[]
+  }
+  type Components = {
+    name: string
+    url: string
+    width: string
+    height: string
+    customId: number
+  }
+
+  let state = reactive<{ [key: string]: any; resources: Resources[] }>({
     form: {
       id: '',
       code: '',
@@ -100,13 +132,140 @@
         link: '',
         code: '',
         privateKey: '',
-        customId: '1'
+        customId: 1,
+        flows: [
+          {
+            business: '',
+            field: [
+              {
+                name: '',
+                code: '',
+                type: '',
+                customId: 1
+              }
+            ],
+            customId: 1
+          }
+        ],
+        components: [
+          {
+            name: '',
+            url: '',
+            width: '',
+            height: '',
+            customId: 1
+          }
+        ]
       }
     ]
   })
 
+  const handlFieldMenu = (
+    type: ProductMenuEventType,
+    index: number,
+    fIndex: number,
+    selectId?: number
+  ) => {
+    let field = state.resources[index].flows[fIndex].field
+    switch (type) {
+      case 'Add':
+        field.push({
+          name: '',
+          code: '',
+          type: '',
+          customId: field[field.length - 1].customId + 1
+        })
+        break
+      case 'Delete':
+        // handleDeleteMenu(selectId)
+        if (field.length > 1) {
+          state.resources[index].flows[fIndex].field = field.filter(
+            (item) => item.customId !== selectId
+          )
+        } else {
+          ElMessage({
+            type: 'error',
+            message: '请填写至少一个字段信息'
+          })
+        }
+
+        break
+      default:
+        break
+    }
+  }
+
+  const handleAddComponents = (
+    type: ProductMenuEventType,
+    index: number,
+    fIndex: number,
+    selectId?: number
+  ) => {
+    let components = state.resources[index].components
+    switch (type) {
+      case 'Add':
+        components.push({
+          name: '',
+          url: '',
+          width: '',
+          height: '',
+          customId: components[components.length - 1].customId + 1
+        })
+        break
+      case 'Delete':
+        // handleDeleteMenu(selectId)
+        if (components.length > 1) {
+          state.resources[index].components = components.filter(
+            (item) => item.customId !== selectId
+          )
+        } else {
+          ElMessage({
+            type: 'error',
+            message: '请填写至少一个组件信息'
+          })
+        }
+
+        break
+      default:
+        break
+    }
+  }
+  const handleAddFlows = (type: ProductMenuEventType, index: number, selectId?: number) => {
+    let flows = state.resources[index].flows
+    switch (type) {
+      case 'Add':
+        flows.push({
+          business: '',
+          field: [
+            {
+              name: '',
+              code: '',
+              type: '',
+              customId: 1
+            }
+          ],
+          customId: flows[flows.length - 1].customId + 1
+        })
+        break
+      case 'Delete':
+        // handleDeleteMenu(selectId)
+        if (flows.length > 1) {
+          state.resources[index].flows = flows.filter((item) => item.customId !== selectId)
+        } else {
+          ElMessage({
+            type: 'error',
+            message: '请填写至少一个流程信息'
+          })
+        }
+
+        break
+      default:
+        break
+    }
+  }
+
   // 处理资源信息操作
-  const handleMemuEvent = (type: ProductMenuEventType, selectId?: string) => {
+  const handleMemuEvent = (type: ProductMenuEventType, selectId?: number) => {
     switch (type) {
       case 'Add':
         state.resources.push({
@@ -114,7 +273,22 @@
           link: '',
           code: '',
           privateKey: '',
-          customId: `${state.resources.length + 1}`
+          customId: state.resources.length + 1,
+          flows: [
+            {
+              business: '',
+              field: [
+                {
+                  name: '',
+                  code: '',
+                  type: '',
+                  customId: 1
+                }
+              ],
+              customId: 1
+            }
+          ],
+          components: []
         })
         break
       case 'Delete':
@@ -140,7 +314,7 @@
     }
   }
   // 排序资源信息
-  const handleSortMenu = (type: ProductMenuEventType, aimId: string) => {
+  const handleSortMenu = (type: ProductMenuEventType, aimId: number) => {
     const data = state.resources
     // 根据当前所选标志 获取目标数据信息
     const obj = data.find((item) => item.customId === aimId)
@@ -195,8 +369,13 @@
           })
         }
         // 过滤无效填写
-        const resourcesData = state.resources.filter((item) => {
+        const obj = state.resources.filter((item) => {
           return item.link
+        })
+        const resourcesData = JSON.parse(JSON.stringify(obj))
+        resourcesData.forEach((el: any) => {
+          el.flows = JSON.stringify(el.flows)
+          el.components = JSON.stringify(el.components)
         })
         const params = { ...state.form, resources: resourcesData }
         const success = await appstore.onRegister(params)
