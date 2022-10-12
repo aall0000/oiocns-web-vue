@@ -136,6 +136,7 @@
                           action.label
                         }}</el-dropdown-item>
                       </div>
+                      <el-dropdown-item :command="'流程'">发起流程</el-dropdown-item>
                       <el-dropdown-item
                         @click="GoPageWithQuery('/market/publishList', { id: item.id })"
                         >应用上架列表
@@ -266,6 +267,40 @@
         @closeDialog="shareVisible = false"
         :info="selectProductItem"
       ></ShareComponent>
+    </el-dialog>
+    <el-dialog
+      v-model="processType"
+      custom-class="share-dialog"
+      title="流程发起"
+      draggable
+      :close-on-click-modal="false"
+    >
+      <div class="process-row">
+        <div  class="row-title">选择资源</div>
+        <el-select v-model="resourcesValue" class="m-2" placeholder="Select" size="large">
+          <el-option
+            v-for="item in resourcesList"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id"
+          />
+        </el-select>
+      </div>
+      <div class="process-row">
+        <div class="row-title">选择资源</div>
+        <el-select v-model="resourcesValue" class="m-2" placeholder="Select" size="large">
+          <el-option
+            v-for="item in resourcesList"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id"
+          />
+        </el-select>
+      </div>
+      <div class="process-footer">
+        <el-button type="primary" >确认</el-button>
+        <el-button class="footer-btn">取消</el-button>
+      </div>
     </el-dialog>
   </div>
 </template>
@@ -501,6 +536,9 @@
       case 'detail':
         GoPage(`/market/detail/${item.id}`)
         break
+      case '流程':
+        startProcess(selectProductItem.value.id);
+        break
       default:
         break
     }
@@ -542,7 +580,27 @@
       return new Date().getTime() + 1000
     }
   }
-</script>
+  const processType = ref<boolean>(false)
+ 
+  type  resourcesType = {
+    value:string,
+    key:string,
+    name:string,
+    id:string,
+    label:string
+  }
+
+  const resourcesList = ref< Array<resourcesType>>([])
+
+  const startProcess = async (id:string) =>{
+    processType.value = true;
+    console.log(selectProductItem.value)
+    const result = await appstore.getResource(id)
+    // resources.resources = result
+    resourcesList.value = result
+  }
+  const resourcesValue = ref<string>('')
+ </script>
 
 <style>
   .group-dialog > .el-dialog__body {
@@ -714,5 +772,23 @@
         height: calc(100vh - 404px);
       }
     }
+  }
+  .process-row{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 10px;
+    .row-title{
+      width: 80px;
+    }
+    .m-2{
+      max-width: 450px;
+    }
+  }
+  .process-footer{
+    margin: 30px 0s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 </style>
