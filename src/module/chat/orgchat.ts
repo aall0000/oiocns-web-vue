@@ -419,7 +419,6 @@ export default class OrgChat extends Object {
         if (data.msgType === "recall") {
             data = this._recallMsg(data)
         }
-        debugger
         this.chats.value.forEach((item: ImMsgType) => {
             let newChats: ImMsgChildType[] = []
             item.chats.forEach((chat: ImMsgChildType) => {
@@ -507,7 +506,7 @@ export default class OrgChat extends Object {
             })
         }
         this.nameMap.value = data.nameMap || this.nameMap.value
-        this.openChats = data.openChats || data.openChats
+        this.openChats = data.openChats || this.openChats
         let lastMsg = data.lastMsg
         if (lastMsg && lastMsg.chat && lastMsg.data && this.curChat.value
             && this.curChat.value.id === lastMsg.chat.id
