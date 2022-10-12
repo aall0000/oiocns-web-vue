@@ -22,7 +22,7 @@
 
   import DefaultProps from "./DefaultNodeProps"
 
-  import { useAppwfConfig } from '@/store/goWorkflow';
+  import { useAppwfConfig } from '@/store/wflow';
 
   export default defineComponent({
     name: 'ProcessTree',
@@ -230,7 +230,7 @@
       };
       const copyBranch = (node: any) => {
         let parentNode = nodeMap.value.get(node.parentId)
-        let branchNode = deepCopy(node)
+        let branchNode:any = deepCopy(node)
         branchNode.name = branchNode.name + '-copy'
         forEachNode(parentNode, branchNode, (parent: any, node: any) => {
           let id = getRandomId()
@@ -487,13 +487,15 @@
         return err
       };
       const validateNode = (err: any, node: any) => {
-        if (ctx.refs[node.nodeId].validate) {
-          state.valid = ctx.refs[node.nodeId].validate(err)
+        let refnode:any = ctx.refs[node.nodeId]
+        if (refnode.validate) {
+          state.valid = refnode.validate(err)
         }
       };
       //更新指定节点的dom
       const nodeDomUpdate = (node: any) => {
-        ctx.refs[node.nodeId].$forceUpdate()
+        let refnode:any = ctx.refs[node.nodeId]
+        refnode.$forceUpdate()
       };
       //给定一个起始节点，遍历内部所有节点
       const forEachNode = (parent: any, node: any, callback: any) => {

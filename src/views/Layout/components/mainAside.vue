@@ -101,9 +101,11 @@ const activeAppId = ref<string>('')
 // 判断是否已经存在菜单
 const onAppClick = (data: any) => {
   data.type = 'app'
+  data.id = data.appInfo.id
   activeAppId.value = data.id ?? ''
   commonStore.iframeLink = data?.link
   commonStore.iframeID = data?.id
+  commonStore.appInfo = data?.appInfo
   let bool = state.mainMenus.filter((el) => {
     return el.id == data.id
   })

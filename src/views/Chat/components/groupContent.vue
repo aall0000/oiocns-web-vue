@@ -9,7 +9,7 @@
       </div>
       <!-- 左侧聊天内容显示 -->
       <div class="group-content-left con recall" v-if="item.msgType === 'recall'">
-        {{ item.showTxt }}
+        {{ chat.getName(item.fromId) }}撤回了一条消息
         <span class="reWrite" v-if="item.allowEdit" @click="handleReWrite(item.msgBody)">重新编辑</span>
       </div>
 
@@ -112,7 +112,7 @@ const recallMsg = (item: any) => {
     delete item.sessionId
   }
   chat.recallMsg(item).then((res: ResultType) => {
-    if (res.data != 1) {
+    if (res.data.status != 2) {
       ElMessage({
         type: "warning",
         message: "只能撤回2分钟内发送的消息"

@@ -1,5 +1,5 @@
 <template>
-  <div class="base-setup" @click="showIconSelect = false">
+  <!-- <div class="base-setup" @click="showIconSelect = false">
     <el-form ref="baseSetting" :model="setup" label-position="top" label-width="80px">
       <el-form-item label="表单名称" prop="formName">
         <el-input v-model="setup" size="default"></el-input>
@@ -14,7 +14,7 @@
         <el-input v-model="setup" size="default"></el-input>
       </el-form-item>
     </el-form>
-  </div>
+  </div> -->
 </template>
 
 <script lang="ts">
