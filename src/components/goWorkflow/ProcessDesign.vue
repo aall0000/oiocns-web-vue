@@ -123,6 +123,7 @@
 						code: formatDate(new Date(),'yyyyMMddhhmmss'),
 						formId: null,
 						formName: "",
+						formFileds: [],
 						appId: "",
 						appName: "",
 						remainHours: 240,
@@ -159,25 +160,32 @@
 			});
 
 			onMounted(() => {
+	
+				
+			});
+			const startDesign= (appId:string, formId:string)=>{
+				
+				/**1. 根据appId，formId,(不需要传workspaceId和userId ?)查询所有版本的流程定义  */
 				for(let i=0;i<3;i++){
 					var design  = JSON.parse(JSON.stringify(state.defaultDesign))
-					design.id = i;
+					design.id = `${i}`;
 					design.name = `流程${i}`;
 					design.version = `v${i}.0`;
 					state.designList.push(design);
 				}
+				/**2. 根据appId获取平台 appName,业务表单标识，条件字段 */
+				var appName = "应用名称";
+				var formName = "业务表单";
+				var formFileds:any[]  = [{name:'金额',code:'money',type:'NUMERIC'},{name:'项目名称',code:'xiangmumc',type:'STRING'},{name:'出让方式',code:'churangfs',type:'STRING',dict:[{code:'1',name:'协议定价'},{code:'2',name:'挂牌'},{code:'3',name:'拍卖'}]}];
+				state.designList = state.designList.map(item=>{item.appId=appId; item.appName=appName; item.formId=formId; item.formName=formName; item.formFileds=formFileds; return item;})
 				stores.setDesignList(state.designList);
-			});
-			const startDesign= (formId)=>{
-
-				openDialog('1');
+				openDialog(state.designList[state.designList.length-1].id);
 			}
 			// 打开弹窗
 			const openDialog = (id: String) => {
 		
 				if (id) {
 					state.isShowDialog = true;
-					//调取后端接口获取disign
 					state.tempDesign = state.designList.filter(item=>item.id==id)[0] || JSON.parse(JSON.stringify(state.defaultDesign));
 					stores.setDesign(state.tempDesign);
 					console.log("design",proxy.$pinia.state.value.appwfConfig.design);

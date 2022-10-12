@@ -64,10 +64,11 @@ export const CONDITION_CONDITIONS = {
   pos:1,
   paramKey:"",
   paramLabel:"",
-  key:"EQ",
-  label:"等于",
+  key:"",
+  label:"",
   type:"NUMERIC",
-  val: NULL
+  val: null,
+  valLabel:""
 }
 
 //抄送节点默认属性

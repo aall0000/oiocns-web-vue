@@ -38,7 +38,7 @@
     ComponentInternalInstance
   } from 'vue';
   // import draggable from "vuedraggable";
-  import GroupItem from "./ConditionGroupItemConfig.vue"
+  import GroupItem from "./ConditionGroupItemConfigNew.vue"
   
   export default defineComponent({
     name: 'ConditionNodeConfig',
@@ -87,6 +87,16 @@
       // });
       //
       const addConditionGroup = () => {
+        proxy.$pinia.state.value.appwfConfig.selectedNode.conditions.push({
+          pos: proxy.$pinia.state.value.appwfConfig.selectedNode.conditions.length + 1,
+          paramKey:"",
+          paramLabel:"",
+          key:"",
+          label:"",
+          type:"NUMERIC",
+          val: null
+        });
+        console.log(proxy.$pinia.state.value.appwfConfig.selectedNode)
         // props.config.groups.push({
         //   cids:[],
         //   groupType: "OR",

@@ -195,7 +195,7 @@
       };
       // id映射到map，用来向上遍历
       const toMapping = (node: any) => {
-        debugger
+        
         if (node && node.nodeId) {
 					stores.addNodeMap({"nodeId":node.nodeId,"node":node});
 					console.log("nodeMap",proxy.$pinia.state.value.appwfConfig.nodeMap);
@@ -359,7 +359,7 @@
           parentId: parentNode.children.nodeId,
           type: "CONDITION",
           props: deepCopy(DefaultProps.CONDITION_PROPS),
-          conditions: deepCopy(DefaultProps.CONDITION_CONDITIONS),
+          conditions: [],
           name: "条件1",
           children: {}
         }, {
@@ -367,7 +367,7 @@
           parentId: parentNode.children.nodeId,
           type: "CONDITION",
           props: deepCopy(DefaultProps.CONDITION_PROPS),
-          conditions: deepCopy(DefaultProps.CONDITION_CONDITIONS),
+          conditions: [],
           name: "条件2",
           children: {}
         }];
@@ -417,13 +417,14 @@
         return getBranchEndNode(conditionNode.children);
       };
       const addBranchNode = (node: any) => {
+        debugger
         if (node.branches.length < 8) {
           node.branches.push({
             nodeId: getRandomId(),
             parentId: node.nodeId,
             name: (isConditionNode(node) ? '条件' : '分支') + (node.branches.length + 1),
             props: isConditionNode(node) ? deepCopy(DefaultProps.CONDITION_PROPS) : {},
-            conditions: isConditionNode(node) ? deepCopy(DefaultProps.CONDITION_CONDITIONS) : {},
+            conditions: [],
             type: isConditionNode(node) ? "CONDITION" : "CONCURRENT",
             children: {}
           })
@@ -436,7 +437,7 @@
         console.log("删除节点", node)
         console.log("nodeMap", nodeMap.value)
         //获取该节点的父节点
-        debugger
+        
         let parentNode = nodeMap.value.get(node.parentId)
         if (parentNode) {
           //判断该节点的父节点是不是分支节点

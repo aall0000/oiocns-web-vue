@@ -97,37 +97,48 @@
         errorInfo: '',
         showError: false
       });
-      //
       const content = computed(() => {
-        const groups = props.config.props.groups
-        let confitions: any[] = []
-        groups.forEach((group: any) => {
-          let subConditions = []
-          group.conditions.forEach(subCondition => {
-            let subConditionStr = ''
-            switch (subCondition.valueType) {
-              case ValueType.dept:
-              case ValueType.user:
-                subConditionStr =
-                  `${subCondition.title}属于[${String(subCondition.value.map(u => u.name)).replaceAll(',', '. ')}]之一`
-                break;
-              case ValueType.number:
-              case ValueType.string:
-                subConditionStr = getOrdinaryConditionContent(subCondition)
-                break;
-            }
-            subConditions.push(subConditionStr)
-          })
-          //根据子条件关系构建描述
-          let subConditionsStr = String(subConditions)
-            .replaceAll(',', subConditions.length > 1 ?
-              (group.groupType === 'AND' ? ') 且 (' : ') 或 (') :
-              (group.groupType === 'AND' ? ' 且 ' : ' 或 '))
-          confitions.push(subConditions.length > 1 ? `(${subConditionsStr})` : subConditionsStr)
-        })
-        //构建最终描述
-        return String(confitions).replaceAll(',', (props.config.props.groupsType === 'AND' ? ' 且 ' : ' 或 '))
+        const conditions = props.config.conditions
+        var text = "请设置条件"
+        if(conditions && conditions.length >0){
+          text = ""
+          for(let condition of conditions){
+            text += condition.paramLabel + condition.label + (condition.valLabel || condition.val) +" 且 "
+          }
+          text = text.substring(0,text.lastIndexOf(' 且 '))
+        }
+        return text
       });
+      // const content = computed(() => {
+      //   const groups = props.config.props.groups
+      //   let confitions: any[] = []
+      //   groups.forEach((group: any) => {
+      //     let subConditions = []
+      //     group.conditions.forEach(subCondition => {
+      //       let subConditionStr = ''
+      //       switch (subCondition.valueType) {
+      //         case ValueType.dept:
+      //         case ValueType.user:
+      //           subConditionStr =
+      //             `${subCondition.title}属于[${String(subCondition.value.map(u => u.name)).replaceAll(',', '. ')}]之一`
+      //           break;
+      //         case ValueType.number:
+      //         case ValueType.string:
+      //           subConditionStr = getOrdinaryConditionContent(subCondition)
+      //           break;
+      //       }
+      //       subConditions.push(subConditionStr)
+      //     })
+      //     //根据子条件关系构建描述
+      //     let subConditionsStr = String(subConditions)
+      //       .replaceAll(',', subConditions.length > 1 ?
+      //         (group.groupType === 'AND' ? ') 且 (' : ') 或 (') :
+      //         (group.groupType === 'AND' ? ' 且 ' : ' 或 '))
+      //     confitions.push(subConditions.length > 1 ? `(${subConditionsStr})` : subConditionsStr)
+      //   })
+      //   //构建最终描述
+      //   return String(confitions).replaceAll(',', (props.config.props.groupsType === 'AND' ? ' 且 ' : ' 或 '))
+      // });
       //
       const getDefault = (val: any, df: any) => {
         return val && val !== '' ? val : df;
